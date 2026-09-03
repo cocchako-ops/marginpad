@@ -458,7 +458,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand — every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
   function wireFreePan(el){var st={d:0};el.addEventListener('pointerdown',function(e){var r=el.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-64);st.dec=0;},true);el.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){_userPS=true;return;}if(dy>dx){_userPS=true;try{chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);el.addEventListener('dblclick',function(e){var r=el.getBoundingClientRect();if(e.clientX>r.right-64){_userPS=false;try{chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});}
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
-  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
+  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;var _lo={background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false};if(window.innerWidth<=720)_lo.fontSize=11; /* phones: smaller axis labels = narrower price axis, more chart (mobile terminal 2026-09-04) */
+    chart=mpCreateChart(el,{layout:_lo,grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
     // timeframe — but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
     if(!bars||!bars.length)return orig?orig():null;
@@ -519,7 +520,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // render a klines array onto the chart (precision + data + scale + live-seed of the forming candle + position lines)
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
-    try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}/* ~5 sig figs — $1-100 coins were 2dp (XRP 1.09 hid 1.0904) */
+    try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);if(window.innerWidth<=720&&_lp>=100)_pc=Math.max(0,_pc-2); /* phones: BTC/ETH axis without cents ("81577" not "81577.10") — display-only, the form/tickets keep fp() */candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}/* ~5 sig figs — $1-100 coins were 2dp (XRP 1.09 hid 1.0904) */
     _userPS=false;try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
@@ -3708,3 +3709,84 @@ window.mpSrvOpen=function(payload,ok,fail){
 
 /* shared toast for role-gated chat command replies (visible only to the sender; mirrored home.js/mp-trade.js, one instance per page) */
 (function(){if(window.__mpCcSys)return;window.__mpCcSys=function(t){var h=document.getElementById('ccSysT');if(!h){h=document.createElement('div');h.id='ccSysT';h.style.cssText='position:fixed;bottom:86px;left:50%;transform:translateX(-50%);z-index:1400;background:#12151d;border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:12px;padding:9px 16px;font:600 12.5px system-ui,sans-serif;max-width:88vw;opacity:0;transition:opacity .25s;pointer-events:none;text-align:center';document.body.appendChild(h);}h.textContent=t;h.style.opacity='1';clearTimeout(window.__mpCcT);window.__mpCcT=setTimeout(function(){h.style.opacity='0';},4600);};})();
+
+;/* ══════════ MOBILE PAPER TRADE TERMINAL — chart-first layout + order-form bottom sheet (2026-09-04) ══════════
+   Owner-approved mock "B": on phones (<=720px) the chart fills the screen; the order form (.ptt-side) becomes a sheet
+   docked above the bottom tab bar. Collapsed it shows the open-position strip + live price + Long/Short; a tap on
+   Long/Short, the grab handle or any form field opens it (amount, leverage, stats, Open); a successful open collapses
+   it again. CSS lives at the end of home.css (".pts-*" + body.paper-page rules). This block only:
+     - builds the in-flow toolbar row (.pts-bar) by MOVING .ptt-chart-top + #ptRecent into it (and moves them back
+       above 720px, so a tablet rotation restores the desktop grid),
+     - wraps .pt2-top + #planSeg in .pts-head (harmless on desktop: .ptt-form is a block column),
+     - mirrors the candle countdown (.pt-cd text, owned by tickCd) into #ptsCd inside the TF chip,
+     - measures the collapsed head height into --pts-h (ResizeObserver) so the chart height follows the sheet,
+     - keeps the "+N" open-position badge on #ptLastTrade (data-more attribute — survives renderLast's innerHTML).
+   It never touches trading logic, ticket markup or the chart engine. Guarded everywhere: missing nodes = no-op. */
+(function(){
+  if(window.mpPtSheet)return;
+  var MQ='(max-width:720px)';
+  function mob(){try{return !!(window.matchMedia&&window.matchMedia(MQ).matches);}catch(e){return window.innerWidth<=720;}}
+  var ptt=document.querySelector('#plan .ptt');if(!ptt)return;
+  var chartEl=ptt.querySelector('.ptt-chart'),top=ptt.querySelector('.ptt-chart-top'),side=ptt.querySelector('.ptt-side');
+  var form=side&&side.querySelector('.ptt-form'),pxTop=form&&form.querySelector('.pt2-top'),seg=document.getElementById('planSeg');
+  var rail=document.getElementById('ptRecent'),tickets=document.getElementById('ptLastTrade'),tfw=top&&top.querySelector('.ptt-tfwrap'),saveBtn=document.getElementById('planSave');
+  if(!chartEl||!top||!side||!form||!pxTop||!seg)return;
+  var bar=null,head=null,grab=null,cd=null,built=false,_lastSave=0,_seenIds=null;
+  function build(){ if(built)return; built=true;
+    bar=document.createElement('div');bar.className='pts-bar';chartEl.insertBefore(bar,chartEl.firstChild);bar.appendChild(top);if(rail)bar.appendChild(rail);
+    if(!head){head=document.createElement('div');head.className='pts-head';form.insertBefore(head,form.firstChild);head.appendChild(pxTop);head.appendChild(seg);}
+    grab=document.createElement('button');grab.type='button';grab.className='pts-grab';grab.setAttribute('aria-label','Order form');side.insertBefore(grab,side.firstChild);
+    grab.addEventListener('click',function(e){e.preventDefault();setOpen(!isOpen());});
+    if(tfw&&!cd){cd=document.createElement('span');cd.id='ptsCd';cd.className='pts-cd';cd.setAttribute('aria-hidden','true');tfw.appendChild(cd);}
+    side.setAttribute('aria-expanded','false');
+    measure();more();
+  }
+  function unbuild(){ if(!built)return; built=false;
+    try{chartEl.insertBefore(top,chartEl.firstChild);if(rail)ptt.insertBefore(rail,side);if(bar&&bar.parentNode)bar.parentNode.removeChild(bar);}catch(e){}
+    try{if(grab&&grab.parentNode)grab.parentNode.removeChild(grab);}catch(e){}
+    try{if(cd&&cd.parentNode){cd.parentNode.removeChild(cd);cd=null;}}catch(e){}
+    ptt.classList.remove('pts-open');ptt.style.removeProperty('--pts-h');document.documentElement.style.removeProperty('--pts-h');side.removeAttribute('aria-expanded');
+  }
+  function isOpen(){return ptt.classList.contains('pts-open');}
+  function setOpen(v){ if(!built)return; v=!!v; if(isOpen()===v)return;
+    ptt.classList.toggle('pts-open',v);side.setAttribute('aria-expanded',v?'true':'false');
+    if(v){side.scrollTop=0;}
+    else{try{var a=document.activeElement;if(a&&side.contains(a)&&a.blur)a.blur();}catch(e){}side.scrollTop=0;}
+    measure();
+  }
+  // collapsed height = everything from the sheet's top edge down to the bottom of the head row (+ padding); measured
+  // with offsets (not rects) so an open, scrolled sheet measures the same as a collapsed one
+  var _mq=false;
+  function measure(){ if(!built||!head)return; if(_mq)return;_mq=true;requestAnimationFrame(function(){_mq=false;
+    var y=0,n=head;try{while(n&&n!==side){y+=n.offsetTop;n=n.offsetParent;}}catch(e){y=0;}
+    if(!(head.offsetHeight>0))return; // hidden (other route) → keep the last value
+    var h=Math.round(y+head.offsetHeight+2);if(h<60)h=60;var cap=Math.round(window.innerHeight*0.5);if(h>cap)h=cap; // +2: the head carries its own bottom padding — anything more lets the first form labels peek out under the collapsed sheet
+    var v=h+'px';if(ptt.style.getPropertyValue('--pts-h')!==v){ptt.style.setProperty('--pts-h',v);document.documentElement.style.setProperty('--pts-h',v);}
+  });}
+  function more(){ if(!tickets)return; var open=0;try{var d=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];for(var i=0;i<d.length;i++)if(d[i]&&d[i].status==='open')open++;}catch(e){}
+    var extra=Math.max(0,open-1);if(extra&&built){if(tickets.getAttribute('data-more')!=='+'+extra)tickets.setAttribute('data-more','+'+extra);}else if(tickets.hasAttribute('data-more'))tickets.removeAttribute('data-more'); }
+  // candle countdown mirror: tickCd owns .pt-cd (re-attaches it to #ptChart every second), we only copy its text
+  setInterval(function(){ if(!built||!cd)return; var s=document.querySelector('#ptChart .pt-cd'),t=s?String(s.textContent||'').replace(/^close in\s*/i,''):''; if(cd.textContent!==t)cd.textContent=t; },1000);
+  // triggers
+  seg.addEventListener('click',function(e){ if(!built)return; if(e.target&&e.target.closest&&e.target.closest('button'))setOpen(true); });
+  ptt.addEventListener('click',function(e){ if(!built)return; if(e.target===ptt&&isOpen()){e.preventDefault();setOpen(false);} }); // the dim is .ptt::after → its clicks target .ptt itself
+  document.addEventListener('keydown',function(e){ if(built&&e.key==='Escape'&&isOpen())setOpen(false); });
+  side.addEventListener('focusin',function(e){ if(!built)return; var t=e.target; if(t&&t.matches&&t.matches('input,select,textarea')&&!isOpen()&&!(head&&head.contains(t)))setOpen(true); });
+  side.addEventListener('focusout',function(){ if(!built)return; setTimeout(function(){ try{ if(!side.contains(document.activeElement)&&(window.scrollY||document.documentElement.scrollTop)){window.scrollTo(0,0);} }catch(e){} },60); }); // iOS pans the page to reveal a focused input inside the fixed-height terminal — snap back once the keyboard goes
+  if(saveBtn)saveBtn.addEventListener('click',function(){ if(!built)return; _lastSave=Date.now(); if(Date.now()-(window._mpLastOpenTs||0)<400)setTimeout(function(){setOpen(false);},180); }); // sync local open: add() ran first (registered earlier on the same button)
+  if(tickets){
+    tickets.addEventListener('click',function(e){ if(!built)return; if(e.target&&e.target.closest&&e.target.closest('button,a,input'))return; if(window.mpOpenTrades){e.preventDefault();window.mpOpenTrades();} }); // the strip = a shortcut to My Trades (all positions, full details)
+    if('MutationObserver'in window)new MutationObserver(function(){ more(); if(!built)return;
+      var ids={},fresh=false,list=tickets.querySelectorAll('.pt-last');for(var i=0;i<list.length;i++){var id=list[i].getAttribute('data-tid');ids[id]=1;if(_seenIds&&!_seenIds[id])fresh=true;}
+      _seenIds=ids; if(fresh&&Date.now()-_lastSave<4000&&isOpen())setTimeout(function(){setOpen(false);},120); // server-filled opens land asynchronously → collapse when the new ticket actually appears
+      measure(); }).observe(tickets,{childList:true,attributes:true,attributeFilter:['hidden']});
+  }
+  // keep --pts-h honest whenever the head, the tickets or the sheet change size
+  if('ResizeObserver'in window){var ro=new ResizeObserver(function(){measure();});[side,form,tickets,pxTop,seg].forEach(function(el){if(el)ro.observe(el);});setTimeout(function(){if(head)ro.observe(head);},0);}
+  window.addEventListener('resize',function(){ if(mob()){if(!built)build();measure();}else if(built)unbuild(); });
+  window.addEventListener('orientationchange',function(){setTimeout(measure,120);});
+  window.addEventListener('storage',function(e){if(!e||e.key==='mp_journal')more();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)measure();});
+  if(mob())build();
+  window.mpPtSheet={open:function(){setOpen(true);},close:function(){setOpen(false);},isOpen:isOpen,measure:measure,built:function(){return built;}}; // debug/E2E hook
+})();

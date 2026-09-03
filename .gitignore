@@ -71,3 +71,6 @@ scratch-*.png
 
 # ops E2E screenshots (build/ops-e2e.js)
 build/ops-shots/
+
+# mobile paper-trade terminal E2E screenshots (build/pt-mobile-e2e.js)
+build/pt-shots/
