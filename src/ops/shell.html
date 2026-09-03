@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>MarginPad ops</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/app-icon-180.png">
+<link rel="manifest" href="/api/stats/asset/ops.webmanifest?v=__V__" crossorigin="use-credentials">
 <link rel="stylesheet" href="/api/stats/asset/ops.css?v=__V__">
 </head>
 <body>
@@ -28,6 +30,12 @@
     <main id="view" class="view"></main>
   </div>
 </div>
+<nav class="tabbar" id="tabbar" aria-label="Sections">
+  <a href="#today/overview" data-sec="today">Today</a><a href="#inbox/support" data-sec="inbox">Inbox</a><a href="#money/withdrawals" data-sec="money">Money</a><a href="#people/users" data-sec="people">People</a><button type="button" id="tabMore">More</button>
+</nav>
+<div class="pal" id="help" hidden><div class="palbox"><div class="helpbox"><b>Keyboard</b>
+<div class="hk"><kbd>Ctrl K</kbd> or <kbd>/</kbd> search or jump</div><div class="hk"><kbd>r</kbd> refresh this view</div><div class="hk"><kbd>[</kbd> <kbd>]</kbd> previous / next view</div><div class="hk"><kbd>Ctrl Enter</kbd> send a reply (Support, chat)</div><div class="hk"><kbd>Esc</kbd> close card, palette or this</div><div class="hk"><kbd>?</kbd> this help</div>
+<div class="line" style="margin-top:10px;font-size:12px">Click any @user anywhere for the quick card; Ctrl-click opens the full profile in a new tab.</div></div></div></div>
 <div class="pal" id="pal" hidden><div class="palbox"><input id="palIn" type="text" placeholder="Type a user, wallet, page or a section name…" autocomplete="off" spellcheck="false"><div class="palres" id="palRes"></div><div class="palhint">Enter opens · Esc closes · sections, users, faucet accounts, community posts</div></div></div>
 <div class="toast" id="toast" hidden></div>
 <script src="/api/stats/asset/ops.js?v=__V__"></script>

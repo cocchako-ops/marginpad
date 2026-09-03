@@ -16,7 +16,13 @@
   function J(u, o) { return fetch(u, o).then(function (r) { return r.json().then(function (j) { if (!r.ok && j && !j.error) j.error = 'http_' + r.status; return j; }); }); }
   function post(u, body) { return J(u, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }); }
   var toastT = null; function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3500); }
-  function stamp() { $('stamp').textContent = 'updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+  // the stamp is a live "updated 12s ago" counter; amber once a view has not repainted for 3 minutes (a dead timer or a failing endpoint)
+  var stampTs = 0; function stamp() { stampTs = Date.now(); tickStamp(); }
+  function tickStamp() { var e = $('stamp'); if (!stampTs) { e.textContent = ''; return; } var s = Math.round((Date.now() - stampTs) / 1000); e.textContent = 'updated ' + (s < 5 ? 'just now' : ago(stampTs) + ' ago'); e.classList.toggle('old', s > 180); }
+  setInterval(tickStamp, 1000);
+  function failHtml(msg) { return '<div class="empty err">' + esc(msg || 'could not load') + ' <button class="btn sm" data-retry style="margin-left:8px">Retry</button></div>'; }
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-retry]'); if (b) { b.disabled = true; show(); } });
+  function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('ops_' + k) || 'null'); localStorage.setItem('ops_' + k, JSON.stringify(v)); } catch (e) { return null; } }
 
   // ---------- information architecture ----------
   // 8 sections instead of 24 flat tabs. Every view is native since 2026-09-03 evening (the old server-rendered dashboard is no longer embedded).
@@ -39,9 +45,11 @@
   function clearTimers() { timers.forEach(clearInterval); timers = []; }
   function every(ms, fn) { timers.push(setInterval(function () { if (!document.hidden) fn(); }, ms)); }
   function show() {
-    var r = route(); cur = r; clearTimers(); renderNav(); $('side').classList.remove('open');
+    var r = route(); cur = r; clearTimers(); renderNav(); $('side').classList.remove('open'); stampTs = 0; tickStamp();
     $('crumb').innerHTML = esc(r.sec.title) + ' <small>' + esc(r.view.title) + '</small>';
-    document.title = r.view.title + ' · ' + r.sec.title + ' · MarginPad ops';
+    baseTitle = r.view.title + ' · ' + r.sec.title + ' · MarginPad ops'; setTitle();
+    document.querySelectorAll('#tabbar a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-sec') === r.sec.id); });
+    var rec = (store('recent') || []).filter(function (k) { return k !== r.key; }); rec.unshift(r.key); store('recent', rec.slice(0, 6));
     // a FRESH #view node per route: a fetch the previous view started (Live trades fires ~25 price lookups) resolves after the
     // route change and paints into the element it holds; that element is now detached, so the new view is never overwritten
     var old = $('view'), el = old.cloneNode(false); old.parentNode.replaceChild(el, old); el.innerHTML = '<div class="empty">loading…</div>'; window.scrollTo(0, 0);
@@ -50,8 +58,29 @@
     if (v) v.render(el, r.arg); else el.innerHTML = '<div class="empty">No such view.</div>';
     try { if (navigator.sendBeacon) navigator.sendBeacon('/api/admin/usage', JSON.stringify({ tab: 'v2:' + r.key })); } catch (e) {}
   }
+  var baseTitle = 'MarginPad ops', redN = 0; function setTitle() { document.title = (redN ? '(' + redN + ') ' : '') + baseTitle; } // the tab itself shows how many red items wait
+  function viewKeys() { var o = []; NAV.forEach(function (s) { s.views.forEach(function (v) { o.push(s.id + '/' + v.id); }); }); return o; }
+  function typing() { var a = document.activeElement; return !!(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable)); }
   window.addEventListener('hashchange', show);
   $('menuBtn').addEventListener('click', function () { $('side').classList.add('open'); });
+  $('tabMore').addEventListener('click', function () { $('side').classList.add('open'); });
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || typing()) return; var help = $('help');
+    if (e.key === '?') { e.preventDefault(); help.hidden = !help.hidden; return; }
+    if (e.key === 'Escape') { if (!help.hidden) help.hidden = true; return; }
+    if (!pal.hidden || !help.hidden || MODAL) return;
+    if (e.key === '/') { e.preventDefault(); palOpen(); }
+    else if (e.key === 'r') { e.preventDefault(); show(); loadTop(); toast('refreshed'); }
+    else if (e.key === '[' || e.key === ']') { var ks = viewKeys(), i = ks.indexOf(route().key); var n = ks[(i + (e.key === ']' ? 1 : -1) + ks.length) % ks.length]; location.hash = n; }
+  });
+  $('help').addEventListener('click', function (e) { if (e.target === $('help')) $('help').hidden = true; });
+  // Quick user card: any @user link (they all point at /api/admin/user) opens the card in place; Ctrl/Cmd-click or middle-click keeps the full profile in a new tab
+  document.addEventListener('click', function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return; var a = e.target.closest && e.target.closest('a[href^="/api/admin/user?"]'); if (!a || a.classList.contains('btn')) return; e.preventDefault(); var m = a.getAttribute('href').match(/[?&](u|email)=([^&]+)/); if (!m) return; userCard(decodeURIComponent(m[2]), m[1] === 'email'); });
+  function userCard(who, isEmail) {
+    var m = modal('<div class="mhead"><b>' + esc(who) + '</b><button class="btn sm x" id="ucX">close</button></div><div id="ucBody"><div class="empty">loading…</div></div>'); $('ucX').onclick = closeModal;
+    var p = isEmail ? Promise.resolve(who) : J('/api/admin/search?q=' + encodeURIComponent(who)).then(function (d) { var u = ((d && d.users) || []).filter(function (x) { return String(x.username || '').toLowerCase() === who.toLowerCase(); })[0] || ((d && d.users) || [])[0]; return u && u.email; });
+    p.then(function (email) { if (!email) { $('ucBody').innerHTML = '<div class="empty">no account matches</div>'; return; } userCardInto($('ucBody'), email, true); }).catch(function () { $('ucBody').innerHTML = failHtml('could not load the user'); });
+  }
   $('sideClose').addEventListener('click', function () { $('side').classList.remove('open'); });
   $('refreshBtn').addEventListener('click', function () { show(); loadTop(); });
 
@@ -64,13 +93,15 @@
     J('/api/stats?format=json').then(function (d) { if (d && typeof d.online === 'number') $('online').innerHTML = '<i></i><b>' + N(d.online) + '</b> online'; }).catch(function () {});
     J('/api/admin/attention').then(function (d) {
       attnItems = (d && d.items) || []; paintAttn();
-      counts = {}; attnItems.forEach(function (a) { if (a.cls === 'red' || a.cls === 'amber') { var go = GO[a.go]; if (go) counts[go] = (counts[go] || 0) + 1; } }); renderNav(); stamp();
+      counts = {}; attnItems.forEach(function (a) { if (a.cls === 'red' || a.cls === 'amber') { var go = GO[a.go]; if (go) counts[go] = (counts[go] || 0) + 1; } }); renderNav();
+      redN = attnItems.filter(function (a) { return a.cls === 'red' || a.cls === 'amber'; }).length; setTitle();
     }).catch(function () {});
   }
   var GO = { wd: 'money/withdrawals', rewards: 'money/faucet', support: 'inbox/support', stats: 'health/overview', spot: 'trading/spot', premium: 'money/premium', users: 'people/users' };
 
   // ---------- components ----------
-  function tile(v, l, cls, sub) { return '<div class="tile ' + (cls || '') + '"><div class="v">' + v + (sub ? '<small>' + sub + '</small>' : '') + '</div><div class="l">' + l + '</div></div>'; }
+  function tile(v, l, cls, sub, mini) { return '<div class="tile ' + (cls || '') + '"><div class="v">' + v + (sub ? '<small>' + sub + '</small>' : '') + '</div><div class="l">' + l + '</div>' + (mini || '') + '</div>'; }
+  function mini(arr, key) { if (!arr || arr.length < 3) return ''; var mx = 1; arr.forEach(function (x) { if (+x[key] > mx) mx = +x[key]; }); return '<div class="mini" title="last ' + arr.length + ' days">' + arr.map(function (x, i) { return '<i class="' + (i === arr.length - 1 ? 'last' : '') + '" style="height:' + Math.max(6, (+x[key] || 0) / mx * 100) + '%"></i>'; }).join('') + '</div>'; }
   function card(title, body, sub, right) { return '<div class="card"><h2>' + title + (sub ? '<span>' + sub + '</span>' : '') + (right ? '<span class="r">' + right + '</span>' : '') + '</h2>' + body + '</div>'; }
   function dl(v, a) { a = +a || 0; v = +v || 0; if (a < 5) return ''; var p = Math.round((v - a) / a * 100); return ' <span class="' + (p >= 0 ? 'up' : 'dn') + '">' + (p >= 0 ? '&#9650;' : '&#9660;') + Math.abs(p) + '%</span>'; }
   function spark(arr, key) { if (!arr || !arr.length) return ''; var mx = 1; arr.forEach(function (x) { if (+x[key] > mx) mx = +x[key]; }); return '<div class="spark">' + arr.map(function (x, i) { return '<i class="' + (i === arr.length - 1 ? 'last' : '') + '" style="height:' + Math.max(2, (+x[key] || 0) / mx * 100) + '%" title="' + esc(x.day || x.d || '') + ' · ' + N(x[key]) + '"></i>'; }).join('') + '</div>'; }
@@ -88,27 +119,73 @@
   function setStat(id, txt, ok) { var e = $(id); if (!e) return; e.textContent = txt; e.className = 'stat ' + (ok === true ? 'ok' : ok === false ? 'bad' : ''); if (txt) setTimeout(function () { if (e.textContent === txt) e.textContent = ''; }, 4000); }
 
   // ---------- TODAY ----------
+  // "Since your last visit" remembers when this browser last had the dashboard open (localStorage) and lists what arrived
+  // in between: sign-ups, tickets, withdrawals, alarms, money clicks. The stamp moves only when the tab goes away, so a
+  // long session keeps its baseline.
+  var visitPrev = store('seen') || 0; var visitStart = Date.now(), hiddenAt = 0;
+  function markSeen() { store('seen', Date.now()); }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) { hiddenAt = Date.now(); markSeen(); } else if (hiddenAt && Date.now() - hiddenAt > 10 * 60000) { visitPrev = hiddenAt; visitStart = Date.now(); hiddenAt = 0; if (route().key === 'today/overview') show(); } }); // back after 10+ minutes away: the baseline moves to when you left
+  window.addEventListener('pagehide', markSeen);
   VIEWS['today/overview'] = { render: function (el) {
     function paint() {
-      Promise.all([J('/api/stats?format=json').catch(function () { return null; }), J('/api/admin/attention').catch(function () { return null; }), J('/api/admin/money').catch(function () { return null; }), J('/api/admin/health').catch(function () { return null; }), J('/api/admin/funnel').catch(function () { return null; }), J('/api/auth/admin?limit=1&offset=0&_=' + Date.now()).catch(function () { return null; })]).then(function (r) {
-        var s = r[0] || {}, at = r[1] || {}, m = r[2] || {}, h = r[3] || {}, fn = r[4] || {}, ua = r[5] || {};
+      Promise.all([J('/api/stats?format=json').catch(function () { return null; }), J('/api/admin/attention').catch(function () { return null; }), J('/api/admin/money').catch(function () { return null; }), J('/api/admin/health').catch(function () { return null; }), J('/api/admin/funnel').catch(function () { return null; }), J('/api/auth/admin?limit=60&offset=0&sort=new&_=' + Date.now()).catch(function () { return null; }), J('/api/reward/support/convs?_=' + Date.now()).catch(function () { return null; }), J('/api/admin/withdrawals').catch(function () { return null; }), J('/api/admin/alerts').catch(function () { return null; })]).then(function (r) {
+        var s = r[0] || {}, at = r[1] || {}, m = r[2] || {}, h = r[3] || {}, fn = r[4] || {}, ua = r[5] || {}, sc = r[6] || {}, wd = r[7] || {}, al = r[8] || {};
         var y = (at.yday && at.yday.y) || {}, av = (at.yday && at.yday.avg) || {};
+        var sn = (fn.snaps || []).slice().sort(function (a, b) { return a.day < b.day ? -1 : 1; }).slice(-14);
         var html = '<div class="grid g4">'
-          + tile(N(s.uvToday), 'visitors today', '', y.uv ? 'yday ' + N(y.uv) : '') + tile(N(s.retToday), 'returning today', 'dim', s.uvToday ? Math.round((s.retToday || 0) / s.uvToday * 100) + '%' : '')
-          + tile(N(s.affToday), 'money clicks today', s.affToday ? '' : 'dim', y.aff != null ? 'yday ' + N(y.aff) : '') + tile(USD(s.revToday, 0), 'est. revenue today', 'dim', 'clicks x ~$0.45')
-          + tile(N(s.pvToday), 'pageviews today', 'dim', N(s.newToday) + ' new visitors') + tile(ua.newToday != null ? N(ua.newToday) : '—', 'sign-ups today', ua.newToday ? '' : 'dim', ua.activeToday != null ? N(ua.activeToday) + ' active' : '') + tile(USD(m.dispensedTodayUsd), 'faucet dispensed today', (m.dailyCapUsd && m.dispensedTodayUsd >= m.dailyCapUsd * 0.9) ? 'amber' : 'dim', m.dailyCapUsd ? '/ ' + USD(m.dailyCapUsd, 0) : '') + tile(N(s.botToday), 'bots filtered today', 'dim') + '</div>';
+          + tile(N(s.uvToday), 'visitors today', '', y.uv ? 'yday ' + N(y.uv) : '', mini(sn, 'uv')) + tile(N(s.retToday), 'returning today', 'dim', s.uvToday ? Math.round((s.retToday || 0) / s.uvToday * 100) + '%' : '', mini(sn, 'rt'))
+          + tile(N(s.affToday), 'money clicks today', s.affToday ? '' : 'dim', y.aff != null ? 'yday ' + N(y.aff) : '', mini(sn, 'aff')) + tile(USD(s.revToday, 0), 'est. revenue today', 'dim', 'clicks x ~$0.45')
+          + tile(N(s.pvToday), 'pageviews today', 'dim', N(s.newToday) + ' new visitors', mini(sn, 'pv')) + tile(ua.newToday != null ? N(ua.newToday) : '—', 'sign-ups today', ua.newToday ? '' : 'dim', ua.activeToday != null ? N(ua.activeToday) + ' active' : '', mini(sn, 'signup')) + tile(USD(m.dispensedTodayUsd), 'faucet dispensed today', (m.dailyCapUsd && m.dispensedTodayUsd >= m.dailyCapUsd * 0.9) ? 'amber' : 'dim', m.dailyCapUsd ? '/ ' + USD(m.dailyCapUsd, 0) : '', mini((m.dispensedByDay || []).slice().reverse(), 'usd')) + tile(N(s.botToday), 'bots filtered today', 'dim') + '</div>';
+        // since your last visit
+        var since = '';
+        if (visitPrev && visitStart - visitPrev > 10 * 60000) {
+          var nu = (ua.users || []).filter(function (u) { return (u.created || 0) > visitPrev; }); var nt = ((sc.conversations) || []).filter(function (c) { return (c.lastTs || 0) > visitPrev && !c.closed && (c.messages[c.messages.length - 1] || {}).dir === 'in'; }); var nw = (wd.wds || []).filter(function (w) { return (w.ts || 0) > visitPrev; }); var na = (al.kinds || []).filter(function (k) { return (k.last || 0) > visitPrev && k.s !== 'info'; }); var nc = (s.feed || []).filter(function (e) { return (e.ts || 0) > visitPrev && (e.t === 'refclick' || e.t === 'exchange'); }).length;
+          var it = function (n, one, many, href) { return n ? '<a class="al ' + (n ? 'info' : '') + '" href="' + href + '" style="margin:0 6px 6px 0"><b>' + N(n) + '</b> ' + (n === 1 ? one : many) + '</a>' : ''; };
+          var items = it(nu.length, 'new sign-up', 'new sign-ups', '#people/users') + it(nt.length, 'ticket waiting', 'tickets waiting', '#inbox/support') + it(nw.length, 'withdrawal request', 'withdrawal requests', '#money/withdrawals') + it(na.length, 'alarm fired', 'alarms fired', '#health/overview') + it(nc, 'money click', 'money clicks', '#money/revenue');
+          since = card('Since your last visit', (items ? '<div>' + items + '</div>' : '<div class="line up">quiet - nothing new needs you</div>') + (nu.length ? '<div class="line" style="margin-top:4px;font-size:12px">new: ' + nu.slice(0, 12).map(function (u) { return userLink(u.username, u.email) + ' ' + flag(u.cc); }).join(' · ') + (nu.length > 12 ? ' · +' + (nu.length - 12) + ' more' : '') + '</div>' : ''), ago(visitPrev) + ' ago · ' + dt(visitPrev));
+        }
+        // who is online right now (signed-in, seen in the last 3 minutes)
+        var seen = {}, now = Date.now(); (s.visitors || []).concat(s.feed || []).forEach(function (v) { if (!v.u || now - (v.ts || 0) > 180000) return; var k = String(v.u).toLowerCase(); if (!seen[k] || v.ts > seen[k].ts) seen[k] = { u: v.u, cc: v.cc, p: v.p || '', ts: v.ts }; });
+        var on = Object.keys(seen).map(function (k) { return seen[k]; }).sort(function (a, b) { return b.ts - a.ts; });
+        var onl = card('Online now', on.length ? '<div class="line">' + on.map(function (v) { return '<span style="display:inline-block;margin:0 12px 4px 0">' + userLink(v.u) + ' ' + flag(v.cc) + ' <span class="meta mono" style="font-size:11px">' + esc(v.p) + ' · ' + ago(v.ts) + '</span></span>'; }).join('') + '</div>' : '<div class="empty">no signed-in user active in the last 3 minutes</div>', N(on.length) + ' signed-in · ' + N(s.online) + ' connections');
         var yl = at.yday ? '<div class="line"><b>Yesterday</b> (' + esc(at.yday.day) + '): <b>' + N(y.uv) + '</b> visitors' + dl(y.uv, av.uv) + ' · <b>' + N(y.ret) + '</b> returning' + dl(y.ret, av.ret) + ' · <b>' + N(y.nu) + '</b> new visitors' + dl(y.nu, av.nu) + ' · <b>' + N(y.aff) + '</b> money clicks' + dl(y.aff, av.aff) + ' · <b>' + N(y.pv) + '</b> pageviews' + dl(y.pv, av.pv) + ' <span style="color:var(--faint)">· vs the 7 full days before</span></div>' : '';
         var net = +m.net7dUsd || 0;
         var ml = m.owedUsd != null ? '<div class="line"><b>Money 7d</b>: faucet cost <b>' + USD(m.dispensed7dUsd) + '</b> · paid out <b>' + USD(m.paid7dUsd) + '</b> · est. income <b>' + USD(m.income7dUsd) + '</b> · net <b class="' + (net >= 0 ? 'up' : 'dn') + '">' + (net >= 0 ? '+' : '') + USD(net) + '</b> · ledger owes <b>' + USD(m.owedUsd) + '</b>' + (m.pendingN ? ' (<b>' + USD(m.pendingUsd) + '</b> pending)' : '') + (m.backup ? ' · backup ' + m.backup.ageH + 'h ago &Delta; ' + (m.backup.deltaUsd >= 0 ? '+' : '') + USD(m.backup.deltaUsd) : '') + '</div>' : '';
         var days = (fn && (fn.days || fn.rows)) || []; var sp = days.length ? card('Last 14 days', spark(days.slice(-14), 'uv') + '<div class="line" style="margin-top:6px">visitors per day · ' + spark(days.slice(-14), 'clicks').replace('class="spark"', 'class="spark" style="height:26px"') + ' money clicks</div>') : '';
         var hl = '<div class="grid g4" style="margin-top:12px">' + tile((h.coll && h.coll.state) || '?', 'liquidation collector', (h.coll && /LIVE|OK/.test(h.coll.state)) ? '' : 'red') + tile(h.ae && h.ae.ok ? N(h.ae.evHour) + '<small>ev/h</small>' : 'down', 'analytics engine', h.ae && h.ae.ok ? 'dim' : 'red') + tile(h.users && h.users.ok ? N(h.users.active24) : '?', 'users active 24h', 'dim') + tile(h.kv ? N(h.kv.errToday) : '?', 'broken pages today', h.kv && h.kv.errToday > 3 ? 'amber' : 'dim') + '</div>';
-        var feed = (s.feed || []).slice(0, 40).map(function (e) { return '<div class="row"><span class="who">' + (e.u ? '@' + esc(e.u) : '<span style="color:var(--faint)">visitor</span>') + '</span><span class="grow">' + esc(e.t || '') + ' <b>' + esc(e.e || '') + '</b> <span class="meta">' + esc(e.p || '') + ' ' + flag(e.cc) + '</span></span><span class="meta">' + ago(e.ts) + ' ago</span></div>'; }).join('');
-        el.innerHTML = html + card('Yesterday and money', yl + ml, 'full-day numbers; the tiles above are today so far') + sp + hl + card('Live activity', '<div class="feed">' + (feed || '<div class="empty">quiet</div>') + '</div>', 'last events · refreshes every 30s', '<a href="#people/activity">all activity</a>');
+        var feed = (s.feed || []).slice(0, 40).map(function (e) { return '<div class="row"><span class="who">' + (e.u ? userLink(e.u) : '<span style="color:var(--faint)">visitor</span>') + '</span><span class="grow">' + esc(e.t || '') + ' <b>' + esc(e.e || '') + '</b> <span class="meta">' + esc(e.p || '') + ' ' + flag(e.cc) + '</span></span><span class="meta">' + ago(e.ts) + ' ago</span></div>'; }).join('');
+        el.innerHTML = html + since + card('Yesterday and money', yl + ml, 'full-day numbers; the tiles above are today so far') + onl + sp + hl + card('Live activity', '<div class="feed">' + (feed || '<div class="empty">quiet</div>') + '</div>', 'last events · refreshes every 30s', '<a href="#people/activity">all activity</a>');
         stamp();
       });
     }
     paint(); every(30000, paint);
   } };
+
+  // ---------- shared user card (Support right pane + the quick card behind every @user link) ----------
+  var ucCache = {};
+  function userCardInto(u, email) {
+    var k = email.toLowerCase(); if (ucCache[k] && Date.now() - ucCache[k].ts < 60000) { u.innerHTML = ucCache[k].html; return; }
+    u.innerHTML = '<div class="empty">loading user…</div>';
+    J('/api/auth/user?email=' + encodeURIComponent(email)).then(function (d) {
+      if (!d || d.error || !d.user) { u.innerHTML = '<div class="empty">No MarginPad account with this email - a visitor, or a different address.</div>'; return; }
+      var usr = d.user; return J('/api/reward/detail?address=' + encodeURIComponent('u:' + usr.id)).catch(function () { return null; }).then(function (rw) {
+        var lvl = usr.level || {}, acct = (rw && rw.account) || {}, fraud = (rw && rw.fraud) || {}, ts = d.tradeSummary || {}, prem = (+usr.premium || 0) > Date.now();
+        var wr = (ts.wins + ts.losses) > 0 ? Math.round(ts.wins / (ts.wins + ts.losses) * 100) : null;
+        var badges = (lvl.name ? '<span class="badge lime">' + esc(lvl.name) + ' · ' + N(usr.xp) + ' XP</span> ' : '') + (prem ? '<span class="badge amber">PREMIUM</span> ' : '') + (usr.status && usr.status !== 'active' ? '<span class="badge red">' + esc(usr.status.toUpperCase()) + '</span> ' : '') + (usr.muted ? '<span class="badge red">MUTED</span> ' : '') + (usr.vpn ? '<span class="badge">VPN?</span> ' : '') + (acct.banned ? '<span class="badge red">FAUCET BAN</span> ' : '') + ((usr.streak || 0) > 1 ? '<span class="badge">' + usr.streak + '-DAY STREAK</span> ' : '') + (fraud.riskLevel ? '<span class="badge ' + (fraud.riskLevel === 'high' ? 'red' : fraud.riskLevel === 'med' ? 'amber' : '') + '">RISK ' + esc(String(fraud.riskLevel).toUpperCase()) + '</span>' : '');
+        var flags = (fraud.flags || []).slice(0, 4).map(function (f) { return '<div class="line dn" style="font-size:12px">' + esc(f) + '</div>'; }).join('');
+        var evs = (d.events || []).slice(0, 6).map(function (e) { var lbl = e.type === 'pageview' ? ('viewed ' + (e.path || '/')) : (e.type + (e.label ? ' ' + e.label : '')); return '<div class="row" style="padding:4px 0"><span class="meta" style="min-width:36px">' + ago(e.ts) + '</span><span class="grow" style="font-size:12px">' + esc(String(lbl).slice(0, 48)) + '</span></div>'; }).join('');
+        var kv = function (a, b) { return '<div class="sup-kv"><span>' + a + '</span><b>' + b + '</b></div>'; };
+        var html = '<div class="sup-uh"><div class="sup-uav">' + (usr.avatar && usr.avatar.indexOf('data:image') === 0 ? '<img src="' + usr.avatar + '" alt="">' : esc(((usr.username || email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 1) || '?').toUpperCase())) + '</div><div><div class="sup-un">' + (usr.username ? '@' + esc(usr.username) : '(no username)') + '</div><div class="meta">' + esc(usr.email || '') + '</div><div class="meta">' + flag(usr.cc) + ' ' + esc(usr.dev || '?') + ' · ' + esc(usr.br || '?') + '</div></div></div><div style="margin:8px 0 10px;line-height:2">' + badges + '</div>'
+          + (usr.bio ? '<div class="line" style="font-size:12px;margin-bottom:8px">' + esc(usr.bio).slice(0, 160) + '</div>' : '')
+          + kv('joined', usr.created ? ago(usr.created) + ' ago' : '—') + kv('last seen', usr.last_seen ? ago(usr.last_seen) + ' ago' : 'never') + kv('time on site', (function (s) { s = +d.dwellTotal || 0; return s < 3600 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h'; })()) + kv('page views', N(usr.pv))
+          + '<div class="sup-sec">Trading</div>' + kv('trades', (ts.n || 0) + ' (' + (ts.wins || 0) + 'W-' + (ts.losses || 0) + 'L' + (wr != null ? ' · ' + wr + '%' : '') + ')') + kv('open now', ts.opens || 0) + kv('total P&amp;L', '<span class="' + ((+ts.pnl || 0) >= 0 ? 'up' : 'dn') + '">' + ((+ts.pnl || 0) >= 0 ? '+' : '-') + USD(Math.abs(+ts.pnl || 0)) + '</span>')
+          + '<div class="sup-sec">Rewards</div>' + kv('balance', USD(acct.balanceUsd)) + kv('earned total', USD(acct.earnedUsd)) + kv('claims', N(acct.claims)) + kv('withdrawals', N((rw && rw.withdrawals && rw.withdrawals.length) || 0)) + flags
+          + '<div class="sup-sec">Recent activity</div>' + (evs || '<div class="meta">no tracked activity</div>')
+          + '<div class="bar" style="margin-top:10px"><a class="btn sm lime" href="/api/admin/user?email=' + encodeURIComponent(email) + '" target="_blank">Full profile</a><a class="btn sm" href="#people/journeys/' + encodeURIComponent(usr.username || email) + '">Journey</a><a class="btn sm" href="#inbox/mail/' + encodeURIComponent(email) + '">Email</a><a class="btn sm" href="#inbox/support/' + encodeURIComponent(email) + '">Tickets</a></div>';
+        ucCache[k] = { ts: Date.now(), html: html }; u.innerHTML = html;
+      });
+    }).catch(function () { u.innerHTML = failHtml('could not load the user'); });
+  }
 
   // ---------- INBOX / SUPPORT (native, 2026-09-03) ----------
   // Three panes: conversations (open/closed, search, affiliate inbox first), the thread with a composer that sends from a
@@ -116,7 +193,11 @@
   // /api/reward/support/new, /api/auth/user?email=, /api/reward/detail?address=u:<id>.
   VIEWS['inbox/support'] = { render: function (el, arg) {
     var st = { tab: 'open', q: '', sel: null, convs: [], emailReady: false, compose: false, pane: 'list' };
-    var uCache = {};
+    // canned replies live in this browser (localStorage); a chip inserts, the small x forgets
+    function tpls() { return store('tpl') || []; }
+    function tplBar() { var t = tpls(); return '<div class="tpl" id="supTpl">' + t.map(function (x, i) { return '<span class="chip" data-tpl="' + i + '">' + esc(x.name) + ' <b data-tpldel="' + i + '" title="forget this template">x</b></span>'; }).join('') + '<button class="btn sm" id="supTplSave" title="save the current reply text as a template">+ save as template</button></div>'; }
+    function wireTpl(ta) { el.querySelectorAll('[data-tpl]').forEach(function (c) { c.onclick = function (e) { if (e.target.hasAttribute('data-tpldel')) return; var x = tpls()[+c.getAttribute('data-tpl')]; if (!x) return; ta.value = (ta.value ? ta.value.replace(/\s+$/, '') + '\n\n' : '') + x.text; ta.focus(); }; }); el.querySelectorAll('[data-tpldel]').forEach(function (b) { b.onclick = function () { var t = tpls(); t.splice(+b.getAttribute('data-tpldel'), 1); store('tpl', t); paintThread(); }; }); var s = $('supTplSave'); if (s) s.onclick = function () { var txt = ta.value.trim(); if (!txt) { toast('write the reply first, then save it'); return; } var name = prompt('Template name:', txt.slice(0, 24)); if (!name) return; var t = tpls(); t.push({ name: name.slice(0, 32), text: txt }); store('tpl', t); paintThread(); }; }
+    function staleAnswered() { var lim = Date.now() - 14 * 86400000; return st.convs.filter(function (c) { return !c.closed && last(c).dir === 'out' && (c.lastTs || 0) < lim; }); }
     function frame() {
       el.innerHTML = '<div class="sup" data-pane="' + esc(st.pane) + '"><div class="sup-l"><div class="bar" style="margin:0 0 8px"><input class="in" id="supQ" placeholder="search tickets" value="' + esc(st.q) + '"></div><div class="chips" style="margin:0 0 8px"><span class="chip ' + (st.tab === 'open' ? 'on' : '') + '" data-st="open">Open <b id="supNo"></b></span><span class="chip ' + (st.tab === 'closed' ? 'on' : '') + '" data-st="closed">Closed <b id="supNc"></b></span><button class="btn sm lime" id="supNew" style="margin-left:auto">New ticket</button></div><div id="supList" class="sup-list"></div></div>'
         + '<div class="sup-t" id="supThread"><div class="empty">Select a ticket. The conversation opens here and the user card on the right.</div></div><div class="sup-u" id="supUser"><div class="empty">No ticket selected</div></div></div>';
@@ -134,8 +215,10 @@
       var list = (st.tab === 'open' ? open : closed).filter(function (c) { if (!st.q) return true; return ((c.email || '') + ' ' + (c.title || '') + ' ' + c.messages.map(function (m) { return m.body || ''; }).join(' ')).toLowerCase().indexOf(st.q) >= 0; });
       var aff = list.filter(function (c) { return c.aff; }), rest = list.filter(function (c) { return !c.aff; });
       var row = function (c) { var l = last(c), wait = !c.closed && l.dir === 'in'; var nm = (c.email || '?'); return '<div class="sup-row ' + (st.sel === c.conv ? 'on' : '') + '" data-conv="' + esc(c.conv) + '"><span class="sup-av">' + esc(nm.slice(0, 1).toUpperCase()) + '</span><span class="sup-b"><b>' + esc(nm) + (wait ? ' <i class="sup-dot" title="waiting for a reply"></i>' : '') + '</b><span>' + esc((l.body || c.title || '').replace(/\s+/g, ' ').slice(0, 64)) + '</span></span><span class="sup-m">' + c.messages.length + ' msg<br>' + ago(c.lastTs) + ' ago</span></div>'; };
-      $('supList').innerHTML = (aff.length ? '<div class="sup-sec">Affiliate / creator inbox</div>' + aff.map(row).join('') : '') + (rest.length ? (aff.length ? '<div class="sup-sec">Support</div>' : '') + rest.map(row).join('') : '') + (!list.length ? '<div class="empty">nothing here</div>' : '');
+      var stale = st.tab === 'open' && !st.q ? staleAnswered() : [];
+      $('supList').innerHTML = (stale.length ? '<div class="line" style="font-size:12px;margin-bottom:8px"><button class="btn sm" id="supBulk">Close ' + stale.length + ' answered, idle 14+ days</button></div>' : '') + (aff.length ? '<div class="sup-sec">Affiliate / creator inbox</div>' + aff.map(row).join('') : '') + (rest.length ? (aff.length ? '<div class="sup-sec">Support</div>' : '') + rest.map(row).join('') : '') + (!list.length ? '<div class="empty">nothing here</div>' : '');
       el.querySelectorAll('[data-conv]').forEach(function (r) { r.onclick = function () { st.sel = r.getAttribute('data-conv'); st.compose = false; paintList(); paintThread(); showPane('thread'); }; });
+      var bulk = $('supBulk'); if (bulk) bulk.onclick = function () { var s = staleAnswered(); if (!confirm('Close ' + s.length + ' threads where we answered and the user has been silent for 14+ days? They can be reopened.')) return; bulk.disabled = true; var i = 0; (function next() { if (i >= s.length) { toast('closed ' + s.length); load(); loadTop(); return; } post('/api/reward/support/close', { conv: s[i++].conv }).then(next).catch(next); })(); };
     }
     function paintThread() {
       var t = $('supThread'), u = $('supUser');
@@ -147,40 +230,17 @@
       var c = st.sel && convOf(st.sel); if (!c) { t.innerHTML = '<div class="empty">Select a ticket. The conversation opens here and the user card on the right.</div>'; u.innerHTML = '<div class="empty">No ticket selected</div>'; return; }
       var msgs = c.messages.map(function (m) { return '<div class="sup-msg ' + (m.dir === 'out' ? 'out' : 'in') + '"><div class="sup-bub">' + esc(m.body || '').replace(/\n/g, '<br>') + (m.img ? '<br><img src="' + esc(m.img) + '" alt="" style="max-width:100%;border-radius:8px;margin-top:6px">' : '') + '</div><div class="sup-ts">' + (m.dir === 'out' ? 'MarginPad' : esc(c.email || 'user')) + ' · ' + dt(m.ts) + '</div></div>'; }).join('');
       t.innerHTML = '<div class="sup-h"><button class="btn sm sup-back" id="supBack">Back</button><b>' + esc(c.email || 'no email') + '</b>' + (c.aff ? '<span class="badge lime">AFFILIATE</span>' : '') + (c.closed ? '<span class="badge">CLOSED</span>' : '<span class="badge amber">OPEN</span>') + '<span class="meta">' + c.messages.length + ' messages · last ' + ago(c.lastTs) + ' ago</span><button class="btn sm" id="supClose" style="margin-left:auto">' + (c.closed ? 'Reopen' : 'Close') + '</button></div><div class="sup-msgs" id="supMsgs">' + msgs + '</div>'
-        + '<div class="sup-comp">' + (st.emailReady ? '' : '<div class="line dn">Email sending is not configured (RESEND_API_KEY) — replies are only logged.</div>') + '<textarea class="in" id="supBody" rows="4" placeholder="Reply to ' + esc(c.email || 'the user') + '…"></textarea><div class="bar"><select class="in" id="supFrom" style="flex:0 0 auto"><option value="support">support@marginpad.io</option><option value="hello">hello@marginpad.io</option></select><input class="in" id="supSubj" value="Re: your message to MarginPad" style="flex:1"><button class="btn lime" id="supSend"' + (c.email ? '' : ' disabled') + '>Send</button><span class="meta" id="supSt"></span></div></div>';
+        + '<div class="sup-comp">' + (st.emailReady ? '' : '<div class="line dn">Email sending is not configured (RESEND_API_KEY) — replies are only logged.</div>') + '' + tplBar() + '<textarea class="in" id="supBody" rows="4" placeholder="Reply to ' + esc(c.email || 'the user') + '…"></textarea><div class="bar"><select class="in" id="supFrom" style="flex:0 0 auto"><option value="support">support@marginpad.io</option><option value="hello">hello@marginpad.io</option></select><input class="in" id="supSubj" value="Re: your message to MarginPad" style="flex:1"><button class="btn lime" id="supSend"' + (c.email ? '' : ' disabled') + '>Send</button><span class="meta" id="supSt"></span></div></div>';
       var box = $('supMsgs'); box.scrollTop = box.scrollHeight;
       $('supBack').onclick = function () { showPane('list'); };
       $('supClose').onclick = function () { $('supClose').disabled = true; post('/api/reward/support/close', { conv: c.conv, reopen: c.closed ? 1 : 0 }).then(function () { toast(c.closed ? 'reopened' : 'closed'); load(); loadTop(); }); };
       $('supSend').onclick = function () { var bd = $('supBody').value, stt = $('supSt'); if (!bd.trim()) { stt.textContent = 'write a message first'; return; } stt.textContent = 'sending…'; $('supSend').disabled = true;
         post('/api/reward/reply', { to: c.email, subject: $('supSubj').value.trim() || 'Re: your message to MarginPad', message: bd, from: $('supFrom').value, conv: c.conv }).then(function (j) { if (!j || !j.ok) { stt.textContent = 'failed: ' + ((j && (j.error || j.detail)) || '?'); $('supSend').disabled = false; return; } toast(j.logOnly ? 'logged (no email)' : 'sent'); load(); loadTop(); }).catch(function () { stt.textContent = 'network error'; $('supSend').disabled = false; }); };
       $('supBody').addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') $('supSend').click(); });
+      wireTpl($('supBody'));
       paintUser(c.email);
     }
-    function paintUser(email) {
-      var u = $('supUser'); if (!email) { u.innerHTML = '<div class="empty">No email on this ticket</div>'; return; }
-      var k = email.toLowerCase(); if (uCache[k] && Date.now() - uCache[k].ts < 60000) { u.innerHTML = uCache[k].html; wireUser(u, email); return; }
-      u.innerHTML = '<div class="empty">loading user…</div>';
-      J('/api/auth/user?email=' + encodeURIComponent(email)).then(function (d) {
-        if (!d || d.error || !d.user) { u.innerHTML = '<div class="empty">No MarginPad account with this email — a visitor, or a different address.</div>'; return; }
-        var usr = d.user; return J('/api/reward/detail?address=' + encodeURIComponent('u:' + usr.id)).catch(function () { return null; }).then(function (rw) {
-          var lvl = usr.level || {}, acct = (rw && rw.account) || {}, fraud = (rw && rw.fraud) || {}, ts = d.tradeSummary || {}, prem = (+usr.premium || 0) > Date.now();
-          var wr = (ts.wins + ts.losses) > 0 ? Math.round(ts.wins / (ts.wins + ts.losses) * 100) : null;
-          var badges = (lvl.name ? '<span class="badge lime">' + esc(lvl.name) + ' · ' + N(usr.xp) + ' XP</span> ' : '') + (prem ? '<span class="badge amber">PREMIUM</span> ' : '') + (usr.status && usr.status !== 'active' ? '<span class="badge red">' + esc(usr.status.toUpperCase()) + '</span> ' : '') + (usr.muted ? '<span class="badge red">MUTED</span> ' : '') + (usr.vpn ? '<span class="badge">VPN?</span> ' : '') + (acct.banned ? '<span class="badge red">FAUCET BAN</span> ' : '') + ((usr.streak || 0) > 1 ? '<span class="badge">' + usr.streak + '-DAY STREAK</span> ' : '') + (fraud.riskLevel ? '<span class="badge ' + (fraud.riskLevel === 'high' ? 'red' : fraud.riskLevel === 'med' ? 'amber' : '') + '">RISK ' + esc(String(fraud.riskLevel).toUpperCase()) + '</span>' : '');
-          var flags = (fraud.flags || []).slice(0, 4).map(function (f) { return '<div class="line dn" style="font-size:12px">' + esc(f) + '</div>'; }).join('');
-          var evs = (d.events || []).slice(0, 6).map(function (e) { var lbl = e.type === 'pageview' ? ('viewed ' + (e.path || '/')) : (e.type + (e.label ? ' ' + e.label : '')); return '<div class="row" style="padding:4px 0"><span class="meta" style="min-width:36px">' + ago(e.ts) + '</span><span class="grow" style="font-size:12px">' + esc(String(lbl).slice(0, 48)) + '</span></div>'; }).join('');
-          var kv = function (a, b) { return '<div class="sup-kv"><span>' + a + '</span><b>' + b + '</b></div>'; };
-          var html = '<div class="sup-uh"><div class="sup-uav">' + (usr.avatar && usr.avatar.indexOf('data:image') === 0 ? '<img src="' + usr.avatar + '" alt="">' : esc(((usr.username || email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 1) || '?').toUpperCase())) + '</div><div><div class="sup-un">' + (usr.username ? '@' + esc(usr.username) : '(no username)') + '</div><div class="meta">' + esc(usr.email || '') + '</div><div class="meta">' + flag(usr.cc) + ' ' + esc(usr.dev || '?') + ' · ' + esc(usr.br || '?') + '</div></div></div><div style="margin:8px 0 10px;line-height:2">' + badges + '</div>'
-            + (usr.bio ? '<div class="line" style="font-size:12px;margin-bottom:8px">' + esc(usr.bio).slice(0, 160) + '</div>' : '')
-            + kv('joined', usr.created ? ago(usr.created) + ' ago' : '—') + kv('last seen', usr.last_seen ? ago(usr.last_seen) + ' ago' : 'never') + kv('time on site', (function (s) { s = +d.dwellTotal || 0; return s < 3600 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h'; })()) + kv('page views', N(usr.pv))
-            + '<div class="sup-sec">Trading</div>' + kv('trades', (ts.n || 0) + ' (' + (ts.wins || 0) + 'W-' + (ts.losses || 0) + 'L' + (wr != null ? ' · ' + wr + '%' : '') + ')') + kv('open now', ts.opens || 0) + kv('total P&amp;L', '<span class="' + ((+ts.pnl || 0) >= 0 ? 'up' : 'dn') + '">' + ((+ts.pnl || 0) >= 0 ? '+' : '-') + USD(Math.abs(+ts.pnl || 0)) + '</span>')
-            + '<div class="sup-sec">Rewards</div>' + kv('balance', USD(acct.balanceUsd)) + kv('earned total', USD(acct.earnedUsd)) + kv('claims', N(acct.claims)) + kv('withdrawals', N((rw && rw.withdrawals && rw.withdrawals.length) || 0)) + flags
-            + '<div class="sup-sec">Recent activity</div>' + (evs || '<div class="meta">no tracked activity</div>')
-            + '<div class="bar" style="margin-top:10px"><a class="btn sm lime" href="/api/admin/user?email=' + encodeURIComponent(email) + '" target="_blank">Full profile</a><a class="btn sm" href="#people/journeys">Journey</a><a class="btn sm" href="#inbox/mail">Email</a></div>';
-          uCache[k] = { ts: Date.now(), html: html }; u.innerHTML = html; wireUser(u, email);
-        });
-      }).catch(function () { u.innerHTML = '<div class="empty err">could not load the user</div>'; });
-    }
-    function wireUser() {}
+    function paintUser(email) { var u = $('supUser'); if (!email) { u.innerHTML = '<div class="empty">No email on this ticket</div>'; return; } userCardInto(u, email); }
     frame(); load(); every(30000, function () { load(true); });
     if (arg) { st.q = decodeURIComponent(arg); $('supQ').value = st.q; }
   } };
@@ -193,22 +253,25 @@
         var all = (d && d.wds) || []; var pend = all.filter(function (w) { return w.status === 'pending'; });
         var paid7 = all.filter(function (w) { return w.status === 'paid' && Date.now() - (+w.paidTs || 0) < 7 * 86400000; });
         var rows = all.filter(function (w) { return (st.f === 'all' || w.status === st.f) && (!st.q || ((w.who || '') + ' ' + (w.email || '') + ' ' + (w.wallet || '')).toLowerCase().indexOf(st.q) >= 0); }).slice(0, 200);
-        el.innerHTML = '<div class="grid g4">' + tile(N(pend.length), 'pending payouts', pend.length ? 'amber' : 'dim', USD(pend.reduce(function (s, w) { return s + (+w.usd || 0); }, 0))) + tile(USD(paid7.reduce(function (s, w) { return s + (+w.usd || 0); }, 0)), 'paid last 7 days', 'dim', paid7.length + ' payouts') + tile(N(pend.filter(function (w) { return Date.now() - (+w.ts || 0) > 48 * 3600000; }).length), 'pending over 48h', 'dim') + tile(N(d.uidListCount || 0), 'UIDs on the allowlist', 'dim') + '</div>'
-          + card('Queue', '<div class="bar"><div class="chips" style="margin:0">' + ['pending', 'paid', 'rejected', 'all'].map(function (f) { return '<span class="chip ' + (st.f === f ? 'on' : '') + '" data-f="' + f + '">' + f + '</span>'; }).join('') + '</div><input class="in" id="wdq" placeholder="search user, email, wallet" value="' + esc(st.q) + '"></div>'
+        var over48 = pend.filter(function (w) { return Date.now() - (+w.ts || 0) > 48 * 3600000; }).length;
+        el.innerHTML = '<div class="grid g4">' + tile(N(pend.length), 'pending payouts', pend.length ? 'amber' : 'dim', USD(pend.reduce(function (s, w) { return s + (+w.usd || 0); }, 0))) + tile(USD(paid7.reduce(function (s, w) { return s + (+w.usd || 0); }, 0)), 'paid last 7 days', 'dim', paid7.length + ' payouts') + tile(N(over48), 'pending over 48h', over48 ? 'amber' : 'dim') + tile(N(d.uidListCount || 0), 'UIDs on the allowlist', 'dim') + '</div>'
+          + card('Queue', '<div class="bar"><div class="chips" style="margin:0">' + ['pending', 'paid', 'rejected', 'all'].map(function (f) { return '<span class="chip ' + (st.f === f ? 'on' : '') + '" data-f="' + f + '">' + f + '</span>'; }).join('') + '</div><input class="in" id="wdq" placeholder="search user, email, wallet" value="' + esc(st.q) + '">' + (pend.length ? '<button class="btn sm" id="wdCopyAll" title="one line per pending payout: wallet, amount, user - paste it into your payment sheet">Copy payment list</button>' : '') + '</div>'
           + '<div class="tblwrap"><table class="tbl"><thead><tr><th>when</th><th>who</th><th>wallet (Bybit UID)</th><th class="r">amount</th><th>status</th><th>UID</th><th>history</th><th></th></tr></thead><tbody>'
           + (rows.length ? rows.map(function (w) { var uid = w.uidCheck === 'ok' ? '<span class="badge ok">UID OK</span>' : w.uidCheck === 'missing' ? '<span class="badge red">NOT ON LIST</span>' : '<span class="badge">' + esc(w.uidCheck || '—') + '</span>';
             var stb = w.status === 'pending' ? '<span class="badge amber">PENDING</span>' : w.status === 'paid' ? '<span class="badge ok">PAID</span>' : '<span class="badge red">REJECTED</span>';
             var act = w.status === 'pending' ? '<button class="btn sm lime" data-pay="' + esc(w.id) + '">Pay</button> <button class="btn sm red" data-rej="' + esc(w.id) + '">Reject + notify</button>' : (w.txid ? '<a href="https://bscscan.com/tx/' + esc(w.txid) + '" target="_blank" rel="noopener">TXID</a>' : '');
-            return '<tr><td class="mono">' + dt(w.ts) + '</td><td><a href="/api/admin/user?u=' + encodeURIComponent(w.who || '') + '" target="_blank">@' + esc(w.who || '?') + '</a><br><span class="meta" style="color:var(--faint);font-size:11px">' + esc(w.email || '') + '</span></td><td class="mono">' + esc(w.wallet) + ' <button class="btn sm" data-copy="' + esc(w.wallet) + '">copy</button></td><td class="r mono">' + USD(w.usd) + '</td><td>' + stb + '</td><td>' + uid + '</td><td class="meta">' + N(w.claims) + ' claims · bal ' + USD(w.balUsd) + (w.banned ? ' · <span class="badge red">BANNED</span>' : '') + '</td><td>' + act + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="empty">nothing here</td></tr>')
+            var ageH = (Date.now() - (+w.ts || 0)) / 3600000; var ageCls = w.status === 'pending' ? (ageH > 168 ? 'dn' : ageH > 48 ? 'amber' : '') : '';
+            return '<tr><td class="mono ' + ageCls + '" title="' + (w.status === 'pending' ? 'waiting ' + ago(w.ts) : '') + '">' + dt(w.ts) + (w.status === 'pending' ? '<br><span style="font-size:11px">' + ago(w.ts) + ' waiting</span>' : '') + '</td><td><a href="/api/admin/user?u=' + encodeURIComponent(w.who || '') + '" target="_blank">@' + esc(w.who || '?') + '</a><br><span class="meta" style="color:var(--faint);font-size:11px">' + esc(w.email || '') + '</span></td><td class="mono">' + esc(w.wallet) + ' <button class="btn sm" data-copy="' + esc(w.wallet) + '">copy</button></td><td class="r mono">' + USD(w.usd) + '</td><td>' + stb + '</td><td>' + uid + '</td><td class="meta">' + N(w.claims) + ' claims · bal ' + USD(w.balUsd) + (w.banned ? ' · <span class="badge red">BANNED</span>' : '') + '</td><td>' + act + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="empty">nothing here</td></tr>')
           + '</tbody></table></div>', 'Pay = mark paid after you sent USDT on BSC · Reject + notify emails the user', '<a href="#money/faucet">faucet &amp; flags</a>')
           + card('Bybit UID allowlist', '<div class="line">' + N(d.uidListCount || 0) + ' UIDs on the list. Withdrawals to a UID not on it are auto-rejected; the list is maintained by the owner (KV) and checked on every request.</div>');
         el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); paint(); }; });
         var q = $('wdq'); if (q) q.oninput = function () { st.q = q.value.trim().toLowerCase(); paint(); q.focus(); };
         el.querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.getAttribute('data-copy')); toast('copied'); } catch (e) {} }; });
+        var ca = $('wdCopyAll'); if (ca) ca.onclick = function () { var txt = pend.map(function (w) { return w.wallet + '\t' + (+w.usd || 0).toFixed(2) + '\t@' + (w.who || '') + '\t' + (w.uidCheck || ''); }).join('\n'); try { navigator.clipboard.writeText(txt); toast('copied ' + pend.length + ' lines: wallet, amount, user, UID check'); } catch (e) { prompt('copy:', txt); } };
         el.querySelectorAll('[data-pay]').forEach(function (b) { b.onclick = function () { var tx = prompt('Mark as PAID. Tx hash (optional):'); if (tx === null) return; b.disabled = true; post('/api/reward/admin/paid', { id: b.getAttribute('data-pay'), txid: tx || '' }).then(function (j) { toast(j && j.ok !== false ? 'marked paid' : 'failed'); paint(); loadTop(); }); }; });
         el.querySelectorAll('[data-rej]').forEach(function (b) { b.onclick = function () { var r = prompt('Reject and email the user. Reason:'); if (!r) return; b.disabled = true; post('/api/reward/wd/reject', { id: b.getAttribute('data-rej'), note: r }).then(function (j) { toast(j && j.ok ? 'rejected, user notified' : 'failed: ' + ((j && j.error) || '?')); paint(); loadTop(); }); }; });
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load withdrawals</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load withdrawals'); });
     }
     paint(); every(30000, paint);
   } };
@@ -233,7 +296,7 @@
         var p = $('uprev'); if (p) p.onclick = function () { st.offset = Math.max(0, st.offset - st.limit); paint(); };
         var nx = $('unext'); if (nx) nx.onclick = function () { st.offset += st.limit; paint(); };
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load users</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load users'); });
     }
     if (arg) st.q = decodeURIComponent(arg);
     paint();
@@ -249,10 +312,12 @@
         var tiles = '<div class="grid g4">' + tile((h.coll && h.coll.state) || '?', 'collector', (h.coll && /LIVE|OK/.test(h.coll.state)) ? '' : 'red') + tile(h.ae && h.ae.ok ? N(h.ae.evHour) + '<small>ev/h</small>' : 'down', 'analytics engine', h.ae && h.ae.ok ? 'dim' : 'red') + tile(m.backup ? m.backup.ageH + 'h' : '?', 'ledger backup age', m.backup && m.backup.ageH > 8 ? 'red' : 'dim', m.backup ? '&Delta; ' + USD(m.backup.deltaUsd) : '') + tile(h.kv ? N(h.kv.errToday) : '?', 'broken pages today', h.kv && h.kv.errToday > 3 ? 'amber' : 'dim') + '</div>';
         var sysl = sys.length ? '<div>' + sys.map(function (a) { return '<div class="al ' + a.cls + '" style="margin:0 6px 6px 0">' + a.html + '</div>'; }).join('') + '</div>' : '<div class="line up">Cron, backups, Telegram and the liquidation venues are all fine.</div>';
         var ks = al.kinds || [];
-        var alh = ks.length ? '<div class="tblwrap"><table class="tbl"><thead><tr><th></th><th>kind</th><th>last</th><th class="r">7d</th><th>state</th><th>last message</th><th></th></tr></thead><tbody>' + ks.map(function (k) { var stt = k.snooze ? 'snoozed until ' + new Date(k.snooze).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (k.ack && k.ack >= k.last ? 'acked' : ''); return '<tr><td><span class="dot" style="background:' + (SEV[k.s] || SEV.warn) + '"></span></td><td class="mono">' + esc(k.k) + '</td><td class="mono">' + ago(k.last) + ' ago</td><td class="r mono">' + k.n7 + '</td><td class="up">' + stt + '</td><td class="grow" style="color:var(--dim);max-width:420px;overflow:hidden;text-overflow:ellipsis" title="' + esc(k.lastText) + '">' + esc(k.lastText) + '</td><td>' + (k.s === 'info' ? '' : '<button class="btn sm" data-ak="' + esc(k.k) + '" data-op="ack">Ack</button> <button class="btn sm" data-ak="' + esc(k.k) + '" data-op="' + (k.snooze ? 'unsnooze' : 'snooze') + '">' + (k.snooze ? 'Unsnooze' : 'Snooze 24h') + '</button>') + '</td></tr>'; }).join('') + '</tbody></table></div>' + ((al.silent || []).length ? '<div class="line" style="margin-top:8px;color:var(--amber)">Quiet 7+ days after firing within 30d (fixed, or dead): ' + al.silent.map(function (k) { return esc(k.k); }).join(', ') + '</div>' : '') : '<div class="empty">nothing paged you yet (history starts 2026-09-03)</div>';
+        var unacked = ks.filter(function (k) { return k.s !== 'info' && !(k.ack && k.ack >= k.last) && !k.snooze; });
+        var alh = (unacked.length > 1 ? '<div class="bar"><button class="btn sm" id="ackAll">Ack all ' + unacked.length + '</button><span class="meta" style="color:var(--faint);font-size:12px">marks every unacked kind as seen</span></div>' : '') + (ks.length ? '<div class="tblwrap"><table class="tbl"><thead><tr><th></th><th>kind</th><th>last</th><th class="r">7d</th><th>state</th><th>last message</th><th></th></tr></thead><tbody>' + ks.map(function (k) { var stt = k.snooze ? 'snoozed until ' + new Date(k.snooze).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (k.ack && k.ack >= k.last ? 'acked' : ''); return '<tr><td><span class="dot" style="background:' + (SEV[k.s] || SEV.warn) + '"></span></td><td class="mono">' + esc(k.k) + '</td><td class="mono">' + ago(k.last) + ' ago</td><td class="r mono">' + k.n7 + '</td><td class="up">' + stt + '</td><td class="grow" style="color:var(--dim);max-width:420px;overflow:hidden;text-overflow:ellipsis" title="' + esc(k.lastText) + '">' + esc(k.lastText) + '</td><td>' + (k.s === 'info' ? '' : '<button class="btn sm" data-ak="' + esc(k.k) + '" data-op="ack">Ack</button> <button class="btn sm" data-ak="' + esc(k.k) + '" data-op="' + (k.snooze ? 'unsnooze' : 'snooze') + '">' + (k.snooze ? 'Unsnooze' : 'Snooze 24h') + '</button>') + '</td></tr>'; }).join('') + '</tbody></table></div>' + ((al.silent || []).length ? '<div class="line" style="margin-top:8px;color:var(--amber)">Quiet 7+ days after firing within 30d (fixed, or dead): ' + al.silent.map(function (k) { return esc(k.k); }).join(', ') + '</div>' : '') : '<div class="empty">nothing paged you yet (history starts 2026-09-03)</div>');
         var tabs = (us.tabs || []); var uh = tabs.length ? tabs.map(function (t) { return '<span style="display:inline-block;margin:0 10px 6px 0"><b class="mono" style="color:var(--ink)">' + esc(t.tab) + '</b> ' + N(t.n) + '</span>'; }).join('') : '<span class="meta">no opens recorded yet</span>';
         el.innerHTML = tiles + card('System', sysl, 'what the cron, backups, Telegram and the collector say right now') + card('Alerts', alh, 'per alarm kind · Ack = seen · Snooze = swallow repeats · same buttons as under each Telegram message') + card('Tab usage', '<div class="line">' + uh + '</div>', 'opens per tab, last 30 days · what you never open is a merge or kill candidate', '<a href="#health/perf">performance</a>');
         el.querySelectorAll('[data-ak]').forEach(function (b) { b.onclick = function () { b.disabled = true; post('/api/admin/alerts', { op: b.getAttribute('data-op'), kind: b.getAttribute('data-ak'), hours: 24 }).then(paint); }; });
+        var aa = $('ackAll'); if (aa) aa.onclick = function () { aa.disabled = true; Promise.all(unacked.map(function (k) { return post('/api/admin/alerts', { op: 'ack', kind: k.k }); })).then(function () { toast('acked ' + unacked.length); paint(); loadTop(); }); };
         stamp();
       });
     }
@@ -270,7 +335,7 @@
         el.querySelectorAll('[data-sw]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-sw'), to = b.getAttribute('data-to') === '1'; if (!confirm((to ? 'Turn ON ' : 'Turn OFF ') + k + '?')) return; b.disabled = true; var body = {}; body[k] = to; post('/api/admin/opscfg', body).then(function () { toast(k + (to ? ' ON' : ' OFF')); paint(); }); }; });
         el.querySelectorAll('[data-rw]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-rw'), to = b.getAttribute('data-to') === '1'; if (!confirm((to ? 'Turn ON ' : 'Turn OFF ') + k + '? (audited on Telegram)')) return; b.disabled = true; var body = {}; body[k] = to; post('/api/reward/config', body).then(function (j) { toast(j && j.ok !== false ? k + (to ? ' ON' : ' OFF') : 'failed'); paint(); }); }; });
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
     }
     paint();
   } };
@@ -281,7 +346,7 @@
   function daysAgg(rows, dk, vk, n) { var m = {}; rows.forEach(function (r) { var d = String(r[dk] || '').slice(0, 10); m[d] = (m[d] || 0) + (+r[vk] || 0); }); var out = []; for (var i = (n || 14) - 1; i >= 0; i--) { var d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10); out.push({ day: d, v: m[d] || 0 }); } return out; }
   function tbl(cols, rows, empty) { if (!rows || !rows.length) return '<div class="empty">' + (empty || 'nothing here') + '</div>'; return '<div class="tblwrap"><table class="tbl"><thead><tr>' + cols.map(function (c) { return '<th class="' + (c.r ? 'r' : '') + '">' + c.h + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + cols.map(function (c) { return '<td class="' + (c.r ? 'r ' : '') + (c.mono ? 'mono ' : '') + (c.grow ? 'grow' : '') + '">' + c.f(r) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>'; }
   function userLink(u, e) { var name = u || (e || '').split('@')[0]; return name ? '<a href="/api/admin/user?' + (u ? 'u=' + encodeURIComponent(u) : 'email=' + encodeURIComponent(e)) + '" target="_blank">@' + esc(name) + '</a>' : '<span class="meta">visitor</span>'; }
-  function simple(key, opts) { VIEWS[key] = { render: function (el) { function paint() { J(opts.url).then(function (d) { el.innerHTML = opts.html(d || {}); if (opts.wire) opts.wire(el, d || {}, paint); stamp(); }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; }); } paint(); if (opts.every) every(opts.every, paint); } }; }
+  function simple(key, opts) { VIEWS[key] = { render: function (el) { function paint() { J(opts.url).then(function (d) { el.innerHTML = opts.html(d || {}); if (opts.wire) opts.wire(el, d || {}, paint); stamp(); }).catch(function () { el.innerHTML = failHtml('could not load'); }); } paint(); if (opts.every) every(opts.every, paint); } }; }
 
   // ---------- MONEY / PREMIUM DESK ----------
   simple('money/premium', { url: '/api/admin/premdesk', every: 60000, html: function (d) {
@@ -360,6 +425,7 @@
     var byDay = (d.pvByDay || []).slice().sort(function (a, b) { return a.d < b.d ? -1 : 1; });
     return '<div class="grid g4">' + tile(N(pv7), 'pageviews 7d', '', pvP ? delta(pv7, pvP) + ' w/w' : '') + tile((d.pages7 || [])[0] ? esc(d.pages7[0].p) : '—', 'top page 7d', 'dim') + tile((d.src7 || [])[0] ? esc(d.src7[0].s) : '—', 'top source 7d', 'dim') + tile(N((d.clicksPage7 || []).reduce(function (s, p) { return s + (+p.n || 0); }, 0)), 'exchange clicks 7d', 'dim') + '</div>'
       + card('Pageviews per day', spark(byDay.map(function (x) { return { day: x.d, v: x.n }; }), 'v') + '<div class="line" style="margin-top:6px">last ' + byDay.length + ' days · Analytics Engine</div>')
+      + (function () { var mv = (d.pages7 || []).map(function (p) { var pr = prev[p.p] || 0; return { p: p.p, n: +p.n || 0, pr: pr, d: (+p.n || 0) - pr }; }).filter(function (x) { return x.n >= 20 || x.pr >= 20; }); var up = mv.filter(function (x) { return x.d > 0; }).sort(function (a, b) { return b.d - a.d; }).slice(0, 6), dn = mv.filter(function (x) { return x.d < 0; }).sort(function (a, b) { return a.d - b.d; }).slice(0, 6); var row = function (x) { return '<div class="row"><span class="mono grow">' + esc(x.p) + '</span><span class="mono ' + (x.d > 0 ? 'up' : 'dn') + '">' + (x.d > 0 ? '+' : '') + N(x.d) + '</span><span class="meta">' + N(x.pr) + ' to ' + N(x.n) + '</span></div>'; }; return '<div class="grid g2" style="margin-top:12px"><div class="card" style="margin:0"><h2>Movers up <span>7d vs prior 7d · pages with 20+ pv</span></h2>' + (up.map(row).join('') || '<div class="empty">no page gained this week</div>') + '</div><div class="card" style="margin:0"><h2>Movers down <span>where traffic went missing</span></h2>' + (dn.map(row).join('') || '<div class="empty">no page lost this week</div>') + '</div></div>'; })()
       + '<div class="grid g2" style="margin-top:12px"><div class="card" style="margin:0"><h2>Top pages <span>7d vs prior 7d</span></h2>' + tbl([{ h: 'page', mono: true, grow: true, f: function (p) { return esc(p.p); } }, { h: 'pv', r: true, mono: true, f: function (p) { return N(p.n); } }, { h: 'w/w', r: true, f: function (p) { return delta(p.n, prev[p.p]); } }], (d.pages7 || []).slice(0, 30)) + '</div><div><div class="card" style="margin:0"><h2>Sources <span>7d</span></h2>' + tbl([{ h: 'source', grow: true, f: function (p) { return esc(p.s); } }, { h: 'pv', r: true, mono: true, f: function (p) { return N(p.n); } }, { h: 'w/w', r: true, f: function (p) { return delta(p.n, sprev[p.s]); } }], (d.src7 || []).slice(0, 15)) + '</div><div class="card"><h2>Pages that print money <span>exchange clicks by page · 7d</span></h2>' + bars(d.clicksPage7 || [], 'p', 'n') + '</div><div class="card"><h2>Countries <span>7d</span></h2>' + bars((d.cc7 || []).slice(0, 12).map(function (x) { return { html: flag(x.cc), n: x.n }; }), 'html', 'n') + '</div></div></div>';
   } });
 
@@ -397,7 +463,14 @@
     var sd = d.sessDo || {};
     return '<div class="grid g4">' + tile(d.apiN >= 30 ? N(Math.round(d.apiP95)) + '<small>ms</small>' : '<span class="meta">n=' + N(d.apiN || 0) + '</span>', 'API p95 · ' + N(d.apiN || 0) + ' samples', d.apiN >= 30 && d.apiP95 > 1500 ? 'amber' : 'dim') + tile(g.ws && g.ws.n >= 30 ? N(Math.round(g.ws.p50)) + '<small>ms</small>' : '<span class="meta">n=' + N((g.ws || {}).n || 0) + '</span>', 'websocket latency p50', 'dim') + tile(g.fps && g.fps.n >= 30 ? N(Math.round(g.fps.p50)) : '<span class="meta">n=' + N((g.fps || {}).n || 0) + '</span>', 'chart fps median', 'dim') + tile(N(d.errHr) + '<small>js</small> ' + N(d.srvErrHr) + '<small>srv</small>', 'errors last hour', (d.errHr || 0) + (d.srvErrHr || 0) > 0 ? 'amber' : 'dim') + '</div>'
       + '<div class="grid g4" style="margin-top:12px">' + tile(N(d.online), 'active connections', 'dim') + tile(sd.total >= 30 && sd.p95 != null ? N(Math.round(sd.p95)) + '<small>ms</small>' : '<span class="meta">n=' + N(sd.total || 0) + '</span>', 'session DO p95 round-trip', 'dim') + tile(sd.doReachRate != null ? (sd.doReachRate <= 1 ? Math.round(sd.doReachRate * 100) : Math.round(sd.doReachRate)) + '%' : '—', 'session→DO reach · lower = KV caching', 'dim', sd.total ? N(sd.total) + ' in ' + (sd.win || '6h') : '') + tile((d.cronErrs || []).length ? N(d.cronErrs.length) : '0', 'cron failures 24h', (d.cronErrs || []).length ? 'red' : 'dim') + '</div>'
-      + card('Latency by group', tbl([{ h: 'group', mono: true, f: function (r) { return esc(r.k); } }, { h: 'samples', r: true, mono: true, f: function (r) { return '<span class="' + (r.n < 30 ? 'dn' : '') + '">' + N(r.n) + '</span>'; } }, { h: 'p50', r: true, mono: true, f: function (r) { return ms(r.p50, r.n); } }, { h: 'p95', r: true, mono: true, f: function (r) { return ms(r.p95, r.n); } }, { h: 'max', r: true, mono: true, f: function (r) { return ms(r.max, r.n); } }, { h: 'avg', r: true, mono: true, f: function (r) { return ms(r.avg, r.n); } }, { h: 'budget suggest', r: true, mono: true, f: function (r) { return r.n >= 30 && r.sug ? N(Math.round(r.sug)) + 'ms' : '<span class="meta">needs n≥30</span>'; } }], rows), '60-minute window · greyed = fewer than 30 samples, not a p95 · budget = max(round(p95×1.5), p95+150)');
+      + card('Latency by group', tbl([{ h: 'group', mono: true, f: function (r) { return esc(r.k); } }, { h: 'samples', r: true, mono: true, f: function (r) { return '<span class="' + (r.n < 30 ? 'dn' : '') + '">' + N(r.n) + '</span>'; } }, { h: 'p50', r: true, mono: true, f: function (r) { return ms(r.p50, r.n); } }, { h: 'p95', r: true, mono: true, f: function (r) { return ms(r.p95, r.n); } }, { h: 'max', r: true, mono: true, f: function (r) { return ms(r.max, r.n); } }, { h: 'avg', r: true, mono: true, f: function (r) { return ms(r.avg, r.n); } }, { h: 'budget suggest', r: true, mono: true, f: function (r) { return r.n >= 30 && r.sug ? N(Math.round(r.sug)) + 'ms' : '<span class="meta">needs n≥30</span>'; } }], rows), '60-minute window · greyed = fewer than 30 samples, not a p95 · budget = max(round(p95×1.5), p95+150)') + '<div id="perfTrend"></div>';
+  }, wire: function (el) {
+    // day-over-day p95 per group (Analytics Engine): the only way to tell drift from a one-off before touching a budget
+    J('/api/admin/perfhist?days=7').then(function (rows) { var box = $('perfTrend'); if (!box) return; rows = Array.isArray(rows) ? rows : (rows && rows.data) || []; if (!rows.length) { box.innerHTML = card('7-day trend', '<div class="empty">no history yet (Analytics Engine)</div>'); return; }
+      var G = {}, days = {}; rows.forEach(function (r) { days[r.d] = 1; (G[r.grp] = G[r.grp] || {})[r.d] = { n: +r.n || 0, p95: +r.p95 || 0, p50: +r.p50 || 0 }; }); var dl = Object.keys(days).sort();
+      var groups = Object.keys(G).map(function (k) { var tot = 0; dl.forEach(function (d) { tot += (G[k][d] || {}).n || 0; }); return { k: k, tot: tot }; }).sort(function (a, b) { return b.tot - a.tot; }).slice(0, 10);
+      var cols = [{ h: 'group', mono: true, f: function (g) { return esc(g.k); } }].concat(dl.map(function (d) { return { h: d.slice(5), r: true, mono: true, f: function (g) { var x = G[g.k][d]; if (!x) return '<span class="meta">—</span>'; return '<span class="' + (x.n < 30 ? 'meta' : '') + '" title="n=' + x.n + ' · p50 ' + Math.round(x.p50) + 'ms">' + N(Math.round(x.p95)) + '</span>'; } }; })).concat([{ h: 'trend', r: true, f: function (g) { var vals = dl.map(function (d) { var x = G[g.k][d]; return x && x.n >= 30 ? x.p95 : null; }).filter(function (v) { return v != null; }); if (vals.length < 3) return '<span class="meta">needs 3 days with n≥30</span>'; var first = vals.slice(0, Math.ceil(vals.length / 2)), lastH = vals.slice(Math.ceil(vals.length / 2)); var a = first.reduce(function (s, v) { return s + v; }, 0) / first.length, b = lastH.reduce(function (s, v) { return s + v; }, 0) / lastH.length; var p = a ? Math.round((b - a) / a * 100) : 0; return '<span class="' + (p > 25 ? 'dn' : p < -25 ? 'up' : 'meta') + ' mono">' + (p >= 0 ? '+' : '') + p + '%</span>'; } }]);
+      box.innerHTML = card('7-day trend', tbl(cols, groups, 'nothing'), 'p95 in ms per day · greyed = fewer than 30 samples that day · trend = second half vs first half of the week; red above +25% = drift, fix the page, not the budget'); }).catch(function () { var box = $('perfTrend'); if (box) box.innerHTML = card('7-day trend', '<div class="empty">history unavailable</div>'); });
   } });
 
   // ---------- TRADING / DEMO SPOT ----------
@@ -418,7 +491,7 @@
         var q = $('spq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paint(); }, 300); }; }
         var so = $('spsort'); if (so) so.onchange = function () { st.sort = so.value; paint(); };
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
     }
     paint();
   } };
@@ -437,7 +510,7 @@
         el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); paint(); }; });
         var q = $('acq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paint(); }, 250); }; }
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
     }
     paint(); every(15000, paint);
   } };
@@ -452,10 +525,11 @@
         var ms = ((d && d.messages) || []).slice().reverse(); var day = ms.filter(function (m) { return Date.now() - (m.ts || 0) < 86400000; });
         var who = {}; day.forEach(function (m) { if (!m.admin) who[m.u || 'anon'] = 1; });
         $('chatTiles').innerHTML = tile(N(ms.length), 'messages kept', 'dim', 'global room') + tile(N(day.length), 'last 24h', day.length ? '' : 'dim') + tile(N(Object.keys(who).length), 'people talking 24h', 'dim') + tile(N(ms.filter(function (m) { return m.admin; }).length), 'posted as MarginPad', 'dim');
-        $('chatList').innerHTML = ms.length ? ms.slice(0, 200).map(function (m) { return '<div class="chatrow"><span class="who ' + (m.admin ? 'mp' : '') + '">' + (m.admin ? 'MarginPad' : esc(m.u || 'anon')) + '</span><span class="txt">' + esc(m.t || '') + '</span><span class="meta">' + ago(m.ts) + ' ago</span><button class="btn sm" data-del="' + (+m.ts || 0) + '" title="delete this message">del</button></div>'; }).join('') : '<div class="empty">no messages yet</div>';
+        $('chatList').innerHTML = ms.length ? ms.slice(0, 200).map(function (m) { return '<div class="chatrow"><span class="who ' + (m.admin ? 'mp' : '') + '"' + (m.admin ? '' : ' data-mention="' + esc(m.u || '') + '" style="cursor:pointer" title="reply to @' + esc(m.u || '') + '"') + '>' + (m.admin ? 'MarginPad' : esc(m.u || 'anon')) + '</span><span class="txt">' + esc(m.t || '') + '</span><span class="meta">' + ago(m.ts) + ' ago</span><button class="btn sm" data-del="' + (+m.ts || 0) + '" title="delete this message">del</button></div>'; }).join('') : '<div class="empty">no messages yet</div>';
         el.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () { b.disabled = true; post('/chat/admin/delete', { ts: +b.getAttribute('data-del') }).then(function () { toast('deleted'); list(); }); }; });
+        el.querySelectorAll('[data-mention]').forEach(function (w) { w.onclick = function () { var inp = $('chatIn'); var tag = '@' + w.getAttribute('data-mention') + ' '; if (inp.value.indexOf(tag) < 0) inp.value = tag + inp.value; inp.focus(); window.scrollTo(0, 0); }; });
         stamp();
-      }).catch(function () { $('chatList').innerHTML = '<div class="empty err">could not load the room</div>'; });
+      }).catch(function () { $('chatList').innerHTML = failHtml('could not load the room'); });
     }
     el.innerHTML = '<div class="grid g4" id="chatTiles"></div>'
       + card('Post as MarginPad', '<div class="bar"><input class="in" id="chatIn" maxlength="280" placeholder="say something to the room"><button class="btn lime" id="chatSend">Send</button></div>', 'lands in the global room with the MarginPad badge')
@@ -476,7 +550,7 @@
 
   // ---------- INBOX / EMAIL ----------
   // GET /api/admin/sendmail = {addresses:[{key,name,addr}], log:[...]}; POST one recipient at a time {from,fromName,replyTo,subject,text,to}.
-  VIEWS['inbox/mail'] = { render: function (el) {
+  VIEWS['inbox/mail'] = { render: function (el, arg) {
     var addrs = [];
     function paint(keepForm) {
       J('/api/admin/sendmail').then(function (d) {
@@ -494,6 +568,7 @@
             + '<textarea class="in" id="mlBody" rows="9" style="margin-top:10px" placeholder="Plain text. A matching HTML part is generated automatically. Plain, personal mail is what builds domain reputation."></textarea>'
             + '<div class="bar" style="margin-top:8px"><button class="btn lime" id="mlSend">Send</button><span class="stat" id="mlSt"></span></div>', 'manual sends through Resend · replies land in Support')
           + card('Sent', '<div id="mlLog">' + logHtml + '</div>', 'last 100 manual sends and support replies');
+        if (arg) { $('mlTo').value = decodeURIComponent(arg); $('mlBody').focus(); arg = ''; } // #inbox/mail/<email> from a user card or ticket
         $('mlSend').onclick = function () {
           var to = ($('mlTo').value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean); var body = $('mlBody').value || '';
           if (!to.length) { setStat('mlSt', 'enter at least one recipient', false); return; } if (!body.trim()) { setStat('mlSt', 'write a message first', false); return; }
@@ -502,7 +577,7 @@
           (function next() { if (i >= to.length) { $('mlSend').disabled = false; setStat('mlSt', 'sent ' + ok + '/' + to.length + (fail ? ' · ' + fail + ' failed' : ''), !fail); if (!fail) { $('mlBody').value = ''; $('mlTo').value = ''; } paint(true); return; } var one = {}; for (var k in base) one[k] = base[k]; one.to = to[i++]; setStat('mlSt', 'sending ' + i + '/' + to.length + '…'); post('/api/admin/sendmail', one).then(function (r) { if (r && r.ok) ok++; else fail++; next(); }).catch(function () { fail++; next(); }); })();
         };
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
     }
     paint(); every(60000, function () { paint(true); });
   } };
@@ -528,7 +603,7 @@
       var alive = [], dead = []; S.pos.forEach(function (t) { (calc(t).dead ? dead : alive).push(t); });
       var totM = 0, totP = 0, nl = 0, ns = 0, worst = null, nOver = 0;
       alive.forEach(function (t) { var c = calc(t); if (c.over) nOver++; else { totM += c.margin; if (c.pnl != null) totP += c.pnl; } if (c.long) nl++; else ns++; if (!c.over && c.liqDist != null && (worst == null || c.liqDist < worst.d)) worst = { d: c.liqDist, t: t }; });
-      var k = '<div class="grid g4">' + tile(N(alive.length), 'live positions', alive.length ? '' : 'dim', N(S.traders) + ' traders') + tile('<span class="up">' + nl + '</span> <small>/</small> <span class="dn">' + ns + '</span>', 'long / short', 'dim') + tile('$' + N(Math.round(totM)), 'margin at risk', 'dim', nOver ? 'excl. ' + nOver + ' oversized' : 'paper money') + tile('<span class="' + (totP >= 0 ? 'up' : 'dn') + '">' + money(totP, 0) + '</span>', 'unrealized P&amp;L', 'dim', 'paper' + (alive.filter(function (t) { return calc(t).bad; }).length ? ' · ' + alive.filter(function (t) { return calc(t).bad; }).length + ' beyond 10,000% ROE or mispriced left out' : ''))
+      var k = '<div class="grid g4">' + tile(N(alive.length), 'live positions', alive.length ? '' : 'dim', N(S.traders) + ' traders') + tile('<span class="up">' + nl + '</span> <small>/</small> <span class="dn">' + ns + '</span>', 'long / short', 'dim') + tile('$' + N(Math.round(totM)), 'margin at risk', 'dim', nOver ? 'paper · ' + nOver + ' outliers out' : 'paper money') + tile('<span class="' + (totP >= 0 ? 'up' : 'dn') + '">' + money(totP, 0) + '</span>', 'unrealized P&amp;L', 'dim', 'paper' + (alive.filter(function (t) { return calc(t).bad; }).length ? ' · ' + alive.filter(function (t) { return calc(t).bad; }).length + ' outliers out' : ''))
         + tile(worst ? '<span style="color:' + (worst.d < 3 ? '#ff8a80' : worst.d < 10 ? 'var(--amber)' : '#7fe7bd') + '">' + worst.d.toFixed(1) + '%</span>' : '—', 'nearest liquidation', 'dim', worst ? esc(who(worst.t)) + ' · ' + esc(calc(worst.t).sy) : '') + tile(N(dead.length), 'crossed liq, close pending', dead.length ? 'red' : 'dim', 'waiting for the owner\'s browser') + tile(N(S.srv.filter(function (e) { return e.kind === 'close'; }).length), 'closes 7d', 'dim') + tile(N(Object.keys(S.PR).length), 'live prices', 'dim') + '</div>';
       var chips = '<div class="bar"><div class="chips" style="margin:0">' + [['traders', 'Traders'], ['markets', 'Markets'], ['list', 'Raw list']].map(function (v) { return '<span class="chip ' + (S.view === v[0] ? 'on' : '') + '" data-v="' + v[0] + '">' + v[1] + '</span>'; }).join('') + '</div><input class="in" id="lvq" placeholder="find trader" value="' + esc(S.q) + '"><select class="in" id="lvsort" style="flex:0 0 auto">' + [['pnl', 'Sort: P&amp;L'], ['liq', 'Sort: closest to liq'], ['age', 'Sort: newest'], ['margin', 'Sort: margin']].map(function (o) { return '<option value="' + o[0] + '"' + (S.sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>';
       var body;
@@ -550,7 +625,10 @@
             + (open ? '<div class="trd-b">' + (g.open.length ? g.open.slice().sort(function (a, b) { return sortKey(a) - sortKey(b); }).map(posRow).join('') : '<div class="empty">no open positions</div>') + (g.ev.length ? '<div class="sec-h">closes, last 7 days</div>' + g.ev.filter(function (e) { return e.kind === 'close'; }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }).slice(0, 20).map(function (e) { return '<div class="row"><span class="mono" style="width:120px">' + esc(e.sym || '') + ' ' + esc(e.side || '') + '</span><span class="mono ' + ((+e.pnl || 0) >= 0 ? 'up' : 'dn') + '">' + money(+e.pnl || 0) + '</span>' + (e.liq ? '<span class="badge red">LIQ</span>' : '') + '<span class="meta" style="margin-left:auto">' + ago(e.ts) + ' ago</span></div>'; }).join('') : '') + '</div>' : '') + '</div>'; }).join('') || '<div class="empty">no traders match</div>');
       }
       var deadH = dead.length ? card('Crossed liquidation, close pending', dead.map(posRow).join(''), 'price is past the liq level; the owner\'s browser closes it on their next visit (server sweep also catches it)') : '';
-      el.innerHTML = k + card('Open positions', chips + body, 'paper positions · prices live · refreshes every 12s') + deadH;
+      // danger zone: within 2% of liquidation right now, under the cap - the people worth a ping before the candle does it
+      var dz = alive.map(function (t) { return { t: t, c: calc(t) }; }).filter(function (x) { return !x.c.over && x.c.liqDist != null && x.c.liqDist > 0 && x.c.liqDist < 2; }).sort(function (a, b) { return a.c.liqDist - b.c.liqDist; }).slice(0, 12);
+      var dzH = dz.length ? card('Danger zone', '<div class="dz">' + dz.map(function (x) { return '<div class="row">' + flag(x.t.cc) + '<span class="who">' + (x.t.uid ? userLink(x.t.username, x.t.email) : esc(who(x.t))) + '</span><span class="mono">' + esc(x.c.sy) + ' ' + (x.c.long ? 'long' : 'short') + ' ' + x.c.lev + 'x · $' + N(Math.round(x.c.margin)) + '</span><span class="mono dn" style="margin-left:auto">' + x.c.liqDist.toFixed(2) + '% to liq</span>' + (x.t.uid ? '<button class="btn sm" data-ping="' + esc(x.t.uid) + '">Ping</button>' : '') + '</div>'; }).join('') + '</div>', dz.length + ' within 2% of liquidation · Ping emails the live ROE and a nudge (20h cooldown per user)') : '';
+      el.innerHTML = k + dzH + card('Open positions', chips + body, 'paper positions · prices live · refreshes every 12s · outlier = margin above $100k, ticker now a different asset, or ROE beyond 10,000% (shown with a badge, kept out of the tiles)') + deadH;
       el.querySelectorAll('[data-v]').forEach(function (c) { c.onclick = function () { S.view = c.getAttribute('data-v'); paint(); }; });
       var q = $('lvq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { S.q = q.value.trim().toLowerCase(); paint(); }, 250); }; }
       var so = $('lvsort'); if (so) so.onchange = function () { S.sort = so.value; paint(); };
@@ -561,7 +639,7 @@
     function prices() { J('/api/prices').then(function (d) { var P = (d && (d.prices || d.pairs || d)) || {}; var put = function (k2, v) { var n = typeof v === 'number' ? v : (v && +(v.price || v.p || v.last || v.c)); if (n > 0) S.PR[String(k2).toUpperCase().replace(/USDT$/, '')] = n; }; if (Array.isArray(P)) P.forEach(function (row) { put(row.symbol || row.sym || '', row); }); else Object.keys(P).forEach(function (k2) { put(k2, P[k2]); }); paint(); }).catch(function () {}); }
     var pt = null; function qpaint() { clearTimeout(pt); pt = setTimeout(paint, 80); } // ~25 price lookups resolve within a second: one repaint, not 25
     function fill() { var now = Date.now(), need = {}; S.pos.forEach(function (t) { var sy = String(t.sym || '').toUpperCase().replace(/USDT$/, ''); if (sy && !(S.PR[sy] > 0) && (!S.miss[sy] || now - S.miss[sy] > 30000)) need[sy] = 1; }); Object.keys(need).slice(0, 24).forEach(function (sy) { S.miss[sy] = now; J('/api/price?symbol=' + encodeURIComponent(sy)).then(function (j) { if (j && +j.price > 0) { S.PR[sy] = +j.price; qpaint(); } }).catch(function () {}); }); }
-    function load() { J('/api/auth/opentrades').then(function (d) { S.pos = (d && d.positions) || []; S.traders = (d && d.traders) || 0; paint(); fill(); }).catch(function () { if (!S.pos.length) el.innerHTML = '<div class="empty err">could not load positions</div>'; }); }
+    function load() { J('/api/auth/opentrades').then(function (d) { S.pos = (d && d.positions) || []; S.traders = (d && d.traders) || 0; paint(); fill(); }).catch(function () { if (!S.pos.length) el.innerHTML = failHtml('could not load positions'); }); }
     function loadEv() { J('/api/auth/tradeev?since=' + (Date.now() - 604800000)).then(function (d) { S.srv = (d && d.events) || []; paint(); }).catch(function () {}); }
     load(); prices(); loadEv(); every(12000, load); every(20000, prices); every(60000, loadEv);
   } };
@@ -630,13 +708,14 @@
     function bind(box) { box.querySelectorAll('[data-acct]').forEach(function (r) { r.onclick = function (e) { if (e.target.closest('a')) return; openAcct(r.getAttribute('data-acct')); }; }); }
     function hist(i) { var w = S.hist[i]; var box = $('rwHist'); if (!box) return; box.innerHTML = w && w.top && w.top.length ? w.top.map(function (r, k) { var who = r.who || 'anon'; return '<div class="row"><span class="mono meta" style="width:28px">' + (k + 1) + '.</span><span class="who">' + (/…$/.test(who) ? esc(who) : '@' + esc(who)) + '</span><span class="mono ' + ((+r.roe >= 0) ? 'up' : 'dn') + '">' + ((+r.roe >= 0 ? '+' : '') + (+r.roe).toFixed(0)) + '%</span><span class="meta">' + esc(r.symbol || '') + ' ' + esc(r.side || '') + '</span></div>'; }).join('') : '<div class="empty">no entries in that season</div>'; }
     function paint() {
-      Promise.all([J('/api/reward/accounts'), J('/api/reward/admin'), J('/api/reward/log'), J('/api/reward/lbtop').catch(function () { return {}; }), J('/api/reward/lbhistory').catch(function () { return {}; }), J('/api/reward/moonsign/list').catch(function () { return {}; }), J('/api/reward/promo/list').catch(function () { return {}; }), J('/api/admin/missionstats?d=7').catch(function () { return {}; })]).then(function (r) {
-        var a = r[0] || {}, ad = r[1] || {}, lg = r[2] || {}, lb = r[3] || {}, lh = r[4] || {}, moon = r[5] || {}, pr = r[6] || {}, ms = r[7] || {};
+      Promise.all([J('/api/reward/accounts'), J('/api/reward/admin'), J('/api/reward/log'), J('/api/reward/lbtop').catch(function () { return {}; }), J('/api/reward/lbhistory').catch(function () { return {}; }), J('/api/reward/moonsign/list').catch(function () { return {}; }), J('/api/reward/promo/list').catch(function () { return {}; }), J('/api/admin/missionstats?d=7').catch(function () { return {}; }), J('/api/admin/money').catch(function () { return {}; })]).then(function (r) {
+        var a = r[0] || {}, ad = r[1] || {}, lg = r[2] || {}, lb = r[3] || {}, lh = r[4] || {}, moon = r[5] || {}, pr = r[6] || {}, ms = r[7] || {}, mo = r[8] || {};
+        var byDay = (mo.dispensedByDay || []).slice().reverse();
         S.accounts = a.accounts || []; S.hist = lh.weeks || [];
         var pend = ad.pending || []; var pendSum = pend.reduce(function (s, w) { return s + (+w.amountUsd || 0); }, 0);
         var flagged = S.accounts.filter(function (x) { return risk(x) > 0 && !x.banned; }).sort(function (x, y) { return risk(y) - risk(x); }); var banned = a.bannedCount != null ? a.bannedCount : S.accounts.filter(function (x) { return x.banned; }).length;
         var claims = (lg.log || []).filter(function (e) { return e.type === 'claim'; });
-        var tiles = '<div class="grid g4">' + tile(N(a.count), 'faucet accounts', 'dim', N(ad.newToday || 0) + ' new today') + tile(N(ad.activeToday || 0), 'active today', 'dim', N(ad.claimsToday || 0) + ' claims') + tile(USD(ad.dispensedTodayUsd), 'dispensed today', (ad.dailyCapUsd && ad.dispensedTodayUsd >= ad.dailyCapUsd * 0.9) ? 'amber' : 'dim', '/ ' + USD(ad.dailyCapUsd, 0) + ' budget') + tile(USD(a.totalBalanceUsd), 'unpaid balance', 'dim', 'what the ledger owes')
+        var tiles = '<div class="grid g4">' + tile(N(a.count), 'faucet accounts', 'dim', N(ad.newToday || 0) + ' new today') + tile(N(ad.activeToday || 0), 'active today', 'dim', N(ad.claimsToday || 0) + ' claims') + tile(USD(ad.dispensedTodayUsd), 'dispensed today', (ad.dailyCapUsd && ad.dispensedTodayUsd >= ad.dailyCapUsd * 0.9) ? 'amber' : 'dim', '/ ' + USD(ad.dailyCapUsd, 0) + ' budget' + (byDay.length ? ' · 14d ' + USD(byDay.reduce(function (s, x) { return s + (+x.usd || 0); }, 0), 0) : ''), mini(byDay, 'usd')) + tile(USD(a.totalBalanceUsd), 'unpaid balance', 'dim', 'what the ledger owes')
           + tile(N(pend.length), 'pending payouts', pend.length ? 'amber' : 'dim', pend.length ? USD(pendSum) + ' · <a href="#money/withdrawals">pay in Withdrawals</a>' : '') + tile(USD(ad.totalPaidUsd), 'paid all time', 'dim') + tile(N(flagged.length), 'flagged', flagged.length ? 'amber' : 'dim', N(banned) + ' banned') + tile(N(a.sharedIpWallets != null ? a.sharedIpWallets : 0), 'wallets sharing an IP', 'dim', a.ipDistinct != null ? N(a.ipDistinct) + ' distinct IPs' : '') + '</div>';
         var sel = S.hist.map(function (w, i) { var O = { month: 'short', day: 'numeric' }; return '<option value="' + i + '">' + (w.current ? 'This season · ' : '') + new Date(w.weekStart).toLocaleDateString('en-US', O) + ' - ' + new Date(w.weekEnd - 1).toLocaleDateString('en-US', O) + ' (' + w.entries + ')</option>'; }).join('');
         var lbRows = (lb.top || []); var moonUsd = moon.moonUsd != null ? moon.moonUsd : 1, xUsd = pr.promoXUsd != null ? pr.promoXUsd : 0.1, rBase = pr.redditUsd != null ? pr.redditUsd : 0.5, rMax = pr.redditMaxUsd != null ? pr.redditMaxUsd : 5;
@@ -657,7 +736,7 @@
         el.querySelectorAll('[data-moon]').forEach(function (b) { b.onclick = function () { var actn = b.getAttribute('data-act'); var note = actn === 'reject' ? (prompt('Reason shown to the user (optional):') || '') : ''; b.disabled = true; post('/api/reward/moonsign/review', { id: b.getAttribute('data-moon'), action: actn, note: note }).then(function (j) { toast(j && j.ok !== false ? actn + 'd' : 'failed'); paint(); }); }; });
         el.querySelectorAll('[data-promo]').forEach(function (b) { b.onclick = function () { var actn = b.getAttribute('data-act'), id = b.getAttribute('data-promo'); var payload = { id: id, action: actn }; if (actn === 'reject') payload.note = prompt('Reason shown to the user:') || ''; else { var ai = el.querySelector('[data-amt="' + id + '"]'); if (ai) payload.amount = +ai.value || 0; } (function send() { b.disabled = true; post('/api/reward/promo/review', payload).then(function (j) { if (j && j.error === 'too_early') { b.disabled = false; if (confirm('Post is younger than 24h. Approve anyway?')) { payload.force = 1; send(); } return; } toast(j && j.ok !== false ? actn + 'd' : 'failed: ' + ((j && j.error) || '?')); paint(); }); })(); }; });
         stamp();
-      }).catch(function () { el.innerHTML = '<div class="empty err">could not load the faucet</div>'; });
+      }).catch(function () { el.innerHTML = failHtml('could not load the faucet'); });
     }
     function openAcct(a) {
       if (!a) return; var m = modal('<div class="mhead"><b id="amTitle">' + esc(a) + '</b><button class="btn sm x" id="amX">close</button></div><div id="amBody"><div class="empty">loading…</div></div>'); $('amX').onclick = closeModal;
@@ -738,7 +817,7 @@
       $('xpAdd').onclick = function () { PR.push({ id: 'p' + Date.now().toString(36), enabled: false, title: 'XP Promo', coins: [], xp: 100, levMax: 20, roeMin: 5, winOnly: true, startMs: 0, endMs: 0, _hours: 24, _edit: true }); promos(); };
       $('xpSave').onclick = function () { var out = PR.map(function (p) { var ss = +p.startMs || 0, ee = +p.endMs || 0; if (p.enabled && ee <= xnow()) { ss = xnow(); ee = xnow() + (p._hours || 24) * 3600000; p.startMs = ss; p.endMs = ee; } return { id: p.id, enabled: !!p.enabled, title: p.title || 'XP Promo', coins: p.coins || [], xp: +p.xp || 0, levMax: +p.levMax || 20, roeMin: +p.roeMin || 0, winOnly: p.winOnly !== false, startMs: ss, endMs: ee, dayCap: 700 }; }); setStat('xpSt', 'saving…'); post('/api/admin/xppromos', { promos: out }).then(function (j) { setStat('xpSt', j && j.ok ? 'saved - live on the homepage in ~15s' : 'error', !!(j && j.ok)); if (j && j.ok) { PR.forEach(function (p) { p._edit = false; }); promos(); } }); };
       stamp();
-    }).catch(function () { el.innerHTML = '<div class="empty err">could not load the config</div>'; });
+    }).catch(function () { el.innerHTML = failHtml('could not load the config'); });
     every(30000, function () { promos(); });
   } };
 
@@ -746,9 +825,22 @@
   var pal = $('pal'), palIn = $('palIn'), palRes = $('palRes'), palItems = [], palIdx = 0, palT = null;
   function palOpen() { pal.hidden = false; palIn.value = ''; palRender(''); setTimeout(function () { palIn.focus(); }, 0); }
   function palClose() { pal.hidden = true; }
-  function palStatic(q) { var out = []; NAV.forEach(function (s) { s.views.forEach(function (v) { var t = s.title + ' / ' + v.title; if (!q || t.toLowerCase().indexOf(q) >= 0 || s.id.indexOf(q) >= 0 || v.id.indexOf(q) >= 0) out.push({ k: 'go', t: t, s: '', href: '#' + s.id + '/' + v.id }); }); });
+  function titleOf(key) { var p = key.split('/'); var s = NAV.filter(function (x) { return x.id === p[0]; })[0]; var v = s && s.views.filter(function (x) { return x.id === p[1]; })[0]; return s && v ? s.title + ' / ' + v.title : key; }
+  var ACTIONS = [
+    { t: 'Refresh this view', s: 'r', run: function () { show(); loadTop(); } },
+    { t: 'Ack all alerts', s: 'marks every unacked alarm kind as seen', run: function () { J('/api/admin/alerts').then(function (al) { var ks = (al.kinds || []).filter(function (k) { return k.s !== 'info' && !(k.ack && k.ack >= k.last) && !k.snooze; }); if (!ks.length) { toast('nothing to ack'); return; } Promise.all(ks.map(function (k) { return post('/api/admin/alerts', { op: 'ack', kind: k.k }); })).then(function () { toast('acked ' + ks.length); loadTop(); }); }); } },
+    { t: 'Copy pending payment list', s: 'wallet, amount, user, UID check', run: function () { J('/api/admin/withdrawals').then(function (d) { var p = (d.wds || []).filter(function (w) { return w.status === 'pending'; }); if (!p.length) { toast('no pending payouts'); return; } var txt = p.map(function (w) { return w.wallet + '\t' + (+w.usd || 0).toFixed(2) + '\t@' + (w.who || '') + '\t' + (w.uidCheck || ''); }).join('\n'); try { navigator.clipboard.writeText(txt); toast('copied ' + p.length + ' lines'); } catch (e) { prompt('copy:', txt); } }); } },
+    { t: 'Post to the trader chat', s: 'as MarginPad', href: '#inbox/chat' },
+    { t: 'Keyboard shortcuts', s: '?', run: function () { $('help').hidden = false; } }
+  ];
+  function palStatic(q) { var out = [];
+    var acts = function () { ACTIONS.forEach(function (a) { if (!q || a.t.toLowerCase().indexOf(q) >= 0) out.push({ k: 'action', t: a.t, s: a.s, href: a.href || '', run: a.run }); }); };
+    if (!q) { (store('recent') || []).slice(1, 5).forEach(function (k) { out.push({ k: 'recent', t: titleOf(k), s: '', href: '#' + k }); }); acts(); } // empty box = where you were + what you can do; typing = views first
+    NAV.forEach(function (s) { s.views.forEach(function (v) { var t = s.title + ' / ' + v.title; if (!q || t.toLowerCase().indexOf(q) >= 0 || s.id.indexOf(q) >= 0 || v.id.indexOf(q) >= 0) out.push({ k: 'go', t: t, s: '', href: '#' + s.id + '/' + v.id }); }); });
+    if (q) acts();
     [['Pocket view', '/api/stats/pocket'], ['Site', '/'], ['Bug inbox', '/api/bug'], ['Private inbox', '/api/admin/pmail']].forEach(function (x) { if (!q || x[0].toLowerCase().indexOf(q) >= 0) out.push({ k: 'open', t: x[0], s: x[1], href: x[1], blank: true }); }); return out; }
-  function palRender(q) { q = (q || '').trim().toLowerCase(); palItems = palStatic(q).slice(0, q ? 6 : 12);
+  function palRender(q) { q = (q || '').trim().toLowerCase(); palItems = palStatic(q).slice(0, q ? 8 : 14);
+    if (q.indexOf('@') > 0 && q.length >= 5) { J('/api/reward/support/convs').then(function (d) { if ((palIn.value || '').trim().toLowerCase() !== q) return; var hits = ((d && d.conversations) || []).filter(function (c) { return String(c.email || '').toLowerCase().indexOf(q) >= 0; }).slice(0, 4); if (!hits.length) return; palItems = palItems.concat(hits.map(function (c) { return { k: 'ticket', t: c.email, s: (c.closed ? 'closed · ' : 'open · ') + c.messages.length + ' msg · ' + ago(c.lastTs) + ' ago', href: '#inbox/support/' + encodeURIComponent(c.email) }; })); palDraw(); }).catch(function () {}); }
     if (q.length >= 2) { clearTimeout(palT); palT = setTimeout(function () { J('/api/admin/search?q=' + encodeURIComponent(q)).then(function (d) { if ((palIn.value || '').trim().toLowerCase() !== q) return; var more = [];
       (d.users || []).slice(0, 8).forEach(function (u) { more.push({ k: 'user', t: '@' + (u.username || u.email || ''), s: (u.email || '') + (u.cc ? ' · ' + u.cc : ''), href: '/api/admin/user?u=' + encodeURIComponent(u.username || u.email || ''), blank: true }); });
       (d.accounts || []).slice(0, 5).forEach(function (a) { more.push({ k: 'faucet', t: a.username || a.address || '', s: 'balance ' + USD(a.balanceUsd || a.balance || 0), href: '#money/faucet' }); });
@@ -757,7 +849,7 @@
     palIdx = 0; palDraw(); }
   function palDraw() { palRes.innerHTML = palItems.length ? palItems.map(function (it, i) { return '<div class="pr ' + (i === palIdx ? 'on' : '') + '" data-i="' + i + '"><span class="k">' + esc(it.k) + '</span><span class="t">' + esc(it.t) + '</span><span class="s">' + esc(it.s || '') + '</span></div>'; }).join('') : '<div class="pr"><span class="t" style="color:var(--faint)">nothing matches</span></div>';
     palRes.querySelectorAll('.pr[data-i]').forEach(function (r) { r.onclick = function () { palGo(+r.getAttribute('data-i')); }; }); }
-  function palGo(i) { var it = palItems[i]; if (!it) return; palClose(); if (it.blank) window.open(it.href, '_blank'); else location.hash = it.href.replace(/^#/, ''); }
+  function palGo(i) { var it = palItems[i]; if (!it) return; palClose(); if (it.run) it.run(); else if (it.blank) window.open(it.href, '_blank'); else location.hash = it.href.replace(/^#/, ''); }
   palIn.addEventListener('input', function () { palRender(palIn.value); });
   palIn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown') { palIdx = Math.min(palItems.length - 1, palIdx + 1); palDraw(); e.preventDefault(); } else if (e.key === 'ArrowUp') { palIdx = Math.max(0, palIdx - 1); palDraw(); e.preventDefault(); } else if (e.key === 'Enter') { palGo(palIdx); } else if (e.key === 'Escape') palClose(); });
   pal.addEventListener('click', function (e) { if (e.target === pal) palClose(); });
@@ -767,5 +859,5 @@
   // ---------- boot ----------
   show(); loadTop(); setInterval(function () { if (!document.hidden) loadTop(); }, 45000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) { loadTop(); } });
-  window.__ops2 = { NAV: NAV, VIEWS: VIEWS, route: route, show: show };
+  window.__ops2 = { NAV: NAV, VIEWS: VIEWS, route: route, show: show, seen: function (ts) { visitPrev = ts; visitStart = Date.now(); show(); } }; // seen() = E2E hook: pretend the last visit was at ts
 })();

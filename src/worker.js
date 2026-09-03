@@ -5606,6 +5606,10 @@ async function handleOpsShell(url, env, request) { // the v2 dashboard: static s
 }
 async function handleOpsAsset(url, env, request) {
   if (!(await adminCookieOk(request, env))) return new Response('forbidden', { status: 403, headers: { 'cache-control': 'no-store' } });
+  if (url.pathname.endsWith('.webmanifest')) { // installable on the phone (standalone, own icon); fetched with credentials so the cookie gate holds
+    const man = { name: 'MarginPad ops', short_name: 'MP ops', start_url: '/api/stats#today/overview', scope: '/api/stats', display: 'standalone', background_color: '#0a0b0d', theme_color: '#0a0b0d', icons: [{ src: '/assets/app-icon-192.png', sizes: '192x192', type: 'image/png' }, { src: '/assets/app-icon-512.png', sizes: '512x512', type: 'image/png' }] };
+    return new Response(JSON.stringify(man), { headers: { 'content-type': 'application/manifest+json; charset=utf-8', 'cache-control': 'private, max-age=86400', 'x-ops-v': OPS_V } });
+  }
   const isCss = url.pathname.endsWith('.css');
   return new Response(isCss ? OPS_CSS : OPS_JS, { headers: { 'content-type': (isCss ? 'text/css' : 'application/javascript') + '; charset=utf-8', 'cache-control': 'private, max-age=31536000, immutable', 'x-ops-v': OPS_V } });
 }
@@ -12938,7 +12942,7 @@ export default {
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout(request, env, 'mp_sadm', '/');
     if (url.pathname === '/api/stats/pocket') return handleStatsPocket(url, env, request);
-    if (url.pathname === '/api/stats/asset/ops.css' || url.pathname === '/api/stats/asset/ops.js') return handleOpsAsset(url, env, request);
+    if (url.pathname === '/api/stats/asset/ops.css' || url.pathname === '/api/stats/asset/ops.js' || url.pathname === '/api/stats/asset/ops.webmanifest') return handleOpsAsset(url, env, request);
     if (url.pathname === '/api/stats') { // v2 shell by default (2026-09-03); the legacy server render stays reachable (?legacy=1) and still owns the JSON/CSV feeds and cache-bypass renders
       const sp = url.searchParams; if (sp.get('legacy') === '1' || sp.get('format') || sp.get('nc') || sp.get('clearerr') || sp.get('_bg')) return handleStats(url, env, request, ctx);
       return handleOpsShell(url, env, request);

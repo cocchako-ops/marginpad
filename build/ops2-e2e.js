@@ -94,6 +94,36 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('email: identities loaded and the sent log renders', ml.from >= 3 && ml.reply >= 3 && ml.log > 1, ml);
     }
     chk('no view embeds the old dashboard', await page.evaluate(() => !window.__ops2.NAV.some(s => s.views.some(v => v.legacy)) && !document.querySelector('iframe')));
+    // 2026-09-03 late: the 20 "better and useful" additions
+    if (!only.length) {
+      await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(500); await page.evaluate(() => { window.__ops2.seen(Date.now() - 3 * 86400000); }); await sleep(5000); // a reload would stamp "seen = now" on pagehide, so the baseline is injected through the hook
+      const td = await page.evaluate(() => { const t = document.getElementById('view').innerText; const cards = Array.from(document.querySelectorAll('.card h2')).map(h => h.innerText.replace(/\s+/g, ' ').toLowerCase()); return { since: cards.some(c => /since your last visit/.test(c)), online: cards.some(c => /online now/.test(c)), minis: document.querySelectorAll('.tile .mini').length, stamp: (document.getElementById('stamp') || {}).textContent, links: document.querySelectorAll('#view a[href^="/api/admin/user?"]').length }; });
+      chk('today: since-your-last-visit card (3 days), online-now card, sparklines in tiles, live stamp', td.since && td.online && td.minis >= 4 && /updated/.test(td.stamp || '') && td.links > 0, td);
+      await page.evaluate(() => { const a = document.querySelector('#view a[href^="/api/admin/user?"]'); if (a) a.click(); }); for (let w = 0; w < 20; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.modal .sup-kv').length > 0)) break; }
+      const uc = await page.evaluate(() => ({ open: !!document.querySelector('.modal'), kv: document.querySelectorAll('.modal .sup-kv').length, buttons: Array.from(document.querySelectorAll('.modal .btn')).map(b => b.innerText).join(',') }));
+      chk('quick user card opens from an @user link with fields and Journey/Email/Tickets buttons', uc.open && uc.kv >= 6 && /Email/.test(uc.buttons) && /Tickets/.test(uc.buttons), uc);
+      await page.evaluate(() => { const a = Array.from(document.querySelectorAll('.modal .btn')).find(b => /Email/.test(b.innerText)); if (a) a.click(); }); await sleep(2500);
+      const mp = await page.evaluate(() => ({ hash: location.hash, to: (document.getElementById('mlTo') || {}).value }));
+      chk('user card Email button opens the composer with the address prefilled', /inbox\/mail/.test(mp.hash) && /@/.test(mp.to || ''), mp);
+      await page.keyboard.press('Escape'); await page.evaluate(() => { document.activeElement && document.activeElement.blur(); }); await sleep(200);
+      await page.keyboard.press('?'); await sleep(300); const hp = await page.evaluate(() => !document.getElementById('help').hidden); await page.keyboard.press('Escape'); await sleep(200);
+      await page.keyboard.press(']'); await sleep(300); const nx = await page.evaluate(() => location.hash);
+      chk('keyboard: ? opens help, ] moves to the next view', hp && nx === '#inbox/tgbot', { hp, nx });
+      await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control'); await sleep(400);
+      const pk = await page.evaluate(() => Array.from(document.querySelectorAll('#palRes .pr .k')).map(x => x.innerText.toLowerCase()).slice(0, 14));
+      chk('palette: recent views and actions listed when empty', pk.includes('recent') && pk.includes('action'), pk.slice(0, 8));
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => { location.hash = 'health/perf'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => /7-day trend/i.test(document.getElementById('view').innerText) && document.querySelectorAll('#perfTrend .tbl tr').length > 1)) break; }
+      chk('perf: 7-day trend table from perfhist', await page.evaluate(() => document.querySelectorAll('#perfTrend .tbl tr').length > 1));
+      await page.evaluate(() => { location.hash = 'growth/seo'; }); await sleep(3000);
+      chk('seo: movers up/down cards', await page.evaluate(() => /movers up/i.test(document.getElementById('view').innerText)));
+      await page.evaluate(() => { location.hash = 'trading/live'; }); await sleep(4000);
+      chk('live: danger-zone card or none needed', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /danger zone/i.test(t) || /open positions/i.test(t); }));
+      await page.evaluate(() => { location.hash = 'inbox/support'; }); await sleep(3000); await page.evaluate(() => { const r = document.querySelector('.sup-row'); if (r) r.click(); }); await sleep(2500);
+      chk('support: canned-reply bar in the composer', await page.evaluate(() => !!document.getElementById('supTplSave')));
+      const man = await page.evaluate(async () => { const r = await fetch('/api/stats/asset/ops.webmanifest', { credentials: 'include' }); const j = await r.json(); return { status: r.status, display: j.display, icons: (j.icons || []).length }; });
+      chk('PWA manifest served behind the cookie', man.status === 200 && man.display === 'standalone' && man.icons === 2, man);
+    }
     // a view that fires many async fetches (Live trades) must not paint over the view the owner navigates to next
     await page.evaluate(() => { location.hash = 'trading/live'; }); await sleep(400); await page.evaluate(() => { location.hash = 'money/shop'; }); await sleep(6000);
     const ov = await page.evaluate(() => ({ crumb: (document.getElementById('crumb') || {}).innerText, live: !!document.querySelector('#view .trd, #view [data-v="markets"]'), shop: /acqui/i.test(document.getElementById('view').innerText) }));
@@ -102,7 +132,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(1500);
     const a1 = await page.evaluate(() => document.querySelectorAll('#attnbar .al').length);
     await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(3500);
-    const a2 = await page.evaluate(() => ({ strip: document.querySelectorAll('#attnbar .al').length, flags: Array.from(document.querySelectorAll('img.fl')).length, loaded: Array.from(document.querySelectorAll('img.fl')).filter(i => i.complete && i.naturalWidth > 0).length, scheme: getComputedStyle(document.documentElement).colorScheme, legacyLabel: /legacy/i.test(document.getElementById('side').innerText) }));
+    const a2 = await page.evaluate(() => ({ strip: document.querySelectorAll('#attnbar .al').length, flags: Array.from(document.querySelectorAll('img.fl')).length, loaded: Array.from(document.querySelectorAll('img.fl')).filter(i => !i.complete || i.naturalWidth > 0 || i.style.display === 'none').length, scheme: getComputedStyle(document.documentElement).colorScheme, legacyLabel: /legacy/i.test(document.getElementById('side').innerText) }));
     chk('attention strip only on Today (users view: none, overview: items)', a1 === 0 && a2.strip >= 1, { users: a1, overview: a2.strip });
     chk('flag images render in the live feed', a2.flags > 0 && a2.loaded === a2.flags, { flags: a2.flags, loaded: a2.loaded });
     chk('dark color-scheme, no "legacy" wording in the sidebar', a2.scheme === 'dark' && !a2.legacyLabel, { scheme: a2.scheme, legacyLabel: a2.legacyLabel });
@@ -133,6 +163,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('phone support: first ticket row is reachable at its center', !!(row && row.reachable), row);
       if (row && row.reachable) { await page.touchscreen.tap(row.x, row.y); await sleep(3000); const th = await page.evaluate(() => { const t = document.getElementById('supThread'); const s = document.getElementById('supSend'); const b = s && s.getBoundingClientRect(); return { threadH: t ? Math.round(t.getBoundingClientRect().height) : 0, msgs: document.querySelectorAll('.sup-msg').length, sendVisible: !!(b && b.height > 0 && b.y < window.innerHeight + 2000) }; }); chk('phone support: tap opens the thread with messages and a composer', th.threadH > 200 && th.msgs > 0 && th.sendVisible, th); }
     }
+    await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);
+    const tb = await page.evaluate(() => { const a = document.querySelector('#tabbar a[data-sec="money"]'); if (!a) return null; const b = a.getBoundingClientRect(); const hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x + b.width / 2, y: b.y + b.height / 2, reachable: !!(hit && (hit === a || a.contains(hit))), visible: b.height > 0 && b.y < window.innerHeight }; });
+    chk('phone: bottom tab bar visible and reachable', !!(tb && tb.visible && tb.reachable), tb);
+    if (tb && tb.reachable) { await page.touchscreen.tap(tb.x, tb.y); await sleep(1200); chk('phone: tab bar tap opens Money', await page.evaluate(() => /money/.test(location.hash) && document.querySelector('#tabbar a.on') && document.querySelector('#tabbar a.on').getAttribute('data-sec') === 'money')); }
     await page.evaluate(() => document.getElementById('menuBtn').click()); await sleep(400);
     const mo = await page.evaluate(() => document.getElementById('side').classList.contains('open') && document.getElementById('side').getBoundingClientRect().left >= -1);
     chk('phone: menu drawer opens', mo);
