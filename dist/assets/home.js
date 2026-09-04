@@ -234,7 +234,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-(1-_mmr)/lev):live*(1+(1-_mmr)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
-    set('planLiq', money(liq)); set('planNotional', money(notional)); setBtn();
+    var _ld=(liq-live)/live*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); setBtn(); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
   // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
@@ -525,7 +525,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
-  function preloadTfs(sym,curTf){ if(window.innerWidth<721)return; /* mobile: skip the 6-TF prewarm (~150KB/symbol) — TF switches just fetch on demand (edge-cached); desktop keeps instant switching */ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
+  function preloadTfs(sym,curTf){ var all=['1','5','15','60','240','1440','10080'],list=all;
+    if(window.innerWidth<721){ /* mobile: prewarm only the two NEIGHBOURING timeframes (~50KB), not all six (~150KB) — measured 2026-09-05: TF switch p95 5.7s on phones because every switch fetched on demand */ var i=all.indexOf(curTf);list=[all[i-1],all[i+1]].filter(Boolean); }
+    list.forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   var _kq=0; // klines request ticket (2026-09-02): loadKlines + refreshKlinesQuiet share it — only the newest full-window response may paint
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;morePages=0;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted

@@ -75,7 +75,11 @@ const LB_PERIOD = 14 * 86400000, LB_ANCHOR = Date.UTC(2026, 6, 20);
 // and a trader needs GD_SEASON closes in the season to appear at all — so the board measures showing
 // up and staying green, not a single lucky trade repeated once a day.
 const GD_DAY = 3, GD_SEASON = 10;
-const SEASON_FRAMES = ['champion', 'deadeye', 'overdrive', 'tycoon'], SEASON_WEAR_MS = LB_PERIOD; // board-winner frames: worn from the grant (season settle) until the next season settles — ts refreshed on every win
+const SEASON_FRAMES = ['champion', 'deadeye', 'overdrive', 'tycoon'], SEASON_WEAR_MS = LB_PERIOD;
+const CHAT_HIST_MAX = 150; // room history kept in DO storage (was 60 = a few hours at 49 DAU; a morning visitor saw none of the night). 150 x <=~400 B stays far under the 128 KB per-key limit.
+// DO SQLite: an IN (...) with many bound parameters SILENTLY returns 0 rows (three incidents by 2026-09-05: users REF chip,
+// leaderboard names, ops All-accounts usernames). Every IN over a caller-sized list goes through this: fn(part, placeholders).
+function inChunks(list, fn, size) { const out = []; const n = size || 50; for (let i = 0; i < list.length; i += n) { const part = list.slice(i, i + n); const r = fn(part, part.map(() => '?').join(',')); if (r && r.length) for (const x of r) out.push(x); } return out; } // board-winner frames: worn from the grant (season settle) until the next season settles — ts refreshed on every win
 const SEASON_STATS_EPOCH = Date.UTC(2026, 7, 17); // owner 2026-08-16: from this Monday, USER-facing trading stats (profile card) show the current season only; before it nothing changes. Progress systems (XP, achievements, referrals, missions) and ops/admin views stay lifetime.
 function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.floor((now - LB_ANCHOR) / LB_PERIOD) * LB_PERIOD; }
 function mpcLiq(entry, lev, mmr, long) { return long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); }
@@ -10232,6 +10236,7 @@ async function handleTrade(url, request, env, ctx) {
   // a qualifying HYPE close via /api/trade/close earned no promo XP because this module never passed them).
   let _prm = []; try { _prm = await xpPromos(env); } catch (e) {}
   if (path === '/open' && request.method === 'POST') {
+    try { delete (globalThis.__botSyms || {})[uid]; } catch (e) {} // /positions symbol memo (30 s) — a new symbol must be priced on the very next poll from this isolate
     // light per-user rate limit: 20 opens/min (the count write is non-blocking — profiled 2026-07-24, the fill path pays only the read)
     const tR = Date.now();
     try { const rk = 'trl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); const putP = env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); if (ctx) ctx.waitUntil(putP.catch(() => {})); else await putP; } catch (e) {}
@@ -10266,6 +10271,7 @@ async function handleTrade(url, request, env, ctx) {
   }
   if (path === '/close' && request.method === 'POST') {
     if (!b.id) return jt({ error: 'id_required' }, 400);
+    try { delete (globalThis.__botSyms || {})[uid]; } catch (e) {}
     const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
     const match = seed && seed.positions ? seed.positions.filter(p => String(p.id) === String(b.id))[0] : null;
     if (!match) return jt({ error: 'not_found' }, 404);
@@ -10312,12 +10318,24 @@ async function handleTrade(url, request, env, ctx) {
     return jt(r);
   }
   if (path === '/positions') {
-    const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
-    const open = seed && seed.positions ? seed.positions.filter(p => p.status === 'open') : [];
-    const syms = Array.from(new Set(open.map(p => String(p.symbol || '').toUpperCase().replace(/USDT$/, '')))).slice(0, 20);
+    // Bots poll this ~19k times a day (vs 12 opens). It used to cost TWO UserStore round trips per call (one to learn the
+    // symbols, one to sweep with prices). Now the symbol list is remembered per uid for 30 s in this isolate, so a steady
+    // poll is ONE DO call; the position list itself is never cached (a bot must see its own open/close instantly). A symbol
+    // that appeared since the last refresh (open via another isolate) simply gets no price on that call and is swept next
+    // time or by the */10 cron sweep — the same as before for a price the exchange did not return.
+    const _sc = globalThis.__botSyms = globalThis.__botSyms || {}; const _hit = _sc[uid];
+    let syms = (_hit && Date.now() - _hit.t < 30000) ? _hit.syms : null;
+    let seed = null;
+    if (!syms) {
+      seed = await usersDO(env, '/botpositions', { uid, prices: {} });
+      const open = seed && seed.positions ? seed.positions.filter(p => p.status === 'open') : [];
+      syms = Array.from(new Set(open.map(p => String(p.symbol || '').toUpperCase().replace(/USDT$/, '')))).slice(0, 20);
+      _sc[uid] = { t: Date.now(), syms }; if (Object.keys(_sc).length > 2000) { for (const k of Object.keys(_sc).slice(0, 1000)) delete _sc[k]; }
+      if (!syms.length) return jt(seed || { positions: [] }); // nothing open: the seed IS the answer
+    }
     const prices = {};
     for (const sym2 of syms) { try { const pd2 = await fetchPriceCached(sym2); if (pd2 && +pd2.price > 0) { prices[sym2] = +pd2.price; prices[sym2 + 'USDT'] = +pd2.price; } } catch (e) {} }
-    const r = await usersDO(env, '/botpositions', { uid, prices }); // second call sweeps SL/TP/liq with fresh prices
+    const r = await usersDO(env, '/botpositions', { uid, prices }); // sweeps SL/TP/liq with fresh prices and returns the live list
     return jt(r || { positions: [] });
   }
   return jt({ error: 'not_found' }, 404);
@@ -15338,7 +15356,7 @@ export class ChatRoom {
     if (cp.endsWith('/reset')) { await this.state.storage.put('hist', []); this.broadcast({ type: 'history', messages: [] }); return new Response('cleared'); }
     if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
     if (cp.endsWith('/last')) { const h = (await this.state.storage.get('hist')) || []; const l = h.length ? h[h.length - 1] : null; return cj({ ts: l ? +l.ts || 0 : 0, n: h.length }); } // public: latest message ts + count → drives the "new messages" glow (no content)
-    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
+    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/poll')) { // ops-launched chat poll: POST {q,opts[]} starts, {close:1} closes (results stay pinned)
       let b = {}; try { b = await request.json(); } catch (e) {}
       if (b.close) { const pl = await this.state.storage.get('poll'); if (pl) { pl.closed = 1; await this.state.storage.put('poll', pl); this.broadcast({ type: 'poll', poll: { id: pl.id, q: pl.q, opts: pl.opts, votes: pl.votes, closed: 1 } }); } return cj({ ok: true }); }
@@ -15358,7 +15376,7 @@ export class ChatRoom {
       let hist = (await this.state.storage.get('hist')) || [];
       const seen = new Set(hist.map(x => x.ts + '|' + x.u));
       inc.forEach(x => { const k = x.ts + '|' + x.u; if (!seen.has(k)) { seen.add(k); hist.push({ u: String(x.u || 'anon').slice(0, 20), t: String(x.t).slice(0, 280), ts: +x.ts, ...(x.admin ? { admin: true } : {}) }); } });
-      hist.sort((a, b2) => a.ts - b2.ts); if (hist.length > 60) hist = hist.slice(-60);
+      hist.sort((a, b2) => a.ts - b2.ts); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX);
       await this.state.storage.put('hist', hist);
       this.broadcast({ type: 'history', messages: hist });
       return cj({ ok: true, count: hist.length });
@@ -15403,7 +15421,7 @@ export class ChatRoom {
       sess.last = now;
       const msg = { u: user, t: text, ts: now };
       let hist = (await self.state.storage.get('hist')) || [];
-      hist.push(msg); if (hist.length > 60) hist = hist.slice(-60);
+      hist.push(msg); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX);
       await self.state.storage.put('hist', hist);
       self.broadcast({ type: 'msg', message: msg, online: self.online() }); try { evPush(self.env, null, 'chatmsg', String((msg.u || '?')).slice(0, 20) + ': ' + String(msg.t || '').slice(0, 36), '').catch(function () {}); } catch (e) {}
       // MISSION QUALITY GATE (owner 2026-08-15): the chat missions used to count a CLIENT beacon — "." spam farmed them.
@@ -17241,8 +17259,8 @@ export class UserStore {
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 80);
       const names = (Array.isArray(b && b.names) ? b.names : []).map(x => String(x).slice(0, 24)).filter(Boolean).slice(0, 80);
       const byId = {}, byName = {};
-      if (ids.length) { const ph = ids.map(() => '?').join(','); try { this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...ids).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
-      if (names.length) { const ph = names.map(() => '?').join(','); try { this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...names).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
+      if (ids.length) { try { inChunks(ids, (part, ph) => this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
+      if (names.length) { try { inChunks(names, (part, ph) => this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...part)).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
       return this.j({ byId, byName });
     }
     if (path === '/signupsdaily') { // Funnel tab: new-account COUNT per UTC day, last 15 days (signups happen via /api/auth/verify, not /api/track, so the funnel can't read them from AE)
@@ -17756,7 +17774,7 @@ export class UserStore {
     }
     if (path === '/push/del') { sql.exec('DELETE FROM psubs WHERE endpoint=?', String(b.endpoint || '')); return this.j({ ok: true }); }
     if (path === '/push/has') { const aS = b.token ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', String(b.token), now)[0] : null; if (!aS) return this.j({ has: false }); return this.j({ has: this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', aS.user_id)[0].n > 0 }); }
-    if (path === '/push/byuid') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; if (!uids.length) return this.j({ subs: [] }); const ph = uids.map(() => '?').join(','); return this.j({ subs: this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid IN (' + ph + ')', ...uids) }); }
+    if (path === '/push/byuid') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; if (!uids.length) return this.j({ subs: [] }); return this.j({ subs: inChunks(uids, (part, ph) => this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid IN (' + ph + ')', ...part)) }); }
     if (path === '/username') { // user changes their OWN username (session-authenticated); enforces uniqueness
       const token = String(b.token || ''), uname = String(b.username || '').trim();
       const s = this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', token, now)[0];
@@ -18774,7 +18792,7 @@ export class UserStore {
     if (path === '/closefeed') { // public homepage feed: latest closed trades — manual closes AND liquidations — named active accounts only, premium flagged
       const rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, user_id FROM tradeev WHERE kind='close' ORDER BY id DESC LIMIT 40");
       const uids = [...new Set(rows.map(r => String(r.user_id)))];
-      const um = {}; if (uids.length) { try { this.rows('SELECT id,username,premium,status FROM users WHERE id IN (' + uids.map(() => '?').join(',') + ')', ...uids).forEach(u => { um[String(u.id)] = u; }); } catch (e) {} }
+      const um = {}; if (uids.length) { try { inChunks(uids, (part, ph) => this.rows('SELECT id,username,premium,status FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { um[String(u.id)] = u; }); } catch (e) {} }
       const out = [];
       for (const r of rows) {
         const u = um[String(r.user_id)]; if (!u || !u.username || (u.status && u.status !== 'active')) continue; // no anonymous / banned rows on a public surface
@@ -18786,7 +18804,7 @@ export class UserStore {
     if (path === '/duelfeed') { // public homepage feed: recent challenges / active duels / results, with premium flags so VIPs stand out
       const rows = this.rows("SELECT id,a_uid,b_uid,a_name,b_name,metric,status,stake,sym,winner,created,end_ts,dur FROM duels WHERE status IN ('open','active','done') ORDER BY created DESC LIMIT 26"); // v3 (owner 2026-08-14): OPEN posts are the product now, pending noise is gone
       const uids = new Set(); rows.forEach(d => { uids.add(String(d.a_uid)); uids.add(String(d.b_uid)); });
-      const prem = {}; if (uids.size) { const list = [...uids]; try { this.rows('SELECT id,username,premium FROM users WHERE id IN (' + list.map(() => '?').join(',') + ')', ...list).forEach(u => { prem[String(u.id)] = this._isPrem(u); }); } catch (e) {} }
+      const prem = {}; if (uids.size) { const list = [...uids]; try { inChunks(list, (part, ph) => this.rows('SELECT id,username,premium FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { prem[String(u.id)] = this._isPrem(u); }); } catch (e) {} }
       const out = rows.map(d => ({ id: d.id, a: d.a_name || '?', b: d.b_name || '?', metric: d.metric, status: d.status, stake: +d.stake || 0, sym: d.sym || '', dur: +d.dur || 604800000, winner: d.winner ? (String(d.winner) === String(d.a_uid) ? 'a' : 'b') : '', aPrem: !!prem[String(d.a_uid)], bPrem: !!prem[String(d.b_uid)], ts: d.created, end: d.end_ts || 0 }));
       return this.j({ duels: out });
     }
@@ -18972,16 +18990,15 @@ export class Community {
         if (!uid) return this.j({ posts: [], needLogin: true });
         const fl = this.rows('SELECT tuid FROM follows WHERE uid=?', uid).map(x => x.tuid);
         if (!fl.length) return this.j({ posts: [], noFollows: true });
-        const ph = fl.slice(0, 100).map(() => '?').join(',');
         if (before) { W.push('ts<?'); A.push(before); }
-        list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' AND uid IN (' + ph + ') ORDER BY ts DESC LIMIT ' + L, ...A, ...fl.slice(0, 100));
+        list = inChunks(fl.slice(0, 100), (part, ph) => this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' AND uid IN (' + ph + ') ORDER BY ts DESC LIMIT ' + L, ...A, ...part)).sort((a, b2) => (+b2.ts || 0) - (+a.ts || 0)).slice(0, L); // chunked IN (100 followed uids in one IN silently returned nothing) — merge + re-sort + re-limit
       } else { // trending: engagement-weighted, last 7 days (tops up with newest when quiet)
         W.push('ts>?'); A.push(now - 7 * 86400000);
         list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY (likes*3+ncom*4+views/8+pinned*50) DESC, ts DESC LIMIT ' + L, ...A);
         if (list.length < 6) { const seen = {}; list.forEach(p => { seen[p.id] = 1; }); let extra = cat ? this.rows('SELECT * FROM posts WHERE del=0 AND cat=? ORDER BY ts DESC LIMIT ' + L, cat) : this.rows('SELECT * FROM posts WHERE del=0 ORDER BY ts DESC LIMIT ' + L); list = list.concat(extra.filter(p => !seen[p.id])).slice(0, L); }
       }
       let likedSet = {};
-      if (uid && list.length) { const ks = list.map(p => uid + '|p:' + p.id); const ph2 = ks.map(() => '?').join(','); this.rows('SELECT k FROM likes WHERE k IN (' + ph2 + ')', ...ks).forEach(r => { likedSet[r.k.split('|')[1].slice(2)] = 1; }); }
+      if (uid && list.length) { const ks = list.map(p => uid + '|p:' + p.id); inChunks(ks, (part, ph2) => this.rows('SELECT k FROM likes WHERE k IN (' + ph2 + ')', ...part)).forEach(r => { likedSet[r.k.split('|')[1].slice(2)] = 1; }); }
       return this.j({ posts: list.map(p => { const o = this.pub(p); o.body = String(o.body || '').slice(0, 500); o.liked = !!likedSet[p.id]; return o; }) });
     }
     if (path === '/post' && request.method === 'GET') {
@@ -18995,7 +19012,7 @@ export class Community {
         out.liked = !!this.rows('SELECT k FROM likes WHERE k=?', uid + '|p:' + id)[0];
         out.marked = !!this.rows('SELECT k FROM marks WHERE k=?', uid + '|' + id)[0];
         out.following = !!this.rows('SELECT k FROM follows WHERE k=?', uid + '|' + p.uid)[0];
-        if (comments.length) { const ks = comments.map(c => uid + '|c:' + c.id); const ph = ks.map(() => '?').join(','); out.likedC = {}; this.rows('SELECT k FROM likes WHERE k IN (' + ph + ')', ...ks).forEach(r => { out.likedC[r.k.split('|')[1].slice(2)] = 1; }); }
+        if (comments.length) { const ks = comments.map(c => uid + '|c:' + c.id); out.likedC = {}; inChunks(ks, (part, ph) => this.rows('SELECT k FROM likes WHERE k IN (' + ph + ')', ...part)).forEach(r => { out.likedC[r.k.split('|')[1].slice(2)] = 1; }); }
       }
       return this.j(out);
     }
@@ -19055,8 +19072,7 @@ export class Community {
       if (!uid) return this.j({ posts: [] });
       const ids = this.rows('SELECT pid FROM marks WHERE uid=? ORDER BY ts DESC LIMIT 50', uid).map(x => x.pid);
       if (!ids.length) return this.j({ posts: [] });
-      const ph = ids.map(() => '?').join(',');
-      const posts = this.rows('SELECT * FROM posts WHERE id IN (' + ph + ') AND del=0', ...ids).sort((a, b2) => ids.indexOf(a.id) - ids.indexOf(b2.id));
+      const posts = inChunks(ids, (part, ph) => this.rows('SELECT * FROM posts WHERE id IN (' + ph + ') AND del=0', ...part)).sort((a, b2) => ids.indexOf(a.id) - ids.indexOf(b2.id));
       return this.j({ posts: posts.map(p => { const o = this.pub(p); o.body = String(o.body || '').slice(0, 500); return o; }) });
     }
     if (path === '/follow' && request.method === 'POST') {
