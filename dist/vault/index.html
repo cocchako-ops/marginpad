@@ -159,6 +159,7 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .fcard[data-tier="epic"]{--tc:#c792ff}
 .fcard[data-tier="legendary"]{--tc:#ffd75a}
 .fcard[data-tier="mythic"]{--tc:#ff5ad0}
+.fcard[data-tier="nation"]{--tc:#c2f64a}
 .fcard.tryon{border-color:var(--lime);box-shadow:0 0 0 1px rgba(194,246,74,.5),0 0 26px -10px rgba(194,246,74,.6)}
 /* name + price on one line; the price IS the buy control, so no separate button row in the resting state */
 .tryhit{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
@@ -186,6 +187,7 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .tier.legendary{color:#ffd75a;border-color:#7a6220}
 .tier.level{color:#7ee0ff;border-color:#2a5a6e}
 .tier.limited{color:#ff9a3a;border-color:#7a4a1a}
+.tier.nation{color:#c2f64a;border-color:#4b6a1a}
 .btn.gift{color:#c792ff;border-color:#5a3a85;font-size:11px}
 .sup-state{font-family:'Space Mono',monospace;font-size:11px;color:#7ee0ff;margin-top:6px}
 /* THE FITTING ROOM — the answer to "let me preview a frame on my own card before I pay for it".
@@ -321,6 +323,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     <button type="button" data-vfilter="owned" id="vfOwned" aria-pressed="false"><i class="vfbox"></i>Owned</button>
     <button type="button" data-vfilter="afford" id="vfAfford" aria-pressed="false" title="Only what your Ticks already cover"><i class="vfbox"></i>Can afford</button>
     <button type="button" data-vtab="frames">Frames</button>
+    <button type="button" data-vtab="nations">Nations</button>
     <button type="button" data-vtab="tickets">Ticket skins</button>
     <button type="button" data-vtab="backgrounds">Backgrounds</button>
     <button type="button" data-vtab="supply">Supply drop</button>
@@ -384,6 +387,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <h2>Vault frames</h2>
   <div class="h2s">Buy with Ticks you earned, or with your rewards balance. Ticks are never for sale — trading, streaks and lessons are the only way in. Balance purchases are final.</div>
   <div class="gal" id="galShop"></div>
+  </section>
+
+  <section data-vsec="nations" hidden>
+  <h2>Nations</h2>
+  <div class="h2s">Fly your colours. Twenty country frames cut from the flag itself, each with its emblem pinned to the edge of your trader card. $1.99 from your rewards balance, yours for good, and giftable to a compatriot.</div>
+  <div class="gal" id="galNations"></div>
   </section>
 
   <section data-vsec="tickets" hidden>
@@ -478,7 +487,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   var TRY=null,SEC_TRYABLE=true;
   // Items added in this drop. A returning trader should be able to see what is new without re-reading a
   // shop they already know, and a date-based rule would need a per-item timestamp the catalogue lacks.
-  var NEW_IDS={obsidian:1,quicksilver:1,prism:1,circuitry:1,ink:1,cathedral:1,slate:1,bone:1,moss:1,denim:1,
+  var NEW_IDS={nat_ng:1,nat_pk:1,nat_us:1,nat_in:1,nat_id:1,nat_rs:1,nat_de:1,nat_tr:1,nat_th:1,nat_ir:1,nat_ph:1,nat_za:1,nat_nl:1,nat_ca:1,nat_pl:1,nat_bd:1,nat_gb:1,nat_br:1,nat_vn:1,nat_ua:1,obsidian:1,quicksilver:1,prism:1,circuitry:1,ink:1,cathedral:1,slate:1,bone:1,moss:1,denim:1,
     steel:1,abyss:1,wine:1,blueprint:1,storm:1,phosphor:1,dusk:1,petrol:1,
     tkt_carbon:1,tkt_thermal:1,tkt_ledger:1,tkt_circuit:1,tkt_marble:1,tkt_titanium:1,tkt_phosphor:1,tkt_obsidian:1,
     bg_topo:1,bg_rain:1,bg_ridge:1,bg_metro:1,bg_trench:1,bg_radar:1,bg_ember:1,bg_deepfield:1};
@@ -708,7 +717,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   }
   // One ordering function for every gallery. Rarest-first is the default because a shop that opens on its
   // cheapest goods reads like a clearance rack, and the flagship frames are the reason to visit.
-  var TIER_RANK={mythic:0,legendary:1,epic:2,rare:3,common:4};
+  var TIER_RANK={mythic:0,legendary:1,epic:2,nation:2,rare:3,common:4};
   function sortMode(){var s=document.getElementById('vsort');return s?s.value:'tier';}
   function sortItems(a){
     var m=sortMode(),v=a.slice();
@@ -721,10 +730,16 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     return v;
   }
   function renderShopGal(){
-    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return (it.ticks||it.cents)&&!it.kind;}));
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return (it.ticks||it.cents)&&!it.kind&&it.group!=='nation';}));
     document.getElementById('galShop').innerHTML=items.map(function(it){
       return shopCard(it,{equipped:ST&&ST.equipped});
     }).join('');
+  }
+  function renderNations(){ // country frames: catalogue order (top countries first) unless the user picks a sort
+    var all=((ST&&ST.items)||[]).filter(function(it){return it.group==='nation';});
+    var items=sortMode()==='tier'?all:sortItems(all);
+    var g=document.getElementById('galNations');if(!g)return;
+    g.innerHTML=items.map(function(it){return shopCard(it,{equipped:ST&&ST.equipped});}).join('');
   }
   function tktPrev(id){return '<div class="tprev'+(id?' tsk-'+id:'')+'"><div class="tp-h"><b>BTCUSDT</b><span class="tp-long">LONG</span><span>25x</span></div><div class="tp-roe">+184.6%</div><div class="tp-pnl">+$462.10</div></div>';}
   function renderTkt(){
@@ -848,7 +863,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       document.getElementById('signin').hidden=!!d.signedIn;
       if(d.signedIn){
       }
-      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();renderTicksHow();
+      renderLadder();renderLevelGal();renderShopGal();renderNations();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();renderTicksHow();
       try{var qt=new URLSearchParams(location.search).get('try');if(qt&&!TRY&&itemById(qt))tryOn(qt);}catch(e){} /* a shared look opens already worn */
       try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
       if(d.signedIn){
@@ -916,7 +931,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     }
   });
   (function(){ /* section tabs: pick one, see only it (owner: no more mile-long scroll) */
-    var SECS=['frames','tickets','backgrounds','supply','earned','levels','ticks'];
+    var SECS=['frames','nations','tickets','backgrounds','supply','earned','levels','ticks'];
     function show(k){
       if(SECS.indexOf(k)<0)k='frames';
       document.querySelectorAll('[data-vsec]').forEach(function(sc){sc.hidden=sc.getAttribute('data-vsec')!==k;});
@@ -926,7 +941,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       try{history.replaceState(null,'','#'+k);}catch(e){}
       // The fitting room dresses a profile card, so it only belongs where trying something on changes what
       // you are looking at. Ticket skins restyle a P&L receipt and the supply drop has no visual at all.
-      SEC_TRYABLE=(k==='frames'||k==='backgrounds'||k==='earned'||k==='levels');
+      SEC_TRYABLE=(k==='frames'||k==='nations'||k==='backgrounds'||k==='earned'||k==='levels');
       if(!SEC_TRYABLE)TRY=null;
       try{renderFit();}catch(e){}
     }
@@ -967,7 +982,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       var a=document.getElementById('vfAfford');if(a)
       a.addEventListener('click',function(){AFFORD_ONLY=!AFFORD_ONLY;try{localStorage.setItem('mp_vault_afford',AFFORD_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});
       var so=document.getElementById('vsort');if(so)
-      so.addEventListener('change',function(){renderShopGal();renderTkt();renderBg();applyOwnedFilter();});
+      so.addEventListener('change',function(){renderShopGal();renderNations();renderTkt();renderBg();applyOwnedFilter();});
     })();
   document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
     var init=(location.hash||'').replace('#','');
