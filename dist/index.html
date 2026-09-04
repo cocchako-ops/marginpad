@@ -371,6 +371,40 @@
   .lb-reset b{color:var(--amber);font-variant-numeric:tabular-nums;}
   /* ---- switchable 3-board prize showcase (locked preview of next week) ---- */
   .lbpz{margin-top:15px;}
+/* ===== board rail: one snap-scrolling picker, used by BOTH leaderboard widgets (2026-09-05) ===== */
+.mprail{position:relative;--railbg:#0d1014}
+/* ROOT FIX (2026-09-05): .lb-card sits in a grid cell and grid items default to min-width:auto, so the card grew to
+   its widest CONTENT (604px inside a 354px cell on a phone) instead of letting the rail scroll. Every rail ancestor may
+   now shrink; the rail is what scrolls. This is what made the card widen each time a board was added. */
+.lb-card{min-width:0}
+.lb-card>*{min-width:0;max-width:100%}
+.mprail,.mprail-s{min-width:0;max-width:100%}
+
+.mprail-s{display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;padding:4px;margin:0;scroll-padding:0 4px}
+.mprail-s::-webkit-scrollbar{display:none}
+.mprail-s>*{flex:0 0 auto;scroll-snap-align:start}
+.mprail-f{position:absolute;top:0;bottom:7px;width:38px;pointer-events:none;z-index:3;opacity:0;transition:opacity .22s}
+.mprail-f.l{left:0;background:linear-gradient(90deg,var(--railbg),rgba(0,0,0,0))}
+.mprail-f.r{right:0;background:linear-gradient(270deg,var(--railbg),rgba(0,0,0,0))}
+.mprail.can-l .mprail-f.l,.mprail.can-r .mprail-f.r{opacity:1}
+.mprail-f{display:none}/* replaced by a mask: a colour-matched overlay cannot sit on a gradient card, a mask fades the CONTENT itself and works on any background */
+.mprail.can-r .mprail-s{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+.mprail.can-l .mprail-s{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px);mask-image:linear-gradient(90deg,transparent,#000 40px)}
+.mprail.can-l.can-r .mprail-s{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.mprail-bar{height:2px;border-radius:2px;background:rgba(255,255,255,.07);margin:5px 4px 0;overflow:hidden}
+.mprail-bar i{display:block;height:100%;width:30%;border-radius:2px;background:currentColor;opacity:.5;transition:transform .12s linear,width .2s}
+.mprail.full .mprail-bar{visibility:hidden}
+.lbpz-tabs{display:flex;gap:7px;background:rgba(0,0,0,.28);border:1px solid rgba(255,215,90,.16);border-radius:12px;padding:4px}
+.lbpz-tab{flex:0 0 auto;min-width:96px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 12px;border:none;border-radius:9px;background:rgba(255,255,255,.03);color:#b9a86a;font:700 10.5px/1.15 'Space Mono',ui-monospace,monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:.16s;white-space:nowrap;text-align:left}
+.lbpz-tab .pz{font:700 13px/1 'Space Mono',ui-monospace,monospace;color:#ffd75a;letter-spacing:0}
+.lbpz-tab.on{background:linear-gradient(180deg,#ffdf7a,#ffc13c);color:#2a1e00;box-shadow:0 4px 14px -6px rgba(255,215,90,.75)}
+.lbpz-tab.on .pz{color:#3a2a00}
+.mprail.pz-rail{color:#ffd75a;--railbg:#121016}
+.lb-tabs{display:flex;gap:8px;margin:0}
+.lb-tab{flex:0 0 auto;padding:8px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#95a1b0;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:.15s;white-space:nowrap}
+.mprail.lb-rail{color:#c2f64a;--railbg:#0e1116;margin:12px 0 6px}
+@media(max-width:560px){.lbpz-tab{min-width:88px;padding:8px 10px}.lb-tab{padding:8px 11px;font-size:10.5px}}
+
   .lbpz-tabs{display:flex;gap:5px;background:rgba(0,0,0,.28);border:1px solid rgba(255,215,90,.16);border-radius:12px;padding:4px;}
   .lbpz-tab{flex:1;padding:8px 4px;border:none;border-radius:9px;background:none;color:#b9a86a;font:700 10.5px/1.15 'Space Mono',ui-monospace,monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:.16s;white-space:nowrap;}
   .lbpz-tab:hover{color:#ffd75a;}
@@ -1009,18 +1043,21 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Four boards — Green days, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Five boards — Green days, Highest ROE, Win rate, Season XP and the Gold-only Gold Room — Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
-      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 4 boards · win real USDT</div>
-      <div class="t-title" style="font-size:22px">Four boards, bigger prizes</div>
-      <div class="t-sub">Four season boards — <b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
+      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 5 boards · win real USDT</div>
+      <div class="t-title" style="font-size:22px">Five boards, bigger prizes</div>
+      <div class="t-sub"><b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the <b>top 5</b> in real USDT when the 14-day season ends. The new <b>Gold Room</b> is for Gold members only and runs for the title this season — prize money starts next season. Pick your game:</div>
       <div class="lbpz">
-        <div class="lbpz-tabs" id="lbpzTabs">
-          <button type="button" class="lbpz-tab on" data-pz="roe">Green days</button>
-          <button type="button" class="lbpz-tab" data-pz="roe2">Highest ROE</button>
-          <button type="button" class="lbpz-tab" data-pz="wr">Win rate</button>
-          <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
+        <div class="mprail pz-rail" data-rail><span class="mprail-f l"></span><span class="mprail-f r"></span>
+          <div class="lbpz-tabs mprail-s" id="lbpzTabs">
+            <button type="button" class="lbpz-tab on" data-pz="roe">Green days<span class="pz" data-pzv="roe">$25</span></button>
+            <button type="button" class="lbpz-tab" data-pz="roe2">Highest ROE<span class="pz" data-pzv="roe2">$30</span></button>
+            <button type="button" class="lbpz-tab" data-pz="wr">Win rate<span class="pz" data-pzv="wr">$67</span></button>
+            <button type="button" class="lbpz-tab" data-pz="xp">Season XP<span class="pz" data-pzv="xp">$30</span></button>
+            <button type="button" class="lbpz-tab" data-pz="gold">Gold Room<span class="pz" data-pzv="gold">TITLE</span></button>
+          </div><div class="mprail-bar"><i></i></div>
         </div>
         <div class="lbpz-panel" id="lbpzPanel"></div>
         <button type="button" class="lbr-open" id="lbRulesOpen">See rules &mdash; how each board counts</button>
@@ -1036,7 +1073,7 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="green">Green days</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
+      <div class="mprail lb-rail" data-rail><span class="mprail-f l"></span><span class="mprail-f r"></span><div class="lb-tabs mprail-s"><button type="button" class="lb-tab on" data-lbm="green">Green days</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab" data-lbm="gold">Gold Room</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div><div class="mprail-bar"><i></i></div></div>
       <div class="lb-note" id="lbNote">All <b>four boards</b> pay the top 5 in real USDT every 14-day season. <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
@@ -1239,6 +1276,37 @@
     document.addEventListener('keydown',onKey);
     document.body.appendChild(w);
   }
+  /* Board rail: edge fades, a position hairline, and "scroll the chosen chip into view". Every selection path
+     (pointer, keyboard, programmatic) goes through window.mpRailShow. A rail with nothing to scroll hides its bar. */
+  (function(){
+    if(window.mpRailShow)return;
+    function sync(r){
+      var s=r.querySelector('.mprail-s');if(!s)return;
+      var max=s.scrollWidth-s.clientWidth;
+      r.classList.toggle('full',max<=2);
+      r.classList.toggle('can-l',s.scrollLeft>4);
+      r.classList.toggle('can-r',s.scrollLeft<max-4);
+      var bar=r.querySelector('.mprail-bar i');
+      if(bar&&max>2){var vis=Math.max(14,Math.min(100,s.clientWidth/s.scrollWidth*100));bar.style.width=vis+'%';bar.style.transform='translateX('+(s.scrollLeft/max*(100/vis*100-100))+'%)';}
+    }
+    function wire(r){
+      var s=r.querySelector('.mprail-s');if(!s||s.__railed)return;s.__railed=1;
+      s.addEventListener('scroll',function(){sync(r);},{passive:true});
+      window.addEventListener('resize',function(){sync(r);});
+      sync(r);setTimeout(function(){sync(r);},400);
+    }
+    window.mpRailShow=function(el){
+      try{
+        var s=el&&el.closest?el.closest('.mprail-s'):null;if(!s)return;
+        var er=el.getBoundingClientRect(),sr=s.getBoundingClientRect();
+        if(er.left<sr.left+6)s.scrollLeft-=(sr.left+6-er.left);
+        else if(er.right>sr.right-6)s.scrollLeft+=(er.right-(sr.right-6));
+      }catch(e){}
+    };
+    function init(){document.querySelectorAll('[data-rail]').forEach(wire);}
+    if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+    setTimeout(init,1200);
+  })();
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
@@ -1249,7 +1317,7 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='green'?' pay':'');
-        note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
+        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only, ranked by winning trades. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
@@ -1267,6 +1335,12 @@
       var xt=((d&&d.topXp)||[]).slice(0,15);
       el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this season',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
         :'<div class="lb-empty">No XP earned yet this season — trade, learn in the Academy, and complete missions to climb.</div>';
+      lbAfter(el);return;
+    }
+    if(lbMode==='gold'){
+      var gt=((d&&d.topGold)||[]).slice(0,15);
+      el.innerHTML=gt.length?gt.map(function(t,i){return lbRow(i,t.who,((+t.l||0)+'L'),(+t.w||0)+((+t.w||0)===1?' win':' wins'),'up');}).join('')
+        :'<div class="lb-empty">No Gold member has a qualifying win yet this season. Reach Gold (12,000 XP) to enter the room.</div>';
       lbAfter(el);return;
     }
     var st=((d&&d.topGreen)||[]).slice(0,15);
@@ -1453,7 +1527,7 @@
     draw();setInterval(function(){if(!document.hidden)draw();},20000);
   })();
   document.addEventListener('keydown',function(e){if(e.key==='Escape')lbCloseModal();});
-  document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
+  document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');if(window.mpRailShow)window.mpRailShow(b);document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
     lbData=d;lbRender();
     var pz=(d&&d.prizes)||[35,20,10];
@@ -1474,7 +1548,8 @@
       roe:{name:'Green days',pool:25,p:[10,6,4,3,2],live:true,desc:"Every day of the season you finish in profit counts as one green day — the trader with the most of them wins. A day needs at least 3 closed trades to turn green, you need 10 closed trades in the season to rank, and you have to be up on the season overall. It is the one board you cannot win in a single session."},
       roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season — server-verified trades only. One well-timed call can top it, on any account size."},
       wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
-      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
+      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."},
+      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold members only. The most WINNING trades of the 14-day season takes it — every closed ticket that finished in profit counts as one win. The same rules the win-rate board is paid on apply, so tiny scalps do not pad it: a win must clear +5% ROE on a real 0.2% price move, on at least $1 of margin, server-settled, and partial closes of one position count once. Reach Gold (12,000 XP) to enter."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
     var START=seasonEnd();
@@ -1484,17 +1559,19 @@
       var b=PZ[cur],rows='';
       for(var i=0;i<b.p.length;i++){var r=i+1,lbl=r+(r===1?'st':r===2?'nd':r===3?'rd':'th');rows+='<div class="lbpz-row p'+r+'"><span class="m">'+r+'</span><span class="l">'+lbl+' place</span><span class="v">$'+b.p[i]+'</span></div>';}
       var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge"> Next season</span>';
+      if(b.gold&&!b.p.length){rows='<div class="lbpz-row p1"><span class="m">!</span><span class="l">No prizes this season</span><span class="v">$0</span></div>';}
       var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');
+      if(b.gold&&!b.p.length)foot='This season runs for the title only — <b>prize money starts next season</b> · <b>'+ctd()+'</b>';
       panel.innerHTML='<div class="lbpz-name">'+b.name+badge+'</div>'
-        +'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>'
+        +(b.gold&&!b.p.length?'<div class="lbpz-pool">TITLE<small>no prize pool this season</small></div>':'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>')
         +'<div class="lbpz-desc">'+b.desc+'</div>'
         +'<div class="lbpz-rows">'+rows+'</div>'
         +'<div class="lbpz-count">'+foot+'</div>';
     }
-    tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
+    tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');if(window.mpRailShow)window.mpRailShow(t);for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
     // keep all 3 boards' prizes in sync with the LIVE reward config (owner tunes them in mp-ops Settings) — set from /api/reward/lb below
     function setArr(bk,pz){if(!Array.isArray(pz))return;var a=pz.map(function(x){return Math.round(+x||0);});while(a.length&&a[a.length-1]===0)a.pop();if(!a.length)return;PZ[bk].p=a;PZ[bk].pool=a.reduce(function(s,x){return s+x;},0);}
-    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.green||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
+    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.green||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);setArr('gold',bp.gold);try{for(var k in PZ){var c=document.querySelector('[data-pzv="'+k+'"]');if(c)c.textContent=(PZ[k].gold&&!PZ[k].p.length)?'TITLE':('$'+PZ[k].pool);}}catch(e){}render();};
     render();setInterval(render,60000);
   })();
 
@@ -1750,7 +1827,7 @@
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=8fe4de15"></script>
+<script defer src="/assets/mp-trade.js?v=06cf9ed2"></script>
 <script defer src="/assets/mp-auth.js?v=94228f34"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 

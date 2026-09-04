@@ -530,8 +530,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function setOnline(n){/* online count removed per owner */}
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
- var LB_META={1:{t:'Green days',k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:'Best win rate',k:'topWr'},3:{t:'Weekly XP',k:'topXp'}};
-  function showLeaderboard(board){board=(board===2||board===3||board===4)?board:1;var meta=LB_META[board];
+ var LB_META={1:{t:'Green days',k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:'Best win rate',k:'topWr'},3:{t:'Weekly XP',k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
+  function showLeaderboard(board){board=(board===2||board===3||board===4||board===5)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['','',''];
       var html='<b style="color:#c2f64a">'+meta.t+' · this season</b><br>';
@@ -540,11 +540,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
         else if(board===4)val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
-        else val='<b style="color:#2ebd85">$'+(+x.bankUsd||0).toLocaleString('en-US',{maximumFractionDigits:0})+'</b>';
+        else if(board===5)val='<b style="color:#ffcf3f">'+(+x.w||0)+((+x.w||0)===1?' win':' wins')+'</b> <span style="color:#7f8893">('+(+x.l||0)+'L)</span>';else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?' green day':' green days')+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
  html+='<br><span style="color:#ffce8a;font-size:11.5px"> 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
- html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> green days · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · <b>/leaderboard4</b> ROE · members only, prizes paid in USDT each 14-day season</span>';
+ html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> green days · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · <b>/leaderboard4</b> ROE · <b>/leaderboard5</b> Gold Room · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }

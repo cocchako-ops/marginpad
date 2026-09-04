@@ -8711,6 +8711,10 @@ async function botLog(env, cmd, from) {
 // Open time of a trade from its id: server/bot ids are 'srv'|'bot' + Date.now() in base36 (8 chars) + a random
 // tail, client ids are the decimal ms timestamp + '_' + random. Survives the tradeev prune and the journal trim.
 function tradeOpenTs(id) { id = String(id || ''); let m = /^(?:srv|bot)([0-9a-z]{8})/.exec(id); let t = m ? parseInt(m[1], 36) : NaN; if (!isFinite(t)) { m = /^(\d{13})_/.exec(id); t = m ? +m[1] : NaN; } return (isFinite(t) && t > 1.6e12 && t < Date.now() + 86400000) ? t : null; }
+// GOLD ROOM (owner 2026-09-05): the Gold-only "most winning trades" board ships mid-season and pays NOTHING for the
+// season it landed in — the owner's call. The first payable season is the one starting here; payWeeklyPrizes refuses
+// to pay any earlier season, so no back-pay is possible even if prizes are configured today.
+const GOLD_LB_START = Date.UTC(2026, 8, 14); // 2026-09-14 00:00 UTC — the season after the one running when it shipped
 const LB_V2_START = Date.UTC(2026, 6, 20); // 2026-07-20 00:00 UTC — the Monday the 3-board format goes live; rules below apply only from this week on
 const SRV_LB_START = Date.UTC(2026, 6, 27); // P0 phase 3: first Monday when ONLY server-filled+server-closed (src:'srv' + sc) trades count on the paid board
 const SPOT_LB_START = Date.UTC(2026, 7, 3); // owner 2026-08-03: from this season the FIRST paid board is Highest Demo-Spot BANK balance (replaces Highest ROE; prize amounts stay in cfg.lbRoe)
@@ -9756,8 +9760,8 @@ async function rewardCfg(env) {
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
-  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]); // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, raw: m };
+  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]); // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -9932,11 +9936,11 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
- const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
+ const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
-  const achieveTxt = board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
+  const achieve = board === 'gold' ? ('<b>' + (info.w || 0) + ' winning trade' + ((info.w === 1) ? '' : 's') + '</b> this season') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'gold' ? ((info.w || 0) + ' winning trades this season') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -9979,7 +9983,7 @@ async function payWeeklyPrizes(env) {
     const we = ws + LB_PERIOD;
     let ud = {};
     try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=40')); ud = await ur.json(); } catch (e) {}
-    const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [], greenBoard = (ud && ud.green) || [];
+    const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [], greenBoard = (ud && ud.green) || [], goldBoard = (ud && ud.gold) || [];
     const banned = {};
     try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
     const notB = x => x && x.uid && !banned[x.uid];
@@ -10016,6 +10020,14 @@ async function payWeeklyPrizes(env) {
       await grantSeasonFrame(xpTop[0], 'overdrive', 'XP');
       push(wrTop, cfg.lbWr, 'wr', x => ({ name: x.name || '', wr: Math.round(x.wr * 100) }));
       push(xpTop, cfg.lbXp, 'xp', x => ({ name: x.name || '', xp: +x.xp || 0 }));
+      // GOLD ROOM: pays only from GOLD_LB_START (the season after it shipped) and only once prizes are set in
+      // Settings — cfg.lbGold defaults to zeros and `push` skips a zero, so nothing can be paid by accident, and an
+      // earlier season can never be back-paid even if the cron re-runs on it.
+      if (ws >= GOLD_LB_START) {
+        const goldTop = goldBoard.filter(x => notB(x) && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.w || 0) > 0).slice(0, 5)
+          .map(x => ({ uid: String(x.uid).indexOf('u:') === 0 ? x.uid : 'u:' + x.uid, name: x.name, w: +x.w || 0, l: +x.l || 0 }));
+        push(goldTop, cfg.lbGold, 'gold', x => ({ name: x.name || '', w: x.w, l: x.l }));
+      }
     }
     let paidOut = [], payOk = payload.length === 0; // nothing to pay = trivially settled
     if (payload.length) {
@@ -12437,7 +12449,7 @@ async function handleReward(url, request, env) {
  // table but gates on 'moonEnabled', which stays.
  for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
  for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'redditUsd', 'redditMaxUsd', 'referralUsd', 'moonUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k]; /* 'exsignUsd' dropped 2026-08-20 — retired system, see the boolean list above */
-      for (const k of ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
+      for (const k of ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
       // CONFIG AUDIT (2026-08-03, the silent $5-claim/$200-cap incident): every change to the money config
@@ -12455,7 +12467,7 @@ async function handleReward(url, request, env) {
       } catch (e) {}
       return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2) } });
     }
-    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2 } });
+    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold } });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -12494,7 +12506,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
- const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2 }; // (unchanged) — reward config snapshot passed to the DO
+ const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold }; // (unchanged) — reward config snapshot passed to the DO
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -12558,10 +12570,10 @@ async function handleReward(url, request, env) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
-        let board = [], xpBoard = [], greenBoard = [];
+        let board = [], xpBoard = [], greenBoard = [], goldBoard = [];
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40'));
-          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || [];
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || [];
         }
         const banned = {};
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
@@ -12583,12 +12595,16 @@ async function handleReward(url, request, env) {
         // site in weeks; this one only moves when you come back and close the day green.
         const topGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0)
           .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen });
+        // GOLD ROOM: Gold-level members only, ranked by winning trades. `goldPaidFrom` is the first season that pays —
+        // the client shows the "no prizes this season" line from it instead of hard-coding a date.
+        const topGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.w || 0) > 0)
+          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, w: +x.w || 0, l: +x.l || 0 }));
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
     let out = bodyText;
- try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone — no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
+ try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone — no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board — DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel — same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -18227,6 +18243,26 @@ export class UserStore {
           green.sort((a, b) => (b.days - a.days) || (b.pnl - a.pnl) || (b.closes - a.closes));
         }
       } catch (e) {}
+      // GOLD ROOM (owner 2026-09-05): a Gold-only board ranked by the NUMBER OF WINNING TRADES this season.
+      // It reuses `tev` — the exact win count the win-rate board is paid on — so every guard already applies:
+      // server-settled closes only (via<>'client'), the ticket must have been OPENED inside the season, >= $1
+      // margin, a win must clear +5% ROE and a 0.2% real price move, partial closes fold into one ticket, and
+      // clone chains (same symbol+side inside 10 minutes) count once. Entry is the Gold level, which is the perk
+      // /levels has always promised as "Entry to Gold-only competitions".
+      const gold = [];
+      try {
+        const gW = Object.keys(tev).filter(u => (tev[u].w || 0) > 0);
+        if (gW.length) {
+          const gMin = (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min;
+          const gInfo = {};
+          inChunks(gW, (part, ph) => this.rows("SELECT id, username, COALESCE(xp,0) xp FROM users WHERE id IN (" + ph + ") AND (status IS NULL OR status='active') AND username IS NOT NULL AND username!=''", ...part)).forEach(u => { gInfo[String(u.id)] = u; });
+          for (const u of gW) {
+            const i9 = gInfo[u]; if (!i9 || (+i9.xp || 0) < gMin) continue;
+            gold.push({ uid: 'u:' + u, name: String(i9.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), w: tev[u].w || 0, l: tev[u].l || 0 });
+          }
+          gold.sort((a, b) => (b.w - a.w) || (a.l - b.l) || (a.name < b.name ? -1 : 1)); // most wins, then fewest losses; name only as a stable tie-break
+        }
+      } catch (e) {}
       for (const r of rows) {
         let arr = []; try { arr = JSON.parse(r.json); } catch (e) {}
         if (!Array.isArray(arr)) continue;
@@ -18313,7 +18349,7 @@ export class UserStore {
         xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, limit)
           .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
       } catch (e) {}
-      return this.j({ top: best.slice(0, limit), xp, green: green.slice(0, limit) });
+      return this.j({ top: best.slice(0, limit), xp, green: green.slice(0, limit), gold: gold.slice(0, limit) });
     }
     if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
