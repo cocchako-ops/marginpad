@@ -12620,7 +12620,7 @@ async function handleReward(url, request, env) {
       const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list' || path === '/moonsign/list' || path === '/xengage/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
       if (Array.isArray(arr) && arr.length) {
         const prof = await resolveProfiles(env, arr.map(e => e.address));
-        arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; } });
+        arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } }); // faucet rows minted from an account carry no device/country of their own — borrow the user's
         txt = JSON.stringify(data);
       }
     } catch (e) {}
@@ -17170,7 +17170,12 @@ export class UserStore {
     if (path === '/profiles') { // internal: batch account-id → {username,email} for the admin reward views
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x)).filter(Boolean).slice(0, 600);
       const out = {};
-      if (ids.length) { const ph = ids.map(() => '?').join(','); try { this.rows('SELECT id,email,username,tg_chat FROM users WHERE id IN (' + ph + ')', ...ids).forEach(u => { out[u.id] = { username: u.username || '', email: u.email || '', tg: !!u.tg_chat }; }); } catch (e) {} }
+      // CHUNKED: one IN (...) with hundreds of bound params silently returns 0 rows in DO SQLite (CLAUDE.md gotcha) — the ops
+      // "All accounts" list showed "user eea32a0c · ?" for everyone because of exactly this (owner report 2026-09-05)
+      for (let i = 0; i < ids.length; i += 60) {
+        const part = ids.slice(i, i + 60), ph = part.map(() => '?').join(',');
+        try { this.rows('SELECT id,email,username,tg_chat,dev,cc FROM users WHERE id IN (' + ph + ')', ...part).forEach(u => { out[u.id] = { username: u.username || '', email: u.email || '', tg: !!u.tg_chat, dev: u.dev || '', cc: u.cc || '' }; }); } catch (e) {}
+      }
       return this.j({ profiles: out });
     }
     if (path === '/rewarduse') { // internal (rewards-ROI measurement): per-uid product signal — paper-trade count (utrades.n), any non-pageview interaction, and affiliate clicks. Full small scans into maps (no IN → no bound-param cap gotcha).
