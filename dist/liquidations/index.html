@@ -76,7 +76,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidations","item":"https://marginpad.io/liquidations/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much crypto is liquidated in 24 hours?","acceptedAnswer":{"@type":"Answer","text":"It swings with volatility. Quiet days clear tens of millions of dollars across all perpetual futures markets; a sharp move can clear more than a billion in a single day. The live figure on this page is measured continuously from exchange liquidation websockets and carries its own timestamp."}},{"@type":"Question","name":"Why do liquidation trackers show different numbers?","acceptedAnswer":{"@type":"Answer","text":"Exchanges publish forced closes at different granularity, some batch cascades into single events, and feeds throttle under exactly the load that produces the most liquidations. Trackers that model the missing data report higher totals than trackers that only count observed events. MarginPad counts observed events only, which puts our figures at the conservative end."}},{"@type":"Question","name":"Are stop-losses counted as liquidations?","acceptedAnswer":{"@type":"Answer","text":"No. A stop-loss is a voluntary exit you placed yourself; a liquidation is a forced close executed by the exchange when margin can no longer cover the loss. Only the second appears on a liquidation feed. The totals here also exclude options, dated futures and on-chain lending liquidations."}},{"@type":"Question","name":"Which exchange has the most liquidations?","acceptedAnswer":{"@type":"Answer","text":"It changes daily. Binance is usually largest by absolute size because it carries the most open leverage, but share moves sharply during cascades. The per-venue breakdown with the long and short split is at marginpad.io/liquidations/by-exchange/."}},{"@type":"Question","name":"Can I get liquidation data as a free API?","acceptedAnswer":{"@type":"Answer","text":"Yes, keyless and CORS-enabled: /api/v1/liquidations for market totals, /api/v1/venues for the per-exchange breakdown, /api/v1/liquidations/live for individual recent events and /api/v1/clusters for the heatmap bands."}}]}</script>
 
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -170,6 +170,6 @@
   function load(){fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
   load();setInterval(load,60000);
 })();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

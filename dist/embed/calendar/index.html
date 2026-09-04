@@ -37,7 +37,7 @@ body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-seri
 .ft{margin-top:auto;padding-top:8px;font-family:Consolas,monospace;font-size:9.5px;color:#5c6570}
 .ft a{color:#c2f64a;text-decoration:none;font-weight:700}
 </style>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head><body>
 <div class="h"><b>Crypto <i>Calendar</i></b><span id="mo">—</span></div>
 <div class="g" id="grid"></div>
@@ -62,5 +62,5 @@ body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-seri
     document.getElementById('next').innerHTML=fut?('Next: <b>'+String(fut.title).replace(/</g,'&lt;')+'</b> — in '+Math.ceil((fut.ts-Date.now())/86400000)+'d'):'Quiet month ahead.';
   }).catch(function(){document.getElementById('next').textContent='';});
 })();
-</script><script defer src="/assets/mp-nav.js"></script>
+</script><script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body></html>

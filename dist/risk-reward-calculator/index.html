@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Risk-Reward Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/risk-reward-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Risk-Reward Calculator","item":"https://marginpad.io/risk-reward-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is a higher R:R always better?","acceptedAnswer":{"@type":"Answer","text":"No — distant targets hit less often, so win rate falls as R:R rises. The product (expectancy) is what matters."}},{"@type":"Question","name":"Should I move the stop to break-even?","acceptedAnswer":{"@type":"Answer","text":"It locks a free trade but knocks out positions that would have reached target — test in your journal; for many strategies it reduces expectancy despite feeling safer."}},{"@type":"Question","name":"Where should the target sit?","acceptedAnswer":{"@type":"Answer","text":"At a level the market has a reason to reach: prior highs, liquidation clusters (see the heatmap), measured moves — then take only setups above your R:R threshold."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,st=+document.getElementById('stop').value,tg=+document.getElementById('target').value,p=+document.getElementById('pos').value;var r=document.getElementById('res');if(!(en>0&&st>0&&tg>0&&p>0)){r.innerHTML='';return;}var risk=Math.abs(en-st)/en*p,rew=Math.abs(tg-en)/en*p,rr=risk>0?rew/risk:0,be=1/(1+rr)*100;r.innerHTML='<div class="rrow big"><span class="k">Risk : Reward</span><span class="v">1 : '+rr.toFixed(2)+'</span></div><div class="rrow"><span class="k">Dollar risk at stop</span><span class="v dn">-'+risk.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Dollar reward at target</span><span class="v up">+'+rew.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+be.toFixed(1)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

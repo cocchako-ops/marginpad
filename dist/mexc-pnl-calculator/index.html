@@ -54,7 +54,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate PnL on MEXC?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size for a long, or (entry - exit) x size for a short. ROE multiplies the price ROI by your leverage."}},{"@type":"Question","name":"What is ROE on MEXC futures?","acceptedAnswer":{"@type":"Answer","text":"ROE is the return on the margin you posted, amplified by leverage. A 10% move at 10x leverage is roughly a 100% return on margin."}},{"@type":"Question","name":"Do MEXC fees reduce my PnL?","acceptedAnswer":{"@type":"Answer","text":"Yes. MEXC charges about 0.04% taker per side plus funding every 8 hours, so net profit is a little below the raw price PnL. This tool shows gross PnL; subtract roughly two taker fees for a round trip."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"MEXC PnL Calculator","item":"https://marginpad.io/mexc-pnl-calculator/"}]}</script>
 
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -145,6 +145,6 @@ if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathna
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}});});})();
 </script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

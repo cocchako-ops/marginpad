@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Win Rate &amp; Expectancy Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-win-rate-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Win Rate &amp; Expectancy Calculator","item":"https://marginpad.io/crypto-win-rate-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many trades before win rate is trustworthy?","acceptedAnswer":{"@type":"Answer","text":"Under ~100 trades the confidence interval is roughly plus or minus 10 points. Judge systems on expectancy over hundreds of journaled trades, not a hot week."}},{"@type":"Question","name":"Improve win rate or payoff first?","acceptedAnswer":{"@type":"Answer","text":"They trade off. Most durable systems fix a payoff floor (say 1.5R minimum) and optimize entries, because letting winners run is easier to systematize."}},{"@type":"Question","name":"Where do I get my numbers?","acceptedAnswer":{"@type":"Answer","text":"From your journal — MarginPad tracks every paper trade automatically and the profile stats give win rate and average W/L to feed this page."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var w=+document.getElementById('wr').value/100,aw=+document.getElementById('aw').value,al=+document.getElementById('al').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(w>=0&&w<=1&&aw>=0&&al>=0)){r.innerHTML='';return;}var ex=w*aw-(1-w)*al,mo=ex*n,beWR=al+aw>0?al/(aw+al)*100:0;r.innerHTML='<div class="rrow big"><span class="k">Expectancy per trade</span><span class="v '+(ex>=0?'up':'dn')+'">'+(ex>=0?'+':'')+ex.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Expected monthly ('+n+' trades)</span><span class="v '+(mo>=0?'up':'dn')+'">'+(mo>=0?'+':'')+mo.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+beWR.toFixed(1)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

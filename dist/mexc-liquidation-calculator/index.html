@@ -54,7 +54,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate my liquidation price on MEXC?","acceptedAnswer":{"@type":"Answer","text":"Enter entry price, leverage and direction. Liquidation = Entry x (1 - 1/Leverage + MMR) for a long and Entry x (1 + 1/Leverage - MMR) for a short."}},{"@type":"Question","name":"What is the maximum leverage on MEXC?","acceptedAnswer":{"@type":"Answer","text":"MEXC offers up to 500x leverage on flagship perpetuals. The maximum varies by contract, region and account tier."}},{"@type":"Question","name":"What are MEXC's trading fees?","acceptedAnswer":{"@type":"Answer","text":"MEXC's base USDT-perpetual fees are about 0.01% maker and 0.04% taker, before VIP tiers or token discounts. Funding is exchanged between longs and shorts every 8 hours."}},{"@type":"Question","name":"Is MEXC available in the US?","acceptedAnswer":{"@type":"Answer","text":"Not available to US residents. Global; not available to residents of the United States and several restricted jurisdictions."}},{"@type":"Question","name":"How do I avoid liquidation on MEXC?","acceptedAnswer":{"@type":"Answer","text":"Use lower leverage, set a stop-loss inside your liquidation level, and size positions from your stop distance rather than a round dollar figure."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"MEXC Liquidation Calculator","item":"https://marginpad.io/mexc-liquidation-calculator/"}]}</script>
 
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -154,6 +154,6 @@ if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathna
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}});});})();
 </script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

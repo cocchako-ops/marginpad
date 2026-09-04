@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto ROI Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-roi-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto ROI Calculator","item":"https://marginpad.io/crypto-roi-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this include fees?","acceptedAnswer":{"@type":"Answer","text":"No — it measures pure price return. Spot fees are usually ~0.1% per side; for leveraged positions use the profit calculator where fees matter far more."}},{"@type":"Question","name":"What is a good ROI in crypto?","acceptedAnswer":{"@type":"Answer","text":"The honest benchmark is whether a pick beat simply holding BTC over the same window — many portfolios do not."}},{"@type":"Question","name":"Why annualize?","acceptedAnswer":{"@type":"Answer","text":"Capital has opportunity cost. Annualizing shows whether money worked harder here than in an index or just BTC."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var i=+document.getElementById('inv').value,b=+document.getElementById('buy').value,s=+document.getElementById('sell').value,d=+document.getElementById('days').value;var r=document.getElementById('res');if(!(i>0&&b>0&&s>0)){r.innerHTML='';return;}var roi=(s-b)/b,val=i*(1+roi),pr=val-i,ann=d>0?(Math.pow(1+roi,365/d)-1)*100:0;r.innerHTML='<div class="rrow big"><span class="k">ROI</span><span class="v '+(roi>=0?'up':'dn')+'">'+(roi>=0?'+':'')+(roi*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">Profit</span><span class="v '+(pr>=0?'up':'dn')+'">'+(pr>=0?'+':'')+pr.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Final value</span><span class="v">'+val.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Annualized</span><span class="v">'+(ann>=0?'+':'')+ann.toFixed(1)+'% / yr</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

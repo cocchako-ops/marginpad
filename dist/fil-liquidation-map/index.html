@@ -37,7 +37,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Filecoin liquidation map?","acceptedAnswer":{"@type":"Answer","text":"A Filecoin liquidation map shows where leveraged FIL positions are being forcibly closed. MarginPad plots real liquidation events from nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) as bubbles on the FIL price chart, with a price-level histogram showing where they cluster."}},{"@type":"Question","name":"Is the FIL liquidation data real?","acceptedAnswer":{"@type":"Answer","text":"Yes — the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional \"Clusters\" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate."}},{"@type":"Question","name":"How do I read the FIL liquidation map?","acceptedAnswer":{"@type":"Answer","text":"Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level — the densest bands are where most leverage was wiped out."}},{"@type":"Question","name":"Is the Filecoin liquidation map free?","acceptedAnswer":{"@type":"Answer","text":"The map opens without a signup and the live heatmap runs free for a 5-minute preview; unlimited access is part of MarginPad Premium ($3.99/mo). You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"FIL Liquidation Map","item":"https://marginpad.io/fil-liquidation-map/"}]}</script>
 
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -83,6 +83,6 @@
     <span><a href="/">Calculators</a> · <a href="/heatmap">Heatmap</a> · <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

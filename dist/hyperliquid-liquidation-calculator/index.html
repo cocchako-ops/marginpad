@@ -74,7 +74,7 @@
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is Hyperliquid's liquidation price calculated?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid liquidates when account equity falls below the maintenance margin, which is half of the initial margin required at the asset's MAXIMUM leverage — i.e. maintenance margin fraction = 1/(2 x max leverage). The docs' formula is liq_price = price - side x margin_available / position_size / (1 - l x side), where l = 1/(2 x max leverage) and margin_available = isolated margin - maintenance margin required. This calculator implements that formula exactly."}},{"@type":"Question","name":"Why does Hyperliquid liquidation differ from Binance or Bybit?","acceptedAnswer":{"@type":"Answer","text":"CEXes use tiered maintenance margin rates set per position size (e.g. 0.4-0.5% on BTC at retail sizes). Hyperliquid derives maintenance margin from the asset's max leverage instead: 1/(2 x max leverage) — e.g. 1.25% on a 40x asset, 2.5% on a 20x asset, up to 16.7% on a 3x asset. At the same user leverage, your liquidation can sit meaningfully further or closer than on a CEX depending on the asset."}},{"@type":"Question","name":"What are Hyperliquid's fees and funding?","acceptedAnswer":{"@type":"Answer","text":"Base tier fees are 0.015% maker and 0.045% taker (volume tiers reduce them). Funding is exchanged EVERY HOUR, not every 8 hours like most CEXes — an 0.01% hourly rate compounds to roughly 87.6% annualized, so funding matters much more for positions held days."}},{"@type":"Question","name":"Is this calculator free?","acceptedAnswer":{"@type":"Answer","text":"Yes — free, instant, no sign-up, and the math runs entirely in your browser. You can also practice Hyperliquid-style leverage risk-free in MarginPad's paper trading terminal."}}]}
 </script>
 
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -197,6 +197,6 @@
   calc();
 })();
 </script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

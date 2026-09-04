@@ -457,7 +457,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var _posSig='';
   var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand — every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
   function wireFreePan(el){var st={d:0};el.addEventListener('pointerdown',function(e){var r=el.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-64);st.dec=0;},true);el.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){_userPS=true;return;}if(dy>dx){_userPS=true;try{chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);el.addEventListener('dblclick',function(e){var r=el.getBoundingClientRect();if(e.clientX>r.right-64){_userPS=false;try{chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});}
-  function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
+  function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
     // timeframe — but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
@@ -1923,7 +1923,7 @@ window.addEventListener('load', function () {
   var HEAT_DISABLED=false; // re-enabled 2026-07-24: the heatmap is fed by OUR collector (/api/v1 recent+live+clusters) which lives again on the new droplet. (Do NOT `return` here — the rest of this IIFE runs the product switcher + swap + mobile hub.)
   var chart=null, candle=null, plines=[], libBusy=false;
   function ensureLib(cb){ if(window.LightweightCharts){cb();return;} if(libBusy)return; libBusy=true;
-    var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js';
+    var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';
     s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load — check your connection.</div>';};
     document.head.appendChild(s); }
   function initChart(){ if(chart||!window.LightweightCharts)return;
@@ -2107,13 +2107,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=a5af1630
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 — dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=a5af1630';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -2623,7 +2623,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=6fe2474b'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3072,7 +3072,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded — only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=4805d5ec';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -3179,7 +3179,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=c650b444'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

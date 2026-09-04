@@ -123,4 +123,9 @@ run('Charset meta first in head', 'node build/fix-charset.js');
 // 12) build the Browse search content index — scans EVERY page's <title>, so it must run LAST
 run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 
-process.stdout.write('\n Build complete. Review dist/, then: npx wrangler deploy\n');
+// 13) VERY LAST: ?v= content hashes on every shared bundle reference (generators + post-processors write bare
+// /assets/mp-nav.js etc.; the stamper walks all HTML, home.js's loaders and the worker's injection). Without this the
+// service worker serves those bundles network-first on every load. check-home-hash (predeploy) fails on a bare ref.
+run('Stamp bundle versions (?v=)', 'node build/bump-home-assets.js');
+
+process.stdout.write('\n Build complete. Review dist/, then: npm run deploy\n');

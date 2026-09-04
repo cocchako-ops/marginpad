@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Leverage Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/leverage-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Leverage Calculator","item":"https://marginpad.io/leverage-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What leverage do most professionals actually use?","acceptedAnswer":{"@type":"Answer","text":"Serious futures traders rarely run effective leverage above 3-5x on the whole account, even when an exchange offers 100x. High per-trade leverage is mainly a capital-efficiency tool: it lets you lock less margin for the same deliberately-sized position — not a way to multiply the bet."}},{"@type":"Question","name":"Is liquidation the same as my stop-loss?","acceptedAnswer":{"@type":"Answer","text":"No. Liquidation is the exchange force-closing you when margin runs out — you lose the whole margin plus liquidation fees. A stop-loss is your own exit at a price you chose. If liquidation is doing the job of your stop, the position was oversized."}},{"@type":"Question","name":"Why is my real liquidation price slightly different?","acceptedAnswer":{"@type":"Answer","text":"Exchanges compute liquidation from the maintenance-margin tier of your exact position size, plus fees, and for isolated vs cross margin differently. The distance formula here is the standard approximation for an isolated position and lands very close for typical sizes."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -89,6 +89,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var m=+document.getElementById('margin').value,p=+document.getElementById('pos').value,mmr=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(m>0&&p>0)){r.innerHTML='';return;}var lev=p/m,liq=(1-mmr)/lev*100;
 r.innerHTML='<div class="rrow big"><span class="k">Implied leverage</span><span class="v">'+lev.toFixed(2)+'x</span></div><div class="rrow"><span class="k">Liquidation distance (approx, long)</span><span class="v dn">-'+liq.toFixed(2)+'%</span></div><div class="rrow"><span class="k">A 1% price move changes your margin by</span><span class="v">'+lev.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Move that wipes 50% of margin</span><span class="v">'+(50/lev).toFixed(2)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

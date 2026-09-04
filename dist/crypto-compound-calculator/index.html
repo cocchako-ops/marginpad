@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Compound Growth Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-compound-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Compound Growth Calculator","item":"https://marginpad.io/crypto-compound-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is a steady weekly percentage realistic?","acceptedAnswer":{"@type":"Answer","text":"No week is average — treat the rate as your long-run mean including losing weeks, which for consistently profitable retail traders lands in low single digits weekly."}},{"@type":"Question","name":"Withdraw or compound?","acceptedAnswer":{"@type":"Answer","text":"A common pattern: compound to a target account size, then withdraw a fixed share monthly. Full compounding maximizes growth and also maximizes what a late drawdown costs."}},{"@type":"Question","name":"How do losses fit in?","acceptedAnswer":{"@type":"Answer","text":"They ARE the r — one -5% week among +4% weeks drags the geometric mean hard. Keep drawdowns shallow and the curve survives."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var s=+document.getElementById('start').value,re=+document.getElementById('ret').value/100,n=+document.getElementById('per').value;var u=document.getElementById('unit').value;var r=document.getElementById('res');if(!(s>0&&n>0)){r.innerHTML='';return;}var f=s*Math.pow(1+re,n),tot=(f/s-1)*100;r.innerHTML='<div class="rrow big"><span class="k">After '+n+' '+u+'s</span><span class="v">'+f.toLocaleString(undefined,{maximumFractionDigits:2})+' USD</span></div><div class="rrow"><span class="k">Total return</span><span class="v '+(tot>=0?'up':'dn')+'">'+(tot>=0?'+':'')+tot.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Same edge NOT compounded</span><span class="v">'+(s+s*re*n).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

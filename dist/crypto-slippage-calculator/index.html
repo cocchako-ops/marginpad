@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Slippage Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-slippage-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Slippage Calculator","item":"https://marginpad.io/crypto-slippage-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I reduce slippage?","acceptedAnswer":{"@type":"Answer","text":"Limit orders where urgency allows, split large orders, trade liquid pairs and hours, and avoid market orders around news — depth is visible in the book before you click."}},{"@type":"Question","name":"Is slippage worse with leverage?","acceptedAnswer":{"@type":"Answer","text":"The percentage is the same but applies to the full position: at 20x a 0.1% slip instantly costs 2% of margin — on entry AND exit."}},{"@type":"Question","name":"Do stop-losses slip too?","acceptedAnswer":{"@type":"Answer","text":"Yes — a triggered stop becomes a market order exactly when books thin out. Stop-limit orders bound the damage at the risk of not filling."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var e=+document.getElementById('exp').value,f=+document.getElementById('fill').value,p=+document.getElementById('pos').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(e>0&&f>0&&p>0)){r.innerHTML='';return;}var sl=Math.abs(f-e)/e,usd=p*sl,mo=usd*2*n;r.innerHTML='<div class="rrow big"><span class="k">Slippage</span><span class="v">'+(sl*100).toFixed(3)+'%</span></div><div class="rrow"><span class="k">Cost on this fill</span><span class="v dn">-'+usd.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Monthly (both sides, '+n+' trades)</span><span class="v dn">-'+mo.toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

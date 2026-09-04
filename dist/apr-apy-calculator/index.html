@@ -65,7 +65,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"APR &harr; APY Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/apr-apy-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"APR &harr; APY Calculator","item":"https://marginpad.io/apr-apy-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which number should I compare products by?","acceptedAnswer":{"@type":"Answer","text":"Convert everything to APY and compare like for like — and remember quoted crypto yields float; today APY is a snapshot, not a promise."}},{"@type":"Question","name":"Does funding-rate APR work the same way?","acceptedAnswer":{"@type":"Answer","text":"Funding settles every 8 hours (n = 1,095/year), so small per-interval rates annualize aggressively — the funding-cost calculator does that conversion."}},{"@type":"Question","name":"Why is realized yield lower than APY?","acceptedAnswer":{"@type":"Answer","text":"Reward tokens sell below quote, rates decay as pools fill, and claim fees eat small positions. Treat advertised APY as a ceiling."}}]}</script>
-<script defer src="/assets/sentry.js"></script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var a=+document.getElementById('apr').value/100,f=+document.getElementById('freq').value,amt=+document.getElementById('amt').value;var r=document.getElementById('res');if(!(a>=0)){r.innerHTML='';return;}var apy=Math.pow(1+a/f,f)-1;r.innerHTML='<div class="rrow big"><span class="k">APY (effective annual yield)</span><span class="v up">'+(apy*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">On '+amt.toLocaleString()+' USD / year</span><span class="v up">+'+(amt*apy).toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Compounding adds</span><span class="v">+'+((apy-a)*100).toFixed(2)+'% vs simple APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>
