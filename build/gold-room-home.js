@@ -154,7 +154,7 @@ rep('  function lbEsc(x)', RAIL_JS + '  function lbEsc(x)', 'rail js');
 /* ---------- 7) copy: five boards, and the Gold Room does NOT pay this season ---------- */
 rep('4 boards · win real USDT', '5 boards · win real USDT', 'eyebrow');
 rep('Four boards, bigger prizes', 'Five boards, bigger prizes', 'panel heading');
-rep('Four boards — Green days, Highest ROE, Win rate and', 'Five boards — Green days, Highest ROE, Win rate, Season XP and the Gold-only Gold Room —', 'boards sentence');
+rep('Four boards — Green days, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season.', 'Green days, Highest ROE, Win rate and Season XP each pay the top 5 in real USDT every 14-day season. The Gold Room is for Gold members only and runs for the title this season.', 'boards sentence');
 rep('Four season boards — <b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:',
   '<b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the <b>top 5</b> in real USDT when the 14-day season ends. The new <b>Gold Room</b> is for Gold members only and runs for the title this season — prize money starts next season. Pick your game:',
   'intro copy');

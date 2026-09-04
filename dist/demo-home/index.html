@@ -148,7 +148,11 @@
 
   /* ================= sections ================= */
   .band{position:relative;padding:clamp(40px,5vw,72px) var(--pad) clamp(26px,3vw,44px);}
-  .band::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(1100px,90vw);height:420px;pointer-events:none;background:radial-gradient(ellipse 60% 100% at 50% 0%,var(--glow,rgba(46,189,133,.05)),transparent 70%);}
+  .band::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(1100px,90vw);height:420px;pointer-events:none;background:radial-gradient(ellipse 60% 100% at 50% 0%,var(--glow,rgba(46,189,133,.05)),transparent 70%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 150px);mask-image:linear-gradient(180deg,transparent 0,#000 150px);}
+/* SEAM FIX (2026-09-05, owner: "tacno se vidi odakle pocinje ta pozadina"): the section glow is a radial centred AT the
+   top edge (at 50% 0%), so its bright half is clipped and the colour appeared at FULL strength on the band's first pixel.
+   Measured at x=640: luminance 13 -> 27 across one pixel row on every band. The mask ramps it in over 150px, so the glow
+   still reads but has no edge. Its bottom already fades on its own (transparent at 70% of a 420px ellipse). */
   .band-head{position:relative;z-index:2;display:flex;align-items:baseline;gap:18px;margin-bottom:22px;}
   .band-idx{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--bandc,var(--grn));}
   .band-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,38px);letter-spacing:-.03em;}
@@ -1010,7 +1014,7 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Five boards — Green days, Highest ROE, Win rate, Season XP and the Gold-only Gold Room — Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Green days, Highest ROE, Win rate and Season XP each pay the top 5 in real USDT every 14-day season. The Gold Room is for Gold members only and runs for the title this season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
       <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 5 boards · win real USDT</div>
