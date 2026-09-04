@@ -91,6 +91,8 @@ async function phone(b, w, h, tag, full, ua) {
     ok('countdown mirrored into the toolbar', /\d/.test(st.cdText), 'text=' + JSON.stringify(st.cdText));
     ok('old in-chart countdown hidden', st.cdOld === 'none', st.cdOld);
     ok('no page/console errors on load', p._errs.length === 0, p._errs.join(' | '));
+    const nz = await ev(p, () => ({ guard: window.__mpNoZoom === 1, ta: getComputedStyle(document.body).touchAction, unzoom: typeof window.__mpUnzoom === 'function' }));
+    ok('page-zoom guard armed (touch-action manipulation + pinch guard)', nz.guard && /manipulation/.test(nz.ta) && nz.unzoom, JSON.stringify(nz));
     await shot(p, '01-default');
     // toolbar chips
     await R(p, 'class select reachable', '.pts-bar .pt2-class');

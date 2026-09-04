@@ -3824,3 +3824,22 @@ window.mpSrvOpen=function(payload,ok,fail){
   if(mob())build();
   window.mpPtSheet={open:function(){setOpen(true);},close:function(){setOpen(false);},isOpen:isOpen,measure:measure,built:function(){return built;}}; // debug/E2E hook
 })();
+
+;/* ══ No page zoom on touch devices — only the chart canvases may pinch (owner 2026-09-04: iOS Safari ignores user-scalable=no,
+   a pinch on the UI zoomed the whole app shell and there was no way back). Pinch outside a chart is cancelled (Safari gesture
+   events + 2-finger touchmove), double-tap zoom is off via touch-action:manipulation (home.css), and if the page still ends up
+   scaled (any path we did not catch) the viewport meta is re-asserted, which snaps iOS back to 1x. Charts keep their own pinch. */
+(function(){
+  if(window.__mpNoZoom)return;window.__mpNoZoom=1;
+  if(!('ontouchstart' in window)&&!(navigator.maxTouchPoints>0))return;
+  function isChart(t){try{return !!(t&&(t.tagName==='CANVAS'||(t.closest&&t.closest('.tv-lightweight-charts,#ptChart,.mfc-chart,.cwin-body,.heat-wrap,.lqm-wrap'))));}catch(e){return false;}}
+  function block(e){if(isChart(e.target))return;try{e.preventDefault();}catch(_){}}
+  document.addEventListener('gesturestart',block,{passive:false});
+  document.addEventListener('gesturechange',block,{passive:false});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1&&!isChart(e.target))block(e);},{passive:false});
+  var _uz=0;
+  function unzoom(){try{var vv=window.visualViewport;if(!vv||vv.scale<=1.02)return;var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0';m.setAttribute('content',c.replace(/,\s*minimum-scale=[^,]*/,'')+', minimum-scale=1');setTimeout(function(){m.setAttribute('content',c);},80);}catch(e){}}
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){if(window.visualViewport.scale>1.02){clearTimeout(_uz);_uz=setTimeout(unzoom,300);}});
+  document.addEventListener('gestureend',function(e){if(!isChart(e.target))setTimeout(unzoom,50);},{passive:true});
+  window.__mpUnzoom=unzoom;
+})();

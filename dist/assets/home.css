@@ -2932,6 +2932,8 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
    the grab handle (.pts-grab), the candle-countdown mirror (#ptsCd) and measures --pts-h (collapsed sheet height).
    No backdrop-filter anywhere (killed on mobile for weak GPUs) — "glass" is gradients + inset highlights only.
    ============================================================================================================ */
+/* touch devices: no double-tap zoom anywhere in the app shell (pinch outside the charts is cancelled in home.js __mpNoZoom) */
+@media (hover:none) and (pointer:coarse){html,body{touch-action:manipulation;}}
 @media (max-width:720px){
   /* --- toolbar row: symbol/class/TF chip + candle countdown + recently-traded rail, IN FLOW above the chart --- */
   body.paper-page .pts-bar{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 8px;background:#0a0b0d;border-bottom:1px solid #151a21;}
