@@ -1368,7 +1368,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
-    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT)window.__mpWsDownT=Date.now();}catch(e){}if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
+    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT&&!document.hidden)window.__mpWsDownT=Date.now();}catch(e){}/* ws-recon must mean "how long the price was frozen WHILE THE USER WATCHED". A socket that dies in a backgrounded tab (or is closed by our own 20s battery saver) and re-opens on return was measuring the whole away period — p95 40s against a 2.5s budget, a permanent false alarm. Downtime that starts hidden is not measured; downtime that GOES hidden is voided below. */if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
   function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2000,3000,3000,3000][retry-1]||3000);} // fast first retry (250ms), then backoff CAPPED at 3s (was 8s): the `online` event is unreliable on mobile radio hand-offs, so a network that returns mid-backoff could sit dead for up to 8s → 3s cap halves that worst case (ws-recon p95). Retries during a real outage are cheap failed WS handshakes.
@@ -1394,7 +1394,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // and the chart engines already resync on visibilitychange.
   var _hidT=null;
   document.addEventListener('visibilitychange',function(){
-    if(document.hidden){ if(!_hidT)_hidT=setTimeout(function(){_hidT=null;try{if(ws){ws.onclose=null;ws.close();}}catch(_){}ws=null;alive=false;if(pingT){clearInterval(pingT);pingT=null;}if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}},20000); }
+    if(document.hidden){ try{window.__mpWsDownT=0;}catch(_){} /* void an in-flight ws-recon measurement: from here on the gap is "user away", not "price frozen in front of them" */
+      if(!_hidT)_hidT=setTimeout(function(){_hidT=null;try{if(ws){ws.onclose=null;ws.close();}}catch(_){}ws=null;alive=false;if(pingT){clearInterval(pingT);pingT=null;}if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}},20000); }
     else if(_hidT){clearTimeout(_hidT);_hidT=null;}
   });
   document.addEventListener('visibilitychange',function(){if(!document.hidden)onResume();});

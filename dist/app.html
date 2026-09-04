@@ -2,18 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
@@ -109,10 +97,24 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=83109eba">
+<link rel="stylesheet" href="/assets/home.css?v=95eb2b6d">
+<!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
+     biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
+     parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
+     carried the CONSUMER of this handoff (window.__preK, plus a __preR hit/miss drift metric that rides the perf probe)
+     but the producer had been lost from this file, so the optimisation was silently dead. The key must match what
+     loadKlines computes (sym|tf): ?coin= wins, else localStorage mp_pt_sym, else the select default BTC; the first load
+     is always tf=5 (a ?tf= link re-loads afterwards). A drifted key costs exactly one wasted request and shows up as
+     __preR=miss. -->
+<link rel="preload" as="script" href="/assets/lightweight-charts-4.2.0.js?v=46fc6953">
+<script>(function(){try{
+  if(!/^\/paper-trade\/?$/.test(location.pathname))return;
+  var m=location.search.match(/[?&]coin=([A-Za-z0-9]+)/),s=m?m[1]:'';
+  if(!s){try{s=localStorage.getItem('mp_pt_sym')||'';}catch(e){}}
+  s=String(s||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12)||'BTC';
+  window.__preK={key:s+'|5',p:fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=5',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})};
+}catch(e){}})();</script>
 
-
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <script>
@@ -822,7 +824,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=83109eba"></script>
+<script src="/assets/home.js?v=95eb2b6d"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>
