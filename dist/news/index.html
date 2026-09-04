@@ -246,7 +246,7 @@
   (function(){var t=document.getElementById('newsTicker');if(!t)return;var WANT=['BTC','ETH','SOL','BNB','XRP','DOGE'];function f(px){return '$'+(+px).toLocaleString('en-US',{maximumFractionDigits:+px>=1?2:5});}function tl(){fetch('/api/prices').then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.pairs)return;var by={};d.pairs.forEach(function(p){by[(p.symbol||'').replace('USDT','')]=p;});t.innerHTML=WANT.map(function(s){var p=by[s];if(!p)return '';var c=+p.changePct;return '<div class="nt-pill"><span class="nt-sym">'+s+'</span><span class="nt-px">'+f(p.price)+'</span><span class="nt-chg '+(c>=0?'up':'dn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span></div>';}).join('');}).catch(function(){});}tl();setInterval(tl,30000);})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=d5974e97"></script>
+<script defer src="/assets/mp-auth.js?v=94228f34"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

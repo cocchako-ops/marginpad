@@ -7,12 +7,13 @@ const OUT = path.join(__dirname, 'pt-shots'); fs.mkdirSync(OUT, { recursive: tru
 const wait = ms => new Promise(r => setTimeout(r, ms));
 let pass = 0, fail = 0; const fails = [];
 function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK   ' + name); } else { fail++; fails.push(name + (detail ? ' — ' + detail : '')); console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); } }
-const IDS = ['ng', 'pk', 'us', 'in', 'id', 'rs', 'de', 'tr', 'th', 'ir', 'ph', 'za', 'nl', 'ca', 'pl', 'bd', 'gb', 'br', 'vn', 'ua'];
+const IDS = ['ng', 'pk', 'us', 'in', 'id', 'rs', 'de', 'tr', 'th', 'ir', 'ph', 'za', 'nl', 'ca', 'pl', 'bd', 'gb', 'br', 'vn', 'ua',
+  'et', 'ao', 'sg', 'it', 'ma', 'kw', 'al', 'fr', 'lk', 'ke', 'ro', 'jp', 'au', 'qa', 'bw', 'ye', 'np', 'eg', 'mr', 'ee', 'dz', 'ar', 'mx', 'kr', 'gh', 'sa', 'il', 'se', 'cn', 'ge'];
 (async () => {
   // 1) catalogue
   const shop = await (await fetch(BASE + '/api/auth/shop?cb=' + Date.now())).json();
   const nat = (shop.items || []).filter(i => i.group === 'nation');
-  ok('catalogue: 20 nation frames', nat.length === 20, 'n=' + nat.length);
+  ok('catalogue: ' + IDS.length + ' nation frames', nat.length === IDS.length, 'n=' + nat.length);
   ok('catalogue: every one $1.99, balance only, tier nation', nat.every(i => i.cents === 199 && !i.ticks && i.tier === 'nation'), JSON.stringify(nat.filter(i => !(i.cents === 199 && !i.ticks)).map(i => i.id)));
   ok('catalogue: ids match the design set', IDS.every(c => nat.some(i => i.id === 'nat_' + c)));
   await withBrowser(async (b) => {
@@ -33,10 +34,10 @@ const IDS = ['ng', 'pk', 'us', 'in', 'id', 'rs', 'de', 'tr', 'th', 'ir', 'ph', '
       return { shown: sec && !sec.hidden, n: cards.length, ring, emblem, price, shopHasNat, firstVisible: !!(r && r.height > 0 && document.elementFromPoint(r.left + r.width / 2, r.top + 30)), ids: cards.slice(0, 3).map(c => c.getAttribute('data-item')) };
     });
     console.log('  gallery', JSON.stringify(gal));
-    ok('Vault: 20 cards in the Nations gallery, catalogue order', gal.shown && gal.n === 20 && gal.ids.join(',') === 'nat_ng,nat_pk,nat_us', JSON.stringify(gal.ids));
-    ok('Vault: every preview wears its flag ring (::after gradient)', gal.ring === 20, 'ring=' + gal.ring);
-    ok('Vault: 19 emblems pinned (all but the Union Jack)', gal.emblem === 19, 'emblem=' + gal.emblem);
-    ok('Vault: $1.99 on every card', gal.price === 20, 'price=' + gal.price);
+    ok('Vault: ' + IDS.length + ' cards in the Nations gallery, catalogue order', gal.shown && gal.n === IDS.length && gal.ids.join(',') === 'nat_ng,nat_pk,nat_us', JSON.stringify(gal.ids));
+    ok('Vault: every preview wears its flag ring (::after gradient)', gal.ring === IDS.length, 'ring=' + gal.ring);
+    ok('Vault: an emblem on all but the Union Jack', gal.emblem === IDS.length - 1, 'emblem=' + gal.emblem);
+    ok('Vault: $1.99 on every card', gal.price === IDS.length, 'price=' + gal.price);
     ok('Vault: nations stay out of the regular Frames gallery', gal.shopHasNat === false);
     await p.screenshot({ path: path.join(OUT, 'nations-vault.png') });
     // 2) frame classes resolve on a real trader card (mp-auth CSS) on the app shell too

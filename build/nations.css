@@ -50,3 +50,64 @@
 .frame-nat_vn::before{background:linear-gradient(180deg,#fff27a,#FFDD00 50%,#e0b800);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 .frame-nat_ua{--nr:rgba(0,91,187,.9);--ng:rgba(255,213,0,.5);--nb:linear-gradient(180deg,#1c78de 0 50%,#FFD500 50%);--ne:block}
 .frame-nat_ua::before{border-radius:50%;background:radial-gradient(circle at 50% 50%,#3a2a08 0 2.6px,#FFD500 3px 5.4px,transparent 5.8px),repeating-conic-gradient(#FFD500 0 10deg,transparent 10deg 30deg)}
+/* --- WAVE 2 (2026-09-05, owner): 30 more countries — every country with 2+ accounts on the site plus nine larger crypto markets we already have users in. Same technique as wave 1. --- */
+.frame-nat_et{--nr:rgba(16,140,66,.9);--ng:rgba(252,221,9,.45);--nb:linear-gradient(180deg,#108C42 0 33.4%,#FCDD09 33.4% 66.6%,#DA121A 66.6%);--ne:block}
+.frame-nat_et::before{border-radius:50%;background:radial-gradient(circle,#FCDD09 0 3px,transparent 3.4px),repeating-conic-gradient(from 18deg,#FCDD09 0 4deg,transparent 4deg 72deg),#1a5fd0}
+.frame-nat_ao{--nr:rgba(214,16,17,.9);--ng:rgba(255,207,0,.45);--nb:linear-gradient(180deg,#D61011 0 50%,#141414 50%);--ne:block}
+.frame-nat_ao::before{background:linear-gradient(180deg,#ffe98a,#FFCF00 55%,#b08a00);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.frame-nat_sg{--nr:rgba(237,42,55,.9);--ng:rgba(237,42,55,.5);--nb:linear-gradient(180deg,#ED2939 0 50%,#ffffff 50%);--ne:block}
+.frame-nat_sg::before{border-radius:50%;background:radial-gradient(circle at 66% 44%,transparent 0 6px,#ffffff 6.6px)}
+.frame-nat_it{--nr:rgba(0,146,70,.9);--ng:rgba(0,166,80,.45);--nb:linear-gradient(90deg,#009246 0 33.4%,#ffffff 33.4% 66.6%,#CE2B37 66.6%);--ne:block}
+.frame-nat_it::before{background:linear-gradient(90deg,#009246 0 34%,#ffffff 34% 67%,#CE2B37 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_ma{--nr:rgba(200,20,32,.9);--ng:rgba(0,152,72,.5);--nb:linear-gradient(180deg,#d81a26,#C1272D 50%,#8f1a20);--ne:block}
+.frame-nat_ma::before{background:#0aa35a;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.frame-nat_kw{--nr:rgba(0,124,65,.9);--ng:rgba(0,170,90,.45);--nb:linear-gradient(90deg,#141414 0 16%,transparent 16%),linear-gradient(180deg,#0a9950 0 33.4%,#ffffff 33.4% 66.6%,#CE1126 66.6%);--ne:block}
+.frame-nat_kw::before{background:linear-gradient(180deg,#0a9950 0 34%,#ffffff 34% 67%,#CE1126 67%);clip-path:polygon(18% 0,86% 0,86% 58%,50% 100%,14% 58%)}
+.frame-nat_al{--nr:rgba(227,29,42,.9);--ng:rgba(227,29,42,.5);--nb:linear-gradient(180deg,#ee2b38,#E41E20 50%,#a5151c);--ne:block}
+.frame-nat_al::before{background:linear-gradient(180deg,#ff5a63,#E41E20 55%,#8f1218);clip-path:polygon(14% 0,86% 0,86% 58%,50% 100%,14% 58%)}
+.frame-nat_fr{--nr:rgba(35,73,150,.9);--ng:rgba(45,95,184,.5);--nb:linear-gradient(90deg,#2d5fb8 0 33.4%,#ffffff 33.4% 66.6%,#ED2939 66.6%);--ne:block}
+.frame-nat_fr::before{background:linear-gradient(90deg,#2d5fb8 0 34%,#ffffff 34% 67%,#ED2939 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_lk{--nr:rgba(255,190,45,.85);--ng:rgba(255,167,38,.45);--nb:linear-gradient(90deg,#0aa35a 0 12%,#FF7900 12% 24%,transparent 24%),linear-gradient(180deg,#a03a2a,#8D2029 55%,#5c1319);--ne:block}
+.frame-nat_lk::before{background:linear-gradient(180deg,#ffe08a,#FFBE2D 55%,#b8860b);clip-path:polygon(50% 2%,58% 22%,78% 14%,70% 36%,92% 44%,70% 56%,80% 82%,54% 70%,44% 96%,36% 68%,14% 76%,24% 52%,4% 40%,26% 34%,20% 12%,40% 20%)}
+.frame-nat_ke{--nr:rgba(190,25,32,.9);--ng:rgba(0,166,81,.45);--nb:linear-gradient(180deg,#141414 0 26%,#ffffff 26% 32%,#BE1922 32% 68%,#ffffff 68% 74%,#0aa35a 74%);--ne:block}
+.frame-nat_ke::before{background:linear-gradient(180deg,#e0303a,#BE1922 55%,#7a0f16);clip-path:polygon(50% 0,86% 20%,86% 80%,50% 100%,14% 80%,14% 20%)}
+.frame-nat_ro{--nr:rgba(0,43,127,.95);--ng:rgba(252,209,22,.45);--nb:linear-gradient(90deg,#1240a8 0 33.4%,#FCD116 33.4% 66.6%,#CE1126 66.6%);--ne:block}
+.frame-nat_ro::before{background:linear-gradient(90deg,#1240a8 0 34%,#FCD116 34% 67%,#CE1126 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_jp{--nr:rgba(188,0,45,.85);--ng:rgba(188,0,45,.45);--nb:linear-gradient(180deg,#f4f5f7,#e6e8ec 50%,#c9ced6);--ne:block}
+.frame-nat_jp::before{border-radius:50%;background:radial-gradient(circle at 40% 36%,#ff5a6e,#BC002D 55%,#8a0020)}
+.frame-nat_au{--nr:rgba(31,66,176,.95);--ng:rgba(60,110,220,.45);--nb:linear-gradient(90deg,transparent 0 45%,#C8102E 45% 55%,transparent 55%),linear-gradient(180deg,transparent 0 44%,#C8102E 44% 56%,transparent 56%),linear-gradient(45deg,transparent 0 47%,#ffffff 47% 53%,transparent 53%),linear-gradient(-45deg,transparent 0 47%,#ffffff 47% 53%,transparent 53%),#1f42b0;--ne:block}
+.frame-nat_au::before{background:#ffffff;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.frame-nat_qa{--nr:rgba(138,21,56,.95);--ng:rgba(170,30,72,.45);--nb:linear-gradient(90deg,#ffffff 0 28%,#8A1538 28%);--ne:block}
+.frame-nat_qa::before{background:#a51a44;clip-path:polygon(0 0,44% 0,100% 12%,44% 24%,100% 36%,44% 48%,100% 60%,44% 72%,100% 84%,44% 100%,0 100%)}
+.frame-nat_bw{--nr:rgba(107,190,225,.85);--ng:rgba(107,190,225,.42);--nb:linear-gradient(180deg,#6BBEE1 0 36%,#ffffff 36% 42%,#141414 42% 58%,#ffffff 58% 64%,#6BBEE1 64%);--ne:block}
+.frame-nat_bw::before{background:linear-gradient(180deg,#6BBEE1 0 34%,#141414 34% 67%,#6BBEE1 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_ye{--nr:rgba(206,17,38,.9);--ng:rgba(206,17,38,.45);--nb:linear-gradient(180deg,#CE1126 0 33.4%,#ffffff 33.4% 66.6%,#141414 66.6%);--ne:block}
+.frame-nat_ye::before{background:linear-gradient(180deg,#CE1126 0 34%,#ffffff 34% 67%,#141414 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_np{--nr:rgba(10,58,176,.95);--ng:rgba(220,20,60,.45);--nb:linear-gradient(90deg,#0a3ab0 0 8%,#DC143C 8% 92%,#0a3ab0 92%);--ne:block}
+.frame-nat_np::before{border-radius:50%;background:radial-gradient(circle,#ffffff 0 3.4px,transparent 3.8px),repeating-conic-gradient(#ffffff 0 8deg,transparent 8deg 30deg),#DC143C}
+.frame-nat_eg{--nr:rgba(206,17,38,.9);--ng:rgba(201,151,27,.45);--nb:linear-gradient(180deg,#CE1126 0 33.4%,#ffffff 33.4% 66.6%,#141414 66.6%);--ne:block}
+.frame-nat_eg::before{background:linear-gradient(180deg,#ffe08a,#C9971B 60%,#7a5a0a);clip-path:polygon(50% 4%,64% 16%,88% 12%,76% 34%,92% 48%,68% 56%,60% 84%,50% 96%,40% 84%,32% 56%,8% 48%,24% 34%,12% 12%,36% 16%)}
+.frame-nat_mr{--nr:rgba(0,160,90,.9);--ng:rgba(255,208,0,.5);--nb:linear-gradient(180deg,#CD2A3E 0 12%,#0aa35a 12% 88%,#CD2A3E 88%);--ne:block}
+.frame-nat_mr::before{border-radius:50%;background:radial-gradient(circle at 50% 74%,transparent 0 6.4px,#FFD500 7px)}
+.frame-nat_ee{--nr:rgba(0,114,206,.9);--ng:rgba(0,140,235,.45);--nb:linear-gradient(180deg,#0a7fd6 0 33.4%,#141414 33.4% 66.6%,#ffffff 66.6%);--ne:block}
+.frame-nat_ee::before{background:linear-gradient(180deg,#0a7fd6 0 34%,#141414 34% 67%,#ffffff 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_dz{--nr:rgba(0,152,81,.9);--ng:rgba(0,180,100,.45);--nb:linear-gradient(90deg,#0a9950 0 50%,#ffffff 50%);--ne:block}
+.frame-nat_dz::before{border-radius:50%;background:radial-gradient(circle at 66% 44%,transparent 0 6px,#D21034 6.6px)}
+.frame-nat_ar{--nr:rgba(116,170,220,.85);--ng:rgba(252,191,73,.45);--nb:linear-gradient(180deg,#74AADC 0 33.4%,#ffffff 33.4% 66.6%,#74AADC 66.6%);--ne:block}
+.frame-nat_ar::before{border-radius:50%;background:radial-gradient(circle,#FCBF49 0 4px,transparent 4.4px),repeating-conic-gradient(#FCBF49 0 10deg,transparent 10deg 30deg)}
+.frame-nat_mx{--nr:rgba(0,104,71,.9);--ng:rgba(0,150,100,.45);--nb:linear-gradient(90deg,#0a8f5a 0 33.4%,#ffffff 33.4% 66.6%,#CE1126 66.6%);--ne:block}
+.frame-nat_mx::before{background:linear-gradient(90deg,#0a8f5a 0 34%,#ffffff 34% 67%,#CE1126 67%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.frame-nat_kr{--nr:rgba(205,46,58,.9);--ng:rgba(0,71,160,.45);--nb:linear-gradient(180deg,#f4f5f7,#e6e8ec 50%,#c9ced6);--ne:block}
+.frame-nat_kr::before{border-radius:50%;background:linear-gradient(38deg,#0a55c0 0 50%,#CD2E3A 50%)}
+.frame-nat_gh{--nr:rgba(206,17,38,.9);--ng:rgba(252,209,22,.45);--nb:linear-gradient(180deg,#CE1126 0 33.4%,#FCD116 33.4% 66.6%,#0aa35a 66.6%);--ne:block}
+.frame-nat_gh::before{background:linear-gradient(180deg,#ffe98a,#FCD116 55%,#b08a00);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.frame-nat_sa{--nr:rgba(0,140,79,.9);--ng:rgba(0,180,100,.45);--nb:linear-gradient(180deg,#0fa35e,#0a8c4f 50%,#066638);--ne:block}
+.frame-nat_sa::before{background:#ffffff;clip-path:polygon(2% 44%,74% 44%,74% 34%,98% 50%,74% 66%,74% 56%,2% 56%)}
+.frame-nat_il{--nr:rgba(0,56,184,.9);--ng:rgba(0,90,220,.45);--nb:linear-gradient(180deg,#ffffff 0 18%,#0a49c8 18% 30%,#ffffff 30% 70%,#0a49c8 70% 82%,#ffffff 82%);--ne:block}
+.frame-nat_il::before{background:#0a49c8;clip-path:polygon(50% 0,63% 25%,91% 25%,77% 50%,91% 75%,63% 75%,50% 100%,37% 75%,9% 75%,23% 50%,9% 25%,37% 25%)}
+.frame-nat_se{--nr:rgba(0,106,167,.9);--ng:rgba(254,204,0,.45);--nb:linear-gradient(90deg,transparent 0 30%,#FECC00 30% 44%,transparent 44%),linear-gradient(180deg,transparent 0 43%,#FECC00 43% 57%,transparent 57%),#0a6aa7;--ne:block}
+.frame-nat_se::before{background:linear-gradient(90deg,transparent 0 30%,#FECC00 30% 46%,transparent 46%),linear-gradient(180deg,transparent 0 42%,#FECC00 42% 58%,transparent 58%),#0a6aa7;border-radius:3px}
+.frame-nat_cn{--nr:rgba(222,41,16,.9);--ng:rgba(255,222,0,.45);--nb:linear-gradient(180deg,#ee3a24,#DE2910 50%,#a81c0a);--ne:block}
+.frame-nat_cn::before{background:linear-gradient(180deg,#fff27a,#FFDE00 55%,#d4b400);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.frame-nat_ge{--nr:rgba(220,225,232,.6);--ng:rgba(255,60,60,.4);--nb:linear-gradient(90deg,transparent 0 42%,#FF3B3B 42% 58%,transparent 58%),linear-gradient(180deg,transparent 0 40%,#FF3B3B 40% 60%,transparent 60%),#f2f3f5;--ne:block}
+.frame-nat_ge::before{background:linear-gradient(90deg,transparent 0 40%,#FF3B3B 40% 60%,transparent 60%),linear-gradient(180deg,transparent 0 40%,#FF3B3B 40% 60%,transparent 60%),#f2f3f5;border-radius:3px}
