@@ -54,8 +54,8 @@ const UA_MOBILE = require('./e2e-browser.js').UA_MOBILE;
         return { chipVisible: cr.left >= sr.left - 1 && cr.right <= sr.right + 1, panel, board: board.slice(0, 120), note: note.replace(/\s+/g, ' ') };
       });
       ok('picking Gold Room scrolls the chip fully into view', sel.chipVisible);
-      ok('panel switches to the Gold Room', /Gold Room/i.test(sel.panel) && /prize money starts next season/i.test(sel.panel), sel.panel.slice(0, 90));
-      ok('live board switches to the Gold Room', /win|Gold member/i.test(sel.board), sel.board.slice(0, 80));
+      ok('panel switches to the Gold Room (points rules)', /Gold Room/i.test(sel.panel) && /prize money starts next season/i.test(sel.panel) && /\+1/.test(sel.panel) && /-1/.test(sel.panel), sel.panel.slice(0, 110));
+      ok('live board switches to the Gold Room (points)', /\bpts\b/i.test(sel.board) && /[+-]?\d+ pts/.test(sel.board), sel.board.slice(0, 90)); // the W-L detail is desktop-only, the points are always there
       ok('live board note states it is unpaid this season', /prize money starts next season/i.test(sel.note), sel.note.slice(0, 90));
       ok('no page errors', errs.length === 0, errs.join(' | '));
       await p.screenshot({ path: path.join(OUT, 'lbrail-' + tag.replace(/\s+/g, '') + '.png') });

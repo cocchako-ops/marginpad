@@ -9939,8 +9939,8 @@ async function sendLeaderboardEmail(env, to, info) {
  const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'gold' ? ('<b>' + (info.w || 0) + ' winning trade' + ((info.w === 1) ? '' : 's') + '</b> this season') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
-  const achieveTxt = board === 'gold' ? ((info.w || 0) + ' winning trades this season') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
+  const achieve = board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -10024,9 +10024,10 @@ async function payWeeklyPrizes(env) {
       // Settings — cfg.lbGold defaults to zeros and `push` skips a zero, so nothing can be paid by accident, and an
       // earlier season can never be back-paid even if the cron re-runs on it.
       if (ws >= GOLD_LB_START) {
-        const goldTop = goldBoard.filter(x => notB(x) && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.w || 0) > 0).slice(0, 5)
-          .map(x => ({ uid: String(x.uid).indexOf('u:') === 0 ? x.uid : 'u:' + x.uid, name: x.name, w: +x.w || 0, l: +x.l || 0 }));
-        push(goldTop, cfg.lbGold, 'gold', x => ({ name: x.name || '', w: x.w, l: x.l }));
+        // pays the top points, and only a POSITIVE score can win money — a season finished in the red takes no prize
+        const goldTop = goldBoard.filter(x => notB(x) && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.pts || 0) > 0).slice(0, 5)
+          .map(x => ({ uid: String(x.uid).indexOf('u:') === 0 ? x.uid : 'u:' + x.uid, name: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
+        push(goldTop, cfg.lbGold, 'gold', x => ({ name: x.name || '', pts: x.pts, w: x.w, l: x.l }));
       }
     }
     let paidOut = [], payOk = payload.length === 0; // nothing to pay = trivially settled
@@ -12597,8 +12598,8 @@ async function handleReward(url, request, env) {
           .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
         // GOLD ROOM: Gold-level members only, ranked by winning trades. `goldPaidFrom` is the first season that pays —
         // the client shows the "no prizes this season" line from it instead of hard-coding a date.
-        const topGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.w || 0) > 0)
-          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, w: +x.w || 0, l: +x.l || 0 }));
+        const topGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && ((+x.w || 0) + (+x.l || 0)) > 0)
+          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
@@ -18177,6 +18178,7 @@ export class UserStore {
       // Weekly win/loss comes from the tradeev log, NOT the utrades blob: the blob is capped at 100 closed trades (oldest
       // trimmed), so a heavy trader's earlier losses vanish from it and inflate their win rate. tradeev keeps every close (14d).
       const tev = {};
+      const gpts = {}; // GOLD ROOM points: uid -> { pts, w, l } — filled by the same clone-dedup pass below, never mixed into tev
       const mvP = v2 ? WR_MIN_MOVE : -1e9; // v2: a win must also clear a ≥0.2% real price move (roe/lev); excluded low-vol/forex symbols never count
       // CLONE DEDUP (2026-08-03, the Adiyat 20-0 exploit): N identical positions (same symbol, same side) opened as a
       // batch and closed together are ONE trading decision, not N wins — 21 parallel AKE shorts closed inside one
@@ -18199,20 +18201,25 @@ export class UserStore {
           const open = tradeOpenTs(tid);
           if (v2 && open != null && open < ws) continue; // opened before the season — closing it (or slices of it) inside the season is not a season trade
           const key = uid + '|' + (tid || ('anon|' + String(x.sym || '') + '|' + String(x.side || '') + '|' + Math.floor(+x.ts / 600000)));
-          const t = tk.get(key) || { uid, sym: String(x.sym || '').toUpperCase(), side: String(x.side || ''), open: open != null ? open : +x.ts, pnl: 0, margin: 0, bestRoe: -Infinity, bestMove: -Infinity, n: 0 };
+          const t = tk.get(key) || { uid, sym: String(x.sym || '').toUpperCase(), side: String(x.side || ''), open: open != null ? open : +x.ts, pnl: 0, margin: 0, bestRoe: -Infinity, bestMove: -Infinity, absMove: 0, n: 0 };
           t.pnl += +x.pnl || 0; t.margin += +x.margin || 0; t.n++;
-          if (isFinite(+x.roe)) { if (+x.roe > t.bestRoe) t.bestRoe = +x.roe; const mv = (+x.lev > 0) ? +x.roe / +x.lev : -Infinity; if (mv > t.bestMove) t.bestMove = mv; }
+          if (isFinite(+x.roe)) { if (+x.roe > t.bestRoe) t.bestRoe = +x.roe; const mv = (+x.lev > 0) ? +x.roe / +x.lev : -Infinity; if (mv > t.bestMove) t.bestMove = mv; const am = (+x.lev > 0) ? Math.abs(+x.roe) / +x.lev : 0; if (am > t.absMove) t.absMove = am; }
           tk.set(key, t);
         }
         const tickets = [...tk.values()].filter(t => t.margin >= 1).sort((a, b) => (a.uid < b.uid ? -1 : a.uid > b.uid ? 1 : 0) || (a.sym < b.sym ? -1 : a.sym > b.sym ? 1 : 0) || (a.side < b.side ? -1 : a.side > b.side ? 1 : 0) || (a.open - b.open));
         const qWin = t => t.pnl > 0 && (v2 ? (t.bestRoe >= WR_MIN_WIN_ROE && t.bestMove >= WR_MIN_MOVE) : true);
         let cur = null;
-        const flush = () => { if (!cur) return; const t = tev[cur.uid] = tev[cur.uid] || { w: 0, l: 0 }; if (cur.qw > cur.l) t.w++; else if (cur.l > 0) t.l++; cur = null; };
+        const flush = () => { if (!cur) return; const t = tev[cur.uid] = tev[cur.uid] || { w: 0, l: 0 }; if (cur.qw > cur.l) t.w++; else if (cur.l > 0) t.l++;
+          // GOLD ROOM: one clone group = one decision = one point, + if it finished green, - if it finished red.
+          // A group whose every ticket stayed inside the 0.2% noise bar scores nothing either way (symmetric).
+          if (cur.gq > 0 && cur.gp !== 0) { const g = gpts[cur.uid] = gpts[cur.uid] || { pts: 0, w: 0, l: 0 }; if (cur.gp > 0) { g.pts++; g.w++; } else { g.pts--; g.l++; } }
+          cur = null; };
         for (const t of tickets) {
           const key = t.uid + '|' + t.sym + '|' + t.side;
-          if (!cur || cur.key !== key || (t.open - cur.lastOpen) > 600000) { flush(); cur = { uid: t.uid, key, lastOpen: t.open, qw: 0, l: 0 }; }
+          if (!cur || cur.key !== key || (t.open - cur.lastOpen) > 600000) { flush(); cur = { uid: t.uid, key, lastOpen: t.open, qw: 0, l: 0, gp: 0, gq: 0 }; }
           cur.lastOpen = t.open;
           if (qWin(t)) cur.qw++; else if (t.pnl <= 0) cur.l++;
+          cur.gp += t.pnl; if (t.absMove >= WR_MIN_MOVE) cur.gq++;
         }
         flush();
       } catch (e) {}
@@ -18251,16 +18258,16 @@ export class UserStore {
       // /levels has always promised as "Entry to Gold-only competitions".
       const gold = [];
       try {
-        const gW = Object.keys(tev).filter(u => (tev[u].w || 0) > 0);
+        const gW = Object.keys(gpts).filter(u => ((gpts[u].w || 0) + (gpts[u].l || 0)) > 0);
         if (gW.length) {
           const gMin = (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min;
           const gInfo = {};
           inChunks(gW, (part, ph) => this.rows("SELECT id, username, COALESCE(xp,0) xp FROM users WHERE id IN (" + ph + ") AND (status IS NULL OR status='active') AND username IS NOT NULL AND username!=''", ...part)).forEach(u => { gInfo[String(u.id)] = u; });
           for (const u of gW) {
             const i9 = gInfo[u]; if (!i9 || (+i9.xp || 0) < gMin) continue;
-            gold.push({ uid: 'u:' + u, name: String(i9.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), w: tev[u].w || 0, l: tev[u].l || 0 });
+            const g9 = gpts[u]; gold.push({ uid: 'u:' + u, name: String(i9.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), pts: g9.pts || 0, w: g9.w || 0, l: g9.l || 0 });
           }
-          gold.sort((a, b) => (b.w - a.w) || (a.l - b.l) || (a.name < b.name ? -1 : 1)); // most wins, then fewest losses; name only as a stable tie-break
+          gold.sort((a, b) => (b.pts - a.pts) || ((a.w + a.l) - (b.w + b.l)) || (a.name < b.name ? -1 : 1)); // most points; a tie goes to whoever needed FEWER trades to get there; name only as a stable tie-break
         }
       } catch (e) {}
       for (const r of rows) {

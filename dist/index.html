@@ -1321,7 +1321,7 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='green'?' pay':'');
-        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only, ranked by winning trades. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
+        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
@@ -1343,8 +1343,8 @@
     }
     if(lbMode==='gold'){
       var gt=((d&&d.topGold)||[]).slice(0,15);
-      el.innerHTML=gt.length?gt.map(function(t,i){return lbRow(i,t.who,((+t.l||0)+'L'),(+t.w||0)+((+t.w||0)===1?' win':' wins'),'up');}).join('')
-        :'<div class="lb-empty">No Gold member has a qualifying win yet this season. Reach Gold (12,000 XP) to enter the room.</div>';
+      el.innerHTML=gt.length?gt.map(function(t,i){var gp=+t.pts||0;return lbRow(i,t.who,((+t.w||0)+'W-'+(+t.l||0)+'L'),(gp>0?'+':'')+gp+' pts',gp>=0?'up':'down');}).join('')
+        :'<div class="lb-empty">No Gold member has scored yet this season. Reach Gold (12,000 XP) to enter the room.</div>';
       lbAfter(el);return;
     }
     var st=((d&&d.topGreen)||[]).slice(0,15);
@@ -1553,7 +1553,7 @@
       roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season — server-verified trades only. One well-timed call can top it, on any account size."},
       wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
       xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."},
-      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold members only. The most WINNING trades of the 14-day season takes it — every closed ticket that finished in profit counts as one win. The same rules the win-rate board is paid on apply, so tiny scalps do not pad it: a win must clear +5% ROE on a real 0.2% price move, on at least $1 of margin, server-settled, and partial closes of one position count once. Reach Gold (12,000 XP) to enter."}
+      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold members only, scored in points: close a trade in profit and it is +1, close it red and it is -1. Your season score is simply the difference, so volume alone gets you nowhere — you need to be right more often than you are wrong. A trade that never moved the price 0.2% counts neither way, partial closes of one position count once, and so does a batch of the same trade opened together. Minimum $1 margin, server-settled trades, opened during the season. Reach Gold (12,000 XP) to enter."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
     var START=seasonEnd();
@@ -1831,7 +1831,7 @@
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=06cf9ed2"></script>
+<script defer src="/assets/mp-trade.js?v=786ef56f"></script>
 <script defer src="/assets/mp-auth.js?v=94228f34"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 

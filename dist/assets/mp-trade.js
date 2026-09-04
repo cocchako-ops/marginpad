@@ -540,7 +540,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
         else if(board===4)val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
-        else if(board===5)val='<b style="color:#ffcf3f">'+(+x.w||0)+((+x.w||0)===1?' win':' wins')+'</b> <span style="color:#7f8893">('+(+x.l||0)+'L)</span>';else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?' green day':' green days')+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
+        else if(board===5){var _gp=+x.pts||0;val='<b style="color:'+(_gp>=0?'#ffcf3f':'#ff7b72')+'">'+(_gp>0?'+':'')+_gp+' pts</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';}else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?' green day':' green days')+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
  html+='<br><span style="color:#ffce8a;font-size:11.5px"> 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
