@@ -66,6 +66,37 @@
     }
     host.hidden = false;
   };
+  // Guest carry-over (2026-09-06). A guest's paper trades live in localStorage and syncTrades() already ships them
+  // into the account at sign-in; what was missing is the MOMENT. On a sign-in where this device holds closed guest
+  // trades, one card says what came with you: closes, net, best, wins - and that they count now. Once per account
+  // per device. Numbers come from the local journal itself: it is the record of what the guest actually did.
+  window.mpCarryOver = function (uid, isNew) {
+    try {
+      uid = String(uid || ''); if (!uid) return false;
+      var key = 'mp_carry_' + uid; if (localStorage.getItem(key)) return false;
+      var arr = []; try { arr = JSON.parse(localStorage.getItem('mp_journal') || '[]') || []; } catch (e) { arr = []; }
+      var closed = arr.filter(function (t) { return t && (t.status === 'win' || t.status === 'loss') && isFinite(+t.pnl); });
+      if (!closed.length) return false;
+      localStorage.setItem(key, String(Date.now()));
+      var net = 0, best = null, wins = 0;
+      closed.forEach(function (t) { var p = +t.pnl || 0, m = +t.margin || +t.riskAmt || 0, roe = m > 0 ? p / m * 100 : null; net += p; if (p > 0) wins++; if (roe != null && (best == null || roe > best)) best = roe; });
+      var money = function (v) { return (v < 0 ? '-$' : '+$') + Math.abs(v).toFixed(2); };
+      if (document.getElementById('mpCo')) return true;
+      if (!document.getElementById('mpco-css')) { var st = document.createElement('style'); st.id = 'mpco-css'; st.textContent = '#mpCo{position:fixed;right:18px;bottom:18px;z-index:1450;width:min(360px,calc(100vw - 24px));background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid #c2f64a;border-radius:14px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.55);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#e8ecf1;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}#mpCo.on{opacity:1;transform:none}.mpco-k{font:700 10px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#c2f64a;margin-bottom:5px}.mpco-t{font-weight:800;font-size:14.5px;margin-bottom:8px}.mpco-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 9px}.mpco-g div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:7px 6px;text-align:center;min-width:0}.mpco-g b{display:block;font:700 14px "Space Mono",monospace;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpco-g span{display:block;font-size:9.5px;color:#7c8794;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}.mpco-b{font-size:12.5px;line-height:1.5;color:#b7c0ca}.mpco-a{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}.mpco-go{background:#c2f64a;color:#0a0b0d;border:0;border-radius:9px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer}.mpco-no{background:transparent;color:#9aa3ad;border:1px solid #2a323c;border-radius:9px;padding:9px 12px;font-weight:600;font-size:13px;cursor:pointer}'; document.head.appendChild(st); }
+      var box = document.createElement('div'); box.id = 'mpCo';
+      box.innerHTML = '<div class="mpco-k">' + (isNew ? 'Welcome aboard' : 'Signed in') + '</div><div class="mpco-t">' + (closed.length === 1 ? 'Your guest trade came with you.' : 'Your ' + closed.length + ' guest trades came with you.') + '</div>'
+        + '<div class="mpco-g"><div><b style="color:' + (net >= 0 ? '#34d99a' : '#ff6c5c') + '">' + money(net) + '</b><span>net</span></div><div><b>' + wins + ' / ' + closed.length + '</b><span>wins</span></div><div><b' + (best != null && best > 0 ? ' style="color:#34d99a"' : '') + '>' + (best == null ? '-' : (best > 0 ? '+' : '') + Math.round(best) + '%') + '</b><span>best ROE</span></div></div>'
+        + '<div class="mpco-b">They are in your journal now and they count: XP, records and the season boards start from here.</div>'
+        + '<div class="mpco-a"><button type="button" class="mpco-go">See My Trades</button><button type="button" class="mpco-no">Got it</button></div>';
+      document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
+      var close = function () { box.classList.remove('on'); setTimeout(function () { try { box.remove(); } catch (e) {} }, 300); };
+      box.querySelector('.mpco-no').addEventListener('click', close);
+      box.querySelector('.mpco-go').addEventListener('click', function () { close(); try { if (window.mpOpenTrades) window.mpOpenTrades(); else location.href = '/paper-trade'; } catch (e) {} });
+      setTimeout(close, 45000);
+      try { if (window.mpXpCheck) setTimeout(window.mpXpCheck, 2500); } catch (e) {} // the imported closes pay XP: let the toasts land with the card
+      return true;
+    } catch (e) { return false; }
+  };
   window.mpLvlSvg = window.mpLvlSvg || function (k, col) { col = col || '#c97f4a';
     if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>';
     if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
@@ -1348,7 +1379,7 @@
       fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode(), src: landingSrc() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
-          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
+          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
           else if (d.error === 'bad_code') setMsg('Wrong code' + (d.left != null ? ' — ' + d.left + ' tries left' : '') + '.', 'err');
           else if (d.error === 'expired' || d.error === 'no_code') setMsg('Code expired — request a new one.', 'err');
           else if (d.error === 'too_many_attempts') setMsg('Too many tries — request a new code.', 'err');
