@@ -530,6 +530,40 @@
   .hh-promo.live{border-color:rgba(56,189,248,.75);box-shadow:0 0 26px -10px rgba(56,189,248,.7);}
   button.hh-promo:hover{border-color:rgba(56,189,248,.7);box-shadow:0 6px 22px -12px rgba(56,189,248,.6);}
   .hh-promo .hh-more{color:#57c7f7;}
+/* Daily call (2026-09-06): one BTC close guess a day, Ticks for accuracy. Same card family as Happy Hour, lime. */
+.dc{margin:10px 0 2px;border:1px solid rgba(194,246,74,.28);background:linear-gradient(180deg,rgba(194,246,74,.075),rgba(194,246,74,.012));border-radius:12px;padding:11px 13px 12px;}
+.dc[hidden]{display:none}
+.dc-top{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:var(--lime);}
+.dc-state{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#0a0b0d;background:var(--lime);border-radius:20px;padding:2px 9px;}
+.dc-state.off{background:#3a4450;color:#c7ccd4}
+.dc-q{margin:7px 0 9px;font-size:13.5px;color:#d7dce2;line-height:1.4}
+.dc-q b{color:#fff}
+.dc-live{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--dim);white-space:nowrap}
+.dc-form{display:flex;gap:7px;align-items:stretch}
+.dc-in{flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:0 11px;transition:border-color .14s}
+.dc-in:focus-within{border-color:var(--lime)}
+.dc-in span{font-family:'Space Mono',monospace;font-size:13px;color:var(--faint)}
+.dc-in input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:700 16px 'Space Mono',monospace;padding:10px 0;letter-spacing:.01em}
+.dc-in input::placeholder{color:#4e5864;font-weight:400}
+.dc-go{flex:0 0 auto;background:var(--lime);color:#0a0b0d;border:0;border-radius:10px;padding:0 15px;font:800 13px 'Bricolage Grotesque',sans-serif;cursor:pointer;transition:filter .14s,transform .1s}
+.dc-go:hover{filter:brightness(1.06)}
+.dc-go:active{transform:translateY(1px)}
+.dc-go[disabled]{opacity:.55;cursor:not-allowed}
+.dc-mine{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:11.5px;color:#c7ccd4}
+.dc-mine b{color:#fff}
+.dc-mine .dc-chg{color:var(--lime);background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.dc-y{margin-top:9px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font-family:'Space Mono',monospace;font-size:11px;color:#b9c2cc;line-height:1.45}
+.dc-y b{color:#fff}.dc-y .win{color:var(--lime)}.dc-y .mid{color:#ffd75a}
+.dc-sub{margin-top:8px;font-size:11.5px;color:var(--dim);line-height:1.45}
+.dc-sub b{color:#c7ccd4}
+.dc-board{margin-top:9px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px}
+.dc-board .dc-bh{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.dc-board .dc-r{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#d7dce2;padding:3px 0}
+.dc-board .dc-r i{font:700 10px 'Space Mono',monospace;color:var(--faint);width:14px;text-align:right;font-style:normal}
+.dc-board .dc-r span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-board .dc-r b{font:700 12px 'Space Mono',monospace;color:var(--lime)}
+.dc-board .dc-r.me{color:#fff}.dc-board .dc-r.me span{font-weight:700}
+@media(max-width:560px){.dc-q{font-size:13px}.dc-in input{font-size:15px}}
   /* details modal */
   .hhm{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,7,10,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
   .hhm[hidden]{display:none;}
@@ -1074,6 +1108,18 @@
         </button>
         <div id="hhPromos"></div>
       </div>
+      <div class="dc" id="dc" hidden>
+        <div class="dc-top">Daily call<span class="dc-state" id="dcState">OPEN</span></div>
+        <div class="dc-q">Where does <b>BTC</b> close today? <span class="dc-live" id="dcLive"></span></div>
+        <form class="dc-form" id="dcForm" autocomplete="off">
+          <div class="dc-in"><span>$</span><input id="dcIn" type="text" inputmode="decimal" placeholder="your call" maxlength="12" /></div>
+          <button type="submit" class="dc-go" id="dcGo">Call it</button>
+        </form>
+        <div class="dc-mine" id="dcMine" hidden></div>
+        <div class="dc-y" id="dcY" hidden></div>
+        <div class="dc-sub" id="dcSub"></div>
+        <div class="dc-board" id="dcBoard" hidden></div>
+      </div>
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
@@ -1543,6 +1589,40 @@
   // reflect sign-in state on the leaderboard CTA
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
+  /* Daily call: state comes whole from /api/predict; re-fetched on sign-in, after a call, and every 5 min. */
+  (function(){
+    var box=document.getElementById('dc');if(!box)return;var D=null,busy=false;
+    function fmt(n){n=+n||0;return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:0}):n.toFixed(2);}
+    function esc(x){return String(x==null?'':x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function hm(ms){var s=Math.max(0,Math.round(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+(m<10?'0':'')+m+'m':m+'m';}
+    function paint(){
+      if(!D){return;}
+      box.hidden=false;
+      var st=document.getElementById('dcState'),live=document.getElementById('dcLive'),form=document.getElementById('dcForm'),mine=document.getElementById('dcMine'),y=document.getElementById('dcY'),sub=document.getElementById('dcSub'),bd=document.getElementById('dcBoard'),inp=document.getElementById('dcIn'),go=document.getElementById('dcGo');
+      var me=D.me,today=me&&me.today,signed=!!D.signedIn;
+      st.textContent=D.open?('OPEN · '+hm(D.cutoff-Date.now())+' left'):'CLOSED';st.className='dc-state'+(D.open?'':' off');
+      live.textContent=D.live?('now $'+fmt(D.live)):'';
+      if(!signed){form.hidden=true;mine.hidden=true;sub.innerHTML='<b>Sign in (free)</b> to make your call. Calls close at '+D.cutoffH+':00 UTC; the 00:00 UTC close settles it. Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up.';}
+      else if(today&&!box.getAttribute('data-edit')){form.hidden=true;mine.hidden=false;mine.innerHTML='Your call: <b>$'+fmt(today.guess)+'</b>'+(D.open?' <button type="button" class="dc-chg" id="dcChg">change</button>':'');var cb=document.getElementById('dcChg');if(cb)cb.onclick=function(){box.setAttribute('data-edit','1');paint();inp.focus();};
+        sub.innerHTML=(D.open?'Locked in until '+D.cutoffH+':00 UTC. ':'Calls are closed for today. ')+'Settles at 00:00 UTC'+(me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+(me.season&&me.season.n?' · season <b>'+me.season.pts+' pts</b>'+(me.season.rank?' (#'+me.season.rank+')':''):'')+'.';}
+      else{form.hidden=!D.open;mine.hidden=true;if(!D.open){sub.innerHTML='Calls for today closed at '+D.cutoffH+':00 UTC. Come back after midnight UTC for tomorrow'+(me&&me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+'.';}else{sub.innerHTML='Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up. One call a day, changeable until '+D.cutoffH+':00 UTC.';}
+        if(!inp.value&&D.live)inp.placeholder=fmt(D.live);}
+      if(me&&me.yday&&me.yday.settled){var yy=me.yday,cls=yy.pts>=8?'win':yy.pts>0?'mid':'';y.hidden=false;y.innerHTML='Yesterday: you said <b>$'+fmt(yy.guess)+'</b>, it closed <b>$'+fmt(yy.close)+'</b> · <span class="'+cls+'">'+(Math.round(yy.err*100)/100)+'% off · +'+yy.ticks+' Ticks</span>';}else{y.hidden=true;}
+      var rows=D.board||[],myName=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'';
+      if(rows.length){bd.hidden=false;bd.innerHTML='<div class="dc-bh"><span>Top callers · this season</span><span>'+(D.callers||0)+' calling</span></div>'+rows.slice(0,5).map(function(r,i){return '<div class="dc-r'+(r.name===myName?' me':'')+'"><i>'+(i+1)+'</i><span>@'+esc(r.name)+'</span><b>'+r.pts+' pts</b></div>';}).join('');}else{bd.hidden=true;}
+      go.disabled=false;
+    }
+    function load(){fetch('/api/predict',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.day){D=d;box.removeAttribute('data-edit');paint();}}).catch(function(){});}
+    document.getElementById('dcForm').addEventListener('submit',function(e){e.preventDefault();if(busy)return;var v=parseFloat(String(document.getElementById('dcIn').value).replace(/[^0-9.]/g,''));var sub=document.getElementById('dcSub');
+      if(!(v>0)){sub.innerHTML='<b style="color:#ff8a80">Type a price first.</b>';return;}
+      busy=true;document.getElementById('dcGo').disabled=true;
+      fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){busy=false;
+        if(d&&d.ok){document.getElementById('dcIn').value='';load();}
+        else{document.getElementById('dcGo').disabled=false;sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='range'?'That is more than 30% from the price right now.':d&&d.error==='closed'?'Calls closed for today.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save your call.')+'</b>';}
+      }).catch(function(){busy=false;document.getElementById('dcGo').disabled=false;});});
+    window.addEventListener('mp-auth-change',load);setTimeout(load,900);setInterval(function(){if(!document.hidden)load();},300000);
+    setInterval(function(){if(D&&D.open&&!document.hidden){var st=document.getElementById('dcState');if(st&&Date.now()<D.cutoff)st.textContent='OPEN · '+hm(D.cutoff-Date.now())+' left';}},60000);
+  })();
 
   // ---- 3-board prize showcase (switchable, locked preview of next week's leaderboards) ----
   (function(){

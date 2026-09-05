@@ -4849,6 +4849,25 @@ async function drainXpBoostEvents(env) {
 // once storage-wedged beyond recovery, and these two hold ALL users + ALL balances with no other copy).
 // Rotation: 7 day-of-week slots + a 'latest' pointer per store → always the last 7 days, zero retention logic.
 // Prefers R2 (env.BACKUP) automatically once the owner enables R2 and the binding is added.
+// Daily call settlement: after 00:05 UTC, read yesterday's 1D candle close (same cascade every chart uses) and score
+// every open call. Stamped per day; a failed fetch leaves no stamp so the next */10 retries.
+async function settleDailyCalls(env) {
+  try {
+    if (!env.STATS || !env.USERS) return;
+    const now = new Date(); if (now.getUTCHours() === 0 && now.getUTCMinutes() < 5) return;
+    const yday = predDay(Date.now() - 86400000);
+    if (await env.STATS.get('pred:done:' + yday)) return;
+    let bars = []; try { const r = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=BTC&interval=1440')); bars = await r.json(); } catch (e) { return; }
+    const want = Date.UTC(+yday.slice(0, 4), +yday.slice(5, 7) - 1, +yday.slice(8, 10)) / 1000;
+    const bar = (Array.isArray(bars) ? bars : []).filter(b => +b.time === want)[0];
+    const later = (Array.isArray(bars) ? bars : []).some(b => +b.time > want);
+    if (!bar || !(+bar.close > 0) || !later) return; // the candle must be closed (a newer one exists) before it can settle anything
+    const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pred/settle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day: yday, close: +bar.close }) }));
+    const rj = await rr.json();
+    await env.STATS.put('pred:done:' + yday, '1', { expirationTtl: 3 * 86400 });
+    await env.STATS.put('pred:last', JSON.stringify({ day: yday, close: +bar.close, settled: rj.settled || 0, ticksPaid: rj.ticksPaid || 0, ts: Date.now() }), { expirationTtl: 40 * 86400 });
+  } catch (e) {}
+}
 async function nightlyBackup(env) {
   try {
     if (!env.STATS || !env.USERS || !env.REWARDS) return;
@@ -9199,6 +9218,7 @@ const TICK_SOURCES = [
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
+  { k: 'predict', label: 'Daily call', cap: 13 },
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
@@ -9396,6 +9416,12 @@ const ACH_DEFS = [ // id, name, how — all server-verified from real tables; ea
   { id: 'veteran', name: 'Veteran', how: 'Earn 30,000 lifetime XP' },
   { id: 'regular', name: 'The Regular', how: '500 pageviews on your account' },
 ];
+// Daily call (2026-09-06): guess where BTC closes today (00:00 UTC). Calls close at PRED_CUTOFF_H so the last hours
+// cannot be a free answer; the 1D candle settles it; points are the Ticks tiers (plus 1 Tick for showing up).
+const PRED_CUTOFF_H = 20;
+function predPts(errPct) { return errPct <= 0.25 ? 12 : errPct <= 0.5 ? 8 : errPct <= 1 ? 5 : errPct <= 2 ? 2 : 0; }
+function predSeason(now) { const i = Math.floor(((+now || Date.now()) - LB_ANCHOR) / LB_PERIOD); const a = LB_ANCHOR + i * LB_PERIOD; return { idx: i, from: new Date(a).toISOString().slice(0, 10), to: new Date(a + LB_PERIOD).toISOString().slice(0, 10), endMs: a + LB_PERIOD }; }
+function predDay(now) { return new Date(+now || Date.now()).toISOString().slice(0, 10); }
 function vaultItem(id) { return VAULT_ITEMS.find(x => x.id === id) || null; }
 // What to call the thing in a sentence. The catalogue encodes the kind as a one-letter field, which is fine
 // for code and useless in a chat line.
@@ -14185,6 +14211,10 @@ export default {
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
     }
+    if (url.pathname === '/api/admin/e2euser' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E: mint/remove a throwaway member {uid, op}
+      let eb = {}; try { eb = await request.json(); } catch (e) {}
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); return new Response(await rr.text(), { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
+    }
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
@@ -14841,6 +14871,34 @@ export default {
       // browser/CDN get no-store so a refresh ALWAYS re-hits the worker (fresh ≤30s) — the public max-age was being extended to 4h by the CF CDN, freezing the board
       return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
+    if (url.pathname === '/api/predict') { // Daily call: GET = the card's whole state (public board + mine when signed in); POST {guess} = make or change today's call
+      const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh3 });
+      const stubP = env.USERS.get(env.USERS.idFromName('main'));
+      const now = Date.now(), day = predDay(now), yday = predDay(now - 86400000), cutoffMs = Date.UTC(+day.slice(0, 4), +day.slice(5, 7) - 1, +day.slice(8, 10), PRED_CUTOFF_H), open = now < cutoffMs;
+      const tokP = getCookie(request, SESS_COOKIE); let uP = tokP ? await sessionUser(env, tokP) : null;
+      const adminUidP = url.searchParams.get('uid'); if (!uP && adminUidP && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uP = { id: adminUidP }; // E2E hook, same as /api/trade
+      let live = 0; try { const pd = await fetchPriceCached('BTC'); live = +(pd && pd.price) || 0; } catch (e) {}
+      if (request.method === 'POST') {
+        if (!uP) return new Response('{"error":"not_signed_in"}', { status: 401, headers: jh3 });
+        if (!open && !(adminUidP && url.searchParams.get('force'))) return new Response(JSON.stringify({ error: 'closed', cutoff: cutoffMs }), { status: 409, headers: jh3 });
+        let bp = {}; try { bp = await request.json(); } catch (e) {}
+        const g = +bp.guess; if (!(g > 0) || !(live > 0) || g < live * 0.7 || g > live * 1.3) return new Response(JSON.stringify({ error: 'range', live }), { status: 400, headers: jh3 });
+        const pr = await stubP.fetch(new Request('https://do/pred/put', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uP.id, day, guess: Math.round(g * 100) / 100, pxAt: live }) }));
+        const pj = await pr.json(); if (pj && pj.ok) { try { await evPush(env, request, 'predict', String(pj.changed ? 'changed' : 'call') + ' ' + day, '/'); } catch (e) {} }
+        return new Response(JSON.stringify(pj), { status: pr.status, headers: jh3 });
+      }
+      let board = { board: [], callers: 0, season: predSeason(now) }; try { board = await (await stubP.fetch(new Request('https://do/pred/board'))).json(); } catch (e) {}
+      let me = null; if (uP) { try { me = await (await stubP.fetch(new Request('https://do/pred/me?uid=' + encodeURIComponent(uP.id) + '&day=' + day + '&yday=' + yday))).json(); } catch (e) {} }
+      return new Response(JSON.stringify({ day, yday, cutoff: cutoffMs, open, live, cutoffH: PRED_CUTOFF_H, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], board: board.board || [], callers: board.callers || 0, season: board.season, me, signedIn: !!(uP && tokP) }), { headers: jh3 });
+    }
+    if (url.pathname === '/api/admin/predict' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops/E2E: ?settle=<day>&close=<px>[&uid=] forces a settlement with a given close; plain GET = last settle stamp
+      const jh4 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const sday = url.searchParams.get('settle');
+      if (sday) { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pred/settle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day: sday, close: +url.searchParams.get('close') || 0, uid: url.searchParams.get('uid') || '' }) })); return new Response(await rr.text(), { headers: jh4 }); }
+      let last = null; try { last = await env.STATS.get('pred:last'); } catch (e) {}
+      return new Response(JSON.stringify({ last: last ? JSON.parse(last) : null, cutoffH: PRED_CUTOFF_H }), { headers: jh4 });
+    }
     if (url.pathname === '/api/levels' && request.method === 'POST') { // public batch level-badge resolver (uid[]/username[] -> {k,col,name})
       let lvBody = {}; try { lvBody = await request.json(); } catch (e) {}
       if (!env.USERS) return new Response('{"byId":{},"byName":{}}', { headers: { 'content-type': 'application/json', ...CORS } });
@@ -15225,6 +15283,7 @@ export default {
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
     bg(payWeeklyPrizes, 'prizes');
+    bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
     bg(checkWhaleAlerts, 'whale');
@@ -17018,6 +17077,8 @@ export class UserStore {
     // Personal records (2026-09-06): the four numbers a trader beats over months, kept forever and updated on every
     // close. new_json/new_ts remember the last record broken so the /xp poll can toast it once.
     s.exec('CREATE TABLE IF NOT EXISTS upb(user_id TEXT PRIMARY KEY, best_roe REAL, best_roe_ts INTEGER, best_pnl REAL, best_pnl_ts INTEGER, streak INTEGER DEFAULT 0, streak_best INTEGER DEFAULT 0, streak_best_ts INTEGER, day_key TEXT, day_n INTEGER DEFAULT 0, day_best INTEGER DEFAULT 0, day_best_ts INTEGER, new_json TEXT, new_ts INTEGER)');
+    // Daily call (2026-09-06): one BTC close guess per UTC day, settled from the 1D candle, paid in Ticks only.
+    s.exec('CREATE TABLE IF NOT EXISTS upred(user_id TEXT, day TEXT, guess REAL, ts INTEGER, px_at REAL, close REAL, err REAL, pts INTEGER, ticks INTEGER, settled INTEGER DEFAULT 0, PRIMARY KEY(user_id, day))');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
@@ -19062,6 +19123,52 @@ export class UserStore {
       const count = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', uid)[0] || { c: 0 }).c;
       const last = this.rows('SELECT f.uid fid, u.username, f.ts FROM ufollows f LEFT JOIN users u ON u.id = f.uid WHERE f.tuid = ? ORDER BY f.ts DESC LIMIT 1', uid)[0];
       return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
+    }
+    if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
+      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
+      const sql = this.state.storage.sql;
+      if (b.op === 'rm') { for (const t of ['upred', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
+      return this.j({ ok: true, uid, username: 'e2e_' + uid });
+    }
+    if (path === '/pred/put' && request.method === 'POST') { // {uid, day, guess, pxAt}: one call per UTC day, changeable until the cutoff, never after settlement
+      const uid = String(b.uid || '').replace(/^u:/, ''), day = String(b.day || ''), g = +b.guess, px = +b.pxAt || 0;
+      if (!uid || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !(g > 0)) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      const cur = this.rows('SELECT settled FROM upred WHERE user_id=? AND day=?', uid, day)[0];
+      if (cur && +cur.settled) return this.j({ error: 'settled' }, 409);
+      this.state.storage.sql.exec('INSERT INTO upred(user_id,day,guess,ts,px_at,settled) VALUES(?,?,?,?,?,0) ON CONFLICT(user_id,day) DO UPDATE SET guess=excluded.guess, ts=excluded.ts, px_at=excluded.px_at', uid, day, g, Date.now(), px);
+      return this.j({ ok: true, guess: g, day, changed: !!cur });
+    }
+    if (path === '/pred/me') { // the signed-in caller's state: today, yesterday's result, day streak, season points + rank
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''), day = String(url.searchParams.get('day') || ''), yday = String(url.searchParams.get('yday') || '');
+      const sk = predSeason(url.searchParams.get('now') ? +url.searchParams.get('now') : Date.now());
+      const today = this.rows('SELECT guess, ts, px_at FROM upred WHERE user_id=? AND day=?', uid, day)[0] || null;
+      const y = this.rows('SELECT guess, close, err, pts, ticks, settled FROM upred WHERE user_id=? AND day=?', uid, yday)[0] || null;
+      const days = this.rows('SELECT day FROM upred WHERE user_id=? ORDER BY day DESC LIMIT 400', uid).map(r => r.day);
+      let streak = 0; { let d = new Date(day + 'T00:00:00Z'); if (days.indexOf(day) < 0) d = new Date(d.getTime() - 86400000); for (;;) { const k = d.toISOString().slice(0, 10); if (days.indexOf(k) < 0) break; streak++; d = new Date(d.getTime() - 86400000); } }
+      const mine = this.rows('SELECT COALESCE(SUM(pts),0) p, COUNT(*) n FROM upred WHERE user_id=? AND settled=1 AND day>=? AND day<?', uid, sk.from, sk.to)[0] || { p: 0, n: 0 };
+      const above = this.rows('SELECT COUNT(*) c FROM (SELECT user_id, SUM(pts) p FROM upred WHERE settled=1 AND day>=? AND day<? GROUP BY user_id HAVING p>?)', sk.from, sk.to, +mine.p || 0)[0] || { c: 0 };
+      return this.j({ today, yday: y, streak, season: { pts: +mine.p || 0, n: +mine.n || 0, rank: (+mine.n || 0) ? (+above.c || 0) + 1 : null } });
+    }
+    if (path === '/pred/board') { // season top callers: points are the same tiers the Ticks pay
+      const sk = predSeason(url.searchParams.get('now') ? +url.searchParams.get('now') : Date.now());
+      const rows = this.rows("SELECT p.user_id uid, u.username name, SUM(p.pts) pts, COUNT(*) n FROM upred p JOIN users u ON u.id=p.user_id WHERE p.settled=1 AND p.day>=? AND p.day<? AND u.username NOT LIKE 'e2e\\_%' ESCAPE '\\' GROUP BY p.user_id ORDER BY pts DESC, n ASC LIMIT 10", sk.from, sk.to);
+      const callers = (this.rows("SELECT COUNT(DISTINCT p.user_id) c FROM upred p JOIN users u ON u.id=p.user_id WHERE p.day>=? AND p.day<? AND u.username NOT LIKE 'e2e\\_%' ESCAPE '\\'", sk.from, sk.to)[0] || {}).c || 0;
+      return this.j({ season: sk, board: rows.filter(r => r.name).map(r => ({ name: r.name, pts: +r.pts || 0, n: +r.n || 0 })), callers });
+    }
+    if (path === '/pred/settle' && request.method === 'POST') { // {day, close, uid?}: score every open call for that day, pay Ticks (accuracy tiers + 1 for showing up)
+      const day = String(b.day || ''), close = +b.close, only = b.uid ? String(b.uid).replace(/^u:/, '') : '';
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !(close > 0)) return this.j({ error: 'bad' }, 400);
+      const rows = only ? this.rows('SELECT user_id, guess FROM upred WHERE day=? AND settled=0 AND user_id=?', day, only) : this.rows('SELECT user_id, guess FROM upred WHERE day=? AND settled=0', day);
+      let n = 0, paid = 0;
+      for (const r of rows) {
+        const err = Math.abs(+r.guess - close) / close * 100, pts = predPts(err), tk = pts + 1;
+        this.state.storage.sql.exec('UPDATE upred SET close=?, err=?, pts=?, ticks=?, settled=1 WHERE user_id=? AND day=?', close, Math.round(err * 1000) / 1000, pts, tk, r.user_id, day);
+        try { paid += this._grantTicks(r.user_id, 'predict', tk, { dayCap: TICK_CAP.predict, note: 'daily call ' + day + ' (' + (Math.round(err * 100) / 100) + '% off)' }); } catch (e) {}
+        n++;
+      }
+      return this.j({ ok: true, day, close, settled: n, ticksPaid: paid });
     }
     if (path === '/pb') { const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); return this.j({ records: uid ? this._pbGet(uid) : null }); } // personal records (self poll + admin)
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
