@@ -435,14 +435,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // Paper-Trade opener incl. Advanced (exchange margin preset, SL, TP, trailing stop, break-even), big X.
   function openTrade(){closeFloat();
     var old=ov.querySelector('.mfc-trbd');if(old){old.remove();return;}
-    var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005;
+    var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005,oType='market';
     var el=document.createElement('div');el.className='mfc-trbd';
     el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade','Demo trade')+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
       +'<div class="mfc-trf-b">'
       +'<label class="mtr-lbl">'+mcT('mtCoin','Coin')+'</label>'
       +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search" hidden></div>'
       +'<div class="mfc-sl mtr-syml" id="mtrSymL" hidden></div>'
+      +'<div class="mtr-otype" id="mtrType"><button class="on" data-ot="market" type="button">'+mcT('otMarket','Market')+'</button><button data-ot="limit" type="button">'+mcT('otLimit','Limit')+'</button></div>'
       +'<div class="mtr-seg" id="mtrSeg"><button class="on" data-side="long" type="button">'+mcT('long','Long')+'</button><button data-side="short" type="button">'+mcT('short','Short')+'</button></div>'
+      +'<div id="mtrLimWrap" hidden><label class="mtr-lbl">'+mcT('lLimitPx','Limit price')+'</label><input class="mtr-in" id="mtrLim" type="number" inputmode="decimal" step="any" min="0" placeholder="—"><div class="mtr-limh" id="mtrLimH"></div></div>'
       +'<label class="mtr-lbl">'+mcT('lAmountIn','Amount (USD)')+'</label>'
       +'<input class="mtr-in" id="mtrAmt" type="number" inputmode="decimal" value="100" min="1" max="100000" step="any">'
       +'<label class="mtr-lbl">'+mcT('lLeverage','Leverage')+' <b id="mtrLevV" style="color:#c2f64a">20×</b></label>'
@@ -501,13 +503,32 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       // nothing fresh → pull a REST price + seed the map, return 0 so the opener asks the user to retry (never opens stale)
       fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
       return 0;}
+    // Market fills now; Limit rests until the market reaches the price and fills AT it (mpOrders owns the order —
+    // server-side when signed in, so it fills with the phone in a pocket). Same wrong-side rule as the terminal.
+    function limPx(){var e=q('mtrLim');var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
+    function limHint(){var h=q('mtrLimH');if(!h)return;
+      if(oType!=='limit'){h.textContent='';h.className='mtr-limh';return;}
+      var p=livePx(),l=limPx(),long=side==='long';
+      if(!isFinite(l)||l<=0){h.textContent=mcT('otHintEmpty','Enter the price you want to be filled at.');h.className='mtr-limh';return;}
+      if(!(p>0)){h.textContent='';h.className='mtr-limh';return;}
+      if(long?l>=p:l<=p){h.textContent=long?mcT('otBadLong','A limit long must be BELOW the current price.'):mcT('otBadShort','A limit short must be ABOVE the current price.');h.className='mtr-limh bad';return;}
+      var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?mcT('otBelow','below the market'):mcT('otAbove','above the market'));h.className='mtr-limh';}
+    function setType(t){oType=(t==='limit')?'limit':'market';
+      Array.prototype.forEach.call(q('mtrType').querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-ot')===oType);});
+      q('mtrLimWrap').hidden=oType!=='limit';
+      var li=q('mtrLim');if(oType==='limit'&&li&&!(parseFloat(li.value)>0)){var p=livePx();if(p>0)li.value=String(+(p*(side==='long'?0.99:1.01)).toPrecision(8));}
+      q('mtrGo').textContent=(oType==='limit')?mcT('otPlace','Place limit order'):mcT('mtOpen','Open demo trade');
+      upd();}
+    q('mtrType').addEventListener('click',function(e){var b=e.target.closest('button[data-ot]');if(!b)return;setType(b.getAttribute('data-ot'));});
+    var _mli=q('mtrLim');if(_mli)_mli.addEventListener('input',upd);
     function upd(){var px=livePx();var amt=+q('mtrAmt').value||0;
-      if(px>0){var liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
-        q('mtrPx').textContent=fp(px);
+      var epx=(oType==='limit'&&limPx()>0)?limPx():px; // a limit ticket quotes its liq off the price it will be entered at
+      if(epx>0){var liq=side==='long'?epx*(1-(1-mmr)/lev):epx*(1+(1-mmr)/lev);
+        q('mtrPx').textContent=fp(epx);
         q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
       }else{q('mtrPx').textContent='…';q('mtrLiq').textContent='—';}
       q('mtrSz').textContent=fp(amt*lev);q('mtrNot').textContent=fp(amt*lev);
-      q('mtrGo').classList.toggle('short',side==='short');}
+      q('mtrGo').classList.toggle('short',side==='short');limHint();}
     upd();
     var updT=setInterval(function(){if(!document.body.contains(el)){clearInterval(updT);return;}upd();},600);
     q('mtrGo').addEventListener('click',function(){
@@ -515,6 +536,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
       if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
       if(window.mpTradeGate&&!window.mpTradeGate(tSym,side))return;
+      if(oType==='limit'){ // rest the order — no fresh-price fetch needed: the server re-checks the side before accepting
+        var _lp=limPx(),_mk=livePx(),_lg=side==='long';
+        if(!isFinite(_lp)||_lp<=0){msg.style.color='#ff6258';msg.textContent=mcT('otNoPx','Enter a limit price.');return;}
+        if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx','Waiting for a live price — try again in a second.');return;}
+        if(_lg?_lp>=_mk:_lp<=_mk){msg.style.color='#ff6258';msg.textContent=_lg?mcT('otBadLong','A limit long must be BELOW the current price.'):mcT('otBadShort','A limit short must be ABOVE the current price.');return;}
+        var _s9=parseFloat(q('mtrSL').value),_t9=parseFloat(q('mtrTP').value);
+        _s9=(isFinite(_s9)&&(_lg?_s9<_lp:_s9>_lp))?_s9:null;_t9=(isFinite(_t9)&&(_lg?_t9>_lp:_t9<_lp))?_t9:null; // side-checked against the LIMIT price
+        if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}
+        window.mpOrders.add({sym:tSym,side:side,px:_lp,lev:lev,margin:amt,sl:_s9,tp:_t9},function(){
+          msg.style.color='#f0c35a';msg.textContent=mcT('otPlaced','Order placed ✓')+' — '+tSym+' '+side+' '+fp(_lp);
+          try{window.mpBuzz&&window.mpBuzz([12]);}catch(e){}
+          try{if(window.__mpTrack)window.__mpTrack('limitorder',tSym+' '+side+' @'+_lp);}catch(e){}
+        },function(m){msg.style.color='#ff6258';msg.textContent=m||mcT('otFail','Could not place the order — try again.');});
+        return;
+      }
       // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
       // already past its 100× liq distance → the trade "instantly liquidates" the moment the real price loads. Fetch at click.
       msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');

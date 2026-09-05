@@ -51,7 +51,7 @@
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }] },
-    { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
+    { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }] },
     { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }] }
@@ -649,6 +649,31 @@
   }, wire: function (el, d, paint) { el.querySelectorAll('[data-cma]').forEach(function (b) { b.onclick = function () { var act = b.getAttribute('data-cma'); if ((act === 'del' || act === 'delc') && !confirm('Delete this ' + (act === 'del' ? 'post' : 'comment') + '? This cannot be undone.')) return; b.disabled = true; post('/api/comm/admin', { act: act, id: b.getAttribute('data-cmid') }).then(function () { toast(act === 'pin' ? 'pinned' : act === 'unpin' ? 'unpinned' : 'deleted'); paint(); }); }; }); } });
 
   // ---------- TRADING / BOT API ----------
+  // Resting limit orders (2026-09-05). Nothing here needs the owner to act — it is the answer to "why has my order
+  // not filled": how far each one still is from the market, and whether the fill engine actually ran.
+  simple('trading/orders', { url: '/api/admin/porders', every: 60000, html: function (d) {
+    var os = d.orders || [], last = d.last || null;
+    var ranAgo = last && last.ts ? ago(last.ts) + ' ago' : 'never';
+    var close = os.filter(function (o) { return o.awayPct != null && Math.abs(o.awayPct) <= 1; });
+    var cols = [
+      { h: 'who', f: function (o) { return o.username ? userLink(o.username) : '<span class="meta">' + esc(String(o.uid || '').slice(0, 10)) + '</span>'; } },
+      { h: 'market', f: function (o) { return '<b>' + esc(o.sym) + '</b> <span class="badge ' + (o.side === 'short' ? 'red' : 'green') + '">' + esc(String(o.side).toUpperCase()) + '</span> <span class="meta">' + (+o.lev || 1) + 'x</span>'; } },
+      { h: 'limit', r: true, mono: true, f: function (o) { return '$' + (+o.px).toLocaleString('en-US', { maximumFractionDigits: 8 }); } },
+      { h: 'market now', r: true, mono: true, f: function (o) { return o.live ? '$' + (+o.live).toLocaleString('en-US', { maximumFractionDigits: 8 }) : '<span class="meta">no price</span>'; } },
+      { h: 'away', r: true, mono: true, f: function (o) { return o.awayPct == null ? '—' : '<span class="' + (Math.abs(o.awayPct) <= 1 ? 'green' : '') + '">' + (o.awayPct >= 0 ? '+' : '') + o.awayPct.toFixed(2) + '%</span>'; } },
+      { h: 'margin', r: true, mono: true, f: function (o) { return '$' + N(Math.round(+o.margin || 0)); } },
+      { h: 'sl / tp', mono: true, f: function (o) { return (o.sl != null ? (+o.sl).toPrecision(6) : '—') + ' / ' + (o.tp != null ? (+o.tp).toPrecision(6) : '—'); } },
+      { h: 'waiting', mono: true, f: function (o) { return ago(o.ts); } },
+      { h: 'via', f: function (o) { return '<span class="badge">' + esc(o.src || 'site') + '</span>'; } }
+    ];
+    return '<div class="grid g4">'
+      + tile(N(d.resting), 'orders waiting', d.resting ? '' : 'dim', 'good until cancelled, 30-day expiry')
+      + tile(N(close.length), 'within 1% of filling', close.length ? '' : 'dim')
+      + tile(last ? N(last.filled) : '—', 'filled on the last sweep', (last && last.filled) ? '' : 'dim', last ? (N(last.checked) + ' checked · ' + N(last.expired) + ' expired · ' + N(last.failed) + ' blocked') : '')
+      + tile(ranAgo, 'fill engine last ran', (last && Date.now() - last.ts < 25 * 60000) ? '' : 'red', 'runs every 10 minutes with the position sweep')
+      + '</div>'
+      + card('Waiting to fill', tbl(cols, os, 'nothing resting right now'), 'a fill lands at the order price, not at the price the engine noticed — the 1m high/low decides · click the owner for the card');
+  } });
   simple('trading/botapi', { url: '/api/admin/apistats', every: 60000, html: function (d) {
     var ks = (d.keys || []).slice().sort(function (a, b) { return (b.last || 0) - (a.last || 0); });
     var byKey = {}; (d.use || []).forEach(function (u) { byKey[u.k] = (byKey[u.k] || 0) + (+u.n || 0); }); var byDay = daysAgg(d.use || [], 'day', 'n', 14); var u7 = byDay.slice(7).reduce(function (s, x) { return s + x.v; }, 0), uP = byDay.slice(0, 7).reduce(function (s, x) { return s + x.v; }, 0);

@@ -244,6 +244,24 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +'<div class="jrb-row" style="font:11px monospace;color:#8a7a52;margin:0 0 10px">from '+mK(bm.start)+'</div>'
       +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell('In trades',mK(openMargin))+cell('Available',mK(avail))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-baltgl]');if(!t)return;e.preventDefault();e.stopPropagation();var c=(window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false};if(!c.on&&window._mpPrem!==true){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Balance Mode');return;}if(window.mpBal&&window.mpBal.setCfg)window.mpBal.setCfg(!c.on);}); // My Trades Balance-Mode on/off toggle
+  /* MIRROR of the orders tab in home.js (same markup, same classes, same actions) — the drawer exists in both
+     bundles and a trader must see the same waiting orders on the homepage, /rekt and /rewards as in the terminal. */
+  function orderCard(o){
+    var long=o.side!=='short',lp=(window.mpLivePrices&&window.mpLivePrices[o.sym]&&+window.mpLivePrices[o.sym].p)||0;
+    var away=(lp>0)?((+o.px-lp)/lp*100):null;
+    return '<div class="pp pp-ord" data-oid="'+esc(o.id)+'">'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(o.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-ordtag">'+MT('otLimit','Limit')+'</span><span class="pp-live">'+(o.lev||1)+'×'+(lp>0?' · '+fp(lp):'')+'</span></div>'
+      +'<div class="pp-pnl"><span class="big">'+fp(+o.px)+'</span><span class="roe">'+(away==null?MT('otWaiting','waiting'):((away>=0?'+':'')+away.toFixed(2)+'% '+MT('otFromMkt','from market')))+'</span></div>'
+      +'<div class="pp-meta">'
+        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+money(+o.margin)+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+money((+o.margin||0)*((+o.lev>0)?+o.lev:1))+'</b></div>'
+        +'<div><span>SL</span><b>'+(o.sl!=null?fp(+o.sl):'—')+'</b></div>'
+        +'<div><span>TP</span><b>'+(o.tp!=null?fp(+o.tp):'—')+'</b></div>'
+      +'</div>'
+      +'<div class="pp-foot">'+dur(Date.now()-(+o.ts||Date.now()))+' '+MT('otWaiting','waiting')+(o.local?' · '+MT('otLocalNote','this device only'):'')+'</div>'
+      +'<div class="pp-btns"><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel','Cancel order')+'</button></div>'
+      +'<div class="pp-times">'+MT('otPlacedAt','Placed')+' '+tsf(+o.ts)+'</div></div>';}
+  function ordersNow(){try{return (window.mpOrders&&window.mpOrders.list())||[];}catch(e){return [];}}
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -261,12 +279,14 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +stat((unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>=0?'#34d99a':'#ff7b72')
       +stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
-    var rows=(jrTab==='open'?open:closed);
+    var ords=ordersNow();
+    var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
     var _ord=rows.slice().reverse(),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
-    var cards=rows.length?_vis.map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</span></div>';
+    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting — place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
+    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server — they fill even when you are away.')+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore','Show more')+' ('+_rest+')</button>';
     if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season — stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
-    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
+    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
@@ -306,6 +326,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
     if(b.hasAttribute('data-jt')){jrTab=b.getAttribute('data-jt');jrShow=50;render();return;}
+    var oid=b.getAttribute('data-oid'); // an order id is not a journal id — handle it before the journal lookup bails out
+    if(oid&&b.getAttribute('data-act')==='ordcancel'){if(window.mpOrders)window.mpOrders.cancel(oid,function(){render();});render();return;}
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='elig'){_eligData=data;eligToggle(b,e);return;}
@@ -367,6 +389,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeJr();});
   var _jrPend=null;
+  window.addEventListener('mp-orders',function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden)render();});
   window.mpJournalRender=function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden){if(Date.now()-_jrTouchT<800){clearTimeout(_jrPend);_jrPend=setTimeout(render,820);}else render();}}; // defer live re-render past a finger-down so it can't destroy a button mid-tap
   window.mpOpenTrades=openJr;
   /* clamp an ISOLATED outlier wick (a bad exchange print) that sits >3.5% beyond the candle's own body AND both

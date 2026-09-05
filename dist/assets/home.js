@@ -219,22 +219,28 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="mw-a">The price above is the last one the exchange printed, so it will not move until then. Crypto trades every hour of every day if you want something live right now.</div>';
   }
   function updateMktGate(){var b=document.getElementById('planSave'),t=document.getElementById('planOpenTxt'),lbl=document.querySelector('.pt2-px-lbl');var closed=mktClosed();
-    try{mktPanel(((document.getElementById('planSym')||{}).value||'').toUpperCase(),closed);}catch(_){}if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){t.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';}
+    try{mktPanel(((document.getElementById('planSym')||{}).value||'').toUpperCase(),closed);}catch(_){}if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){setBtn();/* reopening must restore the label the CURRENT order type wants (Market vs Limit), not always "Open demo trade" */}
     if(lbl){var wasClosed=lbl.getAttribute('data-mkt')==='closed';if(closed!==wasClosed){lbl.setAttribute('data-mkt',closed?'closed':'open');lbl.childNodes.forEach&&Array.prototype.forEach.call(lbl.childNodes,function(n){if(n.nodeType===3)n.textContent=closed?'CLOSED':'LIVE';});}}}
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();if(t)t.textContent=cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade');if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
+  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade'));if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
   function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,fmtPx);}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
+  // The price this ticket will actually be entered at: the live price for a market order, the typed level for a
+  // limit order. Size, notional and the liquidation estimate must all be quoted off THAT — a limit ticket showing
+  // a liq computed from the live price would be wrong by exactly the distance the trader is waiting for.
+  function effPx(){var p=window.mpPlanLimit;return (window.mpPlanType==='limit'&&isFinite(p)&&p>0)?p:live;}
   function calc(){
     var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional'];
-    if(!isFinite(live)||live<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();return;}
-    var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-(1-_mmr)/lev):live*(1+(1-_mmr)/lev);
+    var px=effPx();
+    if(!isFinite(px)||px<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();try{limHint();}catch(_){}return;}
+    var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-_mmr)/lev):px*(1+(1-_mmr)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
-    var _ld=(liq-live)/live*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); setBtn(); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
+    var _ld=(liq-px)/px*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); setBtn(); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
+    try{limHint();}catch(_){}
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
   // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
@@ -256,6 +262,42 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(levR)levR.addEventListener('input',function(){if(!levEl)return;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
   var _pSymCap=document.getElementById('planSym');if(_pSymCap)_pSymCap.addEventListener('change',function(){applyLevCap(true);});
   syncLevR();levRisk();setTimeout(function(){applyLevCap(false);},200);
+  /* ── MARKET / LIMIT ────────────────────────────────────────────────────────────────────────────────────────
+     Cross-IIFE state lives on window (this file's many IIFEs share nothing else): add() in the journal IIFE reads
+     mpPlanType/mpPlanLimit to decide between an instant fill and a resting order. The wrong-side rule is shown
+     LIVE here — the trader sees "a limit long must be below the market" while typing, not after clicking. */
+  window.mpPlanType='market';window.mpPlanLimit=NaN;
+  var typeEl=document.getElementById('planType'),limWrap=document.getElementById('planLimWrap'),limIn=document.getElementById('planLimitPx'),limQ=document.getElementById('planLimQuick'),limH=document.getElementById('planLimHint');
+  var LQ=[0.5,1,2,5]; // the four distances a trader actually uses; sign follows the side (a long waits below, a short above)
+  function limQuick(){if(!limQ)return;var long=side==='long';limQ.innerHTML=LQ.map(function(p){return '<button type="button" data-lq="'+p+'">'+(long?'-':'+')+p+'%</button>';}).join('');}
+  function limSet(pct){if(!isFinite(live)||live<=0||!limIn)return;var long=side==='long',p=live*(1+(long?-pct:pct)/100);limIn.value=String(+p.toPrecision(8));onLim();}
+  // The one message that decides whether this ticket can be placed. It is the SAME rule the server enforces, so
+  // the button and the API can never disagree about what a limit order is.
+  function limHint(){
+    if(!limH)return;
+    if(window.mpPlanType!=='limit'){limH.textContent='';limH.className='pt2-lim-h';return;}
+    var p=window.mpPlanLimit,long=side==='long';
+    if(!isFinite(p)||p<=0){limH.textContent=(window.mpT&&window.mpT('otHintEmpty'))||'Enter the price you want to be filled at.';limH.className='pt2-lim-h';return;}
+    if(!isFinite(live)||live<=0){limH.textContent='';limH.className='pt2-lim-h';return;}
+    var d=(p-live)/live*100;
+    if(long?p>=live:p<=live){limH.textContent=long?((window.mpT&&window.mpT('otBadLong'))||'A limit long must be BELOW the current price — switch to Market to buy now.'):((window.mpT&&window.mpT('otBadShort'))||'A limit short must be ABOVE the current price — switch to Market to sell now.');limH.className='pt2-lim-h bad';return;}
+    limH.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?((window.mpT&&window.mpT('otBelow'))||'below the market'):((window.mpT&&window.mpT('otAbove'))||'above the market'))+' · '+((window.mpT&&window.mpT('otWaits'))||'fills only if the price gets there');
+    limH.className='pt2-lim-h ok';
+  }
+  function onLim(){window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;calc();try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(_){}}
+  function setType(t){
+    window.mpPlanType=(t==='limit')?'limit':'market';
+    if(typeEl)typeEl.querySelectorAll('button').forEach(function(x){var on=x.getAttribute('data-otype')===window.mpPlanType;x.classList.toggle('on',on);x.setAttribute('aria-selected',on?'true':'false');});
+    if(limWrap)limWrap.hidden=window.mpPlanType!=='limit';
+    if(window.mpPlanType==='limit'){limQuick();if(limIn&&!(parseFloat(limIn.value)>0)&&isFinite(live)&&live>0){limIn.value=String(+(live*(side==='long'?0.99:1.01)).toPrecision(8));}window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;}
+    else window.mpPlanLimit=NaN;
+    calc();
+  }
+  if(typeEl)typeEl.addEventListener('click',function(e){var b=e.target.closest('button[data-otype]');if(!b)return;setType(b.getAttribute('data-otype'));});
+  if(limIn)limIn.addEventListener('input',onLim);
+  if(limQ)limQ.addEventListener('click',function(e){var b=e.target.closest('button[data-lq]');if(!b)return;limSet(parseFloat(b.getAttribute('data-lq')));});
+  if(seg)seg.addEventListener('click',function(){if(window.mpPlanType==='limit'){limQuick();limHint();}}); // flipping Long/Short flips which side of the market the order may rest on
+  window.mpPlanSetType=setType; // the chart's "limit order here" affordance and the E2E both drive the form through this
   (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row — reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
@@ -338,7 +380,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(v.p>0&&Math.abs(raw-v.p)/v.p>0.025){v.rej=(v.rej||0)+1;if(v.rej<2)return v.p;} // hold last-good until a 2nd tick confirms the jump
     v.p=raw;v.rej=0;return raw; }
   window.mpLivePrices=prices; // shared with the My Trades drawer so it shows live P&L without double-polling
-  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
+  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});
+    // A resting limit order's coin must be priced too — otherwise the cross is never seen on this device (the server
+    // still fills it on the */10 sweep, but the trader watching the chart would see nothing happen).
+    try{if(window.mpOrders)window.mpOrders.list().forEach(function(o){if(o&&o.sym)s[String(o.sym).toUpperCase()]=1;});}catch(e){}
+    if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);if(pd.sess&&window.mpMktSess)window.mpMktSess[sym.toUpperCase()]=pd.sess;}catch(_){}if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
@@ -716,7 +762,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // diff: only destroy/recreate the chart price-line objects when the open-position set actually changes. This used
     // to churn every line EVERY tick (1Hz), and each createPriceLine re-fires the autoscale recompute + a chart redraw.
     // updateZone still runs so the liq zone/edge pills track scroll/scale. renderKlines/refreshKlinesQuiet reset _linesSig.
-    var sig=op.map(function(e){return e.id+':'+e.entry+':'+e.stop+':'+e.tp+':'+e.side+':'+e.lev+':'+liqOf(e)+':'+JSON.stringify(e.tps||0)+':'+JSON.stringify(e.sls||0);}).join('|');
+    var ords=[];try{if(window.mpOrders)ords=window.mpOrders.forSym(chartSym);}catch(e){} // resting limit orders on this coin get their own dashed line — a waiting order you cannot see is one you forget you placed
+    var sig=op.map(function(e){return e.id+':'+e.entry+':'+e.stop+':'+e.tp+':'+e.side+':'+e.lev+':'+liqOf(e)+':'+JSON.stringify(e.tps||0)+':'+JSON.stringify(e.sls||0);}).join('|')+'#'+ords.map(function(o){return o.id+':'+o.px+':'+o.side;}).join('|');
     if(sig===_linesSig){updateZone();return;} _linesSig=sig;
     plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
     // cache the line prices FIRST so the autoscale provider (which fires the moment a price line is created) already sees them
@@ -731,6 +778,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       else if(e.tp!=null)_gAdd(+e.tp,'TP','#6b7280',1,2);
       if(e.sls&&e.sls.length)e.sls.forEach(function(L){if(+L.p>0)_gAdd(+L.p,'SL'+(+L.pct<100?' '+(+L.pct)+'%':''),'#6b7280',1,2);});
       else if(e.stop!=null)_gAdd(+e.stop,'SL','#6b7280',1,2);});
+    ords.forEach(function(o){_gAdd(+o.px,(o.side==='short'?'LIMIT SHORT':'LIMIT LONG'),'#f0c35a',1,1);}); // dashed amber: waiting, not held
     for(var gk in _grp){var g=_grp[gk];var t=g.label+(g.n>1?' ×'+g.n:'');
       _openMarks.push({p:g.p,label:t,color:(g.label.slice(0,2)==='TP'||g.label.slice(0,2)==='SL')?'#9aa3ad':g.color});
       if(isFinite(g.p))try{plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}catch(e){}}
@@ -765,6 +813,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       else html+='<div class="zone" style="top:0;height:'+Math.max(0,Math.min(H,y)).toFixed(1)+'px"></div>';});
     if(zoneEl._h!==html){zoneEl._h=html;zoneEl.innerHTML=html;}} // only touch the DOM when the zone geometry actually changed — was an unconditional innerHTML rebuild at ~60fps
   window.mpDrawLines=drawLines; // let the My Trades drawer refresh the chart lines the instant a position is closed/edited
+  window.addEventListener('mp-orders',function(){try{drawLines();}catch(e){}}); // placing/cancelling/filling an order repaints its line immediately, not on the next tick
   function chartHeader(){var px=document.getElementById('ptChartPx'),ch=document.getElementById('ptChartChg'),pd=window.mpPlanLive;var p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p),cg=(pd&&pd.sym===chartSym)?pd.chg:0;if(p>0){if(px){if(window.mpSmoothPx)window.mpSmoothPx(px,p,fp);else px.textContent=fp(p);}if(ch){ch.textContent=((cg>=0?'+':'')+(+cg||0).toFixed(2))+'%';ch.style.color=cg>=0?'var(--up)':'var(--red)';}}
     // the on-chart live-price label colour follows the 24h change (consistent) — never the current TF candle's up/down
     if(candle){var _cc=(cg>=0?'#2ebd85':'#ff5a4d');if(_cc!==_plc){_plc=_cc;try{candle.applyOptions({priceLineColor:_cc});}catch(e){}}}}
@@ -830,7 +879,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     e.tps=proc(e.tps,true);e.sls=proc(e.sls,false);
     if(changed)lvlSync(e);
     return changed;}
-  function tick(){ensureChart();var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var _rp=prices[e.sym];if(!_rp||!(+_rp.p>0)||_rp.seed)return; /* ROOT FIX: no REAL feed price for this symbol → skip stops/levels/liquidation entirely. metrics() falls back to THIS trade's own entry, so 2 open trades on one coin push different values into the per-symbol spike filter ccPx()/_vpx and it returns the wrong (older) entry → phantom liquidation. Display P&L still uses the fallback; only decisions are gated. */var m=metrics(e);if(!(e.sls&&e.sls.length)&&manageStops(e,m))changed=true;if(lvlHit(d,e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
+  function tick(){ensureChart();
+    /* Resting limit orders are checked on the SAME 1s heartbeat as stops and liquidations, and against the same
+       live prices. Signed in, this only ASKS the server to look (it re-verifies and fills at the order's price);
+       for a guest it fills locally. Runs even when the Paper Trade panel is hidden — an order must not depend on
+       which tool tab happens to be open, exactly like the liquidation check below. */
+    try{if(window.mpOrders)window.mpOrders.check();}catch(e){}
+    var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var _rp=prices[e.sym];if(!_rp||!(+_rp.p>0)||_rp.seed)return; /* ROOT FIX: no REAL feed price for this symbol → skip stops/levels/liquidation entirely. metrics() falls back to THIS trade's own entry, so 2 open trades on one coin push different values into the per-symbol spike filter ccPx()/_vpx and it returns the wrong (older) entry → phantom liquidation. Display P&L still uses the fallback; only decisions are gated. */var m=metrics(e);if(!(e.sls&&e.sls.length)&&manageStops(e,m))changed=true;if(lvlHit(d,e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
     if(closedAny)window._mpSltpHidden=true; // a position hit SL/TP/liq and closed → hide the SL/TP lines (they reappear only when a new trade is set up)
     if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile — skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
     if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden — it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
@@ -1123,6 +1178,24 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="jrb-row" style="font:800 26px \'Space Mono\',monospace;color:#f4cf7a;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;text-shadow:0 0 18px rgba(240,195,90,.28)">'+mK(equity)+'</div>'
       +'<div class="jrb-row" style="font:11px \'Space Mono\',monospace;color:#8a7a52;margin:0 0 10px">from '+mK(bm.start)+'</div>'
       +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell('In trades',mK(openMargin))+cell('Available',mK(bm.start+realized-openMargin))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
+  /* A resting limit order is not a position, so it gets its own tab rather than a fake row among open trades:
+     nothing here has a P&L, a liquidation price or a close button — only a price it is waiting for and a Cancel. */
+  function orderCard(o){
+    var long=o.side!=='short',lp=(window.mpLivePrices&&window.mpLivePrices[o.sym]&&+window.mpLivePrices[o.sym].p)||0;
+    var away=(lp>0)?((+o.px-lp)/lp*100):null;
+    return '<div class="pp pp-ord" data-oid="'+esc(o.id)+'">'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(o.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-ordtag">'+MT('otLimit','Limit')+'</span><span class="pp-live">'+(o.lev||1)+'×'+(lp>0?' · '+fp(lp):'')+'</span></div>'
+      +'<div class="pp-pnl"><span class="big">'+fp(+o.px)+'</span><span class="roe">'+(away==null?MT('otWaiting','waiting'):((away>=0?'+':'')+away.toFixed(2)+'% '+MT('otFromMkt','from market')))+'</span></div>'
+      +'<div class="pp-meta">'
+        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+money(+o.margin)+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+money((+o.margin||0)*((+o.lev>0)?+o.lev:1))+'</b></div>'
+        +'<div><span>SL</span><b>'+(o.sl!=null?fp(+o.sl):'—')+'</b></div>'
+        +'<div><span>TP</span><b>'+(o.tp!=null?fp(+o.tp):'—')+'</b></div>'
+      +'</div>'
+      +'<div class="pp-foot">'+dur(Date.now()-(+o.ts||Date.now()))+' '+MT('otWaiting','waiting')+(o.local?' · '+MT('otLocalNote','this device only'):'')+'</div>'
+      +'<div class="pp-btns"><button class="ch" data-act="ordchart" data-oid="'+esc(o.id)+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel','Cancel order')+'</button></div>'
+      +'<div class="pp-times">'+MT('otPlacedAt','Placed')+' '+tsf(+o.ts)+'</div></div>';}
+  function ordersNow(){try{return (window.mpOrders&&window.mpOrders.list())||[];}catch(e){return [];}}
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -1140,12 +1213,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +stat((unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>=0?'#34d99a':'#ff7b72')
       +stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
-    var rows=(jrTab==='open'?open:closed);
+    var ords=ordersNow();
+    var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
     var _ord=rows.slice().reverse(),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
-    var cards=rows.length?_vis.map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</span></div>';
+    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting — place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
+    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server — they fill even when you are away.')+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore','Show more')+' ('+_rest+')</button>';
     if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season — stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
-    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
+    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
@@ -1166,6 +1241,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
     entry=+pl.price;
     if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
+    /* LIMIT MODE: everything below (size, notional, liq, the SL/TP side checks) is computed against the price this
+       ticket will actually be entered at — so `entry` becomes the limit price here, and the marketable case is
+       refused rather than quietly turned into a market order. */
+    var _isLim=(window.mpPlanType==='limit'), _limPx=+window.mpPlanLimit, _mktPx=entry;
+    if(_isLim){
+      if(!isFinite(_limPx)||_limPx<=0){_say('Enter a limit price (the price you want to be filled at).');add._busy=false;return;}
+      if(side==='long'?_limPx>=_mktPx:_limPx<=_mktPx){_say(side==='long'?'A limit long must be BELOW the current price — switch to Market to buy now.':'A limit short must be ABOVE the current price — switch to Market to sell now.');add._busy=false;return;}
+      if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say('That price is more than 20x away from the market — check the decimal point.');add._busy=false;return;}
+      entry=_limPx;
+    }
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
@@ -1186,6 +1271,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
+    if(_isLim){ // rest the order instead of opening: mpOrders owns it from here (server-side when signed in)
+      if(!window.mpOrders){_say('Limit orders are still loading — try again in a second.');add._busy=false;return;}
+      var _btnL=document.getElementById('planSave'),_spL=_btnL&&_btnL.querySelector('span');
+      window.mpOrders.add({sym:sym,side:side,px:entry,lev:L,margin:amt,sl:stop,tp:(isFinite(tp)?tp:null)},function(){
+        if(_btnL&&_spL){var _o=_spL.textContent;_btnL.classList.add('saved','cooldown');_spL.textContent=MT('otPlaced','Order placed ✓');setTimeout(function(){_btnL.classList.remove('cooldown');},1000);setTimeout(function(){_spL.textContent=_o;_btnL.classList.remove('saved');},1400);}
+        if(window.mpBuzz)window.mpBuzz([12]);
+        try{if(window.__mpTrack)window.__mpTrack('limitorder',sym+' '+side+' @'+entry);}catch(e){}
+        try{if(window.mpDrawLines)window.mpDrawLines();}catch(e){} // drawLines lives in the chart IIFE — reach it through the global, not a bare name
+        render();
+      },function(){add._busy=false;});
+      return;
+    }
     /* P0 dual-write: signed-in opens are SERVER-FILLED (/api/trade/open) — the server takes its own live
        price and writes the trade into the account journal (src:'srv'). We insert the SERVER position (same
        id!) locally so the UI is instant and the 12s sync/pull merge is idempotent. Timeout or any error →
@@ -1226,6 +1323,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
     if(b.hasAttribute('data-jt')){jrTab=b.getAttribute('data-jt');jrShow=50;render();return;}
+    // ORDER actions first: an order id is not a journal id, so the lookup below would find nothing and bail out
+    var oid=b.getAttribute('data-oid'),oact=b.getAttribute('data-act');
+    if(oid&&oact==='ordcancel'){if(window.mpOrders)window.mpOrders.cancel(oid,function(){render();try{if(window.mpDrawLines)window.mpDrawLines();}catch(_){}});render();return;}
+    if(oid&&oact==='ordchart'){var _o=(window.mpOrders?window.mpOrders.list():[]).filter(function(x){return x.id===oid;})[0];if(!_o)return;var _cs2=String(_o.sym||'').toUpperCase();closeJr();if(window.matchMedia&&window.matchMedia('(max-width:880px)').matches){if(window.mpOpenMobileCharts){window.mpOpenMobileCharts(_cs2);return;}}try{sessionStorage.setItem('mp_force_chart',_cs2);}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';return;}
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='elig'){_eligData=data;eligToggle(b,e);return;}
@@ -1297,7 +1398,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeJr();});
   var _jrPend=null;
-  window.mpJournalRender=function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden){if(Date.now()-_jrTouchT<800){clearTimeout(_jrPend);_jrPend=setTimeout(render,820);}else render();}try{if(window.mpActivationNudge)window.mpActivationNudge();}catch(e){}}; // defer the live re-render past a finger-down so it can't destroy a Close/Chart button mid-tap
+  window.mpJournalRender=function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden){if(Date.now()-_jrTouchT<800){clearTimeout(_jrPend);_jrPend=setTimeout(render,820);}else render();}try{if(window.mpActivationNudge)window.mpActivationNudge();}catch(e){}};
+  window.addEventListener('mp-orders',function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden)render();}); // the Orders tab count/list follows a place, a cancel and a server-side fill // defer the live re-render past a finger-down so it can't destroy a Close/Chart button mid-tap
   // live P&L: re-render the open drawer on each price tick (throttled to ~4/s so the list doesn't thrash)
   var _jrLast=0;
   document.addEventListener('mp:price',function(){var d=document.getElementById('jrDrawer');if(!d||d.hidden)return;var now=(window.performance&&performance.now)?performance.now():+new Date();if(now-_jrLast<800)return;_jrLast=now;renderLive();});
@@ -2626,7 +2728,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=6fe2474b'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=a841d8b9'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3182,7 +3284,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=c650b444'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=bc297207'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

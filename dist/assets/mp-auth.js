@@ -1798,3 +1798,160 @@
   };
   window.addEventListener('mp-auth-change', function (e) { try { if (e.detail && e.detail.user && LS('clicked') && Date.now() - (+LS('clicked') || 0) < 3600000) { track('converted'); LS('clicked', ''); } } catch (e2) {} });
 })();
+
+/* ══════════ PENDING LIMIT ORDERS — one client, every surface (2026-09-05) ══════════
+   A resting order is NOT a trade: it never enters mp_journal, so nothing that reads the journal (open-trade caps,
+   My Trades stats, the leaderboard, the server sync) can mistake it for a position. It becomes a position only at
+   fill, through the SAME path a market open takes.
+
+   TWO WORLDS, deliberately:
+   - SIGNED IN: the server owns the order (UserStore `porders`). It fills from its own price and its own 1m candles,
+     whether or not a browser is open. This client only MIRRORS the list and, when it sees the live price cross,
+     ASKS the server to look now (POST /api/trade/ordersweep). It never decides a fill itself.
+   - GUEST: no account, nothing to rest on. The order lives in localStorage and fills locally while the page is
+     open, at the order's own price. The UI says so, and the feature stays usable without a sign-up wall.
+
+   Lives in mp-auth.js because that is the one bundle on EVERY page - home.js, mp-trade.js, mp-charts.js and
+   mp-mcharts.js all consume `window.mpOrders` instead of carrying a fourth copy of this logic. Consumers must
+   look it up at CALL time (`window.mpOrders && ...`): home.js parses before this file. */
+(function () {
+  var LSK = 'mp_orders', MAX = 20, TTL = 30 * 86400000;
+  var open = [], done = [], subs = [], lastPull = 0, pulling = false, sweepT = null, sweepAt = 0, sweepGap = 3000;
+  var ORDERR = { too_many_orders: 'You already have 20 orders waiting - cancel one first.', opposite_open: 'You already have an opposite position open on this coin - close it first (one-way mode).', market_closed: 'This market is closed right now.', rate_limited: 'Too many orders in a minute - wait a moment.', sl_wrong_side: 'Your stop-loss is on the wrong side of the limit price.', tp_wrong_side: 'Your take-profit is on the wrong side of the limit price.', price_far: 'That price is more than 20x away from the market - check the decimal point.', login_required: 'Sign in again to place the order.' };
+  function T(k, d) { try { return (window.mpT && window.mpT(k)) || d; } catch (e) { return d; } }
+  function me() { try { return (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null; } catch (e) { return null; } }
+  function lsGet() { try { var a = JSON.parse(localStorage.getItem(LSK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function lsPut(a) { try { localStorage.setItem(LSK, JSON.stringify(a.slice(0, 60))); } catch (e) {} }
+  function emit() { subs.forEach(function (f) { try { f(open, done); } catch (e) {} }); try { window.dispatchEvent(new CustomEvent('mp-orders')); } catch (e) {} }
+  function setOpen(list, dn) { open = Array.isArray(list) ? list : []; if (dn) done = dn; sweepGap = 3000; lsPut(open); emit(); }
+  function live(sym) { var p = window.mpLivePrices && window.mpLivePrices[String(sym || '').toUpperCase()]; return (p && +p.p > 0 && !p.seed) ? +p.p : 0; }
+  function feeRate(lev, sym) { try { return window.mpFeeRate ? window.mpFeeRate(lev, sym) : Math.min(0.00055, 0.1 / Math.max(1, lev)); } catch (e) { return 0.00055; } }
+
+  // Boot from the local mirror so the Orders tab and the chart lines paint instantly, then reconcile with the server.
+  open = lsGet().filter(function (o) { return o && o.status === 'open'; });
+
+  function refresh(cb) {
+    if (!me()) { open = lsGet().filter(function (o) { return o && o.status === 'open' && (!o.expTs || Date.now() < o.expTs); }); lsPut(open); emit(); if (cb) cb(open); return; }
+    if (pulling) { if (cb) cb(open); return; }
+    pulling = true;
+    fetch('/api/trade/orders', { credentials: 'same-origin', headers: { accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { pulling = false; lastPull = Date.now(); if (d && Array.isArray(d.orders)) setOpen(d.orders, Array.isArray(d.done) ? d.done : done); if (cb) cb(open); })
+      .catch(function () { pulling = false; if (cb) cb(open); });
+  }
+
+  /* Place. The wrong-side check ("a limit long must be BELOW the market") is enforced on BOTH sides: here so the
+     answer is instant, and on the server so it is true. A marketable limit is refused, never quietly filled - the
+     same stance as the wrong-side SL/TP guard (owner decision 2026-09-05). */
+  function add(o, ok, err) {
+    var sym = String(o.sym || '').toUpperCase(), long = o.side !== 'short', px = +o.px, lv = Math.max(1, +o.lev || 1), mg = +o.margin || 0;
+    var fail = function (m) { try { if (window.mpLimitToast) window.mpLimitToast(m); } catch (e) {} if (err) err(m); };
+    if (!(px > 0)) return fail(T('otNoPx', 'Enter a limit price.'));
+    if (!(mg > 0)) return fail(T('otNoAmt', 'Enter an amount (USD) above $0.'));
+    var lp = live(sym);
+    if (lp > 0 && (long ? px >= lp : px <= lp)) return fail(long ? T('otBadLong', 'A limit long must be BELOW the current price - switch to Market to buy now.') : T('otBadShort', 'A limit short must be ABOVE the current price - switch to Market to sell now.'));
+    if (open.length >= MAX) return fail(T('otMax', 'You already have 20 orders waiting - cancel one first.'));
+    if (!me()) { // guest: the order lives on this device and fills while the page is open
+      var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1 };
+      setOpen(open.concat([g]));
+      if (ok) ok(g);
+      return;
+    }
+    fetch('/api/trade/order', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'add', sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: o.sl, tp: o.tp }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.ok && d.order) { setOpen(open.filter(function (x) { return x.id !== d.order.id; }).concat([d.order])); if (ok) ok(d.order); return; }
+        fail((d && d.message) || ORDERR[d && d.error] || T('otFail', 'Could not place the order - try again.'));
+      })
+      .catch(function () { fail(T('otNet', 'Network problem - the order was not placed.')); });
+  }
+
+  function cancel(id, cb) {
+    var row = open.filter(function (x) { return x.id === id; })[0];
+    setOpen(open.filter(function (x) { return x.id !== id; }));
+    if (row) { try { row = JSON.parse(JSON.stringify(row)); row.status = 'cancelled'; row.doneTs = Date.now(); done = [row].concat(done).slice(0, 20); } catch (e) {} }
+    if (!me() || String(id).slice(0, 2) === 'lg') { if (cb) cb(true); emit(); return; }
+    fetch('/api/trade/order', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'cancel', id: id }) })
+      .then(function (r) { return r.json(); }).then(function (d) { if (cb) cb(!!(d && d.ok)); if (!(d && d.ok)) refresh(); })
+      .catch(function () { if (cb) cb(false); refresh(); });
+  }
+
+  /* The live price crossed one of my orders - ASK the server to check (it re-verifies with its own price and its
+     own candles and fills at the order's own price). Debounced 400ms, hard-throttled 3s: the server throttles too. */
+  function sweep() {
+    if (!me() || !open.length) return;
+    if (Date.now() - sweepAt < sweepGap || sweepT) return;
+    sweepT = setTimeout(function () {
+      sweepT = null; sweepAt = Date.now();
+      fetch('/api/trade/ordersweep', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: '{}' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d) return;
+          var fills = (d.filled || []);
+          // BACKOFF: normally the server agrees on the first ask and fills. It disagrees only when its price has
+          // not crossed yet (a different source, or an edge-cached read) — and then the local price can sit on the
+          // level for minutes, which would otherwise be one request every 3s forever against a single-instance DO.
+          if (fills.length) sweepGap = 3000; else sweepGap = Math.min(30000, Math.round(sweepGap * 1.8));
+          if (fills.length && Array.isArray(d.positions)) applyFills(d.positions, fills);
+          if (fills.length || (d.failed && d.failed.length) || (d.expired && d.expired.length)) refresh();
+        }).catch(function () { sweepGap = Math.min(30000, Math.round(sweepGap * 1.8)); });
+    }, 400);
+  }
+  // A filled order becomes a position in the journal - the same writer every opener uses, so My Trades, the chart
+  // lines and the server sync all see it without a special case.
+  function applyFills(positions, fills) {
+    var arr = []; try { arr = JSON.parse(localStorage.getItem('mp_journal') || '[]') || []; } catch (e) { arr = []; }
+    if (!Array.isArray(arr)) arr = [];
+    var have = {}; arr.forEach(function (e) { if (e && e.id) have[String(e.id)] = 1; });
+    var added = 0;
+    positions.forEach(function (t) { if (!t || !t.id || have[String(t.id)]) return; arr.push(t); added++; try { if (window.mpLivePrices && t.sym && !window.mpLivePrices[t.sym]) window.mpLivePrices[t.sym] = { p: +t.entry, t: Date.now() }; } catch (e) {} });
+    if (added) { try { if (window.mpJStore) window.mpJStore(arr); else localStorage.setItem('mp_journal', JSON.stringify(arr)); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} try { if (window.mpDrawLines) window.mpDrawLines(); } catch (e) {} }
+    setOpen(open.filter(function (o) { return !fills.some(function (f) { return f.id === o.id; }); }));
+    (fills || []).forEach(function (f) { toastFill(f); });
+    try { if (window.mpBuzz) window.mpBuzz([15, 40, 15]); } catch (e) {}
+  }
+  function toastFill(f) {
+    try {
+      var m = T('otFilled', 'Limit order filled') + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 });
+      var t = document.createElement('div'); t.textContent = m;
+      t.style.cssText = 'position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:131;background:#0e1a14;color:#c9f7e2;border:1px solid #2ebd85;border-left:3px solid #2ebd85;border-radius:12px;padding:13px 17px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;font-family:inherit;text-align:center;';
+      document.body.appendChild(t); requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+      setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 350); }, 5000);
+    } catch (e) {}
+  }
+
+  /* Called from every terminal's 1s tick. Signed in: detect a cross and ask the server. Guest: fill here, at the
+     order's own price, using the SAME trade shape a local market open writes. */
+  function check() {
+    if (!open.length) return;
+    var signed = !!me(), fills = [], positions = [];
+    for (var i = 0; i < open.length; i++) {
+      var o = open[i], lp = live(o.sym); if (!(lp > 0)) continue;
+      if (o.expTs && Date.now() > o.expTs) continue;
+      var crossed = (o.side !== 'short') ? lp <= +o.px : lp >= +o.px;
+      if (!crossed) continue;
+      if (signed) { sweep(); return; }
+      var lv = Math.max(1, +o.lev || 1), mg = +o.margin || 0, px = +o.px, long = o.side !== 'short', mmr = 0.005;
+      if (window.mpTradeGate && !window.mpTradeGate(o.sym, long ? 'long' : 'short')) continue; // one-way / open-trade caps - the same gate a manual open passes
+      positions.push({ id: String(Date.now()) + '_' + Math.floor(Math.random() * 1e4), ts: Date.now(), sym: o.sym, side: long ? 'long' : 'short', entry: px, stop: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), trail: 0, be: 0, hwm: px, lev: lv, rr: null, qty: mg * lv / px, notional: mg * lv, margin: mg, riskAmt: mg, liq: long ? px * (1 - (1 - mmr) / lv) : px * (1 + (1 - mmr) / lv), mmr: mmr, feeRate: feeRate(lv, o.sym), status: 'open', pnl: null, ord: o.id });
+      fills.push({ id: o.id, sym: o.sym, side: long ? 'long' : 'short', px: px });
+    }
+    if (positions.length) applyFills(positions, fills);
+    else if (!signed) { var exp = open.filter(function (o) { return o.expTs && Date.now() > o.expTs; }); if (exp.length) setOpen(open.filter(function (o) { return !(o.expTs && Date.now() > o.expTs); })); }
+  }
+
+  window.mpOrders = {
+    list: function () { return open.slice(); },
+    doneList: function () { return done.slice(); },
+    forSym: function (s) { s = String(s || '').toUpperCase(); return open.filter(function (o) { return String(o.sym).toUpperCase() === s; }); },
+    add: add, cancel: cancel, refresh: refresh, check: check, sweep: sweep,
+    max: MAX,
+    guest: function () { return !me(); },
+    onchange: function (f) { if (typeof f === 'function') subs.push(f); }
+  };
+  // Server list on load and on sign-in; a 60s re-pull catches an order the */10 cron filled while this tab idled.
+  refresh();
+  window.addEventListener('mp-auth-change', function () { open = []; done = []; refresh(); });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && me() && Date.now() - lastPull > 15000) refresh(); });
+  setInterval(function () { if (!document.hidden && me()) refresh(); }, 60000);
+})();

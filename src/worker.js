@@ -225,6 +225,8 @@ function handleOpenApi() {
  '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (free 50 / Premium 200)' }, '429': { description: 'rate limited — see X-RateLimit-Reset and Retry-After' } } } },
       '/api/bot/v1/close': { post: { tags: ['Paper trading'], summary: 'Close a paper position', description: 'Close a simulated position fully or partially. P&L settles net of the round-trip taker fee and accrued funding.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CloseRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { $ref: '#/components/schemas/Position' }, remaining: { $ref: '#/components/schemas/Position' }, position: { $ref: '#/components/schemas/Position' } } } } } }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
       '/api/bot/v1/sltp': { post: { tags: ['Paper trading'], summary: 'Move stop-loss / take-profit', description: 'Change the stop or target on an OPEN position without closing it. Both are side-checked against the entry price. Pass null to clear one.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SltpRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
+      '/api/bot/v1/orders': { get: { tags: ['Paper trading'], summary: 'List limit orders', description: 'Resting limit orders plus the last 20 that filled, expired or were cancelled (a filled one carries the position_id it created).', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
+      '/api/bot/v1/cancel_order': { post: { tags: ['Paper trading'], summary: 'Cancel a limit order', description: 'Cancel one resting order. Body: {"order_id":"lo..."}.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' }, '404': { description: 'no such order' }, '409': { description: 'already filled, cancelled or expired' } } } },
       '/api/bot/v1/positions': { get: { tags: ['Paper trading'], summary: 'List paper positions', description: 'Your positions with live mark price and P&L net of fees. Supports If-None-Match (ETag over structural state, so a poll that changed nothing costs a 304) and ?since=<unix ms>.', security: [{ ApiKeyAuth: [] }], parameters: [q('since', 'Only positions opened or closed at/after this unix ms.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Positions' } } } }, '304': { description: 'nothing changed since your ETag' } } } },
       '/api/bot/v1/trades': { get: { tags: ['Paper trading'], summary: 'Closed-trade ledger', description: 'Full closed-trade history with paging — /positions is capped at 100, this pages through the whole retention window. Follow next_before for the next page.', security: [{ ApiKeyAuth: [] }], parameters: [q('limit', '1-500, default 100.', false, '100'), q('before', 'Cursor: unix ms from next_before.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Trades' } } } } } } },
       '/api/bot/v1/account': { get: { tags: ['Paper trading'], summary: 'Paper account', description: 'Open positions, margin in use, unrealized P&L, LIFETIME realized P&L, wins/losses, win rate, plus balance_usd, equity_usd, free_margin_usd and return_pct.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Account' } } } } } } },
@@ -274,7 +276,7 @@ function handleOpenApi() {
         Markets: { type: 'object', properties: { markets: { type: 'array', items: { $ref: '#/components/schemas/Market' } }, count: { type: 'integer' }, note: { type: 'string' } } },
         Trade: { type: 'object', properties: { id: { type: ['string', 'null'] }, closed_ts: { type: 'integer' }, symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, leverage: { type: 'number' }, margin_usd: { type: 'number' }, pnl_usd: { type: ['number', 'null'] }, roe_pct: { type: ['number', 'null'] }, liquidated: { type: 'boolean' }, via: { type: ['string', 'null'], description: 'Which path executed the close: bot, site, sweep, cron, sltp.' } } },
         Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
-        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
+        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". Below the market for a long, above it for a short — a marketable limit is rejected (limit_marketable) rather than silently turned into a market order.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
         CloseRequest: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', minimum: 1, maximum: 100, description: 'Percent to close. Omit for the whole position.' }, symbol: { type: 'string', description: 'The position symbol, copied from /positions. Optional but strongly recommended: it lets the server price exactly one feed and skip a lookup round trip, which is worth several hundred milliseconds from Asia. A wrong value costs nothing — the server falls back automatically.' } }, required: ['id'] },
         SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] } }, required: ['id'] },
         ServerTime: { type: 'object', properties: { server_time_ms: { type: 'integer' }, server_time_iso: { type: 'string' }, client_time_ms: { type: 'integer' }, drift_ms: { type: 'integer', description: 'client_ts minus server time, when you pass ?client_ts=' } } },
@@ -4542,12 +4544,107 @@ async function tgAdmin(env, text, opts) { // tgApi never throws (null on network
 // One AE row per failure (index mailerr/aierr, blob2 = call site, blob3 = HTTP status); checkOpsAlerts pages on the hourly count.
 function mailFail(env, where, status) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['mailerr'], blobs: ['mailerr', String(where || '?'), String(status || 0)], doubles: [1] }); } catch (e) {} }
 function aiFail(env, where, status) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['aierr'], blobs: ['aierr', String(where || '?'), String(status || 0)], doubles: [1] }); } catch (e) {} }
+// ─── PENDING LIMIT ORDERS: the fill engine (2026-09-05) ───────────────────────────────────────────────────────
+// A resting order fills at its OWN price, never at "the price when we noticed". Everything below exists to make
+// that exact: the candle scan finds the FIRST minute after placement whose high/low reached the level, and the
+// position is written with that candle's timestamp and `entry = the limit price`. Detection can therefore be late
+// (the cron runs */10) without the fill being wrong — the same guarantee the SL/TP sweep already gives.
+// The client NEVER decides a fill: it can only ask this engine to look now (/api/trade/ordersweep).
+
+// Did the market reach the order's price? Candles are authoritative — a wick that retraced between two passes is
+// invisible to the current price but recorded in the 1m high/low. The live price is checked as well because the
+// candle that is FORMING when the order is placed is deliberately skipped (its low/high may predate placement),
+// which would otherwise leave the first minute of an order's life blind.
+function orderCross(o, live, bars) {
+  const long = o.side !== 'short', px = +o.px || 0;
+  if (!(px > 0)) return null;
+  const from = Math.max(+o.swT || 0, +o.ts || 0);
+  if (bars && bars.length) {
+    for (const c of bars) {
+      const ct = (+c.time || 0) * 1000;
+      if (ct <= from) continue;                                  // never fill on price action that predates the order
+      if (long ? (+c.low > 0 && +c.low <= px) : (+c.high >= px)) return { ts: ct, via: 'candle' };
+    }
+  }
+  if (live > 0 && (long ? live <= px : live >= px)) return { ts: Date.now(), via: 'price' }; // crossing right now
+  return null;
+}
+// The position a filled order becomes — SAME shape and same math as a market open (/api/trade/open), with
+// entry = the limit price. `ord` keeps the trail back to the order; `swT` starts the SL/TP/liq candle-check at
+// the fill so a stop hit in the same window the fill was detected in is not skipped.
+function orderPosition(o, fillTs) {
+  const sym = String(o.sym || '').toUpperCase(), long = o.side !== 'short';
+  const lev = Math.min(maxLevFor(sym), Math.max(1, +o.lev || 1));
+  const entry = +o.px, margin = +o.margin || 0, mmr = 0.005, rate = feeRateFor(lev, sym);
+  const isBot = o.src === 'bot';
+  return {
+    id: (isBot ? 'bot' : 'srv') + fillTs.toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+    ts: fillTs, sym, side: long ? 'long' : 'short', entry, stop: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp),
+    lev, rr: null, qty: margin * lev / entry, notional: margin * lev,
+    margin: _mNet(margin, lev, rate), riskAmt: _mNet(margin, lev, rate), feeOpen: _feeOpen(margin, lev, rate),
+    liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
+    src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs
+  };
+}
+// Fill every crossed order in `orders` using the prices/candles the caller already gathered. Returns what happened
+// so both callers (cron, user-triggered sweep) can report it. Expired orders are closed here too.
+async function fillLimitOrders(env, orders, prices, klines, promos, states) {
+  const filled = [], failed = [], expired = [], marks = {};
+  const now = Date.now();
+  for (const o of orders || []) {
+    const SYM = String(o.sym || '').toUpperCase();
+    if (o.expTs > 0 && now > o.expTs) {
+      try { await usersDO(env, '/order/done', { id: o.id, status: 'expired', note: 'expired without filling' }); expired.push(o.id); } catch (e) {}
+      continue;
+    }
+    const live = +prices[SYM] || 0, bars = (klines && klines[SYM]) || null;
+    // Never fill while the market is shut: the last print is frozen, so a "cross" there is an artefact, not a trade.
+    // (states[SYM] is the Yahoo session state — marketSession needs it for stocks; crypto short-circuits to open.)
+    try { const ms = marketSession(SYM, { state: (states && states[SYM]) || null }); if (!ms.open) continue; } catch (e) {}
+    const hit = orderCross(o, live, bars);
+    if (!hit) { // nothing crossed — remember how far the candles were inspected so the next pass starts there
+      if (bars && bars.length) { const last = (+bars[bars.length - 1].time || 0) * 1000; if (last > (+o.swT || 0)) (marks[last] = marks[last] || []).push(o.id); }
+      continue;
+    }
+    const t = orderPosition(o, hit.ts);
+    let r = null;
+    try { r = await usersDO(env, '/order/fill', { id: o.id, t, promos, note: 'filled at ' + t.entry + ' (' + hit.via + ')' }); } catch (e) { r = null; }
+    if (r && r.ok) {
+      filled.push({ id: o.id, uid: o.uid, sym: SYM, side: t.side, px: t.entry, lev: t.lev, margin: o.margin, tid: t.id, ts: hit.ts, via: hit.via, pos: t });
+      try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitfill'], blobs: ['limitfill', SYM, t.side, hit.via, String(o.src || 'site')], doubles: [+o.margin || 0, now - hit.ts] }); } catch (e) {}
+    } else if (r && r.error && r.error !== 'already_done') {
+      failed.push({ id: o.id, uid: o.uid, sym: SYM, error: r.error });
+    }
+  }
+  for (const swT of Object.keys(marks)) { try { await usersDO(env, '/order/mark', { ids: marks[swT], swT: +swT }); } catch (e) {} }
+  return { filled, failed, expired, checked: (orders || []).length };
+}
+// Browser push for a fill that happened while nobody was looking (cron only — a fill the user watched happen on
+// the page needs no notification). Reuses the price-alert delivery path.
+async function pushOrderFills(env, fills) {
+  try {
+    if (!fills.length || !env.VAPID_JWK || !env.USERS) return;
+    const uids = [...new Set(fills.map(f => f.uid).filter(Boolean))];
+    if (!uids.length) return;
+    const r = await usersDO(env, '/push/byuid', { uids });
+    const subs = (r && r.subs) || []; if (!subs.length) return;
+    const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
+    for (const f of fills) {
+      const payload = { title: 'Limit order filled', body: f.side.toUpperCase() + ' ' + f.sym + ' ' + f.lev + 'x filled at $' + f.px, url: 'https://marginpad.io/paper-trade?coin=' + f.sym + '&ref=push' };
+      for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, payload); } catch (e) {} }
+    }
+  } catch (e) {}
+}
 // P0 — server-side position sweep: enforce SL/TP/liq for server/bot-filled trades even with every browser closed.
 async function sweepServerPositions(env) {
   try {
     if (!env.USERS) return;
     const os = await usersDO(env, '/tradeopensyms', {});
-    const allSyms = (os && os.syms) || [];
+    // Resting limit orders ride along in the SAME pass: their symbols join the price/candle fetch, they are filled
+    // BEFORE the position sweep runs, and a fill therefore has its SL/TP/liq checked from the same candles in the
+    // very same run (orderPosition stamps swT = fill time). One fetch, no second cron, no ordering hazard.
+    let osyms = []; try { const or = await usersDO(env, '/ordersyms', {}); osyms = (or && or.syms) || []; } catch (e) {}
+    const allSyms = Array.from(new Set(((os && os.syms) || []).concat(osyms)));
     if (!allSyms.length) { try { await env.STATS.put('sweep:last', JSON.stringify({ swept: 0, checked: 0, staleN: 0, funded: 0, syms: 0, klSyms: 0, ts: Date.now(), empty: true }), { expirationTtl: 3600 }); } catch (e) {} return; } // ALWAYS stamp: null would conflate "no open positions" with "sweep never ran" — ts says when it last ran, syms:0 says it had nothing to do
     // B5 (reconcile): round-robin coverage. The old slice(0,40) permanently STARVED any open symbol beyond the
     // first 40 — their SL/TP/liq never fired, leaving orphaned "open" trades. A per-run KV cursor cycles through
@@ -4569,10 +4666,10 @@ async function sweepServerPositions(env) {
           await tgAdmin(env, 'Server-trade reconcile: an open position is ' + Math.floor((Date.now() - os.oldestMs) / 86400000) + ' days old (' + (os.n || 0) + ' open symbols across ' + (os.owners || 0) + ' traders). Check for a stuck/orphaned trade.'); }
       }
     } catch (e) {}
-    const prices = {}, klines = {};
+    const prices = {}, klines = {}, states = {};
     for (const sym of syms) {
       const k = sym.replace(/USDT$/, '');
-      try { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) { prices[k] = +pd.price; prices[k + 'USDT'] = +pd.price; } } catch (e) {}
+      try { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) { prices[k] = +pd.price; prices[k + 'USDT'] = +pd.price; if (pd.state != null) states[k] = String(pd.state); } } catch (e) {}
       try { const lk = await leanKlines(k, '1', 30, env); if (lk && lk.length) klines[k] = lk; } catch (e) {} // last 30 1m candles' high/low → catches wicks that retraced between */10 passes (invisible to the current price); ~2.7KB vs 91KB
       // DEAD-FEED watchdog (2026-08-16, HMM delist case): a symbol we HOLD open but NO source can price or chart is a
       // delist candidate — its positions silently can't settle server-side. 3 consecutive sweep misses (counter TTL 30min
@@ -4594,6 +4691,16 @@ async function sweepServerPositions(env) {
       if (Array.isArray(list)) { rates = {}; for (const it of list) { const sy = String(it.symbol || '').replace(/USDT$/, ''); if (prices[sy] != null) { const fr = +it.fundingRate; if (isFinite(fr)) rates[sy] = fr; } } }
     } catch (e) {}
     let graceMin = 60, srvCandle = true; try { const oc = await opsCfg(env); graceMin = oc.nudgeGraceMin || 60; srvCandle = oc.srvCandle !== false; } catch (e) {}
+    // LIMIT FILLS FIRST — a position created here is swept for SL/TP/liq by the very next block, same candles.
+    try {
+      const or = await usersDO(env, '/order/open', {});
+      const orders = ((or && or.orders) || []).filter(o => prices[String(o.sym || '').toUpperCase()] > 0 || (klines[String(o.sym || '').toUpperCase()] || []).length); // only what this run actually priced (the round-robin covers the rest next run)
+      if (orders.length) {
+        const fr = await fillLimitOrders(env, orders, prices, klines, await xpPromos(env).catch(() => []), states);
+        try { await env.STATS.put('orders:last', JSON.stringify({ checked: fr.checked, filled: fr.filled.length, failed: fr.failed.length, expired: fr.expired.length, resting: (or.orders || []).length, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {}
+        if (fr.filled.length) { try { await pushOrderFills(env, fr.filled); } catch (e) {} for (const f of fr.filled) { try { await evPush(env, null, 'limitfill', f.side + ' ' + f.sym + ' ' + f.lev + 'x at ' + f.px, '/paper-trade'); } catch (e) {} } }
+      } else { try { await env.STATS.put('orders:last', JSON.stringify({ checked: 0, filled: 0, failed: 0, expired: 0, resting: ((or && or.orders) || []).length, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} }
+    } catch (e) {}
     if (Object.keys(prices).length || Object.keys(klines).length) {
       const res = await usersDO(env, '/tradesweepall', { prices, rates, klines, graceMin, srvCandle, promos: await xpPromos(env).catch(() => []) });
       try { await env.STATS.put('sweep:last', JSON.stringify({ swept: res && res.swept, checked: res && res.checked, staleN: res && res.staleN, funded: res && res.funded, syms: syms.length, klSyms: Object.keys(klines).length, srvCandle, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} // observability: read via /api/admin/sweepstat
@@ -8912,6 +9019,12 @@ function marketSession(sym, pd, now) {
 function _feeOpen(margin, lev, rate) { return Math.round((+margin || 0) * (+lev || 1) * (+rate || 0) * 1e6) / 1e6; }
 function _mNet(margin, lev, rate) { return Math.max(0, Math.round(((+margin || 0) - _feeOpen(margin, lev, rate)) * 1e6) / 1e6); }
 function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055; return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
+// Pending-limit-order limits. PT_MAX_OPEN / PT_MAX_PAIR MIRROR the client gate (window.mpTradeGate in home.js:
+// MAX_TOTAL 50, MAX_PAIR 10, one-way mode) — a limit fill lands minutes or days after placement, so the same
+// product rules are re-checked server-side at fill time. Change one copy, change the other.
+const PORDER_MAX = 20;                  // resting orders per account
+const PORDER_TTL = 30 * 86400000;       // GTC with a 30-day expiry — an order nobody remembers placing is not a feature
+const PT_MAX_OPEN = 50, PT_MAX_PAIR = 10;
 // Resolve the current session user's premium standing: owner grant (premium:allow) OR active paid sub (prem:sub:<uid>).
 async function premiumFor(env, request) {
   const user = await sessionUser(env, getCookie(request, 'mp_sess'));
@@ -10362,6 +10475,68 @@ async function handleTrade(url, request, env, ctx) {
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
+  // ── LIMIT ORDERS ────────────────────────────────────────────────────────────────────────────────────────────
+  if (path === '/orders' && request.method === 'GET') { const r = await usersDO(env, '/order/list', { uid }); return jt(r || { orders: [], done: [] }); }
+  if (path === '/order' && request.method === 'POST') {
+    const action = String(b.action || 'add');
+    if (action === 'list') { const r = await usersDO(env, '/order/list', { uid }); return jt(r || { orders: [], done: [] }); }
+    if (action === 'cancel') {
+      if (!b.id) return jt({ error: 'id_required' }, 400);
+      const r = await usersDO(env, '/order/cancel', { uid, id: String(b.id) });
+      if (r && r.error) return jt(r, r.error === 'not_found' ? 404 : 409);
+      return jt(r);
+    }
+    if (action !== 'add') return jt({ error: 'bad_action' }, 400);
+    try { const rk = 'orl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); const putP = env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); if (ctx) ctx.waitUntil(putP.catch(() => {})); else await putP; } catch (e) {}
+    const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const side = b.side === 'short' ? 'short' : 'long', long = side === 'long';
+    const margin = +b.margin || 0, lev = Math.min(maxLevFor(sym), Math.max(1, +b.lev || 1));
+    const px = +b.px;
+    if (!sym) return jt({ error: 'symbol_required' }, 400);
+    if (!(margin >= 1)) return jt({ error: 'margin_min_1' }, 400);
+    if (margin > 100000) return jt({ error: 'margin_max_100000' }, 400);
+    if (!(px > 0) || !isFinite(px)) return jt({ error: 'price_required' }, 400);
+    const pd = await fetchPriceCached(sym);
+    if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
+    { const ms9 = marketSession(sym, pd); if (!ms9.open) return jt({ error: 'market_closed', sym, message: ms9.msg || 'Market closed' }, 409); }
+    const live = +pd.price;
+    // A limit order that is ALREADY on the fillable side of the market is a market order wearing a costume. Rather
+    // than open a position the trader did not ask for, say so (owner decision 2026-09-05) — same stance as the
+    // wrong-side SL/TP guard: never silently turn one instruction into a different one.
+    if (long ? px >= live : px <= live) return jt({ error: 'limit_marketable', live, message: 'A limit ' + (long ? 'long must be BELOW' : 'short must be ABOVE') + ' the current price ($' + live + '). Use a market order to open now.' }, 400);
+    if (px > live * 20 || px < live / 20) return jt({ error: 'price_far', live, message: 'That price is more than 20x away from the market — check the decimal point.' }, 400);
+    const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
+    // SL/TP are checked against the LIMIT price, not the live one — that is the entry this order will actually get.
+    if (sl != null && (long ? sl >= px : sl <= px)) return jt({ error: 'sl_wrong_side', limit: px }, 400);
+    if (tp != null && (long ? tp <= px : tp >= px)) return jt({ error: 'tp_wrong_side', limit: px }, 400);
+    // One-way mode, checked here for an immediate answer and AGAIN at fill time (the account can change meanwhile).
+    try {
+      const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
+      const opp = ((seed && seed.positions) || []).filter(p => p.status === 'open' && String(p.symbol || p.sym || '').toUpperCase().replace(/USDT$/, '') === sym && (p.side === 'short' ? 'short' : 'long') !== side);
+      if (opp.length) return jt({ error: 'opposite_open', message: 'You already have an opposite ' + sym + ' position open — close it first (one-way mode).' }, 409);
+    } catch (e) {}
+    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site' } });
+    if (!r || r.error) return jt(r || { error: 'unavailable' }, r && r.error === 'too_many_orders' ? 409 : 400);
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'site'], doubles: [margin, Math.abs(px - live) / live * 100] }); } catch (e) {}
+    return jt(r);
+  }
+  if (path === '/ordersweep' && request.method === 'POST') {
+    // "Look at my orders now." The client watches the live price and calls this when it thinks one crossed — it is
+    // an ASK, never an assertion: the server re-checks with its own price and its own 1m candles and fills at the
+    // order's own price. Same trust model as /nudge, same 3s throttle.
+    const _ot = globalThis.__ordThr = globalThis.__ordThr || {}; if (Date.now() - (_ot[uid] || 0) < 3000) return jt({ ok: true, throttled: true }); _ot[uid] = Date.now();
+    const lr = await usersDO(env, '/order/list', { uid });
+    const orders = ((lr && lr.orders) || []).filter(o => o.status === 'open');
+    if (!orders.length) return jt({ ok: true, filled: [] });
+    const syms = Array.from(new Set(orders.map(o => String(o.sym || '').toUpperCase()))).slice(0, 10);
+    const prices = {}, klines = {}, states = {};
+    for (const s2 of syms) {
+      try { const pd2 = await fetchPriceCached(s2); if (pd2 && +pd2.price > 0) { prices[s2] = +pd2.price; if (pd2.state != null) states[s2] = String(pd2.state); } } catch (e) {}
+      try { const lk = await leanKlines(s2, '1', 30, env); if (lk && lk.length) klines[s2] = lk; } catch (e) {}
+    }
+    const fr = await fillLimitOrders(env, orders, prices, klines, _prm, states);
+    return jt({ ok: true, filled: fr.filled.map(f => ({ id: f.id, tid: f.tid, sym: f.sym, side: f.side, px: f.px, ts: f.ts })), positions: fr.filled.map(f => f.pos), failed: fr.failed, expired: fr.expired });
+  }
   if (path === '/positions') {
     // Bots poll this ~19k times a day (vs 12 opens). It used to cost TWO UserStore round trips per call (one to learn the
     // symbols, one to sweep with prices). Now the symbol list is remembered per uid for 30 s in this isolate, so a steady
@@ -10390,6 +10565,15 @@ async function handleTrade(url, request, env, ctx) {
 // HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
+  {
+    date: '2026-09-05', version: '2.1.0', title: 'Limit orders',
+    changes: [
+      { type: 'added', breaking: false, text: 'POST /v1/open accepts type:"limit" with limit_price. The order rests server-side and fills at ITS OWN price — not at the price the engine happened to notice the cross — so a fill detected late is still priced correctly. Fills are found from the 1m high/low, which catches a wick that retraced between two checks; the position is stamped with the minute the market actually reached the level. A limit long must be below the market and a limit short above it (limit_marketable otherwise): the API never silently turns a limit into a market order.' },
+      { type: 'added', breaking: false, text: 'GET /v1/orders lists resting orders plus the last 20 that filled, expired or were cancelled (with the position id a fill created). POST /v1/cancel_order {order_id} cancels one. Orders are good until cancelled with a 30-day expiry, 20 resting per account.' },
+      { type: 'added', breaking: false, text: 'client_order_id works on limit placement too: a retried POST returns the order the first call created (idempotent: true) instead of resting a second one.' },
+      { type: 'unchanged', breaking: false, text: 'sl and tp on a limit order are side-checked against the LIMIT price, not the live price — that is the entry the order will actually get. One-way mode and the open-position caps are re-checked at fill time, and an order blocked by them is closed with a readable note rather than resting forever.' },
+    ],
+  },
   {
     date: '2026-08-19', version: '2.0.0', title: 'Bot API v2: correct fees, per-key metering, idempotency, MCP',
     changes: [
@@ -10510,6 +10694,14 @@ const MCP_TOOLS = [
   { name: 'paper_sltp', description: 'Move the stop-loss or take-profit on an open simulated position. Requires an API key.', path: () => '/api/bot/v2/sltp', method: 'POST', auth: true,
     body: (a) => ({ id: a.id, sl: a.sl, tp: a.tp }),
     inputSchema: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] } }, required: ['id'] } },
+  { name: 'paper_limit_order', description: 'Place a resting limit order: it fills only if the market reaches your price, and it fills AT that price. A limit long must be below the current price and a limit short above it — to open right now use paper_open instead. Simulated money only. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
+    body: (a) => ({ type: 'limit', symbol: a.symbol, side: a.side, limit_price: a.limit_price, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, client_order_id: a.client_order_id }),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, limit_price: { type: 'number', description: 'Below the market for a long, above it for a short' }, margin_usd: { type: 'number', description: '1 to 100000' }, leverage: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string' } }, required: ['symbol', 'side', 'limit_price', 'margin_usd', 'leverage'] } },
+  { name: 'paper_orders', description: 'Your resting limit orders, plus the last 20 that filled, expired or were cancelled. Requires an API key.', path: () => '/api/bot/v2/orders', auth: true,
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'paper_cancel_order', description: 'Cancel a resting limit order. Requires an API key.', path: () => '/api/bot/v2/cancel_order', method: 'POST', auth: true,
+    body: (a) => ({ order_id: a.order_id }),
+    inputSchema: { type: 'object', properties: { order_id: { type: 'string' } }, required: ['order_id'] } },
 ];
 async function handleMcp(url, request, env, ctx) {
   const H = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key, Mcp-Session-Id, MCP-Protocol-Version, Authorization', 'access-control-allow-methods': 'GET, POST, OPTIONS' };
@@ -10797,6 +10989,23 @@ async function handleBot(url, request, env, ctx) {
     const pd = await fetchPrice(sym);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
+    // LIMIT ORDERS (2026-09-05): type:'limit' + limit_price rests the order server-side. It fills at ITS OWN price
+    // — never at "the price when the sweep noticed" — and it fills whether or not the bot is running.
+    if (String(b.type || 'market').toLowerCase() === 'limit') {
+      const lpx = +b.limit_price;
+      const long0 = side === 'long', live0 = +pd.price;
+      if (!(lpx > 0) || !isFinite(lpx)) return jb({ error: 'limit_price_required', hint: 'type:"limit" needs limit_price.' }, 400);
+      if (long0 ? lpx >= live0 : lpx <= live0) return jb({ error: 'limit_marketable', live: live0, message: 'A limit ' + (long0 ? 'long must be BELOW' : 'short must be ABOVE') + ' the current price. Send type:"market" to open now.' }, 400);
+      if (lpx > live0 * 20 || lpx < live0 / 20) return jb({ error: 'limit_price_far', live: live0 }, 400);
+      const sl0 = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp0 = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
+      if (sl0 != null && (long0 ? sl0 >= lpx : sl0 <= lpx)) return jb({ error: 'sl_wrong_side', limit: lpx }, 400);
+      if (tp0 != null && (long0 ? tp0 <= lpx : tp0 >= lpx)) return jb({ error: 'tp_wrong_side', limit: lpx }, 400);
+      const coid0 = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
+      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot' } });
+      if (!ro || ro.error) return jb(ro || { error: 'unavailable' }, ro && ro.error === 'too_many_orders' ? 409 : 400);
+      try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'bot'], doubles: [margin, Math.abs(lpx - live0) / live0 * 100] }); } catch (e) {}
+      return jb({ ok: true, order: ro.order, ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
+    }
     const entry = +pd.price, mmr = 0.005, long = side === 'long';
     const liq = mpcLiq(entry, lev, mmr, long);
     const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
@@ -10810,6 +11019,18 @@ async function handleBot(url, request, env, ctx) {
     if (r && r.error) return jb(r, r.error === 'too_many_open' ? 409 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
     return jb(r && r.position ? { ok: true, position: r.position, ...(r.idempotent ? { idempotent: true } : {}) } : { ok: true }, 200);
+  }
+  if (path === '/v1/orders') { // resting limit orders + the last 20 that filled/cancelled/expired
+    const r = await doCall('/order/list', { uid });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    return jb({ orders: (r.orders || []).map(o => ({ order_id: o.id, symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, placed_ts: o.ts, expires_ts: o.expTs, status: o.status })), recent: (r.done || []).map(o => ({ order_id: o.id, symbol: o.sym, side: o.side, limit_price: o.px, status: o.status, position_id: o.tid, note: o.note, done_ts: o.doneTs })) }, 200);
+  }
+  if (path === '/v1/cancel_order' && request.method === 'POST') {
+    const oid = String(b.order_id || b.id || ''); if (!oid) return jb({ error: 'order_id_required' }, 400);
+    const r = await doCall('/order/cancel', { uid, id: oid });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    if (r.error) return jb(r, r.error === 'not_found' ? 404 : 409);
+    return jb({ ok: true, order_id: oid, status: 'cancelled' }, 200);
   }
   if (path === '/v1/sltp' && request.method === 'POST') {
     // Move the stop / target on an OPEN position. Without this a bot had to close and reopen to trail a stop —
@@ -10927,7 +11148,7 @@ async function handleBot(url, request, env, ctx) {
     out.sort((a, x) => (a.asset_class === x.asset_class ? a.symbol.localeCompare(x.symbol) : a.asset_class.localeCompare(x.asset_class)));
     return jb({ markets: out, count: out.length, note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close.' });
   }
-  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'WS /api/bot/v2/stream'];
+  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/orders', 'POST /api/bot/v1/cancel_order', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'WS /api/bot/v2/stream'];
   return jb({ error: 'not_found', endpoints: isV2 ? EPS.map((e) => e.replace('/v1/', '/v2/')) : EPS }, 404);
 }
 async function handleAnnounce(url, env, request) {
@@ -13786,6 +14007,32 @@ export default {
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
       return J({ last });
     }
+    // Limit orders: what is resting, what the last sweep did, and (?run=1) run the fill engine NOW. Support asks
+    // "why didn't my order fill" — this answers it without waiting for the */10 cron. ?prices=BTC:60000&kl=... lets
+    // the E2E prove the exact fill math deterministically instead of waiting for the market to move.
+    if (url.pathname === '/api/admin/porders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let last = null; try { last = JSON.parse(await env.STATS.get('orders:last') || 'null'); } catch (e) {}
+      const or = await usersDO(env, '/order/open', {});
+      let orders = (or && or.orders) || [];
+      const uidF = url.searchParams.get('uid') || '';
+      if (uidF) orders = orders.filter(o => o.uid === uidF);
+      if (url.searchParams.get('run') !== '1') {
+        let names = {}; try { const nr = await usersDO(env, '/names', { ids: Array.from(new Set(orders.map(o => o.uid))).slice(0, 200) }); names = (nr && nr.names) || {}; } catch (e) {}
+        const px = {}; // one price per distinct symbol so the list can show how far each order still is from filling
+        for (const s2 of Array.from(new Set(orders.map(o => String(o.sym || '').toUpperCase()))).slice(0, 25)) { try { const pd2 = await fetchPriceCached(s2); if (pd2 && +pd2.price > 0) px[s2] = +pd2.price; } catch (e) {} }
+        const rows = orders.slice(0, 100).map(o => { const p = px[String(o.sym || '').toUpperCase()]; return { ...o, username: names[o.uid] || '', live: p || null, awayPct: (p > 0) ? Math.round(((+o.px - p) / p) * 10000) / 100 : null }; });
+        return J({ resting: orders.length, orders: rows, last });
+      }
+      const prices = {}, klines = {}, states = {};
+      const inj = url.searchParams.get('px') || ''; // "BTC:60000,ETH:2500" — an injected price, for the E2E only
+      inj.split(',').filter(Boolean).forEach(p => { const [s, v] = p.split(':'); if (s && +v > 0) prices[s.toUpperCase()] = +v; });
+      for (const s2 of Array.from(new Set(orders.map(o => String(o.sym || '').toUpperCase()))).slice(0, 20)) {
+        if (prices[s2] == null) { try { const pd2 = await fetchPriceCached(s2); if (pd2 && +pd2.price > 0) { prices[s2] = +pd2.price; if (pd2.state != null) states[s2] = String(pd2.state); } } catch (e) {} }
+        if (url.searchParams.get('nokl') !== '1') { try { const lk = await leanKlines(s2, '1', 30, env); if (lk && lk.length) klines[s2] = lk; } catch (e) {} }
+      }
+      const fr = await fillLimitOrders(env, orders, prices, klines, await xpPromos(env).catch(() => []), states);
+      return J({ ran: true, checked: fr.checked, filled: fr.filled, failed: fr.failed, expired: fr.expired, prices });
+    }
     if (url.pathname === '/api/admin/uxperf' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // UX-perf AE history (past the 8h ring): count + p50/p95 per metric. The waterfall deploy waits for ux-cold n>=15 HERE.
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const hrs = Math.min(720, Math.max(1, +url.searchParams.get('h') || 168));
@@ -16483,6 +16730,14 @@ export class UserStore {
     // client_order_id -> the trade it created. A bot that retries after a network timeout MUST NOT end up with two
     // positions while believing it has one; keyed by ACCOUNT (not key) so a rotated key still de-duplicates.
     s.exec('CREATE TABLE IF NOT EXISTS botidem(uid TEXT, coid TEXT, tid TEXT, ts INTEGER, PRIMARY KEY(uid,coid))');
+    // ── PENDING LIMIT ORDERS (2026-09-05) ────────────────────────────────────────────────────────────────────
+    // A resting order is NOT a trade and must never enter the journal blob: `status:'pending'` there would count as
+    // an open position everywhere that reads the journal (open-trade caps, active_srv, /botpositions and therefore
+    // the Bot API, leaderboards, XP, missions, utrades, ops Live trades). Its own table touches none of that; the
+    // order becomes a normal position only at fill, through the SAME _syncJournal path a market open uses.
+    s.exec('CREATE TABLE IF NOT EXISTS porders(id TEXT PRIMARY KEY, uid TEXT, ts INTEGER, sym TEXT, side TEXT, px REAL, lev REAL, margin REAL, sl REAL, tp REAL, expTs INTEGER, status TEXT, tid TEXT, note TEXT, doneTs INTEGER, src TEXT, coid TEXT, swT INTEGER)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS porders_uid ON porders(uid, status)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS porders_st ON porders(status, ts)'); } catch (e) {} // the cron reads open orders across every account
     try {
       if (!this.rows('SELECT 1 FROM botmig WHERE m=?', 'keys_v2')[0]) {
         const _mnow = Date.now();
@@ -16654,6 +16909,8 @@ export class UserStore {
     return { uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
+  // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
+  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0 }; }
   // can `a` DM `b`? Yes if either follows the other, OR a conversation already exists (so a reply is always allowed). Keeps DMs to your social circle → no spam-to-strangers.
   _canDm(a, b) { if (this.rows('SELECT 1 FROM ufollows WHERE k=?', a + '|' + b)[0]) return true; if (this.rows('SELECT 1 FROM ufollows WHERE k=?', b + '|' + a)[0]) return true; if (this.rows('SELECT 1 FROM dms WHERE pair=? LIMIT 1', [a, b].sort().join('|'))[0]) return true; return false; }
   _applyConsumable(uid, itemId, check) { // Vault consumables — check=1 verifies applicability without side effects (worker pre-checks BEFORE debiting the ledger)
@@ -17085,6 +17342,87 @@ export class UserStore {
       const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse2 WHERE day=?', today)[0] || {}).t || 0;
       const activeToday = (this.rows('SELECT COUNT(DISTINCT k) c FROM botuse2 WHERE day=?', today)[0] || {}).c || 0;
       return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key' });
+    }
+    // ── PENDING LIMIT ORDERS ──────────────────────────────────────────────────────────────────────────────────
+    // The DO owns the order's STATE (single-threaded => a fill can never happen twice); the worker owns the price
+    // and candle work that decides IF it fills. /order/fill is the one atomic transition: open -> filled + the
+    // position written through _syncJournal, exactly the path a market open takes.
+    if (path === '/order/add') {
+      const uid = String(b.uid || ''), o = b.o || {};
+      if (!uid || !o.sym) return this.j({ error: 'bad_order' });
+      const coid = String(b.coid || '').slice(0, 64);
+      if (coid) { // idempotent placement for bots: a retried POST returns the order the first call created
+        const prev = this.rows('SELECT * FROM porders WHERE uid=? AND coid=?', uid, coid)[0];
+        if (prev) return this.j({ ok: true, order: this._ordJson(prev), idempotent: true });
+      }
+      const openN = (this.rows("SELECT COUNT(*) n FROM porders WHERE uid=? AND status='open'", uid)[0] || {}).n || 0;
+      if (openN >= PORDER_MAX) return this.j({ error: 'too_many_orders', max: PORDER_MAX });
+      const id = String(o.id || ('lo' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)));
+      const now9 = Date.now();
+      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        id, uid, now9, String(o.sym).toUpperCase().slice(0, 12), o.side === 'short' ? 'short' : 'long', +o.px || 0, +o.lev || 1, +o.margin || 0,
+        (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9);
+      try { sql.exec("DELETE FROM porders WHERE status<>'open' AND doneTs < ?", now9 - 30 * 86400000); } catch (e) {} // done rows are history for the user's Orders list, kept 30 days
+      return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
+    }
+    if (path === '/order/cancel') {
+      const uid = String(b.uid || ''), id = String(b.id || '');
+      const row = this.rows('SELECT * FROM porders WHERE id=? AND uid=?', id, uid)[0];
+      if (!row) return this.j({ error: 'not_found' });
+      if (row.status !== 'open') return this.j({ error: 'already_done', order: this._ordJson(row) });
+      sql.exec("UPDATE porders SET status='cancelled', doneTs=?, note=? WHERE id=?", Date.now(), 'cancelled by you', id);
+      return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
+    }
+    if (path === '/order/list') {
+      const uid = String(b.uid || url.searchParams.get('uid') || '');
+      const open = this.rows("SELECT * FROM porders WHERE uid=? AND status='open' ORDER BY ts DESC LIMIT 50", uid).map(r => this._ordJson(r));
+      const done = this.rows("SELECT * FROM porders WHERE uid=? AND status<>'open' ORDER BY doneTs DESC LIMIT 20", uid).map(r => this._ordJson(r));
+      return this.j({ ok: true, orders: open, done });
+    }
+    if (path === '/order/open') { // cron: every resting order across every account (oldest first — a stale one can never be starved)
+      const rows = this.rows("SELECT * FROM porders WHERE status='open' ORDER BY ts LIMIT 500");
+      return this.j({ orders: rows.map(r => this._ordJson(r)) });
+    }
+    if (path === '/ordersyms') { const rows = this.rows("SELECT DISTINCT sym FROM porders WHERE status='open' LIMIT 300"); return this.j({ syms: rows.map(r => String(r.sym || '').toUpperCase()).filter(Boolean) }); }
+    if (path === '/order/mark') { // advance the candle watermark for orders that were inspected and did NOT cross
+      const ids = Array.isArray(b.ids) ? b.ids.map(String).slice(0, 500) : [], swT = +b.swT || 0;
+      if (ids.length && swT > 0) { for (const id of ids) { try { sql.exec("UPDATE porders SET swT=? WHERE id=? AND status='open' AND swT<?", swT, id, swT); } catch (e) {} } }
+      return this.j({ ok: true });
+    }
+    if (path === '/order/done') { // expired / failed / cancelled-by-the-system
+      const id = String(b.id || ''), st = ['expired', 'failed', 'cancelled'].indexOf(String(b.status || '')) >= 0 ? String(b.status) : 'failed';
+      const row = this.rows('SELECT * FROM porders WHERE id=?', id)[0];
+      if (!row || row.status !== 'open') return this.j({ ok: false });
+      sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', st, Date.now(), String(b.note || '').slice(0, 120), id);
+      return this.j({ ok: true });
+    }
+    if (path === '/order/fill') {
+      const id = String(b.id || ''), t = b.t || {};
+      const row = this.rows('SELECT * FROM porders WHERE id=?', id)[0];
+      if (!row) return this.j({ error: 'not_found' });
+      if (row.status !== 'open') return this.j({ error: 'already_done', status: row.status, tid: row.tid || null }); // a concurrent sweep already filled it — idempotent, never a second position
+      const uid = row.uid, SYM = String(row.sym || '').toUpperCase();
+      // Product gates re-checked AT FILL TIME, not at placement: the account can look completely different minutes
+      // or days later. A blocked order is closed with a readable note instead of silently resting forever.
+      const jn = this._loadJournal(uid);
+      const isOpen9 = (x) => x && x.status !== 'win' && x.status !== 'loss';
+      const openAll = jn.filter(isOpen9);
+      const want = row.side === 'short' ? 'short' : 'long';
+      if (openAll.some(x => String(x.sym || '').toUpperCase() === SYM && ((x.side === 'short' ? 'short' : 'long') !== want))) {
+        sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', 'failed', Date.now(), 'not filled: an opposite ' + SYM + ' position is open (one-way mode)', id);
+        return this.j({ error: 'opposite_open' });
+      }
+      if (openAll.length >= PT_MAX_OPEN) {
+        sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', 'failed', Date.now(), 'not filled: ' + PT_MAX_OPEN + ' open positions is the max', id);
+        return this.j({ error: 'too_many_open' });
+      }
+      if (openAll.filter(x => String(x.sym || '').toUpperCase() === SYM).length >= PT_MAX_PAIR) {
+        sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', 'failed', Date.now(), 'not filled: ' + PT_MAX_PAIR + ' open ' + SYM + ' positions is the max', id);
+        return this.j({ error: 'too_many_pair' });
+      }
+      this._syncJournal(uid, [t], b.promos, true, 'limit'); // server-authoritative write, same as /botopen
+      sql.exec('UPDATE porders SET status=?, doneTs=?, tid=?, note=? WHERE id=?', 'filled', Date.now(), String(t.id || ''), String(b.note || '').slice(0, 120), id);
+      return this.j({ ok: true, position: this._j2bot(t, null), uid });
     }
     if (path === '/botopen') { // Bot API open → written straight into the account's journal (My Trades), same as a manual open
       const uid = String(b.uid || ''), t = b.t || {};

@@ -157,6 +157,9 @@ while len(all_bars) &lt; wanted:
     if not bars: break
     all_bars = bars + all_bars</code></pre>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>&mdash; limit order</b><p>Add <code>"type":"limit"</code> and <code>"limit_price"</code> and the order <b>rests on the server</b> instead of filling now: <code>{"symbol":"BTC","side":"long","type":"limit","limit_price":58000,"margin_usd":100,"leverage":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross &mdash; the fill is found from the 1m high/low, so a wick that retraced between two checks still counts, and the position is stamped with the minute the market actually reached the level. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill. <code>sl</code>/<code>tp</code> are side-checked against the limit price. Returns <code>{"ok":true,"order":{...}}</code>.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/orders</code><p>Your resting limit orders, plus the last 20 that filled, expired or were cancelled &mdash; a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/cancel_order</code><p>Cancel one resting order. Body: <code>{"order_id":"lo..."}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> — <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button — closes every open position at the live price in one call.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically.</p></div>
@@ -388,7 +391,7 @@ if (mySignal(price)) {  // your strategy here
   if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=94228f34"></script>
+<script defer src="/assets/mp-auth.js?v=25366bc4"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

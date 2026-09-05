@@ -97,7 +97,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=a80ed177">
+<link rel="stylesheet" href="/assets/home.css?v=1461b065">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -352,9 +352,19 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
             <div class="pt2-top">
               <div class="pt2-px"><div class="pt2-px-lbl live-lbl"><span class="lvdot"></span>LIVE</div><div class="pt2-px-v copynum" id="planLivePx" title="Click to copy">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
             </div>
+            <div class="pt2-otype" id="planType" role="tablist" aria-label="Order type">
+              <button type="button" class="on" data-otype="market" role="tab" aria-selected="true" data-i18n="otMarket">Market</button>
+              <button type="button" data-otype="limit" role="tab" aria-selected="false" data-i18n="otLimit">Limit</button>
+            </div>
             <div class="pt2-side" id="planSeg">
               <button class="on" data-side="long" type="button"><span data-i18n="long">Long</span></button>
               <button data-side="short" type="button"><span data-i18n="short">Short</span></button>
+            </div>
+            <div class="pt2-lim" id="planLimWrap" hidden>
+              <label for="planLimitPx" data-i18n="lLimitPx">Limit price</label>
+              <div class="input-line"><input type="number" id="planLimitPx" step="any" inputmode="decimal" placeholder="&mdash;"><span class="unit">USD</span></div>
+              <div class="pt2-lim-q" id="planLimQuick"></div>
+              <div class="pt2-lim-h" id="planLimHint"></div>
             </div>
             <div class="pt2-fields">
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div><div class="lev-warn"><svg class="lw-ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="levWarn">High leverage — liquidation sits very close to entry</span></div></div>
@@ -780,7 +790,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   </form>
 </div>
 
-<script src="/assets/i18n.js?v=ad344eaf" defer></script>
+<script src="/assets/i18n.js?v=679210df" defer></script>
 
 
 <div id="pwaBanner" class="pwa-banner" hidden>
@@ -816,7 +826,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script defer src="/assets/mp-auth.js?v=94228f34"></script>
+<script defer src="/assets/mp-auth.js?v=25366bc4"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -824,7 +834,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=a80ed177"></script>
+<script src="/assets/home.js?v=1461b065"></script>
 <script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
 </body>
 </html>

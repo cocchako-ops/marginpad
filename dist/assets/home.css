@@ -274,6 +274,18 @@
   .pt2-side button{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;padding:14px 0;border-radius:12px;cursor:pointer;border:1.5px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);transition:.14s;letter-spacing:.03em;}
   .pt2-side button[data-side="long"].on{background:rgba(46,189,133,.16);border-color:#2ebd85;color:#34d99a;}
   .pt2-side button[data-side="short"].on{background:rgba(255,98,88,.16);border-color:#ff6258;color:#ff7b72;}
+  /* Order type: Market fills now, Limit rests until the market reaches your price (2026-09-05). */
+  .pt2-otype{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:4px;}
+  .pt2-otype button{font-family:'Familjen Grotesk',sans-serif;font-size:13px;font-weight:600;padding:9px 0;border-radius:9px;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--ink-faint);transition:.14s;}
+  .pt2-otype button.on{background:var(--bg);border-color:var(--line-bright);color:#e9e7df;}
+  .pt2-lim{margin-bottom:15px;}
+  .pt2-lim>label{display:block;font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:8px;}
+  .pt2-lim-q{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px;}
+  .pt2-lim-q button{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:8px 0;border-radius:8px;cursor:pointer;border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);transition:.12s;}
+  .pt2-lim-q button:hover{color:#e9e7df;border-color:#3a424e;}
+  .pt2-lim-h{font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.45;margin-top:8px;color:var(--ink-faint);min-height:16px;}
+  .pt2-lim-h.bad{color:#ff7b72;}
+  .pt2-lim-h.ok{color:#8ea0b5;}
   .pt2-fields{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;margin-bottom:15px;}
   @media(max-width:520px){.pt2-fields{grid-template-columns:1fr;}.pt2-px-v{font-size:27px;}}
   .pt2-amt label,.pt2-lev label{display:block;font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:8px;}
@@ -413,6 +425,7 @@
   .ptt-form .pt2-px-v.down{color:#ff6258;}
   .ptt-form .pt2-side{margin-bottom:18px;gap:12px;}
   .ptt-form .pt2-side button{padding:15px 0;font-size:15px;}
+  .ptt-form .pt2-otype{margin-bottom:14px;}
   .ptt-form .pt2-fields{gap:18px;margin-bottom:18px;}
   .ptt-form .pt2-amt label,.ptt-form .pt2-lev label{font-size:11px;margin-bottom:9px;}
   .ptt-form .input-line input{font-size:16px;padding:13px 14px;}
@@ -597,7 +610,12 @@
   }
   .jr-drawer .jr-stats{grid-template-columns:1fr 1fr;}
   .jr-tabs{display:inline-flex;gap:3px;background:#0a0c0f;border:1px solid var(--line-bright);border-radius:9px;padding:3px;margin:4px 0 14px;}
-  .jr-tabs button{font-size:12px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;transition:.12s;}
+  .jr-tabs button{font-size:12px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:8px 13px;cursor:pointer;transition:.12s;white-space:nowrap;}
+@media(max-width:420px){.jr-tabs{display:flex;width:100%;}.jr-tabs button{flex:1;padding:8px 4px;font-size:11px;}} /* three tabs must still fit a 390px phone without wrapping */
+/* A resting limit order: amber, dashed, unmistakably NOT a position (no P&L, no liq, no close). */
+.pp.pp-ord{border-color:rgba(240,195,90,.34);border-style:dashed;}
+.pp.pp-ord .pp-pnl .big{color:#f0c35a;}
+.pp-ordtag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;flex-shrink:0;color:#f0c35a;background:rgba(240,195,90,.15);}
   .jr-tabs button.on{background:rgba(255,255,255,.1);color:#fff;}
   .jr-list .pp-btns button{padding:8px 0;font-size:11px;}
   /* ---- tear-off tickets ---- */
@@ -1557,6 +1575,13 @@
   .cqt-side button[data-side="short"]{color:#ff8a80;border-color:rgba(255,98,88,.35);}
   .cqt-side button[data-side="long"].on{background:#2ebd85;border-color:#2ebd85;color:#03281c;}
   .cqt-side button[data-side="short"].on{background:#ff6258;border-color:#ff6258;color:#2a0a08;}
+  .cqt-otype{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:12px;background:rgba(255,255,255,.04);border:1px solid #232932;border-radius:10px;padding:4px;}
+  .cqt-otype button{background:transparent;border:1px solid transparent;border-radius:8px;padding:8px;color:#8d97a3;font-family:'Familjen Grotesk',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:.13s;}
+  .cqt-otype button.on{background:#0a0d11;border-color:#2f3742;color:#e9e7df;}
+  .cqt-lim{width:100%;background:#0a0d11;border:1px solid #2f3742;border-radius:10px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:15px;font-weight:700;outline:none;box-sizing:border-box;}
+  .cqt-lim:focus{border-color:#3fd8e6;}
+  .cqt-limh{font-family:'Space Mono',monospace;font-size:11px;line-height:1.45;margin:6px 0 14px;color:#5c656f;min-height:15px;}
+  .cqt-limh.bad{color:#ff8a80;}
   .cqt-levl{display:flex;align-items:center;justify-content:space-between;}
   .cqt-levv{color:#3fd8e6;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
   .cqt-lev{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:#232932;outline:none;margin:3px 0 16px;cursor:pointer;}
@@ -1986,7 +2011,14 @@
     .pt2-px-lbl{font-size:9px;margin-bottom:0;}
     .pt2-px-chg{font-size:11px;margin-top:0;}
     .pt2-sym{font-size:15px;padding:8px 30px 8px 12px;}
-    /* Long / Short */
+    /* Market / Limit + Long / Short */
+    .ptt-form .pt2-otype{margin-bottom:7px;padding:3px;}
+    .ptt-form .pt2-otype button{padding:6px 0;font-size:12px;}
+    .ptt-form .pt2-lim{margin-bottom:7px;}
+    .ptt-form .pt2-lim>label{font-size:9.5px;margin-bottom:3px;}
+    .ptt-form .pt2-lim-q{gap:4px;margin-top:5px;}
+    .ptt-form .pt2-lim-q button{padding:6px 0;font-size:10.5px;}
+    .ptt-form .pt2-lim-h{font-size:10.5px;margin-top:5px;min-height:0;}
     .ptt-form .pt2-side{margin-bottom:7px;gap:8px;}
     .ptt-form .pt2-side button{padding:8px 0;font-size:13px;}
     /* Amount + Leverage stay side-by-side, just tight */
@@ -2508,7 +2540,12 @@
   .mtr-adv{display:flex;align-items:center;gap:8px;margin:12px 2px 4px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9aa3ad;cursor:pointer;}
   .mtr-adv input{width:16px;height:16px;accent-color:#c2f64a;}
   .mtr-advbox{border:1px solid #232932;border-radius:11px;padding:4px 12px 12px;margin-top:6px;background:rgba(255,255,255,.015);}
-  .mtr-seg{display:flex;gap:7px;margin:8px 0;}
+  .mtr-otype{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:8px 0 6px;background:rgba(255,255,255,.05);border:1px solid #2b323b;border-radius:10px;padding:3px;}
+.mtr-otype button{font-family:'Familjen Grotesk',sans-serif;font-size:12px;font-weight:600;color:#8d97a3;background:transparent;border:1px solid transparent;border-radius:8px;padding:7px 0;cursor:pointer;}
+.mtr-otype button.on{color:#e9e7df;background:#0c0f13;border-color:#2b323b;}
+.mtr-limh{font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.4;color:#6b7683;margin:5px 0 2px;min-height:14px;}
+.mtr-limh.bad{color:#ff8a80;}
+.mtr-seg{display:flex;gap:7px;margin:8px 0;}
   .mtr-seg button{flex:1;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:#9aa3ad;background:#0c0f13;border:1px solid #2b323b;border-radius:10px;padding:8px 0;cursor:pointer;}
   .mtr-seg button.on{color:#06231d;background:#2ebd85;border-color:#2ebd85;}
   .mtr-seg.short button.on{color:#fff;background:#ff5a4d;border-color:#ff5a4d;}

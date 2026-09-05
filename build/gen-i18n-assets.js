@@ -15,7 +15,7 @@ const slice = (startMark, endMark) => { const s = src.indexOf(startMark); if (s 
 const NAMES = eval('(' + slice('var NAMES = ', 'var RTL') + ')');
 const RTL = eval('(' + slice('var RTL = ', 'var T =') + ')');
 const T = eval('(' + slice('var T = {', 'var EXTRA').replace(/^/, '{') + ')'); // re-add the opening brace the marker ate
-for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17']) {
+for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']) {
   const startMark = 'var EXTRA' + suffix + ' = {';
   const endMark = 'for (var _L' + suffix + ' in EXTRA' + suffix + ')';
   const s = src.indexOf(startMark); if (s < 0) continue;

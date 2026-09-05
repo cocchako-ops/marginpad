@@ -1265,20 +1265,57 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function jstore(d){try{window.mpJStore(d);}catch(e){}}
   function qtPrice(sym){var lp=window.mpLivePrices&&window.mpLivePrices[sym];return (lp&&lp.p>0)?lp.p:0;}
   function fmtP(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}
-  var qtEl=null,qtSide='long',qtLev=10;
+  var qtEl=null,qtSide='long',qtLev=10,qtType='market';
+  // Market fills now; Limit rests until the market reaches the price and fills AT it. Same rule as the terminal:
+  // a limit long must sit BELOW the market and a limit short ABOVE it, or it is just a market order in disguise.
+  function qtLimPx(){var e=qtEl&&qtEl.querySelector('.cqt-lim');var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
+  function qtEff(p){var l=qtLimPx();return (qtType==='limit'&&isFinite(l)&&l>0)?l:p;}
+  function qtLimHint(){
+    if(!qtEl)return;var h=qtEl.querySelector('.cqt-limh');if(!h)return;
+    if(qtType!=='limit'){h.textContent='';h.className='cqt-limh';return;}
+    var p=qtPrice(qtEl.querySelector('.cqt-sym').value),l=qtLimPx(),long=qtSide==='long';
+    if(!isFinite(l)||l<=0){h.textContent='The price you want to be filled at.';h.className='cqt-limh';return;}
+    if(!(p>0)){h.textContent='';h.className='cqt-limh';return;}
+    if(long?l>=p:l<=p){h.textContent=long?'A limit long must be BELOW the current price.':'A limit short must be ABOVE the current price.';h.className='cqt-limh bad';return;}
+    var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?'below':'above')+' the market — fills only if the price gets there.';h.className='cqt-limh';
+  }
+  function qtSetType(t){
+    qtType=(t==='limit')?'limit':'market';if(!qtEl)return;
+    qtEl.querySelectorAll('.cqt-otype button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-ot')===qtType);});
+    var w=qtEl.querySelector('.cqt-limwrap');if(w)w.hidden=qtType!=='limit';
+    var li=qtEl.querySelector('.cqt-lim');
+    if(qtType==='limit'&&li&&!(parseFloat(li.value)>0)){var p=qtPrice(qtEl.querySelector('.cqt-sym').value);if(p>0)li.value=String(+(p*(qtSide==='long'?0.99:1.01)).toPrecision(8));}
+    var ob=qtEl.querySelector('.cqt-open');if(ob)ob.textContent=(qtType==='limit')?'Place limit order':'Open position';
+    updateQT();
+  }
   function qtPosToLev(p){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,p/1000))));}   // log slider 0..1000 → 1×..1000×
   function qtLevToPos(l){l=Math.max(1,Math.min(1000,l));return Math.round(Math.log(l)/Math.log(1000)*1000);}
   function updateQT(){if(!qtEl||qtEl.hidden)return;var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,p=qtPrice(sym);
     var lvv=qtEl.querySelector('.cqt-levv');if(lvv)lvv.innerHTML=lev+'&times;';
     var eE=qtEl.querySelector('.cqt-entry'),eL=qtEl.querySelector('.cqt-liq'),eS=qtEl.querySelector('.cqt-size');
-    if(!(p>0)){if(eE)eE.textContent='…';if(eL)eL.textContent='…';if(eS)eS.textContent='…';return;}
-    var mmr=0.005,liq=qtSide==='long'?p*(1-(1-mmr)/lev):p*(1+(1-mmr)/lev),notional=amt*lev;
-    if(eE)eE.textContent=fmtP(p);if(eL)eL.textContent=fmtP(liq);if(eS)eS.textContent=fmtP(notional);}
+    if(!(p>0)){if(eE)eE.textContent='…';if(eL)eL.textContent='…';if(eS)eS.textContent='…';qtLimHint();return;}
+    var px=qtEff(p); // a limit ticket must quote its liq off the price it will actually be entered at
+    var mmr=0.005,liq=qtSide==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev),notional=amt*lev;
+    if(eE)eE.textContent=fmtP(px);if(eL)eL.textContent=fmtP(liq);if(eS)eS.textContent=fmtP(notional);qtLimHint();}
   function doOpenPos(){ var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,msg=qtEl.querySelector('.cqt-msg');
     if(amt>100000){amt=100000;qtEl.querySelector('.cqt-amt').value='100000';if(msg)msg.textContent='Max trade size is $100,000';} // owner rule
     var advc=qtEl.querySelector('.cqt-adv-chk'),advOn=advc&&advc.checked,tp=advOn?parseFloat(qtEl.querySelector('.cqt-tp').value):NaN,sl=advOn?parseFloat(qtEl.querySelector('.cqt-sl').value):NaN;
     if(!(amt>0)){msg.style.color='#ff6258';msg.textContent='Enter an amount.';return;}
     if(window.mpTradeGate&&!window.mpTradeGate(sym,qtSide))return; // enforce open-trade limits + one-way mode
+    if(qtType==='limit'){ // rest the order instead of opening — mpOrders owns it (server-side when signed in)
+      var _lpx=qtLimPx(),_mk=qtPrice(sym),_lng9=qtSide==='long';
+      if(!isFinite(_lpx)||_lpx<=0){msg.style.color='#ff6258';msg.textContent='Enter a limit price.';return;}
+      if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent='Waiting for the live price — try again in a second.';return;}
+      if(_lng9?_lpx>=_mk:_lpx<=_mk){msg.style.color='#ff6258';msg.textContent=_lng9?'A limit long must be BELOW the current price.':'A limit short must be ABOVE the current price.';return;}
+      var _sl9=(advOn&&isFinite(sl)&&(_lng9?sl<_lpx:sl>_lpx))?sl:null,_tp9=(advOn&&isFinite(tp)&&(_lng9?tp>_lpx:tp<_lpx))?tp:null; // side-checked against the LIMIT price, which is this order's entry
+      if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}
+      window.mpOrders.add({sym:sym,side:qtSide,px:_lpx,lev:lev,margin:amt,sl:_sl9,tp:_tp9},function(){
+        msg.style.color='#f0c35a';msg.innerHTML='Limit '+(_lng9?'long':'short')+' '+sym+' at '+fmtP(_lpx)+' is waiting — see it in <b>My Trades &rarr; Orders</b>.';
+        try{window.mpBuzz&&window.mpBuzz([12]);}catch(e){}
+        try{if(window.__mpTrack)window.__mpTrack('limitorder',sym+' '+qtSide+' @'+_lpx);}catch(e){}
+      },function(m){msg.style.color='#ff6258';msg.textContent=m||'Could not place the order.';});
+      return;
+    }
     function open(p,srvT){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed — you can trade it when it reopens.');return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
       var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
@@ -1304,18 +1341,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else open(p);};
     if(entry>0)openVia(entry);
     else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }
-  function buildQT(){ qtEl=el('<div class="cqt-modal" hidden><div class="cqt-panel"><div class="cqt-head"><span>Quick Paper Trade</span><button class="cqt-x" type="button" aria-label="Close">&#10005;</button></div><label class="cqt-l">Symbol</label><select class="cqt-sym">'+SYMS.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select><div class="cqt-side"><button type="button" class="on" data-side="long">Long</button><button type="button" class="cqt-short" data-side="short">Short</button></div><label class="cqt-l">Amount (USD)</label><input class="cqt-amt" type="number" value="100" min="0" inputmode="decimal"><label class="cqt-l cqt-levl">Leverage <span class="cqt-levv">10&times;</span></label><input class="cqt-lev" type="range" min="0" max="1000" value="333"><label class="cqt-adv"><input type="checkbox" class="cqt-adv-chk"><span class="cqt-adv-box"></span>Advanced &mdash; take-profit &amp; stop-loss</label><div class="cqt-adv-fields" hidden><div class="cqt-grid2"><div><label class="cqt-l">Take profit</label><input class="cqt-tp" type="number" min="0" inputmode="decimal"></div><div><label class="cqt-l">Stop loss</label><input class="cqt-sl" type="number" min="0" inputmode="decimal"></div></div></div><div class="cqt-info3"><div class="cqt-cell"><span>Entry</span><b class="cqt-entry">&mdash;</b></div><div class="cqt-cell"><span>Liq. price</span><b class="cqt-liq">&mdash;</b></div><div class="cqt-cell"><span>Position</span><b class="cqt-size">&mdash;</b></div></div><button class="cqt-open" type="button">Open position</button><div class="cqt-msg"></div></div></div>');
+  function buildQT(){ qtEl=el('<div class="cqt-modal" hidden><div class="cqt-panel"><div class="cqt-head"><span>Quick Paper Trade</span><button class="cqt-x" type="button" aria-label="Close">&#10005;</button></div><label class="cqt-l">Symbol</label><select class="cqt-sym">'+SYMS.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select><div class="cqt-otype"><button type="button" class="on" data-ot="market">Market</button><button type="button" data-ot="limit">Limit</button></div><div class="cqt-side"><button type="button" class="on" data-side="long">Long</button><button type="button" class="cqt-short" data-side="short">Short</button></div><div class="cqt-limwrap" hidden><label class="cqt-l">Limit price</label><input class="cqt-lim" type="number" min="0" step="any" inputmode="decimal"><div class="cqt-limh"></div></div><label class="cqt-l">Amount (USD)</label><input class="cqt-amt" type="number" value="100" min="0" inputmode="decimal"><label class="cqt-l cqt-levl">Leverage <span class="cqt-levv">10&times;</span></label><input class="cqt-lev" type="range" min="0" max="1000" value="333"><label class="cqt-adv"><input type="checkbox" class="cqt-adv-chk"><span class="cqt-adv-box"></span>Advanced &mdash; take-profit &amp; stop-loss</label><div class="cqt-adv-fields" hidden><div class="cqt-grid2"><div><label class="cqt-l">Take profit</label><input class="cqt-tp" type="number" min="0" inputmode="decimal"></div><div><label class="cqt-l">Stop loss</label><input class="cqt-sl" type="number" min="0" inputmode="decimal"></div></div></div><div class="cqt-info3"><div class="cqt-cell"><span>Entry</span><b class="cqt-entry">&mdash;</b></div><div class="cqt-cell"><span>Liq. price</span><b class="cqt-liq">&mdash;</b></div><div class="cqt-cell"><span>Position</span><b class="cqt-size">&mdash;</b></div></div><button class="cqt-open" type="button">Open position</button><div class="cqt-msg"></div></div></div>');
     document.body.appendChild(qtEl);
     qtEl.querySelector('.cqt-x').addEventListener('click',function(){qtEl.hidden=true;});
     qtEl.addEventListener('click',function(e){if(e.target===qtEl)qtEl.hidden=true;});
     qtEl.querySelector('.cqt-side').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;qtSide=b.getAttribute('data-side');this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');updateQT();});
+    qtEl.querySelector('.cqt-otype').addEventListener('click',function(e){var b=e.target.closest('button[data-ot]');if(!b)return;qtSetType(b.getAttribute('data-ot'));});
+    var _qli=qtEl.querySelector('.cqt-lim');if(_qli)_qli.addEventListener('input',updateQT);
     qtEl.querySelector('.cqt-sym').addEventListener('change',updateQT);
     qtEl.querySelector('.cqt-lev').addEventListener('input',function(){qtLev=qtPosToLev(+this.value);updateQT();});
     qtEl.querySelector('.cqt-amt').addEventListener('input',updateQT);
     var advc=qtEl.querySelector('.cqt-adv-chk'),advf=qtEl.querySelector('.cqt-adv-fields');if(advc)advc.addEventListener('change',function(){advf.hidden=!advc.checked;});
     qtEl.querySelector('.cqt-open').addEventListener('click',doOpenPos);
     document.addEventListener('mp:price',function(ev){if(!qtEl||qtEl.hidden||!ev.detail)return;var ss=qtEl.querySelector('.cqt-sym');if(!ss||ev.detail.sym!==ss.value)return;if(qtEl._raf)return;qtEl._raf=true;requestAnimationFrame(function(){qtEl._raf=false;updateQT();});}); }
-  function openQuickTrade(){ if(!qtEl)buildQT(); var sym=(wins.length&&wins[0].sym)||'BTC',sel=qtEl.querySelector('.cqt-sym'); for(var i=0;i<sel.options.length;i++)if(sel.options[i].value===sym){sel.selectedIndex=i;break;} qtSide='long'; var sb=qtEl.querySelector('.cqt-side'); sb.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-side')==='long');}); qtLev=10; var lr=qtEl.querySelector('.cqt-lev'); if(lr)lr.value=String(qtLevToPos(10)); var ac=qtEl.querySelector('.cqt-adv-chk'); if(ac)ac.checked=false; var af=qtEl.querySelector('.cqt-adv-fields'); if(af)af.hidden=true; qtEl.querySelector('.cqt-msg').textContent=''; qtEl.hidden=false; updateQT();
+  function openQuickTrade(){ if(!qtEl)buildQT(); var sym=(wins.length&&wins[0].sym)||'BTC',sel=qtEl.querySelector('.cqt-sym'); for(var i=0;i<sel.options.length;i++)if(sel.options[i].value===sym){sel.selectedIndex=i;break;} qtSide='long'; var sb=qtEl.querySelector('.cqt-side'); sb.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-side')==='long');}); qtLev=10; var lr=qtEl.querySelector('.cqt-lev'); if(lr)lr.value=String(qtLevToPos(10)); var ac=qtEl.querySelector('.cqt-adv-chk'); if(ac)ac.checked=false; var af=qtEl.querySelector('.cqt-adv-fields'); if(af)af.hidden=true; qtEl.querySelector('.cqt-msg').textContent=''; var _ql=qtEl.querySelector('.cqt-lim'); if(_ql)_ql.value=''; qtSetType('market'); qtEl.hidden=false; updateQT();
     if(!(qtPrice(sym)>0))fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};updateQT();}}); }
   // ---- movable calculator popup ----
   var calcEl=null;
