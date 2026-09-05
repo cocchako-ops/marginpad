@@ -1,9 +1,11 @@
-// Limit orders E2E (2026-09-05). Two halves:
-//   SERVER — place / list / cancel, every refusal (marketable, wrong-side SL/TP, absurd price, one-way mode),
-//   and a DETERMINISTIC fill: /api/admin/porders?run=1&px=SYM:price injects the price the fill engine sees, so the
-//   exact fill math is proven without waiting for the market to move. The fill must land at the ORDER's price.
-//   BROWSER — the Paper Trade terminal at 390px: the Market|Limit switch is reachable, the limit field appears,
-//   the wrong-side hint fires, a guest order is placed, shows in My Trades > Orders, and cancels.
+// Limit orders E2E (2026-09-05). An order is a LEVEL, not a side: below the market it is a classic limit, above it
+// a breakout entry ("buy IF it gets to 83.80"). Both must fill, and both must fill AT the level.
+//   SERVER — place / list / cancel, the refusals that remain (wrong-side SL/TP, absurd price, one-way mode), and
+//   DETERMINISTIC fills in both directions: /api/admin/porders?run=1&px=SYM:price injects the price the fill engine
+//   sees, so the exact fill math is proven without waiting for the market to move.
+//   BROWSER — the Paper Trade terminal at 390px, the /charts quick trade and the mobile chart window: the
+//   Market|Limit switch is reachable, the limit field appears, the hint states which way the market must move, a
+//   guest order is placed, shows in My Trades > Orders, and cancels.
 const fs = require('fs');
 const { withBrowser } = require('D:/part1/money-mission/build/e2e-browser.js');
 const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').split(/\r?\n/)[1].trim();
@@ -24,10 +26,13 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
   chk('live BTC price available', px > 0, { px });
 
   // ── refusals ───────────────────────────────────────────────────────────────────────────────────────────────
+  // A LEVEL, NOT A SIDE (owner correction): a buy ABOVE the market is a breakout entry and must be accepted.
   let r = await trade('/order', { action: 'add', sym: 'BTC', side: 'long', px: Math.round(px * 1.05), lev: 10, margin: 100 });
-  chk('marketable limit long refused', r.status === 400 && r.body.error === 'limit_marketable', r.body);
-  r = await trade('/order', { action: 'add', sym: 'BTC', side: 'short', px: Math.round(px * 0.95), lev: 10, margin: 100 });
-  chk('marketable limit short refused', r.status === 400 && r.body.error === 'limit_marketable', r.body);
+  chk('buy ABOVE the market accepted (breakout entry)', r.status === 200 && r.body.ok && r.body.order.dir === 'up', r.body.order || r.body);
+  const upId = r.body.order && r.body.order.id;
+  r = await trade('/order', { action: 'add', sym: 'ETH', side: 'short', px: Math.round((await (await fetch(ORIGIN + '/api/price?symbol=ETH')).json()).price * 0.95), lev: 10, margin: 100 });
+  chk('sell BELOW the market accepted (breakdown entry)', r.status === 200 && r.body.ok && r.body.order.dir === 'down', r.body.order || r.body);
+  const dnId = r.body.order && r.body.order.id;
   r = await trade('/order', { action: 'add', sym: 'BTC', side: 'long', px: Math.round(px / 100), lev: 10, margin: 100 });
   chk('absurd price refused (decimal-point guard)', r.status === 400 && r.body.error === 'price_far', r.body);
   r = await trade('/order', { action: 'add', sym: 'BTC', side: 'long', px: Math.round(px * 0.9), lev: 10, margin: 100, sl: Math.round(px * 0.95) });
@@ -52,6 +57,17 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
 
   let l = await trade('/orders');
   chk('order appears in the list', (l.body.orders || []).some(o => o.id === oid), { n: (l.body.orders || []).length });
+  chk('a level below the market is stamped dir=down', (l.body.orders || []).filter(o => o.id === oid)[0].dir === 'down', { dir: (l.body.orders || []).filter(o => o.id === oid)[0].dir });
+
+  // An UPWARD level must fill when the market RISES through it — the case the first cut refused outright.
+  const upCross = Math.round(px * 1.08); // above the order's own level (px*1.05): the market travelled through it
+  const runUp = await admin('/api/admin/porders?run=1&nokl=1&uid=' + UID + '&px=BTC:' + upCross);
+  const upFill = (runUp.filled || []).filter(f => f.id === upId)[0];
+  chk('breakout order fills when the market rises through the level', !!upFill, runUp.filled);
+  chk('breakout fill lands AT the level, not at the crossing price', upFill && near(upFill.px, Math.round(px * 1.05)) && !near(upFill.px, upCross), upFill && { got: upFill && upFill.px, level: Math.round(px * 1.05), cross: upCross });
+  chk('the downward order was NOT touched by an upward move', !(runUp.filled || []).some(f => f.id === dnId), runUp.filled);
+  { const c = await trade('/close', { id: upFill && upFill.tid }); chk('breakout position closed for cleanup', !c.body || !c.body.error || c.body.error === 'already_closed', c.body && (c.body.error || 'ok')); }
+  await trade('/order', { action: 'cancel', id: dnId });
 
   // ── the fill: an injected price that crosses, and NOTHING else changed ──────────────────────────────────────
   const before = await admin('/api/admin/journal?uid=' + UID);
@@ -160,7 +176,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
       i.value = String(+(live * 1.05).toPrecision(8)); i.dispatchEvent(new Event('input'));
       return new Promise(res => setTimeout(() => res({ hint: (document.getElementById('planLimHint') || {}).textContent, cls: (document.getElementById('planLimHint') || {}).className }), 400));
     });
-    chk('browser: a marketable limit is called out live', /must be BELOW/i.test(bad.hint || '') && /bad/.test(bad.cls || ''), bad);
+    chk('browser: a level ABOVE the market reads as a breakout entry, not an error', /rises to/i.test(bad.hint || '') && !/bad/.test(bad.cls || ''), bad);
 
     // Place a guest order and prove it reaches the drawer.
     await page.evaluate(() => {
@@ -218,7 +234,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
         }, 400));
       });
       chk('browser /charts: limit field shows and the button relabels', q2.shown && /limit order/i.test(q2.btn || ''), q2);
-      chk('browser /charts: a marketable limit long is called out', /must be BELOW/i.test(q2.hint || '') && /bad/.test(q2.cls || ''), q2);
+      chk('browser /charts: a level above the market reads as a breakout entry', /rises to/i.test(q2.hint || '') && !/bad/.test(q2.cls || ''), q2);
     }
     chk('browser /charts: zero page errors', errs2.length === 0, errs2);
     await ctx2.close();

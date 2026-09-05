@@ -276,7 +276,7 @@ function handleOpenApi() {
         Markets: { type: 'object', properties: { markets: { type: 'array', items: { $ref: '#/components/schemas/Market' } }, count: { type: 'integer' }, note: { type: 'string' } } },
         Trade: { type: 'object', properties: { id: { type: ['string', 'null'] }, closed_ts: { type: 'integer' }, symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, leverage: { type: 'number' }, margin_usd: { type: 'number' }, pnl_usd: { type: ['number', 'null'] }, roe_pct: { type: ['number', 'null'] }, liquidated: { type: 'boolean' }, via: { type: ['string', 'null'], description: 'Which path executed the close: bot, site, sweep, cron, sltp.' } } },
         Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
-        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". Below the market for a long, above it for a short — a marketable limit is rejected (limit_marketable) rather than silently turned into a market order.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
+        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". The level may sit on EITHER side of the market: below it the order behaves as a classic limit, above it as a breakout entry. Either way it waits until the market reaches the level and fills AT the level.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
         CloseRequest: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', minimum: 1, maximum: 100, description: 'Percent to close. Omit for the whole position.' }, symbol: { type: 'string', description: 'The position symbol, copied from /positions. Optional but strongly recommended: it lets the server price exactly one feed and skip a lookup round trip, which is worth several hundred milliseconds from Asia. A wrong value costs nothing — the server falls back automatically.' } }, required: ['id'] },
         SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] } }, required: ['id'] },
         ServerTime: { type: 'object', properties: { server_time_ms: { type: 'integer' }, server_time_iso: { type: 'string' }, client_time_ms: { type: 'integer' }, drift_ms: { type: 'integer', description: 'client_ts minus server time, when you pass ?client_ts=' } } },
@@ -4556,17 +4556,24 @@ function aiFail(env, where, status) { try { if (env && env.AE) env.AE.writeDataP
 // candle that is FORMING when the order is placed is deliberately skipped (its low/high may predate placement),
 // which would otherwise leave the first minute of an order's life blind.
 function orderCross(o, live, bars) {
-  const long = o.side !== 'short', px = +o.px || 0;
+  const px = +o.px || 0;
   if (!(px > 0)) return null;
+  // The level can sit on either side of the market, so "reached" is direction-aware, never side-derived: `dir` is
+  // the way the market had to travel when the order was placed. A candle counts when its range TOUCHES the level
+  // (low <= px <= high) — that is true whether the level was approached from below or from above, and it is also
+  // what catches a bar that gapped straight through it.
+  const up = o.dir === 'up' || (o.dir == null && o.side === 'short');
   const from = Math.max(+o.swT || 0, +o.ts || 0);
   if (bars && bars.length) {
     for (const c of bars) {
       const ct = (+c.time || 0) * 1000;
       if (ct <= from) continue;                                  // never fill on price action that predates the order
-      if (long ? (+c.low > 0 && +c.low <= px) : (+c.high >= px)) return { ts: ct, via: 'candle' };
+      const lo = +c.low, hi = +c.high;
+      if (lo > 0 && lo <= px && hi >= px) return { ts: ct, via: 'candle' };
+      if (up ? hi >= px : (lo > 0 && lo <= px)) return { ts: ct, via: 'candle' }; // gapped past the level entirely
     }
   }
-  if (live > 0 && (long ? live <= px : live >= px)) return { ts: Date.now(), via: 'price' }; // crossing right now
+  if (live > 0 && (up ? live >= px : live <= px)) return { ts: Date.now(), via: 'price' }; // standing at/through it now
   return null;
 }
 // The position a filled order becomes — SAME shape and same math as a market open (/api/trade/open), with
@@ -10500,11 +10507,14 @@ async function handleTrade(url, request, env, ctx) {
     if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jt({ error: 'market_closed', sym, message: ms9.msg || 'Market closed' }, 409); }
     const live = +pd.price;
-    // A limit order that is ALREADY on the fillable side of the market is a market order wearing a costume. Rather
-    // than open a position the trader did not ask for, say so (owner decision 2026-09-05) — same stance as the
-    // wrong-side SL/TP guard: never silently turn one instruction into a different one.
-    if (long ? px >= live : px <= live) return jt({ error: 'limit_marketable', live, message: 'A limit ' + (long ? 'long must be BELOW' : 'short must be ABOVE') + ' the current price ($' + live + '). Use a market order to open now.' }, 400);
+    // A LEVEL, NOT A SIDE (owner correction 2026-09-05). The first cut refused a buy above the market, because on a
+    // real exchange that is a "marketable limit" that fills instantly at the current price. But that is not what a
+    // trader typing 83.80 while HYPE sits at 83.60 means: they mean "buy IF it gets to 83.80" — a breakout entry,
+    // which MEXC and the rest express as a trigger order. One rule covers both intents honestly: the order waits
+    // until the market REACHES the level, from whichever side it starts on, and fills AT the level. `dir` records
+    // which way the market has to travel, so the fill test can never be ambiguous later.
     if (px > live * 20 || px < live / 20) return jt({ error: 'price_far', live, message: 'That price is more than 20x away from the market — check the decimal point.' }, 400);
+    const dir = px > live ? 'up' : 'down';
     const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
     // SL/TP are checked against the LIMIT price, not the live one — that is the entry this order will actually get.
     if (sl != null && (long ? sl >= px : sl <= px)) return jt({ error: 'sl_wrong_side', limit: px }, 400);
@@ -10515,7 +10525,7 @@ async function handleTrade(url, request, env, ctx) {
       const opp = ((seed && seed.positions) || []).filter(p => p.status === 'open' && String(p.symbol || p.sym || '').toUpperCase().replace(/USDT$/, '') === sym && (p.side === 'short' ? 'short' : 'long') !== side);
       if (opp.length) return jt({ error: 'opposite_open', message: 'You already have an opposite ' + sym + ' position open — close it first (one-way mode).' }, 409);
     } catch (e) {}
-    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site' } });
+    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site', dir } });
     if (!r || r.error) return jt(r || { error: 'unavailable' }, r && r.error === 'too_many_orders' ? 409 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'site'], doubles: [margin, Math.abs(px - live) / live * 100] }); } catch (e) {}
     return jt(r);
@@ -10568,7 +10578,7 @@ const API_CHANGELOG = [
   {
     date: '2026-09-05', version: '2.1.0', title: 'Limit orders',
     changes: [
-      { type: 'added', breaking: false, text: 'POST /v1/open accepts type:"limit" with limit_price. The order rests server-side and fills at ITS OWN price — not at the price the engine happened to notice the cross — so a fill detected late is still priced correctly. Fills are found from the 1m high/low, which catches a wick that retraced between two checks; the position is stamped with the minute the market actually reached the level. A limit long must be below the market and a limit short above it (limit_marketable otherwise): the API never silently turns a limit into a market order.' },
+      { type: 'added', breaking: false, text: 'POST /v1/open accepts type:"limit" with limit_price. The order rests server-side and fills at ITS OWN price — not at the price the engine happened to notice the cross — so a fill detected late is still priced correctly. Fills are found from the 1m high/low, which catches a wick that retraced between two checks; the position is stamped with the minute the market actually reached the level. The level may sit on EITHER side of the market: below it the order behaves as a classic limit, above it as a breakout entry (what other venues call a trigger order). Either way it waits for the market to reach the level and fills at the level - it is never turned into a market order behind your back.' },
       { type: 'added', breaking: false, text: 'GET /v1/orders lists resting orders plus the last 20 that filled, expired or were cancelled (with the position id a fill created). POST /v1/cancel_order {order_id} cancels one. Orders are good until cancelled with a 30-day expiry, 20 resting per account.' },
       { type: 'added', breaking: false, text: 'client_order_id works on limit placement too: a retried POST returns the order the first call created (idempotent: true) instead of resting a second one.' },
       { type: 'unchanged', breaking: false, text: 'sl and tp on a limit order are side-checked against the LIMIT price, not the live price — that is the entry the order will actually get. One-way mode and the open-position caps are re-checked at fill time, and an order blocked by them is closed with a readable note rather than resting forever.' },
@@ -10995,13 +11005,13 @@ async function handleBot(url, request, env, ctx) {
       const lpx = +b.limit_price;
       const long0 = side === 'long', live0 = +pd.price;
       if (!(lpx > 0) || !isFinite(lpx)) return jb({ error: 'limit_price_required', hint: 'type:"limit" needs limit_price.' }, 400);
-      if (long0 ? lpx >= live0 : lpx <= live0) return jb({ error: 'limit_marketable', live: live0, message: 'A limit ' + (long0 ? 'long must be BELOW' : 'short must be ABOVE') + ' the current price. Send type:"market" to open now.' }, 400);
       if (lpx > live0 * 20 || lpx < live0 / 20) return jb({ error: 'limit_price_far', live: live0 }, 400);
+      const dir0 = lpx > live0 ? 'up' : 'down'; // the level may sit either side of the market: below = classic limit, above = breakout entry
       const sl0 = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp0 = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
       if (sl0 != null && (long0 ? sl0 >= lpx : sl0 <= lpx)) return jb({ error: 'sl_wrong_side', limit: lpx }, 400);
       if (tp0 != null && (long0 ? tp0 <= lpx : tp0 >= lpx)) return jb({ error: 'tp_wrong_side', limit: lpx }, 400);
       const coid0 = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot' } });
+      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0 } });
       if (!ro || ro.error) return jb(ro || { error: 'unavailable' }, ro && ro.error === 'too_many_orders' ? 409 : 400);
       try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'bot'], doubles: [margin, Math.abs(lpx - live0) / live0 * 100] }); } catch (e) {}
       return jb({ ok: true, order: ro.order, ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
@@ -16736,6 +16746,10 @@ export class UserStore {
     // the Bot API, leaderboards, XP, missions, utrades, ops Live trades). Its own table touches none of that; the
     // order becomes a normal position only at fill, through the SAME _syncJournal path a market open uses.
     s.exec('CREATE TABLE IF NOT EXISTS porders(id TEXT PRIMARY KEY, uid TEXT, ts INTEGER, sym TEXT, side TEXT, px REAL, lev REAL, margin REAL, sl REAL, tp REAL, expTs INTEGER, status TEXT, tid TEXT, note TEXT, doneTs INTEGER, src TEXT, coid TEXT, swT INTEGER)');
+    // `dir` = which way the market must travel to reach the level ('up' or 'down'), stamped at placement. An order
+    // is a LEVEL, not a side: a buy can wait above the market (a breakout entry) as well as below it. Rows written
+    // before this column fall back to the old side-derived direction, so nothing resting changes meaning.
+    try { s.exec("ALTER TABLE porders ADD COLUMN dir TEXT"); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_uid ON porders(uid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_st ON porders(status, ts)'); } catch (e) {} // the cron reads open orders across every account
     try {
@@ -16910,7 +16924,7 @@ export class UserStore {
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
-  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0 }; }
+  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down') }; }
   // can `a` DM `b`? Yes if either follows the other, OR a conversation already exists (so a reply is always allowed). Keeps DMs to your social circle → no spam-to-strangers.
   _canDm(a, b) { if (this.rows('SELECT 1 FROM ufollows WHERE k=?', a + '|' + b)[0]) return true; if (this.rows('SELECT 1 FROM ufollows WHERE k=?', b + '|' + a)[0]) return true; if (this.rows('SELECT 1 FROM dms WHERE pair=? LIMIT 1', [a, b].sort().join('|'))[0]) return true; return false; }
   _applyConsumable(uid, itemId, check) { // Vault consumables — check=1 verifies applicability without side effects (worker pre-checks BEFORE debiting the ledger)
@@ -17359,9 +17373,10 @@ export class UserStore {
       if (openN >= PORDER_MAX) return this.j({ error: 'too_many_orders', max: PORDER_MAX });
       const id = String(o.id || ('lo' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)));
       const now9 = Date.now();
-      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT,dir) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         id, uid, now9, String(o.sym).toUpperCase().slice(0, 12), o.side === 'short' ? 'short' : 'long', +o.px || 0, +o.lev || 1, +o.margin || 0,
-        (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9);
+        (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9,
+        (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'));
       try { sql.exec("DELETE FROM porders WHERE status<>'open' AND doneTs < ?", now9 - 30 * 86400000); } catch (e) {} // done rows are history for the user's Orders list, kept 30 days
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
     }

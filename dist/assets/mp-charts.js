@@ -302,9 +302,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function mapVal(b,arr){var o=[];for(var i=0;i<b.length;i++){if(isFinite(arr[i]))o.push({time:b[i].time,value:arr[i]});}return o;}
   function money(n){n=+n||0;var a=Math.abs(n);return a>=1e9?'$'+(n/1e9).toFixed(1)+'B':a>=1e6?'$'+(n/1e6).toFixed(1)+'M':a>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+n.toFixed(0);}
   function cwFmt(v,dec){if(v==null||!isFinite(v))return '–';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
-  // decimals to show on the price axis by magnitude — small-cap tokens (e.g. $0.000123) need many more than 2
-  function pricePrec(p){p=Math.abs(+p)||0;if(!(p>0))return 2;if(p>=1000)return 2;if(p>=100)return 3;if(p>=10)return 3;if(p>=1)return 4;if(p>=0.1)return 4;if(p>=0.01)return 5;if(p>=0.001)return 6;if(p>=0.0001)return 7;if(p>=0.00001)return 8;return 9;} /* ~5 sig figs: $1-100 coins (XRP 1.0904, SOL 74.093) were capped at 2 dp -> lost the digits that matter */
-  function applyPrec(series,p){try{var n=pricePrec(p);series.applyOptions({priceFormat:{type:'price',precision:n,minMove:Math.pow(10,-n)}});}catch(e){}}
+  // Decimals on the price axis are MEASURED from the market's own candles (window.mpPricePrec, defined in the
+  // shared chart-helper block in home.js) instead of guessed from price magnitude — the guess drew HYPE 85.64 as
+  // 85.640 and cut 5-decimal FX short. `bars` is optional: without it this degrades to the magnitude floor.
+  function applyPrec(series,p,bars){try{var n=window.mpPricePrec?window.mpPricePrec(bars||null,p):2;series.applyOptions({priceFormat:{type:'price',precision:n,minMove:Math.pow(10,-n)}});}catch(e){}}
   function _legHidden(){try{return localStorage.getItem('mp:leghide')==='1';}catch(e){return false;}}
   function cwLeg(w,param){if(!w||!w.legEl)return;if(!w.legItems||!w.legItems.length){w.legEl.style.display='none';w.legEl.innerHTML='';return;}w.legEl.style.display='';
     if(!w.legEl._tgw){w.legEl._tgw=1;w.legEl.addEventListener('click',function(e){var t=e.target.closest('[data-legtg]');if(!t)return;try{localStorage.setItem('mp:leghide',_legHidden()?'0':'1');}catch(_){}wins.forEach(function(x){try{cwLeg(x);}catch(_){}});});}
@@ -999,7 +1000,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _q=w._kq=(w._kq||0)+1;/* request ticket: a full-window klines response only applies while it is the NEWEST full-window request for this window (2026-09-02) */
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle||_q!==w._kq)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}/* restore this symbol:TF's saved drawings (time-anchored) */if(first){w._userPS=false;try{w.chart.priceScale('right').applyOptions({autoScale:true});var _vn=kd.length;w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck. setVisibleLogicalRange (was scrollToRealTime) pins the last ~120 bars so a deep-history dataset never renders squished/sparse. */
+      if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close,kd);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}/* restore this symbol:TF's saved drawings (time-anchored) */if(first){w._userPS=false;try{w.chart.priceScale('right').applyOptions({autoScale:true});var _vn=kd.length;w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck. setVisibleLogicalRange (was scrollToRealTime) pins the last ~120 bars so a deep-history dataset never renders squished/sparse. */
       showSkel(w,false); }); }
   // Quietly re-sync the candles with the exchange's true OHLC (no skeleton, preserves the view). The live WS feed only
   // ever EXPANDS the forming bar's high/low, so a transient bad/low print bakes a phantom wick ("a drop that never
@@ -1276,12 +1277,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var p=qtPrice(qtEl.querySelector('.cqt-sym').value),l=qtLimPx(),long=qtSide==='long';
     if(!isFinite(l)||l<=0){h.textContent='The price you want to be filled at.';h.className='cqt-limh';return;}
     if(!(p>0)){h.textContent='';h.className='cqt-limh';return;}
-    if(long?l>=p:l<=p){h.textContent=long?'A limit long must be BELOW the current price.':'A limit short must be ABOVE the current price.';h.className='cqt-limh bad';return;}
-    var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?'below':'above')+' the market — fills only if the price gets there.';h.className='cqt-limh';
+    var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?'below':'above')+' the market — fills if it '+(d<0?'drops':'rises')+' to '+fmtP(l)+'.';h.className='cqt-limh';
   }
   function qtSetType(t){
     qtType=(t==='limit')?'limit':'market';if(!qtEl)return;
-    qtEl.querySelectorAll('.cqt-otype button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-ot')===qtType);});
+    var _ot=qtEl.querySelector('.cqt-otype');if(_ot)_ot.setAttribute('data-t',qtType);qtEl.querySelectorAll('.cqt-otype button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-ot')===qtType);});
     var w=qtEl.querySelector('.cqt-limwrap');if(w)w.hidden=qtType!=='limit';
     var li=qtEl.querySelector('.cqt-lim');
     if(qtType==='limit'&&li&&!(parseFloat(li.value)>0)){var p=qtPrice(qtEl.querySelector('.cqt-sym').value);if(p>0)li.value=String(+(p*(qtSide==='long'?0.99:1.01)).toPrecision(8));}
@@ -1306,7 +1306,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _lpx=qtLimPx(),_mk=qtPrice(sym),_lng9=qtSide==='long';
       if(!isFinite(_lpx)||_lpx<=0){msg.style.color='#ff6258';msg.textContent='Enter a limit price.';return;}
       if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent='Waiting for the live price — try again in a second.';return;}
-      if(_lng9?_lpx>=_mk:_lpx<=_mk){msg.style.color='#ff6258';msg.textContent=_lng9?'A limit long must be BELOW the current price.':'A limit short must be ABOVE the current price.';return;}
+      /* the level may sit either side of the market: below = classic limit, above = breakout entry */
       var _sl9=(advOn&&isFinite(sl)&&(_lng9?sl<_lpx:sl>_lpx))?sl:null,_tp9=(advOn&&isFinite(tp)&&(_lng9?tp>_lpx:tp<_lpx))?tp:null; // side-checked against the LIMIT price, which is this order's entry
       if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}
       window.mpOrders.add({sym:sym,side:qtSide,px:_lpx,lev:lev,margin:amt,sl:_sl9,tp:_tp9},function(){

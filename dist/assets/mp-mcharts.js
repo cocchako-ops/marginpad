@@ -210,7 +210,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return false;
       var ok=false;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
       return ok;
     });
@@ -511,10 +511,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var p=livePx(),l=limPx(),long=side==='long';
       if(!isFinite(l)||l<=0){h.textContent=mcT('otHintEmpty','Enter the price you want to be filled at.');h.className='mtr-limh';return;}
       if(!(p>0)){h.textContent='';h.className='mtr-limh';return;}
-      if(long?l>=p:l<=p){h.textContent=long?mcT('otBadLong','A limit long must be BELOW the current price.'):mcT('otBadShort','A limit short must be ABOVE the current price.');h.className='mtr-limh bad';return;}
-      var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?mcT('otBelow','below the market'):mcT('otAbove','above the market'));h.className='mtr-limh';}
+      var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?mcT('otBelow','below the market'):mcT('otAbove','above the market'))+' - '+(d<0?mcT('otDrops','fills if it drops there'):mcT('otRises','fills if it rises there'));h.className='mtr-limh';}
     function setType(t){oType=(t==='limit')?'limit':'market';
-      Array.prototype.forEach.call(q('mtrType').querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-ot')===oType);});
+      q('mtrType').setAttribute('data-t',oType);Array.prototype.forEach.call(q('mtrType').querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-ot')===oType);});
       q('mtrLimWrap').hidden=oType!=='limit';
       var li=q('mtrLim');if(oType==='limit'&&li&&!(parseFloat(li.value)>0)){var p=livePx();if(p>0)li.value=String(+(p*(side==='long'?0.99:1.01)).toPrecision(8));}
       q('mtrGo').textContent=(oType==='limit')?mcT('otPlace','Place limit order'):mcT('mtOpen','Open demo trade');
@@ -540,7 +539,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _lp=limPx(),_mk=livePx(),_lg=side==='long';
         if(!isFinite(_lp)||_lp<=0){msg.style.color='#ff6258';msg.textContent=mcT('otNoPx','Enter a limit price.');return;}
         if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx','Waiting for a live price — try again in a second.');return;}
-        if(_lg?_lp>=_mk:_lp<=_mk){msg.style.color='#ff6258';msg.textContent=_lg?mcT('otBadLong','A limit long must be BELOW the current price.'):mcT('otBadShort','A limit short must be ABOVE the current price.');return;}
+        /* the level may sit either side of the market */
         var _s9=parseFloat(q('mtrSL').value),_t9=parseFloat(q('mtrTP').value);
         _s9=(isFinite(_s9)&&(_lg?_s9<_lp:_s9>_lp))?_s9:null;_t9=(isFinite(_t9)&&(_lg?_t9>_lp:_t9<_lp))?_t9:null; // side-checked against the LIMIT price
         if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}

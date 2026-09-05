@@ -46,6 +46,37 @@ function mpTzMerge(o){
   return o;
 }
 function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
+/* ── PRICE PRECISION ON THE AXIS — MEASURED, NOT GUESSED (2026-09-05) ────────────────────────────────────────
+   Every engine used to pick decimals from price MAGNITUDE ("$10-$1000 -> 3 decimals"). That is a guess about the
+   market's tick size, and it was wrong in both directions: HYPE at 85.64 was drawn as 85.640 — a digit the
+   exchange never quotes, repeated on every label — while a 5-decimal FX pair got cut short.
+
+   The candles already carry the answer: the decimals a market actually prints ARE its tick size. So read them.
+   The 90th percentile rather than the max, because one aggregated/derived close (a daily bar built by averaging
+   comes back as 38.153333333333336) would otherwise drag the whole axis to 15 decimals. The magnitude floor
+   keeps a quiet window of round prints from under-quoting a market, the ceiling keeps the axis readable.
+   ONE helper for all four chart engines — this is the chart-helper block they all share (mpCreateChart). */
+/* Decimals a value REALLY carries = the fewest that reproduce it. Counting the digits in String(v) looks simpler
+   and is wrong: Yahoo hands us AAPL as 319.989990234375 and Gate hands us EURUSD as 1.1621150970458984 (float32
+   widened to a double), so a string count says "12 decimals" for a market that quotes 2. Asking which rounding
+   reproduces the number ignores that noise and returns 2. */
+function mpDecOf(v){ v=Math.abs(+v); if(!isFinite(v)||v===0)return 0; var tol=v*1e-6; for(var d=0;d<=12;d++){var f=Math.pow(10,d);if(Math.abs(v-Math.round(v*f)/f)<=tol)return d;} return 12; }
+function mpPricePrec(bars,live){
+  var p=Math.abs(+live)||0;
+  if(!(p>0)&&bars&&bars.length){for(var j=bars.length-1;j>=0&&!(p>0);j--){if(bars[j])p=Math.abs(+bars[j].close)||0;}}
+  if(!(p>0))return 2;
+  var hi=p>=1000?2:p>=100?3:p>=10?4:p>=1?5:p>=0.1?6:p>=0.01?7:p>=0.001?8:10;              // never more than ~6 significant figures
+  var lo=p>=1000?1:p>=1?2:p>=0.1?3:p>=0.01?4:p>=0.001?5:p>=0.0001?6:8;                     // never fewer than the market can move meaningfully
+  var ds=[];
+  if(bars&&bars.length){for(var i=bars.length-1,n=0;i>=0&&n<240;i--){var b=bars[i];if(!b||!isFinite(+b.close))continue;n++;ds.push(mpDecOf(b.close));}}
+  var m=lo;
+  if(ds.length>=8){ds.sort(function(a,b){return a-b;});m=ds[Math.min(ds.length-1,Math.floor(ds.length*0.9))];}
+  return Math.max(lo,Math.min(hi,m));
+}
+// The options object LWC wants. minMove also sets the axis tick GRID: at 2 decimals the ticks land on .00/.20/.50
+// instead of whole dollars, which is the "80.11 / 82.13" granularity rather than "83, 84, 85".
+function mpPriceFmt(bars,live){var n=mpPricePrec(bars,live);return {type:'price',precision:n,minMove:Math.pow(10,-n)};}
+window.mpPriceFmt=mpPriceFmt;window.mpPricePrec=mpPricePrec;
 /* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
 /* TEMP pxtag (until 2026-09-01): identify WHO drives /api/price. __mpPQ(ctx,sym) → query suffix &px=<ctx>&pxw=<0|1>
@@ -227,7 +258,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade'));if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
-  function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,fmtPx);}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
+  function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,'planLivePx',symPrec());}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
   // The price this ticket will actually be entered at: the live price for a market order, the typed level for a
   // limit order. Size, notional and the liquidation estimate must all be quoted off THAT — a limit ticket showing
   // a liq computed from the live price would be wrong by exactly the distance the trader is waiting for.
@@ -268,28 +299,37 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
      LIVE here — the trader sees "a limit long must be below the market" while typing, not after clicking. */
   window.mpPlanType='market';window.mpPlanLimit=NaN;
   var typeEl=document.getElementById('planType'),limWrap=document.getElementById('planLimWrap'),limIn=document.getElementById('planLimitPx'),limQ=document.getElementById('planLimQuick'),limH=document.getElementById('planLimHint');
-  var LQ=[0.5,1,2,5]; // the four distances a trader actually uses; sign follows the side (a long waits below, a short above)
-  function limQuick(){if(!limQ)return;var long=side==='long';limQ.innerHTML=LQ.map(function(p){return '<button type="button" data-lq="'+p+'">'+(long?'-':'+')+p+'%</button>';}).join('');}
-  function limSet(pct){if(!isFinite(live)||live<=0||!limIn)return;var long=side==='long',p=live*(1+(long?-pct:pct)/100);limIn.value=String(+p.toPrecision(8));onLim();}
-  // The one message that decides whether this ticket can be placed. It is the SAME rule the server enforces, so
-  // the button and the API can never disagree about what a limit order is.
+  /* The level may sit EITHER side of the market (owner correction 2026-09-05): below it this is a classic limit
+     ("buy the dip at 81.60"), above it a breakout entry ("buy IF HYPE gets to 83.80"), which is the thing MEXC
+     calls a trigger order. So the quick buttons are signed both ways and the hint states, in words, which way the
+     market has to move for this ticket to fill — it is information now, not a refusal. */
+  function symPrec(){try{var _p=window.__mpPT&&window.__mpPT();return window.mpPricePrec?window.mpPricePrec((_p&&_p.bars)||null,live):2;}catch(e){return 2;}}
+  var LQ=[-2,-1,1,2];
+  function limQuick(){if(!limQ)return;limQ.innerHTML=LQ.map(function(p){return '<button type="button" data-lq="'+p+'">'+(p>0?'+':'')+p+'%</button>';}).join('');}
+  // Any price WE generate is rounded to what this market actually quotes: a prefill of 84.3579 on a coin that
+  // trades in cents is a level the market can never print exactly, and it made the whole ticket read as noise.
+  function limSet(pct){if(!isFinite(live)||live<=0||!limIn)return;var p=live*(1+pct/100);limIn.value=String(+p.toFixed(symPrec()));onLim();}
   function limHint(){
     if(!limH)return;
     if(window.mpPlanType!=='limit'){limH.textContent='';limH.className='pt2-lim-h';return;}
-    var p=window.mpPlanLimit,long=side==='long';
+    var p=window.mpPlanLimit;
     if(!isFinite(p)||p<=0){limH.textContent=(window.mpT&&window.mpT('otHintEmpty'))||'Enter the price you want to be filled at.';limH.className='pt2-lim-h';return;}
     if(!isFinite(live)||live<=0){limH.textContent='';limH.className='pt2-lim-h';return;}
-    var d=(p-live)/live*100;
-    if(long?p>=live:p<=live){limH.textContent=long?((window.mpT&&window.mpT('otBadLong'))||'A limit long must be BELOW the current price — switch to Market to buy now.'):((window.mpT&&window.mpT('otBadShort'))||'A limit short must be ABOVE the current price — switch to Market to sell now.');limH.className='pt2-lim-h bad';return;}
-    limH.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?((window.mpT&&window.mpT('otBelow'))||'below the market'):((window.mpT&&window.mpT('otAbove'))||'above the market'))+' · '+((window.mpT&&window.mpT('otWaits'))||'fills only if the price gets there');
+    var d=(p-live)/live*100,sym=((document.getElementById('planSym')||{}).value||'').toUpperCase()||'it';
+    var word=(d>=0)?((window.mpT&&window.mpT('otRisesTo'))||'fills if {s} rises to {p}'):((window.mpT&&window.mpT('otDropsTo'))||'fills if {s} drops to {p}');
+    limH.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?((window.mpT&&window.mpT('otBelow'))||'below the market'):((window.mpT&&window.mpT('otAbove'))||'above the market'))+' · '+word.replace('{s}',sym).replace('{p}',fmtPx(p));
     limH.className='pt2-lim-h ok';
   }
   function onLim(){window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;calc();try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(_){}}
+  // how many orders are resting, shown on the Limit segment so it is visible without opening the drawer
+  function limBadge(){try{var b=typeEl&&typeEl.querySelector('button[data-otype="limit"]');if(!b)return;var n=(window.mpOrders&&window.mpOrders.list().length)||0;if(n>0)b.setAttribute('data-n',String(n));else b.removeAttribute('data-n');}catch(e){}}
+  window.addEventListener('mp-orders',limBadge);
   function setType(t){
     window.mpPlanType=(t==='limit')?'limit':'market';
+    if(typeEl)typeEl.setAttribute('data-t',window.mpPlanType); // drives the sliding segment in CSS
     if(typeEl)typeEl.querySelectorAll('button').forEach(function(x){var on=x.getAttribute('data-otype')===window.mpPlanType;x.classList.toggle('on',on);x.setAttribute('aria-selected',on?'true':'false');});
     if(limWrap)limWrap.hidden=window.mpPlanType!=='limit';
-    if(window.mpPlanType==='limit'){limQuick();if(limIn&&!(parseFloat(limIn.value)>0)&&isFinite(live)&&live>0){limIn.value=String(+(live*(side==='long'?0.99:1.01)).toPrecision(8));}window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;}
+    if(window.mpPlanType==='limit'){limQuick();if(limIn&&!(parseFloat(limIn.value)>0)&&isFinite(live)&&live>0){limIn.value=String(+(live*(side==='long'?0.99:1.01)).toFixed(symPrec()));}window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;}
     else window.mpPlanLimit=NaN;
     calc();
   }
@@ -297,6 +337,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(limIn)limIn.addEventListener('input',onLim);
   if(limQ)limQ.addEventListener('click',function(e){var b=e.target.closest('button[data-lq]');if(!b)return;limSet(parseFloat(b.getAttribute('data-lq')));});
   if(seg)seg.addEventListener('click',function(){if(window.mpPlanType==='limit'){limQuick();limHint();}}); // flipping Long/Short flips which side of the market the order may rest on
+  setType('market');limBadge();setTimeout(limBadge,1500);
   window.mpPlanSetType=setType; // the chart's "limit order here" affordance and the E2E both drive the form through this
   (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row — reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
@@ -504,7 +545,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand — every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
   function wireFreePan(el){var st={d:0};el.addEventListener('pointerdown',function(e){var r=el.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-64);st.dec=0;},true);el.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){_userPS=true;return;}if(dy>dx){_userPS=true;try{chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);el.addEventListener('dblclick',function(e){var r=el.getBoundingClientRect();if(e.clientX>r.right-64){_userPS=false;try{chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});}
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
-  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
+  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:true,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
+    /* lastValueVisible was OFF, so the terminal drew the live price LINE with no number on it: the only readable
+       prices were the axis ticks, and those are round by design (LWC picks a "nice" step for the visible range,
+       exactly like TradingView — on a $8 range that step is $1, which is the "83, 84, 85, 86" the owner saw).
+       The badge is the fix: it carries the live price to this market's real precision, and it tracks the forming
+       candle, so it updates on every WS tick like the number in the form above the chart. (2026-09-05) */
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
     // timeframe — but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
     if(!bars||!bars.length)return orig?orig():null;
@@ -565,7 +611,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // render a klines array onto the chart (precision + data + scale + live-seed of the forming candle + position lines)
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
-    try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}/* ~5 sig figs — $1-100 coins were 2dp (XRP 1.09 hid 1.0904) */
+    try{candle.applyOptions({priceFormat:mpPriceFmt(bars,bars[bars.length-1]&&bars[bars.length-1].close)});}catch(e){}/* decimals MEASURED from this market's own candles (mpPricePrec) — a magnitude guess drew HYPE 85.64 as 85.640 */
     _userPS=false;try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
@@ -1247,9 +1293,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _isLim=(window.mpPlanType==='limit'), _limPx=+window.mpPlanLimit, _mktPx=entry;
     if(_isLim){
       if(!isFinite(_limPx)||_limPx<=0){_say('Enter a limit price (the price you want to be filled at).');add._busy=false;return;}
-      if(side==='long'?_limPx>=_mktPx:_limPx<=_mktPx){_say(side==='long'?'A limit long must be BELOW the current price — switch to Market to buy now.':'A limit short must be ABOVE the current price — switch to Market to sell now.');add._busy=false;return;}
       if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say('That price is more than 20x away from the market — check the decimal point.');add._busy=false;return;}
-      entry=_limPx;
+      entry=_limPx; // the level may sit either side of the market — below it is a classic limit, above it a breakout entry
     }
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
@@ -2210,7 +2255,7 @@ window.addEventListener('load', function () {
   var _hq=0;
   function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;var _q=++_hq;
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
-      if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
+      if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals — sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
   function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=a5af1630
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
@@ -2689,11 +2734,11 @@ window.addEventListener('load', function () {
   var states={}; // keyed state so the roll persists even when a ticket rebuilds its element
   function dpFor(v){ v=Math.abs(+v)||0; return v>=1000?2 : v>=100?3 : v>=10?3 : v>=1?4 : v>=0.1?4 : v>=0.01?5 : v>=0.001?6 : v>=0.0001?7 : 8; }     // ~5 sig figs; $1-100 coins now keep 3-4 dp (XRP 1.0904, SOL 74.093) instead of collapsing to 2
   function fmt(v,dp){ return '$'+v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp}); } // min=max → width never changes
-  window.mpSmoothPx=function(el,value,key){
+  window.mpSmoothPx=function(el,value,key,dp){
     if(!el||!(value>0))return false;
     key=(typeof key==='string'&&key)?key:(el.id||null); if(!key)return false;
     var s=states[key]; if(!s){s=states[key]={cur:value};}
-    s.el=el; s.target=value; s.dp=dpFor(value);
+    s.el=el; s.target=value; s.dp=(dp!=null&&dp>=0)?dp:dpFor(value); /* dpFor is the magnitude GUESS; a caller that knows which market this is passes the MEASURED decimals (mpPricePrec) so HYPE reads 85.21, not 85.210 */
     if(!(s.cur>0)||Math.abs(value-s.cur)>value*0.25)s.cur=value; // snap on first set or a huge jump (e.g. symbol switch)
     el.textContent=fmt(s.cur,s.dp);
     return true;
@@ -2718,7 +2763,7 @@ window.addEventListener('load', function () {
   }
   function kick(){if(!_smRun){_smRun=true;requestAnimationFrame(tick);}}
   var _reg=window.mpSmoothPx;
-  window.mpSmoothPx=function(el,value,key){var r=_reg(el,value,key);if(r)kick();return r;};
+  window.mpSmoothPx=function(el,value,key,dp){var r=_reg(el,value,key,dp);if(r)kick();return r;};
   try{document.addEventListener('visibilitychange',function(){if(!document.hidden)kick();});}catch(_){}
 })();
 
@@ -2728,7 +2773,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=a841d8b9'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=07a41b21'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3284,7 +3329,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=bc297207'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=28a53b81'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

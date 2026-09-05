@@ -1849,10 +1849,12 @@
     if (!(px > 0)) return fail(T('otNoPx', 'Enter a limit price.'));
     if (!(mg > 0)) return fail(T('otNoAmt', 'Enter an amount (USD) above $0.'));
     var lp = live(sym);
-    if (lp > 0 && (long ? px >= lp : px <= lp)) return fail(long ? T('otBadLong', 'A limit long must be BELOW the current price - switch to Market to buy now.') : T('otBadShort', 'A limit short must be ABOVE the current price - switch to Market to sell now.'));
+    // A LEVEL, NOT A SIDE: the price may sit above or below the market. Below = classic limit, above = breakout
+    // entry ("buy if it gets to 83.80"). `dir` records which way the market has to move; the server stamps its own.
+    var dir = (lp > 0 && px > lp) ? 'up' : 'down';
     if (open.length >= MAX) return fail(T('otMax', 'You already have 20 orders waiting - cancel one first.'));
     if (!me()) { // guest: the order lives on this device and fills while the page is open
-      var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1 };
+      var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1, dir: dir };
       setOpen(open.concat([g]));
       if (ok) ok(g);
       return;
@@ -1928,7 +1930,7 @@
     for (var i = 0; i < open.length; i++) {
       var o = open[i], lp = live(o.sym); if (!(lp > 0)) continue;
       if (o.expTs && Date.now() > o.expTs) continue;
-      var crossed = (o.side !== 'short') ? lp <= +o.px : lp >= +o.px;
+      var up = (o.dir === 'up') || (o.dir == null && o.side === 'short'); var crossed = up ? lp >= +o.px : lp <= +o.px;
       if (!crossed) continue;
       if (signed) { sweep(); return; }
       var lv = Math.max(1, +o.lev || 1), mg = +o.margin || 0, px = +o.px, long = o.side !== 'short', mmr = 0.005;
