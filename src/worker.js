@@ -4642,6 +4642,125 @@ async function pushOrderFills(env, fills) {
     }
   } catch (e) {}
 }
+// ─── POSITION ALERTS (Premium, 2026-09-05) ────────────────────────────────────────────────────────────────────
+// A price alert tells you a coin reached a number. This tells you something only WE can know, because we hold the
+// position: your liquidation is close, your stop is about to be hit, your target is nearly there, your resting
+// order is about to fill. It is the one alert a chart site cannot copy.
+// Deliberately ADDITIVE: ordinary price alerts keep their 25-per-account cap and their Telegram delivery for
+// everyone. Nothing a free user has today is taken away to make room for this.
+const POSALERT_DEF = { on: 0, liq: 5, sltp: 1, ord: 1 }; // percent distances that count as "close"
+function posAlertCfg(v) {
+  let c = {}; try { c = (typeof v === 'string') ? JSON.parse(v || '{}') : (v || {}); } catch (e) { c = {}; }
+  const num = (x, d, lo, hi) => { const n = +x; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+  return { on: c.on ? 1 : 0, liq: num(c.liq, POSALERT_DEF.liq, 0.5, 50), sltp: num(c.sltp, POSALERT_DEF.sltp, 0.1, 20), ord: num(c.ord, POSALERT_DEF.ord, 0.1, 20) };
+}
+// ─── TRADING REPORT: the findings ─────────────────────────────────────────────────────────────────────────────
+// The part a trader actually pays for is not the table, it is the sentence. Every finding here is a MEASUREMENT of
+// their own closed trades and carries the n it rests on; below MIN_N a bucket says nothing at all rather than
+// dressing up three trades as a pattern. Expectancy is pnl/margin, i.e. return on what was risked, so buckets with
+// different position sizes are comparable. No advice, no prediction — only what already happened.
+const REPORT_MIN_N = 8;
+function reportFindings(rep) {
+  const f = [], T = rep.total || {};
+  if (!T.n) return f;
+  if (T.n < REPORT_MIN_N) { f.push({ k: 'thin', n: T.n, text: 'Only ' + T.n + ' closed trade' + (T.n === 1 ? '' : 's') + ' in this window — too few to read a pattern from. The breakdowns below are still yours, they are just not evidence yet.' }); return f; }
+  // Leverage: the single most useful thing we can show, because the damage is usually concentrated in one band.
+  const lev = (rep.byLev || []).filter(x => x.n >= REPORT_MIN_N);
+  if (lev.length >= 2) {
+    const worst = lev.slice().sort((a, b) => a.exp - b.exp)[0], best = lev.slice().sort((a, b) => b.exp - a.exp)[0];
+    if (worst && best && worst.k !== best.k && worst.exp < 0 && worst.exp < best.exp) {
+      f.push({ k: 'lev', n: worst.n, text: 'Your ' + worst.k + ' trades return ' + worst.exp + '% on margin risked across ' + worst.n + ' closes, while your ' + best.k + ' trades return ' + best.exp + '% across ' + best.n + '. Same account, same month.' });
+    }
+  }
+  // A coin that is quietly eating the account.
+  const coin = (rep.byCoin || []).filter(x => x.n >= REPORT_MIN_N).sort((a, b) => a.pnl - b.pnl)[0];
+  if (coin && coin.pnl < 0 && T.pnl != null && coin.pnl <= T.pnl * 0.5 && T.pnl < 0) {
+    f.push({ k: 'coin', n: coin.n, text: coin.k + ' alone accounts for ' + Math.round(coin.pnl / T.pnl * 100) + '% of your loss this window, over ' + coin.n + ' closes (win rate ' + (coin.wr == null ? '-' : coin.wr + '%') + ').' });
+  }
+  // Direction bias that is not paying for itself.
+  const sides = (rep.bySide || []).filter(x => x.n >= REPORT_MIN_N);
+  if (sides.length === 2) {
+    const a = sides[0], b = sides[1];
+    if (a.exp != null && b.exp != null && ((a.exp < 0) !== (b.exp < 0))) {
+      const good = a.exp > b.exp ? a : b, bad = a.exp > b.exp ? b : a;
+      f.push({ k: 'side', n: bad.n, text: 'Going ' + good.k + ' returned ' + good.exp + '% on margin over ' + good.n + ' closes; going ' + bad.k + ' returned ' + bad.exp + '% over ' + bad.n + '.' });
+    }
+  }
+  // Liquidations are the one outcome worth naming on its own.
+  if (T.liq >= 3) f.push({ k: 'liq', n: T.liq, text: T.liq + ' of your ' + T.n + ' closes were liquidations (' + Math.round(T.liq / T.n * 100) + '%). Each one cost the whole margin on that trade.' });
+  // Hold time, only when we measured enough of them.
+  if (T.holdMedianMin != null && T.holdN >= REPORT_MIN_N) {
+    const m = T.holdMedianMin;
+    f.push({ k: 'hold', n: T.holdN, text: 'Median hold: ' + (m < 60 ? m + ' minutes' : m < 1440 ? (Math.round(m / 6) / 10) + ' hours' : (Math.round(m / 144) / 10) + ' days') + ' across ' + T.holdN + ' trades.' });
+  }
+  return f;
+}
+// Which of this trader's levels are close enough to be worth saying out loud. Pure, so the E2E can exercise the
+// exact code the cron runs rather than a re-implementation of it.
+function posAlertHits(c, pos, ord, prices) {
+  const hits = [];
+  for (const p of (pos || [])) {
+    const px = prices[p.sym]; if (!(px > 0)) continue;
+    const long = p.side !== 'short';
+    // Distances are SIGNED, so a level already behind the price is never announced as "close": it has either
+    // fired or it sits on the wrong side, and neither is news.
+    if (p.liq > 0) { const d = (long ? (px - p.liq) : (p.liq - px)) / px * 100; if (d > 0 && d <= c.liq) hits.push({ k: 'liq:' + p.id, sym: p.sym, t: 'Liquidation ' + d.toFixed(2) + '% away', b: p.sym + ' ' + p.side.toUpperCase() + ' ' + p.lev + 'x is ' + d.toFixed(2) + '% from liquidation ($' + tgfmt(p.liq) + ')' }); }
+    if (p.stop != null && p.stop > 0) { const d = (long ? (px - p.stop) : (p.stop - px)) / px * 100; if (d > 0 && d <= c.sltp) hits.push({ k: 'sl:' + p.id, sym: p.sym, t: 'Stop-loss ' + d.toFixed(2) + '% away', b: p.sym + ' ' + p.side.toUpperCase() + ' is ' + d.toFixed(2) + '% from your stop ($' + tgfmt(p.stop) + ')' }); }
+    if (p.tp != null && p.tp > 0) { const d = (long ? (p.tp - px) : (px - p.tp)) / px * 100; if (d > 0 && d <= c.sltp) hits.push({ k: 'tp:' + p.id, sym: p.sym, t: 'Target ' + d.toFixed(2) + '% away', b: p.sym + ' ' + p.side.toUpperCase() + ' is ' + d.toFixed(2) + '% from your take-profit ($' + tgfmt(p.tp) + ')' }); }
+  }
+  for (const o of (ord || [])) {
+    const px = prices[o.sym]; if (!(px > 0) || !(o.px > 0)) continue;
+    const d = Math.abs(px - o.px) / px * 100; // an order can be approached from either side, so this one is unsigned
+    if (d <= c.ord) hits.push({ k: 'ord:' + o.id, sym: o.sym, t: 'Limit order ' + d.toFixed(2) + '% away', b: 'Your ' + o.side.toUpperCase() + ' ' + o.sym + ' order at $' + tgfmt(o.px) + ' is ' + d.toFixed(2) + '% away' });
+  }
+  return hits;
+}
+async function checkPositionAlerts(env) {
+  try {
+    if (!env.USERS || !env.STATS) return;
+    // ALWAYS stamp: a null would conflate "nobody opted in" with "the cron never ran" (the sweep:last lesson).
+    const stamp = (o) => { try { return env.STATS.put('posalert:last', JSON.stringify(Object.assign({ ts: Date.now() }, o)), { expirationTtl: 3600 }); } catch (e) {} };
+    let watch = []; try { const r = await usersDO(env, '/posalertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ watched: 0, premium: 0, fired: 0, err: 1 }); return; }
+    if (!watch.length) { await stamp({ watched: 0, premium: 0, fired: 0 }); return; }
+    // Premium standing, resolved once per run from the same sources syncBotTiers uses (founders + allow-list + paid sub).
+    const allow = new Set(PREM_FOUNDERS);
+    try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
+    const now = Date.now();
+    const live = [];
+    for (const w of watch) {
+      let prem = allow.has(String(w.username || '').toLowerCase());
+      if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) {} }
+      if (prem) live.push(w);
+    }
+    if (!live.length) { await stamp({ watched: watch.length, premium: 0, fired: 0 }); return; }
+    const syms = new Set();
+    live.forEach(w => { w.pos.forEach(p => syms.add(p.sym)); w.ord.forEach(o => syms.add(o.sym)); });
+    const prices = {};
+    for (const s of Array.from(syms).slice(0, 60)) { try { const pd = await fetchPriceCached(s); if (pd && +pd.price > 0) prices[s] = +pd.price; } catch (e) {} }
+    const fired = [];
+    for (const w of live) {
+      const c = posAlertCfg(w.cfg);
+      const hits = posAlertHits(c, w.pos, w.ord, prices);
+      for (const h of hits) {
+        const kk = 'pa:' + w.uid + ':' + h.k;
+        try { if (await env.STATS.get(kk)) continue; await env.STATS.put(kk, '1', { expirationTtl: 6 * 3600 }); } catch (e) { continue; } // once per position per level per 6h — a level you are hovering on must not become a siren
+        fired.push({ uid: w.uid, tg: w.tg, title: h.t, body: h.b, sym: h.sym });
+        if (w.tg && env.TELEGRAM_TOKEN) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>' + h.t + '</b>\n' + h.b + '\n\n<a href="https://marginpad.io/paper-trade">Open Paper Trade</a>' }); } catch (e) {} }
+      }
+    }
+    if (fired.length && env.VAPID_JWK) {
+      try {
+        const uids = [...new Set(fired.map(f => f.uid))];
+        const r = await usersDO(env, '/push/byuid', { uids });
+        const subs = (r && r.subs) || [];
+        const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
+        for (const f of fired) { for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, { title: f.title, body: f.body, url: 'https://marginpad.io/paper-trade?ref=push' }); } catch (e) {} } }
+      } catch (e) {}
+    }
+    await stamp({ watched: watch.length, premium: live.length, fired: fired.length });
+    return { watched: watch.length, premium: live.length, fired: fired.length };
+  } catch (e) {}
+}
 // P0 — server-side position sweep: enforce SL/TP/liq for server/bot-filled trades even with every browser closed.
 async function sweepServerPositions(env) {
   try {
@@ -10482,6 +10601,18 @@ async function handleTrade(url, request, env, ctx) {
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
+  // ── TRADING REPORT ──────────────────────────────────────────────────────────────────────────────────────────
+  // The headline totals are free — everyone should be able to see how they did. The BREAKDOWNS (which coin, which
+  // leverage, which hour) and the findings are Premium, because that is the part that changes how someone trades.
+  if (path === '/report' && request.method === 'GET') {
+    const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
+    const rep = await usersDO(env, '/tradereport', { uid, days });
+    if (!rep || rep.error) return jt(rep || { error: 'unavailable' }, 503);
+    let prem = false; try { const pf = await premiumFor(env, request); prem = !!(pf && pf.premium); } catch (e) {}
+    if (adminUid) prem = true; // owner/E2E inspection of a specific account
+    if (!prem) return jt({ ok: true, days: rep.days, total: rep.total, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'] });
+    return jt(Object.assign({ premium: true, findings: reportFindings(rep) }, rep));
+  }
   // ── LIMIT ORDERS ────────────────────────────────────────────────────────────────────────────────────────────
   if (path === '/orders' && request.method === 'GET') { const r = await usersDO(env, '/order/list', { uid }); return jt(r || { orders: [], done: [] }); }
   if (path === '/order' && request.method === 'POST') {
@@ -10943,7 +11074,7 @@ async function handleBot(url, request, env, ctx) {
     const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; }
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
     if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute' }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
     if (r.error === 'no_price') { // stale or wrong hint — fall through to the normal path rather than fail the close
       const a2 = await doCall('/botauth', { key, ep: 'close' });
       if (a2 && a2.limit) rl = { 'x-ratelimit-limit': String(a2.limit), 'x-ratelimit-remaining': String(a2.remaining != null ? a2.remaining : 0), 'x-ratelimit-reset': String(a2.reset || '') };
@@ -10961,7 +11092,7 @@ async function handleBot(url, request, env, ctx) {
   // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
   if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute' }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
+  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   const uid = auth.uid;
 
   if (path === '/v1/stream') { // WebSocket push — one BotStream instance per ACCOUNT, so all your keys share one poller
@@ -11197,6 +11328,22 @@ async function handleAlerts(url, env, request) {
     const ltok = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(x => x.toString(16).padStart(2, '0')).join('');
     try { if (env.STATS) await env.STATS.put('tglink:' + ltok, info.uid, { expirationTtl: 900 }); } catch (e) {}
     return jr({ linked: false, url: 'https://t.me/MarginPadBot?start=' + ltok });
+  }
+  // Position alerts: your own liq / stop / target / resting-order levels. Premium, and gated on the SERVER — the
+  // page hides the card for everyone else, but the switch itself must be the thing that refuses.
+  if (sub === '/posalert') {
+    const pf = await premiumFor(env, request);
+    if (!pf || !pf.uid) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method === 'GET') {
+      let cur = null; try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, keys: ['posalert'] }) })); const d = await r.json(); cur = d && d.prefs && d.prefs.posalert ? d.prefs.posalert.v : null; } catch (e) {}
+      let last = null; try { last = JSON.parse(await env.STATS.get('posalert:last') || 'null'); } catch (e) {}
+      return jr({ premium: !!pf.premium, cfg: posAlertCfg(cur), defaults: POSALERT_DEF, lastRun: last && last.ts ? last.ts : null });
+    }
+    if (!pf.premium) return jr({ error: 'premium_only', message: 'Position alerts are a Premium feature.' }, 402);
+    let pb = {}; try { pb = await request.json(); } catch (e) {}
+    const cfg = posAlertCfg(pb);
+    try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'posalert', v: JSON.stringify(cfg) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, cfg });
   }
   if (request.method === 'GET') { const r = await stub.fetch(new Request('https://do/alerts/list?token=' + encodeURIComponent(tok))); return jr(await r.json()); }
   let b = {}; try { b = await request.json(); } catch (e) {}
@@ -14043,6 +14190,27 @@ export default {
       const fr = await fillLimitOrders(env, orders, prices, klines, await xpPromos(env).catch(() => []), states);
       return J({ ran: true, checked: fr.checked, filled: fr.filled, failed: fr.failed, expired: fr.expired, prices });
     }
+    // Position alerts: what the last run watched, and (?selftest=1) the distance maths exercised against the SAME
+    // functions the cron calls — so the test can never pass while the live path is broken.
+    if (url.pathname === '/api/admin/posalerts' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let last = null; try { last = JSON.parse(await env.STATS.get('posalert:last') || 'null'); } catch (e) {}
+      if (url.searchParams.get('selftest') !== '1') return J({ last });
+      const c = posAlertCfg({ on: 1, liq: 5, sltp: 1, ord: 1 });
+      const PR = { AAA: 100 };
+      const hit = (pos, ord) => posAlertHits(c, pos, ord, PR).map(h => h.k);
+      const L = (o) => Object.assign({ id: 'x', sym: 'AAA', side: 'long', entry: 100, liq: 0, stop: null, tp: null, lev: 10 }, o);
+      const selftest = {
+        longLiqHit: hit([L({ liq: 97 })], []).indexOf('liq:x') >= 0,                       // 3% away, threshold 5
+        longLiqFar: hit([L({ liq: 88 })], []).indexOf('liq:x') >= 0,                       // 12% away
+        shortLiq: hit([L({ side: 'short', liq: 103 })], []).indexOf('liq:x') >= 0,         // a short liquidates ABOVE
+        behind: hit([L({ side: 'long', stop: 101 })], []).indexOf('sl:x') >= 0,            // stop above a long = already behind
+        ordHit: hit([], [{ id: 'o', sym: 'AAA', side: 'long', px: 99.6 }]).indexOf('ord:o') >= 0,
+        clampLow: posAlertCfg({ on: 1, liq: -9 }).liq,
+        clampHigh: posAlertCfg({ on: 1, liq: 9999 }).liq,
+        badCfgOff: posAlertCfg('not json at all').on === 0
+      };
+      return J({ last, selftest });
+    }
     if (url.pathname === '/api/admin/uxperf' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // UX-perf AE history (past the 8h ring): count + p50/p95 per metric. The waterfall deploy waits for ux-cold n>=15 HERE.
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const hrs = Math.min(720, Math.max(1, +url.searchParams.get('h') || 168));
@@ -14315,7 +14483,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, liqarch: archiveLiq, liqrecap: liqRecapDaily };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) — manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -14985,6 +15153,7 @@ export default {
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
     bg(checkAlerts, 'alerts');
     bg(checkAccountAlerts, 'acctalerts');
+    bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
     bg(payWeeklyPrizes, 'prizes');
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
@@ -17286,6 +17455,72 @@ export class UserStore {
         }
       }
       return this.j(out);
+    }
+    // POSITION ALERTS (2026-09-05, Premium): everything the cron needs to watch a trader's OWN levels, in one call.
+    // Only users who switched it on are walked — the pref row IS the index, so an account that never opted in costs
+    // nothing. Bounded per user (30 positions, 30 orders) so one heavy trader cannot stall the run.
+    // TRADING REPORT (2026-09-05): how this account ACTUALLY traded over the window, from tradeev — the durable
+    // per-close ledger, not the 100-row journal blob, so a busy month is not silently truncated. tradeev keeps 30
+    // days, which is exactly the report's horizon; every bucket carries its own n so the reader can see what a
+    // number is built on, and anything thin stays thin rather than being dressed up.
+    if (path === '/tradereport') {
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
+      const days = Math.min(30, Math.max(1, +b.days || 30));
+      const since = Date.now() - days * 86400000;
+      let rows = [];
+      try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); } catch (e) { return this.j({ error: 'unavailable' }); }
+      const opens = {};
+      try { this.rows("SELECT tid, ts FROM tradeev WHERE user_id=? AND kind='open' AND ts>=? LIMIT 5000", uid, since - 30 * 86400000).forEach(r => { if (r.tid && opens[r.tid] == null) opens[r.tid] = +r.ts || 0; }); } catch (e) {}
+      const LEVB = [[1, 5, '1-5x'], [5, 20, '5-20x'], [20, 50, '20-50x'], [50, 100, '50-100x'], [100, 1e9, '100x+']];
+      const mk = () => ({ n: 0, wins: 0, pnl: 0, margin: 0 });
+      const add = (o, r) => { o.n++; if ((+r.pnl || 0) >= 0) o.wins++; o.pnl += (+r.pnl || 0); o.margin += (+r.margin || 0); };
+      const tot = mk(); let liq = 0, best = null, worst = null; const holds = [];
+      const byCoin = {}, byLev = {}, bySide = {}, byHour = [], byDay = {};
+      for (let h = 0; h < 24; h++) byHour.push(mk());
+      LEVB.forEach(b2 => { byLev[b2[2]] = mk(); });
+      for (const r of rows) {
+        const pnl = +r.pnl || 0, sym = String(r.sym || '').toUpperCase(), side = r.side === 'short' ? 'short' : 'long', lev = +r.lev || 1;
+        add(tot, r); if (+r.liq) liq++;
+        if (best == null || pnl > best.pnl) best = { pnl, sym, side, lev, ts: +r.ts || 0 };
+        if (worst == null || pnl < worst.pnl) worst = { pnl, sym, side, lev, ts: +r.ts || 0 };
+        (byCoin[sym] = byCoin[sym] || mk()) && add(byCoin[sym], r);
+        (bySide[side] = bySide[side] || mk()) && add(bySide[side], r);
+        const lb = (LEVB.filter(x => lev >= x[0] && lev < x[1])[0] || LEVB[0])[2]; add(byLev[lb], r);
+        add(byHour[new Date(+r.ts || 0).getUTCHours()], r);
+        const dk = new Date(+r.ts || 0).toISOString().slice(0, 10); (byDay[dk] = byDay[dk] || mk()) && add(byDay[dk], r);
+        const ot = r.tid ? opens[r.tid] : 0; if (ot > 0 && +r.ts > ot) holds.push(+r.ts - ot);
+      }
+      holds.sort((a, c) => a - c);
+      const med = holds.length ? holds[Math.floor(holds.length / 2)] : null;
+      const r2 = (x) => Math.round(x * 100) / 100;
+      const outObj = (o) => ({ n: o.n, wins: o.wins, pnl: r2(o.pnl), margin: r2(o.margin), avg: o.n ? r2(o.pnl / o.n) : 0, wr: o.n ? Math.round(o.wins / o.n * 1000) / 10 : null, exp: o.margin > 0 ? Math.round(o.pnl / o.margin * 1000) / 10 : null });
+      const listOf = (m) => Object.keys(m).map(k => Object.assign({ k }, outObj(m[k]))).sort((a, c) => c.n - a.n);
+      return this.j({
+        ok: true, days, since,
+        total: Object.assign(outObj(tot), { liq, best: best ? { pnl: r2(best.pnl), sym: best.sym, side: best.side, lev: best.lev, ts: best.ts } : null, worst: worst ? { pnl: r2(worst.pnl), sym: worst.sym, side: worst.side, lev: worst.lev, ts: worst.ts } : null, holdMedianMin: med == null ? null : Math.round(med / 60000), holdN: holds.length }),
+        byCoin: listOf(byCoin).slice(0, 20), byLev: LEVB.map(b2 => Object.assign({ k: b2[2] }, outObj(byLev[b2[2]]))), bySide: listOf(bySide),
+        byHour: byHour.map((o, h) => Object.assign({ k: h }, outObj(o))), byDay: Object.keys(byDay).sort().map(k => Object.assign({ k }, outObj(byDay[k])))
+      });
+    }
+    if (path === '/posalertwatch') {
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='posalert' LIMIT 2000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || !cfg.on) continue;
+        const uid = r.user_id;
+        const jn = this._loadJournal(uid).filter(t => t && (t.src === 'srv' || t.src === 'bot') && t.status !== 'win' && t.status !== 'loss');
+        let ords = []; try { ords = this.rows("SELECT id, sym, side, px FROM porders WHERE uid=? AND status='open' LIMIT 30", uid); } catch (e) {}
+        if (!jn.length && !ords.length) continue;
+        const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', uid)[0] || {};
+        out.push({
+          uid, cfg, tg: u.tg_chat || null, username: u.username || '',
+          pos: jn.slice(0, 30).map(t => ({ id: String(t.id), sym: String(t.sym || '').toUpperCase(), side: t.side === 'short' ? 'short' : 'long', entry: +t.entry || 0, liq: +t.liq || 0, stop: (t.stop == null ? null : +t.stop), tp: (t.tp == null ? null : +t.tp), lev: +t.lev || 1 })),
+          ord: ords.map(o => ({ id: o.id, sym: String(o.sym || '').toUpperCase(), side: o.side === 'short' ? 'short' : 'long', px: +o.px || 0 }))
+        });
+        if (out.length >= 500) break;
+      }
+      return this.j({ watch: out });
     }
     if (path === '/prefsget') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ prefs: {} });

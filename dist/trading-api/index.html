@@ -50,7 +50,7 @@
  {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
  {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request — Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
  {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time — it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
- {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"120 requests per minute per key, 50 open positions, $1 to $100,000 margin per trade, and leverage from 1x to 1000x. If you need more for a serious project, contact us through the site."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"On the free tier: 120 requests per minute per key, 3 keys per account and 50 open positions. A Premium account raises the same key to 600 requests per minute, 10 keys and 200 open positions automatically. Both tiers allow $1 to $100,000 margin per trade and leverage from 1x to 1000x, and market data, WebSocket and MCP are included in both."}},
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
 <style>
@@ -178,6 +178,11 @@ while len(all_bars) &lt; wanted:
 { "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
 <p>Same paths, same parameters, same key — swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.</p>
 
+<h2 id="tiers">Free and Premium limits</h2>
+<p>Every account starts on the free tier, which is enough to build and run a real bot. A <a href="/premium/">Premium</a> account lifts the ceilings on every key it owns automatically &mdash; there is nothing to configure, and they drop back when Premium ends.</p>
+<div class="vswrap"><table class="vs">
+  <tr><th>Limit</th><th>Free</th><th class="hl">Premium</th></tr><tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td></tr><tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td></tr><tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td></tr><tr><td>Market data, WebSocket, MCP</td><td>included</td><td class="hl">included</td></tr><tr><td>Margin per trade / leverage</td><td colspan="2">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (same on both)</td></tr></table></div>
+<p class="note">Your current ceilings are always in <code>GET /api/bot/v1/account</code> under <code>limits</code>, so a bot can read them instead of guessing.</p>
 <h2 id="keys">Managing your keys</h2>
 <p>You can hold several keys on one account — keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:</p>
 <pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Your Trading Report — How You Actually Traded | MarginPad</title>
+<meta name="description" content="A measured report of your own paper trades: win rate by coin, by leverage and by hour, median hold time, and the one number that explains your month." />
+<link rel="canonical" href="https://marginpad.io/trading-report/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Your Trading Report — MarginPad" />
+<meta property="og:description" content="Win rate by coin, by leverage, by hour. Median hold time. What your month actually cost you." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/trading-report/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;}
+  a{color:var(--lime);}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 18px calc(48px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(27px,6vw,40px);line-height:1.08;letter-spacing:-.03em;margin:0 0 10px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:15px;margin:0 0 22px;max-width:56ch;}
+  .card{background:linear-gradient(180deg,var(--panel),#0c0f13);border:1px solid var(--line2);border-radius:16px;padding:20px;margin-bottom:16px;}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+  .seg{display:inline-flex;gap:3px;background:#0a0d11;border:1px solid var(--line2);border-radius:10px;padding:3px;margin-bottom:16px;}
+  .seg button{background:none;border:0;border-radius:8px;padding:8px 15px;color:var(--dim);font:600 13px/1 'Familjen Grotesk',sans-serif;cursor:pointer;transition:.14s;}
+  .seg button.on{background:rgba(194,246,74,.14);color:var(--lime);}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+  .tile{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;}
+  .tile .v{font-family:'Space Mono',monospace;font-size:23px;font-weight:700;line-height:1.1;letter-spacing:-.02em;}
+  .tile .l{font-size:11.5px;color:var(--faint);margin-top:4px;}
+  .up{color:var(--up);} .dn{color:var(--red);} .amb{color:var(--amber);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:400;padding:0 8px 8px 0;}
+  td{padding:9px 8px 9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;}
+  td:first-child{font-weight:600;}
+  .r{text-align:right;}
+  .tw{overflow-x:auto;}
+  .find{border-left:3px solid var(--lime);background:rgba(194,246,74,.05);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:9px;font-size:14.5px;line-height:1.55;}
+  .find b{color:var(--lime);}
+  .find .n{display:block;margin-top:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);}
+  .bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-top:6px;}
+  .bars i{flex:1;min-width:2px;border-radius:2px 2px 0 0;background:#2a313c;display:block;}
+  .bars i.p{background:var(--up);} .bars i.l{background:var(--red);}
+  .hx{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint);margin-top:5px;}
+  .gate{text-align:center;padding:26px 18px;}
+  .gate h2{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;margin:0 0 8px;}
+  .gate p{color:var(--dim);font-size:14.5px;margin:0 auto 16px;max-width:48ch;}
+  .go{display:inline-block;padding:13px 22px;border-radius:12px;background:var(--lime);color:#0a0d11;font-weight:800;font-size:15px;text-decoration:none;}
+  .go.ghost{background:none;border:1px solid var(--line2);color:var(--ink);}
+  .empty{color:var(--faint);font-size:14px;padding:14px 0;}
+  .pbadge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:20px;background:rgba(194,246,74,.16);border:1px solid rgba(194,246,74,.45);color:var(--lime);font:700 9.5px/1.5 'Space Mono',monospace;letter-spacing:.1em;vertical-align:2px;}
+  footer{color:var(--faint);font-size:12.5px;text-align:center;padding:12px 0 0;line-height:1.7;}
+  @media(max-width:520px){.tile .v{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <div class="hnav">
+      <a href="/paper-trade">Paper Trade</a>
+      <button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button>
+    </div>
+  </header>
+
+  <h1>How you <em>actually</em> traded</h1>
+  <p class="sub">Not a feeling — a count. Every number below is measured from your own closed trades, and each one carries the number of trades it rests on. Where there is not enough to read a pattern, it says so instead of guessing.</p>
+
+  <div class="seg" id="winSeg">
+    <button data-d="7">7 days</button>
+    <button data-d="30" class="on">30 days</button>
+  </div>
+
+  <div class="card" id="gateCard" hidden>
+    <div class="gate">
+      <h2>Sign in to see your report</h2>
+      <p>Your trades are tied to your account. Signing in is free and takes an email — no password, no deposit.</p>
+      <button class="go" type="button" data-auth-open>Sign in free</button>
+    </div>
+  </div>
+
+  <div id="body" hidden>
+    <div class="card">
+      <div class="lbl">The window <span id="winNote" style="color:var(--faint);letter-spacing:0;text-transform:none;font-family:inherit;font-size:12px"></span></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+
+    <div class="card" id="findCard" hidden>
+      <div class="lbl">What the numbers say <span class="pbadge">PREMIUM</span></div>
+      <div id="finds"></div>
+    </div>
+
+    <div class="card" id="premGate" hidden>
+      <div class="gate">
+        <h2>The breakdown is Premium</h2>
+        <p>The totals above are yours for free. Which coin, which leverage band and which hour of the day are actually costing you — that is the part that changes how you trade, and it is included in Premium.</p>
+        <a class="go" href="/premium/">See Premium &rarr;</a>
+      </div>
+    </div>
+
+    <div class="card" id="levCard" hidden>
+      <div class="lbl">By leverage</div>
+      <div class="tw"><table><thead><tr><th>Band</th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th><th class="r">Return on margin</th></tr></thead><tbody id="levBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="coinCard" hidden>
+      <div class="lbl">By coin</div>
+      <div class="tw"><table><thead><tr><th>Coin</th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th><th class="r">Return on margin</th></tr></thead><tbody id="coinBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="sideCard" hidden>
+      <div class="lbl">Long vs short</div>
+      <div class="tw"><table><thead><tr><th>Direction</th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net</th><th class="r">Return on margin</th></tr></thead><tbody id="sideBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="hourCard" hidden>
+      <div class="lbl">By hour of day (UTC)</div>
+      <div class="bars" id="hourBars"></div>
+      <div class="hx"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+      <p style="color:var(--faint);font-size:12px;margin:10px 0 0">Green bars are hours you closed in profit, red are hours you closed in loss. Height is the size of the result, not the number of trades.</p>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/paper-trade">Paper Trade</a> &middot; <a href="/alerts/">Alerts</a> &middot; <a href="/premium/">Premium</a><br>
+    Simulated trades only. Past results describe what happened, not what will.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var days=30, signedIn=false;
+  var gateCard=document.getElementById('gateCard'), body=document.getElementById('body'),
+      tiles=document.getElementById('tiles'), winNote=document.getElementById('winNote'),
+      findCard=document.getElementById('findCard'), finds=document.getElementById('finds'), premGate=document.getElementById('premGate'),
+      levCard=document.getElementById('levCard'), levBody=document.getElementById('levBody'),
+      coinCard=document.getElementById('coinCard'), coinBody=document.getElementById('coinBody'),
+      sideCard=document.getElementById('sideCard'), sideBody=document.getElementById('sideBody'),
+      hourCard=document.getElementById('hourCard'), hourBars=document.getElementById('hourBars');
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function usd(v){v=+v||0;var n=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-$':'$')+n;}
+  function pc(v){return v==null?'—':((v>=0?'+':'')+v+'%');}
+  function cls(v){return v>0?'up':v<0?'dn':'';}
+
+  function tile(v,l,c){return '<div class="tile"><div class="v '+(c||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+  function rows(list,el,label){
+    if(!list||!list.length){el.innerHTML='<tr><td colspan="5" style="color:var(--faint)">Nothing closed in this window.</td></tr>';return;}
+    el.innerHTML=list.map(function(r){
+      return '<tr><td>'+esc(label?label(r.k):r.k)+'</td><td class="r">'+r.n+'</td><td class="r">'+(r.wr==null?'—':r.wr+'%')+'</td><td class="r '+cls(r.pnl)+'">'+usd(r.pnl)+'</td><td class="r '+cls(r.exp)+'">'+pc(r.exp)+'</td></tr>';
+    }).join('');
+  }
+  function drawHours(list){
+    var mx=1; list.forEach(function(h){var a=Math.abs(h.pnl||0); if(a>mx)mx=a;});
+    hourBars.innerHTML=list.map(function(h){
+      var a=Math.abs(h.pnl||0), ht=h.n?Math.max(3,Math.round(a/mx*100)):0;
+      return '<i class="'+(h.pnl>0?'p':h.pnl<0?'l':'')+'" style="height:'+ht+'%" title="'+h.k+':00 UTC — '+h.n+' trades, '+usd(h.pnl)+'"></i>';
+    }).join('');
+  }
+
+  function render(d){
+    if(!d){return;}
+    var t=d.total||{};
+    winNote.textContent='last '+(d.days||30)+' days, '+(t.n||0)+' closed trade'+((t.n||0)===1?'':'s');
+    tiles.innerHTML=tile(String(t.n||0),'Closed trades')
+      +tile(t.wr==null?'—':t.wr+'%','Win rate')
+      +tile(usd(t.pnl),'Net result',cls(t.pnl))
+      +tile(pc(t.exp),'Return on margin risked',cls(t.exp))
+      +tile(usd(t.best?t.best.pnl:0),'Best trade','up')
+      +tile(usd(t.worst?t.worst.pnl:0),'Worst trade','dn')
+      +tile(String(t.liq||0),'Liquidations',(t.liq?'amb':''))
+      +tile(t.holdMedianMin==null?'—':(t.holdMedianMin<60?t.holdMedianMin+'m':t.holdMedianMin<1440?(Math.round(t.holdMedianMin/6)/10)+'h':(Math.round(t.holdMedianMin/144)/10)+'d'),'Median hold');
+
+    var prem=!!d.premium;
+    premGate.hidden=prem;
+    findCard.hidden=!prem||!(d.findings&&d.findings.length);
+    levCard.hidden=coinCard.hidden=sideCard.hidden=hourCard.hidden=!prem;
+    if(!prem)return;
+    finds.innerHTML=(d.findings||[]).map(function(f){return '<div class="find">'+esc(f.text)+'<span class="n">based on '+f.n+' trade'+(f.n===1?'':'s')+'</span></div>';}).join('');
+    rows(d.byLev&&d.byLev.filter(function(r){return r.n>0;}),levBody);
+    rows(d.byCoin,coinBody);
+    rows(d.bySide,sideBody,function(k){return k==='short'?'Short':'Long';});
+    drawHours(d.byHour||[]);
+  }
+
+  function load(){
+    if(!signedIn)return;
+    fetch('/api/trade/report?days='+days,{credentials:'same-origin'})
+      .then(function(r){return r.ok?r.json():null;}).then(render).catch(function(){});
+  }
+  document.getElementById('winSeg').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-d]'); if(!b)return;
+    days=+b.getAttribute('data-d')||30;
+    this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+    load();
+  });
+  function gate(){ gateCard.hidden=signedIn; body.hidden=!signedIn; }
+  function onAuth(u){ signedIn=!!u; gate(); if(signedIn)load(); }
+  window.addEventListener('mp-auth-change',function(e){onAuth(e.detail&&e.detail.user);});
+  if(window.mpAuth&&window.mpAuth.me){onAuth(window.mpAuth.me());}else{gate();}
+  try{var u='/api/track?t=pageview&p=/trading-report/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);fetch(u,{keepalive:true});}catch(e){}
+})();
+</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/mp-auth.js?v=8141f57d"></script>
+<script defer src="/assets/mp-nav.js?v=d8c7bf85"></script>
+</body>
+</html>

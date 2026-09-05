@@ -49,6 +49,23 @@
   h1 span{color:var(--lime);}
   .sub{color:var(--dim);font-size:15px;margin:0 0 22px;}
   .card{background:linear-gradient(180deg,var(--panel),#0c0f13);border:1px solid var(--line2);border-radius:16px;padding:20px;margin-bottom:16px;}
+.card#posCard{border-color:rgba(194,246,74,.28);}
+.pbadge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:20px;background:rgba(194,246,74,.16);border:1px solid rgba(194,246,74,.45);color:var(--lime);font:700 9.5px/1.5 'Space Mono',monospace;letter-spacing:.1em;vertical-align:2px;}
+.psub{margin:6px 0 14px;font-size:13.5px;line-height:1.55;color:var(--faint);}
+.pgo{display:inline-block;padding:11px 18px;border-radius:11px;background:var(--lime);color:#0a0d11;font-weight:700;font-size:14px;text-decoration:none;}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2);font-size:14px;cursor:pointer;}
+.prow:last-of-type{border-bottom:none;}
+.prow-b{cursor:default;border-bottom:none;padding-top:14px;}
+.pin{display:inline-flex;align-items:center;gap:5px;color:var(--faint);font-family:'Space Mono',monospace;font-size:13px;}
+.pin input{width:76px;background:#0a0d11;border:1px solid var(--line2);border-radius:9px;padding:9px 10px;color:#e9e7df;font-family:'Space Mono',monospace;font-size:14px;outline:none;}
+.pin input:focus{border-color:var(--lime);}
+#paOn{width:44px;height:26px;-webkit-appearance:none;appearance:none;background:#1a1f27;border:1px solid var(--line2);border-radius:20px;position:relative;cursor:pointer;transition:.2s;outline:none;flex:none;}
+#paOn:checked{background:rgba(194,246,74,.3);border-color:var(--lime);}
+#paOn::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#6b7683;transition:transform .2s,background .2s;}
+#paOn:checked::after{transform:translateX(18px);background:var(--lime);}
+.sbtn2{padding:10px 18px;border-radius:11px;border:1px solid var(--line2);background:#151a21;color:#e9e7df;font-weight:700;font-size:14px;cursor:pointer;}
+.sbtn2:hover{border-color:var(--lime);color:var(--lime);}
+.pnote{margin:12px 0 0;font-size:12px;line-height:1.5;color:var(--faint);}
   .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin-bottom:8px;font-weight:700;}
   .note{font-size:12.5px;color:var(--faint);line-height:1.5;}
   input,select{width:100%;background:#0a0d11;border:1px solid var(--line2);border-radius:11px;padding:13px 14px;color:var(--ink);font-size:15px;outline:none;font-family:inherit;transition:border-color .15s;}
@@ -180,6 +197,19 @@
     <div class="msg" id="msg"></div>
   </div>
 
+  <div class="card" id="posCard" hidden>
+    <div class="lbl">Position alerts <span class="pbadge">PREMIUM</span></div>
+    <p class="psub">A price alert tells you a coin hit a number. This tells you what only we can see, because we hold your positions: your liquidation closing in, your stop about to trigger, your target nearly there, your limit order about to fill. Delivered by browser push and, if you connected the bot, Telegram.</p>
+    <div id="posGate" hidden><a class="pgo" href="/premium/">Unlock with Premium &rarr;</a></div>
+    <div id="posOn" hidden>
+      <label class="prow"><span>Watch my positions</span><input type="checkbox" id="paOn"></label>
+      <label class="prow"><span>Warn me when liquidation is within</span><span class="pin"><input type="number" id="paLiq" min="0.5" max="50" step="0.5">%</span></label>
+      <label class="prow"><span>Warn me when a stop or target is within</span><span class="pin"><input type="number" id="paSl" min="0.1" max="20" step="0.1">%</span></label>
+      <label class="prow"><span>Warn me when a limit order is within</span><span class="pin"><input type="number" id="paOrd" min="0.1" max="20" step="0.1">%</span></label>
+      <div class="prow prow-b"><button class="sbtn2" id="paSave" type="button">Save</button><span id="paMsg" class="msg"></span></div>
+      <p class="pnote">Checked every few minutes. Each level is announced once every 6 hours, so a price hovering on your stop cannot turn into a siren.</p>
+    </div>
+  </div>
   <div class="card" id="listCard" hidden>
     <div class="lbl">Your alerts <span id="aCount" style="color:var(--faint)"></span></div>
     <div id="aList"><div class="empty">No alerts yet — set one above.</div></div>
@@ -323,7 +353,28 @@
   });
   target.addEventListener('keydown',function(e){if(e.key==='Enter')createBtn.click();});
 
-  function updateGate(){ if(signedIn){gateCard.hidden=true;formCard.hidden=false;listCard.hidden=false;} else {gateCard.hidden=false;formCard.hidden=true;listCard.hidden=true;} }
+  /* Position alerts (Premium). The card is only rendered for signed-in users; whether the SWITCH works is
+     decided by the server (/api/alerts/posalert returns premium:false and refuses the POST with 402), so hiding
+     the UI is presentation, not the gate. */
+  var posCard=document.getElementById('posCard'),posGate=document.getElementById('posGate'),posOn=document.getElementById('posOn'),
+      paOn=document.getElementById('paOn'),paLiq=document.getElementById('paLiq'),paSl=document.getElementById('paSl'),paOrd=document.getElementById('paOrd'),
+      paSave=document.getElementById('paSave'),paMsg=document.getElementById('paMsg');
+  function paFill(d){ if(!d)return; var c=d.cfg||{}; paOn.checked=!!c.on; paLiq.value=c.liq!=null?c.liq:5; paSl.value=c.sltp!=null?c.sltp:1; paOrd.value=c.ord!=null?c.ord:1;
+    posGate.hidden=!!d.premium; posOn.hidden=!d.premium; }
+  function paLoad(){ if(!signedIn){posCard.hidden=true;return;} posCard.hidden=false;
+    fetch('/api/alerts/posalert',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(paFill).catch(function(){}); }
+  if(paSave)paSave.addEventListener('click',function(){
+    paSave.disabled=true; paMsg.textContent=''; paMsg.className='msg';
+    fetch('/api/alerts/posalert',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},
+      body:JSON.stringify({on:paOn.checked?1:0,liq:+paLiq.value,sltp:+paSl.value,ord:+paOrd.value})})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});})
+      .then(function(x){ paSave.disabled=false;
+        if(x.d&&x.d.ok){ paFill({premium:true,cfg:x.d.cfg}); paMsg.textContent=x.d.cfg.on?'Saved - watching your positions.':'Saved - watching is off.'; paMsg.className='msg ok'; }
+        else if(x.s===402){ posGate.hidden=false; posOn.hidden=true; paMsg.textContent='Position alerts are a Premium feature.'; paMsg.className='msg err'; }
+        else { paMsg.textContent='Could not save. Try again.'; paMsg.className='msg err'; } })
+      .catch(function(){ paSave.disabled=false; paMsg.textContent='Network error - try again.'; paMsg.className='msg err'; });
+  });
+  function updateGate(){ if(signedIn){gateCard.hidden=true;formCard.hidden=false;listCard.hidden=false;paLoad();} else {gateCard.hidden=false;formCard.hidden=true;listCard.hidden=true;posCard.hidden=true;} }
   function onAuth(user){ signedIn=!!user; updateGate(); if(signedIn)load(); }
   window.addEventListener('mp-auth-change',function(e){onAuth(e.detail&&e.detail.user);});
   if(window.mpAuth&&window.mpAuth.me){onAuth(window.mpAuth.me());}else{updateGate();}
