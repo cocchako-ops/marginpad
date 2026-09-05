@@ -4879,6 +4879,19 @@ async function drainXpBoostEvents(env) {
 // Prefers R2 (env.BACKUP) automatically once the owner enables R2 and the binding is added.
 // Daily call settlement: after 00:05 UTC, read yesterday's 1D candle close (same cascade every chart uses) and score
 // every open call. Stamped per day; a failed fetch leaves no stamp so the next */10 retries.
+// Season pass rollover: the first */10 after a season ends grants every reached-but-unclaimed tier. Stamped per season.
+async function passRollover(env) {
+  try {
+    if (!env.STATS || !env.USERS) return;
+    const prev = predSeason(Date.now() - LB_PERIOD); // the season that just ended
+    if (Date.now() < prev.endMs + 5 * 60000) return;
+    if (await env.STATS.get('pass:rolled:' + prev.idx)) return;
+    await env.STATS.put('pass:rolled:' + prev.idx, '1', { expirationTtl: 60 * 86400 });
+    const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/rollover', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ season: prev.idx }) }));
+    const rj = await rr.json();
+    if (rj && (rj.grants || 0) > 0) await tgAdmin(env, '<b>Season pass</b> season ' + prev.idx + ' rolled over: ' + rj.grants + ' unclaimed tier reward(s) granted to ' + rj.users + ' member(s).', { kind: 'pass-rollover', sev: 'info' });
+  } catch (e) {}
+}
 async function settleDailyCalls(env) {
   try {
     if (!env.STATS || !env.USERS) return;
@@ -9248,6 +9261,7 @@ const TICK_SOURCES = [
   { k: 'duel', label: 'Duels won', cap: 30 },
   { k: 'predict', label: 'Daily call', cap: 13 },
   { k: 'goal', label: 'Season goals', cap: 80 },
+  { k: 'pass', label: 'Season pass', cap: 400 },
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
@@ -9458,6 +9472,14 @@ const GOAL_DEFS = [
   { k: 'checkins', name: 'Check in 10 days', target: 10, unit: 'days' },
 ];
 const GOAL_XP = 100, GOAL_TICKS = 40, GOAL_MAX = 2;
+// Season pass. 20 tiers, one every PASS_STEP season XP (XP earned since the season anchor). The free track pays
+// Ticks at every tier and one common frame at the top; the pro track doubles the Ticks and adds four Vault items,
+// all from the existing catalogue so nothing here needs new CSS. Sized from data: an active day is ~100-150 XP,
+// so tier 20 (2,000) is a full season of showing up, not a weekend.
+const PASS_STEP = 100, PASS_TIERS_N = 20, PASS_PRICE_TICKS = 2500, PASS_PRICE_CENTS = 299;
+const PASS_ITEMS = { free: { 20: 'arctic' }, pro: { 5: 'bg_static', 10: 'tkt_kraft', 15: 'sandstone', 20: 'leviathan' } };
+function passTiers() { const out = []; for (let t = 1; t <= PASS_TIERS_N; t++) out.push({ t, xp: t * PASS_STEP, free: { ticks: 15, item: PASS_ITEMS.free[t] || null }, pro: { ticks: 30, item: PASS_ITEMS.pro[t] || null } }); return out; }
+function passCode() { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c = 'MP-'; for (let i = 0; i < 10; i++) { if (i === 5) c += '-'; c += A[Math.floor(Math.random() * A.length)]; } return c; }
 function predPts(errPct) { return errPct <= 0.25 ? 12 : errPct <= 0.5 ? 8 : errPct <= 1 ? 5 : errPct <= 2 ? 2 : 0; }
 function predSeason(now) { const i = Math.floor(((+now || Date.now()) - LB_ANCHOR) / LB_PERIOD); const a = LB_ANCHOR + i * LB_PERIOD; return { idx: i, from: new Date(a).toISOString().slice(0, 10), to: new Date(a + LB_PERIOD).toISOString().slice(0, 10), endMs: a + LB_PERIOD }; }
 function predDay(now) { return new Date(+now || Date.now()).toISOString().slice(0, 10); }
@@ -14915,6 +14937,47 @@ export default {
       if (!env.USERS) return new Response('{"ok":false}', { headers: jh5 });
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/cert?name=' + encodeURIComponent(url.searchParams.get('u') || '') + '&course=' + encodeURIComponent(url.searchParams.get('c') || ''))); return new Response(await rr.text(), { headers: jh5 }); } catch (e) { return new Response('{"ok":false}', { headers: jh5 }); }
     }
+    if (url.pathname === '/api/pass') { // Season pass: GET = tiers + mine; POST {op:'buy', src:'ticks'|'usd'|'code', code} | {op:'claim', t, track}
+      const jh7 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh7 });
+      const stubS = env.USERS.get(env.USERS.idFromName('main'));
+      const tokS = getCookie(request, SESS_COOKIE); let uS = tokS ? await sessionUser(env, tokS) : null;
+      const adminUidS = url.searchParams.get('uid'); if (!uS && adminUidS && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uS = { id: adminUidS };
+      if (request.method === 'POST') {
+        if (!uS) return new Response('{"error":"not_signed_in"}', { status: 401, headers: jh7 });
+        let pb = {}; try { pb = await request.json(); } catch (e) {}
+        if (pb.op === 'claim') {
+          const cr = await stubS.fetch(new Request('https://do/pass/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, t: +pb.t, track: pb.track }) }));
+          const cj = await cr.json(); if (cj && cj.ok) { try { await evPush(env, request, 'pass', 'claim ' + cj.t + ' ' + cj.track, '/pass/'); } catch (e) {} }
+          return new Response(JSON.stringify(cj), { status: cr.status, headers: jh7 });
+        }
+        if (pb.op === 'buy') {
+          const src = pb.src === 'usd' ? 'usd' : pb.src === 'code' ? 'code' : 'ticks';
+          if (src === 'usd') { // debit the ledger first, mark second, refund if the mark fails (same shape as a Vault cash buy)
+            const lock = 'pass:lock:' + uS.id; if (await env.STATS.get(lock)) return new Response('{"error":"in_progress"}', { status: 429, headers: jh7 }); await env.STATS.put(lock, '1', { expirationTtl: 60 });
+            const led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+            let deb = null; try { deb = await (await led.fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uS.id, cents: PASS_PRICE_CENTS, item: 'pass' }) }))).json(); } catch (e) {}
+            if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {} return new Response(JSON.stringify(deb || { error: 'ledger_unavailable' }), { status: deb && deb.error === 'insufficient' ? 402 : 503, headers: jh7 }); }
+            const mr = await stubS.fetch(new Request('https://do/pass/buy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, src: 'usd' }) }));
+            const mj = await mr.json();
+            if (!mj || !mj.ok) { try { await led.fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uS.id, cents: PASS_PRICE_CENTS, item: 'pass' }) })); } catch (e) {} }
+            else { try { const dk = 'shop:usd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + PASS_PRICE_CENTS)); } catch (e) {} try { await evPush(env, request, 'shopbuy', 'pass ($' + (PASS_PRICE_CENTS / 100).toFixed(2) + ')', '/pass/'); } catch (e) {} }
+            try { await env.STATS.delete(lock); } catch (e) {}
+            return new Response(JSON.stringify(mj), { status: mr.status, headers: jh7 });
+          }
+          const br = await stubS.fetch(new Request('https://do/pass/buy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, src, code: pb.code }) }));
+          const bj = await br.json(); if (bj && bj.ok) { try { await evPush(env, request, 'shopbuy', 'pass (' + (src === 'code' ? 'code' : 'Ticks') + ')', '/pass/'); } catch (e) {} }
+          return new Response(JSON.stringify(bj), { status: br.status, headers: jh7 });
+        }
+        return new Response('{"error":"op"}', { status: 400, headers: jh7 });
+      }
+      try { const gr = await stubS.fetch(new Request('https://do/pass/me?uid=' + encodeURIComponent(uS ? uS.id : ''))); const gj = await gr.json(); gj.signedIn = !!uS; return new Response(JSON.stringify(gj), { headers: jh7 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh7 }); }
+    }
+    if (url.pathname === '/api/admin/passcodes' && (await adminCookieOk(request, env) || (request.method !== 'POST' && isAdminKey(env, adminKeyFrom(request, url))) || (request.method === 'POST' && isAdminKey(env, adminKeyFrom(request, url)) && url.searchParams.get('e2e')))) { // ops Settings > Pass codes: GET list; POST gen/revoke is cookie-only (the E2E hook needs ?e2e=1 + the key)
+      const jh8 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let cb = { op: 'list' }; if (request.method === 'POST') { try { cb = await request.json(); } catch (e) {} }
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke') { try { await tgAdmin(env, '<b>Pass codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
+    }
     if (url.pathname === '/api/goals') { // Season goals: GET = mine + catalogue (public catalogue for guests); POST {op:'pick'|'claim', k}
       const jh6 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh6 });
@@ -15344,6 +15407,7 @@ export default {
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
     bg(payWeeklyPrizes, 'prizes');
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
+    bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
     bg(checkWhaleAlerts, 'whale');
@@ -17140,6 +17204,10 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS upb(user_id TEXT PRIMARY KEY, best_roe REAL, best_roe_ts INTEGER, best_pnl REAL, best_pnl_ts INTEGER, streak INTEGER DEFAULT 0, streak_best INTEGER DEFAULT 0, streak_best_ts INTEGER, day_key TEXT, day_n INTEGER DEFAULT 0, day_best INTEGER DEFAULT 0, day_best_ts INTEGER, new_json TEXT, new_ts INTEGER)');
     // Daily call (2026-09-06): one BTC close guess per UTC day, settled from the 1D candle, paid in Ticks only.
     // Season goals (2026-09-06): two self-chosen targets per 14-day season, verified from the real tables, paid once.
+    // Season pass (2026-09-06): the free track is everyone's; the pro track is bought with Ticks, balance or a code.
+    s.exec('CREATE TABLE IF NOT EXISTS upass(user_id TEXT, season INTEGER, pro INTEGER DEFAULT 0, bought_ts INTEGER, src TEXT, claimed TEXT, PRIMARY KEY(user_id, season))');
+    s.exec('CREATE TABLE IF NOT EXISTS pcode(code TEXT PRIMARY KEY, uses INTEGER, used INTEGER DEFAULT 0, exp INTEGER, created INTEGER, note TEXT, revoked INTEGER DEFAULT 0)');
+    s.exec('CREATE TABLE IF NOT EXISTS pcode_use(code TEXT, user_id TEXT, ts INTEGER, PRIMARY KEY(code, user_id))');
     s.exec('CREATE TABLE IF NOT EXISTS ugoal(user_id TEXT, season INTEGER, k TEXT, target INTEGER, chosen_ts INTEGER, done_ts INTEGER, paid INTEGER DEFAULT 0, PRIMARY KEY(user_id, season, k))');
     s.exec('CREATE TABLE IF NOT EXISTS upred(user_id TEXT, day TEXT, guess REAL, ts INTEGER, px_at REAL, close REAL, err REAL, pts INTEGER, ticks INTEGER, settled INTEGER DEFAULT 0, PRIMARY KEY(user_id, day))');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
@@ -19230,9 +19298,90 @@ export class UserStore {
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
       const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
-      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
+      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       return this.j({ ok: true, uid, username: 'e2e_' + uid });
+    }
+    if (path === '/pass/me') { // season, season XP, tier, both tracks with claim state, pro or not
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());
+      const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
+      const xp = uid ? +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", uid, from, to)[0] || {}).x || 0 : 0;
+      const row = uid ? this.rows('SELECT pro, claimed, bought_ts, src FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0] : null;
+      let claimed = []; try { claimed = JSON.parse((row && row.claimed) || '[]'); } catch (e) { claimed = []; }
+      const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP));
+      const tiers = passTiers().map(t => ({ t: t.t, xp: t.xp, reached: t.t <= tier, free: Object.assign({}, t.free, { claimed: claimed.indexOf('f' + t.t) >= 0 }), pro: Object.assign({}, t.pro, { claimed: claimed.indexOf('p' + t.t) >= 0 }) }));
+      return this.j({ season: sk, xp, tier, next: tier < PASS_TIERS_N ? (tier + 1) * PASS_STEP - xp : 0, pro: !!(row && +row.pro), boughtTs: row ? +row.bought_ts || 0 : 0, tiers, price: { ticks: PASS_PRICE_TICKS, cents: PASS_PRICE_CENTS }, step: PASS_STEP, claimable: tiers.reduce((n, t) => n + (t.reached && !t.free.claimed ? 1 : 0) + (t.reached && (row && +row.pro) && !t.pro.claimed ? 1 : 0), 0) }); // rewards, not tiers: the page says "N rewards to claim"
+    }
+    if (path === '/pass/buy' && request.method === 'POST') { // {uid, src:'ticks'|'code'|'usd', code?}. usd = the worker already debited the ledger and only marks here.
+      const uid = String(b.uid || '').replace(/^u:/, ''), src = String(b.src || ''); const sk = predSeason(Date.now());
+      if (!uid || !this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      const row = this.rows('SELECT pro FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0];
+      if (row && +row.pro) return this.j({ error: 'already' }, 409);
+      if (src === 'ticks') {
+        const have = +(this.rows('SELECT ticks FROM users WHERE id=?', uid)[0] || {}).ticks || 0;
+        if (have < PASS_PRICE_TICKS) return this.j({ error: 'short_ticks', have, need: PASS_PRICE_TICKS });
+        sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)-?) WHERE id=?', PASS_PRICE_TICKS, uid);
+        try { sql.exec("INSERT INTO ticklog(user_id,ts,src,amt,note) VALUES(?,?,'pass',?,?)", uid, Date.now(), -PASS_PRICE_TICKS, 'season pass ' + sk.idx); } catch (e) {}
+      } else if (src === 'code') {
+        const code = String(b.code || '').trim().toUpperCase();
+        const c = this.rows('SELECT uses, used, exp, revoked FROM pcode WHERE code=?', code)[0];
+        if (!c || +c.revoked) return this.j({ error: 'bad_code' }, 404);
+        if (c.exp && +c.exp < Date.now()) return this.j({ error: 'expired' }, 410);
+        if (+c.used >= +c.uses) return this.j({ error: 'used_up' }, 409);
+        if (this.rows('SELECT 1 FROM pcode_use WHERE code=? AND user_id=?', code, uid)[0]) return this.j({ error: 'code_taken' }, 409);
+        sql.exec('UPDATE pcode SET used=used+1 WHERE code=?', code);
+        sql.exec('INSERT INTO pcode_use(code,user_id,ts) VALUES(?,?,?)', code, uid, Date.now());
+      } else if (src !== 'usd') return this.j({ error: 'bad' }, 400);
+      sql.exec('INSERT INTO upass(user_id,season,pro,bought_ts,src,claimed) VALUES(?,?,1,?,?,?) ON CONFLICT(user_id,season) DO UPDATE SET pro=1, bought_ts=excluded.bought_ts, src=excluded.src', uid, sk.idx, Date.now(), src, (row ? undefined : '[]') || '[]');
+      return this.j({ ok: true, season: sk.idx, src });
+    }
+    if (path === '/pass/claim' && request.method === 'POST') { // {uid, t, track:'free'|'pro'} -> Ticks and/or a Vault item, once per tier per track
+      const uid = String(b.uid || '').replace(/^u:/, ''), t = Math.round(+b.t || 0), track = b.track === 'pro' ? 'pro' : 'free'; const sk = predSeason(Date.now());
+      const def = passTiers().filter(x => x.t === t)[0]; if (!uid || !def) return this.j({ error: 'bad' }, 400);
+      const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
+      const xp = +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", uid, from, to)[0] || {}).x || 0;
+      if (xp < def.xp) return this.j({ error: 'not_reached', xp, need: def.xp }, 409);
+      let row = this.rows('SELECT pro, claimed FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0];
+      if (!row) { sql.exec('INSERT INTO upass(user_id,season,pro,claimed) VALUES(?,?,0,?)', uid, sk.idx, '[]'); row = { pro: 0, claimed: '[]' }; }
+      if (track === 'pro' && !+row.pro) return this.j({ error: 'no_pass' }, 402);
+      let claimed = []; try { claimed = JSON.parse(row.claimed || '[]'); } catch (e) { claimed = []; }
+      const key = (track === 'pro' ? 'p' : 'f') + t; if (claimed.indexOf(key) >= 0) return this.j({ error: 'claimed' }, 409);
+      claimed.push(key); sql.exec('UPDATE upass SET claimed=? WHERE user_id=? AND season=?', JSON.stringify(claimed), uid, sk.idx);
+      const rw = def[track]; let ticks = 0, item = null;
+      if (rw.ticks) { try { ticks = this._grantTicks(uid, 'pass', rw.ticks, { dayCap: TICK_CAP.pass, note: 'season pass tier ' + t + ' (' + track + ')' }); } catch (e) {} }
+      if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', uid, rw.item, Date.now(), 'pass', 's' + sk.idx); item = rw.item; } catch (e) { item = rw.item; } }
+      return this.j({ ok: true, t, track, ticks, item });
+    }
+    if (path === '/pass/codes' && request.method === 'POST') { // ops: {op:'gen', n, uses, days, note} | {op:'revoke', code} | {op:'list'}
+      const op = String(b.op || 'list');
+      if (op === 'gen') {
+        const n = Math.max(1, Math.min(50, Math.round(+b.n || 1))), uses = Math.max(1, Math.min(1000, Math.round(+b.uses || 1))), days = Math.max(0, Math.min(365, Math.round(+b.days || 0)));
+        const exp = days ? Date.now() + days * 86400000 : null, note = String(b.note || '').slice(0, 60), codes = [];
+        for (let i = 0; i < n; i++) { let c = passCode(); for (let k = 0; k < 5 && this.rows('SELECT 1 FROM pcode WHERE code=?', c)[0]; k++) c = passCode(); sql.exec('INSERT INTO pcode(code,uses,used,exp,created,note,revoked) VALUES(?,?,0,?,?,?,0)', c, uses, exp, Date.now(), note); codes.push(c); }
+        return this.j({ ok: true, codes, uses, exp, note });
+      }
+      if (op === 'revoke') { const code = String(b.code || '').trim().toUpperCase(); sql.exec('UPDATE pcode SET revoked=1 WHERE code=?', code); return this.j({ ok: true, code }); }
+      const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked FROM pcode ORDER BY created DESC LIMIT 300');
+      const holders = this.rows('SELECT COUNT(*) c FROM upass WHERE season=? AND pro=1', predSeason(Date.now()).idx)[0] || { c: 0 };
+      const bySrc = this.rows('SELECT src, COUNT(*) n FROM upass WHERE pro=1 GROUP BY src');
+      return this.j({ codes: rows, holders: +holders.c || 0, bySrc });
+    }
+    if (path === '/pass/rollover' && request.method === 'POST') { // season end: every reached tier still unclaimed is granted, so a missed click never costs a reward
+      const idx = Math.round(+b.season); if (!isFinite(idx)) return this.j({ error: 'bad' }, 400);
+      const a = LB_ANCHOR + idx * LB_PERIOD, from = a, to = a + LB_PERIOD; let users = 0, grants = 0;
+      const rows = this.rows('SELECT user_id, pro, claimed FROM upass WHERE season=?', idx);
+      for (const r of rows) {
+        const xp = +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", r.user_id, from, to)[0] || {}).x || 0;
+        const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP)); let claimed = []; try { claimed = JSON.parse(r.claimed || '[]'); } catch (e) {}
+        let touched = false;
+        for (const def of passTiers()) { if (def.t > tier) break;
+          for (const track of (+r.pro ? ['free', 'pro'] : ['free'])) { const key = (track === 'pro' ? 'p' : 'f') + def.t; if (claimed.indexOf(key) >= 0) continue;
+            claimed.push(key); touched = true; grants++; const rw = def[track];
+            if (rw.ticks) { try { this._grantTicks(r.user_id, 'pass', rw.ticks, { note: 'season ' + idx + ' pass tier ' + def.t + ' (auto)' }); } catch (e) {} }
+            if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', r.user_id, rw.item, Date.now(), 'pass', 's' + idx); } catch (e) {} } } }
+        if (touched) { users++; sql.exec('UPDATE upass SET claimed=? WHERE user_id=? AND season=?', JSON.stringify(claimed), r.user_id, idx); }
+      }
+      return this.j({ ok: true, season: idx, users, grants });
     }
     if (path === '/goal/me') { // the member's season goals with live progress, plus the catalogue
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());

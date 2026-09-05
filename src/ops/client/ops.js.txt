@@ -54,7 +54,7 @@
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }] },
-    { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }] }
+    { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }, { id: 'codes', title: 'Pass codes' }] }
   ];
   var VIEWS = {}; // 'section/view' -> { render(el), refresh() }
   var counts = {}; // sidebar counters from the attention list
@@ -1042,6 +1042,32 @@
   // rwd:cfg via /api/reward/config (full body on save, like the old tab, so nothing is reset by omission), plus the smaller stores that lived on
   // the old Settings tab: /api/announce (site banner), /api/ai/admin (Ask-AI daily limit), /api/calendar/admin (custom events),
   // /api/admin/premium (grants), /api/admin/opscfg (brief/alerts/big-trade ping), /api/admin/xppromos (XP promos).
+  // Season pass codes (2026-09-06): generate, list, revoke. A code unlocks the pro track for one season; multi-use
+  // codes are for drops (chat, Telegram, events) and each account can redeem a given code once.
+  VIEWS['settings/codes'] = { render: function (el) {
+    function paint() {
+      J('/api/admin/passcodes').then(function (d) {
+        var codes = d.codes || [], now = Date.now();
+        var form = '<div class="bar" style="flex-wrap:wrap;gap:8px;align-items:flex-end">'
+          + '<label class="fld">Codes<input class="in" id="pcN" type="number" min="1" max="50" value="5" style="width:70px"></label>'
+          + '<label class="fld">Uses each<input class="in" id="pcU" type="number" min="1" max="1000" value="1" style="width:80px"></label>'
+          + '<label class="fld">Expires in days<input class="in" id="pcD" type="number" min="0" max="365" value="30" style="width:90px"><small>0 = never</small></label>'
+          + '<label class="fld" style="flex:1;min-width:160px">Note<input class="in" id="pcT" type="text" maxlength="60" placeholder="e.g. Telegram drop 6 Sep"></label>'
+          + '<button class="btn" id="pcGen">Generate</button><span class="meta" id="pcOut" style="font-family:var(--mono);font-size:12px"></span></div>';
+        var rows = codes.map(function (c) { var dead = !!+c.revoked || (c.exp && c.exp < now) || (+c.used >= +c.uses); return { code: c.code, left: (+c.uses - +c.used), uses: +c.uses, used: +c.used, exp: c.exp, created: c.created, note: c.note || '', state: +c.revoked ? 'revoked' : (c.exp && c.exp < now) ? 'expired' : (+c.used >= +c.uses) ? 'used up' : 'live', dead: dead }; });
+        var tb = codes.length ? tbl([{ h: 'code', mono: true, f: function (r) { return '<b>' + esc(r.code) + '</b>' + (r.dead ? '' : ' <button class="btn sm" data-copy="' + esc(r.code) + '">copy</button>'); } }, { h: 'left', r: true, f: function (r) { return r.left + ' / ' + r.uses; } }, { h: 'state', f: function (r) { return '<span class="' + (r.state === 'live' ? 'up' : 'dim') + '">' + r.state + '</span>'; } }, { h: 'expires', f: function (r) { return r.exp ? dt(r.exp).slice(0, 16) : 'never'; } }, { h: 'created', f: function (r) { return dt(r.created).slice(0, 16); } }, { h: 'note', f: function (r) { return esc(r.note); } }, { h: '', f: function (r) { return r.state === 'live' ? '<button class="btn sm" data-revoke="' + esc(r.code) + '">Revoke</button>' : ''; } }], rows) : '<div class="empty">no codes yet</div>';
+        var src = (d.bySrc || []).map(function (x) { return esc(x.src || '?') + ' ' + N(x.n); }).join(' · ');
+        el.innerHTML = card('Generate', form, 'each code = the pro track for the season it is redeemed in · every generation and revoke is posted to Telegram')
+          + card('Codes', tb, 'live = still redeemable · a member can redeem a given code once')
+          + card('Pro passes', '<div class="line">' + N(d.holders || 0) + ' pro pass' + (d.holders === 1 ? '' : 'es') + ' this season' + (src ? ' · all time by source: ' + src : '') + '</div>', 'from upass');
+        var gb = $('pcGen'); if (gb) gb.onclick = function () { gb.disabled = true; post('/api/admin/passcodes', { op: 'gen', n: +$('pcN').value || 1, uses: +$('pcU').value || 1, days: +$('pcD').value || 0, note: $('pcT').value || '' }).then(function (r) { var out = $('pcOut'); if (out) out.textContent = (r.codes || []).join('  '); try { navigator.clipboard.writeText((r.codes || []).join('\n')); toast('generated ' + (r.codes || []).length + ' - copied'); } catch (e) { toast('generated ' + (r.codes || []).length); } paint(); }).catch(function () { gb.disabled = false; toast('failed'); }); };
+        el.querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.getAttribute('data-copy')); toast('copied'); } catch (e) {} }; });
+        el.querySelectorAll('[data-revoke]').forEach(function (b) { b.onclick = function () { var c = b.getAttribute('data-revoke'); if (!confirm('Revoke ' + c + '? It stops working immediately.')) return; b.disabled = true; post('/api/admin/passcodes', { op: 'revoke', code: c }).then(function () { toast('revoked'); paint(); }); }; });
+        stamp();
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
+    }
+    paint();
+  } };
   VIEWS['settings/rewards'] = { render: function (el) {
     var PR = [], xoff = 0; var COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'HYPE', 'DOGE', 'ADA', 'AVAX', 'LINK', 'LTC', 'SUI', 'PEPE', 'TRX', 'TON', 'DOT', 'WIF', 'NEAR', 'ARB', 'OP'];
     function xnow() { return Date.now() + xoff; }
