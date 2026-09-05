@@ -87,6 +87,18 @@ h1 .g{color:var(--lime)}
 .node .nt{font-weight:700;font-size:15px}
 .node .ns{font-size:12px;color:var(--faint);margin-top:1px}
 .node.done .dot{background:var(--cc,#2ebd85);color:#06110b;box-shadow:0 5px 0 rgba(0,0,0,.45),inset 0 -4px 0 rgba(0,0,0,.28)}
+/* mastery (2026-09-06): a perfect run gets a gold ring; a mastered course gets its badge + certificate */
+.node.perfect .dot{box-shadow:0 5px 0 rgba(0,0,0,.45),inset 0 -4px 0 rgba(0,0,0,.28),0 0 0 3px #0a0b0d,0 0 0 5px var(--gold)}
+.crs-master{margin-left:8px;background:linear-gradient(180deg,rgba(255,215,90,.18),rgba(255,215,90,.06));border:1px solid rgba(255,215,90,.5);color:var(--gold);border-radius:999px;padding:4px 10px;font:800 10.5px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.lp-run{margin:8px 0 2px;font:700 12px 'Space Mono',monospace;letter-spacing:.04em;color:var(--dim)}.lp-run.ok{color:var(--gold)}
+.cert{position:relative;margin:14px 0 22px;padding:22px 22px 18px;border-radius:18px;border:1px solid rgba(255,215,90,.45);background:radial-gradient(120% 90% at 50% -10%,rgba(255,215,90,.14),transparent 60%),linear-gradient(180deg,#14161c,#0d0f13);box-shadow:0 30px 70px -40px rgba(255,215,90,.35),inset 0 1px 0 rgba(255,255,255,.05);text-align:center}
+.cert::before{content:'';position:absolute;inset:6px;border-radius:14px;border:1px solid rgba(255,215,90,.22);pointer-events:none}
+.cert-k{font:700 10.5px 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.cert-c{margin-top:10px;font:800 clamp(22px,5vw,32px)/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:#fff}
+.cert-n{margin-top:8px;font:800 16px 'Space Mono',monospace;color:var(--gold)}
+.cert-s{margin-top:6px;font-size:12.5px;color:var(--dim)}
+.cert-a{margin-top:14px}.cert-b{display:inline-block;background:var(--gold);color:#1a1200;border:0;border-radius:11px;padding:11px 18px;font:800 13px 'Bricolage Grotesque',sans-serif;cursor:pointer;text-decoration:none}
+.lp-done .cert{margin:16px 0 4px;text-align:center}
 .node.done .nt{color:var(--dim)}
 .node.next{position:relative}
 .node.next .dot{background:var(--lime);color:#0a0b0d;box-shadow:0 5px 0 #7fae1f,inset 0 -4px 0 rgba(0,0,0,.18),0 0 26px -4px rgba(194,246,74,.55);animation:npulse 2.2s infinite}
@@ -235,6 +247,7 @@ html[dir="rtl"] .node{text-align:right}
     <div class="enote" id="enote"></div>
   </div>
 
+  <div id="certHost" hidden></div>
   <div id="courses"></div>
 
   <div class="allDone" id="allDone" hidden>
@@ -265,7 +278,7 @@ html[dir="rtl"] .node{text-align:right}
   /* ---------- i18n ---------- */
   var LANGS=[['en','English'],['es','Español'],['de','Deutsch'],['fr','Français'],['pt','Português'],['sr','Srpski'],['nl','Nederlands'],['ru','Русский'],['tr','Türkçe'],['id','Indonesia'],['zh','中文'],['ja','日本語'],['ko','한국어'],['ar','العربية']];
   var UI={
-  en:{h:'From zero to <span class="g">trader</span>',les:'lessons',crs:'courses',xp:'XP rewards',fr:'free',start:'Start learning',cont:'Continue · lesson {n}/{t}',done:'Academy complete',pdone:'lessons complete',anon:'No account needed to start. <button type="button" data-auth-open>Sign in free</button> to earn <b style="color:var(--gold)">+25 XP per lesson</b> toward your level.',anonp:'Progress is saved on this device. <button type="button" data-auth-open>Sign in free</button> to save it to your account and earn <b style="color:var(--gold)">+25 XP per lesson</b>.',sin:'Signed in — every lesson earns +25 XP, each finished course +50 bonus.',locked:'LOCKED',lockm:'Finish the previous course to unlock.',steps:'steps',qs:'questions',ho:'hands-on',sb:'START',contb:'Continue',exb:'Complete the exercise above',qof:'Question {i} of {n}',lc:'Lesson complete',al:'Already completed — no extra XP',nx:'The next lesson is unlocked.',la:'That was the last one — you finished the whole Academy.',nud:'Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.',nudb:'Sign in & claim XP',tryt:'Try it for real (fake money)',back:'Back to the path',fin:'Finish',oh:'Out of hearts',ohp:'Three mistakes — that is the limit. No speed-running: the lesson restarts from the top so the ideas actually land.',rst:'Restart lesson',cb:'Course bonus',enote:''},
+  en:{perf:'Perfect run',rmk:'{n} mistake(s) — retake for a perfect run (+5 XP)',better:'better run',pfx:'perfect',mast:'Mastered',cert:'Certificate',certs:'Every lesson completed with a perfect run',share:'Copy link',copied:'Link copied',h:'From zero to <span class="g">trader</span>',les:'lessons',crs:'courses',xp:'XP rewards',fr:'free',start:'Start learning',cont:'Continue · lesson {n}/{t}',done:'Academy complete',pdone:'lessons complete',anon:'No account needed to start. <button type="button" data-auth-open>Sign in free</button> to earn <b style="color:var(--gold)">+25 XP per lesson</b> toward your level.',anonp:'Progress is saved on this device. <button type="button" data-auth-open>Sign in free</button> to save it to your account and earn <b style="color:var(--gold)">+25 XP per lesson</b>.',sin:'Signed in — every lesson earns +25 XP, each finished course +50 bonus.',locked:'LOCKED',lockm:'Finish the previous course to unlock.',steps:'steps',qs:'questions',ho:'hands-on',sb:'START',contb:'Continue',exb:'Complete the exercise above',qof:'Question {i} of {n}',lc:'Lesson complete',al:'Already completed — no extra XP',nx:'The next lesson is unlocked.',la:'That was the last one — you finished the whole Academy.',nud:'Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.',nudb:'Sign in & claim XP',tryt:'Try it for real (fake money)',back:'Back to the path',fin:'Finish',oh:'Out of hearts',ohp:'Three mistakes — that is the limit. No speed-running: the lesson restarts from the top so the ideas actually land.',rst:'Restart lesson',cb:'Course bonus',enote:''},
   sr:{h:'Od nule do <span class="g">tradera</span>',les:'lekcija',crs:'kurseva',xp:'XP nagrade',fr:'besplatno',start:'Počni da učiš',cont:'Nastavi · lekcija {n}/{t}',done:'Akademija završena',pdone:'lekcija završeno',anon:'Nalog nije potreban za početak. <button type="button" data-auth-open>Prijavi se besplatno</button> i zaradi <b style="color:var(--gold)">+25 XP po lekciji</b> za svoj nivo.',anonp:'Napredak se čuva na ovom uređaju. <button type="button" data-auth-open>Prijavi se besplatno</button> da ga sačuvaš na nalogu i zaradiš <b style="color:var(--gold)">+25 XP po lekciji</b>.',sin:'Prijavljen si — svaka lekcija donosi +25 XP, svaki završen kurs +50 bonusa.',locked:'ZAKLJUČANO',lockm:'Završi prethodni kurs da otključaš.',steps:'koraka',qs:'pitanja',ho:'vežba',sb:'KRENI',contb:'Nastavi',exb:'Završi vežbu iznad',qof:'Pitanje {i} od {n}',lc:'Lekcija završena',al:'Već završena — nema dodatnog XP',nx:'Sledeća lekcija je otključana.',la:'To je bila poslednja — završio si celu Akademiju.',nud:'Napredak je sačuvan na ovom uređaju. <b>Prijavi se besplatno</b> (samo email) i pokupi <b style="color:var(--gold)">+25 XP</b> za ovu i svaku sledeću lekciju.',nudb:'Prijavi se i uzmi XP',tryt:'Probaj uživo (lažnim novcem)',back:'Nazad na putanju',fin:'Završi',oh:'Nema više srca',ohp:'Tri greške — to je limit. Nema jurcanja: lekcija kreće ispočetka da bi ideje stvarno sele.',rst:'Ponovi lekciju',cb:'Bonus za kurs',enote:''},
   es:{h:'De cero a <span class="g">trader</span>',les:'lecciones',crs:'cursos',xp:'recompensas XP',fr:'gratis',start:'Empezar a aprender',cont:'Continuar · lección {n}/{t}',done:'Academia completada',pdone:'lecciones completadas',anon:'No necesitas cuenta para empezar. <button type="button" data-auth-open>Regístrate gratis</button> y gana <b style="color:var(--gold)">+25 XP por lección</b> para tu nivel.',anonp:'El progreso se guarda en este dispositivo. <button type="button" data-auth-open>Regístrate gratis</button> para guardarlo en tu cuenta y ganar <b style="color:var(--gold)">+25 XP por lección</b>.',sin:'Sesión iniciada — cada lección da +25 XP y cada curso terminado +50 de bonus.',locked:'BLOQUEADO',lockm:'Termina el curso anterior para desbloquear.',steps:'pasos',qs:'preguntas',ho:'práctico',sb:'EMPIEZA',contb:'Continuar',exb:'Completa el ejercicio de arriba',qof:'Pregunta {i} de {n}',lc:'Lección completada',al:'Ya completada — sin XP extra',nx:'La siguiente lección está desbloqueada.',la:'Era la última — ¡terminaste toda la Academia!',nud:'Progreso guardado en este dispositivo. <b>Regístrate gratis</b> (solo email) para cobrar <b style="color:var(--gold)">+25 XP</b> por esta lección y cada una que termines.',nudb:'Registrarme y cobrar XP',tryt:'Pruébalo de verdad (dinero ficticio)',back:'Volver al camino',fin:'Terminar',oh:'Sin corazones',ohp:'Tres errores — ese es el límite. Nada de correr: la lección vuelve a empezar para que las ideas de verdad se queden.',rst:'Reiniciar lección',cb:'Bonus de curso',enote:'Las lecciones están en inglés por ahora — la traducción llega pronto.'},
   de:{h:'Von null zum <span class="g">Trader</span>',les:'Lektionen',crs:'Kurse',xp:'XP-Belohnungen',fr:'kostenlos',start:'Jetzt lernen',cont:'Weiter · Lektion {n}/{t}',done:'Akademie abgeschlossen',pdone:'Lektionen geschafft',anon:'Kein Konto nötig. <button type="button" data-auth-open>Gratis anmelden</button> und <b style="color:var(--gold)">+25 XP pro Lektion</b> für dein Level sichern.',anonp:'Fortschritt wird auf diesem Gerät gespeichert. <button type="button" data-auth-open>Gratis anmelden</button>, um ihn im Konto zu sichern und <b style="color:var(--gold)">+25 XP pro Lektion</b> zu erhalten.',sin:'Angemeldet — jede Lektion bringt +25 XP, jeder Kurs +50 Bonus.',locked:'GESPERRT',lockm:'Schließe zuerst den vorherigen Kurs ab.',steps:'Schritte',qs:'Fragen',ho:'praktisch',sb:'START',contb:'Weiter',exb:'Erst die Übung oben abschließen',qof:'Frage {i} von {n}',lc:'Lektion geschafft',al:'Bereits abgeschlossen — kein extra XP',nx:'Die nächste Lektion ist freigeschaltet.',la:'Das war die letzte — du hast die ganze Akademie geschafft!',nud:'Fortschritt auf diesem Gerät gespeichert. <b>Gratis anmelden</b> (nur E-Mail) und <b style="color:var(--gold)">+25 XP</b> für jede Lektion sichern.',nudb:'Anmelden & XP sichern',tryt:'Probiere es echt aus (Spielgeld)',back:'Zurück zum Pfad',fin:'Fertig',oh:'Keine Herzen mehr',ohp:'Drei Fehler — das ist das Limit. Kein Durchrasen: die Lektion beginnt von vorn, damit es wirklich sitzt.',rst:'Lektion neu starten',cb:'Kurs-Bonus',enote:'Die Lektionen sind vorerst auf Englisch — Übersetzung folgt bald.'},
@@ -2201,7 +2214,7 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
     '<line x1="84" y1="63" x2="228" y2="63" stroke="#ffcf3f" stroke-width="1.2" stroke-dasharray="4 3" class="vzfade" style="animation-delay:1.6s"/><text x="236" y="66" fill="#ffcf3f" font-size="8" font-family="monospace" class="vzfade" style="animation-delay:1.7s">midpoint test</text>','0 0 340 148','Momentum dies in the middle — the third candle <b>proves</b> the turn.');};
 
   /* ===== state ===== */
-  var st={done:{}};
+  var st={done:{},best:{},mastered:{}};
   try{var raw=JSON.parse(localStorage.getItem('mp_academy')||'{}');(raw.done||[]).forEach(function(x){st.done[x]=1;});}catch(e){}
   var signedIn=false,serverDone=null,syncing=false;
   function saveLocal(){try{localStorage.setItem('mp_academy',JSON.stringify({done:Object.keys(st.done)}));}catch(e){}}
@@ -2222,15 +2235,15 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
     var nxt=nextLesson();
     var prevDone=true; // course locks: a course opens only when every lesson of the previous course is complete
     COURSES.forEach(function(c,ci){
-      var cd=c.lessons.filter(function(L){return st.done[L.id];}).length;
+      var cd=c.lessons.filter(function(L){return st.done[L.id];}).length,pc=c.lessons.filter(function(L){return st.best[L.id]===0;}).length,mast=!!st.mastered[c.id];
       var lockedC=!prevDone&&!c.free&&cd===0;
       var isCur=!lockedC&&c.lessons.some(function(L){return L.id===nxt;});
       var open=openCourses[c.id]!=null?openCourses[c.id]:isCur;
       if(lockedC)open=false;
-      html+='<section class="course'+(open?' open':'')+(lockedC?' lockedc':'')+'" data-cid="'+c.id+'" style="--cc:'+c.color+'"><div class="crs-h" data-ctoggle="'+c.id+'"><span class="ic">'+(lockedC?ICONS.lock:ICONS[c.icon])+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+(lockedC?esc(U('locked')):cd+'/'+c.lessons.length)+'</span><span class="crs-chev">\u25B6</span></div>'+(lockedC?'<div class="lockmsg">'+esc(U('lockm'))+'</div>':'')+'<div class="path">';
+      html+='<section class="course'+(open?' open':'')+(lockedC?' lockedc':'')+'" data-cid="'+c.id+'" style="--cc:'+c.color+'"><div class="crs-h" data-ctoggle="'+c.id+'"><span class="ic">'+(lockedC?ICONS.lock:ICONS[c.icon])+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+(lockedC?esc(U('locked')):cd+'/'+c.lessons.length+(pc?' · '+pc+' '+esc(U('pfx')):''))+'</span>'+(mast?'<button type="button" class="crs-master" data-cert="'+c.id+'">'+esc(U('mast'))+' · '+esc(U('cert'))+'</button>':'')+'<span class="crs-chev">\u25B6</span></div>'+(lockedC?'<div class="lockmsg">'+esc(U('lockm'))+'</div>':'')+'<div class="path">';
       if(!c.free)prevDone=prevDone&&(cd===c.lessons.length);
       c.lessons.forEach(function(L,i){
-        var d=!!st.done[L.id],u=unlocked(L.id),cls=d?'done':(L.id===nxt?'next':(u?'':'locked'));
+        var d=!!st.done[L.id],u=unlocked(L.id),cls=(d?'done':(L.id===nxt?'next':(u?'':'locked')))+(d&&st.best[L.id]===0?' perfect':'');
         var nInter=L.cards.filter(function(x){return x.act;}).length;
         html+='<button type="button" class="node '+cls+'" data-start="'+esc(U('sb'))+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' '+esc(U('steps'))+' · '+L.quiz.length+' '+esc(U('qs'))+(nInter?' · '+esc(U('ho')):'')+'</span></span><span class="xpb">+25 XP</span></button>';
       });
@@ -2259,18 +2272,18 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
   });
   /* ===== player ===== */
   var lp=document.getElementById('lp'),lpBody=document.getElementById('lpBody'),lpBar=document.getElementById('lpBar'),lpGo=document.getElementById('lpGo');
-  var cur=null,step=0,steps=0,answered=false,hearts=3,readT=null;
+  var cur=null,step=0,steps=0,answered=false,hearts=3,readT=null,mistakes=0; /* mistakes = hearts this run cost; 0 = a perfect run (mastery) */
   var HEART_FULL='<svg viewBox="0 0 24 24" class="hf"><defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a7a"/><stop offset="1" stop-color="#e8402f"/></linearGradient></defs><path d="M12 21s-6.8-4.4-9.4-8.2C.7 9.9 2 5.9 5.6 4.9c2.3-.6 4.5.5 6.4 2.7 1.9-2.2 4.1-3.3 6.4-2.7 3.6 1 4.9 5 2.9 7.9C18.8 16.6 12 21 12 21z" fill="url(#hg)" stroke="#ff9d8f" stroke-width=".8"/><path d="M7.2 7.4c-1.2.4-2 1.5-2.1 2.7" stroke="#ffd2ca" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>';
   var HEART_EMPTY='<svg viewBox="0 0 24 24" class="he"><path d="M12 21s-6.8-4.4-9.4-8.2C.7 9.9 2 5.9 5.6 4.9c2.3-.6 4.5.5 6.4 2.7 1.9-2.2 4.1-3.3 6.4-2.7 3.6 1 4.9 5 2.9 7.9C18.8 16.6 12 21 12 21z" fill="#161b23" stroke="#39424f" stroke-width="1.4"/></svg>';
   function renderHearts(){var el=document.getElementById('lpHearts');if(!el)return;var out='';for(var i=0;i<3;i++)out+=i<hearts?HEART_FULL:HEART_EMPTY;el.innerHTML=out;el.classList.toggle('low',hearts<=1);}
-  function loseHeart(){hearts--;renderHearts();try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}if(hearts<=0)failLesson();}
+  function loseHeart(){hearts--;mistakes++;renderHearts();try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}if(hearts<=0)failLesson();}
   function failLesson(){
     lpBody.innerHTML='<div class="lp-done"><div class="big"><svg viewBox="0 0 24 24" width="66" height="66" style="display:inline-block;filter:drop-shadow(0 0 14px rgba(255,98,88,.4))"><path d="M12 21s-6.8-4.4-9.4-8.2C.7 9.9 2 5.9 5.6 4.9c2.3-.6 4.5.5 6.4 2.7 1.9-2.2 4.1-3.3 6.4-2.7 3.6 1 4.9 5 2.9 7.9C18.8 16.6 12 21 12 21z" fill="#2a1512" stroke="#ff6258" stroke-width="1.3"/><path d="M12 7.6 10 11l3 2.4-2.2 3.6" fill="none" stroke="#ff6258" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h2>'+esc(U('oh'))+'</h2><p>'+esc(U('ohp'))+'</p></div>';
     lpGo.hidden=false;lpGo.disabled=false;lpGo.textContent=U('rst');lpGo.setAttribute('data-fail','1');
   }
   function openLesson(id){
     var x=ALL.find(function(y){return y.l.id===id;});if(!x)return;
-    cur=x;step=0;steps=x.l.cards.length+x.l.quiz.length+1;hearts=3;renderHearts();lpGo.removeAttribute('data-fail');
+    cur=x;step=0;steps=x.l.cards.length+x.l.quiz.length+1;hearts=3;mistakes=0;renderHearts();lpGo.removeAttribute('data-fail');
     lp.classList.add('on');document.body.style.overflow='hidden';
     show();
     try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=event&type=academy&l='+encodeURIComponent(id)+'&p=/academy/');}catch(e){}
@@ -2321,13 +2334,15 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
     } else { finish(); }
   }
   lpGo.addEventListener('click',function(){if(lpGo.disabled)return;
-    if(lpGo.getAttribute('data-fail')){lpGo.removeAttribute('data-fail');step=0;hearts=3;renderHearts();show();return;}
+    if(lpGo.getAttribute('data-fail')){lpGo.removeAttribute('data-fail');step=0;hearts=3;mistakes=0;renderHearts();show();return;}
     if(step<steps-1){step++;show();}else closeLp();});
   function finish(){
     var L=cur.l,wasNew=!st.done[L.id];
     st.done[L.id]=1;saveLocal();
     lpBar.style.width='100%';
-    var xpHtml=signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':esc(U('al')))+'</div>':'';
+    var perfect=mistakes===0,prevBest=st.best[L.id];
+    var run='<div class="lp-run'+(perfect?' ok':'')+'">'+(perfect?esc(U('perf')):esc(fmt(U('rmk'),{n:mistakes})))+'</div>';
+    var xpHtml=(signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':(prevBest==null||mistakes<prevBest?'+5 XP':esc(U('al'))))+'</div>':'')+run+'<div id="lpCert"></div>';
     var nudge=!signedIn?'<div class="nudge">'+U('nud')+'<br><button type="button" data-auth-open>'+esc(U('nudb'))+'</button></div>':'';
     var tb=L['try']?'<div class="lp-try"><div class="tl">'+esc(U('tryt'))+'</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
     /* graduation moment: this lesson just COMPLETED its whole course -> offer the two real venues (Bybit/Moon, owner 2026-08-13) */
@@ -2338,15 +2353,17 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
       +'</div></div>'):'';
     lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>'+esc(U('lc'))+'</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — '+(nextLesson()?esc(U('nx')):esc(U('la')))+'</p>'+grad+tb+'</div>';
     lpGo.textContent=nextLesson()?U('back'):U('fin');lpGo.hidden=false;lpGo.disabled=false;
-    if(wasNew&&signedIn)postComplete(L.id);
+    if(signedIn)postComplete(L.id,mistakes);
   }
-  function postComplete(id){
-    fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id})})
+  function postComplete(id,mk){
+    fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id,mistakes:mk})})
       .then(function(r){return r.json();})
       .then(function(d){
         if(d&&d.ok){
           var el=document.getElementById('lpXp');
-          if(el&&d.fresh){el.textContent='+'+(d.granted||25)+' XP'+(d.bonus?(' · '+U('cb')+' +'+d.bonus+' XP'):'');}
+          if(el){var parts=[];if(d.fresh)parts.push('+'+(d.granted||25)+' XP');if(d.up)parts.push('+'+d.up+' XP · '+U(d.best===0?'perf':'better'));if(d.bonus)parts.push(U('cb')+' +'+d.bonus+' XP');if(d.masterBonus)parts.push(U('mast')+' +'+d.masterBonus+' XP');el.textContent=parts.length?parts.join(' · '):U('al');}
+          if(d.best!=null)st.best[id]=d.best;
+          if(d.mastered){st.mastered[d.mastered]=1;var ce=document.getElementById('lpCert');if(ce)ce.innerHTML=certCard(d.mastered,(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'',Date.now(),true);}
           if(window.mpXpCheck)setTimeout(window.mpXpCheck,500);
         }
       }).catch(function(){});
@@ -2360,11 +2377,18 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
       fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id})}).then(function(){setTimeout(next,250);}).catch(function(){syncing=false;});
     })();
   }
+  function courseName(id){var c=COURSES.filter(function(x){return x.id===id;})[0];return c?c.name:id;}
+  function certCard(course,name,ts,mine){var url=location.origin+'/academy/?cert='+encodeURIComponent(course)+'&u='+encodeURIComponent(name);
+    return '<div class="cert"><div class="cert-k">MarginPad Academy · '+esc(U('cert'))+'</div><div class="cert-c">'+esc(courseName(course))+'</div><div class="cert-n">@'+esc(name)+'</div><div class="cert-s">'+esc(U('certs'))+' · '+new Date(ts||Date.now()).toISOString().slice(0,10)+'</div>'
+      +'<div class="cert-a">'+(mine?'<button type="button" class="cert-b" data-copy="'+esc(url)+'">'+esc(U('share'))+'</button>':'<a class="cert-b" href="/academy/">'+esc(U('start'))+'</a>')+'</div></div>';}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(b){var u=b.getAttribute('data-copy');try{navigator.clipboard.writeText(u).then(function(){b.textContent=U('copied');setTimeout(function(){b.textContent=U('share');},1600);});}catch(_){prompt('',u);}return;}
+    var cb=e.target.closest&&e.target.closest('[data-cert]');if(cb){e.stopPropagation();var host=document.getElementById('certHost');if(!host)return;host.innerHTML=certCard(cb.getAttribute('data-cert'),(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'',Date.now(),true);host.hidden=false;host.scrollIntoView({behavior:'smooth',block:'center'});}});
+  (function(){try{var q=new URLSearchParams(location.search),c=q.get('cert'),u=q.get('u');if(!c||!u)return;fetch('/api/academy/cert?u='+encodeURIComponent(u)+'&c='+encodeURIComponent(c)).then(function(r){return r.json();}).then(function(d){var host=document.getElementById('certHost');if(!host||!d||!d.ok)return;host.innerHTML=certCard(d.course,d.name,d.ts,false);host.hidden=false;});}catch(e){}})();
   function loadServer(){
     fetch('/api/academy',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       if(!d)return;
       signedIn=!!d.signedIn;
-      if(signedIn){serverDone=(d.done||[]).filter(function(x){return x.indexOf('course:')!==0;});
+      if(signedIn){st.best=d.best||{};st.mastered={};(d.mastered||[]).forEach(function(c){st.mastered[c]=1;});serverDone=(d.done||[]).filter(function(x){return x.indexOf(':')<0;});
         serverDone.forEach(function(id){st.done[id]=1;});saveLocal();
         syncLocalToServer();
       }

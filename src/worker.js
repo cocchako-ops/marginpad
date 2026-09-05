@@ -14871,6 +14871,11 @@ export default {
       // browser/CDN get no-store so a refresh ALWAYS re-hits the worker (fresh ≤30s) — the public max-age was being extended to 4h by the CF CDN, freezing the board
       return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
+    if (url.pathname === '/api/academy/cert') { // public: shareable course certificate (?u=<username>&c=<course>) -- true only when every lesson is a perfect run
+      const jh5 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=120', ...CORS };
+      if (!env.USERS) return new Response('{"ok":false}', { headers: jh5 });
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/cert?name=' + encodeURIComponent(url.searchParams.get('u') || '') + '&course=' + encodeURIComponent(url.searchParams.get('c') || ''))); return new Response(await rr.text(), { headers: jh5 }); } catch (e) { return new Response('{"ok":false}', { headers: jh5 }); }
+    }
     if (url.pathname === '/api/predict') { // Daily call: GET = the card's whole state (public board + mine when signed in); POST {guess} = make or change today's call
       const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh3 });
@@ -16992,6 +16997,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS xpseason(user_id TEXT, season INTEGER, base INTEGER, PRIMARY KEY(user_id,season))'); // xp_life snapshot at a user's FIRST grant of a season → seasonal XP = xp_life - base (trim-proof, no xplog dependency)
     s.exec('CREATE TABLE IF NOT EXISTS lbbest(user_id TEXT, season INTEGER, roe REAL, pnl REAL, symbol TEXT, side TEXT, bp REAL, bpSym TEXT, bpSide TEXT, PRIMARY KEY(user_id,season))'); // trim-proof season-best trade per user (keep-max at close time) — the ROE board used to re-scan the 100-row utrades blob, so a heavy trader's best trade VANISHED from the board when the trim pushed it out (Mistrlefty 1882%→342%, 2026-08-10); legacy corrupt trades also hogged the top-3 trim protection
     s.exec('CREATE TABLE IF NOT EXISTS academy(user_id TEXT, lesson TEXT, ts INTEGER, PRIMARY KEY(user_id,lesson))'); // completed Academy lessons (+ "course:<id>" bonus markers); XP via _grantXp src=academy lifeCap 800
+    for (const col of ['best INTEGER', 'tries INTEGER DEFAULT 1']) { try { s.exec('ALTER TABLE academy ADD COLUMN ' + col); } catch (e) {} } // mastery (2026-09-06): best = fewest mistakes on a finished run, 0 = perfect
     try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
     for (const col of ['ip TEXT', 'cc TEXT', 'asn INTEGER', 'org TEXT']) { try { s.exec('ALTER TABLE sessions ADD COLUMN ' + col); } catch (e) {} } // per-login location + ASN for the session/VPN view
     s.exec('CREATE TABLE IF NOT EXISTS uevents(user_id TEXT, ts INTEGER, type TEXT, label TEXT, path TEXT, cc TEXT, dev TEXT)'); // per-user activity trail (ring-buffered)
@@ -18267,8 +18273,16 @@ export class UserStore {
     }
     if (path === '/academy/state') { // Academy: which lessons this user has completed (incl. course:<id> bonus markers)
       const uid = String(url.searchParams.get('uid') || '');
-      const done = uid ? this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).map(r => r.lesson) : [];
-      return this.j({ done });
+      const rowsA = uid ? this.rows('SELECT lesson, best FROM academy WHERE user_id=?', uid) : [];
+      const best = {}; rowsA.forEach(r => { if (r.best != null && r.lesson.indexOf(':') < 0) best[r.lesson] = +r.best; });
+      return this.j({ done: rowsA.map(r => r.lesson), best, mastered: rowsA.filter(r => r.lesson.indexOf('master:') === 0).map(r => r.lesson.slice(7)) });
+    }
+    if (path === '/academy/cert') { // public: is this course mastered by this trader (every lesson a perfect run)? -> the shareable certificate
+      const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24), course = String(url.searchParams.get('course') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+      if (!name || !course) return this.j({ ok: false });
+      const u = this.rows('SELECT id, username FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0]; if (!u) return this.j({ ok: false });
+      const m = this.rows('SELECT ts FROM academy WHERE user_id=? AND lesson=?', u.id, 'master:' + course)[0]; if (!m) return this.j({ ok: false });
+      return this.j({ ok: true, name: u.username, course, ts: +m.ts || 0, perfect: this.rows('SELECT COUNT(*) c FROM academy WHERE user_id=? AND best=0 AND lesson NOT LIKE ?', u.id, '%:%')[0].c || 0 });
     }
     if (path === '/academy/complete') { // Academy: idempotent lesson-complete marker -> +25 XP (lifeCap 800); +50 course bonus when a whole course is done
       const uid = String(b.uid || ''), lesson = String(b.lesson || '').replace(/[^a-z0-9]/gi, '').slice(0, 12);
@@ -18276,11 +18290,27 @@ export class UserStore {
       const courseLessons = (Array.isArray(b.courseLessons) ? b.courseLessons : []).map(x => String(x)).slice(0, 20); // trusted: the worker sends its own map, never the client
       if (!uid || !lesson) return this.j({ error: 'bad' }, 400);
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
-      let fresh = false, granted = 0, bonus = 0;
-      if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
-        sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
+      // Mastery (2026-09-06). `mistakes` is how many hearts the finished run cost (0-2). A first completion pays the
+      // usual 25 XP. A RETAKE pays only when it beats the best run, and then 5 XP (a fifth): enough to make a perfect
+      // run worth chasing, far too little to farm. Reaching a perfect run pays that 5 whether first try or tenth.
+      const mistakes = (b.mistakes == null) ? null : Math.max(0, Math.min(2, Math.round(+b.mistakes || 0)));
+      let fresh = false, granted = 0, bonus = 0, improved = false, up = 0;
+      const row = this.rows('SELECT best, tries FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0];
+      if (!row) {
+        sql.exec('INSERT INTO academy(user_id,lesson,ts,best,tries) VALUES(?,?,?,?,1)', uid, lesson, now, mistakes); fresh = true;
         granted = this._grantXp(uid, 'academy', 25, { lifeCap: 3000, note: 'lesson ' + lesson });
         try { this._grantTicks(uid, 'academy', 6, { dayCap: TICK_CAP.academy, note: 'academy lesson' }); } catch (ae) {}
+        if (mistakes === 0) { improved = true; up = this._grantXp(uid, 'academy_up', 5, { dayCap: 25, note: 'perfect run ' + lesson }); }
+      } else if (mistakes != null) {
+        const prev = row.best == null ? null : +row.best;
+        sql.exec('UPDATE academy SET tries=COALESCE(tries,1)+1' + ((prev == null || mistakes < prev) ? ', best=?' : '') + ' WHERE user_id=? AND lesson=?', ...((prev == null || mistakes < prev) ? [mistakes, uid, lesson] : [uid, lesson]));
+        if (prev == null || mistakes < prev) { improved = true; up = this._grantXp(uid, 'academy_up', 5, { dayCap: 25, note: (mistakes === 0 ? 'perfect run ' : 'better run ') + lesson }); }
+      }
+      let mastered = null, masterBonus = 0;
+      if (course && courseLessons.length) { // every lesson of the course at a perfect run, once
+        const bestSet = {}; this.rows('SELECT lesson, best FROM academy WHERE user_id=?', uid).forEach(r => { bestSet[r.lesson] = r.best; });
+        const mk2 = 'master:' + course;
+        if (!(mk2 in bestSet) && courseLessons.every(l => bestSet[l] === 0)) { sql.exec('INSERT INTO academy(user_id,lesson,ts,best) VALUES(?,?,?,0)', uid, mk2, now); mastered = course; masterBonus = this._grantXp(uid, 'academy', 50, { lifeCap: 3000, note: 'course ' + course + ' mastered' }); }
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
@@ -18291,7 +18321,8 @@ export class UserStore {
         }
       }
       const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
-      return this.j({ ok: true, fresh, granted, bonus, xp: u ? (u.xp || 0) : 0, level: xpLevelOf(u ? u.xp : 0) });
+      const bestNow = (this.rows('SELECT best FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0] || {}).best;
+      return this.j({ ok: true, fresh, improved, up, best: bestNow == null ? null : +bestNow, granted, bonus, mastered, masterBonus, xp: u ? (u.xp || 0) : 0, level: xpLevelOf(u ? u.xp : 0) });
     }
     if (path === '/xp/backfill') { // one-time retroactive XP for activity that predates the XP system; idempotent via an src='backfill' xplog marker
       const apply = !!b.apply;
@@ -20193,12 +20224,12 @@ async function handleAcademy(url, request, env) {
   const tok = getCookie(request, SESS_COOKIE);
   if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; xp = su.xp || 0; level = su.level || null; } }
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only, same pattern as missions)
-  if (adminUid && (await adminCookieOk(request, env))) uid = adminUid;
+  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = adminUid;
   const stub = env.USERS ? env.USERS.get(env.USERS.idFromName('main')) : null;
   if (request.method === 'GET') {
     if (!uid || !stub) return jr({ signedIn: false, done: [] });
-    let done = []; try { const r = await stub.fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); done = ((await r.json()) || {}).done || []; } catch (e) {}
-    return jr({ signedIn: true, done, xp, level });
+    let done = [], best = {}, mastered = []; try { const r = await stub.fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const sj = (await r.json()) || {}; done = sj.done || []; best = sj.best || {}; mastered = sj.mastered || []; } catch (e) {}
+    return jr({ signedIn: true, done, best, mastered, xp, level });
   }
   if (request.method === 'POST') {
     if (!uid || !stub) return jr({ error: 'login_required' }, 401);
@@ -20207,7 +20238,7 @@ async function handleAcademy(url, request, env) {
     let course = null; for (const c in ACAD_COURSES) if (ACAD_COURSES[c].indexOf(lesson) >= 0) { course = c; break; }
     if (!course) return jr({ error: 'bad_lesson' }, 400);
     try {
-      const r = await stub.fetch(new Request('https://do/academy/complete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, lesson, course, courseLessons: ACAD_COURSES[course] }) }));
+      const r = await stub.fetch(new Request('https://do/academy/complete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, lesson, course, courseLessons: ACAD_COURSES[course], mistakes: (b.mistakes == null ? null : +b.mistakes) }) }));
       const rd = await r.json();
       if (rd && !rd.error) { try { await evPush(env, request, 'academy', lesson, '/academy/'); } catch (e) {} }
       return jr(rd);
