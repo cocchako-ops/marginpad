@@ -9397,6 +9397,35 @@ const ACH_DEFS = [ // id, name, how — all server-verified from real tables; ea
   { id: 'regular', name: 'The Regular', how: '500 pageviews on your account' },
 ];
 function vaultItem(id) { return VAULT_ITEMS.find(x => x.id === id) || null; }
+// What to call the thing in a sentence. The catalogue encodes the kind as a one-letter field, which is fine
+// for code and useless in a chat line.
+function vaultKindWord(it) {
+  if (!it) return 'item';
+  if (it.group === 'nation') return 'flag';
+  if (it.kind === 't') return 'ticket';
+  if (it.kind === 'bg') return 'background';
+  if (it.kind === 'c') return 'supply';
+  return 'frame';
+}
+// A gift is the one Vault event the whole room should see: somebody spent what they earned on somebody else.
+// Posted into the global room as MarginPad, the same channel and the same voice as the sign-up welcome line.
+// Never throws and never blocks the purchase -- the money side has already settled by the time this runs.
+async function announceGift(env, ctx, fromUn, toUn, itemId) {
+  try {
+    if (!env.CHAT) return;
+    let cfg = {}; try { cfg = JSON.parse((await env.STATS.get('ops:cfg')) || '{}'); } catch (e) {}
+    if (cfg.giftChat === false) return; // kill switch, no deploy needed
+    const it = vaultItem(itemId); if (!it) return;
+    const to = String(toUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); if (!to) return;
+    const from = String(fromUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+    const name = String(it.name || '').replace(/[<>&]/g, '').slice(0, 40);
+    const text = from
+      ? ('@' + from + ' gifted @' + to + ' the ' + name + ' ' + vaultKindWord(it) + '.')
+      : ('@' + to + ' got the ' + name + ' ' + vaultKindWord(it) + ' from the house.');
+    const p = env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: text }) })).catch(() => {});
+    if (ctx && ctx.waitUntil) ctx.waitUntil(p); else await p;
+  } catch (e) {}
+}
 function vaultIsTester(username) { return VAULT_TESTERS.indexOf(String(username || '').toLowerCase()) >= 0; }
 function framesFor(xp, premium, founder) {
   const owned = ['default'];
@@ -11894,7 +11923,7 @@ async function handleAuth(url, request, env, ctx) {
  // Fired HERE and not at signup: before this moment the account has no username, and greeting the
  // email prefix would leak part of the user's email into a public room. Usernames are permanent
  // (DO enforces already_set), so this runs exactly once per account, with the name they chose.
- const wp9 = env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'Welcome to MarginPad, @' + d.username + ' — say hi, and go break the paper market.' }) })).catch(() => {});
+ const wp9 = env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'Welcome @' + d.username + ' — say hi.' }) })).catch(() => {});
  if (ctx && ctx.waitUntil) ctx.waitUntil(wp9); else await wp9;
  } catch (e) {} }
     return jr(d, d.error ? (d.error === 'taken' ? 409 : 400) : 200);
@@ -11982,6 +12011,7 @@ async function handleAuth(url, request, env, ctx) {
         const t = await resolve9(un9); if (!t) return jr({ ok: false, reply: 'No trader called ' + un9 });
         const rg = await users.fetch(new Request('https://do/shopgrant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: t.uid, item: it9.id, src: 'gift', fromUn: u.username || '' }) }));
         const dg = await rg.json(); if (!dg || !dg.ok) return jr({ ok: false, reply: 'Grant failed — maybe they already own it.' });
+        await announceGift(env, ctx, '', t.username || un9, it9.id); // no giver named: this one is from the house
         return jr({ ok: true, reply: 'Gifted ' + it9.name + ' to @' + (t.username || un9) + '.' });
       }
       if (cmd9 === '/bal') {
@@ -12035,6 +12065,7 @@ async function handleAuth(url, request, env, ctx) {
       if (!it.ticks) return jr({ error: 'not_tick_priced' }, 400);
       const r = await users.fetch(new Request('https://do/shopbuyt', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id, to: b.to || undefined }) }));
       const d = await r.json();
+      if (d && d.ok && d.giftedTo) await announceGift(env, ctx, u.username, d.giftedTo, it.id); // the room sees the gift
       if (d && d.ok) { try { await evPush(env, request, 'shopbuy', it.id + ' (Ticks)', '/vault/'); } catch (e) {} try { const dk = 'shop:tk:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + it.ticks)); } catch (e) {} }
       return jr(d, d && d.ok ? 200 : 400);
     }
@@ -12042,6 +12073,7 @@ async function handleAuth(url, request, env, ctx) {
       if (!it.xp) return jr({ error: 'not_xp_priced' }, 400);
       const r = await users.fetch(new Request('https://do/shopbuy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id, to: b.to || undefined }) }));
       const d = await r.json();
+      if (d && d.ok && d.giftedTo) await announceGift(env, ctx, u.username, d.giftedTo, it.id);
       if (d && d.ok) { try { await evPush(env, request, 'shopbuy', it.id + ' (XP)', '/vault/'); } catch (e) {} try { const dk = 'shop:xp:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + it.xp)); } catch (e) {} }
       return jr(d, d && d.ok ? 200 : 400);
     }
@@ -12074,6 +12106,7 @@ async function handleAuth(url, request, env, ctx) {
       try { const rg = await users.fetch(new Request('https://do/shopgrant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: giftUid, item: it.id, src: 'gift', fromUn: u.username || '' }) })); const dg = await rg.json(); granted9 = !!(dg && dg.ok); } catch (e) {}
       if (!granted9) return jr({ error: 'grant_failed' }, 500);
       try { await evPush(env, request, 'shopbuy', it.id + ' (owner gift)', '/vault/'); } catch (e) {}
+      await announceGift(env, ctx, u.username, giftUn, it.id);
       return jr({ ok: true, item: it.id, giftedTo: giftUn, balance: null });
     }
     const rd = await led.fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: acct, cents: it.cents, item: it.id }) }));
@@ -12084,6 +12117,7 @@ async function handleAuth(url, request, env, ctx) {
     if (!granted) { try { await led.fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: acct, cents: it.cents, item: it.id }) })); } catch (e) {} return jr({ error: 'grant_failed_refunded' }, 500); }
     try { await evPush(env, request, 'shopbuy', it.id + ' ($' + (it.cents / 100).toFixed(2) + ')', '/vault/'); } catch (e) {}
     try { const dk2 = 'shop:usd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk2, String((+(await env.STATS.get(dk2)) || 0) + it.cents)); } catch (e) {}
+    if (giftUid) await announceGift(env, ctx, u.username, giftUn, it.id);
     return jr({ ok: true, item: it.id, giftedTo: giftUid ? giftUn : undefined, balance: dd.balance != null ? dd.balance : null });
   }
   if (path === '/frames') { // owned profile-card frames + equipped (for the customize panel)
