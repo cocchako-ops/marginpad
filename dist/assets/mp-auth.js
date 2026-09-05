@@ -45,6 +45,27 @@
     var s = ''; for (var i = 0; i < n; i++) s += one;
     return '<span class="mplvp" title="Prestige ' + n + '" style="display:inline-flex;align-items:center;margin-left:2px">' + s + '</span>';
   };
+  // Road to Bronze (2026-09-06). The rewards area, missions and the faucet all open at Bronze (500 XP), and until
+  // now nothing told a new account how far that is or what pays. Fed by the same /api/auth/xp poll that drives the
+  // toasts, so it moves on its own after a close. Renders only into a host the page provides (#ptBronze on Paper
+  // Trade); on every other page it is a no-op. The XP amounts are the server's real grants: lesson 25, check-in 20,
+  // close 3 + 15 when green.
+  window.mpBronzeBar = function (d) {
+    var host = document.getElementById('ptBronze'); if (!host) return;
+    var L = d && d.level; if (!d || !d.signedIn || !L || L.k !== 'unranked') { host.hidden = true; host.innerHTML = ''; return; }
+    var xp = Math.max(0, +d.xp || 0), need = +L.nextMin || 500, left = Math.max(0, need - xp), pct = Math.min(100, Math.round(xp / need * 100));
+    var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
+    if (!host.firstChild) {
+      host.innerHTML = '<div class="pb-top"><span class="pb-badge">' + (window.mpLvlSvg ? window.mpLvlSvg('bronze', '#c97f4a') : '') + '</span><div class="pb-t">Bronze in <b>' + fmt(left) + ' XP</b></div><span class="pb-n">' + fmt(xp) + ' / ' + fmt(need) + '</span></div>'
+        + '<div class="pb-bar"><i style="width:' + pct + '%"></i></div>'
+        + '<div class="pb-src"><span>lesson <b>+25</b></span><span>check-in <b>+20</b></span><span>closed trade <b>+3</b></span><span>green close <b>+15</b> more</span></div>'
+        + '<div class="pb-why">Bronze unlocks the faucet, daily missions and withdrawals. <a href="/academy/">Academy</a> is the fastest road.</div>';
+    } else { // live update without rebuilding: the bar animates, the numbers just change
+      var t = host.querySelector('.pb-t b'), n = host.querySelector('.pb-n'), bar = host.querySelector('.pb-bar i');
+      if (t) t.textContent = fmt(left) + ' XP'; if (n) n.textContent = fmt(xp) + ' / ' + fmt(need); if (bar) bar.style.width = pct + '%';
+    }
+    host.hidden = false;
+  };
   window.mpLvlSvg = window.mpLvlSvg || function (k, col) { col = col || '#c97f4a';
     if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>';
     if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
@@ -1730,6 +1751,8 @@
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
         if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
+        try { window.mpBronzeBar(d); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent('mp:xp', { detail: d })); } catch (e) {} // progress widgets (Road to Bronze, goals, records) re-render off this
         if (typeof d.notifUnread === 'number' && window.mpNotifBadge) { try { window.mpNotifBadge(d.notifUnread); } catch (e) {} }
         // GIFT CELEBRATION: an unseen 'gift' notification gets the center stage once (ts-dedup per device in localStorage).
         // The notif list is fetched only when the unread count first appears or GROWS — never on every poll; the plain
