@@ -38,6 +38,13 @@
   function avatarHtml(av, cls) { av = av || ''; if (/^data:image\//.test(av)) return '<img class="mpa-av-img' + (cls ? ' ' + cls : '') + '" src="' + esc(av) + '" alt="">'; if (av) return '<span class="mpa-av-emoji' + (cls ? ' ' + cls : '') + '">' + esc(av) + '</span>'; return ''; }
   window.mpAvatarHtml = avatarHtml;
   /* shared tier insignia (SVG, no emoji): faceted gem for Diamond, hexagon+star medal otherwise */
+  // Prestige stars (2026-09-06): one small star per 100k XP past Legendary, drawn as SVG (never a glyph — a
+  // text star turns into an emoji on some platforms). Sits right after the level badge everywhere it shows.
+  window.mpPrestigeSvg = window.mpPrestigeSvg || function (n, col) { n = Math.min(9, +n || 0); if (!n) return ''; col = col || '#ff7a1a';
+    var one = '<svg viewBox="0 0 24 24" width="9" height="9" style="display:inline-block;vertical-align:-1px;margin-left:1px"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="' + col + '"/></svg>';
+    var s = ''; for (var i = 0; i < n; i++) s += one;
+    return '<span class="mplvp" title="Prestige ' + n + '" style="display:inline-flex;align-items:center;margin-left:2px">' + s + '</span>';
+  };
   window.mpLvlSvg = window.mpLvlSvg || function (k, col) { col = col || '#c97f4a';
     if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>';
     if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
@@ -53,7 +60,7 @@
       if (L === undefined) return false;
       el.setAttribute('data-lvldone', '1');
       if (!L || L === MISS) { el.innerHTML = ''; return true; }
-      el.innerHTML = '<span class="mplvb" title="' + esc(L.name || '') + '">' + window.mpLvlSvg(L.k, L.col) + '</span>';
+      el.innerHTML = '<span class="mplvb" title="' + esc(L.name || '') + (L.p ? ' · Prestige ' + L.p : '') + '">' + window.mpLvlSvg(L.k, L.col) + '</span>' + (L.p ? window.mpPrestigeSvg(L.p, L.col) : '');
       return true;
     }
     function run() {

@@ -16881,12 +16881,18 @@ async function handleHappyHour(env) {
   const promos = (await xpPromos(env)).filter(p => p.enabled && p.endMs > now).map(p => ({ id: p.id, title: p.title, coins: p.coins, xp: p.xp, levMax: p.levMax, roeMin: p.roeMin, winOnly: p.winOnly, startMs: p.startMs, endMs: p.endMs, active: promoActiveAt(p, now) }));
   return new Response(JSON.stringify({ enabled: HH.enabled, hourUTC: HH.hourUTC, durMin: HH.durMin, roeMin: HH.roeMin, levMax: HH.levMax, xp: HH.xp, active, nextStartMs, endMs: active ? todayStart + dur : null, promos, now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=15', ...CORS } });
 }
+const PRESTIGE_STEP = 100000; // XP per prestige star past Legendary (120k). Top account 2026-09-06: 4,672 XP.
 function xpLevelOf(xp) {
   xp = Math.max(0, +xp || 0);
   let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
   const cur = XP_LEVELS[i], next = XP_LEVELS[i + 1] || null;
-  const pct = next ? Math.min(100, Math.round((xp - cur.min) / (next.min - cur.min) * 100)) : 100;
-  return { idx: i, k: cur.k, name: cur.name, col: cur.col, min: cur.min, xp, next: next ? next.name : null, nextMin: next ? next.min : null, toNext: next ? Math.max(0, next.min - xp) : 0, pct };
+  if (!next) { // Prestige (2026-09-06): the ladder keeps going past the top rung. Every PRESTIGE_STEP after
+    // Legendary is one star; the level name, colour and gates never change, only the stars and the bar.
+    const stars = Math.floor((xp - cur.min) / PRESTIGE_STEP), base = cur.min + stars * PRESTIGE_STEP, nm = base + PRESTIGE_STEP;
+    return { idx: i, k: cur.k, name: cur.name, col: cur.col, min: cur.min, xp, next: 'Prestige ' + (stars + 1), nextMin: nm, toNext: Math.max(0, nm - xp), pct: Math.min(100, Math.round((xp - base) / PRESTIGE_STEP * 100)), stars };
+  }
+  const pct = Math.min(100, Math.round((xp - cur.min) / (next.min - cur.min) * 100));
+  return { idx: i, k: cur.k, name: cur.name, col: cur.col, min: cur.min, xp, next: next.name, nextMin: next.min, toNext: Math.max(0, next.min - xp), pct, stars: 0 };
 }
 
 export class UserStore {
@@ -17965,8 +17971,8 @@ export class UserStore {
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 80);
       const names = (Array.isArray(b && b.names) ? b.names : []).map(x => String(x).slice(0, 24)).filter(Boolean).slice(0, 80);
       const byId = {}, byName = {};
-      if (ids.length) { try { inChunks(ids, (part, ph) => this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
-      if (names.length) { try { inChunks(names, (part, ph) => this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...part)).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
+      if (ids.length) { try { inChunks(ids, (part, ph) => this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name, p: L.stars || 0 }; }); } catch (e) {} }
+      if (names.length) { try { inChunks(names, (part, ph) => this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...part)).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name, p: L.stars || 0 }; }); } catch (e) {} }
       return this.j({ byId, byName });
     }
     if (path === '/signupsdaily') { // Funnel tab: new-account COUNT per UTC day, last 15 days (signups happen via /api/auth/verify, not /api/track, so the funnel can't read them from AE)
