@@ -24,6 +24,12 @@
     + '.lbm-lvl{font:700 11px "Space Mono",monospace;letter-spacing:.04em;text-transform:uppercase;margin-top:3px}'
     + '.lbm-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:15px}'
     + '.lbm-bar i{display:block;height:100%;border-radius:3px}'
+    + '.lbm-rech{display:flex;align-items:baseline;gap:7px;margin:12px 0 7px;font:800 11px "Space Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#ffd75a}'
+    + '.lbm-rech span{font-weight:700;letter-spacing:.04em;text-transform:none;color:#6c7681}'
+    + '.lbm-rec{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:7px;margin-bottom:12px}'
+    + '.lbm-r{padding:8px 9px;border-radius:10px;background:linear-gradient(180deg,rgba(255,215,90,.07),rgba(255,215,90,.02));border:1px solid rgba(255,215,90,.18);min-width:0}'
+    + '.lbm-r b{display:block;font:800 14px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em;color:#ffe08a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.lbm-r span{display:block;margin-top:2px;font:600 10px "Space Mono",monospace;color:#8a93a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.lbm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:15px}'
     + '.lbm-s{min-width:0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 6px;text-align:center;overflow:hidden}'
     + '.lbm-sv{font-family:"Space Mono",monospace;font-weight:700;font-size:14px;color:#fff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
@@ -95,6 +101,15 @@
           + stat(moneyC(s2.realized || 0), 'Realized P&L', (s2.realized >= 0 ? '#34d99a' : '#ff6c5c'))
           + stat(moneyC(s2.weekPnl || 0), (s2.weekTrades || 0) + ' trades · wk', (s2.weekPnl >= 0 ? '#34d99a' : '#ff6c5c'))
         + '</div>'
+        // Personal records (2026-09-06): all-time, kept forever. Shown only once there is something to show.
+        + (function () { var R = d.records; if (!R || (R.roe == null && R.pnl == null && !R.streak && !R.day)) return '';
+            var rec = function (v, l, t) { return '<div class="lbm-r"' + (t ? ' title="' + new Date(t).toISOString().slice(0, 10) + '"' : '') + '><b>' + v + '</b><span>' + l + '</span></div>'; };
+            return '<div class="lbm-rech">Records <span>all time</span></div><div class="lbm-rec">'
+              + (R.roe != null ? rec('+' + R.roe + '%', 'best ROE', R.roeTs) : '')
+              + (R.pnl != null ? rec('+$' + Number(R.pnl).toFixed(2), 'biggest win', R.pnlTs) : '')
+              + (R.streak >= 2 ? rec(R.streak + ' in a row', 'win streak', R.streakTs) : '')
+              + (R.day >= 3 ? rec(R.day, 'closes in a day', R.dayTs) : '')
+              + '</div>'; })()
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + '</span>' + mBtn + '</div>';
     }).catch(function () { body.innerHTML = '<div class="lbm-load">Could not load this trader.</div>'; });
   };

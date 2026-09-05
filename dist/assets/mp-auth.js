@@ -1687,6 +1687,17 @@
       host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 3600);
     }
+    // Personal record broken (2026-09-06): same toast channel as XP, gold, one card per record, shown once per
+    // device (dedup by the server's new_ts). The label is the number that was beaten and what it was before.
+    var PBN = { roe: 'Best ROE', pnl: 'Biggest win', streak: 'Win streak', day: 'Closes in a day' };
+    function pbFmt(k, v) { return k === 'roe' ? ('+' + v + '%') : k === 'pnl' ? ('+$' + Number(v).toFixed(2)) : k === 'streak' ? (v + ' in a row') : (v + ' trades'); }
+    function pbToast(it) {
+      var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
+      var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#ffd75a');
+      el.innerHTML = '<b style="font-size:12px;letter-spacing:.08em">RECORD</b><span>' + (PBN[it.k] || it.k) + ' <b style="color:#e9e7df">' + pbFmt(it.k, it.v) + '</b>' + (it.prev != null && it.prev !== 0 ? '<br>was ' + pbFmt(it.k, it.prev) : '') + '</span>';
+      host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
+      setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4800);
+    }
     function followToast(name) {
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#38bdf8');
@@ -1752,6 +1763,9 @@
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
         if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         try { window.mpBronzeBar(d); } catch (e) {}
+        try { if (d.pbNew && d.pbNew.ts && (d.pbNew.items || []).length) { var pk9 = 'mp_pb_seen_' + ((ME && ME.id) || ''), ps9 = +(localStorage.getItem(pk9) || 0);
+          if (!ps9) localStorage.setItem(pk9, String(d.pbNew.ts)); // first sight on this device: seed, never replay history
+          else if (d.pbNew.ts > ps9) { localStorage.setItem(pk9, String(d.pbNew.ts)); d.pbNew.items.slice(0, 3).forEach(function (it, ix) { setTimeout(function () { pbToast(it); }, 400 + ix * 700); }); } } } catch (e) {}
         try { window.dispatchEvent(new CustomEvent('mp:xp', { detail: d })); } catch (e) {} // progress widgets (Road to Bronze, goals, records) re-render off this
         if (typeof d.notifUnread === 'number' && window.mpNotifBadge) { try { window.mpNotifBadge(d.notifUnread); } catch (e) {} }
         // GIFT CELEBRATION: an unseen 'gift' notification gets the center stage once (ts-dedup per device in localStorage).

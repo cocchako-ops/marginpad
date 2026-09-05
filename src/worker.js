@@ -10628,6 +10628,7 @@ async function handleTrade(url, request, env, ctx) {
     { const ms9 = marketSession(symC, pd); if (!ms9.open) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); }
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
     const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm });
+    try { const xc = globalThis.__xpC; if (xc && tok) xc.delete(tok); } catch (e) {} // the 45s /xp cache would otherwise hide this close's XP and records from the very next poll
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
@@ -11885,7 +11886,8 @@ async function handleAuth(url, request, env, ctx) {
     let duelPending = 0; try { const pr = await stub.fetch(new Request('https://do/duel/pending?uid=' + encodeURIComponent(sd.user.id))); const pd = await pr.json(); duelPending = pd.pending || 0; } catch (e) {}
     let notifUnread = 0; try { const nr = await stub.fetch(new Request('https://do/unotifs?uid=' + encodeURIComponent(sd.user.id))); const nd = await nr.json(); notifUnread = nd.unread || 0; } catch (e) {}
     let premium = false; try { const pf = await premiumFor(env, request); premium = !!(pf && pf.premium); } catch (e) {} // drives the client premium-upgrade celebration
-    const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread, premium, premiumNew: premium && !(sd.user && sd.user.prem_seen) }; // premiumNew = premium AND not-yet-celebrated → the client fires the upgrade celebration once, regardless of WHEN they became premium (fixes first-login-already-premium: an owner grant / IPN that landed while offline)
+    let records = null; try { const pr2 = await stub.fetch(new Request('https://do/pb?uid=' + encodeURIComponent(sd.user.id))); records = ((await pr2.json()) || {}).records || null; } catch (e) {} // personal records + the last one broken (pbNew) for the toast
+    const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread, premium, records: records ? { roe: records.roe, pnl: records.pnl, streak: records.streak, day: records.day } : null, pbNew: records && records.fresh ? records.fresh : null, premiumNew: premium && !(sd.user && sd.user.prem_seen) }; // premiumNew = premium AND not-yet-celebrated → the client fires the upgrade celebration once, regardless of WHEN they became premium (fixes first-login-already-premium: an owner grant / IPN that landed while offline)
     try { const xc2 = globalThis.__xpC = globalThis.__xpC || new Map(); xc2.set(tok, { t: Date.now(), d: xpOut }); if (xc2.size > 500) xc2.delete(xc2.keys().next().value); } catch (e) {}
     return jr(xpOut);
   }
@@ -14182,6 +14184,9 @@ export default {
     }
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
+    }
+    if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
  if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
  const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '' });
@@ -17010,6 +17015,9 @@ export class UserStore {
     } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS missions(user_id TEXT, day TEXT, mid TEXT, ts INTEGER, PRIMARY KEY(user_id,day,mid))');
     s.exec('CREATE TABLE IF NOT EXISTS tradeev(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, lev REAL, margin REAL, pnl REAL, roe REAL, liq INTEGER DEFAULT 0)'); // persistent open/close trade events (diffed on journal sync — real pnl on closes)
+    // Personal records (2026-09-06): the four numbers a trader beats over months, kept forever and updated on every
+    // close. new_json/new_ts remember the last record broken so the /xp poll can toast it once.
+    s.exec('CREATE TABLE IF NOT EXISTS upb(user_id TEXT PRIMARY KEY, best_roe REAL, best_roe_ts INTEGER, best_pnl REAL, best_pnl_ts INTEGER, streak INTEGER DEFAULT 0, streak_best INTEGER DEFAULT 0, streak_best_ts INTEGER, day_key TEXT, day_n INTEGER DEFAULT 0, day_best INTEGER DEFAULT 0, day_best_ts INTEGER, new_json TEXT, new_ts INTEGER)');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
@@ -17247,6 +17255,33 @@ export class UserStore {
   // Merge `incoming` trades into the user's stored journal (union by id, close beats open, trim opens-safe) and persist,
   // plus the trade-event log + XP grants. Extracted from the /trades handler so the Bot API writes THROUGH the exact same
   // path as the browser → bot trades appear in My Trades, earn XP, hit the leaderboard and the ops trade feed. Returns the merged array.
+  // Personal records. Four dimensions, all from the same close event the XP path already trusts: best ROE on one
+  // trade, biggest $ win, longest run of green closes, most closes in one UTC day. Returns the records broken.
+  _pbOnClose(uid, e, pv, roe, ts) {
+    const sql = this.state.storage.sql; ts = +ts || Date.now();
+    let r = this.rows('SELECT * FROM upb WHERE user_id=?', uid)[0];
+    if (!r) { sql.exec('INSERT INTO upb(user_id) VALUES(?)', uid); r = { streak: 0, streak_best: 0, day_n: 0, day_best: 0 }; }
+    const day = new Date(ts).toISOString().slice(0, 10), won = pv > 0, broke = [];
+    const set = {};
+    if (won && roe != null && (r.best_roe == null || roe > +r.best_roe)) { broke.push({ k: 'roe', v: Math.round(roe * 10) / 10, prev: r.best_roe == null ? null : Math.round(+r.best_roe * 10) / 10 }); set.best_roe = roe; set.best_roe_ts = ts; }
+    if (won && (r.best_pnl == null || pv > +r.best_pnl)) { broke.push({ k: 'pnl', v: Math.round(pv * 100) / 100, prev: r.best_pnl == null ? null : Math.round(+r.best_pnl * 100) / 100 }); set.best_pnl = pv; set.best_pnl_ts = ts; }
+    const streak = won ? (+r.streak || 0) + 1 : 0; set.streak = streak;
+    if (streak > (+r.streak_best || 0)) { if (streak >= 3) broke.push({ k: 'streak', v: streak, prev: +r.streak_best || 0 }); set.streak_best = streak; set.streak_best_ts = ts; }
+    const dayN = (r.day_key === day ? (+r.day_n || 0) : 0) + 1; set.day_key = day; set.day_n = dayN;
+    if (dayN > (+r.day_best || 0)) { if (dayN >= 5) broke.push({ k: 'day', v: dayN, prev: +r.day_best || 0 }); set.day_best = dayN; set.day_best_ts = ts; }
+    // a first-ever value is a seed, not a record: only toast improvements on something that already existed,
+    // and the streak/day records only once they mean something (3 in a row, 5 in a day)
+    const news = broke.filter(b => (b.k === 'roe' || b.k === 'pnl') ? b.prev != null : true);
+    if (news.length) { set.new_json = JSON.stringify(news); set.new_ts = ts; }
+    const cols = Object.keys(set); if (cols.length) sql.exec('UPDATE upb SET ' + cols.map(c => c + '=?').join(',') + ' WHERE user_id=?', ...cols.map(c => set[c]), uid);
+    return news;
+  }
+  _pbGet(uid) {
+    const r = this.rows('SELECT * FROM upb WHERE user_id=?', uid)[0]; if (!r) return null;
+    return { roe: r.best_roe == null ? null : Math.round(+r.best_roe * 10) / 10, roeTs: +r.best_roe_ts || 0, pnl: r.best_pnl == null ? null : Math.round(+r.best_pnl * 100) / 100, pnlTs: +r.best_pnl_ts || 0,
+      streak: +r.streak_best || 0, streakTs: +r.streak_best_ts || 0, streakNow: +r.streak || 0, day: +r.day_best || 0, dayTs: +r.day_best_ts || 0,
+      fresh: r.new_ts ? { ts: +r.new_ts, items: (function () { try { return JSON.parse(r.new_json || '[]'); } catch (e) { return []; } })() } : null };
+  }
   _syncJournal(uid, incoming, promos, srvAuth, via) {
     const sql = this.state.storage.sql, now = Date.now();
     try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {} // A3: index of users with OPEN srv/bot trades — sweeps iterate THIS, not every journal
@@ -17330,6 +17365,7 @@ export class UserStore {
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
         try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if (e.sl != null && +e.sl > 0) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
         try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
+        try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once — a DO-reset re-sync must not double-grant */
@@ -19027,12 +19063,14 @@ export class UserStore {
       const last = this.rows('SELECT f.uid fid, u.username, f.ts FROM ufollows f LEFT JOIN users u ON u.id = f.uid WHERE f.tuid = ? ORDER BY f.ts DESC LIMIT 1', uid)[0];
       return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
     }
+    if (path === '/pb') { const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); return this.j({ records: uid ? this._pbGet(uid) : null }); } // personal records (self poll + admin)
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
       const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
+      const records = this._pbGet(u.id);
       const t = this.rows('SELECT json, n, wins, losses, opens, pnl, life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed, s_season, s_closes, s_wins, s_pnl, s_best FROM utrades WHERE user_id = ?', u.id)[0] || {};
       const weekStart = lbPeriodStart(now);
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
@@ -19079,10 +19117,10 @@ export class UserStore {
         followsMe = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', u.id + '|' + viewer)[0];
         mutual = iFollow && followsMe;
       }
-      return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
+      return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
         iFollow, followsMe, mutual,
         bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season — the public card must expire them too, not only the equip panel
-        stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
+        records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
         followers });

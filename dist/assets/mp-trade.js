@@ -756,7 +756,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
-  function fullClose(e,m){e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}try{var _pn=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?' +$':' −$')+Math.abs(e.pnl).toFixed(2)):'';window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — '+(e.status==='win'?'win':'loss')+_pn);}catch(_){}}
+  function fullClose(e,m){try{setTimeout(function(){if(window.mpXpCheck)window.mpXpCheck();},1400);}catch(_){} /* records + XP toasts arrive now, not on the next 60s poll */
+    e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}try{var _pn=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?' +$':' −$')+Math.abs(e.pnl).toFixed(2)):'';window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — '+(e.status==='win'?'win':'loss')+_pn);}catch(_){}}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Close position">'
