@@ -9227,6 +9227,17 @@ const VAULT_ITEMS = [
   { id: 'phosphor', name: 'Phosphor', tier: 'epic', ticks: 3000, cents: 129, desc: 'Amber CRT band under horizontal scanlines, with the glow of a warm tube' },
   { id: 'dusk', name: 'Desert Dusk', tier: 'epic', ticks: 3000, cents: 149, desc: 'Rose horizon bleeding upward into violet and deep night blue' },
   { id: 'petrol', name: 'Petrol', tier: 'epic', ticks: 3000, cents: 169, desc: 'Oil-film iridescence, teal turning to blue and magenta, over an inner sheen ring' },
+  // Drop 2026-09-05 (owner: "more items, for Ticks and for cash"). Same ladder, no new price points.
+  { id: 'sandstone', name: 'Sandstone', tier: 'common', ticks: 300, desc: 'Dry desert stone, warm beige over a darker grain, matte all the way through' },
+  { id: 'arctic', name: 'Arctic', tier: 'common', ticks: 300, desc: 'Pale ice-white edge cooling down into hard grey-blue' },
+  { id: 'copper', name: 'Copper', tier: 'common', ticks: 300, desc: 'Aged copper with a band of verdigris where the weather got in' },
+  { id: 'neonoir', name: 'Neo Noir', tier: 'rare', ticks: 1200, desc: 'Black street at night with magenta bleeding in one corner and cyan in the other' },
+  { id: 'bamboo', name: 'Bamboo', tier: 'rare', ticks: 1200, desc: 'Green stalks segmented by pale nodes, running the whole way around' },
+  { id: 'rust', name: 'Rust Belt', tier: 'rare', ticks: 1200, desc: 'Oxidised iron, orange flaking off dark steel' },
+  { id: 'venom', name: 'Venom', tier: 'rare', ticks: 1200, desc: 'Acid green cutting through black, the colour of something you should not touch' },
+  { id: 'magnetar', name: 'Magnetar', tier: 'epic', ticks: 3000, cents: 149, desc: 'Violet field lines whipping around a dark core, with an inner magnetic ring' },
+  { id: 'koi', name: 'Koi', tier: 'epic', ticks: 3000, cents: 149, desc: 'Black water with white and vermilion koi turning through it, gold ripples inside' },
+  { id: 'tungsten', name: 'Tungsten', tier: 'epic', ticks: 3000, cents: 129, desc: 'A white-hot filament strung through a cold grey housing' },
   // ---- the flagship tier. Every one is earnable with Ticks as well as buyable, so the best frames on
   // the site are not locked behind a card -- they are just a long way up.
   { id: 'void', name: 'Void', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Black-violet depth that eats the light' },
@@ -9240,6 +9251,8 @@ const VAULT_ITEMS = [
   { id: 'singularity', name: 'Singularity', tier: 'legendary', ticks: 7000, cents: 599, desc: 'A black core with a spinning accretion ring, light bending around your name' },
   { id: 'sovereign', name: 'Sovereign', tier: 'legendary', ticks: 7000, cents: 349, minLevel: 'diamond', desc: 'Diamond-gated white gold, the flex' },
   { id: 'midas', name: 'Midas', tier: 'legendary', ticks: 7000, cents: 799, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
+  { id: 'leviathan', name: 'Leviathan', tier: 'legendary', ticks: 7000, cents: 499, desc: 'Something bioluminescent moving in water far too deep to see the bottom of' },
+  { id: 'emperor', name: 'Emperor', tier: 'legendary', ticks: 7000, cents: 549, desc: 'Carved imperial jade with gold inlay running through every vein' },
   { id: 'realtrader', name: 'Real Trader', tier: 'mythic', cents: 1999, desc: 'The apex of the Vault: profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
   { id: 'eclipse', name: 'Eclipse', tier: 'legendary', ticks: 5000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1, forever' },
   // ---- NATIONS (2026-09-05, owner): 20 country frames, $1.99 each, balance only (no Ticks price — identity items,
@@ -9316,8 +9329,12 @@ const VAULT_ITEMS = [
   { id: 'closer2k', name: 'Overclock', tier: 'legendary', earn: 'Close 2,000 trades', desc: 'Two thousand closed tickets — the terminal runs hot' },
   { id: 'dwell500', name: 'Furniture', tier: 'legendary', earn: 'Spend 500 hours on MarginPad', desc: 'Five hundred hours. You are part of the desk now' },
   // ---- consumables (kind c): instant effects, buyable again and again, never giftable --------------
-  { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', ticks: 600, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
-  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', ticks: 1500, cents: 79, desc: 'Double XP from everything you earn for the next 24 hours' },
+  // `grant` IS the effect: {fz} banks streak freezes, {hrs} runs the XP boost. _applyConsumable reads it, so a
+  // new supply item is a catalogue line and nothing else -- no new branch, no new column, no client special-case.
+  { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', ticks: 600, cents: 29, grant: { fz: 1 }, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
+  { id: 'shield3', name: 'Shield Pack', kind: 'c', tier: 'epic', ticks: 1500, cents: 69, grant: { fz: 3 }, desc: 'Three streak freezes at once, at a discount. Needs room in the bank: buy it with 2 or fewer already held' },
+  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', ticks: 1500, cents: 79, grant: { hrs: 24 }, desc: 'Double XP from everything you earn for the next 24 hours' },
+  { id: 'surge72', name: 'XP Surge 72', kind: 'c', tier: 'legendary', ticks: 3500, cents: 179, grant: { hrs: 72 }, desc: 'Three full days of double XP — three times the length, cheaper than three Surges bought one by one' },
   // ---- ticket skins (kind t): restyle every P&L ticket you keep or share --------------------------
   { id: 'tkt_carbon', name: 'Carbon Weave', kind: 't', tier: 'common', ticks: 300, desc: 'Diagonal carbon twill under a matte clearcoat' },
   { id: 'tkt_thermal', name: 'Thermal Roll', kind: 't', tier: 'common', ticks: 300, desc: 'Dark receipt stock with printer ruling and two curled, shadowed edges' },
@@ -9332,6 +9349,13 @@ const VAULT_ITEMS = [
   { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Liquid gold plate, for your wins and your losses alike' },
   { id: 'tkt_dragon', name: 'Dragonhide Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Molten dragon-scale plate with an ember seam, your wins in armor' },
   { id: 'tkt_obsidian', name: 'Obsidian Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 299, desc: 'Volcanic glass, fracture facets catching a violet edge' },
+  { id: 'tkt_kraft', name: 'Kraft Stub', kind: 't', tier: 'common', ticks: 300, desc: 'Brown kraft card with a punched perforation strip down the left edge' },
+  { id: 'tkt_blueprint', name: 'Blueprint Stub', kind: 't', tier: 'rare', ticks: 1200, desc: 'Draft-paper navy under a fine cyan measuring grid' },
+  { id: 'tkt_terminal', name: 'Terminal', kind: 't', tier: 'rare', ticks: 1200, desc: 'Green phosphor on black with the cursor still blinking on line one' },
+  { id: 'tkt_boarding', name: 'Boarding Pass', kind: 't', tier: 'rare', ticks: 1200, desc: 'Airline stub with a dashed tear line and a printed barcode' },
+  { id: 'tkt_frost', name: 'Frostbite', kind: 't', tier: 'epic', ticks: 3000, cents: 99, desc: 'Frosted glass fractured by three ice cracks' },
+  { id: 'tkt_neon', name: 'Neon Sign', kind: 't', tier: 'epic', ticks: 3000, cents: 119, desc: 'A pink neon tube burning against a dark brick wall' },
+  { id: 'tkt_platinum', name: 'Platinum', kind: 't', tier: 'legendary', ticks: 7000, cents: 279, desc: 'Cold white metal with a single mirror sweep across the grain' },
   // ---- card backgrounds (kind bg): a scene behind the whole trader card --------------------------
   { id: 'bg_grid', name: 'Blueprint Field', kind: 'bg', tier: 'common', ticks: 300, desc: 'Faint engineering grid, the builder&#39;s backdrop' },
   { id: 'bg_topo', name: 'Contours', kind: 'bg', tier: 'common', ticks: 300, desc: 'Survey contour lines stepping around two hills' },
@@ -9346,6 +9370,13 @@ const VAULT_ITEMS = [
   { id: 'bg_ember', name: 'Embers', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'Sparks lifting off a bed of coals' },
   { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Northern lights and a field of stars, calm above the chaos' },
   { id: 'bg_deepfield', name: 'Deep Field', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 299, desc: 'A dust lane cutting across distant nebulae and pinprick stars' },
+  { id: 'bg_dunes', name: 'Dunes', kind: 'bg', tier: 'common', ticks: 300, desc: 'Sand ridges stacked in low evening light' },
+  { id: 'bg_static', name: 'Static', kind: 'bg', tier: 'common', ticks: 300, desc: 'Dead-channel noise, the screen nobody is watching' },
+  { id: 'bg_circuit', name: 'Mainboard', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Copper traces routing between three lit vias' },
+  { id: 'bg_waves', name: 'Swell', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Three long ocean swells rolling in from open water' },
+  { id: 'bg_matrix', name: 'Data Rain', kind: 'bg', tier: 'epic', ticks: 3000, cents: 99, desc: 'Green data falling in columns behind your whole card' },
+  { id: 'bg_city', name: 'Skyline', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'A dark city block with the windows of the people still working' },
+  { id: 'bg_orbit', name: 'Low Orbit', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 279, desc: 'The night side of the planet, its atmosphere lit on the rim, cities burning below' },
   { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'mythic', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
@@ -17100,16 +17131,20 @@ export class UserStore {
     const sql = this.state.storage.sql; const now = Date.now();
     const u = this.rows('SELECT freezes, xpboost_until FROM users WHERE id=?', uid)[0];
     if (!u) return { error: 'no_user' };
-    if (itemId === 'shield') {
-      if ((+u.freezes || 0) >= 5) return { error: 'max_freezes' };
+    const cit = vaultItem(itemId);
+    const g = (cit && cit.kind === 'c' && cit.grant) ? cit.grant : null;
+    if (!g) return { error: 'bad' };
+    if (g.fz) { // streak freezes. A pack that would overflow the bank of 5 is refused whole -- never part-filled.
+      const have = +u.freezes || 0;
+      if (have + g.fz > 5) return { error: 'max_freezes', have: have, need: g.fz };
       if (check) return { ok: true };
-      sql.exec('UPDATE users SET freezes=MIN(5,COALESCE(freezes,0)+1) WHERE id=?', uid);
-      return { ok: true, freezes: Math.min(5, (+u.freezes || 0) + 1) };
+      sql.exec('UPDATE users SET freezes=MIN(5,COALESCE(freezes,0)+?) WHERE id=?', g.fz, uid);
+      return { ok: true, freezes: have + g.fz };
     }
-    if (itemId === 'surge') {
+    if (g.hrs) { // XP boost. One at a time: a second one while the first runs would silently overwrite it.
       if ((+u.xpboost_until || 0) > now) return { error: 'boost_active', until: +u.xpboost_until };
       if (check) return { ok: true };
-      const until = now + 86400000;
+      const until = now + g.hrs * 3600000;
       sql.exec('UPDATE users SET xpboost_until=? WHERE id=?', until, uid);
       return { ok: true, until: until };
     }

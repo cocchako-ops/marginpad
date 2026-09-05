@@ -74,3 +74,6 @@ build/ops-shots/
 
 # mobile paper-trade terminal E2E screenshots (build/pt-mobile-e2e.js)
 build/pt-shots/
+
+# Vault cosmetics E2E screenshots (build/vault-shots.js)
+build/vault-shots/
