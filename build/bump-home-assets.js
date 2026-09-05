@@ -28,6 +28,13 @@ function writeIfChanged(f, next) { const cur = fs.readFileSync(f, 'utf8'); if (c
 const ver = {};
 for (const b of BUNDLES) { const f = path.join(A, b); if (fs.existsSync(f)) ver[b] = hashOf(fs.readFileSync(f)); }
 
+// 1b) mp-nav.js carries the chat-everywhere loader (mp-trade.js + mp-trade.css) since 2026-09-06: stamp those
+//     references inside it FIRST, then re-hash it, so the HTML stamps of mp-nav.js match the file that ships.
+{
+  const navPath = path.join(A, 'mp-nav.js');
+  if (fs.existsSync(navPath)) { writeIfChanged(navPath, stampText(fs.readFileSync(navPath, 'utf8'))); ver['mp-nav.js'] = hashOf(fs.readFileSync(navPath)); }
+}
+
 // 2) stamp the dynamic loaders inside home.js ('/assets/mp-charts.js' etc.) and the worker's mp-nav injection
 function stampText(text) {
   let out = text;

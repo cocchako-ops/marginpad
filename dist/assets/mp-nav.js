@@ -351,6 +351,28 @@
     btn.addEventListener('click', open);
     // the canonical bar prefers the LIVE in-page feature when the page has it, and falls back to navigation:
     // Browse → the shared drawer (same everywhere) · Practice → in-page Paper-Trade switch on the app shell ·
+    // Chat everywhere (2026-09-06, owner: "chat must be available on every page it is opened on, not bounce you to
+    // the homepage"). The widget used to exist only where mp-trade.js ships (homepage, app shell, rekt, rewards);
+    // on every other page the bottom-bar Chat was a link to '/' that landed with the chat CLOSED. Now a page without
+    // the widget gets the same markup those pages carry (FAB + box) at load, its stylesheet, and mp-trade.js only on
+    // the first click - the bundle bails on everything else it looks for (journal drawer) when the markup is absent.
+    var CHAT_HTML = '<button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Chat</span></button>'
+      + '<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>'
+      + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
+      + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
+    var CHAT_JS = '/assets/mp-trade.js?v=7c1114a2', CHAT_CSS = '/assets/mp-trade.css?v=778aacc5', chatLoading = null;
+    function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
+    function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=778aacc5"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
+    function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
+    // the FAB is on the page from load (it is how a desktop visitor finds the chat); the bundle waits for the first click
+    function ensureChat(cb) {
+      if (window.mpOpenChat) { cb(); return; }
+      chatCss(); chatMarkup();
+      if (!chatLoading) { chatLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = CHAT_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      chatLoading.then(function () { setTimeout(cb, 30); });
+    }
+    window.mpEnsureChat = ensureChat;
+    if (chatWanted()) { try { chatCss(); chatMarkup(); document.addEventListener('click', function (e) { var f = e.target.closest && e.target.closest('#chatFab'); if (!f || window.mpOpenChat) return; e.preventDefault(); e.stopImmediatePropagation(); ensureChat(function () { if (window.mpOpenChat) window.mpOpenChat(); else { var f2 = document.getElementById('chatFab'); if (f2) f2.click(); } }); }, true); } catch (e) {} }
     // Trades → the live My-Trades drawer (mp-trade.js / home.js) · Chat → the page's chat widget.
     document.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('[data-mpbn]'); if (!b) return;
@@ -361,7 +383,7 @@
         if ((location.pathname.replace(/\/$/, '') || '/') === '/paper-trade') e.preventDefault(); return;
       }
       if (k === 'trades') { if (window.mpOpenTrades) { e.preventDefault(); window.mpOpenTrades(); } return; }
-      if (k === 'chat') { var f = document.getElementById('chatFab'); if (f) { e.preventDefault(); f.click(); } return; }
+      if (k === 'chat') { e.preventDefault(); ensureChat(function () { if (window.mpOpenChat) window.mpOpenChat(); else { var f = document.getElementById('chatFab'); if (f) f.click(); } }); return; }
     });
     if (searchEl) searchEl.addEventListener('input', function () { filter(searchEl.value); });
     // expandable Calculators row: toggle its sub-links (button, not a link → doesn't close the drawer)
