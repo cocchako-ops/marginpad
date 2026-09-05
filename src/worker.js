@@ -4660,6 +4660,34 @@ function posAlertCfg(v) {
 // dressing up three trades as a pattern. Expectancy is pnl/margin, i.e. return on what was risked, so buckets with
 // different position sizes are comparable. No advice, no prediction — only what already happened.
 const REPORT_MIN_N = 8;
+// Skill score (2026-09-06): four habits a trader can actually change, each 0-25, from the same close rows the
+// report reads. Every part carries its own n and is null under REPORT_MIN_N; the total exists only when at
+// least two parts are measurable and says how many. Not a prediction of anything -- a mirror of behaviour.
+//   discipline  stops set on closes, minus liquidations         (rows where sl is known)
+//   sizing      how even the margin per trade is (1 - CV/1.5)    (all rows)
+//   patience    median hold: 1 min = low, 30 min+ = full          (rows with a matching open)
+//   edge        average return on margin, -20% = 0, +20% = full   (all rows)
+function skillScore(rows, opens) {
+  rows = Array.isArray(rows) ? rows : []; opens = opens || {};
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const part = (v, n) => ({ v: n >= REPORT_MIN_N ? Math.round(v * 25 * 10) / 10 : null, n });
+  const slRows = rows.filter(r => r.sl === 0 || r.sl === 1 || r.sl === '0' || r.sl === '1');
+  const slRate = slRows.length ? slRows.filter(r => +r.sl === 1).length / slRows.length : 0;
+  const liqRate = rows.length ? rows.filter(r => +r.liq).length / rows.length : 0;
+  const disc = part(clamp(0.75 * slRate + 0.25 * (1 - clamp(liqRate * 5))), slRows.length);
+  const margins = rows.map(r => +r.margin || 0).filter(m => m > 0);
+  let cv = 0; if (margins.length >= 2) { const mean = margins.reduce((a, b) => a + b, 0) / margins.length; const sd = Math.sqrt(margins.reduce((a, b) => a + (b - mean) * (b - mean), 0) / margins.length); cv = mean > 0 ? sd / mean : 0; }
+  const size = part(clamp(1 - cv / 1.5), margins.length);
+  const holds = rows.map(r => { const ot = r.tid ? opens[r.tid] : 0; return (ot > 0 && +r.ts > ot) ? (+r.ts - ot) / 60000 : null; }).filter(x => x != null).sort((a, b) => a - b);
+  const medHold = holds.length ? holds[Math.floor(holds.length / 2)] : null;
+  const pat = part(medHold == null ? 0 : clamp(Math.log(medHold + 1) / Math.log(31)), holds.length);
+  const mSum = rows.reduce((a, r) => a + (+r.margin || 0), 0), pSum = rows.reduce((a, r) => a + (+r.pnl || 0), 0);
+  const roeAvg = mSum > 0 ? pSum / mSum * 100 : 0;
+  const edge = part(clamp(0.5 + roeAvg / 40), rows.length);
+  const parts = { disc, size, pat, edge }, have = Object.keys(parts).filter(k => parts[k].v != null);
+  const score = have.length >= 2 ? Math.round(have.reduce((a, k) => a + parts[k].v, 0) / have.length * 4) : null; // scaled to 100 over the parts that exist
+  return { score, parts, measured: have.length, n: rows.length };
+}
 function reportFindings(rep) {
   const f = [], T = rep.total || {};
   if (!T.n) return f;
@@ -10697,7 +10725,7 @@ async function handleTrade(url, request, env, ctx) {
     if (!rep || rep.error) return jt(rep || { error: 'unavailable' }, 503);
     let prem = false; try { const pf = await premiumFor(env, request); prem = !!(pf && pf.premium); } catch (e) {}
     if (adminUid) prem = true; // owner/E2E inspection of a specific account
-    if (!prem) return jt({ ok: true, days: rep.days, total: rep.total, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'] });
+    if (!prem) return jt({ ok: true, days: rep.days, total: rep.total, skill: rep.skill, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'] });
     return jt(Object.assign({ premium: true, findings: reportFindings(rep) }, rep));
   }
   // ── LIMIT ORDERS ────────────────────────────────────────────────────────────────────────────────────────────
@@ -17089,6 +17117,7 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
     try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {}
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN sl INTEGER'); } catch (e) {} // skill score (2026-09-06): had a stop set at close (0/1); NULL = before the column existed
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id — lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
@@ -17430,7 +17459,7 @@ export class UserStore {
         // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
         // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
-        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if (e.sl != null && +e.sl > 0) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
+        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
         try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
         try { if (kind === 'close' && !lbExcluded(e.sym) && pv != null) this._pbOnClose(uid, e, pv, roe, ts9); } catch (pbe) {} // personal records
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
@@ -17438,7 +17467,7 @@ export class UserStore {
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once — a DO-reset re-sync must not double-grant */
             if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
         if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''));
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0); // the client journal says `sl`, a server-filled position says `stop`
         nIns++;
       }
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout — the WR board shifted in the season's last days
@@ -17646,7 +17675,7 @@ export class UserStore {
       const days = Math.min(30, Math.max(1, +b.days || 30));
       const since = Date.now() - days * 86400000;
       let rows = [];
-      try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); } catch (e) { return this.j({ error: 'unavailable' }); }
+      try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); } catch (e) { return this.j({ error: 'unavailable' }); }
       const opens = {};
       try { this.rows("SELECT tid, ts FROM tradeev WHERE user_id=? AND kind='open' AND ts>=? LIMIT 5000", uid, since - 30 * 86400000).forEach(r => { if (r.tid && opens[r.tid] == null) opens[r.tid] = +r.ts || 0; }); } catch (e) {}
       const LEVB = [[1, 5, '1-5x'], [5, 20, '5-20x'], [20, 50, '20-50x'], [50, 100, '50-100x'], [100, 1e9, '100x+']];
@@ -17670,11 +17699,13 @@ export class UserStore {
       }
       holds.sort((a, c) => a - c);
       const med = holds.length ? holds[Math.floor(holds.length / 2)] : null;
+      const nowMs = Date.now(), wk = 7 * 86400000;
+      const skill = { now: skillScore(rows, opens), week: skillScore(rows.filter(r => +r.ts >= nowMs - wk), opens), prev: skillScore(rows.filter(r => +r.ts >= nowMs - 2 * wk && +r.ts < nowMs - wk), opens), minN: REPORT_MIN_N };
       const r2 = (x) => Math.round(x * 100) / 100;
       const outObj = (o) => ({ n: o.n, wins: o.wins, pnl: r2(o.pnl), margin: r2(o.margin), avg: o.n ? r2(o.pnl / o.n) : 0, wr: o.n ? Math.round(o.wins / o.n * 1000) / 10 : null, exp: o.margin > 0 ? Math.round(o.pnl / o.margin * 1000) / 10 : null });
       const listOf = (m) => Object.keys(m).map(k => Object.assign({ k }, outObj(m[k]))).sort((a, c) => c.n - a.n);
       return this.j({
-        ok: true, days, since,
+        ok: true, days, since, skill,
         total: Object.assign(outObj(tot), { liq, best: best ? { pnl: r2(best.pnl), sym: best.sym, side: best.side, lev: best.lev, ts: best.ts } : null, worst: worst ? { pnl: r2(worst.pnl), sym: worst.sym, side: worst.side, lev: worst.lev, ts: worst.ts } : null, holdMedianMin: med == null ? null : Math.round(med / 60000), holdN: holds.length }),
         byCoin: listOf(byCoin).slice(0, 20), byLev: LEVB.map(b2 => Object.assign({ k: b2[2] }, outObj(byLev[b2[2]]))), bySide: listOf(bySide),
         byHour: byHour.map((o, h) => Object.assign({ k: h }, outObj(o))), byDay: Object.keys(byDay).sort().map(k => Object.assign({ k }, outObj(byDay[k])))

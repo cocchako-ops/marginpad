@@ -40,6 +40,23 @@
   .tile{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;}
   .tile .v{font-family:'Space Mono',monospace;font-size:23px;font-weight:700;line-height:1.1;letter-spacing:-.02em;}
   .tile .l{font-size:11.5px;color:var(--faint);margin-top:4px;}
+/* Skill score (2026-09-06): four habits, each 0-25 with its own n; the total exists only when two or more are measured */
+.sk{border-color:rgba(194,246,74,.28);background:radial-gradient(120% 80% at 100% 0,rgba(194,246,74,.07),transparent 55%),linear-gradient(180deg,var(--panel),#0c0f13)}
+.sk-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.sk-head h2{margin:0}
+.sk-sub{font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.45;max-width:520px}
+.sk-big{display:flex;align-items:baseline;gap:9px;margin-left:auto}
+.sk-big b{font:800 clamp(34px,6vw,46px)/1 'Space Mono',monospace;letter-spacing:-.03em;color:var(--lime)}
+.sk-big b.thin{color:var(--faint)}
+.sk-big span{font:700 12px 'Space Mono',monospace;color:var(--dim)}.sk-big span.up{color:#34d99a}.sk-big span.dn{color:#ff6c5c}
+.sk-parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-top:14px}
+.sk-p{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-width:0}
+.sk-p .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:#c7ccd4;font-weight:700}
+.sk-p .t b{font:700 13px 'Space Mono',monospace;color:#fff}.sk-p .t b.thin{color:var(--faint);font-weight:400}
+.sk-p .bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin:8px 0 6px}.sk-p .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5f9d2e,var(--lime));width:0;transition:width .6s ease}
+.sk-p .n{font:600 10.5px 'Space Mono',monospace;color:var(--faint)}
+.sk-p .d{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.35}
+.sk-note{margin-top:12px;font-size:12px;color:var(--faint);line-height:1.5}
   .up{color:var(--up);} .dn{color:var(--red);} .amb{color:var(--amber);}
   table{width:100%;border-collapse:collapse;font-size:13.5px;}
   th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:400;padding:0 8px 8px 0;}
@@ -97,6 +114,11 @@
       <div class="tiles" id="tiles"></div>
     </div>
 
+    <div class="card sk" id="skillCard" hidden>
+      <div class="sk-head"><div><h2>Skill score</h2><div class="sk-sub" id="skSub"></div></div><div class="sk-big"><b id="skScore">—</b><span id="skDelta"></span></div></div>
+      <div class="sk-parts" id="skParts"></div>
+      <div class="sk-note" id="skNote"></div>
+    </div>
     <div class="card" id="findCard" hidden>
       <div class="lbl">What the numbers say <span class="pbadge">PREMIUM</span></div>
       <div id="finds"></div>
@@ -182,6 +204,19 @@
       +tile(String(t.liq||0),'Liquidations',(t.liq?'amb':''))
       +tile(t.holdMedianMin==null?'—':(t.holdMedianMin<60?t.holdMedianMin+'m':t.holdMedianMin<1440?(Math.round(t.holdMedianMin/6)/10)+'h':(Math.round(t.holdMedianMin/144)/10)+'d'),'Median hold');
 
+    (function(){var S=d.skill,card=document.getElementById('skillCard');if(!card)return;if(!S||!S.now){card.hidden=true;return;}
+      var now=S.now,wk=S.week||{},pv=S.prev||{},minN=S.minN||8;
+      var P={disc:['Discipline','stops set on your closes, minus liquidations'],size:['Sizing','how even your margin per trade is'],pat:['Patience','median time you hold a trade'],edge:['Edge','average return on margin risked']};
+      var big=document.getElementById('skScore'),delta=document.getElementById('skDelta'),sub=document.getElementById('skSub'),parts=document.getElementById('skParts'),note=document.getElementById('skNote');
+      card.hidden=false;
+      if(now.score==null){big.textContent='—';big.className='thin';delta.textContent='';sub.textContent='Needs '+minN+' closed trades in a window before any habit can be measured; '+(now.n||0)+' so far in the last '+(d.days||30)+' days.';}
+      else{big.textContent=String(now.score);big.className='';sub.textContent='Four habits you can actually change, scored 0-100 from your last '+(d.days||30)+' days ('+now.n+' closed trades, '+now.measured+' of 4 habits measurable).';
+        if(wk.score!=null&&pv.score!=null){var df=wk.score-pv.score;delta.textContent=(df>0?'+':'')+df+' vs last week';delta.className=df>0?'up':df<0?'dn':'';}
+        else if(wk.score!=null){delta.textContent='this week '+wk.score;delta.className='';}
+        else{delta.textContent='';}}
+      parts.innerHTML=Object.keys(P).map(function(k){var q=now.parts[k]||{};var have=q.v!=null;return '<div class="sk-p"><div class="t"><span>'+P[k][0]+'</span><b class="'+(have?'':'thin')+'">'+(have?q.v+' / 25':'—')+'</b></div><div class="bar"><i style="width:'+(have?Math.round(q.v/25*100):0)+'%"></i></div><div class="n">'+(have?'n = '+q.n:(q.n||0)+' of '+minN+' needed')+'</div><div class="d">'+P[k][1]+'</div></div>';}).join('');
+      note.textContent='A mirror of behaviour, not a prediction. Each habit needs '+minN+' trades in the window to count; the weekly change compares the last 7 days with the 7 before, each on its own trades.';
+    })();
     var prem=!!d.premium;
     premGate.hidden=prem;
     findCard.hidden=!prem||!(d.findings&&d.findings.length);
