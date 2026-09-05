@@ -24,6 +24,7 @@ const NEW = {
   let fail = 0;
   await withBrowser(async (browser) => {
     const page = await newPage(browser);
+    await page.setCacheEnabled(false); // the page is edge-cached HTML; a stale copy silently hides the change under test
     const errs = [];
     page.on('pageerror', e => errs.push(String(e.message || e)));
     page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
@@ -57,6 +58,32 @@ const NEW = {
       out.counts.probed = Object.keys(seen).length;
       return out;
     }, NEW);
+
+    // Layering guard (2026-09-05). Frame rings are ::after pseudo-elements carrying z-index 6-7. If the card
+    // does not isolate them, or if the hover panel does not outrank them, the ring paints straight across the
+    // description and the buy buttons -- which is exactly what shipped and what the owner reported.
+    const layer = await page.evaluate(() => {
+      const out = { worstRing: 0, hov: 0, isolated: null, fitTop: null, vtabsH: null, offenders: [] };
+      const card = document.querySelector('#galShop .fcard');
+      out.isolated = card ? (getComputedStyle(card).isolation === 'isolate' || getComputedStyle(card).zIndex !== 'auto') : null;
+      out.hov = card ? (parseInt(getComputedStyle(card.querySelector('.fhov')).zIndex, 10) || 0) : 0;
+      document.querySelectorAll('#galShop .fcard').forEach(c => {
+        const p = c.querySelector('.prev'); if (!p) return;
+        const z = Math.max(parseInt(getComputedStyle(p, '::after').zIndex, 10) || 0, parseInt(getComputedStyle(p, '::before').zIndex, 10) || 0);
+        if (z > out.worstRing) out.worstRing = z;
+        if (z >= out.hov) out.offenders.push(c.getAttribute('data-item') + ':z' + z);
+      });
+      const vt = document.getElementById('vtabs'), ft = document.getElementById('fit');
+      if (vt) out.vtabsH = Math.round(vt.getBoundingClientRect().height);
+      if (ft) out.fitTop = parseInt(getComputedStyle(ft).top, 10) || 0;
+      return out;
+    });
+    console.log('layering: hover panel z=' + layer.hov + ', loudest frame ring z=' + layer.worstRing + ', card isolated=' + layer.isolated);
+    if (!layer.isolated) { console.log('CARD NOT ISOLATED: .fcard makes no stacking context, frame rings escape into the page'); fail++; }
+    if (layer.offenders.length) { console.log('RING OVER HOVER PANEL: ' + layer.offenders.slice(0, 8).join(', ')); fail++; }
+    if (layer.fitTop != null && layer.vtabsH != null && layer.fitTop < layer.vtabsH) {
+      console.log('FITTING ROOM CLIPPED: sticky top ' + layer.fitTop + 'px but the tabs bar is ' + layer.vtabsH + 'px tall'); fail++;
+    }
 
     if (report.missing.length) { console.log('NOT IN CATALOGUE: ' + report.missing.join(', ')); fail++; }
     if (report.flat.length) { console.log('RENDERS FLAT (no CSS reached the browser): ' + report.flat.join(', ')); fail++; }
