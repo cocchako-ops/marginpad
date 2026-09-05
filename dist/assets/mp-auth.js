@@ -1952,6 +1952,9 @@
   // Server list on load and on sign-in; a 60s re-pull catches an order the */10 cron filled while this tab idled.
   refresh();
   window.addEventListener('mp-auth-change', function () { open = []; done = []; refresh(); });
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && me() && Date.now() - lastPull > 15000) refresh(); });
-  setInterval(function () { if (!document.hidden && me()) refresh(); }, 60000);
+  // LOAD DISCIPLINE: every refresh is a call to the single-instance UserStore DO, which is the piece of this system
+  // that resets under load. So: one pull on load, then a periodic pull ONLY while something is actually resting
+  // (with nothing waiting there is nothing a cron fill could change), and on tab-return at most once a minute.
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && me() && Date.now() - lastPull > 60000) refresh(); });
+  setInterval(function () { if (!document.hidden && me() && open.length) refresh(); }, 90000);
 })();
