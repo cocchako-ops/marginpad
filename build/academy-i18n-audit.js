@@ -20,6 +20,7 @@ const I18N = path.join(DIST, 'academy', 'i18n');
 const PAGE = path.join(DIST, 'academy', 'index.html');
 const LANGS = ['sr', 'es', 'de', 'fr', 'pt', 'nl', 'ru', 'tr', 'id', 'zh', 'ja', 'ko', 'ar'];
 const NONLATIN = { ru: 1, zh: 1, ja: 1, ko: 1, ar: 1 };
+const CJK = { zh: 1, ja: 1, ko: 1 };
 
 const argLang = (process.argv.indexOf('--lang') > 0) ? process.argv[process.argv.indexOf('--lang') + 1] : null;
 const SAMPLES = (process.argv.indexOf('--samples') > 0) ? +process.argv[process.argv.indexOf('--samples') + 1] : 4;
@@ -77,7 +78,9 @@ for (const L of (argLang ? [argLang] : LANGS)) {
         const hits = EN_WORDS.filter(w => bad.indexOf(w) < 0 && tw.indexOf(w) >= 0);
         if (hits.length >= 2) { enw++; flags.push('en_words:' + hits.slice(0, 4).join(',')); }
       }
-      if (en.length > 90 && tr.length < en.length * 0.45) { shortN++; flags.push('short'); }
+      // CJK says the same thing in far fewer characters, so a length ratio is meaningless there and would
+      // flag almost every correct Chinese string. Only Latin/Cyrillic/Arabic scripts are length-compared.
+      if (!CJK[L] && en.length > 90 && tr.length < en.length * 0.45) { shortN++; flags.push('short'); }
       if (flags.length) worst.push({ at: p.at, en: en.slice(0, 90), tr: tr.slice(0, 90), flags });
     }
   }
