@@ -531,6 +531,25 @@
 .dc-board .dc-r b{font:700 12px 'Space Mono',monospace;color:var(--lime)}
 .dc-board .dc-r.me{color:#fff}.dc-board .dc-r.me span{font-weight:700}
 @media(max-width:560px){.dc-q{font-size:13px}.dc-in input{font-size:15px}}
+/* Season goals (2026-09-06): pick two targets a season, verified from the real tables, one reward each. Gold = season. */
+.sg{margin:10px 0 2px;border:1px solid rgba(255,215,90,.3);background:linear-gradient(180deg,rgba(255,215,90,.075),rgba(255,215,90,.012));border-radius:12px;padding:11px 13px 12px;}
+.sg[hidden]{display:none}
+.sg-top{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:#ffd75a;}
+.sg-state{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#1a1200;background:#ffd75a;border-radius:20px;padding:2px 9px;}
+.sg-sub{margin:7px 0 9px;font-size:12px;color:var(--dim);line-height:1.45}
+.sg-sub b{color:#d7dce2}
+.sg-list{display:flex;flex-direction:column;gap:7px}
+.sg-opt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;color:#d7dce2;font:600 13px 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer;transition:border-color .14s,transform .1s}
+.sg-opt:hover{border-color:#ffd75a}.sg-opt:active{transform:translateY(1px)}.sg-opt[disabled]{opacity:.5;cursor:not-allowed}
+.sg-opt i{font:700 10.5px 'Space Mono',monospace;color:#ffd75a;font-style:normal;white-space:nowrap}
+.sg-g{background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px}
+.sg-g .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:#e9e7df;font-weight:700}
+.sg-g .t b{font:700 12px 'Space Mono',monospace;color:#ffd75a;white-space:nowrap}
+.sg-g .bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin-top:7px}.sg-g .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#b8901f,#ffd75a);width:0;transition:width .6s ease}
+.sg-g.done{border-color:rgba(255,215,90,.55)}
+.sg-claim{margin-top:8px;width:100%;background:#ffd75a;color:#1a1200;border:0;border-radius:9px;padding:9px 12px;font:800 12.5px 'Bricolage Grotesque',sans-serif;cursor:pointer}
+.sg-claim[disabled]{opacity:.55;cursor:not-allowed}
+.sg-paid{margin-top:7px;font:700 11px 'Space Mono',monospace;color:#ffd75a}
   /* details modal */
   .hhm{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,7,10,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
   .hhm[hidden]{display:none;}
@@ -1087,6 +1106,11 @@
         <div class="dc-sub" id="dcSub"></div>
         <div class="dc-board" id="dcBoard" hidden></div>
       </div>
+      <div class="sg" id="sg" hidden>
+        <div class="sg-top">Season goals<span class="sg-state" id="sgState"></span></div>
+        <div class="sg-sub" id="sgSub"></div>
+        <div class="sg-list" id="sgList"></div>
+      </div>
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
@@ -1589,6 +1613,34 @@
       }).catch(function(){busy=false;document.getElementById('dcGo').disabled=false;});});
     window.addEventListener('mp-auth-change',load);setTimeout(load,900);setInterval(function(){if(!document.hidden)load();},300000);
     setInterval(function(){if(D&&D.open&&!document.hidden){var st=document.getElementById('dcState');if(st&&Date.now()<D.cutoff)st.textContent='OPEN · '+hm(D.cutoff-Date.now())+' left';}},60000);
+  })();
+  /* Season goals: pick two, watch them fill from real activity, claim once each. */
+  (function(){
+    var box=document.getElementById('sg');if(!box)return;var G=null,busy=false;
+    function esc(x){return String(x==null?'':x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function daysLeft(){if(!G||!G.season)return '';var d=Math.max(0,Math.ceil((G.season.endMs-Date.now())/86400000));return d+'d left';}
+    function paint(){
+      if(!G){return;}box.hidden=false;
+      var st=document.getElementById('sgState'),sub=document.getElementById('sgSub'),list=document.getElementById('sgList');
+      st.textContent=daysLeft();
+      var picks=G.picks||[],max=G.max||2,rw=G.reward||{xp:100,ticks:40};
+      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
+      var left=max-picks.length;
+      if(left>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';
+        var taken={};picks.forEach(function(p){taken[p.k]=1;});
+        list.innerHTML=picks.map(row).join('')+(G.catalogue||[]).filter(function(c){return !taken[c.k];}).map(function(c){return '<button type="button" class="sg-opt" data-pick="'+c.k+'"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></button>';}).join('');}
+      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
+    }
+    function row(p){var pct=Math.min(100,Math.round((p.n||0)/(p.target||1)*100));return '<div class="sg-g'+(p.done?' done':'')+'"><div class="t"><span>'+esc(p.name)+'</span><b>'+(Math.min(p.n||0,p.target))+' / '+p.target+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div>'+(p.paid?'<div class="sg-paid">Claimed · +'+(G.reward.xp)+' XP · +'+(G.reward.ticks)+' Ticks</div>':(p.done?'<button type="button" class="sg-claim" data-claim="'+p.k+'">Claim +'+G.reward.xp+' XP · +'+G.reward.ticks+' Ticks</button>':''))+'</div>';}
+    function load(){fetch('/api/goals',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.catalogue){G=d;paint();}}).catch(function(){});}
+    box.addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||busy)return;busy=true;b.disabled=true;
+      var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
+      fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){busy=false;
+        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)setTimeout(window.mpXpCheck,600);load();}
+        else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}
+      }).catch(function(){busy=false;b.disabled=false;});});
+    window.addEventListener('mp-auth-change',load);setTimeout(load,1100);setInterval(function(){if(!document.hidden)load();},300000);
+    window.addEventListener('mp:xp',function(){setTimeout(load,1500);});
   })();
 
   // ---- 3-board prize showcase (switchable, locked preview of next week's leaderboards) ----

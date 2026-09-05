@@ -9247,6 +9247,7 @@ const TICK_SOURCES = [
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
   { k: 'predict', label: 'Daily call', cap: 13 },
+  { k: 'goal', label: 'Season goals', cap: 80 },
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
@@ -9447,6 +9448,16 @@ const ACH_DEFS = [ // id, name, how — all server-verified from real tables; ea
 // Daily call (2026-09-06): guess where BTC closes today (00:00 UTC). Calls close at PRED_CUTOFF_H so the last hours
 // cannot be a free answer; the 1D candle settles it; points are the Ticks tiers (plus 1 Tick for showing up).
 const PRED_CUTOFF_H = 20;
+// Season goals: five things a member can aim at, pick two per season, no swaps. Every one is counted from a real
+// table inside the season window, never from the client. One reward for all five so the choice is about taste.
+const GOAL_DEFS = [
+  { k: 'closes', name: 'Close 20 trades', target: 20, unit: 'trades' },
+  { k: 'green', name: '5 green days', target: 5, unit: 'green days' },
+  { k: 'lessons', name: 'Finish 5 Academy lessons', target: 5, unit: 'lessons' },
+  { k: 'calls', name: 'Make 7 daily calls', target: 7, unit: 'calls' },
+  { k: 'checkins', name: 'Check in 10 days', target: 10, unit: 'days' },
+];
+const GOAL_XP = 100, GOAL_TICKS = 40, GOAL_MAX = 2;
 function predPts(errPct) { return errPct <= 0.25 ? 12 : errPct <= 0.5 ? 8 : errPct <= 1 ? 5 : errPct <= 2 ? 2 : 0; }
 function predSeason(now) { const i = Math.floor(((+now || Date.now()) - LB_ANCHOR) / LB_PERIOD); const a = LB_ANCHOR + i * LB_PERIOD; return { idx: i, from: new Date(a).toISOString().slice(0, 10), to: new Date(a + LB_PERIOD).toISOString().slice(0, 10), endMs: a + LB_PERIOD }; }
 function predDay(now) { return new Date(+now || Date.now()).toISOString().slice(0, 10); }
@@ -14904,6 +14915,22 @@ export default {
       if (!env.USERS) return new Response('{"ok":false}', { headers: jh5 });
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/cert?name=' + encodeURIComponent(url.searchParams.get('u') || '') + '&course=' + encodeURIComponent(url.searchParams.get('c') || ''))); return new Response(await rr.text(), { headers: jh5 }); } catch (e) { return new Response('{"ok":false}', { headers: jh5 }); }
     }
+    if (url.pathname === '/api/goals') { // Season goals: GET = mine + catalogue (public catalogue for guests); POST {op:'pick'|'claim', k}
+      const jh6 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh6 });
+      const stubG = env.USERS.get(env.USERS.idFromName('main'));
+      const tokG = getCookie(request, SESS_COOKIE); let uG = tokG ? await sessionUser(env, tokG) : null;
+      const adminUidG = url.searchParams.get('uid'); if (!uG && adminUidG && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uG = { id: adminUidG };
+      if (request.method === 'POST') {
+        if (!uG) return new Response('{"error":"not_signed_in"}', { status: 401, headers: jh6 });
+        let gb = {}; try { gb = await request.json(); } catch (e) {}
+        const op = gb.op === 'claim' ? 'claim' : 'pick';
+        const gr = await stubG.fetch(new Request('https://do/goal/' + op, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uG.id, k: String(gb.k || '') }) }));
+        const gj = await gr.json(); if (gj && gj.ok) { try { await evPush(env, request, 'goal', op + ' ' + gj.k, '/'); } catch (e) {} }
+        return new Response(JSON.stringify(gj), { status: gr.status, headers: jh6 });
+      }
+      try { const gr = await stubG.fetch(new Request('https://do/goal/me?uid=' + encodeURIComponent(uG ? uG.id : ''))); const gj = await gr.json(); gj.signedIn = !!uG; return new Response(JSON.stringify(gj), { headers: jh6 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh6 }); }
+    }
     if (url.pathname === '/api/predict') { // Daily call: GET = the card's whole state (public board + mine when signed in); POST {guess} = make or change today's call
       const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh3 });
@@ -17112,6 +17139,8 @@ export class UserStore {
     // close. new_json/new_ts remember the last record broken so the /xp poll can toast it once.
     s.exec('CREATE TABLE IF NOT EXISTS upb(user_id TEXT PRIMARY KEY, best_roe REAL, best_roe_ts INTEGER, best_pnl REAL, best_pnl_ts INTEGER, streak INTEGER DEFAULT 0, streak_best INTEGER DEFAULT 0, streak_best_ts INTEGER, day_key TEXT, day_n INTEGER DEFAULT 0, day_best INTEGER DEFAULT 0, day_best_ts INTEGER, new_json TEXT, new_ts INTEGER)');
     // Daily call (2026-09-06): one BTC close guess per UTC day, settled from the 1D candle, paid in Ticks only.
+    // Season goals (2026-09-06): two self-chosen targets per 14-day season, verified from the real tables, paid once.
+    s.exec('CREATE TABLE IF NOT EXISTS ugoal(user_id TEXT, season INTEGER, k TEXT, target INTEGER, chosen_ts INTEGER, done_ts INTEGER, paid INTEGER DEFAULT 0, PRIMARY KEY(user_id, season, k))');
     s.exec('CREATE TABLE IF NOT EXISTS upred(user_id TEXT, day TEXT, guess REAL, ts INTEGER, px_at REAL, close REAL, err REAL, pts INTEGER, ticks INTEGER, settled INTEGER DEFAULT 0, PRIMARY KEY(user_id, day))');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
@@ -17371,6 +17400,18 @@ export class UserStore {
     if (news.length) { set.new_json = JSON.stringify(news); set.new_ts = ts; }
     const cols = Object.keys(set); if (cols.length) sql.exec('UPDATE upb SET ' + cols.map(c => c + '=?').join(',') + ' WHERE user_id=?', ...cols.map(c => set[c]), uid);
     return news;
+  }
+  // What a goal counts, inside [from, to) of the current season. Each source is the table the feature itself writes.
+  _goalProgress(uid, k, from, to, sk) {
+    if (!uid) return 0;
+    try {
+      if (k === 'closes') return +(this.rows("SELECT COUNT(*) c FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<?", uid, from, to)[0] || {}).c || 0;
+      if (k === 'green') { const byDay = {}; this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<?", uid, from, to).forEach(r => { const d = new Date(+r.ts).toISOString().slice(0, 10); byDay[d] = (byDay[d] || 0) + (+r.pnl || 0); }); return Object.values(byDay).filter(v => v > 0).length; }
+      if (k === 'lessons') return +(this.rows("SELECT COUNT(*) c FROM academy WHERE user_id=? AND ts>=? AND ts<? AND lesson NOT LIKE '%:%'", uid, from, to)[0] || {}).c || 0;
+      if (k === 'calls') return +(this.rows('SELECT COUNT(*) c FROM upred WHERE user_id=? AND day>=? AND day<?', uid, sk.from, sk.to)[0] || {}).c || 0;
+      if (k === 'checkins') return +(this.rows("SELECT COUNT(*) c FROM xplog WHERE user_id=? AND src='checkin' AND ts>=? AND ts<?", uid, from, to)[0] || {}).c || 0;
+    } catch (e) {}
+    return 0;
   }
   _pbGet(uid) {
     const r = this.rows('SELECT * FROM upb WHERE user_id=?', uid)[0]; if (!r) return null;
@@ -19189,9 +19230,40 @@ export class UserStore {
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
       const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
-      if (b.op === 'rm') { for (const t of ['upred', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
+      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       return this.j({ ok: true, uid, username: 'e2e_' + uid });
+    }
+    if (path === '/goal/me') { // the member's season goals with live progress, plus the catalogue
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());
+      const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
+      const picks = uid ? this.rows('SELECT k, target, chosen_ts, done_ts, paid FROM ugoal WHERE user_id=? AND season=?', uid, sk.idx) : [];
+      const prog = (k) => this._goalProgress(uid, k, from, to, sk);
+      const mine = picks.map(r => { const d = GOAL_DEFS.filter(g => g.k === r.k)[0] || { name: r.k, unit: '' }; const n = prog(r.k); return { k: r.k, name: d.name, unit: d.unit, target: +r.target, n, done: n >= +r.target, paid: !!+r.paid, doneTs: +r.done_ts || 0 }; });
+      return this.j({ season: sk, picks: mine, max: GOAL_MAX, reward: { xp: GOAL_XP, ticks: GOAL_TICKS }, catalogue: GOAL_DEFS.map(g => ({ k: g.k, name: g.name, target: g.target, unit: g.unit })) });
+    }
+    if (path === '/goal/pick' && request.method === 'POST') {
+      const uid = String(b.uid || '').replace(/^u:/, ''), k = String(b.k || ''); const g = GOAL_DEFS.filter(x => x.k === k)[0];
+      if (!uid || !g) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      const sk = predSeason(Date.now());
+      const have = this.rows('SELECT k FROM ugoal WHERE user_id=? AND season=?', uid, sk.idx);
+      if (have.some(r => r.k === k)) return this.j({ error: 'picked' }, 409);
+      if (have.length >= GOAL_MAX) return this.j({ error: 'full', max: GOAL_MAX }, 409);
+      this.state.storage.sql.exec('INSERT INTO ugoal(user_id,season,k,target,chosen_ts) VALUES(?,?,?,?,?)', uid, sk.idx, k, g.target, Date.now());
+      return this.j({ ok: true, k, season: sk.idx });
+    }
+    if (path === '/goal/claim' && request.method === 'POST') { // re-verifies from the tables, pays once
+      const uid = String(b.uid || '').replace(/^u:/, ''), k = String(b.k || ''); const sk = predSeason(Date.now());
+      const r = this.rows('SELECT target, paid FROM ugoal WHERE user_id=? AND season=? AND k=?', uid, sk.idx, k)[0];
+      if (!r) return this.j({ error: 'not_picked' }, 404);
+      if (+r.paid) return this.j({ error: 'paid' }, 409);
+      const n = this._goalProgress(uid, k, Date.parse(sk.from + 'T00:00:00Z'), Date.parse(sk.to + 'T00:00:00Z'), sk);
+      if (n < +r.target) return this.j({ error: 'not_done', n, target: +r.target }, 409);
+      this.state.storage.sql.exec('UPDATE ugoal SET paid=1, done_ts=? WHERE user_id=? AND season=? AND k=?', Date.now(), uid, sk.idx, k);
+      const xp = this._grantXp(uid, 'goal', GOAL_XP, { note: 'season goal ' + k });
+      let tk = 0; try { tk = this._grantTicks(uid, 'goal', GOAL_TICKS, { dayCap: TICK_CAP.goal, note: 'season goal ' + k }); } catch (e) {}
+      return this.j({ ok: true, k, xp, ticks: tk });
     }
     if (path === '/pred/put' && request.method === 'POST') { // {uid, day, guess, pxAt}: one call per UTC day, changeable until the cutoff, never after settlement
       const uid = String(b.uid || '').replace(/^u:/, ''), day = String(b.day || ''), g = +b.guess, px = +b.pxAt || 0;
