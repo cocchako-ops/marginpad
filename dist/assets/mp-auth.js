@@ -250,7 +250,7 @@
     + '.mpa-dbub .t{display:block;font-size:9.5px;color:#5c656f;margin-top:3px;text-align:right;font-family:ui-monospace,Consolas,monospace}'
     + '.mpa-dm-warn{font-size:12px;color:#ffb347;text-align:center;padding:9px;line-height:1.5;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.25);border-radius:10px;margin-top:8px}'
     + '.mpa-dm-badge{display:inline-block;min-width:16px;height:16px;line-height:16px;padding:0 5px;margin-left:6px;background:#38bdf8;color:#04121c;border-radius:9px;font-size:10px;font-weight:800;vertical-align:middle}'
-    + '.mpa-trig-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#38bdf8;border:2px solid #0a0b0d;z-index:6;pointer-events:none}'
+    + '.mpa-trig-dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#c2f64a;border:2px solid #0a0b0d;box-shadow:0 0 0 2px rgba(194,246,74,.35),0 0 10px 1px rgba(194,246,74,.75);z-index:6;pointer-events:none}[data-auth-open].mpa-unread{position:relative;overflow:visible!important;border-radius:10px;box-shadow:0 0 0 1px rgba(194,246,74,.55),0 0 16px -2px rgba(194,246,74,.6)}[data-auth-open].mpa-unread svg{color:#c2f64a}'
     + '.mpa-fd{display:flex;flex-direction:column;max-height:min(58vh,460px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
     + '.mpa-fd::-webkit-scrollbar{width:9px}.mpa-fd::-webkit-scrollbar-track{background:#0a0d11}.mpa-fd::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
     + '.mpa-fd-r{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid #1a2027}.mpa-fd-r:last-child{border-bottom:none}'
@@ -761,7 +761,7 @@
   function dmCol(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return 'hsl(' + (h % 360) + ',55%,55%)'; }
   function dmLvl(lv) { return lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : ''; }
   function refreshTrigDot() { var on = (window._mpDmUnread || 0) > 0 || (window._mpDuelPending || 0) > 0 || (window._mpNotifUnread || 0) > 0;
-    try { Array.prototype.forEach.call(document.querySelectorAll('[data-auth-open]'), function (t) { if (getComputedStyle(t).position === 'static') t.style.position = 'relative'; var dot = t.querySelector('.mpa-trig-dot'); if (on) { if (!dot) { dot = document.createElement('span'); dot.className = 'mpa-trig-dot'; t.appendChild(dot); } } else if (dot) dot.remove(); }); } catch (e) {}
+    try { Array.prototype.forEach.call(document.querySelectorAll('[data-auth-open]'), function (t) { if (getComputedStyle(t).position === 'static') t.style.position = 'relative'; t.classList.toggle('mpa-unread', on); /* the whole icon lights, not only a dot (owner 2026-09-06) */ var dot = t.querySelector('.mpa-trig-dot'); if (on) { if (!dot) { dot = document.createElement('span'); dot.className = 'mpa-trig-dot'; dot.setAttribute('aria-label', 'unread'); t.appendChild(dot); } } else if (dot) dot.remove(); }); } catch (e) {}
   }
   function setDot(id, n) { try { var mb = bodyEl && bodyEl.querySelector('#' + id); if (mb) { if (n > 0) { mb.textContent = n > 9 ? '9+' : String(n); mb.hidden = false; } else { mb.textContent = ''; mb.hidden = true; } } } catch (e) {} }
   function dmSetBadge(n) { n = +n || 0; window._mpDmUnread = n; setDot('mpaMsgBadge', n); refreshTrigDot(); }
