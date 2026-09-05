@@ -222,6 +222,32 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
     }
     chk('browser /charts: zero page errors', errs2.length === 0, errs2);
     await ctx2.close();
+
+    // ── mobile /charts (mp-mcharts): the same switch inside the demo-trade window ────────────────────────────
+    const ctx3 = await browser.createBrowserContext(); const p3 = await ctx3.newPage();
+    await p3.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    const errs3 = []; p3.on('pageerror', e => errs3.push(String(e.message).slice(0, 120)));
+    await p3.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
+    await new Promise(r => setTimeout(r, 10000)); // mp-mcharts loads lazily and needs its first candles
+    const mob = await p3.evaluate(() => {
+      const b = document.querySelector('[data-act="trade"]');
+      if (!b) return { btn: false, acts: Array.prototype.map.call(document.querySelectorAll('[data-act]'), x => x.getAttribute('data-act')) };
+      b.click(); return { btn: true };
+    });
+    await new Promise(r => setTimeout(r, 1800));
+    const mt = await p3.evaluate(() => {
+      const w = document.querySelector('.mfc-trbd'); if (!w) return { win: false };
+      const b = document.querySelector('#mtrType button[data-ot="limit"]'); if (!b) return { win: true, sw: false };
+      b.scrollIntoView({ block: 'center' });
+      const r = b.getBoundingClientRect(); const h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      const reachable = !!h && (h === b || b.contains(h));
+      b.click();
+      return new Promise(res => setTimeout(() => res({ win: true, sw: true, reachable, shown: !document.getElementById('mtrLimWrap').hidden, btn: (document.getElementById('mtrGo') || {}).textContent, prefilled: +(document.getElementById('mtrLim') || {}).value > 0 }), 500));
+    });
+    chk('browser mobile /charts: demo-trade window has a reachable Limit switch', mt.win && mt.sw && mt.reachable, { mob, mt });
+    chk('browser mobile /charts: limit field shows, prefilled, button relabels', mt.shown && mt.prefilled && /limit order/i.test(mt.btn || ''), mt);
+    chk('browser mobile /charts: zero page errors', errs3.length === 0, errs3);
+    await ctx3.close();
   });
 
   // ── CLEAN UP after ourselves ──────────────────────────────────────────────────────────────────────────────
