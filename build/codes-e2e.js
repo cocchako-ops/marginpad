@@ -63,9 +63,12 @@ const redeem = (uid, code) => post('/api/pass?uid=' + uid, { op: 'buy', src: 'co
   chk('ops list carries kind + amount + uses for every generated code', mine.length >= 6 && mine.every(c => c.kind && (c.kind === 'pass' || c.amt > 0)) && mine.some(c => c.kind === 'premium' && c.amt === 7), mine.map(c => c.kind + ':' + c.amt + ':' + c.used + '/' + c.uses));
   const inB = (list.codes || []).filter(c => c.batch === cB.batch);
   chk('the list carries the batch id on all 3 codes of that generation and on nothing else', inB.length === 3 && inB.every(c => cB.codes.indexOf(c.code) >= 0), inB.map(c => c.code));
+  // one code per drop per account (owner 2026-09-06): UID takes code 0 of the batch, then code 1 refuses for UID and still works for UID2
+  const b0 = (await redeem(UID, cB.codes[0])).body, b1 = (await redeem(UID, cB.codes[1])).body, b2 = (await redeem(UID2, cB.codes[1])).body;
+  chk('one code per batch per member: second code of the same drop -> batch_taken, another member takes it fine', b0.ok && b1.error === 'batch_taken' && b2.ok, { b0: b0.ok, b1: b1.error, b2: b2.ok });
   const rb = (await post('/api/admin/passcodes?e2e=1', { op: 'revokebatch', batch: cB.batch })).body;
   const rb1 = (await redeem(UID2, cB.codes[1])).body;
-  chk('revoke the whole batch: 3 revoked, a code from it refuses', rb.ok && rb.revoked === 3 && rb1.error === 'bad_code', { rb, rb1 });
+  chk('revoke the whole batch: every not-yet-revoked code of it is revoked (used-up ones too), a code from it refuses', rb.ok && rb.revoked === 3 && rb1.error === 'bad_code', { rb, rb1 });
 
   const act = (await get('/api/admin/activity?h=1&e2e=1&actor=u:e2e_' + UID)).body;
   const rows = (act.rows || []).filter(r => r.t === 'code');

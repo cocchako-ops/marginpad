@@ -82,7 +82,7 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
   const rc2 = await buy(UID2, 'code', CODE);
   chk('second member on the same 1-use code -> used_up', rc2.status === 409 && rc2.body.error === 'used_up', rc2.body);
   const rc3 = await buy(UID, 'code', CODE2);
-  chk('a pro member cannot buy again -> already', rc3.status === 409 && rc3.body.error === 'already', rc3.body);
+  chk('the second code of the same drop is refused for the member who already took one (batch_taken; one code per drop per account, 2026-09-06)', rc3.status === 409 && rc3.body.error === 'batch_taken', rc3.body);
   const p1b = await claim(UID, 1, 'pro');
   chk('pro tier 1 claimed: 30 Ticks', p1b.body.ok && p1b.body.ticks === 30, p1b.body);
   const f2 = await claim(UID, 2, 'free');

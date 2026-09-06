@@ -538,7 +538,7 @@ h1 b{color:var(--lime)}
         if(d&&d.ok){var got=d.kind==='cents'?'+$'+((d.amt||0)/100).toFixed(2)+' on your rewards balance':d.kind==='premium'?'+'+d.amt+' days of Premium':d.kind==='ticks'?'+'+int(d.amt||0)+' Ticks':'the pro track for this season';
           m.innerHTML='<b style="color:var(--lime)">Code redeemed: '+got+'.</b>'+(d.kind==='cents'?' <a href="/rewards/">See your balance</a>':d.kind==='pass'?' <a href="#pass">See your road</a>':'');toast('Code redeemed: <b>'+got+'</b>');i.value='';
           if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}
-        else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.innerHTML='<b class="err">'+(E[d&&d.error]||'Could not redeem that code.')+'</b>';}
+        else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',batch_taken:'You already redeemed a code from this drop. One per account.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.innerHTML='<b class="err">'+(E[d&&d.error]||'Could not redeem that code.')+'</b>';}
       }).catch(function(){busy=false;b.disabled=false;m.innerHTML='<b class="err">Network error, try again.</b>';});}
     b.addEventListener('click',go);i.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();go();}});})();
 

@@ -401,7 +401,7 @@
       f.addEventListener('submit',function(e){e.preventDefault();if(busy)return;var c=String(i.value||'').trim().toUpperCase();if(!c){m.textContent='Type the code first.';return;}busy=true;b.disabled=true;m.textContent='Checking the code…';
         fetch('/api/redeem',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code:c})}).then(function(r){return r.json().then(function(j){return [r.status,j];});}).then(function(x){busy=false;b.disabled=false;var j=x[1]||{};
           if(j.ok){var got=j.kind==='cents'?'+$'+((j.amt||0)/100).toFixed(2)+' added to your balance':j.kind==='premium'?'+'+j.amt+' days of Premium':j.kind==='ticks'?'+'+j.amt+' Ticks':'the season pass pro track';m.textContent='Code redeemed: '+got+'.';i.value='';if(j.kind==='cents')setTimeout(function(){location.reload();},1400);}
-          else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.textContent=E[j.error]||'Could not redeem that code.';}
+          else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',batch_taken:'You already redeemed a code from this drop. One per account.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.textContent=E[j.error]||'Could not redeem that code.';}
         }).catch(function(){busy=false;b.disabled=false;m.textContent='Network error, try again.';});});})();
     </script>
   </div>

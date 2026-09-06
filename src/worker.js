@@ -15190,7 +15190,7 @@ export default {
       const jh8 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let cb = { op: 'list' }; if (request.method === 'POST') { try { cb = await request.json(); } catch (e) {} }
       const gives = (k, a) => k === 'cents' ? '$' + ((+a || 0) / 100).toFixed(2) + ' rewards balance' : k === 'premium' ? (+a || 0) + ' days of Premium' : k === 'ticks' ? (+a || 0) + ' Ticks' : 'the pro pass';
-      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke' || cb.op === 'revokebatch') { try { await tgAdmin(env, '<b>Codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' x ' + gives(cb.kind, cb.amt) + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : cb.op === 'revokebatch' ? 'revoked a whole batch: ' + ((JSON.parse(txt).revoked || 0)) + ' live code(s)' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke' || cb.op === 'revokebatch' || cb.op === 'purge') { try { await tgAdmin(env, '<b>Codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' x ' + gives(cb.kind, cb.amt) + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : cb.op === 'revokebatch' ? 'revoked a whole batch: ' + ((JSON.parse(txt).revoked || 0)) + ' live code(s)' : cb.op === 'purge' ? 'ALL codes deleted: ' + ((JSON.parse(txt).deleted || 0)) + ' code(s), ' + ((JSON.parse(txt).uses || 0)) + ' redemption row(s)' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
     }
     if (url.pathname === '/api/goals') { // Season goals: GET = mine + catalogue (public catalogue for guests); POST {op:'pick'|'claim', k}
       const jh6 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -19635,11 +19635,12 @@ export class UserStore {
         try { sql.exec("INSERT INTO ticklog(user_id,ts,src,amt,note) VALUES(?,?,'pass',?,?)", uid, Date.now(), -PASS_PRICE_TICKS, 'season pass ' + sk.idx); } catch (e) {}
       } else if (src === 'code') {
         const code = String(b.code || '').trim().toUpperCase();
-        const c = this.rows('SELECT uses, used, exp, revoked FROM pcode WHERE code=?', code)[0];
+        const c = this.rows('SELECT uses, used, exp, revoked, batch FROM pcode WHERE code=?', code)[0];
         if (!c || +c.revoked) return this.j({ error: 'bad_code' }, 404);
         if (c.exp && +c.exp < Date.now()) return this.j({ error: 'expired' }, 410);
         if (+c.used >= +c.uses) return this.j({ error: 'used_up' }, 409);
         if (this.rows('SELECT 1 FROM pcode_use WHERE code=? AND user_id=?', code, uid)[0]) return this.j({ error: 'code_taken' }, 409);
+        if (c.batch && this.rows('SELECT 1 FROM pcode_use u JOIN pcode p ON p.code=u.code WHERE u.user_id=? AND p.batch=? LIMIT 1', uid, c.batch)[0]) return this.j({ error: 'batch_taken' }, 409); // one code per drop per account (legacy path, same rule)
         sql.exec('UPDATE pcode SET used=used+1 WHERE code=?', code);
         sql.exec('INSERT INTO pcode_use(code,user_id,ts) VALUES(?,?,?)', code, uid, Date.now());
       } else if (src !== 'usd') return this.j({ error: 'bad' }, 400);
@@ -19665,11 +19666,13 @@ export class UserStore {
     if (path === '/code/redeem' && request.method === 'POST') { // {uid, code} -> consume one use and apply what it gives (pass / premium days / Ticks here; cents are credited by the worker on the ledger)
       const uid = String(b.uid || '').replace(/^u:/, ''), code = String(b.code || '').trim().toUpperCase();
       if (!uid || !code || !this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
-      const c = this.rows('SELECT uses, used, exp, revoked, kind, amt FROM pcode WHERE code=?', code)[0];
+      const c = this.rows('SELECT uses, used, exp, revoked, kind, amt, batch FROM pcode WHERE code=?', code)[0];
       if (!c || +c.revoked) return this.j({ error: 'bad_code' }, 404);
       if (c.exp && +c.exp < Date.now()) return this.j({ error: 'expired' }, 410);
       if (+c.used >= +c.uses) return this.j({ error: 'used_up' }, 409);
       if (this.rows('SELECT 1 FROM pcode_use WHERE code=? AND user_id=?', code, uid)[0]) return this.j({ error: 'code_taken' }, 409);
+      // owner 2026-09-06: a DROP is one reward per account. Ten codes generated together are one batch; whoever redeemed any code of it cannot redeem another, first or not.
+      if (c.batch && this.rows('SELECT 1 FROM pcode_use u JOIN pcode p ON p.code=u.code WHERE u.user_id=? AND p.batch=? LIMIT 1', uid, c.batch)[0]) return this.j({ error: 'batch_taken', batch: c.batch }, 409);
       const kind = String(c.kind || 'pass'), amt = Math.max(0, Math.round(+c.amt || 0)), sk = predSeason(Date.now());
       if (kind === 'pass') { const row = this.rows('SELECT pro FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0]; if (row && +row.pro) return this.j({ error: 'already' }, 409); }
       sql.exec('UPDATE pcode SET used=used+1 WHERE code=?', code);
@@ -19697,6 +19700,11 @@ export class UserStore {
       }
       if (op === 'revoke') { const code = String(b.code || '').trim().toUpperCase(); sql.exec('UPDATE pcode SET revoked=1 WHERE code=?', code); return this.j({ ok: true, code }); }
       if (op === 'revokebatch') { const batch = String(b.batch || '').slice(0, 40); if (!batch) return this.j({ error: 'bad' }, 400); const n = +(this.rows('SELECT COUNT(*) c FROM pcode WHERE batch=? AND revoked=0', batch)[0] || {}).c || 0; sql.exec('UPDATE pcode SET revoked=1 WHERE batch=? AND revoked=0', batch); return this.j({ ok: true, batch, revoked: n }); }
+      if (op === 'purge') { // owner 2026-09-06: wipe every generated code and its redemptions (the list, not the rewards already given)
+        const n = +(this.rows('SELECT COUNT(*) c FROM pcode')[0] || {}).c || 0, u = +(this.rows('SELECT COUNT(*) c FROM pcode_use')[0] || {}).c || 0;
+        sql.exec('DELETE FROM pcode_use'); sql.exec('DELETE FROM pcode');
+        return this.j({ ok: true, deleted: n, uses: u });
+      }
       const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked, kind, amt, batch FROM pcode ORDER BY created DESC LIMIT 600');
       const holders = this.rows('SELECT COUNT(*) c FROM upass WHERE season=? AND pro=1', predSeason(Date.now()).idx)[0] || { c: 0 };
       const bySrc = this.rows('SELECT src, COUNT(*) n FROM upass WHERE pro=1 GROUP BY src');
