@@ -1256,6 +1256,145 @@ async function handleSsrBlog(request, url, env, kind) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// ===== LATAM live pages (2026-09-07): /dolar-cripto/ (es-AR, "dólar cripto hoy") + /bitcoin-hoje/ (pt-BR, "bitcoin hoje em reais") =====
+// Source: CriptoYa public API (per-exchange ARS/BRL quotes, no key) + awesomeapi (USD/BRL comercial) + our own BTC/USD.
+// Every upstream read is edge-cached for CY_TTL and mirrored to KV as last-good, so a source outage degrades to
+// "last known, N min ago" (stale:true) instead of an empty page — the GeckoTerminal rule. History is OUR OWN hourly
+// snapshot (KV ring, 30 days): the page draws it only once enough points exist (measured, never modelled).
+const CY_TTL = 60, LATAM_HIST_MAX = 30 * 24, LATAM_HIST_STEP = 55 * 60000;
+const CY_NAMES = { buenbit: 'Buenbit', ripio: 'Ripio', ripioexchange: 'Ripio Trade', satoshitango: 'SatoshiTango', universalcoins: 'Universal Coins', lemoncash: 'Lemon', lemoncashp2p: 'Lemon P2P', belo: 'Belo', fiwind: 'Fiwind', binancep2p: 'Binance P2P', okexp2p: 'OKX P2P', bybitp2p: 'Bybit P2P', kucoinp2p: 'KuCoin P2P', bitgetp2p: 'Bitget P2P', mexcp2p: 'MEXC P2P', huobip2p: 'HTX P2P', paxfulp2p: 'Paxful P2P', decrypto: 'Decrypto', letsbit: "Let'sBit", tiendacrypto: 'TiendaCrypto', cocoscrypto: 'Cocos Crypto', bitsoalpha: 'Bitso', bitso: 'Bitso', eluter: 'Eluter', vitawallet: 'Vita Wallet', plus: 'Plus Crypto', pluscrypto: 'Plus Crypto', prex: 'Prex', astropay: 'AstroPay', wallbit: 'Wallbit', trubit: 'TruBit', calypso: 'Calypso', saldo: 'Saldo', mercadobitcoin: 'Mercado Bitcoin', foxbit: 'Foxbit', novadax: 'NovaDAX', bitpreco: 'BitPreço', coinext: 'Coinext', brasilbitcoin: 'Brasil Bitcoin', binance: 'Binance', bybit: 'Bybit', okx: 'OKX', cryptomkt: 'CryptoMKT', bitcointrade: 'BitcoinTrade', ripiotrade: 'Ripio Trade', pagcripto: 'PagCripto', bipa: 'Bipa', mexc: 'MEXC', bingxp2p: 'BingX P2P', cryptomktpro: 'CryptoMKT Pro', coinexp2p: 'CoinEx P2P', weexp2p: 'WEEX P2P', eldoradop2p: 'El Dorado P2P', nexo: 'Nexo', peanut: 'Peanut', kucoin: 'KuCoin', bitget: 'Bitget', bingx: 'BingX', gateio: 'Gate', gateiop2p: 'Gate P2P', htx: 'HTX', kraken: 'Kraken', coinbase: 'Coinbase' };
+function cyName(k) { const s = String(k || ''); return CY_NAMES[s] || s.replace(/p2p$/i, ' P2P').replace(/^[a-z]/, c => c.toUpperCase()); }
+async function cyFetch(env, path, ttl) { // {j, stale, ts} — edge cache + KV last-good; never throws
+  const ck = new Request('https://marginpad.io/__cy' + path.replace(/[^a-z0-9/]/gi, '_'));
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  const kvk = 'cy:last:' + path.replace(/[^a-z0-9]/gi, '_').slice(0, 80);
+  for (let att = 0; att < 2; att++) {
+    try {
+      const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, ''); if (!base) break;
+      const r = await fetch(base + '/api/v1/latam?src=cy&path=' + encodeURIComponent(path), { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(9000), cf: { cacheTtl: ttl || CY_TTL } }); // via the VPS: CriptoYa answers Workers with CF error 1106 (measured 2026-09-07)
+      if (r.ok) {
+        const j = await r.json(); const out = { j, stale: false, ts: Date.now() };
+        try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + (ttl || CY_TTL) } })); } catch (e) {}
+        try { if (env && env.STATS) await env.STATS.put(kvk, JSON.stringify(out), { expirationTtl: 3 * 86400 }); } catch (e) {}
+        return out;
+      }
+      if (r.status !== 429 && r.status < 500) break;
+    } catch (e) {}
+    if (att === 0) await new Promise(rs => setTimeout(rs, 600));
+  }
+  try { if (env && env.STATS) { const last = JSON.parse(await env.STATS.get(kvk) || 'null'); if (last && last.j) return { j: last.j, stale: true, ts: last.ts || 0 }; } } catch (e) {}
+  return { j: null, stale: true, ts: 0 };
+}
+async function usdBrlFetch(env) { // dólar comercial (awesomeapi, free) — 5 min edge cache + KV last-good
+  const ck = new Request('https://marginpad.io/__usdbrl');
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  try {
+    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    const r = await fetch(base + '/api/v1/latam?src=usdbrl', { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(9000), cf: { cacheTtl: 300 } }); // via the VPS: awesomeapi 429s the shared CF egress
+    if (r.ok) { const j = await r.json(); const q = j && j.USDBRL; const px = q ? (+q.bid + +q.ask) / 2 : 0; if (px > 0) { const out = { px, bid: +q.bid, ask: +q.ask, at: (+q.timestamp || 0) * 1000, stale: false }; try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=300' } })); } catch (e) {} try { await env.STATS.put('cy:last:usdbrl', JSON.stringify(out), { expirationTtl: 3 * 86400 }); } catch (e) {} return out; } }
+  } catch (e) {}
+  try { const last = JSON.parse(await env.STATS.get('cy:last:usdbrl') || 'null'); if (last && last.px > 0) return Object.assign({}, last, { stale: true }); } catch (e) {}
+  return { px: 0, stale: true };
+}
+function _cyRows(map, maxAgeMs) { // CriptoYa per-exchange map → clean rows (fees included: totalAsk/totalBid), dead/zero/stale venues dropped
+  const now = Date.now(), out = [];
+  for (const k of Object.keys(map || {})) {
+    const v = map[k]; if (!v || typeof v !== 'object') continue;
+    const ask = +v.totalAsk || +v.ask || 0, bid = +v.totalBid || +v.bid || 0, t = (+v.time || 0) * 1000;
+    if (!(ask > 0) && !(bid > 0)) continue;
+    if (t > 0 && now - t > maxAgeMs) continue;
+    out.push({ id: k, name: cyName(k), ask: ask > 0 ? ask : null, bid: bid > 0 ? bid : null, time: t || null, spread: (ask > 0 && bid > 0) ? (ask - bid) / bid * 100 : null });
+  }
+  return out;
+}
+function _median(a) { const s = a.filter(x => isFinite(x) && x > 0).sort((x, y) => x - y); if (!s.length) return 0; const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+function _cySane(rows, tol) { // drop venues whose quote sits more than `tol` (20%) off the median mid: a $1.122 bid next to $1.580 is a dead book, not a deal (HTX P2P, 2026-09-07)
+  const mid = _median(rows.map(r => (r.ask && r.bid) ? (r.ask + r.bid) / 2 : (r.ask || r.bid)));
+  if (!(mid > 0)) return rows;
+  return rows.filter(r => (!r.ask || Math.abs(r.ask / mid - 1) <= tol) && (!r.bid || Math.abs(r.bid / mid - 1) <= tol));
+}
+async function latamHist(env, kind) { try { return JSON.parse(await env.STATS.get('latam:hist:' + kind) || '[]'); } catch (e) { return []; } }
+async function latamHistPush(env, kind, point) { // one point per hour at most; the ring keeps 30 days
+  try {
+    const h = await latamHist(env, kind); const last = h[h.length - 1];
+    if (last && point.t - last.t < LATAM_HIST_STEP) return h;
+    h.push(point); while (h.length > LATAM_HIST_MAX) h.shift();
+    await env.STATS.put('latam:hist:' + kind, JSON.stringify(h), { expirationTtl: 45 * 86400 }); return h;
+  } catch (e) { return []; }
+}
+async function latamAr(env) { // dólar cripto: what a USDT costs in pesos on every exchange, the reference dollars and the gap ("brecha")
+  const [d, u] = await Promise.all([cyFetch(env, '/dolar', CY_TTL), cyFetch(env, '/usdt/ars/1', CY_TTL)]);
+  const rows = _cySane(_cyRows(u.j, 24 * 3600000), 0.2).sort((a, b) => (a.ask || 1e12) - (b.ask || 1e12));
+  const mids = rows.filter(r => r.ask && r.bid).map(r => (r.ask + r.bid) / 2);
+  const mid = _median(mids);
+  const withAsk = rows.filter(r => r.ask), withBid = rows.filter(r => r.bid);
+  const bestBuy = withAsk.length ? withAsk.reduce((a, b) => (b.ask < a.ask ? b : a)) : null;
+  const bestSell = withBid.length ? withBid.reduce((a, b) => (b.bid > a.bid ? b : a)) : null;
+  const dj = d.j || {}; const pick = (o) => o ? { ask: +o.ask || +o.price || 0, bid: +o.bid || +o.price || 0, chg: +o.variation || 0 } : null;
+  const bond = (o) => { try { const x = (o.al30 && (o.al30['24hs'] || o.al30.ci)) || (o.gd30 && (o.gd30['24hs'] || o.gd30.ci)); return x && +x.price > 0 ? { ask: +x.price, bid: +x.price, chg: +x.variation || 0 } : null; } catch (e) { return null; } }; // MEP/CCL come nested per bond (AL30/GD30) and settlement (24hs/CI)
+  const dolar = { oficial: pick(dj.oficial), blue: pick(dj.blue), mep: dj.mep ? bond(dj.mep) : null, ccl: dj.ccl ? bond(dj.ccl) : null, tarjeta: pick(dj.tarjeta), cripto: pick(dj.cripto && dj.cripto.usdt) };
+  const brecha = {}; for (const k of ['oficial', 'blue', 'mep', 'ccl', 'tarjeta']) { const o = dolar[k]; const ref = o ? ((o.ask + o.bid) / 2 || o.ask) : 0; brecha[k] = (mid > 0 && ref > 0) ? (mid / ref - 1) * 100 : null; }
+  const ts = Math.max(u.ts || 0, d.ts || 0) || Date.now();
+  let hist = await latamHist(env, 'ar');
+  if (mid > 0 && !u.stale) hist = await latamHistPush(env, 'ar', { t: Date.now(), mid: Math.round(mid * 100) / 100, blue: dolar.blue ? Math.round(((dolar.blue.ask + dolar.blue.bid) / 2) * 100) / 100 : null, oficial: dolar.oficial ? Math.round(dolar.oficial.ask * 100) / 100 : null });
+  return { ok: rows.length > 0, kind: 'ar', ts, stale: !!(u.stale || d.stale), n: rows.length, mid: Math.round(mid * 100) / 100, bestBuy: bestBuy ? { id: bestBuy.id, name: bestBuy.name, price: bestBuy.ask } : null, bestSell: bestSell ? { id: bestSell.id, name: bestSell.name, price: bestSell.bid } : null, rows, dolar, brecha, hist, source: 'CriptoYa' };
+}
+async function latamBr(env) { // bitcoin hoje: BTC and USDT in reais on every exchange, the premium ("ágio") over the dollar price
+  const [b, u, fx] = await Promise.all([cyFetch(env, '/btc/brl/1', CY_TTL), cyFetch(env, '/usdt/brl/1', CY_TTL), usdBrlFetch(env)]);
+  let btcUsd = 0; try { const pd = await fetchPriceCached('BTC'); btcUsd = pd ? +pd.price : 0; } catch (e) {}
+  const usdbrl = +fx.px || 0, fair = (btcUsd > 0 && usdbrl > 0) ? btcUsd * usdbrl : 0;
+  const btc = _cySane(_cyRows(b.j, 24 * 3600000), 0.2).map(r => Object.assign(r, { agio: (fair > 0 && r.ask) ? (r.ask / fair - 1) * 100 : null })).sort((a, c) => (a.ask || 1e15) - (c.ask || 1e15));
+  const usdt = _cySane(_cyRows(u.j, 24 * 3600000), 0.2).map(r => Object.assign(r, { agio: (usdbrl > 0 && r.ask) ? (r.ask / usdbrl - 1) * 100 : null })).sort((a, c) => (a.ask || 1e12) - (c.ask || 1e12));
+  const btcMid = _median(btc.filter(r => r.ask && r.bid).map(r => (r.ask + r.bid) / 2)), usdtMid = _median(usdt.filter(r => r.ask && r.bid).map(r => (r.ask + r.bid) / 2));
+  const bb = btc.filter(r => r.ask), bs = btc.filter(r => r.bid);
+  const bestBuy = bb.length ? bb.reduce((a, c) => (c.ask < a.ask ? c : a)) : null, bestSell = bs.length ? bs.reduce((a, c) => (c.bid > a.bid ? c : a)) : null;
+  const ts = Math.max(b.ts || 0, u.ts || 0) || Date.now();
+  let hist = await latamHist(env, 'br');
+  if (btcMid > 0 && !b.stale) hist = await latamHistPush(env, 'br', { t: Date.now(), btc: Math.round(btcMid), usdt: Math.round(usdtMid * 1000) / 1000, usdbrl: Math.round(usdbrl * 10000) / 10000, btcUsd: Math.round(btcUsd) });
+  return { ok: btc.length > 0, kind: 'br', ts, stale: !!(b.stale || u.stale), n: btc.length, btcMid: Math.round(btcMid), usdtMid: Math.round(usdtMid * 1000) / 1000, btcUsd: Math.round(btcUsd * 100) / 100, usdbrl: Math.round(usdbrl * 10000) / 10000, usdbrlStale: !!fx.stale, fair: Math.round(fair), agioMid: fair > 0 && btcMid > 0 ? Math.round((btcMid / fair - 1) * 10000) / 100 : null, bestBuy: bestBuy ? { id: bestBuy.id, name: bestBuy.name, price: bestBuy.ask } : null, bestSell: bestSell ? { id: bestSell.id, name: bestSell.name, price: bestSell.bid } : null, btc, usdt, hist, source: 'CriptoYa · awesomeapi' };
+}
+async function latamSnapshot(env) { if (!env || !env.STATS) return; await latamAr(env); await latamBr(env); } // */10 cron: keeps the hourly history alive on days nobody opens the page
+// ---- server-side rendering (bots and the first paint read numbers, not a spinner). The page's own JS re-renders the same containers every 60 s.
+const _ars = (n) => '$ ' + Math.round(+n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const _brl = (n, dec) => { const v = (+n || 0), d = dec == null ? 2 : dec; const s = v.toFixed(d); const [i, f] = s.split('.'); return 'R$ ' + i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (d ? ',' + f : ''); };
+const _pct = (v, dec) => v == null || !isFinite(v) ? '–' : ((v >= 0 ? '+' : '') + v.toFixed(dec == null ? 1 : dec).replace('.', ',') + '%');
+const _esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function latamSsrHtml(kind, d) {
+  const agoMin = Math.max(0, Math.round((Date.now() - (d.ts || Date.now())) / 60000));
+  const upd = (kind === 'ar' ? 'Actualizado ' : 'Atualizado ') + (agoMin < 1 ? (kind === 'ar' ? 'hace menos de un minuto' : 'há menos de um minuto') : (kind === 'ar' ? 'hace ' + agoMin + ' min' : 'há ' + agoMin + ' min')) + (d.stale ? (kind === 'ar' ? ' · última cotización conocida (la fuente no responde)' : ' · última cotação conhecida (a fonte não responde)') : '');
+  if (kind === 'ar') {
+    if (!d.ok) return '<div class="lv-empty">Sin cotizaciones por el momento. Reintentá en un minuto.</div>';
+    const chips = [['oficial', 'Oficial'], ['blue', 'Blue'], ['mep', 'MEP'], ['ccl', 'CCL'], ['tarjeta', 'Tarjeta']].filter(([k]) => d.dolar[k] && (d.dolar[k].ask > 0)).map(([k, l]) => '<div class="chip"><span class="ck">' + l + '</span><b>' + _ars((d.dolar[k].ask + d.dolar[k].bid) / 2 || d.dolar[k].ask) + '</b><i class="' + ((d.brecha[k] || 0) >= 0 ? 'up' : 'dn') + '">' + _pct(d.brecha[k]) + '</i></div>').join('');
+    const rows = d.rows.map((r, i) => '<tr class="' + (d.bestBuy && r.id === d.bestBuy.id ? 'best-buy' : (d.bestSell && r.id === d.bestSell.id ? 'best-sell' : '')) + (i >= 12 ? ' more' : '') + '"><td class="ex">' + _esc(r.name) + '</td><td class="num">' + (r.ask ? _ars(r.ask) : '–') + '</td><td class="num">' + (r.bid ? _ars(r.bid) : '–') + '</td><td class="num dim">' + (r.spread != null ? r.spread.toFixed(1).replace('.', ',') + '%' : '–') + '</td></tr>').join('');
+    return '<div class="lv-hero"><div class="lv-k">DÓLAR CRIPTO HOY · PROMEDIO DE ' + d.n + ' EXCHANGES</div><div class="lv-big" id="lvBig">' + _ars(d.mid) + '</div><div class="lv-sub" id="lvSub">' + _esc(upd) + '</div></div>'
+      + '<div class="chips" id="lvChips">' + chips + '</div>'
+      + '<div class="best" id="lvBest">' + (d.bestBuy ? '<div class="bc buy"><span>Más barato para comprar USDT</span><b>' + _esc(d.bestBuy.name) + '</b><i>' + _ars(d.bestBuy.price) + '</i></div>' : '') + (d.bestSell ? '<div class="bc sell"><span>Mejor precio para vender USDT</span><b>' + _esc(d.bestSell.name) + '</b><i>' + _ars(d.bestSell.price) + '</i></div>' : '') + '</div>'
+      + '<div class="tw"><table class="lv-tbl" id="lvTbl"><thead><tr><th>Exchange</th><th class="num">Compra</th><th class="num">Venta</th><th class="num">Spread</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + (d.rows.length > 12 ? '<button class="lv-more" type="button" data-more="lvTbl">Ver los ' + d.rows.length + ' exchanges</button>' : '');
+  }
+  if (!d.ok) return '<div class="lv-empty">Sem cotações no momento. Tente de novo em um minuto.</div>';
+  const rows = d.btc.map((r, i) => '<tr class="' + (d.bestBuy && r.id === d.bestBuy.id ? 'best-buy' : (d.bestSell && r.id === d.bestSell.id ? 'best-sell' : '')) + (i >= 12 ? ' more' : '') + '"><td class="ex">' + _esc(r.name) + '</td><td class="num">' + (r.ask ? _brl(r.ask, 0) : '–') + '</td><td class="num">' + (r.bid ? _brl(r.bid, 0) : '–') + '</td><td class="num ' + ((r.agio || 0) >= 0 ? 'up' : 'dn') + '">' + _pct(r.agio) + '</td></tr>').join('');
+  const urows = d.usdt.map((r, i) => '<tr' + (i >= 12 ? ' class="more"' : '') + '><td class="ex">' + _esc(r.name) + '</td><td class="num">' + (r.ask ? _brl(r.ask, 3) : '–') + '</td><td class="num">' + (r.bid ? _brl(r.bid, 3) : '–') + '</td><td class="num ' + ((r.agio || 0) >= 0 ? 'up' : 'dn') + '">' + _pct(r.agio) + '</td></tr>').join('');
+  return '<div class="lv-hero"><div class="lv-k">BITCOIN HOJE · MEDIANA DE ' + d.n + ' CORRETORAS</div><div class="lv-big" id="lvBig">' + _brl(d.btcMid, 0) + '</div><div class="lv-sub" id="lvSub">' + _esc(upd) + '</div></div>'
+    + '<div class="chips" id="lvChips">' + (d.btcUsd > 0 ? '<div class="chip"><span class="ck">BTC em dólar</span><b>US$ ' + d.btcUsd.toLocaleString('en-US', { maximumFractionDigits: 0 }) + '</b></div>' : '') + (d.usdbrl > 0 ? '<div class="chip"><span class="ck">Dólar comercial</span><b>' + _brl(d.usdbrl, 4) + '</b></div>' : '') + (d.usdtMid > 0 ? '<div class="chip"><span class="ck">USDT em reais</span><b>' + _brl(d.usdtMid, 3) + '</b><i class="' + ((d.usdtMid / d.usdbrl - 1) >= 0 ? 'up' : 'dn') + '">' + _pct(d.usdbrl > 0 ? (d.usdtMid / d.usdbrl - 1) * 100 : null) + '</i></div>' : '') + (d.agioMid != null ? '<div class="chip"><span class="ck">Ágio mediano</span><b class="' + (d.agioMid >= 0 ? 'up' : 'dn') + '">' + _pct(d.agioMid, 2) + '</b></div>' : '') + '</div>'
+    + '<div class="best" id="lvBest">' + (d.bestBuy ? '<div class="bc buy"><span>Mais barato para comprar BTC</span><b>' + _esc(d.bestBuy.name) + '</b><i>' + _brl(d.bestBuy.price, 0) + '</i></div>' : '') + (d.bestSell ? '<div class="bc sell"><span>Melhor preço para vender BTC</span><b>' + _esc(d.bestSell.name) + '</b><i>' + _brl(d.bestSell.price, 0) + '</i></div>' : '') + '</div>'
+    + '<div class="tw"><table class="lv-tbl" id="lvTbl"><thead><tr><th>Corretora</th><th class="num">Compra</th><th class="num">Venda</th><th class="num">Ágio</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + (d.btc.length > 12 ? '<button class="lv-more" type="button" data-more="lvTbl">Ver as ' + d.btc.length + ' corretoras</button>' : '')
+    + '<h2 class="lv-h2" id="usdtH">USDT em reais, por corretora</h2><div class="tw"><table class="lv-tbl" id="lvTbl2"><thead><tr><th>Corretora</th><th class="num">Compra</th><th class="num">Venda</th><th class="num">vs dólar</th></tr></thead><tbody>' + urows + '</tbody></table></div>' + (d.usdt.length > 12 ? '<button class="lv-more" type="button" data-more="lvTbl2">Ver as ' + d.usdt.length + ' corretoras</button>' : '');
+}
+async function handleLatamPage(request, url, env, kind) {
+  const ck = new Request('https://marginpad.io/__latam/' + kind);
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const asset = await env.ASSETS.fetch(new Request(url.origin + url.pathname, request));
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  let d = null; try { d = kind === 'ar' ? await latamAr(env) : await latamBr(env); } catch (e) { d = null; }
+  if (!d) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  const iso = new Date(d.ts || Date.now()).toISOString();
+  const out = html.replace('<!--LATAM_SSR-->', latamSsrHtml(kind, d)).replace('<!--LATAM_DATA-->', '<script type="application/json" id="latamData">' + JSON.stringify(d).replace(/</g, '\\u003c') + '</script>').split('<!--LATAM_UPDATED-->').join(iso);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': d.ok ? 'public, max-age=60' : 'no-store', 'x-mp-ssr': 'latam-' + kind } });
+  if (d.ok) { try { await caches.default.put(ck, resp.clone()); } catch (e) {} } // a page rendered without numbers is never cached
+  return resp;
+}
 async function ssrCgc(sym, env) { try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); return (j && !j.error && j.price != null) ? j : null; } catch (e) { return null; } }
 function ssrBoxHtml(kick, sentences, links) {
   const ls = (links || []).map(l => '<a href="' + l[0] + '" style="color:#c2f64a">' + l[1] + '</a>').join(' · ');
@@ -15518,6 +15657,15 @@ export default {
     if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
+    if (url.pathname === '/api/latam/ar' || url.pathname === '/api/latam/br') { // public: the LATAM live pages refresh from here every 60 s (edge-cached 60 s; CORS for embeds). Sits BEFORE the calculator catch-all, which 404s every other /api/ path.
+      let d = null; try { d = url.pathname.endsWith('/ar') ? await latamAr(env) : await latamBr(env); } catch (e) { d = null; }
+      return new Response(JSON.stringify(d || { ok: false }), { status: d ? 200 : 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': (d && d.ok) ? 'public, max-age=60' : 'no-store', 'access-control-allow-origin': '*' } }); // an empty answer is never cached: the next reader gets a fresh try
+    }
+    if (url.pathname === '/api/admin/latamdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // raw upstream probe for the LATAM sources (status + first bytes), no cache
+      const probe = async (u) => { try { const r = await fetch(u, { headers: { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' } }); const t = await r.text(); return { status: r.status, ct: r.headers.get('content-type'), body: t.slice(0, 160) }; } catch (e) { return { err: String(e && e.message || e).slice(0, 200) }; } };
+      const [a, b, c] = await Promise.all([probe('https://criptoya.com/api/dolar'), probe('https://criptoya.com/api/usdt/ars/1'), probe('https://economia.awesomeapi.com.br/last/USD-BRL')]);
+      return J({ dolar: a, usdt: b, usdbrl: c });
+    }
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
     if (url.pathname === '/telegram/webhook') return handleTelegram(request, env);
     if (url.pathname === '/chat/reset' && (await adminCookieOk(request, env))) {
@@ -15678,6 +15826,8 @@ export default {
       if (url.pathname === '/calendar/' || url.pathname === '/calendar') return handleSsrCalendar(request, url, env);
       if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env, ctx);
       const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2], ctx);
+      if (url.pathname === '/dolar-cripto/') return handleLatamPage(request, url, env, 'ar'); // es-AR live page (2026-09-07) — run_worker_first in wrangler.toml
+      if (url.pathname === '/bitcoin-hoje/') return handleLatamPage(request, url, env, 'br'); // pt-BR live page
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before thefirst <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
  const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];
@@ -15747,6 +15897,7 @@ export default {
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
     bg(ledgerBackup6h, 'backup6');
     bg(spotStuckNudge, 'spotnudge');
+    bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
     bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
