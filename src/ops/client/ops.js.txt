@@ -738,27 +738,107 @@
   } };
 
   // ---------- PEOPLE / ACTIVITY ----------
-  VIEWS['people/activity'] = { render: function (el) {
-    var st = { f: 'all', q: '' }; recall('people/activity', st, ['f']);
-    var GROUPS = { money: ['claim', 'refclick', 'checkout', 'mission', 'promo', 'spottrade', 'premgate'], signals: ['sigresult', 'brief'], trades: ['paper', 'close', 'sltp'], social: ['profile', 'myprofile', 'chatmsg', 'comment', 'like', 'share', 'watch'], account: ['signup', 'signin', 'academy', 'support'] };
-    function label(e) { var t = e.t || ''; var x = esc(e.e || ''); var M = { paper: 'opened a paper trade <b>' + x + '</b>', close: 'closed a trade <b>' + x + '</b>', claim: 'claimed <b>' + x + '</b> from the faucet', profile: 'viewed <b>@' + x + '</b>&#39;s profile', myprofile: 'opened their own profile <b>' + x + '</b>', mission: 'completed mission <b>' + x + '</b>', academy: 'academy <b>' + x + '</b>', signup: 'signed up', signin: 'signed in', chatmsg: 'posted in chat', comment: 'commented <b>' + x + '</b>', like: 'liked <b>' + x + '</b>', share: 'shared <b>' + x + '</b>', refclick: 'clicked a referral link', checkout: 'opened checkout <b>' + x + '</b>', spottrade: 'Demo Spot <b>' + x + '</b>', support: 'wrote to support', sigresult: 'signal result <b>' + x + '</b>', brief: 'brief <b>' + x + '</b>', sltp: 'set SL/TP <b>' + x + '</b>', watch: 'watchlist <b>' + x + '</b>', promo: 'promo <b>' + x + '</b>', premgate: 'hit the Premium gate <b>' + x + '</b>' }; return M[t] || (esc(t) + ' <b>' + x + '</b>'); }
-    function paint() {
-      J('/api/stats?format=json').then(function (d) {
-        var feed = (d.feed || []).filter(function (e) { if (st.f !== 'all' && (GROUPS[st.f] || []).indexOf(e.t) < 0) return false; if (st.q) { var s = ((e.u || '') + ' ' + (e.e || '') + ' ' + (e.cc || '') + ' ' + (e.p || '') + ' ' + (e.t || '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; } return true; });
-        var money = (d.feed || []).filter(function (e) { return GROUPS.money.indexOf(e.t) >= 0; }).length;
-        // the window's heartbeat: events per 5 minutes, and how many distinct people made them
-        var now = Date.now(), bt = []; for (var b = 35; b >= 0; b--) { var t0 = now - (b + 1) * 300000, t1 = now - b * 300000; bt.push({ d: dt(t0).slice(11), v: (d.feed || []).filter(function (e) { return e.ts >= t0 && e.ts < t1; }).length }); } var ppl = {}; (d.feed || []).forEach(function (e) { if (e.u) ppl[String(e.u).toLowerCase()] = 1; }); var busiest = bt.reduce(function (a, x) { return x.v > a.v ? x : a; }, { v: 0, d: '' });
-        el.innerHTML = '<div class="grid g4">' + tile(N(d.online), 'online now') + tile(N((d.feed || []).length), 'events in the window', 'dim', '~3h · ' + N(Object.keys(ppl).length) + ' signed-in people') + tile(N(money), 'money events', money ? '' : 'dim') + tile(N((d.visitors || []).length), 'recent visitors', 'dim') + '</div>'
-          + card('Heartbeat', spark(bt, 'v') + '<div class="line" style="font-size:12px;margin-top:4px">events per 5 minutes, last 3 hours' + (busiest.v ? ' · busiest ' + esc(busiest.d) + ' with ' + N(busiest.v) : '') + '</div>', 'a flat line while people are online means the trackers stopped, not the users')
-          + card('Real-time activity', '<div class="chips">' + [['all', 'All'], ['money', 'Money'], ['signals', 'Signals'], ['trades', 'Trades'], ['social', 'Social'], ['account', 'Account']].map(function (f) { return '<span class="chip ' + (st.f === f[0] ? 'on' : '') + '" data-f="' + f[0] + '">' + f[1] + '</span>'; }).join('') + '<input class="in" id="acq" placeholder="filter: @user, coin, country, page" value="' + esc(st.q) + '" style="flex:1;min-width:160px"></div><div class="feed" style="max-height:none">' + (feed.slice(0, 300).map(function (e) { return '<div class="row"><span class="who">' + (e.u ? userLink(e.u) : '<span class="meta">visitor</span>') + '</span><span class="grow">' + label(e) + ' <span class="meta">' + esc(e.p || '') + ' ' + flag(e.cc) + (e.d ? ' · ' + esc(e.d) : '') + '</span></span><span class="meta">' + ago(e.ts) + ' ago</span></div>'; }).join('') || '<div class="empty">nothing matches</div>') + '</div>', 'everything users, bots and crons do · refreshes every 15s');
-        el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); remember('people/activity', st, ['f']); paint(); }; });
-        var q = $('acq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paint(); }, 250); }; }
-        stamp();
-      }).catch(function () { el.innerHTML = failHtml('could not load'); });
+  // ---------- PEOPLE / ACTIVITY (rewritten 2026-09-06 — the owner's daily read: "ko sta radi, sta se abjuza, gde puca") ----------
+  // /api/admin/activity?h=&n=&pv=1&actor= : the 24h ring (server-written trade rows since 2026-09-06, client clicks, sign-ins,
+  // pageviews on demand), one actor per person (username, else the device-derived guest id), and the abuse radar computed
+  // server-side from plain counts. The stream refreshes by PREPENDING new rows (never a rebuild — the scroll stays put).
+  VIEWS['people/activity'] = { render: function (el, arg) {
+    var st = { h: 24, g: 'all', who: 'all', q: '', pv: false, live: true }; recall('people/activity', st, ['h', 'g', 'who', 'pv', 'live']);
+    var GROUPS = {
+      trades: ['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder', 'ratelimit'],
+      money: ['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'gift', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'exsignpaid', 'pass', 'premgrant', 'refclick', 'exchange', 'tool', 'promo', 'exsign'],
+      social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift'],
+      account: ['signup', 'login', 'logout', 'signin', 'otp', 'otpfail', 'username', 'profile_edit', 'push', 'alert', 'support', 'telegram', 'lang', 'frame', 'admin'],
+      progress: ['academy', 'goal', 'predict', 'xpboost', 'pass', 'premview', 'premgate', 'brief', 'ai', 'ind', 'draw', 'watch', 'search', 'coin', 'screener', 'tab', 'nav', 'prod', 'hotpair', 'nudge', 'grad', 'sect'],
+      spot: ['spottrade'],
+      problems: ['otpfail', 'ratelimit', 'jserr', 'liq', 'wdreject', 'admin', 'premgate'],
+      system: ['backup', 'wrap', 'signal', 'sigresult', 'digest', 'liqalert', 'alertfired', 'cpaper', 'bot', 'cfgchange', 'subkick']
+    };
+    var SEV = { liq: 'red', otpfail: 'amber', ratelimit: 'amber', jserr: 'amber', wdreject: 'amber', admin: 'info', withdraw: 'gold', claim: 'gold', sale: 'gold', shopbuy: 'gold', gift: 'gold', exchange: 'gold', signup: 'ok', login: 'ok' };
+    function sev(e) { return SEV[e.t] || ''; }
+    function L(e) { // one sentence per type, the label in bold; unknown types still read
+      var t = e.t || '', x = esc(e.e || ''), X = x ? '<b>' + x + '</b>' : '', srv = e.v === 'srv' || !!e.x;
+      var M = {
+        pv: 'viewed <b>' + esc(e.p || '/') + '</b>' + (e.s && e.s !== 'direct' ? ' <span class="meta">from ' + esc(e.s) + '</span>' : e.f ? ' <span class="meta">from ' + esc(e.f) + '</span>' : ''),
+        open: 'opened ' + X, close: (srv ? 'closed ' : 'closed a trade ') + X, liq: '<b class="dn">LIQUIDATED</b> ' + X, trim: 'reduced ' + X, sltp: 'set SL/TP ' + X, order: 'limit order ' + X, sync: X,
+        paper: 'opened a paper trade ' + X + ' <span class="meta">(guest, browser-side)</span>', limitorder: 'placed a limit order ' + X + ' <span class="meta">(browser-side)</span>',
+        claim: 'claimed ' + X + ' from the faucet', withdraw: 'requested a withdrawal ' + X, wdpaid: 'withdrawal marked <b>paid</b>', wdreject: 'withdrawal <b>rejected</b> ' + X, wdcancel: 'withdrawal cancelled ' + X,
+        mission: 'completed mission ' + X, shopbuy: 'bought ' + X + ' in the Vault', gift: 'gift ' + X, sale: '<b class="up">PAID</b> ' + X, checkout: 'opened checkout ' + X, refpaid: 'referral paid ' + X, promopaid: 'promo paid ' + X, lbpaid: 'board prize paid ' + X, exsignpaid: 'sign-up bonus paid ' + X,
+        pass: 'season pass ' + X, premgrant: 'Premium granted ' + X, refclick: 'arrived through a referral link ' + X, exchange: 'clicked <b class="gold">' + x + '</b> (exchange)', tool: 'clicked tool ' + X, promo: 'submitted a promo post ' + X, exsign: 'exchange sign-up ' + X,
+        chatmsg: 'chat: <i>' + x + '</i>', chat: 'opened the chat', dm: 'sent a DM to <b>@' + x + '</b>', follow: 'followed <b>@' + x + '</b>', duel: 'duel: ' + X, post: 'posted in Community', comment: 'commented ' + X, like: 'liked a post', save: 'saved a post',
+        profile: 'viewed <b>@' + x + '</b>', myprofile: 'opened their own profile', share: 'shared ' + X,
+        signup: '<b class="up">created an account</b> ' + X, login: 'signed in', logout: 'signed out', signin: 'opened the sign-in box', otp: 'asked for a sign-in code ' + X, otpfail: '<b class="dn">wrong or expired code</b> ' + X, username: 'chose the username <b>@' + x + '</b>', profile_edit: 'edited profile (' + x + ')',
+        push: 'enabled push notifications', alert: 'set a price alert ' + X, support: 'wrote to support', telegram: 'clicked Telegram', lang: 'switched language to ' + X, frame: 'equipped frame ' + X, admin: '<b>owner:</b> ' + x,
+        academy: 'Academy lesson ' + X, goal: 'season goal ' + X, predict: 'daily call ' + X, xpboost: 'XP boost ' + X, premview: 'viewed Premium', premgate: 'hit the Premium gate ' + X, brief: 'read the daily brief', ai: 'asked the AI ' + X,
+        ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
+        spottrade: 'Demo Spot ' + X, jserr: '<b class="dn">JS error</b> ' + X, ratelimit: '<b class="dn">rate limit</b> ' + X,
+        backup: 'backup ' + X, wrap: 'daily wrap ' + X, signal: 'signal ' + X, sigresult: 'signal result ' + X, digest: 'digest ' + X, liqalert: 'liquidation alert ' + X, alertfired: 'price alert fired ' + X, cpaper: 'signal paper trade ' + X, bot: 'Telegram bot ' + X, cfgchange: 'config changed ' + X, subkick: 'subscription ended ' + X
+      };
+      return M[t] || (esc(t) + ' ' + X);
     }
-    paint(); every(15000, paint);
+    function who(e) { if (e.u) return userLink(e.u); if (e.v && e.v !== 'srv') return '<button type="button" class="lnk" data-actor="v:' + esc(e.v) + '" title="guest device ' + esc(e.v) + ' — click for everything this device did">guest ' + esc(e.v) + '</button>'; if (e.uid) return '<button type="button" class="lnk" data-actor="uid:' + esc(e.uid) + '">#' + esc(String(e.uid).slice(0, 6)) + '</button>'; return '<span class="meta">system</span>'; }
+    function tcol(ts) { var d = dt(ts); var today = dt(Date.now()).slice(0, 10) === d.slice(0, 10); return '<span class="meta mono t" title="' + esc(dtFull(ts)) + '">' + esc(today ? d.slice(11) : d.slice(5)) + '</span>'; }
+    function rowKey(e) { return (e.ts || 0) + '|' + (e.t || '') + '|' + (e.u || e.v || '') + '|' + String(e.e || e.p || '').slice(0, 40); }
+    function rowHtml(e, fresh) { var m = []; if (e.p && e.t !== 'pv') m.push(esc(e.p)); if (e.cc) m.push(flag(e.cc)); if (e.d) m.push(esc(e.d)); if (st.q && e.ip && st.q === String(e.ip).toLowerCase()) m.push('<span class="mono">' + esc(e.ip) + '</span>');
+      return '<div class="row ev sev-' + sev(e) + (fresh ? ' new' : '') + (e.t === 'pv' ? ' pvrow' : '') + '" data-k="' + esc(rowKey(e)) + '">' + tcol(e.ts) + '<span class="who">' + who(e) + '</span><span class="grow">' + L(e) + (m.length ? ' <span class="meta">' + m.join(' · ') + '</span>' : '') + '</span><span class="meta">' + ago(e.ts) + '</span></div>'; }
+    function pass(e) {
+      if (st.g !== 'all' && (GROUPS[st.g] || []).indexOf(e.t) < 0) return false;
+      if (st.who === 'users' && !e.u) return false; if (st.who === 'guests' && (e.u || !e.v || e.v === 'srv')) return false; if (st.who === 'system' && (e.u || (e.v && e.v !== 'srv'))) return false;
+      if (st.q) { var s = ((e.u || '') + ' ' + (e.e || '') + ' ' + (e.t || '') + ' ' + (e.p || '') + ' ' + (e.cc || '') + ' ' + (e.ip || '') + ' ' + (e.di || '') + ' ' + (e.v || '') + ' ' + (e.x && e.x.sym ? e.x.sym : '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      return true;
+    }
+    var data = null, rendered = {}, MAXROWS = 700;
+    function actorName(k) { if (!k) return ''; return k.indexOf('u:') === 0 ? '@' + k.slice(2) : k.indexOf('v:') === 0 ? 'guest ' + k.slice(2) : k.indexOf('d:') === 0 ? 'device ' + k.slice(2) : k.indexOf('ip:') === 0 ? 'ip ' + k.slice(3) : k; }
+    function actorBtn(k, label) { return k ? '<button type="button" class="lnk" data-actor="' + esc(k) + '">' + (label || esc(actorName(k))) + '</button>' : ''; }
+    function head() {
+      var chips = function (list, cur, attr) { return '<div class="chips" style="margin:0">' + list.map(function (f) { return '<span class="chip ' + (cur === f[0] ? 'on' : '') + '" data-' + attr + '="' + f[0] + '">' + f[1] + '</span>'; }).join('') + '</div>'; };
+      return '<div class="bar">' + chips([['all', 'All'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
+        + chips([['all', 'Everyone'], ['users', 'Users'], ['guests', 'Guests'], ['system', 'System']], st.who, 'who')
+        + '<input class="in" id="acq" placeholder="filter: @user, guest id, coin, page, country, ip" value="' + esc(st.q) + '" style="flex:1 1 200px"><select class="in" id="ach" style="flex:0 0 auto">' + [[1, '1h'], [3, '3h'], [6, '6h'], [12, '12h'], [24, '24h']].map(function (o) { return '<option value="' + o[0] + '"' + (st.h === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
+        + '<label class="chip ' + (st.pv ? 'on' : '') + '" id="acpv" title="include every pageview in the stream">pageviews</label><label class="chip ' + (st.live ? 'on' : '') + '" id="aclive" title="new rows arrive at the top every 15 s">live</label></div>';
+    }
+    function shell() {
+      el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div class="jm" style="margin-top:12px"><div>' + card('Activity <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', 'newest first · click a guest id or @user for everything that person did') + '</div><div class="jm-rail" id="acRail"></div></div>';
+      el.querySelectorAll('[data-g]').forEach(function (c) { c.onclick = function () { st.g = c.getAttribute('data-g'); remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); shell(); paintAll(true); }; });
+      el.querySelectorAll('[data-who]').forEach(function (c) { c.onclick = function () { st.who = c.getAttribute('data-who'); remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); shell(); paintAll(true); }; });
+      var q = $('acq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paintStream(true); }, 220); }; }
+      var hs = $('ach'); if (hs) hs.onchange = function () { st.h = +hs.value || 24; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); load(true); };
+      var pvb = $('acpv'); if (pvb) pvb.onclick = function () { st.pv = !st.pv; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); load(true); };
+      var lv = $('aclive'); if (lv) lv.onclick = function () { st.live = !st.live; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); lv.classList.toggle('on', st.live); };
+    }
+    function paintTiles() { var d = data; var users = d.actors.filter(function (a) { return a.key.indexOf('u:') === 0; }).length, guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0; }).length, red = d.radar.filter(function (r) { return r.sev === 'red'; }).length, amber = d.radar.filter(function (r) { return r.sev === 'amber'; }).length;
+      $('acTiles').innerHTML = tile(N(d.online), 'online now') + tile(N(d.nEv), 'events in ' + d.h + 'h', 'dim', d.ringOldest ? 'ring reaches back ' + ago(d.ringOldest) : '') + tile(N(users) + ' <small class="meta">+ ' + N(guests) + ' guests</small>', 'people seen', 'dim') + tile(N(red + amber), 'radar hits', red ? 'bad' : amber ? 'warn' : 'dim', red ? N(red) + ' red' : ''); }
+    function paintStream(full) { var box = $('acStream'); if (!box || !data) return; var list = data.rows.filter(pass);
+      if (full) { rendered = {}; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
+      else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) { var emp = box.querySelector('.empty'); if (emp) emp.remove(); var tmp = document.createElement('div'); tmp.innerHTML = fresh.slice(0, 300).map(function (e) { return rowHtml(e, true); }).join(''); while (tmp.lastChild) box.insertBefore(tmp.lastChild, box.firstChild); fresh.forEach(function (e) { rendered[rowKey(e)] = 1; }); while (box.children.length > MAXROWS + 200) box.removeChild(box.lastChild); setTimeout(function () { box.querySelectorAll('.row.new').forEach(function (r) { r.classList.remove('new'); }); }, 2500); } }
+      var n = $('acN'); if (n) n.textContent = N(list.length) + (list.length > MAXROWS ? ' (showing ' + N(MAXROWS) + ')' : ''); }
+    function bars2(items) { var mx = 1; items.forEach(function (x) { if (x.n > mx) mx = x.n; }); return items.map(function (x) { return '<div class="row" style="padding:5px 0"><span class="grow">' + x.html + '</span><span class="mono" style="min-width:34px;text-align:right">' + N(x.n) + '</span></div><div class="bar2"><i style="width:' + Math.round(x.n / mx * 100) + '%"></i></div>'; }).join(''); }
+    function paintRail() { var d = data, rail = $('acRail'); if (!rail) return;
+      var radar = d.radar.length ? d.radar.slice(0, 40).map(function (r) { return '<div class="rd ' + r.sev + '"><b>' + esc(r.title) + '</b><div class="meta">' + esc(r.detail) + (r.ts ? ' · ' + ago(r.ts) + ' ago' : '') + '</div>' + (r.actor ? '<div>' + actorBtn(r.actor, 'open ' + esc(actorName(r.actor))) + '</div>' : '') + '</div>'; }).join('') : '<div class="empty">nothing suspicious in this window — every rule is a plain count (shared device, shared IP with money, 30 trade actions in 10 min, 15 chat lines in 10 min, 3 failed codes, rate limits, claims from one device, guests with 10+ closes, 5 JS errors on a page, money within an hour of sign-up)</div>';
+      var types = Object.keys(d.types).map(function (k) { return { html: esc(k), n: d.types[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 14);
+      var act = d.actors.slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 14).map(function (a) { return { html: actorBtn(a.key) + ' ' + flag(a.cc) + (a.problems ? ' <span class="dn">' + a.problems + ' problems</span>' : '') + (a.money ? ' <span class="gold">' + a.money + ' money</span>' : ''), n: a.n }; });
+      var guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0 && a.trades; }).sort(function (a, b) { return b.trades - a.trades; }).slice(0, 8).map(function (a) { return { html: actorBtn(a.key) + ' ' + flag(a.cc) + ' <span class="meta">' + esc(a.d || '') + ' · ' + N(a.pv) + ' pv</span>', n: a.trades }; });
+      var auth = (d.auth || []).slice(0, 25).map(function (x) { return '<div class="row" style="padding:5px 0"><span class="meta mono t">' + esc(dt(x.ts).slice(11)) + '</span><span class="who">' + (x.u ? userLink(x.u) : '<span class="meta">?</span>') + '</span><span class="grow meta">' + esc(x.k) + ' · <span class="mono">' + esc(x.ip || '') + '</span>' + (x.did ? ' · ' + actorBtn('d:' + x.did, 'dev ' + esc(x.did)) : '') + '</span>' + flag(x.cc) + '</div>'; }).join('');
+      rail.innerHTML = card('Radar', '<div class="radar">' + radar + '</div>', d.radar.length ? d.radar.length + ' hits' : '') + card('What happened', bars2(types), 'by type') + card('Most active', bars2(act) || '<div class="empty">nobody yet</div>', 'events per person') + (guests.length ? card('Guests trading', bars2(guests), 'no account, browser-side trades') : '') + card('Sign-ins', auth || '<div class="empty">none in this window</div>', 'ip + device'); }
+    function paintAll(full) { if (!data) return; paintTiles(); paintStream(full); paintRail(); }
+    function load(full) { var u = '/api/admin/activity?h=' + st.h + '&n=' + (st.pv ? 4000 : 2500) + (st.pv ? '&pv=1' : '') + '&_=' + Date.now();
+      J(u).then(function (d) { if (!d || d.error) throw new Error(d && d.error); data = d; if (full || !$('acStream')) { shell(); paintAll(true); } else paintAll(false); stamp(); }).catch(function () { if (!data) el.innerHTML = head() + failHtml('could not load the activity ring'); }); }
+    // one person, everything: timeline WITH pageviews, devices, ips, sign-ins, what kind of things they do
+    function actorView(key) {
+      var m = modal('<div class="mhead"><b>' + esc(actorName(key)) + '</b><span class="meta" id="avSub"></span><button class="btn sm x" id="avX">close</button></div><div id="avBody"><div class="empty">loading…</div></div>'); $('avX').onclick = closeModal;
+      J('/api/admin/activity?h=' + st.h + '&n=1200&actor=' + encodeURIComponent(key) + '&_=' + Date.now()).then(function (d) { var b = $('avBody'); if (!b) return; var a = d.actorInfo;
+        var info = a ? '<div class="line">' + (a.u ? userLink(a.u) + ' · ' : '') + flag(a.cc) + ' ' + esc(a.d || '') + ' · first seen ' + ago(a.first) + ' ago · last ' + ago(a.last) + ' ago · <b>' + N(a.n) + '</b> events · <b>' + N(a.pv) + '</b> pageviews on ' + N(a.pages) + ' pages' + (a.trades ? ' · <b>' + N(a.trades) + '</b> trade actions' : '') + (a.money ? ' · <b class="gold">' + N(a.money) + '</b> money events' : '') + (a.problems ? ' · <b class="dn">' + N(a.problems) + '</b> problems' : '') + '</div><div class="line" style="font-size:12px">devices: ' + (a.dids.length ? a.dids.map(function (x) { return actorBtn('d:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + ' · ips: ' + (a.ips.length ? a.ips.map(function (x) { return actorBtn('ip:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + (a.vids > 1 ? ' · ' + a.vids + ' visitor ids' : '') + '</div>' : '<div class="line meta">no summary for this key in the window</div>';
+        var auth = (d.auth || []).slice(0, 12).map(function (x) { return '<span class="meta">' + esc(x.k) + ' ' + ago(x.ts) + ' ago · ' + esc(x.ip || '') + (x.u ? ' · @' + esc(x.u) : '') + '</span>'; }).join('<br>');
+        var rows = (d.rows || []).slice(0, 600).map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing in this window</div>';
+        b.innerHTML = info + (auth ? '<div class="line" style="font-size:12px;margin-top:4px">sign-ins: <br>' + auth + '</div>' : '') + '<div class="feed acfeed" style="max-height:60vh;margin-top:8px">' + rows + '</div>'; var sub = $('avSub'); if (sub) sub.textContent = N((d.rows || []).length) + ' rows · ' + st.h + 'h';
+      }).catch(function () { var b = $('avBody'); if (b) b.innerHTML = failHtml(); });
+    }
+    document.addEventListener('click', function onA(e) { if (!document.body.contains(el)) { document.removeEventListener('click', onA); return; } var b = e.target.closest && e.target.closest('[data-actor]'); if (!b) return; e.preventDefault(); actorView(b.getAttribute('data-actor')); });
+    el.innerHTML = head() + SKEL;
+    load(true);
+    if (arg) setTimeout(function () { actorView(decodeURIComponent(arg)); }, 400);
+    every(15000, function () { if (st.live) load(false); });
   } };
-
   // ---------- INBOX / TRADER CHAT ----------
   // /chat/admin/history (messages newest-last), /chat/admin/post {text}, /chat/admin/delete {ts}, /chat/admin/poll {q,opts}|{close:1}|{clear:1},
   // /chat/reset (GET) wipes the room, /api/admin/broadcast {text,photo} posts to the Telegram channel, /api/news feeds the news picker.

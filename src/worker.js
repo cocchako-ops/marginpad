@@ -4200,11 +4200,41 @@ async function authLogPush(env, kind, request, uid, username) {
     await opslogPush(env, 'authlog', { k: kind, u: String(username || '').slice(0, 32), id: String(uid || '').slice(0, 32), ip: String(ip).slice(0, 45), did, cc, ts: Date.now() }, 500, 0);
   } catch (e) {}
 }
-async function evPush(env, request, type, label, pg) {
+// Live activity ring sizing (2026-09-06, owner: "ovo gledam svakodnevno"): 24 hours, not 3 — the owner reads the log once a day and
+// the old 3h/800 window had already dropped the night by the time he opened it. 5,000 rows x ~220 B = ~1 MB in the OpsLog DO.
+const EVLOG_CAP = 5000, EVLOG_CUT = 86400000, PVLOG_CAP = 2500;
+// One visitor id for EVERY row (pageview, click, server event): device cookie first, ip+ua only for cookieless hits. Until
+// 2026-09-06 pageviews hashed the mp_did cookie while events hashed ip|ua, so a guest's clicks never joined his own
+// journey — every guest looked like he only ever looked at pages. `di` (device) and `ip` ride along for multi-account work.
+async function actorOf(request, env) {
+  if (!request) return { v: 'srv', di: '', ip: '', e2: false };
+  const did = (getCookie(request, 'mp_did') || '');
+  const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
+  const v = did ? await sha8('d|' + did) : await sha8(ip + '|' + (request.headers.get('user-agent') || ''));
+  // e2: the request carried the ADMIN key — an E2E run or the owner's own tooling. Such rows are hidden from the daily
+  // read unless asked for (?e2e=1); a visitor cannot fake the flag without the secret.
+  let e2 = false; try { e2 = !!(env && request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))); } catch (e) {}
+  return { v: v.slice(0, 6), di: did.slice(0, 8), ip: String(ip).slice(0, 45), e2 };
+}
+function maskEmail(e) { const s = String(e || '').toLowerCase(); const i = s.indexOf('@'); if (i < 1) return s.slice(0, 3) + '***'; return s.slice(0, Math.min(2, i)) + '***@' + s.slice(i + 1); }
+// uid -> username for ops rows written without a signed-in cookie (admin/E2E ?uid= hooks, bot keys). Cached per isolate.
+async function usernameOf(env, uid) {
+  try {
+    if (!uid || !/^[0-9a-zA-Z_-]{3,40}$/.test(String(uid)) || !env.USERS) return '';
+    const NC = globalThis.__unNm = globalThis.__unNm || new Map();
+    let nm = NC.get(uid);
+    if (nm === undefined) { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/roleof?uid=' + encodeURIComponent(uid) + '&full=1')); const jj = await rr.json(); nm = (jj && jj.username) ? String(jj.username).slice(0, 24) : ''; NC.set(uid, nm); if (NC.size > 500) NC.clear(); }
+    return nm || '';
+  } catch (e) { return ''; }
+}
+async function evPush(env, request, type, label, pg, extra) {
   try {
     const cc = (request && request.cf && request.cf.country) || '';
-    const u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
-    await opslogPush(env, 'evlog', { t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() }, 800, 10800000);
+    let u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
+    const xuid = extra && extra.uid ? String(extra.uid).slice(0, 32) : '';
+    if (!u && xuid) u = await usernameOf(env, xuid);
+    const a = await actorOf(request, env);
+    await opslogPush(env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc, v: a.v, di: a.di, ip: a.ip, u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() }, a.e2 ? { e2: 1 } : {}, xuid ? { uid: xuid } : {}, extra && typeof extra === 'object' ? { x: extra } : {}), EVLOG_CAP, EVLOG_CUT);
     try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
   } catch (e) {}
@@ -4399,7 +4429,7 @@ async function handleTrack(url, request, env, ctx) {
  const cfx = request.cf || {};
  const net = String(cfx.asOrganization || '').replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 24);
  const bscore = (cfx.botManagement && typeof cfx.botManagement.score === 'number') ? cfx.botManagement.score : null;
- kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), net, asn: +cfx.asn || 0, rtt: +cfx.clientTcpRtt || 0, b: browserOf(ua), ...(bscore !== null ? { bs: bscore } : {}), ts: Date.now() }, 400, 10800000); // A5 batched
+ kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), di: String(did0 || '').slice(0, 8), ip: String(ip).slice(0, 45), ...((request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))) ? { e2: 1 } : {}), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), net, asn: +cfx.asn || 0, rtt: +cfx.clientTcpRtt || 0, b: browserOf(ua), ...(bscore !== null ? { bs: bscore } : {}), ts: Date.now() }, PVLOG_CAP, EVLOG_CUT); // A5 batched; 24h window since 2026-09-06
         void 0; // (old inline RMW removed)
         if (false) await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
       } catch (e) {}
@@ -4407,7 +4437,7 @@ async function handleTrack(url, request, env, ctx) {
   } else {
     await inc('ev:' + type + (label ? ':' + label : ''));
     const evIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
-    const evVid = await sha8(evIp + '|' + (request.headers.get('user-agent') || ''));
+    const evAct = await actorOf(request, env); const evVid = evAct.v + '00'; // same derivation as the pageview vid (device cookie first) — see actorOf
     if (type === 'jserr') { // client crash/JS-error beacon: total + daily series + which browser broke
       const de = new Date().toISOString().slice(0, 10);
       await inc('err:total'); await inc('ev:jserrbr:' + browserOf(request.headers.get('user-agent') || ''));
@@ -4426,7 +4456,11 @@ async function handleTrack(url, request, env, ctx) {
       await inc('aff:total'); await inc('aff:day:' + d2, 3456000);        // affiliate-click totals + daily series
     }
     if (type === 'exchange') await inc('xpath:' + (p.get('p') || '/').slice(0, 48)); // which page/tool drove this exchange link-out (revenue path)
-    if (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile') { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    // Signed-in trade beacons are DROPPED from the ring since 2026-09-06: the UserStore now writes the authoritative open/close/
+    // sltp/order rows itself (every path — site, bot, MCP, sweep), so the client copy would only duplicate them. Guests keep
+    // theirs: a guest's journal never reaches the server, the beacon is the only record he leaves.
+    const _clientTrade = (type === 'paper' || type === 'close' || type === 'sltp' || type === 'limitorder') && !!getCookie(request, 'mp_uid');
+    if (!_clientTrade && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad')) { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
         let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);
@@ -4440,7 +4474,7 @@ async function handleTrack(url, request, env, ctx) {
             } catch (e) {}
           }
         }
-        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, 800, 10800000); // A5 batched (cap aligned with evPush 800)
+        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), di: evAct.di, ip: evAct.ip, ...(evAct.e2 ? { e2: 1 } : {}), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, EVLOG_CAP, EVLOG_CUT); // A5 batched (cap aligned with evPush)
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { await opslogPush(env, 'mclog', { ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9, src: _evSrc(p) }, 50, 0); } catch (e) {}
         }
@@ -4852,7 +4886,7 @@ async function sweepServerPositions(env) {
       if (orders.length) {
         const fr = await fillLimitOrders(env, orders, prices, klines, await xpPromos(env).catch(() => []), states);
         try { await env.STATS.put('orders:last', JSON.stringify({ checked: fr.checked, filled: fr.filled.length, failed: fr.failed.length, expired: fr.expired.length, resting: (or.orders || []).length, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {}
-        if (fr.filled.length) { try { await pushOrderFills(env, fr.filled); } catch (e) {} for (const f of fr.filled) { try { await evPush(env, null, 'limitfill', f.side + ' ' + f.sym + ' ' + f.lev + 'x at ' + f.px, '/paper-trade'); } catch (e) {} } }
+        if (fr.filled.length) { try { await pushOrderFills(env, fr.filled); } catch (e) {} } // (the fill itself reaches the ops feed from UserStore._syncJournal as "open ... via limit", with the username — the old nameless 'limitfill' row here only duplicated it)
       } else { try { await env.STATS.put('orders:last', JSON.stringify({ checked: 0, filled: 0, failed: 0, expired: 0, resting: ((or && or.orders) || []).length, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} }
     } catch (e) {}
     if (Object.keys(prices).length || Object.keys(klines).length) {
@@ -4869,7 +4903,7 @@ async function drainXpBoostEvents(env) {
     const r = await usersDO(env, '/xpboostev', {});
     const evs = (r && r.events) || [];
     if (!evs.length) return;
-    await opslogPush(env, 'evlog', evs.map(ev => ({ t: 'xpboost', e: String(ev.note || '').slice(0, 48), cc: '', v: 'srv', u: String(ev.username || '').slice(0, 24), p: '/paper-trade', d: '', ts: +ev.ts || Date.now() })), 800, 10800000);
+    await opslogPush(env, 'evlog', evs.map(ev => ({ t: 'xpboost', e: String(ev.note || '').slice(0, 48), cc: '', v: 'srv', u: String(ev.username || '').slice(0, 24), p: '/paper-trade', d: '', ts: +ev.ts || Date.now() })), EVLOG_CAP, EVLOG_CUT);
     try { const k = 'ev:xpboost'; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + evs.length)); } catch (e) {}
   } catch (e) {}
 }
@@ -5997,7 +6031,7 @@ async function handleStats(url, env, request, ctx) {
     const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
     const day = new Date().toISOString().slice(0, 10);
     const [uvTod, uvTot, pvTot, affTot, affTod, botTod, pvTod2, newTod, retTod] = await Promise.all([gc('uv:day:' + day), gc('uv:total'), gc('pv:total'), gc('aff:total'), gc('aff:day:' + day), gc('botf:day:' + day), gc('pv:day:' + day), gc('uv:new:' + day), gc('uv:ret:' + day)]);
-    const rr9 = await ringRead(env, ['pvlog', 'evlog'], { online: true });
+    const rr9 = await ringRead(env, ['pvlog', 'evlog'], { online: true, n: 400 }); // the ring holds 24h now; this feed (Today, Journeys, top bar) only ever showed the last ~400
     let pvl = rr9.rings.pvlog || [], evl = rr9.rings.evlog || [];
     const now = Date.now(), recent = new Set();
     // "online" = DISTINCT posetioci sa OTVORENIM tabom u zadnjih 150s. Izvor = onlog mapa (vid6 -> lastSeen),
@@ -6186,7 +6220,7 @@ async function handleStats(url, env, request, ctx) {
   const jsErrList = jsErrRows.length ? `<h2 style="font-size:14px;margin-top:14px">Broken pages — exactly what broke <span>(last 7 days, newest first)</span></h2><div class="feedcap">Each client crash with its page and error message. The same message repeating from one page is usually <b>one</b> visitor stuck in a broken state (it re-reports on every page load), not many visitors.</div><div class="list">${jsErrRows.map(r => `<div class="fe"><span class="fe-t">${esc(flag(r.cc) || '')} <code style="color:#ff8c7a">${esc(r.page || '/')}</code> — ${esc(r.msg || '')}</span><span class="fe-a">${esc(String(r.timestamp || '').slice(5, 16))}</span></div>`).join('')}</div>` : '';
   const errHtml = `<div class="feedcap">A <b>broken page</b> = a visitor's browser hit a script error, so they may have seen a broken or frozen page. <b>0 is healthy.</b> Server errors = our server failed to answer a request.</div><div class="cards" style="grid-template-columns:repeat(4,1fr)">${kcard(N(errToday), 'Broken pages today', spark(errDays), dpc(errToday, errYd))}${kcard(N(errTotal), 'Broken pages total')}${kcard(N(srvToday), 'Server errors today')}${kcard(N(srvErrTotal), 'Server errors total')}</div>` + jsErrList + srvErrList + ((errMsgs.length || errBrowsers.length) ? `<div class="two"><div><h2 style="font-size:14px;margin-top:14px">Top error messages</h2><div class="list">${barlist(errMsgs)}</div></div><div><h2 style="font-size:14px;margin-top:14px">Crashes by browser</h2><div class="list">${barlist(errBrowsers)}</div></div></div>` : (srvErrList ? '' : `<div class="sl" style="margin-top:8px">No broken pages recorded — every visitor's page has loaded cleanly. </div>`));
   // live activity feed (ring buffer) + per-exchange revenue + ordered engagement metrics
-  let evlog = []; try { evlog = (await ringRead(env, ['evlog'])).rings.evlog || []; } catch (e) {}
+  let evlog = []; try { evlog = (await ringRead(env, ['evlog'], { n: 800 })).rings.evlog || []; } catch (e) {}
   // latest community posts for the overview (fail-soft; the anonymous feed is edge-cached 20s so this is cheap)
   let commPosts = [];
   try { if (env.COMM) { const cr = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new')); const cd = await cr.json(); commPosts = ((cd && cd.posts) || []).slice(0, 8); } } catch (e) {}
@@ -6209,7 +6243,7 @@ async function handleStats(url, env, request, ctx) {
       }).join('') + '</div>' + (botUserList.length > 80 ? '<div class="cap">showing 80 of ' + botUserList.length + '</div>' : '')
     : '';
   // last visitors — who (country) + from which source (referrer), most recent 5
-  let pvlog = []; try { pvlog = (await ringRead(env, ['pvlog'])).rings.pvlog || []; } catch (e) {}
+  let pvlog = []; try { pvlog = (await ringRead(env, ['pvlog'], { n: 400 })).rings.pvlog || []; } catch (e) {}
   const ccName = { US: 'United States', GB: 'UK', DE: 'Germany', FR: 'France', RS: 'Serbia', ES: 'Spain', BR: 'Brazil', RU: 'Russia', TR: 'Turkey', IN: 'India', CN: 'China', JP: 'Japan', KR: 'Korea', NL: 'Netherlands', CA: 'Canada', AU: 'Australia', IT: 'Italy', PL: 'Poland', UA: 'Ukraine', ID: 'Indonesia', VN: 'Vietnam', PH: 'Philippines', NG: 'Nigeria', MX: 'Mexico', AR: 'Argentina', PT: 'Portugal' };
   const srcName = s => { if (!s || s === 'direct') return 'Direct (typed the URL or bookmark)'; if (/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s)) return 'Google Ads / search partner'; if (/google\./.test(s)) return 'Google search'; if (/bing\./.test(s)) return 'Bing'; if (/yahoo/.test(s)) return 'Yahoo'; if (/yandex/.test(s)) return 'Yandex'; if (/duckduckgo/.test(s)) return 'DuckDuckGo'; if (/ecosia/.test(s)) return 'Ecosia'; if (/brave/.test(s)) return 'Brave Search'; if (/t\.co|twitter|x\.com/.test(s)) return 'X / Twitter'; if (/reddit/.test(s)) return 'Reddit'; if (/youtu/.test(s)) return 'YouTube'; if (/facebook|fb\./.test(s)) return 'Facebook'; if (/instagram/.test(s)) return 'Instagram'; if (/tiktok/.test(s)) return 'TikTok'; if (/linkedin/.test(s)) return 'LinkedIn'; if (/t\.me|telegram/.test(s)) return 'Telegram'; if (/discord/.test(s)) return 'Discord'; return s; };
   const vcol = v => { let h = 0; const s = String(v || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return 'hsl(' + (h % 360) + ',70%,62%)'; };
@@ -8997,7 +9031,7 @@ async function botLog(env, cmd, from) {
   try {
     if (!env.STATS || !cmd || cmd === 'msg') return;
     const u = String((from && (from.username || from.first_name)) || '').replace(/[^a-zA-Z0-9_ ]/g, '').slice(0, 24);
-    await opslogPush(env, 'evlog', { t: 'bot', e: cmd.slice(0, 24), cc: '', v: 'srv', u, p: '', d: 'Telegram', ts: Date.now() }, 800, 10800000);
+    await opslogPush(env, 'evlog', { t: 'bot', e: cmd.slice(0, 24), cc: '', v: 'srv', u, p: '', d: 'Telegram', ts: Date.now() }, EVLOG_CAP, EVLOG_CUT);
   } catch (e) {}
 }
 // ---- Leaderboard v2 (3 boards, top-15, prizes for top-5) launches this Monday ----
@@ -9506,6 +9540,7 @@ async function announceGift(env, ctx, fromUn, toUn, itemId) {
     const to = String(toUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); if (!to) return;
     const from = String(fromUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
     const name = String(it.name || '').replace(/[<>&]/g, '').slice(0, 40);
+    try { const gp = evPush(env, null, 'gift', (from ? '@' + from : 'the house') + ' -> @' + to + ': ' + name, '/vault/', { from, to, item: it.id }); if (ctx && ctx.waitUntil) ctx.waitUntil(gp); else await gp; } catch (e) {} // ops feed: every gift, whoever paid
     const text = from
       ? ('@' + from + ' gifted @' + to + ' the ' + name + ' ' + vaultKindWord(it) + '.')
       : ('@' + to + ' got the ' + name + ' ' + vaultKindWord(it) + ' from the house.');
@@ -10670,7 +10705,9 @@ async function handleTrade(url, request, env, ctx) {
     try { delete (globalThis.__botSyms || {})[uid]; } catch (e) {} // /positions symbol memo (30 s) — a new symbol must be priced on the very next poll from this isolate
     // light per-user rate limit: 20 opens/min (the count write is non-blocking — profiled 2026-07-24, the fill path pays only the read)
     const tR = Date.now();
-    try { const rk = 'trl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); const putP = env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); if (ctx) ctx.waitUntil(putP.catch(() => {})); else await putP; } catch (e) {}
+    // The 20 opens/min limit is enforced in UserStore /botopen since 2026-09-06: the KV counter here was eventually
+    // consistent and a burst of 21 from one client sailed through (measured 21/21 accepted, even with a per-isolate
+    // counter the burst spread over fresh isolates after a deploy). The DO is single-threaded, so it counts exactly.
     mk('ratelimit', tR);
     const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const side = b.side === 'short' ? 'short' : 'long';
@@ -10695,9 +10732,9 @@ async function handleTrade(url, request, env, ctx) {
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
     const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv' }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
-    const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm });
+    const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid });
     mk('do_fill', tD);
-    if (r && r.error) return jt(r, 400);
+    if (r && r.error) return jt(r, r.error === 'rate_limited' ? 429 : 400);
     return jt({ ok: true, position: t });
   }
   if (path === '/close' && request.method === 'POST') {
@@ -10714,7 +10751,7 @@ async function handleTrade(url, request, env, ctx) {
     // shut, so refusing here costs the trader nothing except that optionality.
     { const ms9 = marketSession(symC, pd); if (!ms9.open) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); }
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
-    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm });
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm, e2: !!adminUid });
     try { const xc = globalThis.__xpC; if (xc && tok) xc.delete(tok); } catch (e) {} // the 45s /xp cache would otherwise hide this close's XP and records from the very next poll
     if (r && r.error) return jt(r, 400);
     return jt(r);
@@ -10745,7 +10782,7 @@ async function handleTrade(url, request, env, ctx) {
   }
   if (path === '/sltp' && request.method === 'POST') {
     if (!b.id) return jt({ error: 'id_required' }, 400);
-    const r = await usersDO(env, '/tradesltp', { uid, id: String(b.id), sl: b.sl, tp: b.tp });
+    const r = await usersDO(env, '/tradesltp', { uid, id: String(b.id), sl: b.sl, tp: b.tp, e2: !!adminUid });
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
@@ -10768,12 +10805,12 @@ async function handleTrade(url, request, env, ctx) {
     if (action === 'list') { const r = await usersDO(env, '/order/list', { uid }); return jt(r || { orders: [], done: [] }); }
     if (action === 'cancel') {
       if (!b.id) return jt({ error: 'id_required' }, 400);
-      const r = await usersDO(env, '/order/cancel', { uid, id: String(b.id) });
+      const r = await usersDO(env, '/order/cancel', { uid, id: String(b.id), e2: !!adminUid });
       if (r && r.error) return jt(r, r.error === 'not_found' ? 404 : 409);
       return jt(r);
     }
     if (action !== 'add') return jt({ error: 'bad_action' }, 400);
-    try { const rk = 'orl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); const putP = env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); if (ctx) ctx.waitUntil(putP.catch(() => {})); else await putP; } catch (e) {}
+    // (20 orders/min is counted in UserStore /order/add since 2026-09-06 — see /open above for why not KV)
     const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const side = b.side === 'short' ? 'short' : 'long', long = side === 'long';
     const margin = +b.margin || 0, lev = Math.min(maxLevFor(sym), Math.max(1, +b.lev || 1));
@@ -10804,8 +10841,8 @@ async function handleTrade(url, request, env, ctx) {
       const opp = ((seed && seed.positions) || []).filter(p => p.status === 'open' && String(p.symbol || p.sym || '').toUpperCase().replace(/USDT$/, '') === sym && (p.side === 'short' ? 'short' : 'long') !== side);
       if (opp.length) return jt({ error: 'opposite_open', message: 'You already have an opposite ' + sym + ' position open — close it first (one-way mode).' }, 409);
     } catch (e) {}
-    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site', dir } });
-    if (!r || r.error) return jt(r || { error: 'unavailable' }, r && r.error === 'too_many_orders' ? 409 : 400);
+    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site', dir }, e2: !!adminUid });
+    if (!r || r.error) return jt(r || { error: 'unavailable' }, r && r.error === 'too_many_orders' ? 409 : r && r.error === 'rate_limited' ? 429 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'site'], doubles: [margin, Math.abs(px - live) / live * 100] }); } catch (e) {}
     return jt(r);
   }
@@ -11918,7 +11955,8 @@ async function handleAuth(url, request, env, ctx) {
     if (!env.RESEND_API_KEY) return jr({ error: 'email_not_configured' }, 503);
     const r = await stub.fetch(new Request('https://do/otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, ip, cc }) }));
     const d = await r.json();
-    if (d.error) return jr(d, 429);
+    if (d.error) { try { const rp = evPush(env, request, 'ratelimit', 'sign-in code ' + d.error + ' ' + maskEmail(email), '/', { email: maskEmail(email) }); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); } catch (e) {} return jr(d, 429); }
+    try { const op = evPush(env, request, 'otp', maskEmail(email), '/', { email: maskEmail(email) }); if (ctx && ctx.waitUntil) ctx.waitUntil(op); } catch (e) {} // ops feed: who is trying to get in, before the code is even typed
     const sent = await sendAuthCode(env, email, d.code);
     if (!sent.ok) return jr({ error: 'send_failed', detail: sent.detail }, 502);
     return jr({ ok: true });
@@ -11929,7 +11967,7 @@ async function handleAuth(url, request, env, ctx) {
     if (!email || code.length !== 6) return jr({ error: 'bad_input' }, 400);
     const r = await stub.fetch(new Request('https://do/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, code, ip, cc, ua, org, asn, dev: deviceOf(ua), br: browserOf(ua), did: getCookie(request, 'mp_did') || '' }) }));
     const d = await r.json();
-    if (d.error) return jr(d, (d.error === 'expired' || d.error === 'no_code') ? 410 : (d.error === 'banned' || d.error === 'suspended') ? 403 : 400);
+    if (d.error) { try { const fp = evPush(env, request, 'otpfail', d.error + ' ' + maskEmail(email), '/', { email: maskEmail(email), why: d.error }); if (ctx && ctx.waitUntil) ctx.waitUntil(fp); } catch (e) {} return jr(d, (d.error === 'expired' || d.error === 'no_code') ? 410 : (d.error === 'banned' || d.error === 'suspended') ? 403 : 400); } // ops feed: a wrong code, a banned account knocking, a brute force
     const opts = '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE;
     const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS });
     h.append('set-cookie', SESS_COOKIE + '=' + d.token + opts);
@@ -12007,7 +12045,7 @@ async function handleAuth(url, request, env, ctx) {
     if (!tok) return jr({ error: 'not_signed_in' }, 401);
     const r = await stub.fetch(new Request('https://do/username', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, username: String(b.username || '') }) }));
     const d = await r.json();
-    if (!d.error) await sessRevoke(env, tok); // the cached user object carries the OLD username → drop it so the next read reflects the change
+    if (!d.error) { await sessRevoke(env, tok); try { const up = evPush(env, request, 'username', String(d.username || b.username || '').slice(0, 24), '/', {}); if (ctx && ctx.waitUntil) ctx.waitUntil(up); } catch (e) {} } // the cached user object carries the OLD username → drop it so the next read reflects the change; ops feed sees the name chosen
  if (!d.error && d.username && env.CHAT) { try { // public welcome in the global chat, branded as MarginPad.
  // Fired HERE and not at signup: before this moment the account has no username, and greeting the
  // email prefix would leak part of the user's email into a public room. Usernames are permanent
@@ -12021,7 +12059,9 @@ async function handleAuth(url, request, env, ctx) {
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ error: 'not_signed_in' }, 401);
     const r = await stub.fetch(new Request('https://do/setprofile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, bio: b.bio, avatar: b.avatar, accent: b.accent, coins: b.coins }) }));
-    return jr(await r.json(), 200);
+    const pd9 = await r.json();
+    if (pd9 && pd9.ok) { try { const ch = []; if (b.bio != null) ch.push('bio'); if (b.avatar != null) ch.push('avatar'); if (b.accent != null) ch.push('accent'); if (b.coins != null) ch.push('coins'); const pp = evPush(env, request, 'profile_edit', ch.join(', ') || 'profile', '/', {}); if (ctx && ctx.waitUntil) ctx.waitUntil(pp); } catch (e) {} }
+    return jr(pd9, 200);
   }
   if (path === '/shop') { // The Vault: catalog + my ownership/equip + balance — one call for the whole page
     const tok = getCookie(request, SESS_COOKIE);
@@ -12306,6 +12346,7 @@ async function handleAuth(url, request, env, ctx) {
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }));
     const d = await r.json();
+    if (d && d.ok) { try { const ap = evPush(env, request, 'admin', String(b.action || '') + ' ' + (b.email ? maskEmail(b.email) : '#' + String(b.id || '').slice(0, 8)) + (b.days ? ' ' + b.days + 'd' : '') + (b.username ? ' -> ' + String(b.username).slice(0, 20) : ''), '/', { by: 'owner', action: String(b.action || '') }); if (ctx && ctx.waitUntil) ctx.waitUntil(ap); } catch (e) {} } // ops feed: bans, suspensions, renames, deletions
     if (d && Array.isArray(d.revokedTokens)) await Promise.all(d.revokedTokens.slice(0, 200).map(t => sessRevoke(env, t))); // parallel — a ban on a user with many sessions would time out on sequential awaits. Drops the read-through cache for every touched session.
     return jr(d);
   }
@@ -12317,7 +12358,7 @@ async function handleAuth(url, request, env, ctx) {
   if (path === '/logout') {
     const tok = getCookie(request, SESS_COOKIE);
     if (tok) {
-      try { const su = await sessionUser(env, tok); if (su && su.id) await authLogPush(env, 'logout', request, su.id, su.username || String(su.email || '').split('@')[0]); } catch (e) {} // resolve BEFORE the session dies — afterwards we can't know who left
+      try { const su = await sessionUser(env, tok); if (su && su.id) { await authLogPush(env, 'logout', request, su.id, su.username || String(su.email || '').split('@')[0]); try { await evPush(env, request, 'logout', '', '/', { uid: su.id }); } catch (e) {} } } catch (e) {} // resolve BEFORE the session dies — afterwards we can't know who left
       await stub.fetch(new Request('https://do/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); await sessRevoke(env, tok);
     }
     const clear = '=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0';
@@ -13695,7 +13736,7 @@ export default {
       // latest money clicks are read fresh on EVERY call (one KV get) and appended to the cached AE core
       let mclicks = [];
       try { mclicks = ((await ringRead(env, ['mclog'])).rings.mclog || []).slice(0, 30); } catch (e) {}
-      if (!mclicks.length) try { const ev = (await ringRead(env, ['evlog'])).rings.evlog || []; mclicks = ev.filter(x => x && x.t === 'exchange').sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: x.e || '', p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
+      if (!mclicks.length) try { const ev = (await ringRead(env, ['evlog'], { n: 800 })).rings.evlog || []; mclicks = ev.filter(x => x && x.t === 'exchange').sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: x.e || '', p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
       const withClicks = (txt) => { try { const core = JSON.parse(txt); core.clicks = mclicks; return JSON.stringify(core); } catch (e) { return txt; } };
       try { const hit = await caches.default.match(ck); if (hit) return new Response(withClicks(await hit.text()), { headers: jh2 }); } catch (e) {}
       const [byDayEx, byPage, byEx, byCc, bySrc, pvBySrc] = await Promise.all([
@@ -13749,7 +13790,7 @@ export default {
       const nd = new Date(); const dayStart = Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate());
       try {
         if (k === 'visitors') { // per-visitor landing (first pageview today) + country + device, from the pvlog ring (last ~400 pv / 3h)
-          let pv = []; try { pv = (await ringRead(env, ['pvlog'])).rings.pvlog || []; } catch (e) {}
+          let pv = []; try { pv = (await ringRead(env, ['pvlog'], { n: 400 })).rings.pvlog || []; } catch (e) {}
           const today = pv.filter(x => x && x.ts >= dayStart); const byV = new Map();
           for (const x of today) { const c = byV.get(x.v); if (!c || x.ts < c.ts) byV.set(x.v, x); } // earliest = their landing
           const rows = [...byV.values()].sort((a, b) => b.ts - a.ts).slice(0, 150).map(x => ({ cc: x.cc || '', path: x.p || '/', dev: x.d || '', u: x.u || '', src: (x.s && x.s !== 'direct') ? x.s : (x.s0 ? x.s0 + ' (earlier visit)' : (x.s || '')), ts: x.ts }));
@@ -14606,6 +14647,79 @@ export default {
       for (const k in found) out[k] = (found[k] || []).map(w => { const id = String(w.acct || '').replace(/^u:/, ''); return { ...w, username: (names[id] && names[id].username) || '', accountStatus: (names[id] && names[id].status) || '' }; });
       return new Response(JSON.stringify({ uids: out }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/activity' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops People > Activity (2026-09-06): the 24h ring, every actor (user or guest device), and the abuse radar computed over the window
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const h = Math.min(24, Math.max(1, +url.searchParams.get('h') || 24));
+      const nMax = Math.min(5000, Math.max(50, +url.searchParams.get('n') || 2000));
+      const withPv = url.searchParams.get('pv') === '1';
+      const actorQ = String(url.searchParams.get('actor') || '').slice(0, 80).toLowerCase();
+      const showE2E = url.searchParams.get('e2e') === '1';
+      const rr = await ringRead(env, ['evlog', 'pvlog', 'authlog'], { n: 5000, online: true });
+      const now = Date.now(), from = now - h * 3600000;
+      const isE2E = x => !!x.e2 || /^e2e_/i.test(String(x.u || ''));
+      let ev = (rr.rings.evlog || []).filter(x => x && x.ts >= from && (showE2E || !isE2E(x)));
+      let pv = (rr.rings.pvlog || []).filter(x => x && x.ts >= from && (showE2E || !isE2E(x)));
+      const au = (rr.rings.authlog || []).filter(x => x && x.ts >= from && (showE2E || !isE2E(x)));
+      const ringOldest = (rr.rings.evlog || []).length ? (rr.rings.evlog[rr.rings.evlog.length - 1].ts || 0) : 0;
+      { // a limited burst spread over several isolates leaves one 'ratelimit' row per isolate that saw the limit — fold them into one per actor per 2 minutes
+        const seen = new Map(); ev = ev.filter(x => { if (x.t !== 'ratelimit') return true; const k = (x.u || x.v || '') + '|' + (x.e || ''); const last = seen.get(k); if (last != null && last - x.ts < 120000) return false; seen.set(k, x.ts); return true; }); }
+      const MONEY = new Set(['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'gift', 'pass', 'premgrant']);
+      const TRADE = new Set(['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder']);
+      const PROBLEM = new Set(['otpfail', 'ratelimit', 'jserr', 'wdreject', 'liq', 'premgate']);
+      // the same person under one key: a username when there is one, else the device-derived visitor id
+      const lc = s => String(s || '').toLowerCase();
+      const vidUser = new Map(); ev.concat(pv).forEach(x => { if (x.u && x.v && x.v !== 'srv') vidUser.set(x.v, lc(x.u)); });
+      const keyOf = x => x.u ? 'u:' + lc(x.u) : (x.v && x.v !== 'srv' && vidUser.has(x.v)) ? 'u:' + vidUser.get(x.v) : (x.v && x.v !== 'srv') ? 'v:' + x.v : (x.uid ? 'uid:' + x.uid : 'sys');
+      const A = new Map();
+      const touch = (x, kind) => { const k = keyOf(x); if (k === 'sys') return; let a = A.get(k); if (!a) { a = { key: k, u: x.u || '', v: '', uid: x.uid || '', cc: x.cc || '', d: x.d || '', n: 0, pv: 0, first: x.ts, last: x.ts, types: {}, dids: new Set(), ips: new Set(), vids: new Set(), pages: new Set(), money: 0, trades: 0, problems: 0, chat: 0 }; A.set(k, a); }
+        if (kind === 'pv') { a.pv++; if (x.p) a.pages.add(x.p); } else { a.n++; a.types[x.t] = (a.types[x.t] || 0) + 1; if (MONEY.has(x.t)) a.money++; if (TRADE.has(x.t)) a.trades++; if (PROBLEM.has(x.t)) a.problems++; if (x.t === 'chatmsg' || x.t === 'chat') a.chat++; }
+        if (x.ts < a.first) a.first = x.ts; if (x.ts > a.last) { a.last = x.ts; if (x.cc) a.cc = x.cc; if (x.d) a.d = x.d; }
+        if (x.di) a.dids.add(x.di); if (x.ip) a.ips.add(x.ip); if (x.v && x.v !== 'srv') { a.vids.add(x.v); if (!a.v) a.v = x.v; } if (x.u && !a.u) a.u = x.u; if (x.uid && !a.uid) a.uid = x.uid; };
+      ev.forEach(x => touch(x, 'ev')); pv.forEach(x => touch(x, 'pv'));
+      au.forEach(x => { const k = x.u ? 'u:' + lc(x.u) : null; if (!k) return; const a = A.get(k); if (!a) return; if (x.did) a.dids.add(String(x.did).slice(0, 8)); if (x.ip) a.ips.add(x.ip); });
+      // ---- abuse radar: every rule is a plain count over the window, so the owner can check it by hand ----
+      const radar = [];
+      const push9 = (k, sev, title, detail, actor, n, ts) => radar.push({ k, sev, title, detail, actor: actor || '', n: n || 0, ts: ts || 0 });
+      { const byDid = new Map(); const add = (di, u) => { if (!di || !u) return; const s = byDid.get(di) || new Set(); s.add(lc(u)); byDid.set(di, s); };
+        ev.forEach(x => add(x.di, x.u)); pv.forEach(x => add(x.di, x.u)); au.forEach(x => add(String(x.did || '').slice(0, 8), x.u));
+        byDid.forEach((s, di) => { if (s.size >= 2) push9('multi_device', 'red', 'One device, ' + s.size + ' accounts', Array.from(s).map(n => '@' + n).join(', ') + ' share device ' + di, 'd:' + di, s.size); }); }
+      { const byIp = new Map(); const add = (ip, u, t) => { if (!ip || !u) return; const o = byIp.get(ip) || { s: new Set(), money: 0 }; o.s.add(lc(u)); if (MONEY.has(t)) o.money++; byIp.set(ip, o); };
+        ev.forEach(x => add(x.ip, x.u, x.t)); pv.forEach(x => add(x.ip, x.u, '')); au.forEach(x => add(x.ip, x.u, ''));
+        byIp.forEach((o, ip) => { if (o.s.size >= 3 || (o.s.size >= 2 && o.money)) push9('multi_ip', o.money ? 'red' : 'amber', 'One IP, ' + o.s.size + ' accounts' + (o.money ? ' (money moved)' : ''), Array.from(o.s).map(n => '@' + n).join(', ') + ' from ' + ip, 'ip:' + ip, o.s.size); }); }
+      { const bk = new Map(); ev.forEach(x => { if (!TRADE.has(x.t) || x.t === 'sltp' || x.t === 'sync') return; const k = keyOf(x); if (k === 'sys') return; const b = k + '|' + Math.floor(x.ts / 600000); bk.set(b, (bk.get(b) || 0) + 1); });
+        const seen = new Set(); bk.forEach((n, b) => { const k = b.split('|')[0]; if (n >= 30 && !seen.has(k)) { seen.add(k); push9('trade_burst', 'amber', n + ' trade actions in 10 minutes', (k.indexOf('u:') === 0 ? '@' + k.slice(2) : 'guest ' + k.slice(2)) + ' — a bot or a click storm', k, n); } }); }
+      { const bk = new Map(); ev.forEach(x => { if (x.t !== 'chatmsg') return; const k = keyOf(x); if (k === 'sys') return; const b = k + '|' + Math.floor(x.ts / 600000); bk.set(b, (bk.get(b) || 0) + 1); });
+        const seen = new Set(); bk.forEach((n, b) => { const k = b.split('|')[0]; if (n >= 15 && !seen.has(k)) { seen.add(k); push9('chat_flood', 'amber', n + ' chat messages in 10 minutes', '@' + k.slice(2), k, n); } }); }
+      { const byE = new Map(), byIp = new Map(); ev.forEach(x => { if (x.t !== 'otpfail') return; const em = (x.x && x.x.email) || String(x.e || '').split(' ').pop(); if (em) byE.set(em, (byE.get(em) || 0) + 1); if (x.ip) byIp.set(x.ip, (byIp.get(x.ip) || 0) + 1); });
+        byE.forEach((n, em) => { if (n >= 3) push9('otp_fail', n >= 5 ? 'red' : 'amber', n + ' failed sign-in codes', em, '', n); });
+        byIp.forEach((n, ip) => { if (n >= 6) push9('otp_fail_ip', 'red', n + ' failed codes from one IP', ip, 'ip:' + ip, n); }); }
+      { const byA = new Map(); ev.forEach(x => { if (x.t !== 'ratelimit') return; const k = keyOf(x); byA.set(k, (byA.get(k) || 0) + 1); });
+        byA.forEach((n, k) => push9('ratelimit', 'amber', 'Hit a rate limit ' + n + 'x', (k.indexOf('u:') === 0 ? '@' + k.slice(2) : k === 'sys' ? 'unknown' : 'guest ' + k.slice(2)), k === 'sys' ? '' : k, n)); }
+      { const byDid = new Map(), byU = new Map(); ev.forEach(x => { if (x.t !== 'claim') return; if (x.di) { const s = byDid.get(x.di) || new Set(); if (x.u) s.add(lc(x.u)); byDid.set(x.di, s); } if (x.u) byU.set(lc(x.u), (byU.get(lc(x.u)) || 0) + 1); });
+        byDid.forEach((s, di) => { if (s.size >= 2) push9('claim_device', 'red', 'Faucet claims from ' + s.size + ' accounts on one device', Array.from(s).map(n => '@' + n).join(', ') + ' · device ' + di, 'd:' + di, s.size); });
+        byU.forEach((n, u) => { if (n >= 6) push9('claim_many', 'amber', n + ' faucet claims in ' + h + 'h', '@' + u, 'u:' + u, n); }); } // measured 2026-09-06: 4 claims in 3h is an ordinary regular on the cooldown, not a signal
+      { A.forEach(a => { if (a.key.indexOf('v:') !== 0) return; const c = (a.types.close || 0) + (a.types.paper || 0); if (c >= 10) push9('guest_heavy', 'info', 'Guest with ' + c + ' trade actions and no account', 'guest ' + a.key.slice(2) + ' ' + (a.cc || '') + ' ' + (a.d || ''), a.key, c, a.last); }); }
+      { const byP = new Map(); ev.forEach(x => { if (x.t !== 'jserr') return; const p = x.p || '?'; byP.set(p, (byP.get(p) || 0) + 1); }); byP.forEach((n, p) => { if (n >= 5) push9('jserr', 'amber', n + ' JS errors on ' + p, 'the page is breaking for people', '', n); }); }
+      { const su = new Map(); ev.forEach(x => { if (x.t === 'signup' && x.u) su.set(lc(x.u), x.ts); });
+        ev.forEach(x => { if ((x.t === 'claim' || x.t === 'withdraw') && x.u && su.has(lc(x.u)) && x.ts - su.get(lc(x.u)) < 3600000) push9('fast_money', 'amber', 'Money within an hour of signing up', '@' + x.u + ' ' + x.t + ' ' + (x.e || ''), 'u:' + lc(x.u), 1, x.ts); }); }
+      ev.forEach(x => { if (x.t === 'withdraw') push9('withdraw', 'info', 'Withdrawal requested ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + lc(x.u) : '', 1, x.ts); if (x.t === 'wdreject') push9('wdreject', 'amber', 'Withdrawal rejected ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + lc(x.u) : '', 1, x.ts); if (x.t === 'admin') push9('admin', 'info', 'Owner action: ' + (x.e || ''), '', '', 1, x.ts); });
+      const sevN = { red: 0, amber: 1, info: 2 }; radar.sort((a, b) => (sevN[a.sev] - sevN[b.sev]) || (b.n - a.n));
+      // ---- rows: events (+ pageviews when asked or when one actor is traced), newest first ----
+      let rows = ev.map(x => x);
+      if (withPv || actorQ) rows = rows.concat(pv.map(x => Object.assign({ t: 'pv' }, x)));
+      if (actorQ) {
+        const kind = actorQ.slice(0, actorQ.indexOf(':')), val = actorQ.slice(actorQ.indexOf(':') + 1);
+        const a = A.get(actorQ);
+        const vids = a ? a.vids : new Set();
+        rows = rows.filter(x => kind === 'u' ? (lc(x.u) === val || (x.v && x.v !== 'srv' && vids.has(x.v)) || (a && a.uid && x.uid === a.uid)) : kind === 'v' ? (x.v === val) : kind === 'd' ? (x.di === val) : kind === 'ip' ? (x.ip === val) : kind === 'uid' ? (x.uid === val) : false);
+      }
+      rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const types = {}; ev.forEach(x => { types[x.t] = (types[x.t] || 0) + 1; });
+      const actors = Array.from(A.values()).map(a => ({ key: a.key, u: a.u, v: a.v, uid: a.uid, cc: a.cc, d: a.d, n: a.n, pv: a.pv, first: a.first, last: a.last, types: a.types, dids: Array.from(a.dids).slice(0, 8), ips: Array.from(a.ips).slice(0, 8), vids: a.vids.size, pages: a.pages.size, money: a.money, trades: a.trades, problems: a.problems, chat: a.chat })).sort((x, y) => y.last - x.last);
+      const actorInfo = actorQ ? (actors.filter(a => a.key === actorQ)[0] || null) : null;
+      const authRows = au.slice(0, 300).map(x => ({ k: x.k, u: x.u, ip: x.ip, did: String(x.did || '').slice(0, 8), cc: x.cc, ts: x.ts }));
+      return new Response(JSON.stringify({ now, h, online: (rr.on || []).length, nEv: ev.length, nPv: pv.length, ringOldest, rows: rows.slice(0, nMax), types, actors: actorQ ? actors.filter(a => a.key === actorQ) : actors.slice(0, 300), actorInfo, radar: radar.slice(0, 200), auth: actorQ ? authRows.filter(x => actorQ.indexOf('u:') === 0 ? lc(x.u) === actorQ.slice(2) : actorQ.indexOf('ip:') === 0 ? x.ip === actorQ.slice(3) : actorQ.indexOf('d:') === 0 ? x.did === actorQ.slice(2) : false) : authRows }), { headers: jh2 });
+    }
     if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: compare the three activity sources for one user
       const who = String(url.searchParams.get('user') || '').toLowerCase();
       const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
@@ -15176,6 +15290,7 @@ export default {
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete /import
       const body = request.method === 'POST' ? await request.text() : undefined;
+      if (request.method === 'POST' && (sub === '/post' || sub === '/delete' || sub === '/poll')) { try { let bb = {}; try { bb = JSON.parse(body || '{}'); } catch (e) {} const ap = evPush(env, request, 'admin', 'chat ' + sub.slice(1) + (bb.text ? ': ' + String(bb.text).slice(0, 40) : bb.ts ? ' msg ' + bb.ts : ''), '/', { by: 'owner' }); if (ctx && ctx.waitUntil) ctx.waitUntil(ap); } catch (e) {} } // ops feed: owner moderation is part of the story too
       const inst = url.searchParams.get('inst') === 'old' ? 'global' : (url.searchParams.get('room') ? chatInstOf(url) : 'global2'); // ?inst=old = the pre-2026-07-16 wedged instance (recovery reads); ?room=<COIN> = a per-coin room
       // polled every 30s (badges) + 5s (chat tab); a DO reset mid-flight (every deploy) threw "internal error"
       // as a 500 → Health-tab noise. Retry once, then fail SOFT with an empty history.
@@ -15559,8 +15674,8 @@ export class OpsLog {
     }
     if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
       const keys = String(url.searchParams.get('k') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
-      const n = Math.min(1000, +url.searchParams.get('n') || 0) || 0;
-      const DEF = { pvlog: 400, evlog: 800, mclog: 50, authlog: 500 };
+      const n = Math.min(6000, +url.searchParams.get('n') || 0) || 0;
+      const DEF = { pvlog: 2500, evlog: 5000, mclog: 50, authlog: 500 }; // evlog/pvlog = 24h windows since 2026-09-06 (callers that only need the last few hundred pass n=)
       const rings = {};
       for (const k of keys) {
         rings[k] = this.rows('SELECT j FROM ring WHERE k=? ORDER BY ts DESC, id DESC LIMIT ?', k, n || DEF[k] || 400)
@@ -17488,6 +17603,19 @@ export class UserStore {
       streak: +r.streak_best || 0, streakTs: +r.streak_best_ts || 0, streakNow: +r.streak || 0, day: +r.day_best || 0, dayTs: +r.day_best_ts || 0,
       fresh: r.new_ts ? { ts: +r.new_ts, items: (function () { try { return JSON.parse(r.new_json || '[]'); } catch (e) { return []; } })() } : null };
   }
+  // Ops live-activity rows written by the STORE itself (2026-09-06). Every path that changes a journal funnels through
+  // _syncJournal (site open/close, bot API, MCP, limit fills, the cron sweep's liquidations and SL/TP hits, client syncs)
+  // and every resting order through /order/*, so this is the one place the ops feed can be told the truth about trades;
+  // the client beacons it replaces never arrived from bots, blocked trackers or closed tabs. Fire-and-forget: the DO must
+  // never wait on the ops ring (a slow OpsLog must not slow a fill). Username is looked up once per call and cached briefly.
+  _opsEv(uid, type, label, page, x) {
+    try {
+      const C = this._unCache = this._unCache || new Map();
+      let u = C.get(uid);
+      if (u === undefined) { const r = this.rows('SELECT username, email FROM users WHERE id=?', uid)[0]; u = r ? String(r.username || String(r.email || '').split('@')[0] || '').slice(0, 24) : ''; C.set(uid, u); if (C.size > 300) C.clear(); }
+      opslogPush(this.env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc: '', v: 'srv', di: '', ip: '', u, uid: String(uid).slice(0, 32), p: page || '/paper-trade', d: '', ts: Date.now() }, this._reqE2 ? { e2: 1 } : {}, x ? { x } : {}), EVLOG_CAP, EVLOG_CUT).catch(() => {});
+    } catch (e) {}
+  }
   _syncJournal(uid, incoming, promos, srvAuth, via) {
     const sql = this.state.storage.sql, now = Date.now();
     try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {} // A3: index of users with OPEN srv/bot trades — sweeps iterate THIS, not every journal
@@ -17555,6 +17683,19 @@ export class UserStore {
         if (!o9) { if (isCl(e)) evs.push(['close', e, +e.closeTs || now]); else evs.push(['open', e, +e.ts || now]); }
         else if (!isCl(o9) && isCl(e)) evs.push(['close', e, +e.closeTs || now]);
         else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); } }
+      try { // ops live activity: one row per open / close / trim, labelled the way the owner reads it. A first sign-in ships the
+        // whole guest journal at once (up to 100 rows) — that is summarised in one row instead of flooding the feed.
+        const viaS = String(via || (srvAuth ? 'server' : 'client'));
+        const fmt$ = (v) => (v < 0 ? '-$' : '+$') + Math.abs(v).toFixed(Math.abs(v) >= 100 ? 0 : 2);
+        const ops = [];
+        for (const ev9 of evs) { const kind = ev9[0], e = ev9[1]; const sym = String(e.sym || '').toUpperCase().slice(0, 12), sideU = e.side === 'short' ? 'SHORT' : 'LONG', lev = +e.lev || 1, m = +e.margin || 0;
+          if (kind === 'open') ops.push(['open', sideU + ' ' + sym + ' ' + lev + 'x $' + Math.round(m) + (e.stop != null || e.sl != null ? ' +SL' : '') + (e.tp != null ? ' +TP' : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }]);
+          else if (kind === 'close') { const pv = +e.pnl; const roe = (isFinite(pv) && m > 0) ? pv / m * 100 : null; const liq = !!e.liquidated || (isFinite(pv) && pv <= -m * 0.985); const ex = +e.exit; const auto = viaS === 'sweep' || viaS === 'cron' || viaS === 'nudge'; const how = liq ? 'liquidated' : (auto && e.stop != null && ex === +e.stop) ? 'SL hit' : (auto && e.tp != null && ex === +e.tp) ? 'TP hit' : (e.partial ? 'partial ' + e.partial + '%' : 'closed');
+            ops.push([liq ? 'liq' : 'close', sideU + ' ' + sym + ' ' + lev + 'x ' + (liq ? '' : how + ' ') + (isFinite(pv) ? fmt$(pv) + (roe != null ? ' (' + (roe >= 0 ? '+' : '') + roe.toFixed(1) + '%)' : '') : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, pnl: isFinite(pv) ? Math.round(pv * 100) / 100 : null, roe: roe == null ? null : Math.round(roe * 10) / 10, liq: liq ? 1 : 0, how, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }]); }
+          else if (kind === 'trim') ops.push(['trim', sideU + ' ' + sym + ' size reduced via ' + viaS, { sym, via: viaS }]); }
+        if (ops.length > 8) { const nO = ops.filter(o => o[0] === 'open').length, nC = ops.length - nO; this._opsEv(uid, 'sync', ops.length + ' trades arrived at once via ' + viaS + ' (' + nO + ' open, ' + nC + ' closed)', '/paper-trade', { n: ops.length, via: viaS }); }
+        else for (const o of ops) this._opsEv(uid, o[0], o[1], '/paper-trade', o[2]);
+      } catch (eo) {}
       const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try — see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
         if (kind === 'close') try { this._lbBest(uid, e, ts9); } catch (e8) {} // season-best BEFORE the per-sync cap/age skips — a qualifying close must never miss the board store
@@ -17626,6 +17767,7 @@ export class UserStore {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
     const day = new Date().toISOString().slice(0, 10);
     let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+    this._reqE2 = b && b.e2 === true; // set by the worker only on admin ?uid= hooks (E2E / owner tooling): ops rows written for this request are tagged e2 and hidden from the daily read
 
     if (path === '/otp') { // create/rotate a 6-digit code, rate-limited; returns the code for the Worker to email
       const email = String(b.email || '').toLowerCase(); if (!email) return this.j({ error: 'bad_email' });
@@ -17923,6 +18065,8 @@ export class UserStore {
         const prev = this.rows('SELECT * FROM porders WHERE uid=? AND coid=?', uid, coid)[0];
         if (prev) return this.j({ ok: true, order: this._ordJson(prev), idempotent: true });
       }
+      { const rlk = 'o:' + uid + ':' + Math.floor(Date.now() / 60000); const RL = this._openRl = this._openRl || new Map(); const c = (RL.get(rlk) || 0) + 1; RL.set(rlk, c); if (RL.size > 5000) RL.clear();
+        if (c > 20) { if (c === 21) this._opsEv(uid, 'ratelimit', 'limit orders 20/min', '/paper-trade', { limit: 20 }); return this.j({ error: 'rate_limited', max: 20 }); } } // 20 placements / minute / account, exact (single-threaded), one ops row
       const openN = (this.rows("SELECT COUNT(*) n FROM porders WHERE uid=? AND status='open'", uid)[0] || {}).n || 0;
       if (openN >= PORDER_MAX) return this.j({ error: 'too_many_orders', max: PORDER_MAX });
       const id = String(o.id || ('lo' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)));
@@ -17932,6 +18076,7 @@ export class UserStore {
         (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9,
         (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'));
       try { sql.exec("DELETE FROM porders WHERE status<>'open' AND doneTs < ?", now9 - 30 * 86400000); } catch (e) {} // done rows are history for the user's Orders list, kept 30 days
+      this._opsEv(uid, 'order', 'placed ' + (o.side === 'short' ? 'SHORT ' : 'LONG ') + String(o.sym).toUpperCase().slice(0, 12) + ' @ ' + (+o.px || 0) + ' ' + (+o.lev || 1) + 'x $' + Math.round(+o.margin || 0) + ' via ' + String(o.src || 'site'), '/paper-trade', { sym: String(o.sym).toUpperCase().slice(0, 12), side: o.side === 'short' ? 'short' : 'long', px: +o.px || 0, lev: +o.lev || 1, margin: +o.margin || 0, via: String(o.src || 'site'), id: id.slice(0, 24) });
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
     }
     if (path === '/order/cancel') {
@@ -17940,6 +18085,7 @@ export class UserStore {
       if (!row) return this.j({ error: 'not_found' });
       if (row.status !== 'open') return this.j({ error: 'already_done', order: this._ordJson(row) });
       sql.exec("UPDATE porders SET status='cancelled', doneTs=?, note=? WHERE id=?", Date.now(), 'cancelled by you', id);
+      this._opsEv(uid, 'order', 'cancelled ' + (row.side === 'short' ? 'SHORT ' : 'LONG ') + String(row.sym || '').toUpperCase() + ' @ ' + (+row.px || 0), '/paper-trade', { sym: String(row.sym || '').toUpperCase(), side: row.side, px: +row.px || 0, cancel: 1, id: id.slice(0, 24) });
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
     }
     if (path === '/order/list') {
@@ -17963,6 +18109,7 @@ export class UserStore {
       const row = this.rows('SELECT * FROM porders WHERE id=?', id)[0];
       if (!row || row.status !== 'open') return this.j({ ok: false });
       sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', st, Date.now(), String(b.note || '').slice(0, 120), id);
+      this._opsEv(row.uid, 'order', st + ' ' + (row.side === 'short' ? 'SHORT ' : 'LONG ') + String(row.sym || '').toUpperCase() + ' @ ' + (+row.px || 0) + (b.note ? ' - ' + String(b.note).slice(0, 40) : ''), '/paper-trade', { sym: String(row.sym || '').toUpperCase(), side: row.side, px: +row.px || 0, status: st, id: id.slice(0, 24) });
       return this.j({ ok: true });
     }
     if (path === '/order/fill') {
@@ -18006,6 +18153,10 @@ export class UserStore {
           if (ex) return this.j({ ok: true, position: this._j2bot(ex, null), idempotent: true });
           return this.j({ ok: true, position: null, idempotent: true, note: 'client_order_id already used; the trade is no longer in the recent journal' });
         }
+      }
+      if (b.via !== 'bot' && b.via !== 'limit') { // 20 site opens / minute / account, counted HERE because the DO is single-threaded (the old KV counter let bursts through). Bots have their own per-key rpm; limit fills are the market's timing, not the user's.
+        const rlk = uid + ':' + Math.floor(now / 60000); const RL = this._openRl = this._openRl || new Map(); const c = (RL.get(rlk) || 0) + 1; RL.set(rlk, c); if (RL.size > 5000) RL.clear();
+        if (c > 20) { if (c === 21) this._opsEv(uid, 'ratelimit', 'trade open 20/min (' + String(t.sym || '').toUpperCase().slice(0, 12) + ')', '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), limit: 20 }); return this.j({ error: 'rate_limited', max: 20 }); }
       }
       const openN = jn.filter(x => x && x.src === 'bot' && x.status !== 'win' && x.status !== 'loss').length;
       const _oTier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
@@ -18536,6 +18687,7 @@ export class UserStore {
       if (tp != null && (long ? tp <= entry : tp >= entry)) return this.j({ error: 'tp_wrong_side' });
       const upd = Object.assign({}, t, { stop: sl, tp: tp });
       this._syncJournal(uid, [upd], null, true, 'sltp');
+      this._opsEv(uid, 'sltp', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase().slice(0, 12) + ' SL ' + (sl == null ? 'off' : sl) + ' / TP ' + (tp == null ? 'off' : tp), '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), sl, tp, id: String(t.id || '').slice(0, 24) });
       try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff
       return this.j({ ok: true, position: upd });
     }
