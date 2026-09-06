@@ -70,7 +70,7 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
   chk('ops: two 1-use codes generated', gen.body.ok && (gen.body.codes || []).length === 2 && /^MP-[A-Z2-9]{5}-[A-Z2-9]{5}$/.test(gen.body.codes[0]), gen.body);
   const [CODE, CODE2] = gen.body.codes;
   const rc = await buy(UID, 'code', CODE.toLowerCase());
-  chk('redeem the code (case-insensitive) -> pro', rc.body.ok && rc.body.src === 'code', rc.body);
+  chk('redeem the code (case-insensitive) -> pro', rc.body.ok && rc.body.kind === 'pass', rc.body); // since 2026-09-06 codes go through /code/redeem (kind: pass | cents | premium | ticks)
   const rc2 = await buy(UID2, 'code', CODE);
   chk('second member on the same 1-use code -> used_up', rc2.status === 409 && rc2.body.error === 'used_up', rc2.body);
   const rc3 = await buy(UID, 'code', CODE2);

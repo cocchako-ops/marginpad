@@ -114,3 +114,16 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
 .radar .rd{border:1px solid var(--line2);border-left:3px solid var(--faint);border-radius:9px;padding:8px 10px;margin-bottom:6px;font-size:12.5px}.radar .rd b{display:block}.radar .rd .meta{margin-top:2px;white-space:normal}.radar .rd.red{border-left-color:#ff5a4d;background:rgba(255,90,77,.06)}.radar .rd.amber{border-left-color:#ffb020;background:rgba(255,176,32,.06)}.radar .rd.info{border-left-color:#57c7f7}
 .bar2{height:3px;background:#161b22;border-radius:2px;margin:-2px 0 4px}.bar2 i{display:block;height:100%;background:var(--lime);opacity:.55;border-radius:2px}
 .tile.bad .v{color:#ff8a80}.tile.warn .v{color:#ffcf8a}
+/* phone (2026-09-06 owner audit: "dosta stvari probija"): nothing may be wider than the screen. Rows wrap instead of clipping, grid
+   cells and cards shrink below their content, long links break, the activity sentence gets its own line under who/time. */
+@media(max-width:760px){
+  .grid>*{min-width:0}.g2,.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.card{overflow:hidden}
+  .row{flex-wrap:wrap;row-gap:4px}.row .grow{flex:1 1 140px;white-space:normal;overflow-wrap:anywhere}.row .meta{white-space:normal}
+  .row a.grow,.row .lnkline{flex:1 1 100%;word-break:break-all;overflow-wrap:anywhere;white-space:normal;font-size:12px}
+  .row .acts{flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap}
+  .bar .in{min-width:120px}.line{overflow-wrap:anywhere}.kvgrid .v{overflow-wrap:anywhere}
+  .acfeed .row.ev{flex-wrap:wrap;row-gap:2px}
+}
+@media(max-width:560px){ /* a real phone: cards one under another (two 170px columns cannot hold a row with buttons); tiles stay paired */
+  .g2,.g3{grid-template-columns:minmax(0,1fr)}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g4>.card{grid-column:1 / -1}.acfeed .row.ev .grow{flex:1 1 100%;order:5;white-space:normal;overflow:visible;text-overflow:clip;padding-left:0;font-size:12.5px;line-height:1.4}.acfeed .row.ev .who{max-width:46vw;overflow:hidden;text-overflow:ellipsis}.acfeed .row.ev>.meta:last-child{margin-left:auto}
+}

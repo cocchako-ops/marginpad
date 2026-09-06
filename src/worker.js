@@ -4292,7 +4292,12 @@ function kvRingPush(env, ctx, key, entry, cap, cutMs) {
   // isolate nothing else touched and was lost. Timing from the last flush means a fresh or idle
   // isolate writes its first entry immediately (lf = 0), while a burst still batches to 8.
   try { const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], t: Date.now(), lf: 0 }; b.a.push(entry);
-    if (b.a.length >= 8 || Date.now() - (b.lf || 0) > 8000) { const items = b.a; B[key] = { a: [], t: Date.now(), lf: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); } } catch (e) {}
+    if (b.a.length >= 8 || Date.now() - (b.lf || 0) > 8000) { const items = b.a; B[key] = { a: [], t: Date.now(), lf: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); }
+    else if (!b.tm && ctx) { // an entry that missed the burst/8s rule used to wait for the NEXT push to this isolate — minutes on a quiet
+      // site (owner 2026-09-06: "logovi kasne"). A 2.5s timer flushes whatever is buffered; the flag lives on the buffer object,
+      // so a burst flush that swaps the object simply leaves the timer nothing to do.
+      b.tm = 1; ctx.waitUntil(new Promise(r => setTimeout(r, 2500)).then(() => { const B2 = globalThis.__ringB, bb = B2 && B2[key]; if (!bb || bb !== b || !bb.a.length) return; const items = bb.a; B2[key] = { a: [], t: Date.now(), lf: Date.now() }; return kvRingFlush(env, key, items, cap, cutMs); }).catch(() => {}));
+    } } catch (e) {}
 }
 async function onlogFlush(env, mm) {
   try { const r = await opslogDo(env).fetch(new Request('https://do/mark', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ m: mm }) })); if (r && r.ok) return; } catch (e) {}
@@ -9531,6 +9536,24 @@ function vaultKindWord(it) {
 // A gift is the one Vault event the whole room should see: somebody spent what they earned on somebody else.
 // Posted into the global room as MarginPad, the same channel and the same voice as the sign-up welcome line.
 // Never throws and never blocks the purchase -- the money side has already settled by the time this runs.
+// Redeem a code for a signed-in member (2026-09-06). The UserStore validates + consumes it and applies pass / premium / Ticks
+// itself; cents are credited here on the RewardLedger (the `gift` path: no 50-cent clamp, $5 cap, logged for audit).
+// The owner's explicit order to pay is the act of generating the code in mp-ops — nothing here pays without one.
+async function redeemCode(env, request, user, codeRaw) {
+  const code = String(codeRaw || '').trim().toUpperCase().slice(0, 24);
+  if (!code) return { status: 400, body: { error: 'code_required' } };
+  let d = null;
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/code/redeem', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: user.id, code }) })); d = await r.json(); if (!d || !d.ok) return { status: r.status || 400, body: d || { error: 'unavailable' } }; } catch (e) { return { status: 503, body: { error: 'unavailable' } }; }
+  if (d.kind === 'cents') {
+    let cj = null; try { const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + user.id, cents: d.amt, from: 'code' }) })); cj = await cr.json(); } catch (e) {}
+    d.credited = !!(cj && cj.ok); d.balanceUsd = cj && cj.balanceUsd;
+    if (!d.credited) { try { await tgAdmin(env, '<b>Code</b> ' + code + ' consumed by @' + (user.username || user.id) + ' but the ledger credit FAILED (' + ((cj && cj.error) || 'no reply') + ') — credit ' + (d.amt / 100).toFixed(2) + ' by hand', { kind: 'code-credit', sev: 'warn' }); } catch (e) {} }
+  }
+  if (d.kind === 'premium') { try { await revokeUserSessions(env, String(user.id)); } catch (e) {} } // Premium must show on the very next request, not when the cached session expires
+  try { await evPush(env, request, 'code', code + ' -> ' + (d.kind === 'pass' ? 'pro pass' : d.kind === 'cents' ? '+$' + (d.amt / 100).toFixed(2) : d.kind === 'premium' ? '+' + d.amt + 'd Premium' : '+' + d.amt + ' Ticks'), '/season/', { code, kind: d.kind, amt: d.amt }); } catch (e) {}
+  try { await tgAdmin(env, '<b>Code redeemed</b> ' + code + ' by @' + (user.username || user.id) + ': ' + (d.kind === 'pass' ? 'pro pass' : d.kind === 'cents' ? '+$' + (d.amt / 100).toFixed(2) : d.kind === 'premium' ? '+' + d.amt + 'd Premium' : '+' + d.amt + ' Ticks'), { kind: 'code-redeemed', sev: 'info' }); } catch (e) {}
+  return { status: 200, body: d };
+}
 async function announceGift(env, ctx, fromUn, toUn, itemId) {
   try {
     if (!env.CHAT) return;
@@ -11736,6 +11759,7 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 <section class="view" data-view="rewards">
 <h2>Reward balance</h2><div class="cards" id="rwdCards"><div class="empty">loading…</div></div>
 <h2>Withdrawals <span class="muted" id="wdCount"></span></h2><div class="panel"><div id="withdrawals"><div class="empty">loading…</div></div></div>
+<h2>Money history <span class="muted" id="mhCount"></span></h2><div class="panel"><div class="muted" style="margin-bottom:8px">every credit and debit on the rewards balance, newest first: faucet claims, missions, gifts, codes, board prizes, Vault purchases, owner adjustments, withdrawals and their outcome. Exact since 6 Sep 2026; older rows are reconstructed.</div><div id="moneyHist"><div class="empty">loading…</div></div></div>
 </section>
 
 <section class="view" data-view="network">
@@ -11790,7 +11814,20 @@ function aiWire(){if(!DATA||!DATA.user||!DATA.user.id)return;var uid=DATA.user.i
 function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();rwWire();loadReward();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
   fetch('/api/auth/clicks?'+uarg()).then(function(r){return r.json();}).then(function(d){CLICKS=d;renderHeat();}).catch(function(){});
   fetch('/api/prices').then(function(r){return r.json();}).then(function(d){if(d&&d.pairs)d.pairs.forEach(function(x){PRICES[String(x.symbol||'').replace('USDT','')]=+x.price;});if(DATA)renderOpen();}).catch(function(){});}
-function loadReward(){if(!DATA||!DATA.user||!DATA.user.id)return;fetch('/api/reward/detail?key='+encodeURIComponent(key)+'&address=u:'+encodeURIComponent(DATA.user.id)).then(function(r){return r.json();}).then(function(d){RWD=d;renderReward();rwCtl();}).catch(function(){renderReward();rwCtl();});}
+function loadReward(){if(!DATA||!DATA.user||!DATA.user.id)return;fetch('/api/reward/detail?key='+encodeURIComponent(key)+'&address=u:'+encodeURIComponent(DATA.user.id)).then(function(r){return r.json();}).then(function(d){RWD=d;renderReward();rwCtl();}).catch(function(){renderReward();rwCtl();});loadMoney();}
+function loadMoney(){var el=document.getElementById('moneyHist');if(!el||!DATA||!DATA.user||!DATA.user.id)return;
+  fetch('/api/admin/acctlog?key='+encodeURIComponent(key)+'&uid='+encodeURIComponent(DATA.user.id)+'&n=1000').then(function(r){return r.json();}).then(function(d){
+    if(!d||d.error){el.innerHTML='<div class="empty">no ledger account (never claimed, never paid)</div>';return;}
+    var MT={welcome:['Welcome bonus','in'],claim:['Faucet claim','in'],mission:['Daily mission','in'],gift:['Gift','in'],lbprize:['Season board prize','in'],promo:['Promo post','in'],promo_paid:['Promo post paid','in'],exsign:['Exchange sign-up','in'],exsign_paid:['Sign-up bonus paid','in'],xengage_paid:['X engagement paid','in'],moon:['Moon sign-up','in'],adjust:['Owner adjustment','adj'],shop:['Vault purchase','out'],shoprefund:['Vault refund','in'],withdraw:['Withdrawal requested','out'],wdreject:['Withdrawal rejected, refunded','in'],wdcancel:['Withdrawal cancelled, refunded','in'],refpaid:['Referral bonus','in']};
+    var rows=[],oldest=+d.oldest||0;
+    (d.rows||[]).forEach(function(r){var m=MT[r.type]||[r.type,(+r.amount||0)>=0?'in':'out'];var amt=+r.amount||0,dir=m[1]==='adj'?(amt>=0?'in':'out'):m[1],det=r.detail||'',what=m[0];if(r.type==='gift'&&det==='code'){what='Code redeemed';det='';}else if(r.type==='gift'&&det)det='from @'+det;rows.push({ts:r.ts,what:what,det:det,usd:Math.abs(amt)/100,dir:dir,old:false});});
+    (d.wds||[]).forEach(function(w){if(w.status==='paid'&&w.paid_ts)rows.push({ts:w.paid_ts,what:'Withdrawal PAID',det:(w.address||'')+(w.txid?' · tx '+String(w.txid).slice(0,12)+'…':''),usd:((+w.amount||0)+(+w.bonus||0))/100,dir:'paid',old:false});if(w.status==='rejected'&&w.paid_ts)rows.push({ts:w.paid_ts,what:'Withdrawal rejected',det:w.note||'',usd:(+w.amount||0)/100,dir:'note',old:false});if(!oldest||w.ts<oldest)rows.push({ts:w.ts,what:'Withdrawal requested',det:w.address||'',usd:((+w.amount||0)+(+w.bonus||0))/100,dir:'out',old:true});});
+    (d.shop||[]).forEach(function(s){if(!oldest||s.ts<oldest)rows.push({ts:s.ts,what:s.kind==='refund'?'Vault refund':'Vault purchase',det:s.item||'',usd:(+s.cents||0)/100,dir:s.kind==='refund'?'in':'out',old:true});});
+    if(d.earnings)(d.earnings.items||[]).forEach(function(it){if(oldest&&it.ts>=oldest&&it.type!=='welcome')return;var L={exsign:'Exchange sign-up',promo:'Promo post',lbprize:'Season board prize',welcome:'Welcome bonus',claim:'Faucet claim',moon:'Moon sign-up'};rows.push({ts:it.ts,what:L[it.type]||it.type,det:it.type==='lbprize'?('#'+it.rank+' '+(it.board||'')+' · week '+it.week):it.type==='promo'?(it.platform||'')+' '+(it.url||''):it.type==='exsign'?(it.exchange||'')+' UID '+(it.uid||''):(it.approx?'approximate':''),usd:+it.usd||0,dir:'in',old:true});});
+    rows.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+    var mc=document.getElementById('mhCount');if(mc)mc.textContent=rows.length?('('+rows.length+')'):'';
+    el.innerHTML=rows.length?rows.slice(0,400).map(function(r){var col=r.dir==='in'?'#41e3a3':r.dir==='out'?'#ff8a80':r.dir==='paid'?'#ffd75a':'#9aa3ad';return '<div class="row"><span class="muted" style="width:120px">'+dt(r.ts)+'</span><span style="flex:1;min-width:0"><b>'+esc(r.what)+'</b>'+(r.det?' <span class="muted" style="word-break:break-all">'+esc(String(r.det).slice(0,90))+'</span>':'')+(r.old?' <span class="muted">history</span>':'')+'</span><span class="mono" style="width:80px;text-align:right;color:'+col+';font-weight:700">'+(r.dir==='in'?'+':r.dir==='out'?'-':'')+'$'+r.usd.toFixed(2)+'</span></div>';}).join(''):'<div class="empty">no money movements on record</div>';
+  }).catch(function(){el.innerHTML='<div class="empty">could not load</div>';});}
 function rwCtl(){var el=document.getElementById('rwCtl');if(el){if(!RWD||RWD.exists===false){el.innerHTML='<span class="muted">no faucet account &mdash; the user never opened /rewards</span>';}else{el.innerHTML='<span class="mono" style="font-size:13px">balance <b style="color:#c2f64a">$'+(+RWD.balanceUsd||0).toFixed(2)+'</b> &middot; earned $'+(+RWD.earnedUsd||0).toFixed(2)+' &middot; '+(RWD.claims||0)+' claims'+(RWD.banned?' &middot; <b style="color:#ff8a80">BANNED from faucet</b>':'')+(RWD.locked?' &middot; device-locked':'')+'</span>';}}
   var bb=document.getElementById('rwBan');if(bb)bb.textContent=(RWD&&RWD.banned)?'Unban faucet':'Ban from faucet';}
 function rwWire(){function A(){return 'u:'+((DATA&&DATA.user&&DATA.user.id)||'');}
@@ -13754,6 +13791,18 @@ export default {
       if (byDayEx && byEx) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } })); } catch (e) {} // never cache an AE failure — it would pin an empty tab for 2 min
       return new Response(withClicks(body), { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/acctlog' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one user's money history (2026-09-06): durable acctlog + withdrawals with status + Vault cash + the reconstructed earnings for the time before the log existed. ?u=<username>|?email=|?uid=|?acct=u:<uid>
+      const jhA = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let acct = String(url.searchParams.get('acct') || '').toLowerCase(), uid = String(url.searchParams.get('uid') || '');
+      if (!acct && !uid && env.USERS) { const q = String(url.searchParams.get('u') || url.searchParams.get('email') || '').trim(); if (q) { try { const w9 = await usersDO(env, '/xpdiag', q.indexOf('@') > 0 ? { email: q.toLowerCase() } : { username: q.replace(/^@/, '') }); if (w9 && w9.user && w9.user.id) uid = String(w9.user.id); } catch (e) {} } }
+      if (!acct && uid) acct = 'u:' + uid;
+      if (!acct) return new Response('{"error":"not_found"}', { status: 404, headers: jhA });
+      const led = env.REWARDS.get(env.REWARDS.idFromName('ledger')); const hdr = { headers: { 'x-cfg': JSON.stringify(await rewardCfg(env)) } };
+      let log = null, earn = null;
+      try { log = await (await led.fetch(new Request('https://do/acctlog?acct=' + encodeURIComponent(acct) + '&n=' + Math.min(2000, +url.searchParams.get('n') || 500)))).json(); } catch (e) {}
+      try { earn = await (await led.fetch(new Request('https://do/earnings?address=' + encodeURIComponent(acct), hdr))).json(); } catch (e) {}
+      return new Response(JSON.stringify({ acct, uid: acct.replace(/^u:/, ''), account: log && log.account, rows: (log && log.rows) || [], wds: (log && log.wds) || [], shop: (log && log.shop) || [], oldest: log && log.oldest, since: log && log.since, earnings: earn && earn.exists ? { items: earn.items || [], summary: earn.summary || {}, earnedUsd: earn.earnedUsd, balanceUsd: earn.balanceUsd, claims: earn.claims, claimTotalUsd: earn.claimTotalUsd } : null }), { headers: jhA });
+    }
     if (url.pathname === '/api/admin/bybituids' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // owner-editable Bybit affiliate UID allowlist (copied from the Bybit Affiliate Portal). Withdrawals to a UID NOT on it are auto-rejected with a contact-support message. Empty list = gate OFF.
       const jh9 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'POST') {
@@ -15080,18 +15129,28 @@ export default {
             try { await env.STATS.delete(lock); } catch (e) {}
             return new Response(JSON.stringify(mj), { status: mr.status, headers: jh7 });
           }
-          const br = await stubS.fetch(new Request('https://do/pass/buy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, src, code: pb.code }) }));
-          const bj = await br.json(); if (bj && bj.ok) { try { await evPush(env, request, 'shopbuy', 'pass (' + (src === 'code' ? 'code' : 'Ticks') + ')', '/pass/'); } catch (e) {} }
+          if (src === 'code') { const rc = await redeemCode(env, request, uS, pb.code); return new Response(JSON.stringify(rc.body), { status: rc.status, headers: jh7 }); } // any kind of code: pass, cents, premium, Ticks
+          const br = await stubS.fetch(new Request('https://do/pass/buy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, src }) }));
+          const bj = await br.json(); if (bj && bj.ok) { try { await evPush(env, request, 'shopbuy', 'pass (Ticks)', '/pass/'); } catch (e) {} }
           return new Response(JSON.stringify(bj), { status: br.status, headers: jh7 });
         }
         return new Response('{"error":"op"}', { status: 400, headers: jh7 });
       }
       try { const gr = await stubS.fetch(new Request('https://do/pass/me?uid=' + encodeURIComponent(uS ? uS.id : ''))); const gj = await gr.json(); gj.signedIn = !!uS; return new Response(JSON.stringify(gj), { headers: jh7 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh7 }); }
     }
-    if (url.pathname === '/api/admin/passcodes' && (await adminCookieOk(request, env) || (request.method !== 'POST' && isAdminKey(env, adminKeyFrom(request, url))) || (request.method === 'POST' && isAdminKey(env, adminKeyFrom(request, url)) && url.searchParams.get('e2e')))) { // ops Settings > Pass codes: GET list; POST gen/revoke is cookie-only (the E2E hook needs ?e2e=1 + the key)
+    if (url.pathname === '/api/redeem' && request.method === 'POST') { // any member, any code kind (the /season/ box and the /rewards/ box both post here or through /api/pass)
+      const jhR = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const tokR = getCookie(request, SESS_COOKIE); const uR = (tokR && env.USERS) ? await sessionUser(env, tokR) : null;
+      if (!uR || !uR.id) return new Response('{"error":"not_signed_in"}', { status: 401, headers: jhR });
+      let rb = {}; try { rb = await request.json(); } catch (e) {}
+      const rc = await redeemCode(env, request, uR, rb.code);
+      return new Response(JSON.stringify(rc.body), { status: rc.status, headers: jhR });
+    }
+    if (url.pathname === '/api/admin/passcodes' && (await adminCookieOk(request, env) || (request.method !== 'POST' && isAdminKey(env, adminKeyFrom(request, url))) || (request.method === 'POST' && isAdminKey(env, adminKeyFrom(request, url)) && url.searchParams.get('e2e')))) { // ops Settings > Codes: GET list; POST gen/revoke is cookie-only (the E2E hook needs ?e2e=1 + the key)
       const jh8 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let cb = { op: 'list' }; if (request.method === 'POST') { try { cb = await request.json(); } catch (e) {} }
-      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke') { try { await tgAdmin(env, '<b>Pass codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
+      const gives = (k, a) => k === 'cents' ? '$' + ((+a || 0) / 100).toFixed(2) + ' rewards balance' : k === 'premium' ? (+a || 0) + ' days of Premium' : k === 'ticks' ? (+a || 0) + ' Ticks' : 'the pro pass';
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke') { try { await tgAdmin(env, '<b>Codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' x ' + gives(cb.kind, cb.amt) + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
     }
     if (url.pathname === '/api/goals') { // Season goals: GET = mine + catalogue (public catalogue for guests); POST {op:'pick'|'claim', k}
       const jh6 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -16316,6 +16375,8 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS msgs(address TEXT PRIMARY KEY, message TEXT, ts INTEGER, seen INTEGER NOT NULL DEFAULT 0)'); // admin → user message, shown as a banner on /rewards when that address loads
     s.exec('CREATE TABLE IF NOT EXISTS log(ts INTEGER, type TEXT, address TEXT, cc TEXT, dev TEXT, amount INTEGER)'); // live activity feed: claim / visit / withdraw
     s.exec('CREATE TABLE IF NOT EXISTS shoplog(ts INTEGER, acct TEXT, item TEXT, cents INTEGER, kind TEXT)'); // DURABLE Vault cash ledger (2026-09-04): the 200-row live log above lost every shop purchase within hours, so the Shop tab showed $0 while people paid
+    s.exec('CREATE TABLE IF NOT EXISTS acctlog(ts INTEGER, acct TEXT, type TEXT, detail TEXT, amount INTEGER)'); // DURABLE per-account money history (2026-09-06, owner: "kad udjem u neciji profil... istoriju kako i odakle je dobijao novac i kad se oduzima"): every this.log() with an amount lands here too and is never trimmed
+    try { s.exec('CREATE INDEX IF NOT EXISTS idx_acctlog_acct ON acctlog(acct, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS vidlock(vid TEXT PRIMARY KEY, address TEXT, ts INTEGER)'); // one address per device; admin can unlock
     s.exec('CREATE TABLE IF NOT EXISTS support(ts INTEGER, email TEXT, address TEXT, message TEXT)'); // contact-us submissions from the rewards page
     try { s.exec('ALTER TABLE support ADD COLUMN closed INTEGER NOT NULL DEFAULT 0'); } catch (e) {} // open vs closed ticket state for the admin Support tab
@@ -16341,7 +16402,9 @@ export class RewardLedger {
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
 
-  log(type, address, cc, dev, amount) { const s = this.state.storage.sql; try { s.exec('INSERT INTO log(ts,type,address,cc,dev,amount) VALUES(?,?,?,?,?,?)', Date.now(), type, address || '', cc || '', dev || '', amount || 0); s.exec('DELETE FROM log WHERE rowid NOT IN (SELECT rowid FROM log ORDER BY ts DESC LIMIT 200)'); } catch (e) {} }
+  log(type, address, cc, dev, amount) { const s = this.state.storage.sql; try { s.exec('INSERT INTO log(ts,type,address,cc,dev,amount) VALUES(?,?,?,?,?,?)', Date.now(), type, address || '', cc || '', dev || '', amount || 0); s.exec('DELETE FROM log WHERE rowid NOT IN (SELECT rowid FROM log ORDER BY ts DESC LIMIT 200)'); } catch (e) {}
+    // durable per-account copy of every movement (the third argument is the detail on money rows: mission id, item, gift sender, week/board)
+    try { if (amount && address && type !== 'dispadj') s.exec('INSERT INTO acctlog(ts,acct,type,detail,amount) VALUES(?,?,?,?,?)', Date.now(), address, type, String(cc || '').slice(0, 40), Math.round(+amount || 0)); } catch (e) {} }
   // One-time sign-up bonus: credit the configured welcome amount to a new account the first time it's seen. Idempotent (welcome flag) + respects the global daily budget. Returns the granted USD amount (0 if not granted).
   grantWelcome(acct, cfg) {
     if (!acct || !(cfg.welcomeC > 0)) return 0;
@@ -16619,6 +16682,16 @@ export class RewardLedger {
       if (!validAcct) return this.j({ error: 'bad_address' }, 400);
       sql.exec('UPDATE accounts SET banned=0 WHERE address=?', addr); this.log('unban', addr, '', '', 0);
       return this.j({ ok: true });
+    }
+    if (path === '/acctlog') { // admin: one account's durable money history, newest first (+ its withdrawals with status, so a payout reads as request -> paid/rejected)
+      const a = String(url.searchParams.get('acct') || '').toLowerCase(); if (!/^u:[0-9a-z]{8,40}$/.test(a) && !validAddr) return this.j({ error: 'bad_address' }, 400);
+      const n = Math.min(2000, Math.max(20, +url.searchParams.get('n') || 500));
+      const rows = this.rows('SELECT ts, type, detail, amount FROM acctlog WHERE acct=? ORDER BY ts DESC LIMIT ?', a, n);
+      const wds = this.rows('SELECT id, address, amount, bonus, status, ts, paid_ts, txid, note FROM withdrawals WHERE acct=? OR address=? ORDER BY ts DESC LIMIT 100', a, a);
+      const shop = this.rows('SELECT ts, item, cents, kind FROM shoplog WHERE acct=? ORDER BY ts DESC LIMIT 200', a);
+      const acc = this.rows('SELECT balance, earned, claims, created, last_claim, banned, payout_addr FROM accounts WHERE address=?', a)[0] || null;
+      const oldest = (this.rows('SELECT MIN(ts) t FROM acctlog WHERE acct=?', a)[0] || {}).t || 0;
+      return this.j({ acct: a, account: acc, rows, wds, shop, oldest, since: 1788739200000 }); // since = 2026-09-06, when the durable log started; older money is only in the reconstructed /earnings view
     }
     if (path === '/shopdebit') { // The Vault: debit balance for a cosmetic (integer cents). FINAL sink — logged as 'shop', never returns to withdrawable except via explicit /shoprefund on a failed grant.
       const sacct = String(body.acct || ''), scents = Math.max(1, Math.round(+body.cents || 0)), sitem = String(body.item || '').slice(0, 24);
@@ -17324,6 +17397,8 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS upass(user_id TEXT, season INTEGER, pro INTEGER DEFAULT 0, bought_ts INTEGER, src TEXT, claimed TEXT, PRIMARY KEY(user_id, season))');
     s.exec('CREATE TABLE IF NOT EXISTS pcode(code TEXT PRIMARY KEY, uses INTEGER, used INTEGER DEFAULT 0, exp INTEGER, created INTEGER, note TEXT, revoked INTEGER DEFAULT 0)');
     s.exec('CREATE TABLE IF NOT EXISTS pcode_use(code TEXT, user_id TEXT, ts INTEGER, PRIMARY KEY(code, user_id))');
+    try { s.exec("ALTER TABLE pcode ADD COLUMN kind TEXT DEFAULT 'pass'"); } catch (e) {} // 2026-09-06: a code can also give cents (rewards balance), premium days or Ticks
+    try { s.exec('ALTER TABLE pcode ADD COLUMN amt INTEGER DEFAULT 0'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS ugoal(user_id TEXT, season INTEGER, k TEXT, target INTEGER, chosen_ts INTEGER, done_ts INTEGER, paid INTEGER DEFAULT 0, PRIMARY KEY(user_id, season, k))');
     s.exec('CREATE TABLE IF NOT EXISTS upred(user_id TEXT, day TEXT, guess REAL, ts INTEGER, px_at REAL, close REAL, err REAL, pts INTEGER, ticks INTEGER, settled INTEGER DEFAULT 0, PRIMARY KEY(user_id, day))');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
@@ -19505,16 +19580,40 @@ export class UserStore {
       if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', uid, rw.item, Date.now(), 'pass', 's' + sk.idx); item = rw.item; } catch (e) { item = rw.item; } }
       return this.j({ ok: true, t, track, ticks, item });
     }
-    if (path === '/pass/codes' && request.method === 'POST') { // ops: {op:'gen', n, uses, days, note} | {op:'revoke', code} | {op:'list'}
+    if (path === '/code/redeem' && request.method === 'POST') { // {uid, code} -> consume one use and apply what it gives (pass / premium days / Ticks here; cents are credited by the worker on the ledger)
+      const uid = String(b.uid || '').replace(/^u:/, ''), code = String(b.code || '').trim().toUpperCase();
+      if (!uid || !code || !this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      const c = this.rows('SELECT uses, used, exp, revoked, kind, amt FROM pcode WHERE code=?', code)[0];
+      if (!c || +c.revoked) return this.j({ error: 'bad_code' }, 404);
+      if (c.exp && +c.exp < Date.now()) return this.j({ error: 'expired' }, 410);
+      if (+c.used >= +c.uses) return this.j({ error: 'used_up' }, 409);
+      if (this.rows('SELECT 1 FROM pcode_use WHERE code=? AND user_id=?', code, uid)[0]) return this.j({ error: 'code_taken' }, 409);
+      const kind = String(c.kind || 'pass'), amt = Math.max(0, Math.round(+c.amt || 0)), sk = predSeason(Date.now());
+      if (kind === 'pass') { const row = this.rows('SELECT pro FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0]; if (row && +row.pro) return this.j({ error: 'already' }, 409); }
+      sql.exec('UPDATE pcode SET used=used+1 WHERE code=?', code);
+      sql.exec('INSERT INTO pcode_use(code,user_id,ts) VALUES(?,?,?)', code, uid, Date.now());
+      let until = 0, ticks = 0;
+      if (kind === 'pass') sql.exec("INSERT INTO upass(user_id,season,pro,bought_ts,src,claimed) VALUES(?,?,1,?,'code','[]') ON CONFLICT(user_id,season) DO UPDATE SET pro=1, bought_ts=excluded.bought_ts, src='code'", uid, sk.idx, Date.now());
+      else if (kind === 'premium') { const cur = +(this.rows('SELECT premium FROM users WHERE id=?', uid)[0] || {}).premium || 0; until = Math.max(cur, Date.now()) + amt * 86400000; sql.exec('UPDATE users SET premium=? WHERE id=?', until, uid); } // extends a running premium instead of overwriting it
+      else if (kind === 'ticks') { try { ticks = this._grantTicks(uid, 'code', amt, { note: 'code ' + code }); } catch (e) {} }
+      this._opsEv(uid, 'code', code + ': ' + (kind === 'pass' ? 'pro pass' : kind === 'cents' ? '+$' + (amt / 100).toFixed(2) : kind === 'premium' ? '+' + amt + 'd Premium' : '+' + amt + ' Ticks'), '/season/', { code, kind, amt });
+      return this.j({ ok: true, kind, amt, code, season: sk.idx, until, ticks });
+    }
+    if (path === '/pass/codes' && request.method === 'POST') { // ops: {op:'gen', n, uses, days, note, kind, amt} | {op:'revoke', code} | {op:'list'}
       const op = String(b.op || 'list');
       if (op === 'gen') {
         const n = Math.max(1, Math.min(50, Math.round(+b.n || 1))), uses = Math.max(1, Math.min(1000, Math.round(+b.uses || 1))), days = Math.max(0, Math.min(365, Math.round(+b.days || 0)));
         const exp = days ? Date.now() + days * 86400000 : null, note = String(b.note || '').slice(0, 60), codes = [];
-        for (let i = 0; i < n; i++) { let c = passCode(); for (let k = 0; k < 5 && this.rows('SELECT 1 FROM pcode WHERE code=?', c)[0]; k++) c = passCode(); sql.exec('INSERT INTO pcode(code,uses,used,exp,created,note,revoked) VALUES(?,?,0,?,?,?,0)', c, uses, exp, Date.now(), note); codes.push(c); }
-        return this.j({ ok: true, codes, uses, exp, note });
+        // what the code gives: the pro pass (default), cents on the rewards balance (max $5), premium days (max 365) or Ticks (max 5000)
+        const kind = ['pass', 'cents', 'premium', 'ticks'].indexOf(String(b.kind || 'pass')) >= 0 ? String(b.kind || 'pass') : 'pass';
+        const rawAmt = Math.round(+b.amt || 0);
+        if (kind !== 'pass' && !(rawAmt > 0)) return this.j({ error: 'amount_required' }, 400);
+        const amt = kind === 'pass' ? 0 : Math.min(kind === 'cents' ? 500 : kind === 'premium' ? 365 : 5000, rawAmt);
+        for (let i = 0; i < n; i++) { let c = passCode(); for (let k = 0; k < 5 && this.rows('SELECT 1 FROM pcode WHERE code=?', c)[0]; k++) c = passCode(); sql.exec('INSERT INTO pcode(code,uses,used,exp,created,note,revoked,kind,amt) VALUES(?,?,0,?,?,?,0,?,?)', c, uses, exp, Date.now(), note, kind, amt); codes.push(c); }
+        return this.j({ ok: true, codes, uses, exp, note, kind, amt });
       }
       if (op === 'revoke') { const code = String(b.code || '').trim().toUpperCase(); sql.exec('UPDATE pcode SET revoked=1 WHERE code=?', code); return this.j({ ok: true, code }); }
-      const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked FROM pcode ORDER BY created DESC LIMIT 300');
+      const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked, kind, amt FROM pcode ORDER BY created DESC LIMIT 300');
       const holders = this.rows('SELECT COUNT(*) c FROM upass WHERE season=? AND pro=1', predSeason(Date.now()).idx)[0] || { c: 0 };
       const bySrc = this.rows('SELECT src, COUNT(*) n FROM upass WHERE pro=1 GROUP BY src');
       return this.j({ codes: rows, holders: +holders.c || 0, bySrc });

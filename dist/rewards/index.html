@@ -391,6 +391,19 @@
       <button class="btn btn-lime" id="claimBtn" type="button">Claim 0.02 USDT</button>
     </div>
     <div class="msg" id="msg"></div>
+    <form class="claim-row" id="codeRow" autocomplete="off" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+      <input id="codeIn" placeholder="Have a code? MP-XXXXX-XXXXX" maxlength="16" spellcheck="false" style="flex:1 1 180px;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0" />
+      <button class="btn" type="submit" id="codeBtn" style="flex:0 0 auto">Redeem</button>
+    </form>
+    <div class="note" style="text-align:left;margin-top:6px;color:#8a939d;font-size:12px">Codes drop in chat, on Telegram and in events. A code can add to this balance, give Premium days, Ticks or the season pass. One use per account.</div>
+    <script>
+    (function(){var f=document.getElementById('codeRow'),i=document.getElementById('codeIn'),b=document.getElementById('codeBtn'),m=document.getElementById('msg');if(!f)return;var busy=false;
+      f.addEventListener('submit',function(e){e.preventDefault();if(busy)return;var c=String(i.value||'').trim().toUpperCase();if(!c){m.textContent='Type the code first.';return;}busy=true;b.disabled=true;m.textContent='Checking the code…';
+        fetch('/api/redeem',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code:c})}).then(function(r){return r.json().then(function(j){return [r.status,j];});}).then(function(x){busy=false;b.disabled=false;var j=x[1]||{};
+          if(j.ok){var got=j.kind==='cents'?'+$'+((j.amt||0)/100).toFixed(2)+' added to your balance':j.kind==='premium'?'+'+j.amt+' days of Premium':j.kind==='ticks'?'+'+j.amt+' Ticks':'the season pass pro track';m.textContent='Code redeemed: '+got+'.';i.value='';if(j.kind==='cents')setTimeout(function(){location.reload();},1400);}
+          else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.textContent=E[j.error]||'Could not redeem that code.';}
+        }).catch(function(){busy=false;b.disabled=false;m.textContent='Network error, try again.';});});})();
+    </script>
   </div>
 
   <div class="card" id="wdHistCard" hidden>

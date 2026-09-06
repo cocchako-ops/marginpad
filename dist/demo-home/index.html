@@ -355,18 +355,41 @@
 .ss-empty{color:#5c656f;font-size:13px;padding:8px 0}
 .ss-more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;color:#ffd75a;text-decoration:none}
 /* member strip: replaces the hero for a signed-in visitor */
-.dash{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin:14px var(--pad) 0;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,215,90,.4);background:radial-gradient(90% 100% at 0 0,rgba(255,215,90,.12),transparent 60%),linear-gradient(180deg,#12161d,#0c0f13);color:inherit;text-decoration:none;position:relative;z-index:2}
+.dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.35fr) minmax(220px,.8fr);align-items:stretch;gap:18px;margin:14px var(--pad) 0;padding:20px 22px;border-radius:22px;border:1px solid rgba(199,146,255,.3);background:radial-gradient(70% 90% at 0 0,rgba(199,146,255,.16),transparent 60%),radial-gradient(50% 80% at 100% 100%,rgba(194,246,74,.1),transparent 60%),linear-gradient(180deg,#12161d,#0b0e12);color:inherit;text-decoration:none;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 80px -40px rgba(199,146,255,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .2s,transform .2s}
+.dash:hover{border-color:rgba(194,246,74,.5);transform:translateY(-1px)}
+.dash::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(199,146,255,.75),transparent 35%,transparent 65%,rgba(194,246,74,.6));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.dash::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);-webkit-mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);pointer-events:none}
 .dash[hidden]{display:none}
-.dash-l{display:flex;flex-direction:column;gap:2px;min-width:0}
-.dash-k{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#ffd75a}
-.dash-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;color:#fff;white-space:nowrap}
-.dash-chips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
-.dash-chips span{display:inline-flex;align-items:center;gap:6px;font:700 11px 'Space Mono',monospace;letter-spacing:.02em;padding:6px 10px;border-radius:999px;border:1px solid #2a323c;color:#9aa3ad;background:rgba(255,255,255,.03);white-space:nowrap}
-.dash-chips span b{color:#fff}.dash-chips span.ok{border-color:rgba(194,246,74,.55);color:#c2f64a}.dash-chips span.pro{border-color:rgba(199,146,255,.55);color:#c792ff}.dash-chips span.gold{border-color:rgba(255,215,90,.55);color:#ffd75a}.dash-chips span.hot{border-color:rgba(255,176,32,.6);color:#ffb020}
-.dash-go{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a;white-space:nowrap}
+.dash>*{position:relative;z-index:1;min-width:0}
+.dash-hero{display:flex;gap:14px;align-items:center;min-width:0}
+.dash-av{width:64px;height:64px;border-radius:20px;flex:0 0 64px;display:flex;align-items:center;justify-content:center;font:800 26px 'Bricolage Grotesque',sans-serif;color:#0a0b0d;background:linear-gradient(160deg,#d6ff7a,#c2f64a);box-shadow:0 0 0 3px #0a0b0d,0 0 0 5px var(--lvl,#c2f64a),0 14px 30px -12px var(--lvl,#c2f64a);overflow:hidden}
+.dash-av img{width:100%;height:100%;object-fit:cover}
+.dash-l{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 auto}
+.dash-k{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c792ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-t b{color:#c2f64a}
+.dash-lvl{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;margin-top:4px;font:700 11px 'Space Mono',monospace;color:#9aa3ad;white-space:nowrap}
+.dash-lvl .nm{color:var(--lvl,#c2f64a)}
+.dash-bar{display:block;height:6px;border-radius:4px;background:#161b22;overflow:hidden}.dash-bar b{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--lvl,#c2f64a),#fff);transition:width .8s ease}
+.dash-nx{grid-column:1/-1;font-size:10.5px;color:#5c656f;overflow:hidden;text-overflow:ellipsis}
+.dash-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-content:center}
+.dash-stats .dst{display:flex;flex-direction:column;gap:2px;padding:10px 10px 9px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);min-width:0}
+.dash-stats .dst b{font:800 22px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dash-stats .dst b small{font-size:11px;color:#5c656f;font-weight:600;margin-left:2px}
+.dash-stats .dst em{font-style:normal;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst i{font-style:normal;font-size:11px;color:#5c656f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst.ok{border-color:rgba(194,246,74,.45)}.dash-stats .dst.ok b{color:#c2f64a}.dash-stats .dst.pro{border-color:rgba(199,146,255,.45)}.dash-stats .dst.pro b{color:#c792ff}.dash-stats .dst.gold{border-color:rgba(255,215,90,.45)}.dash-stats .dst.gold b{color:#ffd75a}.dash-stats .dst.hot{border-color:rgba(255,176,32,.55);background:rgba(255,176,32,.08)}.dash-stats .dst.hot i{color:#ffb020}
+.dash-next{display:flex;flex-direction:column;gap:8px;padding-left:18px;border-left:1px solid rgba(255,255,255,.07);min-width:0}
+.dash-todo{display:flex;flex-direction:column;gap:6px}
+.dash-todo span{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:center;font-size:13px;color:#d7dce2;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-todo span i{width:18px;height:18px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font:800 11px 'Space Mono',monospace;background:rgba(255,255,255,.06);color:#9aa3ad;font-style:normal}
+.dash-todo span.ok i{background:rgba(194,246,74,.18);color:#c2f64a}.dash-todo span.hot i{background:rgba(255,176,32,.2);color:#ffb020}.dash-todo span.pro i{background:rgba(199,146,255,.2);color:#c792ff}
+.dash-go{margin-top:auto;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a;white-space:nowrap}
+.dash-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}.dash-days i{display:block;height:5px;border-radius:3px;background:#1a1f27}.dash-days i.on{background:#c792ff}.dash-days i.now{background:#fff;box-shadow:0 0 8px #c792ff}
+@media(max-width:980px){.dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dash-next{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.07);padding-top:12px}}
+@media(max-width:640px){.dash{grid-template-columns:1fr;padding:16px}.dash-stats{grid-template-columns:1fr 1fr}.dash-t{font-size:21px}}
 body.mpa-authed .hero{display:none}
 @media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
-@media(max-width:640px){.ss-grid{grid-template-columns:1fr}.dash{grid-template-columns:1fr auto}.dash-chips{grid-column:1/-1}}
+@media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
   .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;}
   .lb-info{border-color:rgba(255,215,90,.3);background:linear-gradient(160deg,rgba(255,215,90,.09),rgba(255,215,90,.015) 55%),var(--panel);}
@@ -877,9 +900,9 @@ body.mpa-authed .hero{display:none}
 <div class="tape"><div class="tape-in" id="tape"></div></div>
 
 <a class="dash" id="dash" href="/season/" hidden>
-  <div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Your season</span></div>
-  <div class="dash-chips" id="dashChips"></div>
-  <span class="dash-go">Open →</span>
+  <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
+  <div class="dash-stats" id="dashChips"></div>
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"></div><span class="dash-go">Open your season →</span></div>
 </a>
 <section class="hero">
   <div>
@@ -1619,12 +1642,20 @@ body.mpa-authed .hero{display:none}
       }
       document.getElementById('ssRows').innerHTML=rows.join('');
       /* strip */
-      if(signed&&sk){dash.hidden=false;document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').textContent='Welcome back, @'+(m.username||'trader');
-        var ch=[];if(P)ch.push('<span class="pro">tier <b>'+P.tier+'</b>'+(P.claimable?' · '+P.claimable+' to claim':'')+'</span>');
-        if(D){var td=D.me&&D.me.today;ch.push('<span class="'+(td?'ok':'')+'">call <b>'+(td?'made':(D.open?'open':'closed'))+'</b></span>');}
-        if(G){var pk2=G.picks||[];ch.push('<span class="gold">goals <b>'+pk2.length+'/2</b>'+(pk2.some(function(x){return x.done&&!x.paid;})?' · claim':'')+'</span>');}
-        if(H)ch.push('<span class="'+(H.active?'hot':'')+'">happy hour <b>'+(H.active?'live':H.nextStartMs?left(H.nextStartMs-Date.now()):'—')+'</b></span>');
-        var bestR=rows.length?null:null;document.getElementById('dashChips').innerHTML=ch.join('');}
+      if(signed&&sk){dash.hidden=false;var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+        document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
+        var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
+        var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
+        document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+        var ch=[],todo=[];
+        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/20</small></b><em>Pass tier</em><i>'+(P.claimable?P.claimable+' to claim':P.tier>=20?'complete':int(P.next||0)+' XP to next')+'</i></span>');if(P.claimable)todo.push(['ok','Claim '+P.claimable+' pass reward'+(P.claimable>1?'s':'')]);}
+        if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>Daily call</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+' days in a row':''):D.open?'until '+D.cutoffH+':00 UTC':'tomorrow 00:00 UTC')+'</i></span>');if(!td&&D.open)todo.push(['hot','Make today\'s BTC call']);}
+        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>Goals</em><i>'+(gd.length?gd.length+' to claim':pk2.length<2?'pick '+(2-pk2.length)+' more':pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok','Claim goal: '+x.name]);});if(pk2.length<2)todo.push(['pro','Pick your season goal'+(pk2.length?'':'s')]);}
+        if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
+          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'—')+'</b><em>Boards</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):'not ranked yet')+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' — $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
+        if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
+        document.getElementById('dashChips').innerHTML=ch.join('');
+        document.getElementById('dashTodo').innerHTML=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('')||'<span class="ok"><i>1</i>All caught up — go trade</span>';}
       else dash.hidden=true;
       /* leading board: green days, top 5 with prizes */
       if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
