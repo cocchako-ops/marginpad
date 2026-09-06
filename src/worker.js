@@ -12747,7 +12747,7 @@ async function handleSpot(url, request, env) {
     for (const h of holds) {
       let px = 0;
       try {
-        if (h.meta && h.meta.k === 'meme') { const mp = await spotMemePrice(env, h.meta.net || 'solana', h.meta.pool); px = mp ? mp.price : 0; }
+        if (h.meta && h.meta.k === 'meme') { const mp = await spotMemePrice(env, h.meta.net || 'solana', h.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { h.liqUsd = Math.round(+mp.liqUsd || 0); h.rugged = h.liqUsd < SPOT_THIN_LIQ; } } // rugged = the pool behind the bag holds under $1k: what a pulled liquidity looks like from outside (2026-09-06). The value still prints at the live price; only the badge and the lesson change.
         else { const pd = await fetchPriceCached(h.sym); px = pd ? +pd.price : 0; }
       } catch (e) {}
       if (!(px > 0)) { px = +((h.meta && h.meta.lastPx)) || 0; h.stale = true; } // dead feed (rugged meme) → last known mark + a stale flag for the UI
@@ -12768,6 +12768,16 @@ async function handleSpot(url, request, env) {
     const snaps = d.snaps || [];
     let base = null; for (let i = snaps.length - 1; i >= 0; i--) { if (snaps[i].valueUsd != null) { base = snaps[i].valueUsd; break; } } // latest snapshot = start-of-day value (cron writes just after midnight UTC)
     return jr({ ...d, holds, natPx, gasUsd, walletUsd, exchangeUsd, totalUsd, todayPnlUsd: base != null ? Math.round((totalUsd - base) * 100) / 100 : null, allTimePnlUsd: Math.round((totalUsd - 10000) * 100) / 100, feeBp: SPOT_FEE_BP, nets: SPOT_NETS, onrampBp: SPOT_ONRAMP_BP, swapBp: SPOT_SWAP_BP, memeFeeBp: SPOT_MEME_FEE_BP });
+  }
+  if (path === '/daily') { // the day-2 hook (2026-09-06): opt in to one line a day — "your portfolio moved +2.1% yesterday" — by browser push and/or Telegram. Pref lives in UserStore uprefs k='spotdaily' (the cron walks only opted-in accounts).
+    let tgLinked = false; try { const pr = await resolveProfiles(env, ['u:' + uid]); tgLinked = !!(pr[uid] && pr[uid].tg); } catch (e) {}
+    if (request.method === 'POST') {
+      const cfg = { push: !!b.push, tg: !!b.tg && tgLinked, ts: Date.now() };
+      try { await usersDO(env, '/prefsput', { uid, k: 'spotdaily', v: JSON.stringify(cfg) }); } catch (e) { return jr({ error: 'transient' }, 503); }
+      return jr({ ok: true, cfg: { push: cfg.push, tg: cfg.tg }, tgLinked });
+    }
+    let cur = null; try { const d = await usersDO(env, '/prefsget', { uid, keys: ['spotdaily'] }); cur = d && d.prefs && d.prefs.spotdaily ? JSON.parse(d.prefs.spotdaily.v || '{}') : null; } catch (e) {}
+    return jr({ cfg: { push: !!(cur && cur.push), tg: !!(cur && cur.tg) }, tgLinked });
   }
   if (path === '/trade' && request.method === 'POST') {
     const side = b.side === 'sell' ? 'sell' : 'buy';
@@ -13044,7 +13054,37 @@ async function spotDailySnapshot(env) {
       await new Promise(r => setTimeout(r, 60));
     }
     await stub.fetch(new Request('https://do/snapshot-all', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day, prices }) }));
+    try { await spotDailyLine(env, day); } catch (e) {} // the day-2 hook rides on the fresh snapshot: yesterday's move is known the moment today's mark exists
   } catch (e) {}
+}
+// One line a day for accounts that asked for it (Demo Spot, 2026-09-06): "your portfolio moved +$212.40 (+2.1%) yesterday",
+// by web push and/or Telegram. Yesterday's move = today's start-of-day mark minus yesterday's. Silent when nothing moved.
+// Pure text builder so the admin preview and the E2E see exactly what a user would.
+function spotDailyText(prev, cur) {
+  const d = cur - prev, pct = prev > 0 ? d / prev * 100 : 0;
+  if (!(Math.abs(d) >= 0.01)) return null;
+  const s = (d >= 0 ? '+' : '-') + '$' + Math.abs(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)';
+  return { title: 'Demo Spot: ' + s + ' yesterday', body: 'Your practice portfolio is at $' + cur.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '. ' + (d >= 0 ? 'A green day.' : 'A red day.') + ' The calendar and equity curve are on /spot/.', delta: d, pct };
+}
+async function spotDailyLine(env, day, opts) {
+  if (!env || !env.SPOT || !env.USERS || !env.STATS) return { sent: 0 };
+  const only = opts && opts.uid ? String(opts.uid) : null, dry = !!(opts && opts.dry);
+  if (!only && !dry) { const k = 'spot:daily:' + day; if (await env.STATS.get(k)) return { sent: 0, done: true }; await env.STATS.put(k, '1', { expirationTtl: 172800 }); } // a dry preview never spends the day's guard
+  let watch = []; try { const r = await usersDO(env, '/spotdailywatch', {}); watch = (r && r.watch) || []; } catch (e) { return { sent: 0, err: 1 }; }
+  if (only) watch = watch.filter(w => w.uid === only);
+  if (!watch.length) return { sent: 0, watched: 0 };
+  let deltas = {}; try { const r = await spotStub(env).fetch(new Request('https://do/snapdelta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uids: watch.map(w => w.uid).slice(0, 300) }) })); deltas = ((await r.json()) || {}).rows || {}; } catch (e) { return { sent: 0, err: 2 }; }
+  let sent = 0; const out = [];
+  let subsBy = {}; if (!dry && env.VAPID_JWK) { try { const r = await usersDO(env, '/push/byuid', { uids: watch.filter(w => w.push).map(w => w.uid) }); ((r && r.subs) || []).forEach(s => { (subsBy[s.uid] = subsBy[s.uid] || []).push(s); }); } catch (e) {} }
+  for (const w of watch) {
+    const dd = deltas[w.uid]; if (!dd || !(dd.prev > 0)) continue;
+    const t = spotDailyText(dd.prev / 100, dd.cur / 100); if (!t) continue;
+    out.push({ uid: w.uid, title: t.title, body: t.body, push: !!w.push, tg: !!w.tg });
+    if (dry) continue;
+    if (w.tg && env.TELEGRAM_TOKEN) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>' + t.title + '</b>\n' + t.body.replace(' on /spot/', '') + '\n\n<a href="https://marginpad.io/spot/">Open Demo Spot</a>' }); sent++; } catch (e) {} }
+    for (const s of (subsBy[w.uid] || [])) { try { await sendWebPush(env, s, { title: t.title, body: t.body, url: 'https://marginpad.io/spot/?ref=push' }); sent++; } catch (e) {} }
+  }
+  return { sent, watched: watch.length, lines: out };
 }
 async function handleReward(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
@@ -14684,6 +14724,11 @@ export default {
     if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
       return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
     }
+    if (url.pathname === '/api/admin/spotdaily' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // day-2 line preview: ?uid= computes the exact line for one account (dry unless &send=1); no uid = whole watch list, dry
+      const uid = url.searchParams.get('uid') || null, send = url.searchParams.get('send') === '1';
+      const r = await spotDailyLine(env, new Date().toISOString().slice(0, 10), { uid, dry: !send || !uid });
+      return new Response(JSON.stringify(Object.assign({ text: spotDailyText(+url.searchParams.get('prev') || 0, +url.searchParams.get('cur') || 0) }, r)), { headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname === '/api/admin/spotguard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // exposes the pure sell guard + row-freshness helpers so build/spot-e2e-price.js tests the exact code the money path runs
       const q = url.searchParams; const now = Date.now();
       const guard = spotSellGuard({ price: +q.get('price') || 0, lastPx: +q.get('lastPx') || 0, liqUsd: +q.get('liq') || 0, stale: q.get('stale') === '1' });
@@ -16159,6 +16204,11 @@ export class SpotStore {
       // P2P can't inflate the card: received wallet-USDT has no path back to it (card<-offramp<-exchange only).
       const rows = this.rows('SELECT a.user_id uid, a.card FROM spotacct a WHERE EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=a.user_id) OR EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=a.user_id OR x.to_uid=a.user_id) ORDER BY a.card DESC LIMIT 40');
       return this.j({ top: rows.map(r => ({ uid: r.uid, cardC: +r.card || 0 })) });
+    }
+    if (path === '/snapdelta') { // day-2 line: the last two start-of-day marks per account (cents)
+      const uids = Array.isArray(b.uids) ? b.uids.map(String).slice(0, 300) : []; const rows = {};
+      for (const u of uids) { try { const r = this.rows('SELECT value FROM spotsnap WHERE user_id=? ORDER BY day DESC LIMIT 2', u); if (r.length === 2) rows[u] = { cur: +r[0].value || 0, prev: +r[1].value || 0 }; } catch (e) {} }
+      return this.j({ rows });
     }
     if (path === '/lbtrade') { // public season board since 2026-09-06: realized PnL from the account's OWN sells inside the season window. The card balance the old board ranked can be fed by P2P transfers from other accounts (measured: #2 and #3 held $0 and $1 of realized profit) — a sell's pnl cannot.
       const from = +b.from || 0, to = +b.to || Date.now();
@@ -18196,6 +18246,17 @@ export class UserStore {
         byCoin: listOf(byCoin).slice(0, 20), byLev: LEVB.map(b2 => Object.assign({ k: b2[2] }, outObj(byLev[b2[2]]))), bySide: listOf(bySide),
         byHour: byHour.map((o, h) => Object.assign({ k: h }, outObj(o))), byDay: Object.keys(byDay).sort().map(k => Object.assign({ k }, outObj(byDay[k])))
       });
+    }
+    if (path === '/spotdailywatch') { // Demo Spot day-2 line: only accounts that opted in (uprefs k='spotdaily'), with their Telegram chat
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='spotdaily' LIMIT 3000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || (!cfg.push && !cfg.tg)) continue;
+        const u = this.rows("SELECT tg_chat, username FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
+        out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, username: u.username || '' });
+      }
+      return this.j({ watch: out });
     }
     if (path === '/posalertwatch') {
       const out = [];

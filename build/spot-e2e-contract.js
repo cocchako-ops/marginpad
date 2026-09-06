@@ -12,7 +12,7 @@ const BONK = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', CAKE = '0x0e09fabb7
   chk('garbage address -> bad_address', (await api('/token?addr=hello')).error === 'bad_address');
   { const u = await api('/token?addr=So11111111111111111111111111111111111111113'); chk('unknown mint -> not_found (or busy while GT rate-limits)', u.error === 'not_found' || u.error === 'busy', u); }
   const maj = await api('/token?addr=' + WSOL); chk('WSOL -> major (use the exchange)', maj.error === 'major', maj);
-  let r = await api('/trade', { side: 'buy', kind: 'meme', mint: t.mint, pool: t.pool, net: t.net, symbol: t.sym, name: t.name, logo: t.logo, usd: 5 }); chk('buy $5 of the contract token in SOL', r.ok && r.native === 'SOL' && r.qty > 0, { qty: r.qty, slip: r.slipPct });
+  let r = await api('/trade', { side: 'buy', kind: 'meme', mint: t.mint, pool: t.pool, net: t.net, symbol: t.sym, name: t.name, logo: t.logo, usd: 5 }); chk('buy $5 of the contract token in SOL', r.ok && r.native === 'SOL' && r.qty > 0, { qty: r.qty, slip: r.slipPct, err: r.error });
   const p = await api('/portfolio'); const h = (p.holds || []).find(x => x.sym === 'sol:' + BONK); chk('hold appears with the contract identity + live price', !!h && h.valueUsd > 3, h && { v: h.valueUsd, sym: h.meta && h.meta.sym });
   r = await api('/trade', { side: 'sell', kind: 'meme', mint: BONK, pool: t.pool, net: 'solana', holdSym: 'sol:' + BONK, pct: 100, toUsdt: true }); chk('sell 100% + convert to USDT', r.ok && r.swapped && r.swapped.usdUsd > 3, r.swapped);
   await withBrowser(async (browser) => {
