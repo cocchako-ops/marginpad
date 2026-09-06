@@ -185,6 +185,23 @@ h1 b{color:var(--lime)}
 .empty{color:var(--faint);font-size:13px;padding:10px 0}
 .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .how div{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:13px;color:#c7ccd4;line-height:1.5}.how b{color:#fff;display:block;margin-bottom:3px}
+/* pass extras (2026-09-06): what a pro tier gives beyond Ticks */
+.rw .x{font:700 10.5px 'Space Mono',monospace;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw .x.usd{color:var(--gold)}.rw .x.sup{color:var(--sky)}.rw .x.prem{color:var(--pro)}.rw .x.gift{color:var(--lime)}
+.sum{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}.sum .lab{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--pro);margin-right:4px}
+.sum span.ch{background:rgba(199,146,255,.08);border:1px solid rgba(199,146,255,.25);border-radius:999px;padding:5px 10px;font:700 11px 'Space Mono',monospace;color:#e6d9ff;white-space:nowrap}.sum span.ch b{color:var(--pro)}.sum span.ch.usd{border-color:rgba(255,215,90,.4);background:rgba(255,215,90,.07);color:#fff3c4}.sum span.ch.usd b{color:var(--gold)}
+.gifts{margin-top:12px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px}
+.gift-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;font-size:12.5px;color:#d7dce2}.gift-row b{color:var(--lime)}.gift-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gift-row i{font:700 10px 'Space Mono',monospace;color:var(--faint);font-style:normal;letter-spacing:.06em}
+.redeem{margin-top:12px}.redeem .code{margin-top:10px;max-width:440px}.redeem .code input{border-color:#2a323c}.redeem .code input:focus{border-color:var(--lime)}
+/* gift modal */
+.gm{position:fixed;inset:0;z-index:1300;background:rgba(5,6,8,.74);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}.gm.on{opacity:1;pointer-events:auto}
+.gm .bx{width:min(580px,100%);max-height:min(88vh,760px);overflow:auto;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid rgba(199,146,255,.45);border-radius:16px;padding:16px 17px;transform:translateY(8px);transition:transform .2s}.gm.on .bx{transform:none}
+.gm .tabs{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.gm .tabs button{background:transparent;border:1px solid var(--line2);color:var(--dim);border-radius:999px;padding:5px 10px;font:700 11px 'Space Mono',monospace;cursor:pointer}.gm .tabs button.on{border-color:var(--pro);color:#fff}
+.gm .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin-top:10px}
+.gm .gi{background:#0a0d11;border:1px solid var(--line);border-radius:10px;padding:8px 9px;text-align:left;cursor:pointer;color:#d7dce2;font:600 12.5px 'Familjen Grotesk',sans-serif;display:flex;flex-direction:column;gap:3px;min-width:0;transition:border-color .14s,box-shadow .14s}.gm .gi:hover{border-color:var(--pro)}.gm .gi.sel{border-color:var(--lime);box-shadow:0 0 0 1px rgba(194,246,74,.3)}
+.gm .gi small{font:700 9.5px 'Space Mono',monospace;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}.gm .gi small.rare{color:var(--sky)}.gm .gi i{font:700 10px 'Space Mono',monospace;color:var(--gold);font-style:normal}
+.gm .acts{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:640px){.gm{padding:12px 12px calc(96px + env(safe-area-inset-bottom))}.gm .bx{max-height:100%}.gm .acts{position:sticky;bottom:0;background:var(--panel2);margin:8px -17px -16px;padding:10px 17px 14px;border-top:1px solid var(--line)}}
 /* toast */
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
@@ -255,15 +272,22 @@ h1 b{color:var(--lime)}
         <button type="button" class="btn sm claimall" id="claimAll" hidden>Claim all</button>
       </div>
       <div class="road-wrap" id="roadWrap"><div class="road" id="road"><div class="fill" id="roadFill"></div></div></div>
-      <div class="road-lab"><span>Top row: free · everyone</span><b>Bottom row: pro · double Ticks + four Vault items</b></div>
+      <div class="road-lab"><span>Top row: free · everyone</span><b>Bottom row: pro</b></div>
+      <div class="sum" id="proSum"></div>
+      <div class="gifts" id="gifts" hidden></div>
       <div id="buyWrap">
         <div class="buy" id="buy" hidden>
           <div class="opt"><div class="t">With Ticks</div><div class="p" id="pTicks">2,500 T</div><div class="d">Earned Ticks, no money. About a month of showing up.</div><button class="btn pro sm" data-buy="ticks">Unlock pro with Ticks</button></div>
           <div class="opt"><div class="t">With your rewards balance</div><div class="p" id="pUsd">$2.99</div><div class="d">Straight from your withdrawable balance. Final, like a Vault buy.</div><button class="btn pro sm" data-buy="usd">Unlock pro with balance</button></div>
-          <div class="opt"><div class="t">With a code</div><div class="p" style="font-size:14px">MP-XXXXX-XXXXX</div><div class="d">Codes drop in chat, on Telegram and in events. One per account.</div><div class="code"><input id="codeIn" placeholder="MP-" maxlength="16" autocomplete="off" spellcheck="false" /><button class="btn ghost sm" data-buy="code">Redeem</button></div></div>
         </div>
         <div class="sub" id="buyMsg"></div>
       </div>
+    </div>
+    <div class="card redeem" id="redeem">
+      <div class="k">Have a code?</div>
+      <div class="sub">One box for every MarginPad code: the pro pass, money on your rewards balance, Premium days or Ticks. Codes drop in chat, on Telegram and in events. One use per account.</div>
+      <div class="code"><input id="codeIn" placeholder="MP-XXXXX-XXXXX" maxlength="16" autocomplete="off" spellcheck="false" /><button class="btn sm" type="button" id="codeBtn">Redeem</button></div>
+      <div class="sub" id="codeMsg"></div>
     </div>
   </section>
 
@@ -303,6 +327,17 @@ h1 b{color:var(--lime)}
   </section>
 </div>
 <div class="tst" id="tst" role="status" aria-live="polite"></div>
+<div class="gm" id="gm" role="dialog" aria-modal="true" aria-labelledby="gmTitle">
+  <div class="bx">
+    <div class="k" id="gmTitle">Gift a skin<span class="st" id="gmCap" style="background:var(--lime);color:#0a0b0d;margin-left:8px"></span></div>
+    <div class="sub">Pick a member and a skin. It lands in their Vault for free, with a note that it came from you, and the room hears about it. Cash-only skins are not on this list.</div>
+    <div class="code" style="margin-top:10px;max-width:320px"><input id="gmTo" placeholder="username" maxlength="24" autocomplete="off" spellcheck="false" style="text-transform:none;letter-spacing:0" /></div>
+    <div class="tabs" id="gmTabs"></div>
+    <div class="grid" id="gmGrid"></div>
+    <div class="sub" id="gmMsg"></div>
+    <div class="acts"><a class="btn ghost sm" href="/vault/" target="_blank" rel="noopener">Preview in the Vault</a><button class="btn ghost sm" type="button" id="gmX">Cancel</button><button class="btn sm" type="button" id="gmSend" disabled>Send the gift</button></div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -379,10 +414,39 @@ h1 b{color:var(--lime)}
     fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){sgBusy=false;if(d&&d.ok){if(op==='claim'){toast('Goal claimed: <b>+'+(d.xp||0)+' XP · +'+(d.ticks||0)+' Ticks</b>');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);}loadGoals();loadPass();}else{b.disabled=false;$('sgSub').innerHTML='<b class="err">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}}).catch(function(){sgBusy=false;b.disabled=false;});});
 
   /* ---- pass road: built once, updated in place (no re-layout, no scroll jump) ---- */
-  var NAMES={arctic:'Arctic frame',bg_static:'Static background',tkt_kraft:'Kraft Stub ticket',sandstone:'Sandstone frame',leviathan:'Leviathan frame'};
+  /* names come from the server (the catalogue), never a hand-kept map; the old map is the fallback for a stale response */
+  var NAMES={arctic:'Arctic',bg_static:'Static',tkt_kraft:'Kraft Stub',sandstone:'Sandstone',leviathan:'Leviathan',shield:'Streak Shield',surge:'XP Surge'};
   var passBusy=false,roadBuilt=false;
+  function nm(id){return NAMES[id]||id;}
+  function giftName(id){var it=((PASS&&PASS.giftItems)||[]).filter(function(i){return i.id===id;})[0];return it?it.name:nm(id);}
+  function kindWord(k){return k==='t'?'ticket':k==='bg'?'background':'frame';}
+  function extras(r){var h='';
+    if(r.cents)h+='<div class="x usd">+$'+(r.cents/100).toFixed(2)+' balance</div>';
+    if(r.item)h+='<div class="it">'+esc(nm(r.item))+'</div>';
+    if(r.sup)h+='<div class="x sup">'+esc(nm(r.sup))+'</div>';
+    if(r.prem)h+='<div class="x prem">'+r.prem+' days Premium</div>';
+    if(r.gift)h+='<div class="x gift" title="Gift any skin worth up to '+int(r.gift)+' Ticks to another member">Skin gift '+(r.gift>=1000?(r.gift/1000)+'k':r.gift)+'T</div>';
+    return h;}
   function cellHtml(t,tr,D,signed){var r=t[tr],can=signed&&t.reached&&!r.claimed&&(tr==='free'||D.pro);
-    return '<b>+'+r.ticks+'<small>T</small></b>'+(r.item?'<div class="it">'+esc(NAMES[r.item]||r.item)+'</div>':'')+(r.claimed?'<div class="done">CLAIMED</div>':(can?'<button type="button" class="c" data-claim="'+t.t+'" data-track="'+tr+'">Claim</button>':(tr==='pro'&&signed&&t.reached&&!D.pro?'<div class="done">PRO</div>':'')));}
+    return '<b>+'+r.ticks+'<small>T</small></b>'+extras(r)+(r.claimed?'<div class="done">CLAIMED</div>':(can?'<button type="button" class="c" data-claim="'+t.t+'" data-track="'+tr+'">Claim</button>':(tr==='pro'&&signed&&t.reached&&!D.pro?'<div class="done">PRO</div>':'')));}
+  /* what the whole pro track adds up to, counted from the tiers the server sent (never typed by hand) */
+  function proSum(D){var c=0,tk=0,items=0,sups={},prem=0,gifts=0;D.tiers.forEach(function(t){var p=t.pro;tk+=p.ticks||0;c+=p.cents||0;if(p.item)items++;if(p.sup)sups[p.sup]=(sups[p.sup]||0)+1;prem+=p.prem||0;if(p.gift)gifts++;});
+    var ch=['<span class="ch"><b>'+int(tk)+' T</b> Ticks (2x free)</span>'];
+    if(c)ch.push('<span class="ch usd"><b>$'+(c/100).toFixed(2)+'</b> to your balance</span>');
+    if(items)ch.push('<span class="ch"><b>'+items+'</b> Vault items</span>');
+    Object.keys(sups).forEach(function(k){ch.push('<span class="ch"><b>'+sups[k]+'x</b> '+esc(nm(k))+'</span>');});
+    if(prem)ch.push('<span class="ch"><b>'+prem+' days</b> Premium</span>');
+    if(gifts)ch.push('<span class="ch"><b>'+gifts+'</b> skin gifts to give away</span>');
+    var h='<span class="lab">Pro track</span>'+ch.join('');var el=$('proSum');if(el.getAttribute('data-h')!==h){el.innerHTML=h;el.setAttribute('data-h',h);}}
+  function paintGifts(D,signed){var gw=$('gifts'),gifts=D.gifts||[];gw.hidden=!signed||!gifts.length;if(gw.hidden)return;
+    var open=gifts.filter(function(g){return !g.used;}).length;
+    var h='<div class="k">Skin gifts<span class="st" style="background:'+(open?'var(--lime)':'#3a4450')+';color:'+(open?'#0a0b0d':'#c7ccd4')+';margin-left:8px">'+open+' to give</span></div>'
+      +gifts.map(function(g){return g.used
+        ?'<div class="gift-row"><span>Sent <b>'+esc(giftName(g.item))+'</b> to @'+esc(g.to||'')+'</span><i>SENT</i></div>'
+        :'<div class="gift-row"><span>Gift any skin worth up to <b>'+int(g.cap)+' T</b> to another member · from tier '+g.t+'</span><button type="button" class="btn sm" data-gift="'+g.id+'" data-cap="'+g.cap+'">Choose</button></div>';}).join('');
+    if(gw.getAttribute('data-h')!==h){gw.innerHTML=h;gw.setAttribute('data-h',h);}}
+  function gotText(d){var b=[];if(d.ticks)b.push('<b>+'+int(d.ticks)+' Ticks</b>');if(d.cents)b.push('<b>+$'+(d.cents/100).toFixed(2)+'</b> balance');if(d.item)b.push(esc(nm(d.item)));if(d.sup)b.push(esc(nm(d.sup))+(d.sup==='surge'?' running':' banked'));if(d.prem)b.push('<b>+'+d.prem+' days</b> Premium');if(d.gift)b.push('a skin gift to give');return b.join(' · ');}
+  function claimErr(d){var e=d&&d.error;return e==='max_freezes'?'Your freeze bank is full (5). Spend one, then claim this tier.':e==='boost_active'?'An XP boost is already running. Claim this tier when it ends.':e==='not_reached'?'Not reached yet.':e==='no_pass'?'Pro track only.':'Could not claim that.';}
   function buildRoad(D){var road=$('road');var html='<div class="fill" id="roadFill"></div>';
     ['free','pro'].forEach(function(tr){html+=D.tiers.map(function(t){return tr==='free'
       ?'<div class="tier" data-t="'+t.t+'"><span class="n">'+t.t+'</span><div class="xp">'+int(t.xp)+' XP</div><div class="rw" data-cell="free-'+t.t+'"></div></div>'
@@ -394,10 +458,13 @@ h1 b{color:var(--lime)}
     var x=T>0?c(Math.min(19,T-1)):0,nx=T<20?c(Math.min(19,T)):c(19),w=T>=20?c(19):x+(nx-x)*(into/step);
     fill.style.width=Math.max(0,Math.round(w))+'px';}
   function paintPass(){var D=PASS;if(!D)return;var signed=!!D.signedIn,step=D.step||100;
+    if(D.names)Object.keys(D.names).forEach(function(k){NAMES[k]=D.names[k];});
     $('pTicks').textContent=int(D.price.ticks)+' T';$('pUsd').textContent='$'+(D.price.cents/100).toFixed(2);
     $('passPill').textContent=D.pro?'PRO TRACK':'FREE TRACK';$('passPill').style.background=D.pro?'var(--pro)':'#3a4450';$('passPill').style.color=D.pro?'#160a26':'#c7ccd4';
-    var nextT=D.tiers[Math.min(19,D.tier)];
-    $('passNext').innerHTML=signed?(D.tier>=20?'<b>Every tier reached.</b>':'<b>'+int(D.next)+' XP</b> to tier '+(D.tier+1)+' · next: <b>+'+nextT.free.ticks+' T</b> free'+(D.pro?', <b>+'+nextT.pro.ticks+' T</b> pro':'')+(nextT[D.pro?'pro':'free'].item?' · '+esc(NAMES[nextT[D.pro?'pro':'free'].item]||''):'')):'Sign in and the road is yours: tiers unlock from the XP you already earn.';
+    var nextT=D.tiers[Math.min(19,D.tier)],nr=nextT[D.pro?'pro':'free'],nb=[];
+    if(nr.cents)nb.push('$'+(nr.cents/100).toFixed(2)+' balance');if(nr.item)nb.push(esc(nm(nr.item)));if(nr.sup)nb.push(esc(nm(nr.sup)));if(nr.prem)nb.push(nr.prem+' days Premium');if(nr.gift)nb.push('a skin gift');
+    $('passNext').innerHTML=signed?(D.tier>=20?'<b>Every tier reached.</b>':'<b>'+int(D.next)+' XP</b> to tier '+(D.tier+1)+' · next: <b>+'+nextT.free.ticks+' T</b> free'+(D.pro?', <b>+'+nextT.pro.ticks+' T</b> pro':'')+(nb.length?' · '+nb.join(' · '):'')):'Sign in and the road is yours: tiers unlock from the XP you already earn.';
+    proSum(D);paintGifts(D,signed);
     var ca=$('claimAll');ca.hidden=!(signed&&D.claimable>1);ca.textContent='Claim all '+(D.claimable||0);var sn=$('snClaim');sn.hidden=!(signed&&D.claimable);sn.textContent=D.claimable||'';
     if(!roadBuilt)buildRoad(D);
     var road=$('road');
@@ -413,19 +480,56 @@ h1 b{color:var(--lime)}
     throw d||{};});}
   document.addEventListener('click',function(e){
     var c=e.target.closest&&e.target.closest('#road [data-claim]');
-    if(c&&!passBusy){passBusy=true;c.disabled=true;claimTier(+c.getAttribute('data-claim'),c.getAttribute('data-track'),c).then(function(d){passBusy=false;toast('Tier '+d.t+' claimed: <b>+'+(d.ticks||0)+' Ticks</b>'+(d.item?' · '+esc(NAMES[d.item]||d.item):''));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}).catch(function(){passBusy=false;c.disabled=false;});return;}
+    if(c&&!passBusy){passBusy=true;c.disabled=true;claimTier(+c.getAttribute('data-claim'),c.getAttribute('data-track'),c).then(function(d){passBusy=false;toast('Tier '+d.t+' claimed: '+gotText(d));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}).catch(function(d){passBusy=false;c.disabled=false;toast(claimErr(d));});return;}
     var all=e.target.closest&&e.target.closest('#claimAll');
     if(all&&!passBusy&&PASS){passBusy=true;all.disabled=true;var todo=[];PASS.tiers.forEach(function(t){if(!t.reached)return;if(!t.free.claimed)todo.push([t.t,'free']);if(PASS.pro&&!t.pro.claimed)todo.push([t.t,'pro']);});
-      var got=0,items=[];(function next(){var x=todo.shift();if(!x){passBusy=false;all.disabled=false;toast('Claimed <b>+'+got+' Ticks</b>'+(items.length?' · '+items.map(function(i){return esc(NAMES[i]||i);}).join(', '):''));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();return;}
-        claimTier(x[0],x[1]).then(function(d){got+=d.ticks||0;if(d.item)items.push(d.item);setTimeout(next,140);}).catch(function(){setTimeout(next,140);});})();return;}
+      var got=0,cents=0,items=[],prem=0,gifts=0,skipped=0;(function next(){var x=todo.shift();if(!x){passBusy=false;all.disabled=false;var b=['<b>+'+int(got)+' Ticks</b>'];if(cents)b.push('<b>+$'+(cents/100).toFixed(2)+'</b> balance');if(items.length)b.push(items.map(function(i){return esc(nm(i));}).join(', '));if(prem)b.push('<b>+'+prem+' days</b> Premium');if(gifts)b.push(gifts+' skin gift'+(gifts>1?'s':'')+' to give');toast('Claimed '+b.join(' · ')+(skipped?' · '+skipped+' left for later':''));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();return;}
+        claimTier(x[0],x[1]).then(function(d){got+=d.ticks||0;cents+=d.cents||0;if(d.item)items.push(d.item);if(d.sup)items.push(d.sup);prem+=d.prem||0;if(d.gift)gifts++;setTimeout(next,140);}).catch(function(){skipped++;setTimeout(next,140);});})();return;}
+    var g=e.target.closest&&e.target.closest('[data-gift]');
+    if(g&&PASS){openGift(+g.getAttribute('data-gift'),+g.getAttribute('data-cap'));return;}
     var b=e.target.closest&&e.target.closest('[data-buy]');
     if(b&&!passBusy){var src=b.getAttribute('data-buy'),msg=$('buyMsg'),body={op:'buy',src:src};
-      if(src==='code'){body.code=String($('codeIn').value||'').trim().toUpperCase();if(!body.code){msg.innerHTML='<b class="err">Type the code first.</b>';return;}}
       if(src==='usd'&&!confirm('Pay $'+(PASS.price.cents/100).toFixed(2)+' from your rewards balance for the pro track this season?'))return;
       passBusy=true;b.disabled=true;msg.textContent='…';
-      fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){passBusy=false;b.disabled=false;if(d&&d.ok){var got=d.kind==='cents'?'+$'+((d.amt||0)/100).toFixed(2)+' on your rewards balance':d.kind==='premium'?'+'+d.amt+' days of Premium':d.kind==='ticks'?'+'+int(d.amt||0)+' Ticks':'';if(got){msg.innerHTML='<b style="color:var(--lime)">Code redeemed: '+got+'.</b>'+(d.kind==='cents'?' <a href="/rewards/">See your balance</a>':'');toast('Code redeemed: <b>'+got+'</b>');$('codeIn').value='';}else{msg.innerHTML='<b style="color:var(--lime)">Pro track unlocked for this season.</b>';toast('<b>Pro track</b> unlocked');}if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}else{var er=d&&d.error;msg.innerHTML='<b class="err">'+(er==='short_ticks'?('Not enough Ticks: this costs '+int(d.need)+' T and you have '+int(d.have)+' T.'):er==='insufficient'?('Not enough balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='bad_code'?'That code does not exist.':er==='expired'?'That code has expired.':er==='used_up'?'That code has been fully used.':er==='code_taken'?'You already used this code.':er==='already'?'You already have the pro track this season.':er==='not_signed_in'?'Sign in first.':'Could not complete that.')+'</b>';}}).catch(function(){passBusy=false;b.disabled=false;msg.innerHTML='<b class="err">Network error.</b>';});}
+      fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){passBusy=false;b.disabled=false;if(d&&d.ok){msg.innerHTML='<b style="color:var(--lime)">Pro track unlocked for this season.</b>';toast('<b>Pro track</b> unlocked');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}else{var er=d&&d.error;msg.innerHTML='<b class="err">'+(er==='short_ticks'?('Not enough Ticks: this costs '+int(d.need)+' T and you have '+int(d.have)+' T.'):er==='insufficient'?('Not enough balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='already'?'You already have the pro track this season.':er==='not_signed_in'?'Sign in first.':'Could not complete that.')+'</b>';}}).catch(function(){passBusy=false;b.disabled=false;msg.innerHTML='<b class="err">Network error.</b>';});}
   });
   window.addEventListener('resize',function(){if(PASS)placeFill(PASS);});
+
+  /* ---- one redeem box for every code (pass / cents / Premium / Ticks) -- separate from the pro purchase, works after you already own the pass ---- */
+  (function(){var i=$('codeIn'),b=$('codeBtn'),m=$('codeMsg'),busy=false;
+    function go(){if(busy)return;var c=String(i.value||'').trim().toUpperCase();if(!c){m.innerHTML='<b class="err">Type the code first.</b>';i.focus();return;}
+      if(!me()){m.innerHTML='<b class="err">Sign in first</b> - <a href="#" data-auth-open>sign in (free)</a> and redeem the code here.';return;}
+      busy=true;b.disabled=true;m.textContent='Checking the code…';
+      fetch('/api/redeem',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code:c})}).then(function(r){return r.json();}).then(function(d){busy=false;b.disabled=false;
+        if(d&&d.ok){var got=d.kind==='cents'?'+$'+((d.amt||0)/100).toFixed(2)+' on your rewards balance':d.kind==='premium'?'+'+d.amt+' days of Premium':d.kind==='ticks'?'+'+int(d.amt||0)+' Ticks':'the pro track for this season';
+          m.innerHTML='<b style="color:var(--lime)">Code redeemed: '+got+'.</b>'+(d.kind==='cents'?' <a href="/rewards/">See your balance</a>':d.kind==='pass'?' <a href="#pass">See your road</a>':'');toast('Code redeemed: <b>'+got+'</b>');i.value='';
+          if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}
+        else{var E={not_signed_in:'Sign in first.',bad_code:'That code does not exist.',expired:'That code has expired.',used_up:'That code has been fully used.',code_taken:'You already used this code.',already:'You already have the pro track this season.',banned:'This account cannot redeem codes.'};m.innerHTML='<b class="err">'+(E[d&&d.error]||'Could not redeem that code.')+'</b>';}
+      }).catch(function(){busy=false;b.disabled=false;m.innerHTML='<b class="err">Network error, try again.</b>';});}
+    b.addEventListener('click',go);i.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();go();}});})();
+
+  /* ---- skin-gift voucher modal ---- */
+  var GM={id:0,cap:0,item:null,kind:'all',busy:false};
+  function openGift(id,cap){GM={id:id,cap:cap,item:null,kind:'all',busy:false};$('gmCap').textContent='up to '+int(cap)+' T';$('gmTo').value='';$('gmMsg').textContent='';$('gmSend').disabled=true;paintGm();$('gm').classList.add('on');setTimeout(function(){$('gmTo').focus();},60);}
+  function closeGift(){$('gm').classList.remove('on');}
+  function paintGm(){var all=((PASS&&PASS.giftItems)||[]).filter(function(i){return i.ticks<=GM.cap;});
+    var kinds=[['all','All'],['frame','Frames'],['t','Tickets'],['bg','Backgrounds']];
+    $('gmTabs').innerHTML=kinds.map(function(k){var n=all.filter(function(i){return k[0]==='all'||i.kind===k[0];}).length;return n?'<button type="button" data-gk="'+k[0]+'" class="'+(GM.kind===k[0]?'on':'')+'">'+k[1]+' '+n+'</button>':'';}).join('');
+    var items=all.filter(function(i){return GM.kind==='all'||i.kind===GM.kind;});
+    $('gmGrid').innerHTML=items.map(function(i){return '<button type="button" class="gi'+(GM.item===i.id?' sel':'')+'" data-gi="'+esc(i.id)+'" title="'+esc(i.desc||'')+'"><small class="'+esc(i.tier)+'">'+esc(i.tier)+' '+kindWord(i.kind)+'</small>'+esc(i.name)+'<i>'+int(i.ticks)+' T</i></button>';}).join('')||'<div class="sub">Nothing at this cap.</div>';
+    $('gmSend').disabled=!GM.item;}
+  document.addEventListener('click',function(e){var gm=$('gm');if(!gm.classList.contains('on'))return;
+    if(e.target===gm||e.target.closest('#gmX')){closeGift();return;}
+    var k=e.target.closest('[data-gk]');if(k){GM.kind=k.getAttribute('data-gk');paintGm();return;}
+    var gi=e.target.closest('[data-gi]');if(gi){GM.item=gi.getAttribute('data-gi');paintGm();return;}
+    if(e.target.closest('#gmSend')&&!GM.busy){var to=String($('gmTo').value||'').replace(/^@/,'').trim(),m=$('gmMsg');if(!to){m.innerHTML='<b class="err">Type the member\'s username.</b>';$('gmTo').focus();return;}if(!GM.item){m.innerHTML='<b class="err">Pick a skin.</b>';return;}
+      GM.busy=true;$('gmSend').disabled=true;m.textContent='Sending…';
+      fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'gift',id:GM.id,to:to,item:GM.item})}).then(function(r){return r.json();}).then(function(d){GM.busy=false;
+        if(d&&d.ok){closeGift();toast('@'+esc(d.to)+' got the <b>'+esc(d.name)+'</b> '+kindWord(d.kind)+' from you');loadPass();return;}
+        $('gmSend').disabled=false;var E={no_target:'No member with that username.',self:'Gifts go to someone else.',target_owned:'They already own that skin. Pick another one.',not_giftable:'That skin cannot be sent with this voucher.',voucher_used:'This voucher is already spent.',no_voucher:'That voucher is not yours.',not_signed_in:'Sign in first.'};m.innerHTML='<b class="err">'+(E[d&&d.error]||'Could not send that.')+'</b>';
+      }).catch(function(){GM.busy=false;$('gmSend').disabled=false;m.innerHTML='<b class="err">Network error.</b>';});}
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('gm').classList.contains('on'))closeGift();});
 
   /* ---- boards: five cards to choose, one fixed-column table ---- */
   var IC={green:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',roe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',wr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',xp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>',gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z"/><path d="M6 20h12"/></svg>'};

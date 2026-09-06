@@ -4928,7 +4928,12 @@ async function passRollover(env) {
     await env.STATS.put('pass:rolled:' + prev.idx, '1', { expirationTtl: 60 * 86400 });
     const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/rollover', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ season: prev.idx }) }));
     const rj = await rr.json();
-    if (rj && (rj.grants || 0) > 0) await tgAdmin(env, '<b>Season pass</b> season ' + prev.idx + ' rolled over: ' + rj.grants + ' unclaimed tier reward(s) granted to ' + rj.users + ' member(s).', { kind: 'pass-rollover', sev: 'info' });
+    let paid = 0, failed = []; // pro-track cents from unclaimed tiers (season total per member is capped in passTiers)
+    for (const c of (rj && rj.credits) || []) {
+      let lj = null; try { lj = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + c.uid, cents: c.cents, from: 'pass' }) }))).json(); } catch (e) {}
+      if (lj && lj.ok) paid += c.cents; else failed.push(c.uid + ' $' + (c.cents / 100).toFixed(2));
+    }
+    if (rj && (rj.grants || 0) > 0) await tgAdmin(env, '<b>Season pass</b> season ' + prev.idx + ' rolled over: ' + rj.grants + ' unclaimed tier reward(s) granted to ' + rj.users + ' member(s)' + (paid ? ', $' + (paid / 100).toFixed(2) + ' credited' : '') + ((rj.skipped || []).length ? ', ' + rj.skipped.length + ' supply grant(s) could not apply' : '') + '.' + (failed.length ? '\nLedger credit FAILED for: ' + failed.join(', ') + ' — credit by hand' : ''), { kind: 'pass-rollover', sev: failed.length ? 'warn' : 'info' });
   } catch (e) {}
 }
 async function settleDailyCalls(env) {
@@ -9512,12 +9517,32 @@ const GOAL_DEFS = [
 ];
 const GOAL_XP = 100, GOAL_TICKS = 40, GOAL_MAX = 2;
 // Season pass. 20 tiers, one every PASS_STEP season XP (XP earned since the season anchor). The free track pays
-// Ticks at every tier and one common frame at the top; the pro track doubles the Ticks and adds four Vault items,
-// all from the existing catalogue so nothing here needs new CSS. Sized from data: an active day is ~100-150 XP,
+// Ticks at every tier and one common frame at the top; the pro track doubles the Ticks and adds the PASS_PRO extras
+// below, all from the existing catalogue so nothing here needs new CSS. Sized from data: an active day is ~100-150 XP,
 // so tier 20 (2,000) is a full season of showing up, not a weekend.
 const PASS_STEP = 100, PASS_TIERS_N = 20, PASS_PRICE_TICKS = 2500, PASS_PRICE_CENTS = 299;
-const PASS_ITEMS = { free: { 20: 'arctic' }, pro: { 5: 'bg_static', 10: 'tkt_kraft', 15: 'sandstone', 20: 'leviathan' } };
-function passTiers() { const out = []; for (let t = 1; t <= PASS_TIERS_N; t++) out.push({ t, xp: t * PASS_STEP, free: { ticks: 15, item: PASS_ITEMS.free[t] || null }, pro: { ticks: 30, item: PASS_ITEMS.pro[t] || null } }); return out; }
+// Owner 2026-09-06: the pro track may pay small amounts of real money, but never more than $1.00 over a whole season, and it
+// should carry things that make people say "look at everything in here", not just Ticks. Per tier, on top of the Ticks:
+//   item  = a Vault cosmetic (existing catalogue, no new CSS)          cents = rewards balance (real money, season total <= PASS_CENTS_CAP)
+//   sup   = a Vault consumable applied on claim (Streak Shield, XP Surge)   prem = days of Premium
+//   gift  = a skin-gift voucher: the holder gives ANY Ticks-priced cosmetic up to that many Ticks to another member,
+//           free (never a cash-only item; the tier caps it at common 300 / rare 1,200). Two social moments per season.
+const PASS_CENTS_CAP = 100;
+const PASS_FREE = { 20: { item: 'arctic' } };
+const PASS_PRO = { 3: { sup: 'shield' }, 4: { cents: 10 }, 5: { item: 'bg_static' }, 6: { gift: 300 }, 8: { cents: 15 }, 9: { sup: 'surge' }, 10: { item: 'tkt_kraft' }, 11: { prem: 3 }, 12: { cents: 20 }, 13: { sup: 'shield' }, 14: { gift: 1200 }, 15: { item: 'sandstone' }, 16: { cents: 25 }, 17: { sup: 'surge' }, 20: { cents: 30, item: 'leviathan' } };
+function passTiers() { // the cap is enforced HERE, mechanically: a cents entry that would push the season total past PASS_CENTS_CAP is dropped, whatever the table says
+  const out = []; let cents = 0;
+  for (let t = 1; t <= PASS_TIERS_N; t++) {
+    const f = PASS_FREE[t] || {}, p = PASS_PRO[t] || {};
+    let c = Math.max(0, Math.round(+p.cents || 0)); if (cents + c > PASS_CENTS_CAP) c = 0; cents += c;
+    out.push({ t, xp: t * PASS_STEP, free: { ticks: 15, item: f.item || null, cents: 0, sup: null, prem: 0, gift: 0 }, pro: { ticks: 30, item: p.item || null, cents: c, sup: p.sup || null, prem: Math.max(0, Math.round(+p.prem || 0)), gift: Math.max(0, Math.round(+p.gift || 0)) } });
+  }
+  return out;
+}
+// Cosmetics a pass gift voucher may send: priced in Ticks (never cash-only), a real skin (no supplies, no nation frames, no earn-only
+// frames), still on sale, and no dearer than the voucher's cap.
+function passGiftable(cap) { const now = Date.now(); return VAULT_ITEMS.filter(it => it.ticks && it.ticks <= cap && it.kind !== 'c' && !it.earn && !it.group && (!it.until || Date.parse(it.until) > now)); }
+function passNames() { const n = {}; passTiers().forEach(t => ['free', 'pro'].forEach(k => { const r = t[k]; [r.item, r.sup].forEach(id => { const it = id && vaultItem(id); if (it) n[id] = it.name; }); })); return n; }
 function passCode() { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c = 'MP-'; for (let i = 0; i < 10; i++) { if (i === 5) c += '-'; c += A[Math.floor(Math.random() * A.length)]; } return c; }
 function predPts(errPct) { return errPct <= 0.25 ? 12 : errPct <= 0.5 ? 8 : errPct <= 1 ? 5 : errPct <= 2 ? 2 : 0; }
 function predSeason(now) { const i = Math.floor(((+now || Date.now()) - LB_ANCHOR) / LB_PERIOD); const a = LB_ANCHOR + i * LB_PERIOD; return { idx: i, from: new Date(a).toISOString().slice(0, 10), to: new Date(a + LB_PERIOD).toISOString().slice(0, 10), endMs: a + LB_PERIOD }; }
@@ -15112,8 +15137,23 @@ export default {
         let pb = {}; try { pb = await request.json(); } catch (e) {}
         if (pb.op === 'claim') {
           const cr = await stubS.fetch(new Request('https://do/pass/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, t: +pb.t, track: pb.track }) }));
-          const cj = await cr.json(); if (cj && cj.ok) { try { await evPush(env, request, 'pass', 'claim ' + cj.t + ' ' + cj.track, '/pass/'); } catch (e) {} }
+          const cj = await cr.json();
+          if (cj && cj.ok) {
+            if (cj.cents > 0) { // real money from the pro track (owner 2026-09-06, season total capped in passTiers): ledger gift path, logged 'gift'/'pass'
+              let lj = null; try { lj = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uS.id, cents: cj.cents, from: 'pass' }) }))).json(); } catch (e) {}
+              cj.credited = !!(lj && lj.ok); cj.balanceUsd = lj && lj.balanceUsd;
+              if (!cj.credited) { try { await tgAdmin(env, '<b>Season pass</b> tier ' + cj.t + ' claimed by @' + (uS.username || uS.id) + ' but the ledger credit of $' + (cj.cents / 100).toFixed(2) + ' FAILED (' + ((lj && lj.error) || 'no reply') + ') — credit by hand', { kind: 'pass-credit', sev: 'warn' }); } catch (e) {} }
+            }
+            if (cj.prem > 0) { try { await revokeUserSessions(env, String(uS.id)); } catch (e) {} } // Premium shows on the very next request
+            try { await evPush(env, request, 'pass', 'claim ' + cj.t + ' ' + cj.track + (cj.cents ? ' +$' + (cj.cents / 100).toFixed(2) : '') + (cj.item ? ' ' + cj.item : '') + (cj.sup ? ' ' + cj.sup : '') + (cj.prem ? ' +' + cj.prem + 'd Premium' : '') + (cj.gift ? ' gift voucher' : ''), '/season/'); } catch (e) {}
+          }
           return new Response(JSON.stringify(cj), { status: cr.status, headers: jh7 });
+        }
+        if (pb.op === 'gift') { // spend a skin-gift voucher: the store validates and moves the skin, the chat hears about it like any Vault gift
+          const gr = await stubS.fetch(new Request('https://do/pass/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, id: +pb.id, to: pb.to, item: pb.item }) }));
+          const gj = await gr.json();
+          if (gj && gj.ok) { try { await announceGift(env, ctx, gj.from, gj.to, gj.item); } catch (e) {} try { await evPush(env, request, 'pass', 'gift ' + gj.item + ' -> @' + gj.to, '/season/'); } catch (e) {} }
+          return new Response(JSON.stringify(gj), { status: gr.status, headers: jh7 });
         }
         if (pb.op === 'buy') {
           const src = pb.src === 'usd' ? 'usd' : pb.src === 'code' ? 'code' : 'ticks';
@@ -15150,7 +15190,7 @@ export default {
       const jh8 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let cb = { op: 'list' }; if (request.method === 'POST') { try { cb = await request.json(); } catch (e) {} }
       const gives = (k, a) => k === 'cents' ? '$' + ((+a || 0) / 100).toFixed(2) + ' rewards balance' : k === 'premium' ? (+a || 0) + ' days of Premium' : k === 'ticks' ? (+a || 0) + ' Ticks' : 'the pro pass';
-      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke') { try { await tgAdmin(env, '<b>Codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' x ' + gives(cb.kind, cb.amt) + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pass/codes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cb) })); const txt = await rr.text(); if (cb.op === 'gen' || cb.op === 'revoke' || cb.op === 'revokebatch') { try { await tgAdmin(env, '<b>Codes</b> ' + (cb.op === 'gen' ? 'generated ' + (JSON.parse(txt).codes || []).length + ' x ' + gives(cb.kind, cb.amt) + ' (' + (cb.uses || 1) + ' use' + ((+cb.uses || 1) === 1 ? '' : 's') + (cb.note ? ', ' + cb.note : '') + ')' : cb.op === 'revokebatch' ? 'revoked a whole batch: ' + ((JSON.parse(txt).revoked || 0)) + ' live code(s)' : 'revoked ' + cb.code), { kind: 'pass-codes', sev: 'info' }); } catch (e) {} } return new Response(txt, { headers: jh8 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh8 }); }
     }
     if (url.pathname === '/api/goals') { // Season goals: GET = mine + catalogue (public catalogue for guests); POST {op:'pick'|'claim', k}
       const jh6 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -17399,6 +17439,10 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS pcode_use(code TEXT, user_id TEXT, ts INTEGER, PRIMARY KEY(code, user_id))');
     try { s.exec("ALTER TABLE pcode ADD COLUMN kind TEXT DEFAULT 'pass'"); } catch (e) {} // 2026-09-06: a code can also give cents (rewards balance), premium days or Ticks
     try { s.exec('ALTER TABLE pcode ADD COLUMN amt INTEGER DEFAULT 0'); } catch (e) {}
+    try { s.exec('ALTER TABLE pcode ADD COLUMN batch TEXT'); } catch (e) {} // 2026-09-06 (owner): codes are listed and copied per GENERATION in mp-ops, not one by one
+    // Pass skin-gift vouchers (2026-09-06): a pro tier hands out a voucher; the holder sends any Ticks-priced skin up to `cap` to another member.
+    s.exec('CREATE TABLE IF NOT EXISTS pgift(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, season INTEGER, t INTEGER, cap INTEGER, ts INTEGER, used_ts INTEGER, to_user TEXT, item_id TEXT)');
+    s.exec('CREATE INDEX IF NOT EXISTS pgift_u ON pgift(user_id)');
     s.exec('CREATE TABLE IF NOT EXISTS ugoal(user_id TEXT, season INTEGER, k TEXT, target INTEGER, chosen_ts INTEGER, done_ts INTEGER, paid INTEGER DEFAULT 0, PRIMARY KEY(user_id, season, k))');
     s.exec('CREATE TABLE IF NOT EXISTS upred(user_id TEXT, day TEXT, guess REAL, ts INTEGER, px_at REAL, close REAL, err REAL, pts INTEGER, ticks INTEGER, settled INTEGER DEFAULT 0, PRIMARY KEY(user_id, day))');
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
@@ -17581,6 +17625,22 @@ export class UserStore {
       return { ok: true, until: until };
     }
     return { error: 'bad' };
+  }
+  _passGrant(uid, def, track, seasonIdx, auto) { // one pass tier on one track -> what was given. Cents are NOT paid here (the ledger is another DO): they are returned for the worker to credit.
+    const sql = this.state.storage.sql, rw = def[track], now = Date.now();
+    const out = { ticks: 0, item: null, cents: 0, sup: null, supErr: null, prem: 0, until: 0, gift: null };
+    const note = 'season ' + seasonIdx + ' pass tier ' + def.t + ' (' + track + (auto ? ', auto' : '') + ')';
+    if (rw.ticks) { try { out.ticks = this._grantTicks(uid, 'pass', rw.ticks, auto ? { note } : { dayCap: TICK_CAP.pass, note }); } catch (e) {} }
+    if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', uid, rw.item, now, 'pass', 's' + seasonIdx); } catch (e) {} out.item = rw.item; }
+    if (rw.sup && vaultItem(rw.sup)) {
+      let r = this._applyConsumable(uid, rw.sup, 0);
+      if (r.error === 'boost_active' && auto) { try { sql.exec('UPDATE users SET xpboost_until=COALESCE(xpboost_until,0)+? WHERE id=?', (vaultItem(rw.sup).grant.hrs || 0) * 3600000, uid); r = { ok: true }; } catch (e) {} } // season end: a running boost is extended rather than lost
+      if (r.ok) out.sup = rw.sup; else out.supErr = r.error || 'bad'; // a full freeze bank at rollover is the one case that cannot be honoured (the bank IS the rule)
+    }
+    if (rw.prem) { const cur = +(this.rows('SELECT premium FROM users WHERE id=?', uid)[0] || {}).premium || 0; out.until = Math.max(cur, now) + rw.prem * 86400000; sql.exec('UPDATE users SET premium=? WHERE id=?', out.until, uid); out.prem = rw.prem; }
+    if (rw.gift) { try { sql.exec('INSERT INTO pgift(user_id,season,t,cap,ts) VALUES(?,?,?,?,?)', uid, seasonIdx, def.t, rw.gift, now); const g = this.rows('SELECT id FROM pgift WHERE user_id=? ORDER BY id DESC LIMIT 1', uid)[0]; out.gift = { id: g ? +g.id : 0, cap: rw.gift }; } catch (e) {} }
+    if (rw.cents) out.cents = rw.cents;
+    return out;
   }
   _pushNotif(uid, kind, body, link) { // social notification (ring-buffered ~40/user)
     uid = String(uid || '').replace(/^u:/, ''); if (!uid) return; const sql = this.state.storage.sql;
@@ -19526,7 +19586,7 @@ export class UserStore {
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
       const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
-      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
+      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       return this.j({ ok: true, uid, username: 'e2e_' + uid });
     }
@@ -19538,7 +19598,30 @@ export class UserStore {
       let claimed = []; try { claimed = JSON.parse((row && row.claimed) || '[]'); } catch (e) { claimed = []; }
       const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP));
       const tiers = passTiers().map(t => ({ t: t.t, xp: t.xp, reached: t.t <= tier, free: Object.assign({}, t.free, { claimed: claimed.indexOf('f' + t.t) >= 0 }), pro: Object.assign({}, t.pro, { claimed: claimed.indexOf('p' + t.t) >= 0 }) }));
-      return this.j({ season: sk, xp, tier, next: tier < PASS_TIERS_N ? (tier + 1) * PASS_STEP - xp : 0, pro: !!(row && +row.pro), boughtTs: row ? +row.bought_ts || 0 : 0, tiers, price: { ticks: PASS_PRICE_TICKS, cents: PASS_PRICE_CENTS }, step: PASS_STEP, claimable: tiers.reduce((n, t) => n + (t.reached && !t.free.claimed ? 1 : 0) + (t.reached && (row && +row.pro) && !t.pro.claimed ? 1 : 0), 0) }); // rewards, not tiers: the page says "N rewards to claim"
+      // skin-gift vouchers (any season, unused first) + the skins a voucher may send, so the page needs no second call
+      const gifts = uid ? this.rows('SELECT id, season, t, cap, ts, used_ts, to_user, item_id FROM pgift WHERE user_id=? ORDER BY (used_ts IS NOT NULL), id DESC LIMIT 20', uid).map(g => ({ id: +g.id, season: +g.season, t: +g.t, cap: +g.cap, ts: +g.ts, used: !!g.used_ts, to: g.to_user || null, item: g.item_id || null })) : [];
+      const maxCap = Math.max(0, ...Object.values(PASS_PRO).map(p => +p.gift || 0));
+      const giftItems = passGiftable(maxCap).map(it => ({ id: it.id, name: it.name, kind: it.kind || 'frame', tier: it.tier || '', ticks: it.ticks, desc: String(it.desc || '').replace(/&#39;/g, "'") }));
+      return this.j({ season: sk, xp, tier, next: tier < PASS_TIERS_N ? (tier + 1) * PASS_STEP - xp : 0, pro: !!(row && +row.pro), boughtTs: row ? +row.bought_ts || 0 : 0, tiers, price: { ticks: PASS_PRICE_TICKS, cents: PASS_PRICE_CENTS }, step: PASS_STEP, claimable: tiers.reduce((n, t) => n + (t.reached && !t.free.claimed ? 1 : 0) + (t.reached && (row && +row.pro) && !t.pro.claimed ? 1 : 0), 0), gifts, giftItems, names: passNames(), centsTotal: tiers.reduce((n, t) => n + (t.pro.cents || 0), 0), centsCap: PASS_CENTS_CAP }); // rewards, not tiers: the page says "N rewards to claim"
+    }
+    if (path === '/pass/gift' && request.method === 'POST') { // {uid, id, to, item}: spend a skin-gift voucher on another member. The worker announces it in chat afterwards.
+      const uid = String(b.uid || '').replace(/^u:/, ''), gid = Math.round(+b.id || 0), toUn = String(b.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24), itemId = String(b.item || '').slice(0, 40);
+      if (!uid || !gid || !toUn || !itemId) return this.j({ error: 'bad' }, 400);
+      const me = this.rows('SELECT username FROM users WHERE id=?', uid)[0]; if (!me) return this.j({ error: 'no_user' }, 404);
+      const g = this.rows('SELECT id, cap, used_ts FROM pgift WHERE id=? AND user_id=?', gid, uid)[0];
+      if (!g) return this.j({ error: 'no_voucher' }, 404);
+      if (g.used_ts) return this.j({ error: 'voucher_used' }, 409);
+      const it = passGiftable(+g.cap).filter(x => x.id === itemId)[0];
+      if (!it) return this.j({ error: 'not_giftable', cap: +g.cap }, 400); // cash-only, dearer than the cap, a supply, a nation frame or an earn-only frame
+      const target = this.rows('SELECT id, username FROM users WHERE LOWER(username)=LOWER(?)', toUn)[0];
+      if (!target) return this.j({ error: 'no_target' }, 404);
+      if (String(target.id) === uid) return this.j({ error: 'self' }, 400);
+      if (this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', String(target.id), it.id)[0]) return this.j({ error: 'target_owned' }, 409);
+      sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', String(target.id), it.id, Date.now(), 'gift', String(me.username || '').slice(0, 24));
+      sql.exec('UPDATE pgift SET used_ts=?, to_user=?, item_id=? WHERE id=?', Date.now(), String(target.username || ''), it.id, gid);
+      try { this._pushNotif(String(target.id), 'gift', '@' + (me.username || 'A trader') + ' gifted you the ' + it.name + (it.kind === 'bg' ? ' background' : it.kind === 't' ? ' ticket skin' : ' frame') + ' from their season pass — open The Vault to equip it', '/vault/'); } catch (e) {}
+      this._opsEv(uid, 'pass', 'gift ' + it.name + ' -> @' + (target.username || ''), '/season/', { item: it.id, to: target.username || '' });
+      return this.j({ ok: true, id: gid, item: it.id, name: it.name, kind: it.kind || 'frame', to: target.username || '', from: me.username || '' });
     }
     if (path === '/pass/buy' && request.method === 'POST') { // {uid, src:'ticks'|'code'|'usd', code?}. usd = the worker already debited the ledger and only marks here.
       const uid = String(b.uid || '').replace(/^u:/, ''), src = String(b.src || ''); const sk = predSeason(Date.now());
@@ -19574,11 +19657,10 @@ export class UserStore {
       if (track === 'pro' && !+row.pro) return this.j({ error: 'no_pass' }, 402);
       let claimed = []; try { claimed = JSON.parse(row.claimed || '[]'); } catch (e) { claimed = []; }
       const key = (track === 'pro' ? 'p' : 'f') + t; if (claimed.indexOf(key) >= 0) return this.j({ error: 'claimed' }, 409);
+      if (def[track].sup) { const pc = this._applyConsumable(uid, def[track].sup, 1); if (pc.error) return this.j(Object.assign({ sup: def[track].sup }, pc), 409); } // a supply that cannot apply right now (full freeze bank, a boost already running) leaves the tier claimable instead of eating the reward
       claimed.push(key); sql.exec('UPDATE upass SET claimed=? WHERE user_id=? AND season=?', JSON.stringify(claimed), uid, sk.idx);
-      const rw = def[track]; let ticks = 0, item = null;
-      if (rw.ticks) { try { ticks = this._grantTicks(uid, 'pass', rw.ticks, { dayCap: TICK_CAP.pass, note: 'season pass tier ' + t + ' (' + track + ')' }); } catch (e) {} }
-      if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', uid, rw.item, Date.now(), 'pass', 's' + sk.idx); item = rw.item; } catch (e) { item = rw.item; } }
-      return this.j({ ok: true, t, track, ticks, item });
+      const got = this._passGrant(uid, def, track, sk.idx, false);
+      return this.j(Object.assign({ ok: true, t, track }, got));
     }
     if (path === '/code/redeem' && request.method === 'POST') { // {uid, code} -> consume one use and apply what it gives (pass / premium days / Ticks here; cents are credited by the worker on the ledger)
       const uid = String(b.uid || '').replace(/^u:/, ''), code = String(b.code || '').trim().toUpperCase();
@@ -19609,11 +19691,13 @@ export class UserStore {
         const rawAmt = Math.round(+b.amt || 0);
         if (kind !== 'pass' && !(rawAmt > 0)) return this.j({ error: 'amount_required' }, 400);
         const amt = kind === 'pass' ? 0 : Math.min(kind === 'cents' ? 500 : kind === 'premium' ? 365 : 5000, rawAmt);
-        for (let i = 0; i < n; i++) { let c = passCode(); for (let k = 0; k < 5 && this.rows('SELECT 1 FROM pcode WHERE code=?', c)[0]; k++) c = passCode(); sql.exec('INSERT INTO pcode(code,uses,used,exp,created,note,revoked,kind,amt) VALUES(?,?,0,?,?,?,0,?,?)', c, uses, exp, Date.now(), note, kind, amt); codes.push(c); }
-        return this.j({ ok: true, codes, uses, exp, note, kind, amt });
+        const batch = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); // one id per generation: mp-ops lists and copies the whole batch at once
+        for (let i = 0; i < n; i++) { let c = passCode(); for (let k = 0; k < 5 && this.rows('SELECT 1 FROM pcode WHERE code=?', c)[0]; k++) c = passCode(); sql.exec('INSERT INTO pcode(code,uses,used,exp,created,note,revoked,kind,amt,batch) VALUES(?,?,0,?,?,?,0,?,?,?)', c, uses, exp, Date.now(), note, kind, amt, batch); codes.push(c); }
+        return this.j({ ok: true, codes, uses, exp, note, kind, amt, batch });
       }
       if (op === 'revoke') { const code = String(b.code || '').trim().toUpperCase(); sql.exec('UPDATE pcode SET revoked=1 WHERE code=?', code); return this.j({ ok: true, code }); }
-      const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked, kind, amt FROM pcode ORDER BY created DESC LIMIT 300');
+      if (op === 'revokebatch') { const batch = String(b.batch || '').slice(0, 40); if (!batch) return this.j({ error: 'bad' }, 400); const n = +(this.rows('SELECT COUNT(*) c FROM pcode WHERE batch=? AND revoked=0', batch)[0] || {}).c || 0; sql.exec('UPDATE pcode SET revoked=1 WHERE batch=? AND revoked=0', batch); return this.j({ ok: true, batch, revoked: n }); }
+      const rows = this.rows('SELECT code, uses, used, exp, created, note, revoked, kind, amt, batch FROM pcode ORDER BY created DESC LIMIT 600');
       const holders = this.rows('SELECT COUNT(*) c FROM upass WHERE season=? AND pro=1', predSeason(Date.now()).idx)[0] || { c: 0 };
       const bySrc = this.rows('SELECT src, COUNT(*) n FROM upass WHERE pro=1 GROUP BY src');
       return this.j({ codes: rows, holders: +holders.c || 0, bySrc });
@@ -19622,18 +19706,20 @@ export class UserStore {
       const idx = Math.round(+b.season); if (!isFinite(idx)) return this.j({ error: 'bad' }, 400);
       const a = LB_ANCHOR + idx * LB_PERIOD, from = a, to = a + LB_PERIOD; let users = 0, grants = 0;
       const rows = this.rows('SELECT user_id, pro, claimed FROM upass WHERE season=?', idx);
+      const credits = {}, skipped = []; // cents per member for the worker to put on the ledger; supplies that could not apply
       for (const r of rows) {
         const xp = +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", r.user_id, from, to)[0] || {}).x || 0;
         const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP)); let claimed = []; try { claimed = JSON.parse(r.claimed || '[]'); } catch (e) {}
         let touched = false;
         for (const def of passTiers()) { if (def.t > tier) break;
           for (const track of (+r.pro ? ['free', 'pro'] : ['free'])) { const key = (track === 'pro' ? 'p' : 'f') + def.t; if (claimed.indexOf(key) >= 0) continue;
-            claimed.push(key); touched = true; grants++; const rw = def[track];
-            if (rw.ticks) { try { this._grantTicks(r.user_id, 'pass', rw.ticks, { note: 'season ' + idx + ' pass tier ' + def.t + ' (auto)' }); } catch (e) {} }
-            if (rw.item && vaultItem(rw.item)) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', r.user_id, rw.item, Date.now(), 'pass', 's' + idx); } catch (e) {} } } }
+            claimed.push(key); touched = true; grants++;
+            const got = this._passGrant(r.user_id, def, track, idx, true);
+            if (got.cents) credits[r.user_id] = (credits[r.user_id] || 0) + got.cents;
+            if (got.supErr) skipped.push({ uid: r.user_id, t: def.t, sup: def[track].sup, why: got.supErr }); } }
         if (touched) { users++; sql.exec('UPDATE upass SET claimed=? WHERE user_id=? AND season=?', JSON.stringify(claimed), r.user_id, idx); }
       }
-      return this.j({ ok: true, season: idx, users, grants });
+      return this.j({ ok: true, season: idx, users, grants, credits: Object.keys(credits).map(u => ({ uid: u, cents: credits[u] })), skipped });
     }
     if (path === '/goal/me') { // the member's season goals with live progress, plus the catalogue
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());

@@ -1783,10 +1783,10 @@ body.mpa-authed .hero{display:none}
     function load(){fetch('/api/pass',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(!d||!d.tiers)return;box.hidden=false;
       var st=document.getElementById('spState'),t=document.getElementById('spT'),n=document.getElementById('spN'),bar=document.getElementById('spBar'),sub=document.getElementById('spSub');
       st.textContent=d.pro?'PRO':'FREE';
-      if(!d.signedIn){t.innerHTML='20 tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds Vault items. <b>Sign in (free)</b> to start climbing.';return;}
+      if(!d.signedIn){t.innerHTML='20 tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.';return;}
       var step=d.step||100,into=d.xp-d.tier*step,pct=d.tier>=20?100:Math.round(into/step*100);
       t.innerHTML='Tier '+d.tier+' <small>/ 20</small>';n.textContent=fmt(d.xp)+' XP this season';bar.style.width=pct+'%';
-      sub.innerHTML=(d.tier>=20?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks + four Vault items.');
+      sub.innerHTML=(d.tier>=20?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.');
     }).catch(function(){});}
     window.addEventListener('mp-auth-change',load);setTimeout(load,1300);window.addEventListener('mp:xp',function(){setTimeout(load,1700);});
   })();

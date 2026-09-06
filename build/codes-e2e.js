@@ -55,9 +55,17 @@ const redeem = (uid, code) => post('/api/pass?uid=' + uid, { op: 'buy', src: 'co
   chk('money history: the cents code shows as a durable ledger row (+25 cents, from code) with the account balance', giftRows.length >= 2 && giftRows.some(r => r.amount === 25) && giftRows.some(r => r.amount === 10) && ml.account && (+ml.account.balance || 0) >= 25 && ml.acct === 'u:' + UID, { rows: (ml.rows || []).map(r => r.type + ':' + r.amount), balance: ml.account && ml.account.balance });
   const mlU = (await get('/api/admin/acctlog?u=e2e_' + UID)).body;
   chk('money history: resolves a username too', mlU.acct === 'u:' + UID && (mlU.rows || []).length >= 1, mlU.acct);
+  // batches (2026-09-06, owner): one generation = one batch id on every code; mp-ops lists per batch, copies the batch, revokes the batch
+  const cB = (await post('/api/admin/passcodes?e2e=1', { op: 'gen', kind: 'ticks', amt: 5, n: 3, uses: 1, days: 1, note: 'codes-e2e batch ' + UID })).body;
+  chk('a generation of 3 returns one batch id', cB.ok && cB.codes.length === 3 && /^b[a-z0-9]{8,}$/.test(cB.batch || ''), cB.batch);
   const list = (await get('/api/admin/passcodes')).body;
   const mine = (list.codes || []).filter(c => /codes-e2e/.test(c.note || ''));
   chk('ops list carries kind + amount + uses for every generated code', mine.length >= 6 && mine.every(c => c.kind && (c.kind === 'pass' || c.amt > 0)) && mine.some(c => c.kind === 'premium' && c.amt === 7), mine.map(c => c.kind + ':' + c.amt + ':' + c.used + '/' + c.uses));
+  const inB = (list.codes || []).filter(c => c.batch === cB.batch);
+  chk('the list carries the batch id on all 3 codes of that generation and on nothing else', inB.length === 3 && inB.every(c => cB.codes.indexOf(c.code) >= 0), inB.map(c => c.code));
+  const rb = (await post('/api/admin/passcodes?e2e=1', { op: 'revokebatch', batch: cB.batch })).body;
+  const rb1 = (await redeem(UID2, cB.codes[1])).body;
+  chk('revoke the whole batch: 3 revoked, a code from it refuses', rb.ok && rb.revoked === 3 && rb1.error === 'bad_code', { rb, rb1 });
 
   const act = (await get('/api/admin/activity?h=1&e2e=1&actor=u:e2e_' + UID)).body;
   const rows = (act.rows || []).filter(r => r.t === 'code');
