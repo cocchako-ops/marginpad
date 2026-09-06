@@ -19612,7 +19612,7 @@ export class UserStore {
       return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
     }
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
-      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
+      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (b.op !== 'sweep' && (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid))) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
       if (b.op === 'sweep') { // remove every e2e_* member older than an hour: an E2E that crashed mid-run leaves its throwaway behind (goals-e2e 2026-09-06)
         const olds = this.rows("SELECT id FROM users WHERE username LIKE 'e2e\\_%' ESCAPE '\\' AND created < ?", Date.now() - 3600000).map(r => String(r.id));
