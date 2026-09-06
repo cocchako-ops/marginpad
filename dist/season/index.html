@@ -129,7 +129,24 @@ h1 b{color:var(--lime)}
 .stamp{display:inline-block;padding:8px 13px 7px;border:2px solid currentColor;outline:1px solid currentColor;outline-offset:3px;border-radius:5px;font:800 12px 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;transform:rotate(-5deg);margin:6px 6px 0 0;opacity:.95;transition:color .3s}
 .stamp.pro{color:var(--pro);text-shadow:0 0 14px rgba(199,146,255,.55)}.stamp.free{color:#7d8794}
 .claimall{white-space:nowrap}
-.road-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:30px 4px 12px 0;scrollbar-width:thin;margin-top:14px;scroll-snap-type:x proximity}
+/* the strip's scroller: a violet thumb on a ticket-dark rail (WebKit pseudo-elements only — a `scrollbar-width` value would make Chrome ignore them),
+   edge fades that say "more this way", and hover arrows on desktop. Firefox gets the same colours through the standard property. */
+.road-shell{position:relative;margin-top:14px}
+.road-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:30px 4px 14px 0;scroll-snap-type:x proximity}
+.road-wrap::-webkit-scrollbar{height:10px}
+.road-wrap::-webkit-scrollbar-track{background:#0d1015;border-radius:6px;border:1px solid #232932;margin:0 2px}
+.road-wrap::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#7f5fd6,var(--pro));border-radius:6px;border:2px solid #0d1015;box-shadow:0 0 10px rgba(199,146,255,.45)}
+.road-wrap::-webkit-scrollbar-thumb:hover{background:var(--pro)}
+@supports not selector(::-webkit-scrollbar){.road-wrap{scrollbar-width:thin;scrollbar-color:#9d78e0 #0d1015}}
+.road-shell::before,.road-shell::after{content:"";position:absolute;top:0;bottom:24px;width:34px;pointer-events:none;z-index:4;opacity:0;transition:opacity .25s}
+.road-shell::before{left:0;background:linear-gradient(90deg,var(--panel),rgba(17,21,28,0))}
+.road-shell::after{right:0;background:linear-gradient(270deg,var(--panel),rgba(17,21,28,0))}
+.road-shell.sl::before{opacity:1}.road-shell.sr::after{opacity:1}
+.road-shell .arr{position:absolute;top:50%;z-index:5;width:34px;height:34px;border-radius:50%;background:#160f24;border:1px solid rgba(199,146,255,.6);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(-50%);transition:opacity .2s,border-color .15s;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+.road-shell .arr svg{width:14px;height:14px}.road-shell .arr:hover{border-color:var(--pro)}
+.road-shell .arr.l{left:6px}.road-shell .arr.r{right:6px}
+.road-shell.sl:hover .arr.l,.road-shell.sr:hover .arr.r,.road-shell .arr:focus-visible{opacity:1}
+@media(hover:none),(max-width:1000px){.road-shell .arr{display:none}}
 .road{position:relative;display:grid;grid-template-columns:46px repeat(20,118px);gap:6px;width:max-content;align-items:stretch}
 .road::before{content:"";position:absolute;left:52px;right:0;top:15px;height:3px;background:repeating-linear-gradient(90deg,#2a323c 0 6px,transparent 6px 11px)}
 .road .fill{position:absolute;left:52px;top:14px;height:5px;border-radius:3px;background:linear-gradient(90deg,#7f5fd6,var(--pro));box-shadow:0 0 14px rgba(199,146,255,.7);transition:width .7s ease;width:0;z-index:1}
@@ -313,7 +330,11 @@ h1 b{color:var(--lime)}
           <button type="button" class="btn sm claimall" id="claimAll" hidden>Claim all</button>
         </div>
       </div>
-      <div class="road-wrap" id="roadWrap"><div class="road" id="road"><div class="fill" id="roadFill"></div></div></div>
+      <div class="road-shell" id="roadShell">
+        <button type="button" class="arr l" data-roll="-1" aria-label="Earlier tiers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="road-wrap" id="roadWrap"><div class="road" id="road"><div class="fill" id="roadFill"></div></div></div>
+        <button type="button" class="arr r" data-roll="1" aria-label="Later tiers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
       <div class="road-lab"><span class="ps" id="proSum"></span></div>
       <div class="gifts" id="gifts" hidden></div>
       <div id="buyWrap">
@@ -527,7 +548,12 @@ h1 b{color:var(--lime)}
       passBusy=true;b.disabled=true;msg.textContent='…';
       fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){passBusy=false;b.disabled=false;if(d&&d.ok){msg.innerHTML='<b style="color:var(--lime)">Pro track unlocked for this season.</b>';toast('<b>Pro track</b> unlocked');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}else{var er=d&&d.error;msg.innerHTML='<b class="err">'+(er==='short_ticks'?('Not enough Ticks: this costs '+int(d.need)+' T and you have '+int(d.have)+' T.'):er==='insufficient'?('Not enough balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='already'?'You already have the pro track this season.':er==='not_signed_in'?'Sign in first.':'Could not complete that.')+'</b>';}}).catch(function(){passBusy=false;b.disabled=false;msg.innerHTML='<b class="err">Network error.</b>';});}
   });
-  window.addEventListener('resize',function(){if(PASS)placeFill(PASS);});
+  window.addEventListener('resize',function(){if(PASS)placeFill(PASS);roadEdges();});
+  /* strip edges: fade + arrow on the side that still has stubs */
+  function roadEdges(){var w=$('roadWrap'),s=$('roadShell');if(!w||!s)return;s.classList.toggle('sl',w.scrollLeft>4);s.classList.toggle('sr',w.scrollLeft+w.clientWidth<w.scrollWidth-4);}
+  $('roadWrap').addEventListener('scroll',roadEdges,{passive:true});
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#roadShell [data-roll]');if(!a)return;var w=$('roadWrap');w.scrollBy({left:(+a.getAttribute('data-roll'))*Math.max(240,w.clientWidth-140),behavior:'smooth'});});
+  new MutationObserver(function(){roadEdges();}).observe($('road'),{childList:true});
 
   /* ---- one redeem box for every code (pass / cents / Premium / Ticks) -- separate from the pro purchase, works after you already own the pass ---- */
   (function(){var i=$('codeIn'),b=$('codeBtn'),m=$('codeMsg'),busy=false;

@@ -9587,6 +9587,7 @@ async function announceGift(env, ctx, fromUn, toUn, itemId) {
     const it = vaultItem(itemId); if (!it) return;
     const to = String(toUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); if (!to) return;
     const from = String(fromUn || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+    if (/^e2e_/i.test(to) || /^e2e_/i.test(from)) return; // throwaway E2E members (POST /api/admin/e2euser) never reach the room or the owner's activity log (owner 2026-09-06: "e2e_ keeps gifting, clean it up")
     const name = String(it.name || '').replace(/[<>&]/g, '').slice(0, 40);
     try { const gp = evPush(env, null, 'gift', (from ? '@' + from : 'the house') + ' -> @' + to + ': ' + name, '/vault/', { from, to, item: it.id }); if (ctx && ctx.waitUntil) ctx.waitUntil(gp); else await gp; } catch (e) {} // ops feed: every gift, whoever paid
     const text = from
@@ -14723,6 +14724,10 @@ export default {
     }
     if (url.pathname === '/api/admin/activity' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops People > Activity (2026-09-06): the 24h ring, every actor (user or guest device), and the abuse radar computed over the window
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (request.method === 'POST' && url.searchParams.get('purge')) { // POST ?purge=<substring>: delete matching rows from the 24h rings (owner cleanup of test traffic)
+        const q = String(url.searchParams.get('purge') || '').slice(0, 64);
+        try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, keys: ['evlog', 'pvlog', 'authlog'] }) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info' }); } catch (e) {} return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); }
+      }
       const h = Math.min(24, Math.max(1, +url.searchParams.get('h') || 24));
       const nMax = Math.min(5000, Math.max(50, +url.searchParams.get('n') || 2000));
       const withPv = url.searchParams.get('pv') === '1';
@@ -15763,6 +15768,14 @@ export class OpsLog {
       for (const it of items) { try { this.state.storage.sql.exec('INSERT INTO ring(k,ts,j) VALUES(?,?,?)', k, +(it && it.ts) || Date.now(), JSON.stringify(it)); } catch (e) {} }
       this.trim(k, +b.cap || 800, +b.cutMs || 0);
       return this.j({ ok: 1, n: items.length });
+    }
+    if (path === '/purge' && request.method === 'POST') { // ops: drop every ring row whose payload contains a substring (test-traffic cleanup, 2026-09-06: "e2e_ keeps gifting")
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const q = String(b.q || '').slice(0, 64); const keys = (Array.isArray(b.keys) ? b.keys : ['evlog', 'pvlog']).map(k => String(k).replace(/[^a-z]/g, '')).filter(Boolean);
+      if (q.length < 3) return this.j({ error: 'q_too_short' }, 400);
+      const out = {};
+      for (const k of keys) { try { out[k] = +(this.rows('SELECT COUNT(*) c FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%')[0] || {}).c || 0; this.state.storage.sql.exec('DELETE FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%'); } catch (e) { out[k] = -1; } }
+      return this.j({ ok: 1, q, deleted: out });
     }
     if (path === '/mark' && request.method === 'POST') { // online heartbeats: vid -> lastSeen
       let b = {}; try { b = await request.json(); } catch (e) {}
@@ -17748,7 +17761,7 @@ export class UserStore {
       const C = this._unCache = this._unCache || new Map();
       let u = C.get(uid);
       if (u === undefined) { const r = this.rows('SELECT username, email FROM users WHERE id=?', uid)[0]; u = r ? String(r.username || String(r.email || '').split('@')[0] || '').slice(0, 24) : ''; C.set(uid, u); if (C.size > 300) C.clear(); }
-      opslogPush(this.env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc: '', v: 'srv', di: '', ip: '', u, uid: String(uid).slice(0, 32), p: page || '/paper-trade', d: '', ts: Date.now() }, this._reqE2 ? { e2: 1 } : {}, x ? { x } : {}), EVLOG_CAP, EVLOG_CUT).catch(() => {});
+      opslogPush(this.env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc: '', v: 'srv', di: '', ip: '', u, uid: String(uid).slice(0, 32), p: page || '/paper-trade', d: '', ts: Date.now() }, (this._reqE2 || /^e2e_/i.test(u)) ? { e2: 1 } : {}, x ? { x } : {}), EVLOG_CAP, EVLOG_CUT).catch(() => {}); // e2e_* members (POST /api/admin/e2euser) are always test traffic, whatever request reached the store
     } catch (e) {}
   }
   _syncJournal(uid, incoming, promos, srvAuth, via) {

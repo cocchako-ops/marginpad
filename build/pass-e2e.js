@@ -30,6 +30,8 @@ const get = async (u) => { const r = await fetch(ORIGIN + u, { headers: H }); re
 const pass = (uid) => get('/api/pass?uid=' + uid);
 const buy = (uid, src, code) => post('/api/pass?uid=' + uid, { op: 'buy', src, code });
 const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, track });
+// browser requests to the site carry the admin key so pageviews / profile views / beacons from the test browser are tagged e2 (hidden from the owner's Activity read); third-party hosts never see the key
+const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInterceptResolutionHandled()) { req.continue({ headers: Object.assign({}, req.headers(), { 'x-admin-key': K }) }); return true; } } catch (e) {} return false; };
 
 (async () => {
   const pub = await fetch(ORIGIN + '/api/pass').then(r => r.json());
@@ -138,6 +140,7 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: 1280, height: 900 });
+    await page.setRequestInterception(true); page.on('request', (req) => tagE2(req) || req.continue()); // every same-origin beacon carries the admin key -> rows are e2-tagged, never in the owner's daily read
     await page.goto(ORIGIN + '/season/?cb=' + Date.now() + '#pass', { waitUntil: 'networkidle2', timeout: 90000 });
     await page.waitForFunction("document.querySelectorAll('#road .tier').length>=40", { timeout: 20000 }).catch(() => {});
     guest = await page.evaluate(() => ({ gate: !document.getElementById('gate').hidden, tiers: document.querySelectorAll('#road .tier').length, buyHidden: document.getElementById('buy').hidden, scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, ends: document.getElementById('ends').textContent, fill: parseFloat(document.getElementById('roadFill').style.width) || 0 }));
@@ -165,7 +168,7 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
         t[b.track].claimed = true; recount();
         return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, t: b.t, track: b.track, ticks: t[b.track].ticks, item: t[b.track].item || null, cents: t[b.track].cents || 0, sup: t[b.track].sup || null, prem: t[b.track].prem || 0, gift: t[b.track].gift ? { id: 8, cap: t[b.track].gift } : null }) });
       }
-      return req.continue();
+      return tagE2(req) || req.continue();
     });
     await p2.goto(ORIGIN + '/season/?cb=' + Date.now() + '#pass', { waitUntil: 'networkidle2', timeout: 90000 });
     await p2.waitForFunction("document.querySelectorAll('#road [data-claim]').length>0 && parseFloat(document.getElementById('roadFill').style.width)>0", { timeout: 20000 }).catch(() => {});

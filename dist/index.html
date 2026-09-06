@@ -390,6 +390,8 @@
 /* member strip: replaces the hero for a signed-in visitor */
 .dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.35fr) minmax(220px,.8fr);align-items:stretch;gap:18px;margin:14px var(--pad) 0;padding:20px 22px;border-radius:22px;border:1px solid rgba(199,146,255,.3);background:radial-gradient(70% 90% at 0 0,rgba(199,146,255,.16),transparent 60%),radial-gradient(50% 80% at 100% 100%,rgba(194,246,74,.1),transparent 60%),linear-gradient(180deg,#12161d,#0b0e12);color:inherit;text-decoration:none;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 80px -40px rgba(199,146,255,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .2s,transform .2s}
 .dash:hover{border-color:rgba(194,246,74,.5);transform:translateY(-1px)}
+.dash{margin-bottom:26px} /* owner 2026-09-06: the member card sat straight on the market strip (cap / volume / dominance / fear & greed) */
+@media(max-width:640px){.dash{margin-bottom:16px}}
 .dash::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(199,146,255,.75),transparent 35%,transparent 65%,rgba(194,246,74,.6));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .dash::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);-webkit-mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);pointer-events:none}
 .dash[hidden]{display:none}
