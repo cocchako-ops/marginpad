@@ -147,7 +147,8 @@ h1 b{color:var(--lime)}
 .bsw{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .bs{position:relative;text-align:left;background:#0a0d11;border:1px solid var(--line2);border-radius:14px;padding:12px 12px 11px;cursor:pointer;color:inherit;min-width:0;transition:border-color .16s,transform .12s,background .16s;--c:#ffd75a}
 .bs:hover{border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
-.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,#0a0d11),#0a0d11);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent),0 16px 36px -22px var(--c)}
+/* selected card: a ring only. The old drop shadow (0 16px 36px -22px) fell under the table card 12 px below and read as a cut edge (owner 2026-09-06, twice). */
+.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,#0a0d11),#0a0d11);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent)}
 .bs .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:8px}
 .bs .ic svg{width:16px;height:16px}
 .bs .nm{font:800 13.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -178,6 +179,7 @@ h1 b{color:var(--lime)}
 .fr{display:grid;grid-template-columns:minmax(0,1fr) 128px 144px 42px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px;white-space:nowrap;min-height:38px}
 .fr.duel{grid-template-columns:minmax(0,1fr) 124px 52px} /* "survival · 1000T" 16 ch */
 .fr .pair .w.win{color:var(--sky)}.fr .pair i.open{color:var(--amber);letter-spacing:.04em}
+.fr .take{background:var(--amber);color:#1a1200;border:0;border-radius:8px;padding:6px 0;font:800 11px 'Bricolage Grotesque',sans-serif;cursor:pointer;width:100%;transition:filter .14s}.fr .take:hover{filter:brightness(1.08)}.fr .take[disabled]{opacity:.5;cursor:default}
 .fr .p small{font-size:11px;font-weight:600;color:var(--dim)}.fr .p.liq small{font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}.fr .p.liq .sep{font-style:normal}
 .fr:first-child{border-top:0}
 .fr>*{min-width:0}
@@ -208,7 +210,7 @@ h1 b{color:var(--lime)}
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
 @media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
-@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 74px}.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.road-head{grid-template-columns:1fr}}
+@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.road-head{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -555,7 +557,11 @@ h1 b{color:var(--lime)}
     /* a duel with no opponent yet ("?" from the feed) is an OPEN CHALLENGE in the lobby, not a guest: shown as such. The winner is marked in the pair; the last column stays one short word. */
     if(duels){$('duelFeed').innerHTML=duels.length?duels.slice(0,12).map(function(d){var done=d.status==='done',open=!d.b||d.b==='?';var w=done?(d.winner==='a'?d.a:d.winner==='b'?d.b:''):'';
       var who=function(u){return '<span class="w'+(w&&u===w?' win':'')+'" data-lbu="'+esc(u)+'" title="'+esc(u)+(w&&u===w?' won':'')+'">'+esc(u)+'</span>';};
-      return '<div class="fr duel"><span class="pair">'+who(d.a)+(open?'<i class="open">open challenge</i>':'<i>vs</i>'+who(d.b))+'</span><span class="sy" title="'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+' Ticks at stake':'')+'">'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+'T':'')+'</span><span class="p" style="color:'+(done?'var(--sky)':open?'var(--amber)':'var(--dim)')+'" title="'+(done?(w?esc(w)+' won':'draw'):open?'waiting for an opponent':'live')+'">'+(done?(w?'won':'draw'):open?'open':'live')+'</span></div>';}).join(''):'<div class="empty">No duels yet this season.</div>';$('dfN').textContent=duels.length?duels.length+' LIVE':'LIVE';}
+      var m=me(),mine=!!(m&&m.username&&String(m.username).toLowerCase()===String(d.a||'').toLowerCase());
+      var last=done?'<span class="p" style="color:var(--sky)" title="'+(w?esc(w)+' won':'draw')+'">'+(w?'won':'draw')+'</span>'
+        :open?(mine?'<span class="p" style="color:var(--amber)" title="your open challenge, waiting for a taker">yours</span>':'<button type="button" class="take" data-take="'+esc(d.id)+'" title="Take this challenge'+(d.stake?' ('+d.stake+' Ticks at stake)':'')+'">Take</button>')
+        :'<span class="p" style="color:var(--dim)" title="live">live</span>';
+      return '<div class="fr duel"><span class="pair">'+who(d.a)+(open?'<i class="open">open challenge</i>':'<i>vs</i>'+who(d.b))+'</span><span class="sy" title="'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+' Ticks at stake':'')+'">'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+'T':'')+'</span>'+last+'</div>';}).join(''):'<div class="empty">No duels yet this season.</div>';$('dfN').textContent=duels.length?duels.length+' LIVE':'LIVE';}
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
 
   /* ---- loads ---- */
@@ -565,6 +571,14 @@ h1 b{color:var(--lime)}
   function loadPred(){return J('/api/predict').then(function(d){if(d&&d.day){PRED=d;paintDC();paintBanner();}});}
   function loadLB(){return J('/api/reward/lb').then(function(d){if(d&&d.weekStart){LB=d;paintBoards();paintBanner();}});}
   function loadHH(){return J('/api/happyhour').then(function(d){if(d){HH=d;paintHH(false);}});}
+  /* take an open challenge straight from the floor (owner 2026-09-06: "open duels are listed but cannot be taken") -- same route the duel panel uses */
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#duelFeed [data-take]');if(!b||b.disabled)return;
+    if(!me()){toast('Sign in to take a duel');var a=document.querySelector('[data-auth-open]');if(a)a.click();return;}
+    b.disabled=true;b.textContent='…';
+    fetch('/api/duel/accept',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-take')})}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.ok){toast('<b>Duel on.</b> The clock is running');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadFeeds();return;}
+      var E={need_ticks:'Need '+(d&&d.need||0)+' Ticks to stake',gone:'Already taken',exists:'You already have a live duel with them',self:'That is your own challenge',need_username:'Pick a username first',restricted:'This account cannot duel',not_signed_in:'Sign in first'};
+      toast(E[d&&d.error]||'Could not take that');b.disabled=false;b.textContent='Take';}).catch(function(){b.disabled=false;b.textContent='Take';toast('Network error');});});
   function loadFeeds(){J('/api/trades/feed').then(function(d){paintFeeds((d&&d.closes)||[],null);});J('/api/duel/feed').then(function(d){paintFeeds(null,(d&&d.duels)||[]);});}
   function loadAll(){loadPass();loadGoals();loadPred();loadLB();loadHH();loadFeeds();}
   loadAll();
@@ -575,7 +589,7 @@ h1 b{color:var(--lime)}
   if(location.hash&&document.querySelector(location.hash)){setTimeout(function(){try{document.querySelector(location.hash).scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}},600);}
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=78d3ebd1"></script>
+<script defer src="/assets/mp-auth.js?v=daabc67c"></script>
 <script defer src="/assets/mp-nav.js?v=74c5e53c"></script>
 <script defer src="/assets/mp-profile.js?v=557b2454"></script>
 </body>

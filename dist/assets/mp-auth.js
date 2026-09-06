@@ -2072,3 +2072,54 @@
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && me() && Date.now() - lastPull > 60000) refresh(); });
   setInterval(function () { if (!document.hidden && me() && open.length) refresh(); }, 90000);
 })();
+
+/* SCROLL CONTAINMENT FOR EVERY OPEN WINDOW (owner 2026-09-06: "focus stays on what is open — the page behind a chat, a
+   sheet, a modal must never scroll while I scroll the window"). One listener pair here, on the bundle every page loads,
+   instead of wiring each of the ~25 overlays by hand: a wheel or touch inside a FIXED ancestor that is tall enough to be a
+   window (nav bars, toasts and banners are short and stay untouched) scrolls the nearest scrollable panel inside that
+   window and nothing else; at the panel's edge, or where there is no panel, the event is cancelled so it cannot chain to
+   the document. Horizontal gestures are left alone (carousels inside sheets). */
+(function () {
+  if (window.__mpContain) return; window.__mpContain = 1;
+  function overlayOf(el) {
+    var n = el && el.nodeType === 1 ? el : (el && el.parentElement);
+    for (var i = 0; n && n !== document.body && n !== document.documentElement && i < 60; n = n.parentElement, i++) {
+      var cs; try { cs = getComputedStyle(n); } catch (e) { return null; }
+      if (cs.position !== 'fixed') continue;
+      if (n.getAttribute('role') === 'dialog' || n.getAttribute('aria-modal') === 'true') return n;
+      var h = n.getBoundingClientRect().height, vh = window.innerHeight || 800;
+      return h >= Math.min(220, vh * 0.28) ? n : null;
+    }
+    return null;
+  }
+  function scroller(el, top) {
+    for (var n = el && el.nodeType === 1 ? el : el.parentElement; n; n = n.parentElement) {
+      var cs; try { cs = getComputedStyle(n); } catch (e) { break; }
+      var oy = cs.overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 1) return n;
+      if (n === top) break;
+    }
+    return null;
+  }
+  function block(el, dy) {
+    var top = overlayOf(el); if (!top) return false;
+    var sc = scroller(el, top); if (!sc) return true;
+    try { if (sc.style.overscrollBehavior !== 'contain') sc.style.overscrollBehavior = 'contain'; } catch (e) {}
+    if (dy < 0 && sc.scrollTop <= 0) return true;
+    if (dy > 0 && sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 1) return true;
+    return false;
+  }
+  window.mpScrollBlocks = block; // E2E hook: mpScrollBlocks(element, deltaY) -> would this wheel be cancelled
+  document.addEventListener('wheel', function (e) {
+    if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    if (block(e.target, e.deltaY)) e.preventDefault();
+  }, { passive: false });
+  var tx = 0, ty = 0, horiz = false;
+  document.addEventListener('touchstart', function (e) { if (e.touches && e.touches[0]) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; horiz = false; } }, { passive: true });
+  document.addEventListener('touchmove', function (e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    var x = e.touches[0].clientX, y = e.touches[0].clientY, dx = tx - x, dy = ty - y; tx = x; ty = y;
+    if (horiz || Math.abs(dx) > Math.abs(dy) + 2) { horiz = true; return; }
+    if (block(e.target, dy)) e.preventDefault();
+  }, { passive: false });
+})();
