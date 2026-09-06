@@ -9305,7 +9305,7 @@ const TICK_SOURCES = [
   { k: 'duel', label: 'Duels won', cap: 30 },
   { k: 'predict', label: 'Daily call', cap: 13 },
   { k: 'goal', label: 'Season goals', cap: 80 },
-  { k: 'pass', label: 'Season pass', cap: 1500 }, // 2026-09-06: 40 tiers x (12 + 24) = 1,440 T — a season-end "Claim all" must fit in one day
+  { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T — a season-end "Claim all" must fit in one day
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
@@ -9531,7 +9531,7 @@ const PASS_STEP = 100, PASS_TIERS_N = 40, PASS_PRICE_TICKS = 2500, PASS_PRICE_CE
 //   gift  = a skin-gift voucher: the holder gives ANY Ticks-priced cosmetic up to that many Ticks to another member,
 //           free (never a cash-only item; the tier caps it at common 300 / rare 1,200). Two social moments per season.
 const PASS_CENTS_CAP = 100;
-const PASS_TICKS_FREE = 12, PASS_TICKS_PRO = 24; // per tier: 480 T free / 960 T pro over 40 tiers (was 300 / 600 over 20)
+const PASS_TICKS_FREE = 24, PASS_TICKS_PRO = 48; // per tier: 960 T free / 1,920 T pro over 40 tiers (owner 2026-09-06: "double it, frames cost thousands"; was 300 / 600 over 20)
 const PASS_FREE = { 20: { item: 'arctic' }, 40: { item: 'jade' } };
 // Pro extras over 40 tiers. Money: 5/10/15/20/25/30/35/40 = 5+10+10+10+15+15+15+20 = exactly $1.00. Nine catalogue skins (Ticks-priced,
 // no new CSS) rising in rarity; three Shields, three Surges; two 3-day Premium tastes; the two skin-gift vouchers.
@@ -17100,12 +17100,16 @@ export class RewardLedger {
       return this.j({ conversations: list });
     }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) — closes/reopens the WHOLE conversation
-      const conv = String(body.conv || '').replace(/[^a-z0-9]/gi, '').slice(0, 24), val = body.reopen ? 0 : 1;
-      if (conv) { sql.exec('UPDATE support SET closed=? WHERE conv=?', val, conv); return this.j({ ok: true }); }
+      const val = body.reopen ? 0 : 1; let changed = 0;
+      // '_legacy' is the conversation the list builds from rows that have NO conv id (pre-conversation era + admin-started rows) — the sanitiser used to
+      // turn it into 'legacy', the UPDATE matched nothing and the button did nothing (owner 2026-09-06: "I click close and nothing happens")
+      if (String(body.conv || '') === '_legacy') { changed = sql.exec("UPDATE support SET closed=? WHERE conv IS NULL OR conv=''", val).rowsWritten || 0; return this.j({ ok: true, changed }); }
+      const conv = String(body.conv || '').replace(/[^a-z0-9]/gi, '').slice(0, 24);
+      if (conv) { changed = sql.exec('UPDATE support SET closed=? WHERE conv=?', val, conv).rowsWritten || 0; return this.j({ ok: true, changed }); }
       const id = parseInt(body.id, 10);
       if (id) { const row = this.rows('SELECT conv FROM support WHERE rowid=?', id)[0];
-        if (row && row.conv) sql.exec('UPDATE support SET closed=? WHERE conv=?', val, row.conv); else sql.exec('UPDATE support SET closed=? WHERE rowid=?', val, id); }
-      return this.j({ ok: true });
+        if (row && row.conv) changed = sql.exec('UPDATE support SET closed=? WHERE conv=?', val, row.conv).rowsWritten || 0; else changed = sql.exec('UPDATE support SET closed=? WHERE rowid=?', val, id).rowsWritten || 0; }
+      return this.j({ ok: true, changed });
     }
     if (path === '/support/new') { // admin-initiated ticket (address='admin' marks "you started this"); the email is sent from the Worker
       const email = String(body.email || '').slice(0, 120), message = String(body.message || '').slice(0, 1000);

@@ -1,5 +1,5 @@
-/* Season pass E2E (2026-09-06). 40 tiers per 14-day season, one every 100 season XP. Free track: 12 Ticks a tier,
-   Arctic at 20, Jade at 40. Pro track (2,500 Ticks, $2.99 from the rewards balance, or a code): 24 Ticks a tier
+/* Season pass E2E (2026-09-06). 40 tiers per 14-day season, one every 100 season XP. Free track: 24 Ticks a tier,
+   Arctic at 20, Jade at 40. Pro track (2,500 Ticks, $2.99 from the rewards balance, or a code): 48 Ticks a tier
    plus Vault items, supplies (Shield / Surge), <= $1.00 of real money a season, 3 days of Premium and two skin-gift vouchers
    (2026-09-06). Claims are per tier per track, once; unclaimed reached tiers are granted at season end.
 
@@ -36,7 +36,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
 (async () => {
   const pub = await fetch(ORIGIN + '/api/pass').then(r => r.json());
   chk('guest: 40 tiers (n echoed), prices, step 100, not signed in', pub && (pub.tiers || []).length === 40 && pub.n === 40 && pub.price && pub.price.ticks === 2500 && pub.price.cents === 299 && pub.step === 100 && !pub.signedIn, pub && { n: (pub.tiers || []).length, price: pub.price });
-  chk('guest: free = 12 T a tier, Arctic at 20, Jade at 40; pro = 24 T a tier, Static at 6, Leviathan at 40, nine skins in all', pub.tiers[19].free.item === 'arctic' && pub.tiers[39].free.item === 'jade' && pub.tiers[5].pro.item === 'bg_static' && pub.tiers[39].pro.item === 'leviathan' && pub.tiers[0].free.ticks === 12 && pub.tiers[0].pro.ticks === 24 && pub.tiers.filter(t => t.pro.item).length === 9, pub.tiers.filter(t => t.pro.item).map(t => t.t + ':' + t.pro.item));
+  chk('guest: free = 24 T a tier, Arctic at 20, Jade at 40; pro = 48 T a tier, Static at 6, Leviathan at 40, nine skins in all', pub.tiers[19].free.item === 'arctic' && pub.tiers[39].free.item === 'jade' && pub.tiers[5].pro.item === 'bg_static' && pub.tiers[39].pro.item === 'leviathan' && pub.tiers[0].free.ticks === 24 && pub.tiers[0].pro.ticks === 48 && pub.tiers.filter(t => t.pro.item).length === 9, pub.tiers.filter(t => t.pro.item).map(t => t.t + ':' + t.pro.item));
   // 2026-09-06 (owner): the pro track carries real money (<= $1.00 a season, enforced in passTiers), supplies, Premium days and skin-gift vouchers
   const proCents = pub.tiers.reduce((a, t) => a + (t.pro.cents || 0), 0), freeCents = pub.tiers.reduce((a, t) => a + (t.free.cents || 0), 0);
   chk('pro track money: season total <= $1.00 cap, spread over several tiers, none on the free track', proCents > 0 && proCents <= 100 && pub.centsCap === 100 && pub.centsTotal === proCents && pub.tiers.filter(t => t.pro.cents > 0).length >= 3 && freeCents === 0, { proCents, cap: pub.centsCap, tiers: pub.tiers.filter(t => t.pro.cents).map(t => t.t + ':' + t.pro.cents) });
@@ -63,7 +63,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   const T = s1.tier;
   chk('after 32 lessons: season XP >= 800, tier = floor(xp/100), claimable = tier', s1.xp >= 800 && T === Math.floor(s1.xp / 100) && s1.claimable === T && T >= 8, { xp: s1.xp, tier: T, claimable: s1.claimable });
   const f1 = await claim(UID, 1, 'free');
-  chk('free tier 1 claimed: 12 Ticks', f1.body.ok && f1.body.ticks === 12 && f1.body.track === 'free', f1.body);
+  chk('free tier 1 claimed: 24 Ticks', f1.body.ok && f1.body.ticks === 24 && f1.body.track === 'free', f1.body);
   const f1b = await claim(UID, 1, 'free');
   chk('claiming it again -> claimed', f1b.status === 409 && f1b.body.error === 'claimed', f1b.body);
   const f3 = await claim(UID, T + 1, 'free');
@@ -86,15 +86,15 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   const rc3 = await buy(UID, 'code', CODE2);
   chk('the second code of the same drop is refused for the member who already took one (batch_taken; one code per drop per account, 2026-09-06)', rc3.status === 409 && rc3.body.error === 'batch_taken', rc3.body);
   const p1b = await claim(UID, 1, 'pro');
-  chk('pro tier 1 claimed: 24 Ticks', p1b.body.ok && p1b.body.ticks === 24, p1b.body);
+  chk('pro tier 1 claimed: 48 Ticks', p1b.body.ok && p1b.body.ticks === 48, p1b.body);
   const f2 = await claim(UID, 2, 'free');
-  chk('free tier 2 claimed: 12 Ticks', f2.body.ok && f2.body.ticks === 12, f2.body);
+  chk('free tier 2 claimed: 24 Ticks', f2.body.ok && f2.body.ticks === 24, f2.body);
   const s2 = (await pass(UID)).body;
   // reached T tiers, 2 tracks = 2T rewards; claimed so far: free 1, free 2, pro 1
   chk('state: pro, tiers 1 (both) and 2 (free) claimed, the rest still claimable', s2.pro && s2.tiers[0].free.claimed && s2.tiers[0].pro.claimed && s2.tiers[1].free.claimed && !s2.tiers[1].pro.claimed && s2.claimable === 2 * T - 3, { pro: s2.pro, claimable: s2.claimable, T });
   // ---- the richer pro track (2026-09-06): a supply, real money, a skin-gift voucher, and the voucher spent on another member
   const p3 = await claim(UID, 4, 'pro');
-  chk('pro tier 4: 24 Ticks + Streak Shield banked (supply applied on claim)', p3.body.ok && p3.body.ticks === 24 && p3.body.sup === 'shield' && !p3.body.supErr, p3.body);
+  chk('pro tier 4: 48 Ticks + Streak Shield banked (supply applied on claim)', p3.body.ok && p3.body.ticks === 48 && p3.body.sup === 'shield' && !p3.body.supErr, p3.body);
   const p4 = await claim(UID, 5, 'pro');
   chk('pro tier 5: $0.05 credited on the rewards ledger (credited flag + balance)', p4.body.ok && p4.body.cents === 5 && p4.body.credited === true && +p4.body.balanceUsd >= 0.05, p4.body);
   const ml = (await get('/api/admin/acctlog?uid=' + UID)).body;
