@@ -211,6 +211,11 @@ print(r.json()[<span class="tok-s">'data'</span>][<span class="tok-s">'price'</s
 <div class="ep"><div class="ep-h"><span class="m get">GET</span><code>/api/v1/trending</code></div><p>Currently trending coins.</p></div>
 <div class="ep"><div class="ep-h"><span class="m get">GET</span><code>/api/v1/defi</code></div><p>Total DeFi TVL, top chains, biggest protocols and largest stablecoins.</p></div>
 
+<h3 style="color:var(--lime)">Regional quotes (Argentina, Brazil)</h3>
+<p>Plain JSON (not the envelope), keyless, cached 60 seconds, <code>stale:true</code> when the upstream is down and the last known quote is served. The human pages: <a href="/dolar-cripto/">Dólar cripto hoy</a> and <a href="/bitcoin-hoje/">Bitcoin hoje em reais</a>.</p>
+<div class="ep"><div class="ep-h"><span class="m get">GET</span><code>/api/latam/ar</code></div><p>Dólar cripto: the peso price of USDT on every exchange operating in Argentina, fees included, sorted by buy price. <code>mid</code> is the median across venues quoting both sides (venues more than 20% off it are dropped), <code>bestBuy</code>/<code>bestSell</code>, the reference dollars (<code>dolar.oficial|blue|mep|ccl|tarjeta</code>), the gap in percent (<code>brecha</code>) and an hourly <code>hist</code> collected by MarginPad.</p></div>
+<div class="ep"><div class="ep-h"><span class="m get">GET</span><code>/api/latam/br</code></div><p>Bitcoin and USDT in reais on every exchange operating in Brazil, fees included. <code>btcMid</code>/<code>usdtMid</code> are medians; each venue carries <code>agio</code> = buy price ÷ (BTC/USD × dólar comercial) − 1 in percent (<code>usdbrl</code> from awesomeapi with Banco Central PTAX as fallback, <code>btcUsd</code> from our own feed).</p></div>
+
 <h3 style="color:var(--lime)">Calculators</h3>
 <div class="ep"><div class="ep-h"><span class="m get">GET</span><code>/api/v1/calc/liquidation</code></div>
 <p>Liquidation price for a leveraged position.</p>

@@ -196,6 +196,7 @@ function handleOpenApi() {
       { name: 'Macro', description: 'Economic calendar, Fear & Greed, global stats, DeFi TVL' },
       { name: 'Calculators', description: 'Liquidation price, position size, PnL, risk/reward, take-profit' },
       { name: 'Paper trading', description: 'Free simulated trading REST API (test your bot with no real money). Auth via X-API-Key.' },
+      { name: 'Regional quotes', description: 'Argentina (dólar cripto: USDT in pesos per exchange) and Brazil (Bitcoin and USDT in reais per exchange, ágio over the commercial dollar). Plain JSON, keyless.' },
       { name: 'Meta', description: 'Status & version' },
     ],
     paths: {
@@ -215,6 +216,8 @@ function handleOpenApi() {
       '/api/v1/global': { get: { tags: ['Macro'], summary: 'Global market stats', description: 'Total market cap, 24h volume, BTC dominance.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/trending': { get: { tags: ['Macro'], summary: 'Trending coins', description: 'Currently trending coins (CoinGecko search trending).', responses: { '200': { description: 'ok' } } } },
       '/api/v1/defi': { get: { tags: ['Macro'], summary: 'DeFi TVL overview', description: 'Total DeFi TVL, top chains, biggest protocols, largest stablecoins (DefiLlama-aggregated).', responses: { '200': { description: 'ok' } } } },
+      '/api/latam/ar': { get: { tags: ['Regional quotes'], summary: 'Dólar cripto (Argentina): USDT in pesos per exchange', description: 'The peso price of USDT on every exchange operating in Argentina, fees included (totalAsk/totalBid), sorted by buy price; mid = median across venues quoting both sides; venues more than 20% off the median are dropped; bestBuy/bestSell; the reference dollars (oficial, blue, MEP, CCL, tarjeta) and the gap ("brecha") in percent; own hourly history. Plain JSON, not the envelope. 60 s cache; stale:true when the upstream (CriptoYa) is down and the last known quote is served. Human page: /dolar-cripto/.', responses: { '200': { description: '{ ok, ts, stale, n, mid, bestBuy, bestSell, rows:[{id,name,ask,bid,spread}], dolar, brecha, hist }' } } } },
+      '/api/latam/br': { get: { tags: ['Regional quotes'], summary: 'Bitcoin hoje (Brazil): BTC and USDT in reais per exchange', description: 'BTC/BRL and USDT/BRL on every exchange operating in Brazil, fees included, sorted by buy price; btcMid/usdtMid = medians; agio = ask ÷ (BTC/USD × dólar comercial) − 1 in percent per venue (dólar comercial from awesomeapi with Banco Central PTAX fallback; BTC/USD from MarginPad\'s own feed); own hourly history. Plain JSON, 60 s cache, stale:true on upstream failure. Human page: /bitcoin-hoje/.', responses: { '200': { description: '{ ok, ts, stale, n, btcMid, usdtMid, btcUsd, usdbrl, fair, agioMid, bestBuy, bestSell, btc:[{id,name,ask,bid,spread,agio}], usdt:[…], hist }' } } } },
       '/api/v1/calc/liquidation': { get: { tags: ['Calculators'], summary: 'Liquidation price', description: 'Compute the liquidation price for a leveraged position.', parameters: [q('entry', 'Entry price.', true, '60000'), q('leverage', 'Leverage, e.g. 10.', true, '10'), q('side', 'long or short.', false, 'long'), q('mmr', 'Maintenance margin rate in percent (default 0.5).', false, '0.5')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/calc/position-size': { get: { tags: ['Calculators'], summary: 'Position size', description: 'Risk-based position size from account balance, risk %, entry and stop.', parameters: [q('balance', 'Account balance.', true, '10000'), q('risk', 'Risk percent of balance, e.g. 1.', true, '1'), q('entry', 'Entry price.', true, '60000'), q('stop', 'Stop-loss price.', true, '58000'), q('leverage', 'Optional leverage for margin required.', false, '10')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/calc/pnl': { get: { tags: ['Calculators'], summary: 'PnL / ROI', description: 'Profit/loss and ROI for a position.', parameters: [q('entry', 'Entry price.', true, '60000'), q('exit', 'Exit price.', true, '63000'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
@@ -11106,6 +11109,14 @@ async function handleTrade(url, request, env, ctx) {
 // HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
+  {
+    date: '2026-09-07', version: '2.2.0', title: 'Regional quotes',
+    changes: [
+      { type: 'added', breaking: false, text: 'GET /api/latam/ar — dólar cripto for Argentina: the peso price of USDT on every exchange operating there, fees included, sorted by buy price, with the median, the best venue to buy and to sell, the reference dollars (oficial, blue, MEP, CCL, tarjeta) and the gap in percent, plus an hourly history MarginPad collects itself. Human page: /dolar-cripto/.' },
+      { type: 'added', breaking: false, text: 'GET /api/latam/br — Bitcoin and USDT in reais on every exchange operating in Brazil, fees included, with each venue\'s ágio over BTC/USD × the commercial dollar (Banco Central PTAX as fallback). Human page: /bitcoin-hoje/.' },
+      { type: 'unchanged', breaking: false, text: 'Both are plain JSON rather than the {ok,data,ts} envelope, keyless, cached 60 s at the edge, and carry stale:true when the upstream is down and the last known quote is served. Nothing on /api/v1/* or /api/bot/* changed.' },
+    ],
+  },
   {
     date: '2026-09-05', version: '2.1.0', title: 'Limit orders',
     changes: [
