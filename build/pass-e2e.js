@@ -221,6 +221,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   chk('page: sending closes the modal, toasts "@name got the ...", the voucher row reads SENT and 0 to give', member && member.gm && member.gm.sent && member.gm.sent.closed && /got the/.test(member.gm.sent.toast) && member.gm.sent.rowSent && member.gm.sent.give0, member && member.gm && member.gm.sent);
 
   for (const u of [UID, UID2]) await post('/api/admin/e2euser', { uid: u, op: 'rm' });
+  if (gen.body && gen.body.batch) await post('/api/admin/passcodes?e2e=1', { op: 'delete', batch: gen.body.batch }); // the two test codes leave the owner's list
   const gone = (await pass(UID)).body;
   chk('cleanup: members scrubbed (tier 0, not pro)', gone.tier === 0 && !gone.pro);
 
