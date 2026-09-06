@@ -137,7 +137,8 @@ h1 b{color:var(--lime)}
 .rw .it{font-size:10.5px;color:var(--gold);font-weight:700;line-height:1.25}
 .rw .c{background:var(--lime);color:#0a0b0d;border:0;border-radius:8px;padding:6px 8px;font:800 11px 'Bricolage Grotesque',sans-serif;cursor:pointer;transition:opacity .2s}.rw.pro .c{background:var(--pro);color:#160a26}.rw .c[disabled]{opacity:.5}
 .rw .done{font:700 9.5px 'Space Mono',monospace;color:var(--faint);letter-spacing:.06em}
-.road-lab{display:flex;gap:14px;margin-top:6px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.road-lab b{color:var(--pro)}
+.road-lab{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.road-lab b{color:var(--pro)}
+.road-lab .ps{color:var(--dim);letter-spacing:.06em;text-transform:none;font-weight:600;margin-left:auto}.road-lab .ps em{font-style:normal;color:#e6d9ff}.road-lab .ps em.usd{color:var(--gold)}
 .buy{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
 .opt{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;display:flex;flex-direction:column;gap:8px}
 .opt .t{font-weight:700;font-size:14px;color:#fff}.opt .p{font:800 18px 'Space Mono',monospace;color:var(--pro)}.opt .d{font-size:12px;color:var(--dim);line-height:1.4}
@@ -173,14 +174,17 @@ h1 b{color:var(--lime)}
 .rules p{font-size:13px;color:#c7ccd4;line-height:1.55;margin:8px 0}.rules b{color:#fff}
 /* floor: fixed columns */
 .feed{display:flex;flex-direction:column}
-.fr{display:grid;grid-template-columns:minmax(0,1fr) 128px 118px 42px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px;white-space:nowrap;min-height:38px}
-.fr.duel{grid-template-columns:minmax(0,1fr) 118px 96px}
+/* fixed columns sized for the longest REAL values (measured 2026-09-06): symbol "RAYDIUM x1000" 13 ch, result "-$999.99M · -99.9k%" 19 ch at 12 px mono */
+.fr{display:grid;grid-template-columns:minmax(0,1fr) 128px 144px 42px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px;white-space:nowrap;min-height:38px}
+.fr.duel{grid-template-columns:minmax(0,1fr) 124px 52px} /* "survival · 1000T" 16 ch */
+.fr .pair .w.win{color:var(--sky)}.fr .pair i.open{color:var(--amber);letter-spacing:.04em}
+.fr .p small{font-size:11px;font-weight:600;color:var(--dim)}.fr .p.liq small{font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}.fr .p.liq .sep{font-style:normal}
 .fr:first-child{border-top:0}
 .fr>*{min-width:0}
 .fr .w{font-weight:700;color:#fff;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.fr .w:hover{color:var(--lime)}
 .fr .pair{display:flex;align-items:center;gap:5px;min-width:0}.fr .pair .w{flex:0 1 auto}.fr .pair i{font-style:normal;color:var(--faint);font-size:11px;flex:0 0 auto}
 .fr .sy{font:700 11px 'Space Mono',monospace;color:var(--dim);border:1px solid var(--line2);border-radius:7px;padding:3px 7px;overflow:hidden;text-overflow:ellipsis;text-align:center}.fr .sy.l{color:var(--grn);border-color:rgba(46,189,133,.5)}.fr .sy.s{color:var(--red);border-color:rgba(255,90,77,.5)}
-.fr .p{font:700 12.5px 'Space Mono',monospace;text-align:right}.fr .p.liq{color:var(--red);font-size:10.5px;letter-spacing:.08em}
+.fr .p{font:700 12px 'Space Mono',monospace;text-align:right;overflow:hidden;text-overflow:ellipsis}.fr .p.liq{color:var(--red);font-size:10.5px;letter-spacing:.08em}
 .fr .t{font:600 11px 'Space Mono',monospace;color:var(--faint);text-align:right}
 .empty{color:var(--faint);font-size:13px;padding:10px 0}
 .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
@@ -188,8 +192,6 @@ h1 b{color:var(--lime)}
 /* pass extras (2026-09-06): what a pro tier gives beyond Ticks */
 .rw .x{font:700 10.5px 'Space Mono',monospace;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rw .x.usd{color:var(--gold)}.rw .x.sup{color:var(--sky)}.rw .x.prem{color:var(--pro)}.rw .x.gift{color:var(--lime)}
-.sum{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}.sum .lab{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--pro);margin-right:4px}
-.sum span.ch{background:rgba(199,146,255,.08);border:1px solid rgba(199,146,255,.25);border-radius:999px;padding:5px 10px;font:700 11px 'Space Mono',monospace;color:#e6d9ff;white-space:nowrap}.sum span.ch b{color:var(--pro)}.sum span.ch.usd{border-color:rgba(255,215,90,.4);background:rgba(255,215,90,.07);color:#fff3c4}.sum span.ch.usd b{color:var(--gold)}
 .gifts{margin-top:12px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px}
 .gift-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;font-size:12.5px;color:#d7dce2}.gift-row b{color:var(--lime)}.gift-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gift-row i{font:700 10px 'Space Mono',monospace;color:var(--faint);font-style:normal;letter-spacing:.06em}
 .redeem{margin-top:12px}.redeem .code{margin-top:10px;max-width:440px}.redeem .code input{border-color:#2a323c}.redeem .code input:focus{border-color:var(--lime)}
@@ -206,7 +208,7 @@ h1 b{color:var(--lime)}
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
 @media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
-@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 112px 96px}.fr .t{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 96px 80px}.me-r{grid-template-columns:1fr}.road-head{grid-template-columns:1fr}}
+@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 74px}.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.road-head{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -272,8 +274,7 @@ h1 b{color:var(--lime)}
         <button type="button" class="btn sm claimall" id="claimAll" hidden>Claim all</button>
       </div>
       <div class="road-wrap" id="roadWrap"><div class="road" id="road"><div class="fill" id="roadFill"></div></div></div>
-      <div class="road-lab"><span>Top row: free · everyone</span><b>Bottom row: pro</b></div>
-      <div class="sum" id="proSum"></div>
+      <div class="road-lab"><span>Top row: free · everyone</span><b>Bottom row: pro</b><span class="ps" id="proSum"></span></div>
       <div class="gifts" id="gifts" hidden></div>
       <div id="buyWrap">
         <div class="buy" id="buy" hidden>
@@ -286,7 +287,7 @@ h1 b{color:var(--lime)}
     <div class="card redeem" id="redeem">
       <div class="k">Have a code?</div>
       <div class="sub">One box for every MarginPad code: the pro pass, money on your rewards balance, Premium days or Ticks. Codes drop in chat, on Telegram and in events. One use per account.</div>
-      <div class="code"><input id="codeIn" placeholder="MP-XXXXX-XXXXX" maxlength="16" autocomplete="off" spellcheck="false" /><button class="btn sm" type="button" id="codeBtn">Redeem</button></div>
+      <div class="code"><input id="codeIn" name="mp-code" placeholder="MP-XXXXX-XXXXX" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" inputmode="text" /><button class="btn sm" type="button" id="codeBtn">Redeem</button></div>
       <div class="sub" id="codeMsg"></div>
     </div>
   </section>
@@ -327,17 +328,7 @@ h1 b{color:var(--lime)}
   </section>
 </div>
 <div class="tst" id="tst" role="status" aria-live="polite"></div>
-<div class="gm" id="gm" role="dialog" aria-modal="true" aria-labelledby="gmTitle">
-  <div class="bx">
-    <div class="k" id="gmTitle">Gift a skin<span class="st" id="gmCap" style="background:var(--lime);color:#0a0b0d;margin-left:8px"></span></div>
-    <div class="sub">Pick a member and a skin. It lands in their Vault for free, with a note that it came from you, and the room hears about it. Cash-only skins are not on this list.</div>
-    <div class="code" style="margin-top:10px;max-width:320px"><input id="gmTo" placeholder="username" maxlength="24" autocomplete="off" spellcheck="false" style="text-transform:none;letter-spacing:0" /></div>
-    <div class="tabs" id="gmTabs"></div>
-    <div class="grid" id="gmGrid"></div>
-    <div class="sub" id="gmMsg"></div>
-    <div class="acts"><a class="btn ghost sm" href="/vault/" target="_blank" rel="noopener">Preview in the Vault</a><button class="btn ghost sm" type="button" id="gmX">Cancel</button><button class="btn sm" type="button" id="gmSend" disabled>Send the gift</button></div>
-  </div>
-</div>
+<div class="gm" id="gm" role="dialog" aria-modal="true" aria-labelledby="gmTitle"></div><!-- built on open, emptied on close: an idle text input here made iOS offer "fill username" on every page load (owner, 2026-09-06) -->
 
 <script>
 (function(){
@@ -431,13 +422,13 @@ h1 b{color:var(--lime)}
     return '<b>+'+r.ticks+'<small>T</small></b>'+extras(r)+(r.claimed?'<div class="done">CLAIMED</div>':(can?'<button type="button" class="c" data-claim="'+t.t+'" data-track="'+tr+'">Claim</button>':(tr==='pro'&&signed&&t.reached&&!D.pro?'<div class="done">PRO</div>':'')));}
   /* what the whole pro track adds up to, counted from the tiers the server sent (never typed by hand) */
   function proSum(D){var c=0,tk=0,items=0,sups={},prem=0,gifts=0;D.tiers.forEach(function(t){var p=t.pro;tk+=p.ticks||0;c+=p.cents||0;if(p.item)items++;if(p.sup)sups[p.sup]=(sups[p.sup]||0)+1;prem+=p.prem||0;if(p.gift)gifts++;});
-    var ch=['<span class="ch"><b>'+int(tk)+' T</b> Ticks (2x free)</span>'];
-    if(c)ch.push('<span class="ch usd"><b>$'+(c/100).toFixed(2)+'</b> to your balance</span>');
-    if(items)ch.push('<span class="ch"><b>'+items+'</b> Vault items</span>');
-    Object.keys(sups).forEach(function(k){ch.push('<span class="ch"><b>'+sups[k]+'x</b> '+esc(nm(k))+'</span>');});
-    if(prem)ch.push('<span class="ch"><b>'+prem+' days</b> Premium</span>');
-    if(gifts)ch.push('<span class="ch"><b>'+gifts+'</b> skin gifts to give away</span>');
-    var h='<span class="lab">Pro track</span>'+ch.join('');var el=$('proSum');if(el.getAttribute('data-h')!==h){el.innerHTML=h;el.setAttribute('data-h',h);}}
+    var b=['<em>'+int(tk)+' T</em>'];
+    if(c)b.push('<em class="usd">$'+(c/100).toFixed(2)+'</em> balance');
+    if(items)b.push('<em>'+items+'</em> items');
+    Object.keys(sups).forEach(function(k){b.push('<em>'+sups[k]+'</em> '+esc(nm(k)).replace(/^Streak |^XP /,''));});
+    if(prem)b.push('<em>'+prem+' d</em> Premium');
+    if(gifts)b.push('<em>'+gifts+'</em> skin gifts');
+    var h='adds '+b.join(' · ');var el=$('proSum');if(el.getAttribute('data-h')!==h){el.innerHTML=h;el.setAttribute('data-h',h);}}
   function paintGifts(D,signed){var gw=$('gifts'),gifts=D.gifts||[];gw.hidden=!signed||!gifts.length;if(gw.hidden)return;
     var open=gifts.filter(function(g){return !g.used;}).length;
     var h='<div class="k">Skin gifts<span class="st" style="background:'+(open?'var(--lime)':'#3a4450')+';color:'+(open?'#0a0b0d':'#c7ccd4')+';margin-left:8px">'+open+' to give</span></div>'
@@ -510,8 +501,14 @@ h1 b{color:var(--lime)}
 
   /* ---- skin-gift voucher modal ---- */
   var GM={id:0,cap:0,item:null,kind:'all',busy:false};
-  function openGift(id,cap){GM={id:id,cap:cap,item:null,kind:'all',busy:false};$('gmCap').textContent='up to '+int(cap)+' T';$('gmTo').value='';$('gmMsg').textContent='';$('gmSend').disabled=true;paintGm();$('gm').classList.add('on');setTimeout(function(){$('gmTo').focus();},60);}
-  function closeGift(){$('gm').classList.remove('on');}
+  function openGift(id,cap){GM={id:id,cap:cap,item:null,kind:'all',busy:false};
+    $('gm').innerHTML='<div class="bx"><div class="k" id="gmTitle">Gift a skin<span class="st" id="gmCap" style="background:var(--lime);color:#0a0b0d;margin-left:8px">up to '+int(cap)+' T</span></div>'
+      +'<div class="sub">Pick a member and a skin. It lands in their Vault for free, with a note that it came from you, and the room hears about it. Cash-only skins are not on this list.</div>'
+      +'<div class="code" style="margin-top:10px;max-width:320px"><input id="gmTo" name="mp-member" placeholder="member name" maxlength="24" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="text-transform:none;letter-spacing:0" /></div>'
+      +'<div class="tabs" id="gmTabs"></div><div class="grid" id="gmGrid"></div><div class="sub" id="gmMsg"></div>'
+      +'<div class="acts"><a class="btn ghost sm" href="/vault/" target="_blank" rel="noopener">Preview in the Vault</a><button class="btn ghost sm" type="button" id="gmX">Cancel</button><button class="btn sm" type="button" id="gmSend" disabled>Send the gift</button></div></div>';
+    paintGm();requestAnimationFrame(function(){$('gm').classList.add('on');});setTimeout(function(){var i=$('gmTo');if(i)i.focus();},80);}
+  function closeGift(){var g=$('gm');g.classList.remove('on');setTimeout(function(){if(!g.classList.contains('on'))g.innerHTML='';},220);}
   function paintGm(){var all=((PASS&&PASS.giftItems)||[]).filter(function(i){return i.ticks<=GM.cap;});
     var kinds=[['all','All'],['frame','Frames'],['t','Tickets'],['bg','Backgrounds']];
     $('gmTabs').innerHTML=kinds.map(function(k){var n=all.filter(function(i){return k[0]==='all'||i.kind===k[0];}).length;return n?'<button type="button" data-gk="'+k[0]+'" class="'+(GM.kind===k[0]?'on':'')+'">'+k[1]+' '+n+'</button>':'';}).join('');
@@ -554,8 +551,11 @@ h1 b{color:var(--lime)}
   /* ---- floor ---- */
   var MET={roe:'ROE',wr:'win rate',win:'biggest win',pnl:'profit',survival:'survival',streak:'win streak',sniper:'sniper'};
   function paintFeeds(closes,duels){
-    if(closes){$('closeFeed').innerHTML=closes.length?closes.slice(0,20).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="fr"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span>'+(c.liq?'<span class="p liq">REKT · '+money(c.pnl)+'</span>':'<span class="p '+(up?'up':'dn')+'">'+money(c.pnl)+' · '+pct(c.roe)+'</span>')+'<span class="t">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="empty">Quiet on the floor right now.</div>';$('cfN').textContent=closes.length?closes.length+' LIVE':'LIVE';}
-    if(duels){$('duelFeed').innerHTML=duels.length?duels.slice(0,12).map(function(d){var done=d.status==='done';var w=done?(d.winner==='a'?d.a:d.winner==='b'?d.b:''):'';return '<div class="fr duel"><span class="pair"><span class="w" data-lbu="'+esc(d.a)+'" title="'+esc(d.a)+'">'+esc(d.a)+'</span><i>vs</i><span class="w" data-lbu="'+esc(d.b)+'" title="'+esc(d.b)+'">'+esc(d.b)+'</span></span><span class="sy">'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+'T':'')+'</span><span class="p" style="color:'+(done?'var(--sky)':'var(--dim)')+'" title="'+(done?esc(w)+' won':'live')+'">'+(done?(w?esc(w.length>9?w.slice(0,8)+'…':w)+' won':'draw'):'live')+'</span></div>';}).join(''):'<div class="empty">No duels yet this season.</div>';$('dfN').textContent=duels.length?duels.length+' LIVE':'LIVE';}
+    if(closes){$('closeFeed').innerHTML=closes.length?closes.slice(0,20).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="fr"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span>'+(c.liq?'<span class="p liq" title="liquidated · '+money(c.pnl)+'">REKT<small><i class="sep"> ·</i> '+money(c.pnl)+'</small></span>':'<span class="p '+(up?'up':'dn')+'" title="'+money(c.pnl)+' · '+pct(c.roe)+' ROE">'+money(c.pnl)+'<small> · '+pct(c.roe)+'</small></span>')+'<span class="t">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="empty">Quiet on the floor right now.</div>';$('cfN').textContent=closes.length?closes.length+' LIVE':'LIVE';}
+    /* a duel with no opponent yet ("?" from the feed) is an OPEN CHALLENGE in the lobby, not a guest: shown as such. The winner is marked in the pair; the last column stays one short word. */
+    if(duels){$('duelFeed').innerHTML=duels.length?duels.slice(0,12).map(function(d){var done=d.status==='done',open=!d.b||d.b==='?';var w=done?(d.winner==='a'?d.a:d.winner==='b'?d.b:''):'';
+      var who=function(u){return '<span class="w'+(w&&u===w?' win':'')+'" data-lbu="'+esc(u)+'" title="'+esc(u)+(w&&u===w?' won':'')+'">'+esc(u)+'</span>';};
+      return '<div class="fr duel"><span class="pair">'+who(d.a)+(open?'<i class="open">open challenge</i>':'<i>vs</i>'+who(d.b))+'</span><span class="sy" title="'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+' Ticks at stake':'')+'">'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+'T':'')+'</span><span class="p" style="color:'+(done?'var(--sky)':open?'var(--amber)':'var(--dim)')+'" title="'+(done?(w?esc(w)+' won':'draw'):open?'waiting for an opponent':'live')+'">'+(done?(w?'won':'draw'):open?'open':'live')+'</span></div>';}).join(''):'<div class="empty">No duels yet this season.</div>';$('dfN').textContent=duels.length?duels.length+' LIVE':'LIVE';}
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
 
   /* ---- loads ---- */
