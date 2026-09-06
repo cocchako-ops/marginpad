@@ -177,6 +177,7 @@
     + row('Liquidations today', 'Live 24h total &amp; all-time records', '/crypto-liquidations-today/', '#ff8c5a', 'rekt')
     + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert')
     + '<div class="mpnav-sec">'+TR('secEarn')+'</div>'
+    + row('Your season', 'Boards, pass, daily call, goals', '/season/', '#c2f64a', 'gift')
     + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift')
     + row('brVaultT', 'brVaultS', '/vault/', '#c792ff', 'vault')
     + '<a class="mpnav-row" href="/levels/"><span class="mpnav-ic" style="color:#8b5cff;background:#8b5cff22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.3 21 12 17.5 5.7 21 7 14 2 9.3 9 8.5 12 2"/></svg></span><span class="mpnav-rt"><b>Level System</b><small>Bronze &rarr; Diamond &middot; XP &amp; rewards</small></span>' + I.chev + '</a>'
