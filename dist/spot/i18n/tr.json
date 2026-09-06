@@ -19,7 +19,6 @@
   "g_l4": "<b>Günlük PnL, equity eğrisi,</b> ortalama girişler, gerçekleşen kâr ve eksiksiz bir işlem kaydı.",
   "g_issuing": "Kartın hazırlanıyor…",
   "g_issue_fail": "Kart oluşturulamadı — tekrar dene.",
-
   "h_kick": "DEMO SPOT <i>·</i> PARAN, BAŞTAN SONA",
   "h_apps": "ÜÇ UYGULAMAN — AÇMAK İÇİN DOKUN",
   "h_noprize": "<b>BURADA ÖDÜL YOK</b> — Demo Spot hiçbir şey ödemez ve asla para istemez; bu bir antrenman. Gerçek USDT ödülleri vadeli işlem sezon tablolarında. <a href=\"/rewards/\">Tablolara bak</a>",
@@ -41,7 +40,6 @@
   "h_share": "Paylaş",
   "h_sharing": "Paylaşılıyor…",
   "t_arrived": "<b>$10,000'lık kartın geldi.</b> Harita yolu gösteriyor — bankadan başla.",
-
   "st_bank": "Banka",
   "st_bank_s": "kart & nakit",
   "st_ex": "Borsa",
@@ -78,17 +76,15 @@
   "s6_t": "İlk coinini al",
   "s6_b": "Borsayı aç",
   "s6_c": "Kurulum bitti — şimdi işlem zamanı. Bitcoin ve en iyi 250 borsada; meme coinler cüzdanında. Her işlem, onaylamadan önce ücretini gösterir.",
-
   "cal_h": "Günlük PnL · son 28 gün",
   "cal_gr": "bu sezon {g} yeşil · {r} kırmızı",
-  "sb_h": "Bu sezonun banka bakiyeleri",
-  "sb_s": "övünme hakkı · ödül yok",
-  "sb_empty": "Bu sezon henüz kimse $10,000'ın üstünde nakde çevirmedi — skor, karttır.",
+  "sb_h": "Bu sezonun işlem kârı",
+  "sb_s": "kendi satışlarında gerçekleşen · ödül yok",
+  "sb_empty": "Bu sezon henüz kimse işlem kârı yazmadı — burada görünmek için kârdayken sat.",
   "d_card": "Kart",
   "d_exusdt": "Borsa USDT",
   "d_wusdt": "Cüzdan USDT",
   "d_gas": "Gas coinleri",
-
   "tok_look": "Kontrat aranıyor…",
   "tok_e_not_found": "Solana, BNB Chain, Base veya Ethereum'da bu adrese sahip bir token yok. Adresi explorer'da kontrol et — ünlü tokenların kopyaları klasik dolandırıcılıktır.",
   "tok_e_major": "Bu büyük bir coin ya da stablecoin — onu DEX üzerinden değil, Borsa uygulamasında al-sat.",
@@ -103,7 +99,6 @@
   "tok_trade": "İşlem yap",
   "tok_thinlesson": "<b>Sığ havuz.</b> ${usd}'lık bir havuz her işlemde hareket eder — birkaç yüzde slippage bekle, bir rug ise onu sıfıra götürür. ",
   "tok_unknown": "Bilinmeyen kontrat: isme güvenmeden önce <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">explorer'da</a> kontrol et. Aynı tickera sahip ünlü token kopyaları klasik dolandırıcılıktır — kimlik isim değil, adrestir.",
-
   "sh_fail": "Kart oluşturulamadı — tekrar dene.",
   "sh_copied": "Link kopyalandı — sohbete ya da istediğin yere yapıştır.",
   "sh_title": "Demo Spot portföyüm",
@@ -119,13 +114,11 @@
   "sh_lesson": "Antrenman parası, gerçek ücretler: kartla giriş %1.8, borsa %0.1, DEX %0.3, ağ ücretleri ve gas, çıkış %1. Burada hiçbir şey gerçek para ödemez.",
   "sh_cta": "Kendi $10,000'lık kartını al",
   "sh_loadfail": "Bu kart yüklenemedi.",
-
   "nav_home": "← Ana sayfa",
   "nav_map": "Harita",
   "nav_bank": "Banka",
   "nav_ex": "Borsa",
   "nav_wal": "Cüzdan",
-
   "b_name": "MarginPad Bank",
   "b_tag": "bugünden beri üye · FDIC sigortalı (sözde)",
   "b_greet_default": "İyi günler.",
@@ -156,7 +149,6 @@
   "b_outside1": "<b>Para bankanın dışında.</b> Bu karta dönebilmesine 1 adım var.",
   "b_outsideN": "<b>Para bankanın dışında.</b> Bu karta dönebilmesine {n} adım var.",
   "b_plan": "Planı göster",
-
   "e_name": "MarginPad Exchange",
   "e_tag": "custodial · senin adına onlar tutar · taker ücreti %0.1",
   "e_bal": "Borsa bakiyesi",
@@ -189,7 +181,6 @@
   "e_nousdt": "Henüz USDT yok — kartınla almak için Yatır'a dokun.",
   "e_stale": "eski",
   "e_avg": "{qty} @ {px} ort.",
-
   "o_open": "Açık emirler ({n})",
   "o_recent": "Son emirler",
   "o_sub": "limit · 10 dakikada bir kontrol edilir",
@@ -205,7 +196,6 @@
   "o_st_cancelled": "iptal edildi",
   "o_st_failed": "başarısız",
   "o_st_expired": "süresi doldu",
-
   "dp_t": "Borsaya yatır",
   "dp_p": "İki giriş yolu: kartınla anında al ya da kişisel borsa yatırma adresine kripto gönder.",
   "dp_card": "Kartla USDT al",
@@ -222,7 +212,6 @@
   "cd_fail": "Yatırma adresin yüklenemedi — biraz sonra tekrar dene.",
   "cd_na": "mevcut değil",
   "cd_copied": "Adres kopyalandı — şimdi Cüzdan'ı aç, Gönder'e dokun ve yapıştır.",
-
   "w_name": "MarginPad Wallet",
   "w_tag": "self-custody · senin anahtarların, senin coinlerin",
   "w_setup": "Self-custody burada başlar.<br><b style=\"color:#fff\">Henüz cüzdan yok.</b> Bir tane oluştur — tıpkı Phantom ya da MetaMask'teki gibi kendi adreslerini ve bir seed phrase alırsın.",
@@ -254,7 +243,6 @@
   "w_nochain": "Bu zincirde şu an meme yok.",
   "w_more": "{n} tane daha göster · {left} kaldı",
   "w_sol_copied": "Solana adresi kopyalandı. Yapıştır, asla elle yazma.",
-
   "tx_reset": "SIFIRLAMA",
   "tx_reset_t": "Taze $10,000'lık kart",
   "tx_on": "KART→BORSA",
@@ -278,20 +266,17 @@
   "tx_trade_s": "{qty} @ {px} · ücret {fee} · {ago}",
   "tx_pnl": "PnL",
   "tx_meme": "meme",
-
   "r_confirm": "TEK sıfırlama hakkını kullanmak istiyor musun? Her şey taze bir $10,000'lık karta döner (pozisyonlar kapanır, bakiyeler silinir, geçmiş kalır). Sonraki sıfırlama 7 gün sonra açılır.",
   "r_done": "Taze başlangıç — <b>$10,000</b> yeniden kartında.",
   "r_cd1": "0 sıfırlama hakkı kaldı — sonraki ~1 gün sonra.",
   "r_cdN": "0 sıfırlama hakkı kaldı — sonraki ~{d} gün sonra.",
   "r_fail": "Sıfırlama başarısız — tekrar dene.",
-
   "err_net": "Ağ hatası.",
   "err_net2": "Ağ hatası — tekrar dene.",
   "err_transient": "Depomuz bir an takıldı — hiçbir şey tahsil edilmedi. Birkaç saniye sonra tekrar dene.",
   "err_failed": "Başarısız ({e}) — tekrar dene.",
   "err_noans": "yanıt yok",
   "err_noprice": "Şu an canlı fiyat yok — biraz sonra tekrar dene.",
-
   "mc_t": "Sanal kartın",
   "mc_linked": "Kart borsaya bağlı. İstediğin zaman USDT almak için kullan (%1.8 kart ücreti uygulanır).",
   "mc_buy": "Bu kartla USDT al",
@@ -301,7 +286,6 @@
   "mc_wrong": "Bunlar bu kartın son 4 hanesi değil (yukarıdaki karta bak).",
   "mc_linking": "Bağlanıyor…",
   "mc_ok": "Kart bağlandı. Sıradaki: USDT al.",
-
   "mo_t": "Kartınla USDT al",
   "mo_p": "USDT bir stablecoin — 1 USDT hep ~$1 değerinde kalır. Asıl işlemlerini onunla yaparsın. Kart bakiyesi: <b>{usd}</b>",
   "mo_amt": "Tutar (USD) · min $10",
@@ -318,7 +302,6 @@
   "mo_toast": "USDT alındı — Borsa uygulaması iş başında.",
   "mo_notlinked": "Önce kartı borsaya bağla.",
   "mo_cardonly": "Kartta yalnızca {usd} var (%1.8 ücreti unutma).",
-
   "mf_nothing": "Nakde çevrilecek bir şey yok — her şey zaten kartında.",
   "mf_t": "Kartına nakde çevir",
   "mf_p": "USDT'yi kartındaki dolara geri satıyorsun — kârın kriptodan gerçekten çıkma yolu bu. Borsa bakiyesi: <b>{usd} USDT</b>",
@@ -336,7 +319,6 @@
   "mf_ok": "Tamam — {usd} kartına yattı (ücret {fee}).",
   "mf_toast": "{usd} kartına geri döndü. Çember tamamlandı.",
   "mf_exonly": "Borsada yalnızca {usd} USDT var.",
-
   "wc_t": "Borsadan çek",
   "wc_p": "Birbirinden çok farklı iki çıkış. Paranın nereye gideceğini seç:",
   "wc_fiat": "Banka kartına",
@@ -347,7 +329,6 @@
   "wc_ready": "cüzdan hazır",
   "wc_nowallet": "henüz cüzdan yok",
   "wc_lesson": "Gerçek bir borsada da bunlar ayrı menülerdir: “Fiat çek” ve “Kripto çek”. Yanlış adrese ya da yanlış ağa gönderilen kripto gider — fiat ise sadece bir gün ve bir ücret alır.",
-
   "mw_t": "Self-custody cüzdanını oluştur",
   "mw_p": "Borsada coinlerini ONLAR tutar. Self-custody bir cüzdan (Phantom ya da MetaMask gibi) yalnızca senindir — bir <b>seed phrase</b> ile korunur. Kelimeleri kim biliyorsa para onundur.",
   "mw_go": "Cüzdanımı oluştur",
@@ -359,7 +340,6 @@
   "mw_ck": "Seed phrase'imi yazdım ve gerçek hayatta onu kaybetmenin paramı kaybetmek — paylaşmanın ise daha hızlı kaybetmek — anlamına geldiğini anlıyorum.",
   "mw_cont": "Devam",
   "mw_toast": "Cüzdan oluşturuldu. Sıradaki: borsadan cüzdana USDT gönder.",
-
   "wd_need": "Önce borsada USDT olmalı — kartınla biraz al.",
   "wd_t": "Cüzdanına USDT çek",
   "wd_p": "Coinleri borsadan SENİN cüzdanına taşımak gerçek bir zincir üstü transferdir. Ağı sen seçersin — coinler aynı, ücretler değil. Borsa bakiyesi: <b>{usd}</b>",
@@ -384,7 +364,6 @@
   "wd_badaddr": "Bu adres seçilen ağın formatıyla eşleşmiyor.",
   "wd_min": "Minimum çekim $5.",
   "wd_insuf": "Borsada yeterli bakiye yok (ağ ücretini unutma).",
-
   "sw_nousdt": "Cüzdanında henüz USDT yok — önce borsadan biraz yatır.",
   "sw_t": "Swap",
   "sw_buy": "USDT → gas coini",
@@ -420,7 +399,6 @@
   "sw_toast_sell": "Cüzdanında {usd} USDT.",
   "sw_walonly": "Cüzdanda yalnızca {usd} USDT var.",
   "sw_dust": "Ücret sonrası $1 USDT'nin altında kalıyor — DEX toz miktarları yönlendirmez. Elinde {qty} {a} ({usd}) var; onu gas olarak sakla.",
-
   "ec_t": "Cüzdan ↔ Borsa",
   "ec_p": "USDT, borsa hesabınla kendi cüzdanın arasında seçtiğin ağ üzerinden taşınır — her atlama bir ağ ücreti ya da gas tutar.",
   "ec_from": "Borsadan yatır",
@@ -430,7 +408,6 @@
   "ec_to_s": "Cüzdan USDT → borsa · yalnızca gas · sonra kartına nakde çevir",
   "ec_inwal": "cüzdanda {usd}",
   "ec_lesson": "Gerçek hayat: borsa sana her ağ için bir yatırma adresi verir; cüzdanından oraya gönderirsin ve bakiye borsada görünür. Burada adres senin için dolduruluyor — gas yine gerçek.",
-
   "te_dust": "Cüzdanda yalnızca toz kaldı (gas coinlerinde {usd}) — $1 minimumun altında, taşımaya değmez. Geri kalan her şey zaten borsada ya da kartta.",
   "te_nousdt_swap": "Cüzdanda henüz USDT yok — önce elindeki {a} coinlerini USDT'ye geri çevir.",
   "te_coins": "coin",
@@ -454,7 +431,6 @@
   "te_ok": "{usd} USDT borsa bakiyende (blok #{h}). <a href=\"#\" id=\"teCash\">Kartına nakde çevir</a>",
   "te_toast": "{usd} USDT borsaya ulaştı.",
   "te_nogas_err": "O ağda gas yok. <a href=\"#\" id=\"teGas\">USDT'yi {a} coinine çevir</a>",
-
   "co_bags": "Meme coinlerini sat",
   "co_bags_s": "memelerde {usd} — zincir coinine satılırlar",
   "co_openwal": "Cüzdanı aç",
@@ -476,7 +452,6 @@
   "co_t": "Nakde çevirme — dönüş yolunun tamamı",
   "co_p": "Para yalnızca borsa üzerinden çıkar: zincir üstündeki her şey önce USDT olarak geri dönmeli, sonra USDT kartındaki dolara satılır. Sırayla:",
   "co_lesson": "Gerçek dünyada da nakde çevirmenin şekli bu: DEX → cüzdan → borsa → banka, her atlamada bir ücret. Traderların çıkışı girişten önce planlamasının sebebi bu.",
-
   "sd_nousdt": "Cüzdanında gönderecek USDT yok — önce borsadan yatır.",
   "sd_t": "USDT gönder",
   "sd_p": "Cüzdan USDT'ni HERHANGİ bir MarginPad kullanıcısına gönder — kişiden kişiye, MarginPad Chain'e kaydedilir. Cüzdan bakiyesi: <b>{usd}</b>",
@@ -503,7 +478,6 @@
   "sd_nogas": "Gas için yeterli {a} yok: elinde {have} var, bu transfer {need} ister. <a href=\"#\" id=\"sdGas\">Birkaç dolarlık USDT'yi {a} coinine çevir</a>",
   "sd_invalid": "Geçersiz adres.",
   "sd_fail": "Gönderim başarısız — tekrar dene.",
-
   "ch_t": "MarginPad Chain",
   "ch_loading": "Defter yükleniyor…",
   "ch_lesson": "Bir blok explorer böyle çalışır: yapılmış her transfer sonsuza dek herkese açıktır — tutar, adresler, zaman ve bir tx hash'i. Mühürlenmiş bir bloğu kimse düzenleyemez ya da silemez. Gerçek zincirler (Solscan, Etherscan) tam olarak böyle görünür.",
@@ -511,13 +485,11 @@
   "ch_empty": "Henüz transfer yok — ilk blok sen ol. Cüzdanından bir arkadaşına biraz USDT gönder.",
   "ch_you": "(sen)",
   "ch_fail": "Zincir yüklenemedi — tekrar dene.",
-
   "rc_t": "Al",
   "rc_p": "DOĞRU ağ için DOĞRU adresi paylaş. Solana coinleri Solana adresine gider; Ethereum, Base ve BNB Chain'in hepsi EVM adresini kullanır.",
   "rc_qr": "Demo QR — hiçbir yerde okunmaz. Kopyalamak için adrese dokun.",
   "rc_lesson": "Gerçek hayat alışkanlığı: kopyala-yapıştır, önce ufak bir test tutarı gönder ve yapıştırdıktan sonra ilk + son 4 karakteri kontrol et. Panoyu ele geçiren zararlı yazılımlar adresleri değiştirir.",
   "rc_copied": "Adres kopyalandı. Yapıştırırken ilk ve son 4 karakteri kontrol et.",
-
   "tm_loading": "Grafik yükleniyor…",
   "tm_buy": "Al",
   "tm_sell": "Sat",
@@ -596,9 +568,12 @@
   "tm_nochart": "Bu parite için grafik verisi yok.",
   "tm_chartfail": "Grafik yüklenemedi.",
   "tm_libfail": "Grafik kütüphanesi yüklenemedi.",
-
   "ago_s": "{n}sn önce",
   "ago_m": "{n}dk önce",
   "ago_h": "{n}sa önce",
-  "f_text": "Antrenman fonlarıyla demo hayat simülasyonu — fiyatlar, ücretler, gas, ağlar ve slippage gerçek piyasaları yansıtır ama gerçek para söz konusu değildir ve hiçbir şey çekilemez. Banka, kart, borsa, cüzdan, adresler ve seed phrase eğitim amacıyla simüle edilmiştir. Yatırım tavsiyesi değildir. · <a href=\"/paper-trade\">Vadeli işlem paper trading'i dene</a> · <a href=\"/academy/\">Akademi'de öğren</a>"
+  "f_text": "Antrenman fonlarıyla demo hayat simülasyonu — fiyatlar, ücretler, gas, ağlar ve slippage gerçek piyasaları yansıtır ama gerçek para söz konusu değildir ve hiçbir şey çekilemez. Banka, kart, borsa, cüzdan, adresler ve seed phrase eğitim amacıyla simüle edilmiştir. Yatırım tavsiyesi değildir. · <a href=\"/paper-trade\">Vadeli işlem paper trading'i dene</a> · <a href=\"/academy/\">Akademi'de öğren</a>",
+  "sb_sells": "{n} satış",
+  "tm_e_thin_pool": "Bu tokenın arkasındaki havuzda 1.000 $’dan az likidite var — bu büyüklükte bir satış gerçekleşemez. Gerçek rug’lar tam olarak böyle görünür.",
+  "tm_e_bad_pool": "O havuz başka bir tokenı fiyatlıyor. Hiçbir şey gerçekleşmedi.",
+  "sb_sell1": "1 satış"
 }

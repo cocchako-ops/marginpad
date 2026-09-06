@@ -19,7 +19,6 @@
   "g_l4": "<b>Dnevni PnL, kriva kapitala,</b> prosečni ulazi, realizovan profit i kompletan papirni trag.",
   "g_issuing": "Izdajem tvoju karticu…",
   "g_issue_fail": "Nije uspelo izdavanje kartice — probaj ponovo.",
-
   "h_kick": "DEMO SPOT <i>·</i> TVOJ NOVAC, CELIM PUTEM",
   "h_apps": "TVOJE TRI APLIKACIJE — DODIRNI DA OTVORIŠ",
   "h_noprize": "<b>OVDE NEMA NAGRADA</b> — Demo Spot ne isplaćuje ništa i nikad ne traži novac; ovo je vežba. Prave USDT nagrade su na sezonskim tablama za fjučerse. <a href=\"/rewards/\">Pogledaj table</a>",
@@ -41,7 +40,6 @@
   "h_share": "Podeli",
   "h_sharing": "Delim…",
   "t_arrived": "<b>Tvoja kartica sa $10,000 je stigla.</b> Mapa pokazuje put — počni od banke.",
-
   "st_bank": "Banka",
   "st_bank_s": "kartica i keš",
   "st_ex": "Menjačnica",
@@ -78,17 +76,15 @@
   "s6_t": "Kupi svoj prvi coin",
   "s6_b": "Otvori menjačnicu",
   "s6_c": "Podešavanje je gotovo — sad trguj. Bitcoin i top 250 žive na menjačnici; meme coini žive u tvom novčaniku. Svako izvršenje pokazuje naknadu pre nego što potvrdiš.",
-
   "cal_h": "Dnevni PnL · poslednjih 28 dana",
   "cal_gr": "zeleno {g} · crveno {r} · ove sezone",
-  "sb_h": "Stanja u banci ove sezone",
-  "sb_s": "samo za hvalisanje · bez nagrade",
-  "sb_empty": "Niko ove sezone još nije isplatio iznad $10,000 — kartica je rezultat.",
+  "sb_h": "Profit od trgovanja ove sezone",
+  "sb_s": "ostvaren na sopstvenim prodajama · bez nagrade",
+  "sb_empty": "Niko još nije zaključio profit od trgovanja ove sezone — prodaj u plusu da se pojaviš ovde.",
   "d_card": "Kartica",
   "d_exusdt": "USDT na menjačnici",
   "d_wusdt": "USDT u novčaniku",
   "d_gas": "Gas coini",
-
   "tok_look": "Tražim taj ugovor…",
   "tok_e_not_found": "Nema tokena sa tom adresom na Solana, BNB Chain, Base ili Ethereum mreži. Proveri adresu na exploreru — kopije poznatih tokena su klasična prevara.",
   "tok_e_major": "To je veliki coin ili stablecoin — trguj ga u aplikaciji Menjačnice, ne kroz DEX.",
@@ -103,7 +99,6 @@
   "tok_trade": "Trguj",
   "tok_thinlesson": "<b>Tanak pul.</b> Pul od ${usd} se pomera na svako izvršenje — očekuj slippage od nekoliko procenata, a rug pull ga nosi na nulu. ",
   "tok_unknown": "Nepoznat ugovor: proveri ga na <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">exploreru</a> pre nego što poveruješ imenu. Kopije poznatih tokena sa istim tikerom su klasična prevara — adresa je identitet, ne ime.",
-
   "sh_fail": "Nije uspelo pravljenje kartice — probaj ponovo.",
   "sh_copied": "Link kopiran — nalepi ga u chat ili bilo gde.",
   "sh_title": "Moj Demo Spot portfolio",
@@ -119,13 +114,11 @@
   "sh_lesson": "Vežbovni novac, prave naknade: kartica 1.8% na ulazu, menjačnica 0.1%, DEX 0.3%, mrežne naknade i gas, 1% na izlazu. Ništa ovde ne isplaćuje pravi novac.",
   "sh_cta": "Uzmi svoju karticu sa $10,000",
   "sh_loadfail": "Nije uspelo učitavanje te kartice.",
-
   "nav_home": "← Početna",
   "nav_map": "Mapa",
   "nav_bank": "Banka",
   "nav_ex": "Menjačnica",
   "nav_wal": "Novčanik",
-
   "b_name": "MarginPad Bank",
   "b_tag": "član od danas · osigurano kod FDIC-a (kobajagi)",
   "b_greet_default": "Dobar dan.",
@@ -156,7 +149,6 @@
   "b_outside1": "<b>Novac van banke.</b> 1 korak pre nego što može da se vrati na ovu karticu.",
   "b_outsideN": "<b>Novac van banke.</b> Još {n} koraka pre nego što može da se vrati na ovu karticu.",
   "b_plan": "Prikaži plan",
-
   "e_name": "MarginPad Exchange",
   "e_tag": "kastodijalna · oni čuvaju za tebe · taker naknada 0.1%",
   "e_bal": "Stanje na menjačnici",
@@ -189,7 +181,6 @@
   "e_nousdt": "Još nema USDT — dodirni Uplati da kupiš karticom.",
   "e_stale": "zastarelo",
   "e_avg": "{qty} @ {px} prosek",
-
   "o_open": "Otvoreni nalozi ({n})",
   "o_recent": "Nedavni nalozi",
   "o_sub": "limit · provera na 10 min",
@@ -205,7 +196,6 @@
   "o_st_cancelled": "otkazan",
   "o_st_failed": "neuspešan",
   "o_st_expired": "istekao",
-
   "dp_t": "Uplata na menjačnicu",
   "dp_p": "Dva načina ulaska: kupi odmah karticom ili pošalji kripto na svoju ličnu adresu za uplatu na menjačnici.",
   "dp_card": "Kupi USDT karticom",
@@ -222,7 +212,6 @@
   "cd_fail": "Nije uspelo učitavanje tvoje adrese za uplatu — probaj ponovo za koji trenutak.",
   "cd_na": "nije dostupno",
   "cd_copied": "Adresa kopirana — sad otvori Novčanik, dodirni Pošalji i nalepi je.",
-
   "w_name": "MarginPad Wallet",
   "w_tag": "self-custody · tvoji ključevi, tvoji coini",
   "w_setup": "Ovde počinje self-custody.<br><b style=\"color:#fff\">Još nema novčanika.</b> Generiši ga — dobijaš sopstvene adrese i seed frazu, baš kao u Phantom-u ili MetaMask-u.",
@@ -254,7 +243,6 @@
   "w_nochain": "Trenutno nema meme coina na ovoj mreži.",
   "w_more": "Prikaži još {n} · preostalo {left}",
   "w_sol_copied": "Solana adresa kopirana. Nalepi je, nikad je ne prekucavaj.",
-
   "tx_reset": "RESET",
   "tx_reset_t": "Sveža kartica sa $10,000",
   "tx_on": "KARTICA→MENJ",
@@ -278,20 +266,17 @@
   "tx_trade_s": "{qty} @ {px} · naknada {fee} · {ago}",
   "tx_pnl": "PnL",
   "tx_meme": "meme",
-
   "r_confirm": "Iskoristiti svoj JEDAN reset? Sve se vraća na svežu karticu sa $10,000 (pozicije zatvorene, stanja obrisana, istorija ostaje). Sledeći reset se otključava za 7 dana.",
   "r_done": "Nov početak — <b>$10,000</b> je ponovo na tvojoj kartici.",
   "r_cd1": "0 preostalih reseta — sledeći za ~1 dan.",
   "r_cdN": "0 preostalih reseta — sledeći za ~{d} dana.",
   "r_fail": "Reset nije uspeo — probaj ponovo.",
-
   "err_net": "Greška mreže.",
   "err_net2": "Greška mreže — probaj ponovo.",
   "err_transient": "Naša baza je zastala — ništa nije naplaćeno. Probaj ponovo za par sekundi.",
   "err_failed": "Nije uspelo ({e}) — probaj ponovo.",
   "err_noans": "bez odgovora",
   "err_noprice": "Trenutno nema žive cene — probaj ponovo za koji trenutak.",
-
   "mc_t": "Tvoja virtuelna kartica",
   "mc_linked": "Kartica je povezana sa menjačnicom. Kupuj USDT njome kad god hoćeš (važi naknada kartice od 1.8%).",
   "mc_buy": "Kupi USDT ovom karticom",
@@ -301,7 +286,6 @@
   "mc_wrong": "To nisu poslednje 4 cifre ove kartice (proveri karticu iznad).",
   "mc_linking": "Povezujem…",
   "mc_ok": "Kartica povezana. Sledeće: kupi USDT.",
-
   "mo_t": "Kupi USDT svojom karticom",
   "mo_p": "USDT je stablecoin — 1 USDT ostaje vredan ~$1. To je ono čime zapravo trguješ. Stanje na kartici: <b>{usd}</b>",
   "mo_amt": "Iznos (USD) · min $10",
@@ -318,7 +302,6 @@
   "mo_toast": "USDT kupljen — aplikacija Menjačnice je otvorena za posao.",
   "mo_notlinked": "Prvo poveži karticu sa menjačnicom.",
   "mo_cardonly": "Na kartici je samo {usd} (ne zaboravi naknadu od 1.8%).",
-
   "mf_nothing": "Nema šta da se isplati — sve je već na tvojoj kartici.",
   "mf_t": "Isplati na svoju karticu",
   "mf_p": "Prodaješ USDT nazad u dolare na svojoj kartici — tako profit zapravo izlazi iz kripta. Stanje na menjačnici: <b>{usd} USDT</b>",
@@ -336,7 +319,6 @@
   "mf_ok": "Gotovo — {usd} je stiglo na tvoju karticu (naknada {fee}).",
   "mf_toast": "{usd} je ponovo na tvojoj kartici. Krug zatvoren.",
   "mf_exonly": "Na menjačnici je samo {usd} USDT.",
-
   "wc_t": "Povlačenje sa menjačnice",
   "wc_p": "Dva sasvim različita izlaza. Izaberi kuda ide novac:",
   "wc_fiat": "Na tvoju bankovnu karticu",
@@ -347,7 +329,6 @@
   "wc_ready": "novčanik spreman",
   "wc_nowallet": "još nema novčanika",
   "wc_lesson": "Na pravoj menjačnici su to takođe odvojeni meniji: „Povuci fiat” i „Povuci kripto”. Kripto poslat na pogrešnu adresu ili mrežu je nestao — fiat samo traje dan i košta naknadu.",
-
   "mw_t": "Napravi svoj self-custody novčanik",
   "mw_p": "Na menjačnici ONI čuvaju tvoje coine. Self-custody novčanik (kao Phantom ili MetaMask) je samo tvoj — obezbeđen <b>seed frazom</b>. Ko zna frazu, taj poseduje novac.",
   "mw_go": "Generiši moj novčanik",
@@ -359,7 +340,6 @@
   "mw_ck": "Zapisao/la sam svoju seed frazu i razumem da u pravom životu njen gubitak znači gubitak mog novca — a deljenje znači da ga gubim još brže.",
   "mw_cont": "Nastavi",
   "mw_toast": "Novčanik napravljen. Sledeće: pošalji USDT u njega sa menjačnice.",
-
   "wd_need": "Prvo ti treba USDT na menjačnici — kupi malo karticom.",
   "wd_t": "Povuci USDT u svoj novčanik",
   "wd_p": "Prebacivanje coina sa menjačnice u TVOJ novčanik je pravi on-chain transfer. Ti biraš mrežu — coini su isti, naknade nisu. Stanje na menjačnici: <b>{usd}</b>",
@@ -384,7 +364,6 @@
   "wd_badaddr": "Ta adresa ne odgovara formatu izabrane mreže.",
   "wd_min": "Minimalno povlačenje je $5.",
   "wd_insuf": "Nema dovoljno na menjačnici (ne zaboravi mrežnu naknadu).",
-
   "sw_nousdt": "Tvoj novčanik još nema USDT — prvo uplati malo sa menjačnice.",
   "sw_t": "Zameni",
   "sw_buy": "USDT → gas coin",
@@ -420,7 +399,6 @@
   "sw_toast_sell": "{usd} USDT u tvom novčaniku.",
   "sw_walonly": "U novčaniku je samo {usd} USDT.",
   "sw_dust": "To je ispod $1 u USDT posle naknade — DEX ne rutira prašinu. Držiš {qty} {a} ({usd}); zadrži to kao gas.",
-
   "ec_t": "Novčanik ↔ Menjačnica",
   "ec_p": "USDT se kreće između tvog naloga na menjačnici i tvog sopstvenog novčanika preko mreže koju izabereš — svaki skok košta mrežnu naknadu ili gas.",
   "ec_from": "Uplati sa menjačnice",
@@ -430,7 +408,6 @@
   "ec_to_s": "USDT iz novčanika → menjačnica · samo gas · pa isplata na karticu",
   "ec_inwal": "{usd} u novčaniku",
   "ec_lesson": "Pravi život: menjačnica ti daje adresu za uplatu po mreži; ti šalješ na nju iz novčanika i stanje se pojavi na menjačnici. Ovde je adresa već upisana — gas je i dalje pravi.",
-
   "te_dust": "U novčaniku je ostala samo prašina ({usd} u gas coinima) — ispod minimuma od $1, ne vredi pomerati. Sve ostalo je već na menjačnici ili kartici.",
   "te_nousdt_swap": "U novčaniku još nema USDT — prvo zameni svoj {a} nazad u USDT.",
   "te_coins": "coini",
@@ -454,7 +431,6 @@
   "te_ok": "{usd} USDT je na tvom stanju na menjačnici (blok #{h}). <a href=\"#\" id=\"teCash\">Isplati na svoju karticu</a>",
   "te_toast": "{usd} USDT je stiglo na menjačnicu.",
   "te_nogas_err": "Nema gasa na toj mreži. <a href=\"#\" id=\"teGas\">Zameni USDT za {a}</a>",
-
   "co_bags": "Prodaj svoje meme bagove",
   "co_bags_s": "{usd} u meme coinima — prodaju se u coin mreže",
   "co_openwal": "Otvori novčanik",
@@ -476,7 +452,6 @@
   "co_t": "Isplata — ceo put nazad",
   "co_p": "Novac izlazi samo kroz menjačnicu: sve što je on-chain prvo mora da se vrati kao USDT, pa se USDT prodaje za dolare na tvojoj kartici. Po redu:",
   "co_lesson": "Ovako isplata izgleda i u stvarnom svetu: DEX → novčanik → menjačnica → banka, naknada na svakom skoku. Zato trejderi planiraju izlaz pre ulaza.",
-
   "sd_nousdt": "Tvoj novčanik nema USDT za slanje — prvo uplati sa menjačnice.",
   "sd_t": "Pošalji USDT",
   "sd_p": "Pošalji USDT iz novčanika BILO KOM drugom MarginPad korisniku — od osobe do osobe, zabeleženo na MarginPad Chain-u. Stanje u novčaniku: <b>{usd}</b>",
@@ -503,7 +478,6 @@
   "sd_nogas": "Nema dovoljno {a} za gas: držiš {have}, a ovaj transfer traži {need}. <a href=\"#\" id=\"sdGas\">Zameni par dolara USDT za {a}</a>",
   "sd_invalid": "Nevažeća adresa.",
   "sd_fail": "Slanje nije uspelo — probaj ponovo.",
-
   "ch_t": "MarginPad Chain",
   "ch_loading": "Učitavam knjigu…",
   "ch_lesson": "Ovako radi block explorer: svaki transfer ikada napravljen je javan, zauvek — iznos, adrese, vreme i tx hash. Niko ne može da izmeni ili obriše zapečaćen blok. Pravi lanci (Solscan, Etherscan) izgledaju baš ovako.",
@@ -511,13 +485,11 @@
   "ch_empty": "Još nema transfera — budi prvi blok. Pošalji drugu malo USDT iz svog novčanika.",
   "ch_you": "(ti)",
   "ch_fail": "Nije uspelo učitavanje lanca — probaj ponovo.",
-
   "rc_t": "Primi",
   "rc_p": "Podeli PRAVU adresu za PRAVU mrežu. Solana coini idu na Solana adresu; Ethereum, Base i BNB Chain svi koriste tvoju EVM adresu.",
   "rc_qr": "Demo QR — ne skenira se nigde. Dodirni adresu da je kopiraš.",
   "rc_lesson": "Navika iz pravog života: kopiraj i nalepi, prvo pošalji sićušan probni iznos i posle lepljenja proveri prva + poslednja 4 znaka. Malver koji otima clipboard menja adrese.",
   "rc_copied": "Adresa kopirana. Proveri prva i poslednja 4 znaka kad je nalepiš.",
-
   "tm_loading": "Učitavam grafikon…",
   "tm_buy": "Kupi",
   "tm_sell": "Prodaj",
@@ -596,9 +568,12 @@
   "tm_nochart": "Nema podataka za grafikon za ovaj par.",
   "tm_chartfail": "Grafikon nije uspeo da se učita.",
   "tm_libfail": "Biblioteka za grafikon nije uspela da se učita.",
-
   "ago_s": "pre {n}s",
   "ago_m": "pre {n}m",
   "ago_h": "pre {n}h",
-  "f_text": "Demo simulacija života sa vežbovnim sredstvima — cene, naknade, gas, mreže i slippage prate prava tržišta, ali pravi novac nije uključen i ništa ne može da se podigne. Banka, kartica, menjačnica, novčanik, adrese i seed fraza su simulirani radi učenja. Nije finansijski savet. · <a href=\"/paper-trade\">Probaj paper trading fjučersa</a> · <a href=\"/academy/\">Uči u Akademiji</a>"
+  "f_text": "Demo simulacija života sa vežbovnim sredstvima — cene, naknade, gas, mreže i slippage prate prava tržišta, ali pravi novac nije uključen i ništa ne može da se podigne. Banka, kartica, menjačnica, novčanik, adrese i seed fraza su simulirani radi učenja. Nije finansijski savet. · <a href=\"/paper-trade\">Probaj paper trading fjučersa</a> · <a href=\"/academy/\">Uči u Akademiji</a>",
+  "sb_sells": "{n} prodaja",
+  "tm_e_thin_pool": "Pool iza ovog tokena drži manje od $1.000 — prodaja ove veličine ne može da se izvrši. Pravi rug izgleda tačno ovako.",
+  "tm_e_bad_pool": "Taj pool određuje cenu drugog tokena. Ništa nije izvršeno.",
+  "sb_sell1": "1 prodaja"
 }

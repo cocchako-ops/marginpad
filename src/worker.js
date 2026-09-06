@@ -12553,7 +12553,7 @@ function _gtRows(j, net) { // one GeckoTerminal pool-list response → normalize
     const liq = +a.reserve_in_usd || 0; if (liq < 8000) continue; // sub-$8k pools are pure exit-scam noise even for a demo
     out.push({ mint, pool: String(a.address || ''), net, native: (SPOT_NETS[net] || {}).native || 'SOL', sym, name: String(tok.name || '').slice(0, 48),
       logo: SPOT_LOGO_OK.test(String(tok.image_url || '')) ? tok.image_url : '',
-      price, chg24: +((a.price_change_percentage || {}).h24) || 0, vol24: +((a.volume_usd || {}).h24) || 0, liqUsd: liq, fdv: +a.fdv_usd || 0 });
+      price, chg24: +((a.price_change_percentage || {}).h24) || 0, vol24: +((a.volume_usd || {}).h24) || 0, liqUsd: liq, fdv: +a.fdv_usd || 0, ts: Date.now() }); // ts = when THIS row's price was read; the merge below and the trade-time fallback both key off it (2026-09-06)
   }
   return out;
 }
@@ -12588,22 +12588,44 @@ async function spotMemeList(env) { // the MULTI-CHAIN meme universe: trending + 
     await new Promise(r => setTimeout(r, 350));
   }
   let prev = []; try { prev = JSON.parse((await env.STATS.get('spot:memes:last')) || '[]'); } catch (e) {}
-  for (const r of prev) { const k = r.net + ':' + r.mint; if (!seen.has(k)) { seen.add(k); out.push(r); } } // fresh rows win; everything else carries over
+  // Fresh rows win; a carried-over row survives only while its own price read is younger than SPOT_ROW_MAX_AGE.
+  // Before 2026-09-06 "everything else carries over" had no age at all: a token that left every feed (a rug) kept
+  // its pre-rug price in the list for days, and the trade-time fallback below then sold it at that price ($500 ->
+  // $262k, one account). Rows without a ts are pre-fix rows and are dropped — coverage is back within ~3 rebuilds.
+  const nowL = Date.now();
+  for (const r of prev) { const k = r.net + ':' + r.mint; if (!seen.has(k) && spotRowFresh(r, nowL, SPOT_ROW_MAX_AGE)) { seen.add(k); out.push(r); } }
   const list = out.slice(0, 220);
   if (list.length >= 20) { try { await env.STATS.put('spot:memes:last', JSON.stringify(list), { expirationTtl: 3 * 86400 }); await env.STATS.put('spot:memes:ts', String(Date.now()), { expirationTtl: 3 * 86400 }); } catch (e) {} }
   try { await caches.default.put(ck, new Response(JSON.stringify(list), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=170' } })); } catch (e) {}
   return list;
 }
-async function spotMemePrice(env, net, pool) { // live {price, liqUsd} for one pool on one network (30s edge cache)
+const SPOT_ROW_MAX_AGE = 2 * 3600000; // a meme-list row older than this has left every feed (rug / delist) and is dropped from the universe
+const SPOT_FALLBACK_MAX_AGE = 180000; // the trade-time list fallback accepts a row only this young — a 3-minute-old price cannot be a pre-rug price
+const SPOT_JUMP_X = 20; // a sell fill this many times above the position's last mark is implausible enough to alarm (and to refuse when the pool is thin)
+const SPOT_THIN_LIQ = 1000; // a pool holding less than this in USD cannot honestly fill a sale that claims a 20x move
+function spotRowFresh(row, now, maxAge) { const ts = +((row || {}).ts) || 0; return ts > 0 && (now - ts) >= 0 && (now - ts) <= maxAge; } // pure — tested through /api/admin/spotguard
+// Sell-side integrity guard (2026-09-06). Pure so the E2E can test the exact code the money path runs. Never blocks an
+// ordinary sale: a position that moved less than SPOT_JUMP_X since its last mark passes untouched whatever the pool
+// holds. Above it: a thin pool (or a stale, list-derived price) cannot fill — that is what a rug looks like from
+// outside — and a liquid pool fills but pages the owner (a real 20x in a day is rare enough to look at every time).
+function spotSellGuard(o) {
+  const price = +(o && o.price) || 0, lastPx = +(o && o.lastPx) || 0, liq = +(o && o.liqUsd) || 0, stale = !!(o && o.stale);
+  const x = (price > 0 && lastPx > 0) ? price / lastPx : 0;
+  if (!(x > SPOT_JUMP_X)) return { block: null, alert: false, x };
+  if (stale) return { block: 'no_price', alert: true, x };
+  if (liq < SPOT_THIN_LIQ) return { block: 'thin_pool', alert: true, x };
+  return { block: null, alert: true, x };
+}
+async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for one pool on one network (30s edge cache)
   net = SPOT_NETS[net] ? net : 'solana';
   if (!/^[A-Za-z0-9]{20,60}$/.test(String(pool || ''))) return null;
   const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
   const a = j && j.data && j.data.attributes;
   const price = a ? +a.base_token_price_usd || 0 : 0;
-  if (price > 0) return { price, liqUsd: +a.reserve_in_usd || 0 };
-  // pool read failed (GT 429 burst) → fall back to the AGGREGATE meme list price (≤~3 min stale, cached at the
-  // edge for everyone). A slightly stale fill beats a broken Buy button in a demo; slippage sim is unaffected.
-  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0) return { price: m.price, liqUsd: m.liqUsd || 0, stale: true }; } catch (e) {}
+  if (price > 0) { let mint = ''; try { mint = String(j.data.relationships.base_token.data.id || '').replace(/^[a-z0-9-]+_/, ''); } catch (e) {} return { price, liqUsd: +a.reserve_in_usd || 0, mint }; } // mint = the pool's OWN base token; a trade must prove the pool belongs to the token it names
+  // pool read failed (GT 429 burst) → fall back to the AGGREGATE meme list price, but ONLY a row read within the
+  // last SPOT_FALLBACK_MAX_AGE. The old "≤~3 min stale" comment was a wish: carried-over rows had no age at all.
+  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_FALLBACK_MAX_AGE)) return { price: m.price, liqUsd: m.liqUsd || 0, mint: m.mint || '', stale: true }; } catch (e) {}
   return null;
 }
 // Simulated DEX slippage: trade size vs pool liquidity — a $500 buy into a $50k pool hurts, majors don't. Clamp 0.2%–3%.
@@ -12691,13 +12713,15 @@ async function handleSpot(url, request, env) {
     if (!snap) return jr({ error: 'not_found' }, 404);
     return new Response(JSON.stringify(snap), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   }
-  if (path === '/board') { // season bank-balance board (2026-09-03): bragging rights only — the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
-    const ck = new Request('https://marginpad.io/__spot_board_v1');
+  if (path === '/board') { // season trading-profit board (2026-09-06; bank-balance until then): bragging rights only — the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
+    const ck = new Request('https://marginpad.io/__spot_board_v2');
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
-    let rows = []; try { const r = await spotStub(env).fetch(new Request('https://do/lbbank')); const d = await r.json(); rows = ((d && d.top) || []).filter(x => (+x.cardC || 0) >= SPOT_START_C).slice(0, 10); } catch (e) {}
+    const ss = predSeason(Date.now()), fromMs = ss.endMs - LB_PERIOD;
+    let excl = []; try { const oc = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); excl = Array.isArray(oc.spotBoardExcl) ? oc.spotBoardExcl.map(String) : []; } catch (e) {} // owner list (uid or username) kept off the board — a glitch beneficiary stays whole, just not ranked
+    let rows = []; try { const r = await spotStub(env).fetch(new Request('https://do/lbtrade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: fromMs, to: ss.endMs }) })); const d = await r.json(); rows = ((d && d.top) || []).filter(x => (+x.pnlC || 0) > 0 && excl.indexOf(String(x.uid)) < 0); } catch (e) {}
     let names = {}; try { const nr = await usersDO(env, '/names', { ids: rows.map(x => x.uid) }); names = (nr && nr.names) || {}; } catch (e) {}
-    const top = rows.filter(x => names[x.uid]).map((x, i) => ({ rank: i + 1, who: names[x.uid], cardUsd: Math.round((+x.cardC || 0)) / 100, gainUsd: Math.round(((+x.cardC || 0) - SPOT_START_C)) / 100 }));
-    const resp = new Response(JSON.stringify({ top, note: 'no prize' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    const top = rows.filter(x => names[x.uid] && excl.indexOf(String(names[x.uid])) < 0).slice(0, 10).map((x, i) => ({ rank: i + 1, who: names[x.uid], pnlUsd: Math.round(+x.pnlC || 0) / 100, sells: x.sells }));
+    const resp = new Response(JSON.stringify({ top, season: { from: ss.from, to: ss.to }, note: 'no prize' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
     try { await caches.default.put(ck, resp.clone()); } catch (e) {}
     return resp;
   }
@@ -12748,17 +12772,26 @@ async function handleSpot(url, request, env) {
   if (path === '/trade' && request.method === 'POST') {
     const side = b.side === 'sell' ? 'sell' : 'buy';
     const kind = b.kind === 'meme' ? 'meme' : 'cex';
-    let sym, price = 0, liq = 0, meta = { k: kind }, net = '', native = '', natPxT = 0, gasNat = 0;
+    let sym, price = 0, liq = 0, meta = { k: kind }, net = '', native = '', natPxT = 0, gasNat = 0, holdMeta = null, priceStale = false;
     if (kind === 'meme') {
-      const pool = String(b.pool || ''), mint = String(b.mint || '');
-      if (!/^[A-Za-z0-9]{20,60}$/.test(pool) || !/^[A-Za-z0-9]{20,60}$/.test(mint)) return jr({ error: 'bad_token' }, 400);
+      let pool = String(b.pool || ''); const mint = String(b.mint || '');
+      if (!/^[A-Za-z0-9]{20,60}$/.test(mint)) return jr({ error: 'bad_token' }, 400);
       let info = null; try { info = (await spotMemeList(env)).find(m => m.mint === mint); } catch (e) {} // identity from OUR list when possible — client fields only as sanitized fallback
       net = (info && info.net) || (SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana');
+      if (side === 'sell') { // the POSITION says which pool prices it (2026-09-06). Before this the sell price came from whatever pool the client named.
+        const hk = b.holdSym ? String(b.holdSym).slice(0, 64) : ((net === 'solana' ? 'sol:' : net + ':') + mint);
+        try { const hr = await stub.fetch(new Request('https://do/hold?uid=' + encodeURIComponent(uid) + '&sym=' + encodeURIComponent(hk))); const hd = await hr.json(); if (hd && hd.qty > 0) holdMeta = hd.meta || {}; } catch (e) {}
+        if (!holdMeta) return jr({ error: 'no_position' }, 400);
+        if (holdMeta.pool) pool = String(holdMeta.pool);
+        if (holdMeta.net && SPOT_NETS[holdMeta.net]) net = holdMeta.net;
+      }
+      if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
       native = SPOT_NETS[net].native; gasNat = SPOT_NETS[net].gas;
       sym = (net === 'solana' ? 'sol:' : net + ':') + mint; // hold key: mint is the identity (tickers collide); legacy Solana holds keep the sol: prefix
       const mp = await spotMemePrice(env, net, pool);
       if (!mp) return jr({ error: 'no_price' }, 503);
-      price = mp.price; liq = mp.liqUsd;
+      if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token — no fill through a foreign pool, either direction
+      price = mp.price; liq = mp.liqUsd; priceStale = !!mp.stale;
       try { const npd = await fetchPriceCached(native); natPxT = npd ? +npd.price : 0; } catch (e) {}
       if (!(natPxT > 0)) return jr({ error: 'no_price' }, 503);
       meta = { k: 'meme', mint, pool, net, native, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
@@ -12796,6 +12829,12 @@ async function handleSpot(url, request, env) {
     if (estUsd < 0.5) { /* dust positions may sell whole regardless of the $1 floor */ if (pct < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400); }
     const slip = kind === 'meme' ? spotSlip(estUsd, liq) : 0;
     const eff = price * (1 - slip);
+    if (kind === 'meme') { // integrity guard: a fill far above the position's own last mark needs a pool that could actually pay it
+      const gd = spotSellGuard({ price, lastPx: +(holdMeta && holdMeta.lastPx) || 0, liqUsd: liq, stale: priceStale });
+      if (gd.alert) { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['spotjump'], blobs: ['spotjump', holdKey.slice(0, 64), String(gd.block || 'filled'), String(uid)], doubles: [1, gd.x, estUsd, liq] }); } catch (e) {} try { await tgAdmin(env, '<b>Demo Spot: sell fill ' + Math.round(gd.x) + 'x above the last mark' + (gd.block ? ' (refused: ' + gd.block + ')' : '') + '</b>\n' + (meta.sym || holdKey.slice(0, 20)) + ' est $' + Math.round(estUsd) + ' at ' + price.toPrecision(4) + ' (last mark ' + (+(holdMeta && holdMeta.lastPx) || 0).toPrecision(4) + ', pool liq $' + Math.round(liq) + (priceStale ? ', list fallback' : '') + ')\nuid ' + String(uid).slice(0, 12), { kind: 'spotjump', sev: gd.block ? 'warn' : 'red' }); } catch (e) {} }
+      if (gd.block === 'thin_pool') return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400);
+      if (gd.block) return jr({ error: gd.block }, 503);
+    }
     const feeC = Math.max(1, Math.round(qty * eff * 100 * feeBp / 10000));
     const body9 = { uid, side: 'sell', sym: holdKey, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC };
     if (kind === 'meme') { const netC9 = Math.max(0, Math.round(qty * eff * 100) - feeC); body9.native = native; body9.natOut = netC9 / 100 / natPxT; body9.gasNat = gasNat; } // proceeds come back as SOL/ETH/BNB minus gas
@@ -12971,7 +13010,7 @@ async function spotOrdersSweep(env) {
   for (const o of orders) {
     let meta = {}; try { meta = JSON.parse(o.meta || '{}'); } catch (e) {}
     const key = o.sym;
-    if (px[key] === undefined) { try { if (meta.k === 'meme') { const mp = await spotMemePrice(env, meta.net || 'solana', meta.pool); px[key] = mp ? +mp.price : 0; } else { const pd = await fetchPriceCached(o.sym); px[key] = pd ? +pd.price : 0; } } catch (e) { px[key] = 0; } }
+    if (px[key] === undefined) { try { if (meta.k === 'meme') { let pool = meta.pool, net = meta.net || 'solana'; if (o.side === 'sell') { try { const hr = await spotStub(env).fetch(new Request('https://do/hold?uid=' + encodeURIComponent(o.uid) + '&sym=' + encodeURIComponent(o.sym))); const hd = await hr.json(); if (hd && hd.meta && hd.meta.pool) { pool = hd.meta.pool; net = hd.meta.net || net; } } catch (e) {} } const mp = await spotMemePrice(env, net, pool); px[key] = mp ? +mp.price : 0; } else { const pd = await fetchPriceCached(o.sym); px[key] = pd ? +pd.price : 0; } } catch (e) { px[key] = 0; } } // a resting SELL crosses on the POSITION's pool, the same pool the fill prices (2026-09-06)
     const p = px[key]; if (!(p > 0)) continue;
     const crossed = o.side === 'buy' ? p <= o.price : p >= o.price;
     if (!crossed) continue;
@@ -14645,6 +14684,13 @@ export default {
     if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
       return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
     }
+    if (url.pathname === '/api/admin/spotguard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // exposes the pure sell guard + row-freshness helpers so build/spot-e2e-price.js tests the exact code the money path runs
+      const q = url.searchParams; const now = Date.now();
+      const guard = spotSellGuard({ price: +q.get('price') || 0, lastPx: +q.get('lastPx') || 0, liqUsd: +q.get('liq') || 0, stale: q.get('stale') === '1' });
+      const age = q.has('age') ? +q.get('age') : null;
+      const fresh = age == null ? null : { list: spotRowFresh({ ts: now - age }, now, SPOT_ROW_MAX_AGE), fallback: spotRowFresh({ ts: now - age }, now, SPOT_FALLBACK_MAX_AGE), noTs: spotRowFresh({}, now, SPOT_ROW_MAX_AGE) };
+      return new Response(JSON.stringify({ guard, fresh, limits: { jumpX: SPOT_JUMP_X, thinLiq: SPOT_THIN_LIQ, rowMaxAge: SPOT_ROW_MAX_AGE, fallbackMaxAge: SPOT_FALLBACK_MAX_AGE } }), { headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname === '/api/admin/spotpurge' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // drop never-used Demo Spot accounts (see SpotStore /purgeempty)
       try { const r = await spotStub(env).fetch(new Request('https://do/purgeempty', { method: 'POST' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json' } }); } catch (e) { return new Response(JSON.stringify({ error: 'transient' }), { status: 503, headers: { 'content-type': 'application/json' } }); }
     }
@@ -16061,10 +16107,11 @@ export class SpotStore {
       }
       return this.j({ error: 'bad_side' }, 400);
     }
-    if (path === '/hold') { // worker sell path: exact stored qty (dust-free 100% sells) + size for the slippage estimate
+    if (path === '/hold') { // worker sell path: exact stored qty (dust-free 100% sells) + size for the slippage estimate + the position's own meta (pool/net/lastPx price the sale — 2026-09-06)
       const sym = String(url.searchParams.get('sym') || '');
-      const h = this.rows('SELECT qty,cost FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
-      return this.j(h ? { qty: h.qty, costUsd: h.cost / 100 } : { qty: 0 });
+      const h = this.rows('SELECT qty,cost,meta FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
+      let m = {}; try { m = JSON.parse((h && h.meta) || '{}') || {}; } catch (e) {}
+      return this.j(h ? { qty: h.qty, costUsd: h.cost / 100, meta: m } : { qty: 0 });
     }
     if (path === '/tx') {
       if (!uid) return this.j({ error: 'bad' }, 400);
@@ -16112,6 +16159,11 @@ export class SpotStore {
       // P2P can't inflate the card: received wallet-USDT has no path back to it (card<-offramp<-exchange only).
       const rows = this.rows('SELECT a.user_id uid, a.card FROM spotacct a WHERE EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=a.user_id) OR EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=a.user_id OR x.to_uid=a.user_id) ORDER BY a.card DESC LIMIT 40');
       return this.j({ top: rows.map(r => ({ uid: r.uid, cardC: +r.card || 0 })) });
+    }
+    if (path === '/lbtrade') { // public season board since 2026-09-06: realized PnL from the account's OWN sells inside the season window. The card balance the old board ranked can be fed by P2P transfers from other accounts (measured: #2 and #3 held $0 and $1 of realized profit) — a sell's pnl cannot.
+      const from = +b.from || 0, to = +b.to || Date.now();
+      const rows = this.rows("SELECT user_id uid, SUM(pnl) pnl, COUNT(*) n FROM spottx WHERE side='sell' AND ts>=? AND ts<? GROUP BY user_id ORDER BY pnl DESC LIMIT 60", from, to);
+      return this.j({ top: rows.map(r => ({ uid: r.uid, pnlC: +r.pnl || 0, sells: +r.n || 0 })) });
     }
     if (path === '/order/add') {
       if (!uid) return this.j({ error: 'bad' }, 400);

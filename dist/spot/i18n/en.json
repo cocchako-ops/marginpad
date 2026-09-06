@@ -19,7 +19,6 @@
   "g_l4": "<b>Daily PnL, equity curve,</b> average entries, realized profit and a full paper trail.",
   "g_issuing": "Issuing your card…",
   "g_issue_fail": "Could not issue the card — try again.",
-
   "h_kick": "DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY",
   "h_apps": "YOUR THREE APPS — TAP TO OPEN",
   "h_noprize": "<b>NO PRIZES HERE</b> — Demo Spot pays nothing and never asks for money; it is practice. The real USDT prizes are on the futures season boards. <a href=\"/rewards/\">See the boards</a>",
@@ -41,7 +40,6 @@
   "h_share": "Share",
   "h_sharing": "Sharing…",
   "t_arrived": "<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.",
-
   "st_bank": "Bank",
   "st_bank_s": "card & cash",
   "st_ex": "Exchange",
@@ -78,17 +76,15 @@
   "s6_t": "Buy your first coin",
   "s6_b": "Open exchange",
   "s6_c": "The setup is done — now trade. Bitcoin and the top 250 live on the exchange; the memes live in your wallet. Every fill shows its fee before you confirm.",
-
   "cal_h": "Daily PnL · last 28 days",
   "cal_gr": "{g} green · {r} red this season",
-  "sb_h": "Bank balances this season",
-  "sb_s": "bragging rights · no prize",
-  "sb_empty": "Nobody has cashed out above $10,000 this season yet — the card is the score.",
+  "sb_h": "Trading profit this season",
+  "sb_s": "realized on your own sells · no prize",
+  "sb_empty": "Nobody has booked a trading profit this season yet — sell in the green to appear here.",
   "d_card": "Card",
   "d_exusdt": "Exchange USDT",
   "d_wusdt": "Wallet USDT",
   "d_gas": "Gas coins",
-
   "tok_look": "Looking up that contract…",
   "tok_e_not_found": "No token with that address on Solana, BNB Chain, Base or Ethereum. Check the address on the explorer — copies of famous tokens are the classic scam.",
   "tok_e_major": "That is a major coin or a stablecoin — trade it on the Exchange app, not through the DEX.",
@@ -103,7 +99,6 @@
   "tok_trade": "Trade",
   "tok_thinlesson": "<b>Thin pool.</b> A ${usd} pool moves on every fill — expect slippage of a few percent, and a rug takes it to zero. ",
   "tok_unknown": "Unknown contract: check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam — the address is the identity, not the name.",
-
   "sh_fail": "Could not create the card — try again.",
   "sh_copied": "Link copied — paste it in the chat or anywhere.",
   "sh_title": "My Demo Spot portfolio",
@@ -119,13 +114,11 @@
   "sh_lesson": "Practice money, real fees: card 1.8% in, exchange 0.1%, DEX 0.3%, network fees and gas, 1% out. Nothing here pays real money.",
   "sh_cta": "Get your own $10,000 card",
   "sh_loadfail": "Could not load that card.",
-
   "nav_home": "← Home",
   "nav_map": "Map",
   "nav_bank": "Bank",
   "nav_ex": "Exchange",
   "nav_wal": "Wallet",
-
   "b_name": "MarginPad Bank",
   "b_tag": "member since today · FDIC-insured (pretend)",
   "b_greet_default": "Good day.",
@@ -156,7 +149,6 @@
   "b_outside1": "<b>Money outside the bank.</b> 1 step before it can come back to this card.",
   "b_outsideN": "<b>Money outside the bank.</b> {n} steps before it can come back to this card.",
   "b_plan": "Show the plan",
-
   "e_name": "MarginPad Exchange",
   "e_tag": "custodial · they hold it for you · taker fee 0.1%",
   "e_bal": "Exchange balance",
@@ -189,7 +181,6 @@
   "e_nousdt": "No USDT yet — tap Deposit to buy some with your card.",
   "e_stale": "stale",
   "e_avg": "{qty} @ {px} avg",
-
   "o_open": "Open orders ({n})",
   "o_recent": "Recent orders",
   "o_sub": "limit · checked every 10 min",
@@ -205,7 +196,6 @@
   "o_st_cancelled": "cancelled",
   "o_st_failed": "failed",
   "o_st_expired": "expired",
-
   "dp_t": "Deposit to the exchange",
   "dp_p": "Two ways in: buy instantly with your card, or send crypto to your personal exchange deposit address.",
   "dp_card": "Buy USDT with card",
@@ -222,7 +212,6 @@
   "cd_fail": "Could not load your deposit address — try again in a moment.",
   "cd_na": "not available",
   "cd_copied": "Address copied — now open Wallet, tap Send and paste it.",
-
   "w_name": "MarginPad Wallet",
   "w_tag": "self-custody · your keys, your coins",
   "w_setup": "This is where self-custody begins.<br><b style=\"color:#fff\">No wallet yet.</b> Generate one — you get your own addresses and a seed phrase, just like Phantom or MetaMask.",
@@ -254,7 +243,6 @@
   "w_nochain": "No memes on this chain right now.",
   "w_more": "Show {n} more · {left} left",
   "w_sol_copied": "Solana address copied. Paste it, never retype it.",
-
   "tx_reset": "RESET",
   "tx_reset_t": "Fresh $10,000 card",
   "tx_on": "CARD→EX",
@@ -278,20 +266,17 @@
   "tx_trade_s": "{qty} @ {px} · fee {fee} · {ago}",
   "tx_pnl": "PnL",
   "tx_meme": "meme",
-
   "r_confirm": "Use your ONE reset? Everything goes back to a fresh $10,000 card (positions closed, balances cleared, history kept). Next reset unlocks 7 days from now.",
   "r_done": "Fresh start — <b>$10,000</b> back on your card.",
   "r_cd1": "0 resets left — next one in ~1 day.",
   "r_cdN": "0 resets left — next one in ~{d} days.",
   "r_fail": "Reset failed — try again.",
-
   "err_net": "Network error.",
   "err_net2": "Network error — try again.",
   "err_transient": "Our store hiccuped — nothing was charged. Try again in a few seconds.",
   "err_failed": "Failed ({e}) — try again.",
   "err_noans": "no answer",
   "err_noprice": "No live price right now — try again in a moment.",
-
   "mc_t": "Your virtual card",
   "mc_linked": "Card is linked to the exchange. Use it to buy USDT any time (1.8% card fee applies).",
   "mc_buy": "Buy USDT with this card",
@@ -301,7 +286,6 @@
   "mc_wrong": "Those are not the last 4 digits of this card (check the card above).",
   "mc_linking": "Linking…",
   "mc_ok": "Card linked. Next: buy USDT.",
-
   "mo_t": "Buy USDT with your card",
   "mo_p": "USDT is a stablecoin — 1 USDT stays worth ~$1. It is what you actually trade with. Card balance: <b>{usd}</b>",
   "mo_amt": "Amount (USD) · min $10",
@@ -318,7 +302,6 @@
   "mo_toast": "USDT bought — the Exchange app is open for business.",
   "mo_notlinked": "Link the card to the exchange first.",
   "mo_cardonly": "Card only has {usd} (remember the 1.8% fee).",
-
   "mf_nothing": "Nothing to cash out — everything is already on your card.",
   "mf_t": "Cash out to your card",
   "mf_p": "Selling USDT back to dollars on your card — the way profits actually leave crypto. Exchange balance: <b>{usd} USDT</b>",
@@ -336,7 +319,6 @@
   "mf_ok": "Done — {usd} landed on your card (fee {fee}).",
   "mf_toast": "{usd} is back on your card. Full circle.",
   "mf_exonly": "Exchange only has {usd} USDT.",
-
   "wc_t": "Withdraw from the exchange",
   "wc_p": "Two very different exits. Pick where the money goes:",
   "wc_fiat": "To your bank card",
@@ -347,7 +329,6 @@
   "wc_ready": "wallet ready",
   "wc_nowallet": "no wallet yet",
   "wc_lesson": "On a real exchange these are separate menus too: \"Withdraw fiat\" and \"Withdraw crypto\". Crypto sent to a wrong address or network is gone — fiat just takes a day and a fee.",
-
   "mw_t": "Create your self-custody wallet",
   "mw_p": "On an exchange, THEY hold your coins. A self-custody wallet (like Phantom or MetaMask) is yours alone — secured by a <b>seed phrase</b>. Whoever knows the phrase owns the money.",
   "mw_go": "Generate my wallet",
@@ -359,7 +340,6 @@
   "mw_ck": "I wrote down my seed phrase and understand that in real life losing it means losing my money — and sharing it means losing it faster.",
   "mw_cont": "Continue",
   "mw_toast": "Wallet created. Next: send USDT to it from the exchange.",
-
   "wd_need": "You need USDT on the exchange first — buy some with your card.",
   "wd_t": "Withdraw USDT to your wallet",
   "wd_p": "Moving coins from the exchange to YOUR wallet is a real on-chain transfer. You choose the network — the coins are the same, the fees are not. Exchange balance: <b>{usd}</b>",
@@ -384,7 +364,6 @@
   "wd_badaddr": "That address does not match the chosen network format.",
   "wd_min": "Minimum withdrawal is $5.",
   "wd_insuf": "Not enough on the exchange (remember the network fee).",
-
   "sw_nousdt": "Your wallet has no USDT yet — deposit some from the exchange first.",
   "sw_t": "Swap",
   "sw_buy": "USDT → gas coin",
@@ -420,7 +399,6 @@
   "sw_toast_sell": "{usd} USDT in your wallet.",
   "sw_walonly": "Wallet only has {usd} USDT.",
   "sw_dust": "That is under $1 of USDT after the fee — the DEX will not route dust. You hold {qty} {a} ({usd}); keep it as gas.",
-
   "ec_t": "Wallet ↔ Exchange",
   "ec_p": "USDT moves between your exchange account and your own wallet over the network of your choice — each hop costs a network fee or gas.",
   "ec_from": "Deposit from the exchange",
@@ -430,7 +408,6 @@
   "ec_to_s": "Wallet USDT → exchange · gas only · then cash out to your card",
   "ec_inwal": "{usd} in wallet",
   "ec_lesson": "Real life: an exchange gives you a deposit address per network; you send to it from your wallet and the balance shows up on the exchange. Here the address is filled in for you — the gas is still real.",
-
   "te_dust": "Only dust is left in the wallet ({usd} in gas coins) — under the $1 minimum, not worth moving. Everything else is already on the exchange or the card.",
   "te_nousdt_swap": "No USDT in the wallet yet — swap your {a} back to USDT first.",
   "te_coins": "coins",
@@ -454,7 +431,6 @@
   "te_ok": "{usd} USDT is on your exchange balance (block #{h}). <a href=\"#\" id=\"teCash\">Cash out to your card</a>",
   "te_toast": "{usd} USDT arrived on the exchange.",
   "te_nogas_err": "No gas on that network. <a href=\"#\" id=\"teGas\">Swap USDT for {a}</a>",
-
   "co_bags": "Sell your meme bags",
   "co_bags_s": "{usd} in memes — they sell into the chain coin",
   "co_openwal": "Open wallet",
@@ -476,7 +452,6 @@
   "co_t": "Cash out — the whole way back",
   "co_p": "Money only leaves through the exchange: everything on-chain has to come back as USDT first, then USDT sells to dollars on your card. In order:",
   "co_lesson": "This is the real-world shape of a cash-out too: DEX → wallet → exchange → bank, a fee at every hop. That is why traders plan the exit before the entry.",
-
   "sd_nousdt": "Your wallet has no USDT to send — deposit from the exchange first.",
   "sd_t": "Send USDT",
   "sd_p": "Send wallet USDT to ANY other MarginPad user — person to person, recorded on the MarginPad Chain. Wallet balance: <b>{usd}</b>",
@@ -503,7 +478,6 @@
   "sd_nogas": "Not enough {a} for gas: you hold {have}, this transfer needs {need}. <a href=\"#\" id=\"sdGas\">Swap a couple of dollars of USDT for {a}</a>",
   "sd_invalid": "Invalid address.",
   "sd_fail": "Send failed — try again.",
-
   "ch_t": "MarginPad Chain",
   "ch_loading": "Loading the ledger…",
   "ch_lesson": "This is how a block explorer works: every transfer ever made is public, forever — amount, addresses, time and a tx hash. Nobody can edit or delete a sealed block. Real chains (Solscan, Etherscan) look just like this.",
@@ -511,13 +485,11 @@
   "ch_empty": "No transfers yet — be the first block. Send a friend some USDT from your wallet.",
   "ch_you": "(you)",
   "ch_fail": "Could not load the chain — try again.",
-
   "rc_t": "Receive",
   "rc_p": "Share the RIGHT address for the RIGHT network. Solana coins go to the Solana address; Ethereum, Base and BNB Chain all use your EVM address.",
   "rc_qr": "Demo QR — it scans nowhere. Tap the address to copy.",
   "rc_lesson": "Real-life habit: copy-paste, send a tiny test amount first, and check the first + last 4 characters after pasting. Clipboard-hijack malware swaps addresses.",
   "rc_copied": "Address copied. Check the first and last 4 characters when you paste.",
-
   "tm_loading": "Loading chart…",
   "tm_buy": "Buy",
   "tm_sell": "Sell",
@@ -596,9 +568,12 @@
   "tm_nochart": "No chart data for this pair.",
   "tm_chartfail": "Chart failed to load.",
   "tm_libfail": "Chart library failed to load.",
-
   "ago_s": "{n}s ago",
   "ago_m": "{n}m ago",
   "ago_h": "{n}h ago",
-  "f_text": "Demo life-simulation with practice funds — prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The bank, card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href=\"/paper-trade\">Try futures paper trading</a> · <a href=\"/academy/\">Learn in the Academy</a>"
+  "f_text": "Demo life-simulation with practice funds — prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The bank, card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href=\"/paper-trade\">Try futures paper trading</a> · <a href=\"/academy/\">Learn in the Academy</a>",
+  "sb_sells": "{n} sells",
+  "tm_e_thin_pool": "The pool behind this token holds under $1,000 — a sale this size cannot fill. Real rugs look exactly like this.",
+  "tm_e_bad_pool": "That pool prices a different token. Nothing was filled.",
+  "sb_sell1": "1 sell"
 }

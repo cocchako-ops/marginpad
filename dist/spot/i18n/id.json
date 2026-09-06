@@ -19,7 +19,6 @@
   "g_l4": "<b>PnL harian, kurva ekuitas,</b> harga rata-rata masuk, profit terealisasi dan jejak transaksi lengkap.",
   "g_issuing": "Menerbitkan kartumu…",
   "g_issue_fail": "Kartu gagal diterbitkan — coba lagi.",
-
   "h_kick": "DEMO SPOT <i>·</i> UANGMU, SEPANJANG JALAN",
   "h_apps": "TIGA APLIKASIMU — KETUK UNTUK MEMBUKA",
   "h_noprize": "<b>TIDAK ADA HADIAH DI SINI</b> — Demo Spot tidak membayar apa pun dan tidak pernah meminta uang; ini latihan. Hadiah USDT sungguhan ada di papan musim futures. <a href=\"/rewards/\">Lihat papan</a>",
@@ -41,7 +40,6 @@
   "h_share": "Bagikan",
   "h_sharing": "Membagikan…",
   "t_arrived": "<b>Kartu $10,000-mu sudah tiba.</b> Peta menunjukkan jalannya — mulai dari bank.",
-
   "st_bank": "Bank",
   "st_bank_s": "kartu & uang tunai",
   "st_ex": "Exchange",
@@ -78,17 +76,15 @@
   "s6_t": "Beli koin pertamamu",
   "s6_b": "Buka exchange",
   "s6_c": "Persiapan selesai — sekarang trading. Bitcoin dan 250 koin teratas ada di exchange; meme coin ada di wallet-mu. Setiap eksekusi menampilkan biayanya sebelum kamu konfirmasi.",
-
   "cal_h": "PnL harian · 28 hari terakhir",
   "cal_gr": "{g} hijau · {r} merah musim ini",
-  "sb_h": "Saldo bank musim ini",
-  "sb_s": "sekadar pamer · tanpa hadiah",
-  "sb_empty": "Belum ada yang cash out di atas $10,000 musim ini — kartu adalah skornya.",
+  "sb_h": "Profit trading musim ini",
+  "sb_s": "terealisasi dari penjualanmu sendiri · tanpa hadiah",
+  "sb_empty": "Belum ada yang membukukan profit trading musim ini — jual saat hijau untuk muncul di sini.",
   "d_card": "Kartu",
   "d_exusdt": "USDT exchange",
   "d_wusdt": "USDT wallet",
   "d_gas": "Koin gas",
-
   "tok_look": "Mencari kontrak itu…",
   "tok_e_not_found": "Tidak ada token dengan alamat itu di Solana, BNB Chain, Base atau Ethereum. Periksa alamatnya di explorer — tiruan token terkenal adalah penipuan klasik.",
   "tok_e_major": "Itu koin besar atau stablecoin — tradingkan di aplikasi Exchange, bukan lewat DEX.",
@@ -103,7 +99,6 @@
   "tok_trade": "Trade",
   "tok_thinlesson": "<b>Pool tipis.</b> Pool ${usd} bergerak pada setiap eksekusi — bersiaplah slippage beberapa persen, dan satu rug membawanya ke nol. ",
   "tok_unknown": "Kontrak tidak dikenal: periksa di <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">explorer</a> sebelum kamu percaya namanya. Tiruan token terkenal dengan ticker yang sama adalah penipuan klasik — alamat adalah identitasnya, bukan nama.",
-
   "sh_fail": "Kartu gagal dibuat — coba lagi.",
   "sh_copied": "Tautan disalin — tempel di chat atau di mana saja.",
   "sh_title": "Portofolio Demo Spot-ku",
@@ -119,13 +114,11 @@
   "sh_lesson": "Uang latihan, biaya sungguhan: kartu 1.8% masuk, exchange 0.1%, DEX 0.3%, biaya jaringan dan gas, 1% keluar. Tidak ada yang membayar uang sungguhan di sini.",
   "sh_cta": "Ambil kartu $10,000-mu sendiri",
   "sh_loadfail": "Kartu itu gagal dimuat.",
-
   "nav_home": "← Beranda",
   "nav_map": "Peta",
   "nav_bank": "Bank",
   "nav_ex": "Exchange",
   "nav_wal": "Wallet",
-
   "b_name": "MarginPad Bank",
   "b_tag": "nasabah sejak hari ini · dijamin FDIC (pura-pura)",
   "b_greet_default": "Salam.",
@@ -156,7 +149,6 @@
   "b_outside1": "<b>Uang di luar bank.</b> 1 langkah lagi sebelum bisa kembali ke kartu ini.",
   "b_outsideN": "<b>Uang di luar bank.</b> {n} langkah lagi sebelum bisa kembali ke kartu ini.",
   "b_plan": "Tampilkan rencana",
-
   "e_name": "MarginPad Exchange",
   "e_tag": "kustodial · mereka menyimpannya untukmu · biaya taker 0.1%",
   "e_bal": "Saldo exchange",
@@ -189,7 +181,6 @@
   "e_nousdt": "Belum ada USDT — ketuk Deposit untuk membelinya dengan kartumu.",
   "e_stale": "basi",
   "e_avg": "{qty} @ {px} rata-rata",
-
   "o_open": "Order terbuka ({n})",
   "o_recent": "Order terbaru",
   "o_sub": "limit · dicek tiap 10 menit",
@@ -205,7 +196,6 @@
   "o_st_cancelled": "dibatalkan",
   "o_st_failed": "gagal",
   "o_st_expired": "kedaluwarsa",
-
   "dp_t": "Deposit ke exchange",
   "dp_p": "Dua jalan masuk: beli langsung dengan kartumu, atau kirim kripto ke alamat deposit exchange pribadimu.",
   "dp_card": "Beli USDT dengan kartu",
@@ -222,7 +212,6 @@
   "cd_fail": "Alamat depositmu gagal dimuat — coba lagi sebentar lagi.",
   "cd_na": "tidak tersedia",
   "cd_copied": "Alamat disalin — sekarang buka Wallet, ketuk Kirim dan tempel.",
-
   "w_name": "MarginPad Wallet",
   "w_tag": "self-custody · kuncimu, koinmu",
   "w_setup": "Di sinilah self-custody dimulai.<br><b style=\"color:#fff\">Belum ada wallet.</b> Buat satu — kamu mendapat alamat sendiri dan seed phrase, persis seperti Phantom atau MetaMask.",
@@ -254,7 +243,6 @@
   "w_nochain": "Tidak ada meme coin di chain ini saat ini.",
   "w_more": "Tampilkan {n} lagi · sisa {left}",
   "w_sol_copied": "Alamat Solana disalin. Tempel, jangan pernah ketik ulang.",
-
   "tx_reset": "RESET",
   "tx_reset_t": "Kartu $10,000 baru",
   "tx_on": "KARTU→EX",
@@ -278,20 +266,17 @@
   "tx_trade_s": "{qty} @ {px} · biaya {fee} · {ago}",
   "tx_pnl": "PnL",
   "tx_meme": "meme",
-
   "r_confirm": "Pakai SATU-SATUNYA reset-mu? Semuanya kembali ke kartu $10,000 baru (posisi ditutup, saldo dikosongkan, riwayat tetap ada). Reset berikutnya terbuka 7 hari dari sekarang.",
   "r_done": "Awal yang baru — <b>$10,000</b> kembali di kartumu.",
   "r_cd1": "Sisa 0 reset — berikutnya dalam ~1 hari.",
   "r_cdN": "Sisa 0 reset — berikutnya dalam ~{d} hari.",
   "r_fail": "Reset gagal — coba lagi.",
-
   "err_net": "Kesalahan jaringan.",
   "err_net2": "Kesalahan jaringan — coba lagi.",
   "err_transient": "Penyimpanan kami tersendat sebentar — tidak ada yang dipotong. Coba lagi dalam beberapa detik.",
   "err_failed": "Gagal ({e}) — coba lagi.",
   "err_noans": "tidak ada jawaban",
   "err_noprice": "Tidak ada harga live saat ini — coba lagi sebentar lagi.",
-
   "mc_t": "Kartu virtualmu",
   "mc_linked": "Kartu sudah terhubung ke exchange. Pakai untuk beli USDT kapan saja (biaya kartu 1.8% berlaku).",
   "mc_buy": "Beli USDT dengan kartu ini",
@@ -301,7 +286,6 @@
   "mc_wrong": "Itu bukan 4 digit terakhir kartu ini (periksa kartu di atas).",
   "mc_linking": "Menghubungkan…",
   "mc_ok": "Kartu terhubung. Berikutnya: beli USDT.",
-
   "mo_t": "Beli USDT dengan kartumu",
   "mo_p": "USDT adalah stablecoin — 1 USDT tetap bernilai ~$1. Inilah yang benar-benar kamu pakai untuk trading. Saldo kartu: <b>{usd}</b>",
   "mo_amt": "Jumlah (USD) · min $10",
@@ -318,7 +302,6 @@
   "mo_toast": "USDT dibeli — aplikasi Exchange siap dipakai.",
   "mo_notlinked": "Hubungkan dulu kartu ke exchange.",
   "mo_cardonly": "Kartu hanya punya {usd} (ingat biaya 1.8%).",
-
   "mf_nothing": "Tidak ada yang bisa di-cash out — semuanya sudah di kartumu.",
   "mf_t": "Cash out ke kartumu",
   "mf_p": "Menjual USDT kembali ke dolar di kartumu — begitulah profit sebenarnya keluar dari kripto. Saldo exchange: <b>{usd} USDT</b>",
@@ -336,7 +319,6 @@
   "mf_ok": "Selesai — {usd} masuk ke kartumu (biaya {fee}).",
   "mf_toast": "{usd} kembali di kartumu. Satu putaran penuh.",
   "mf_exonly": "Exchange hanya punya {usd} USDT.",
-
   "wc_t": "Tarik dari exchange",
   "wc_p": "Dua jalan keluar yang sangat berbeda. Pilih ke mana uangnya pergi:",
   "wc_fiat": "Ke kartu bankmu",
@@ -347,7 +329,6 @@
   "wc_ready": "wallet siap",
   "wc_nowallet": "belum ada wallet",
   "wc_lesson": "Di exchange sungguhan ini juga menu terpisah: \"Tarik fiat\" dan \"Tarik kripto\". Kripto yang dikirim ke alamat atau jaringan yang salah hilang selamanya — fiat cuma butuh sehari dan satu biaya.",
-
   "mw_t": "Buat wallet self-custody-mu",
   "mw_p": "Di exchange, MEREKA yang menyimpan koinmu. Wallet self-custody (seperti Phantom atau MetaMask) hanya milikmu — diamankan oleh <b>seed phrase</b>. Siapa pun yang tahu frasanya, dialah pemilik uangnya.",
   "mw_go": "Buat wallet-ku",
@@ -359,7 +340,6 @@
   "mw_ck": "Aku sudah menulis seed phrase-ku dan paham bahwa di dunia nyata kehilangannya berarti kehilangan uangku — dan membagikannya berarti kehilangan lebih cepat.",
   "mw_cont": "Lanjut",
   "mw_toast": "Wallet dibuat. Berikutnya: kirim USDT ke sana dari exchange.",
-
   "wd_need": "Kamu butuh USDT di exchange dulu — beli dengan kartumu.",
   "wd_t": "Tarik USDT ke wallet-mu",
   "wd_p": "Memindahkan koin dari exchange ke wallet-MU adalah transfer on-chain sungguhan. Kamu yang memilih jaringannya — koinnya sama, biayanya tidak. Saldo exchange: <b>{usd}</b>",
@@ -384,7 +364,6 @@
   "wd_badaddr": "Alamat itu tidak cocok dengan format jaringan yang dipilih.",
   "wd_min": "Penarikan minimum $5.",
   "wd_insuf": "Tidak cukup di exchange (ingat biaya jaringan).",
-
   "sw_nousdt": "Wallet-mu belum punya USDT — deposit dulu dari exchange.",
   "sw_t": "Swap",
   "sw_buy": "USDT → koin gas",
@@ -420,7 +399,6 @@
   "sw_toast_sell": "{usd} USDT di wallet-mu.",
   "sw_walonly": "Wallet hanya punya {usd} USDT.",
   "sw_dust": "Itu di bawah $1 USDT setelah biaya — DEX tidak akan merutekan debu. Kamu punya {qty} {a} ({usd}); simpan sebagai gas.",
-
   "ec_t": "Wallet ↔ Exchange",
   "ec_p": "USDT bergerak antara akun exchange-mu dan wallet-mu sendiri lewat jaringan pilihanmu — setiap lompatan kena biaya jaringan atau gas.",
   "ec_from": "Deposit dari exchange",
@@ -430,7 +408,6 @@
   "ec_to_s": "USDT wallet → exchange · hanya gas · lalu cash out ke kartumu",
   "ec_inwal": "{usd} di wallet",
   "ec_lesson": "Dunia nyata: exchange memberimu alamat deposit per jaringan; kamu kirim ke sana dari wallet-mu dan saldonya muncul di exchange. Di sini alamatnya terisi otomatis untukmu — gasnya tetap sungguhan.",
-
   "te_dust": "Yang tersisa di wallet hanya debu ({usd} dalam koin gas) — di bawah minimum $1, tidak layak dipindahkan. Semua yang lain sudah ada di exchange atau di kartu.",
   "te_nousdt_swap": "Belum ada USDT di wallet — swap dulu {a}-mu kembali ke USDT.",
   "te_coins": "koin",
@@ -454,7 +431,6 @@
   "te_ok": "{usd} USDT ada di saldo exchange-mu (blok #{h}). <a href=\"#\" id=\"teCash\">Cash out ke kartumu</a>",
   "te_toast": "{usd} USDT tiba di exchange.",
   "te_nogas_err": "Tidak ada gas di jaringan itu. <a href=\"#\" id=\"teGas\">Swap USDT ke {a}</a>",
-
   "co_bags": "Jual koleksi meme coin-mu",
   "co_bags_s": "{usd} dalam meme coin — dijual menjadi koin chain",
   "co_openwal": "Buka wallet",
@@ -476,7 +452,6 @@
   "co_t": "Cash out — seluruh jalan pulang",
   "co_p": "Uang hanya keluar lewat exchange: semua yang on-chain harus kembali dulu jadi USDT, lalu USDT dijual jadi dolar di kartumu. Urutannya:",
   "co_lesson": "Begini juga bentuk cash-out di dunia nyata: DEX → wallet → exchange → bank, ada biaya di setiap lompatan. Itulah kenapa trader merencanakan jalan keluar sebelum masuk.",
-
   "sd_nousdt": "Wallet-mu tidak punya USDT untuk dikirim — deposit dulu dari exchange.",
   "sd_t": "Kirim USDT",
   "sd_p": "Kirim USDT wallet ke pengguna MarginPad lain MANA PUN — orang ke orang, tercatat di MarginPad Chain. Saldo wallet: <b>{usd}</b>",
@@ -503,7 +478,6 @@
   "sd_nogas": "{a} tidak cukup untuk gas: kamu punya {have}, transfer ini butuh {need}. <a href=\"#\" id=\"sdGas\">Swap beberapa dolar USDT ke {a}</a>",
   "sd_invalid": "Alamat tidak valid.",
   "sd_fail": "Pengiriman gagal — coba lagi.",
-
   "ch_t": "MarginPad Chain",
   "ch_loading": "Memuat buku besar…",
   "ch_lesson": "Beginilah cara kerja block explorer: setiap transfer yang pernah dibuat bersifat publik, selamanya — jumlah, alamat, waktu dan hash tx. Tidak ada yang bisa mengubah atau menghapus blok yang sudah disegel. Chain sungguhan (Solscan, Etherscan) tampak persis seperti ini.",
@@ -511,13 +485,11 @@
   "ch_empty": "Belum ada transfer — jadilah blok pertama. Kirim sedikit USDT ke teman dari wallet-mu.",
   "ch_you": "(kamu)",
   "ch_fail": "Chain gagal dimuat — coba lagi.",
-
   "rc_t": "Terima",
   "rc_p": "Bagikan alamat yang TEPAT untuk jaringan yang TEPAT. Koin Solana ke alamat Solana; Ethereum, Base dan BNB Chain semuanya memakai alamat EVM-mu.",
   "rc_qr": "QR demo — tidak bisa dipindai ke mana pun. Ketuk alamat untuk menyalin.",
   "rc_lesson": "Kebiasaan dunia nyata: salin-tempel, kirim dulu jumlah kecil sebagai uji coba, dan periksa 4 karakter pertama + terakhir setelah menempel. Malware pembajak clipboard mengganti alamat.",
   "rc_copied": "Alamat disalin. Periksa 4 karakter pertama dan terakhir saat kamu menempel.",
-
   "tm_loading": "Memuat grafik…",
   "tm_buy": "Beli",
   "tm_sell": "Jual",
@@ -596,9 +568,12 @@
   "tm_nochart": "Tidak ada data grafik untuk pasangan ini.",
   "tm_chartfail": "Grafik gagal dimuat.",
   "tm_libfail": "Pustaka grafik gagal dimuat.",
-
   "ago_s": "{n}d lalu",
   "ago_m": "{n}m lalu",
   "ago_h": "{n}j lalu",
-  "f_text": "Simulasi hidup demo dengan dana latihan — harga, biaya, gas, jaringan dan slippage mencerminkan pasar nyata, tetapi tidak ada uang sungguhan yang terlibat dan tidak ada yang bisa ditarik. Bank, kartu, exchange, wallet, alamat dan seed phrase disimulasikan untuk edukasi. Bukan saran keuangan. · <a href=\"/paper-trade\">Coba paper trading futures</a> · <a href=\"/academy/\">Belajar di Academy</a>"
+  "f_text": "Simulasi hidup demo dengan dana latihan — harga, biaya, gas, jaringan dan slippage mencerminkan pasar nyata, tetapi tidak ada uang sungguhan yang terlibat dan tidak ada yang bisa ditarik. Bank, kartu, exchange, wallet, alamat dan seed phrase disimulasikan untuk edukasi. Bukan saran keuangan. · <a href=\"/paper-trade\">Coba paper trading futures</a> · <a href=\"/academy/\">Belajar di Academy</a>",
+  "sb_sells": "{n} penjualan",
+  "tm_e_thin_pool": "Pool di balik token ini hanya menampung di bawah $1.000 — penjualan sebesar ini tidak bisa dieksekusi. Rug sungguhan terlihat persis seperti ini.",
+  "tm_e_bad_pool": "Pool itu menetapkan harga token lain. Tidak ada yang dieksekusi.",
+  "sb_sell1": "1 penjualan"
 }

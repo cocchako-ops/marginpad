@@ -19,7 +19,6 @@
   "g_l4": "<b>Dagelijkse PnL, equity-curve,</b> gemiddelde instapprijzen, gerealiseerde winst en een volledig papieren spoor.",
   "g_issuing": "Je kaart wordt uitgegeven…",
   "g_issue_fail": "Kon de kaart niet uitgeven — probeer het opnieuw.",
-
   "h_kick": "DEMO SPOT <i>·</i> JE GELD, DE HELE WEG",
   "h_apps": "JE DRIE APPS — TIK OM TE OPENEN",
   "h_noprize": "<b>GEEN PRIJZEN HIER</b> — Demo Spot betaalt niets uit en vraagt nooit om geld; het is oefenen. De echte USDT-prijzen staan op de futures-seizoensborden. <a href=\"/rewards/\">Bekijk de borden</a>",
@@ -41,7 +40,6 @@
   "h_share": "Delen",
   "h_sharing": "Delen…",
   "t_arrived": "<b>Je $10,000-kaart is er.</b> De kaart wijst de weg — begin bij de bank.",
-
   "st_bank": "Bank",
   "st_bank_s": "kaart & cash",
   "st_ex": "Exchange",
@@ -78,17 +76,15 @@
   "s6_t": "Koop je eerste coin",
   "s6_b": "Exchange openen",
   "s6_c": "De setup is klaar — nu handelen. Bitcoin en de top 250 wonen op de exchange; de memes wonen in je wallet. Elke fill toont zijn fee voordat je bevestigt.",
-
   "cal_h": "Dagelijkse PnL · laatste 28 dagen",
   "cal_gr": "{g} groen · {r} rood dit seizoen",
-  "sb_h": "Banksaldo's dit seizoen",
-  "sb_s": "opschepperij · geen prijs",
-  "sb_empty": "Niemand heeft dit seizoen nog boven de $10,000 uitgecasht — de kaart is de score.",
+  "sb_h": "Handelswinst dit seizoen",
+  "sb_s": "gerealiseerd op je eigen verkopen · geen prijs",
+  "sb_empty": "Nog niemand heeft dit seizoen handelswinst geboekt — verkoop in de plus om hier te verschijnen.",
   "d_card": "Kaart",
   "d_exusdt": "Exchange-USDT",
   "d_wusdt": "Wallet-USDT",
   "d_gas": "Gas-coins",
-
   "tok_look": "Dat contract opzoeken…",
   "tok_e_not_found": "Geen token met dat adres op Solana, BNB Chain, Base of Ethereum. Check het adres op de explorer — kopieën van bekende tokens zijn de klassieke scam.",
   "tok_e_major": "Dat is een grote coin of een stablecoin — verhandel die in de Exchange-app, niet via de DEX.",
@@ -103,7 +99,6 @@
   "tok_trade": "Handelen",
   "tok_thinlesson": "<b>Dunne pool.</b> Een pool van ${usd} beweegt bij elke fill — reken op een paar procent slippage, en een rug haalt hem naar nul. ",
   "tok_unknown": "Onbekend contract: check het op <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">de explorer</a> voordat je de naam vertrouwt. Kopieën van bekende tokens met dezelfde ticker zijn de klassieke scam — het adres is de identiteit, niet de naam.",
-
   "sh_fail": "Kon de kaart niet aanmaken — probeer het opnieuw.",
   "sh_copied": "Link gekopieerd — plak hem in de chat of waar je wilt.",
   "sh_title": "Mijn Demo Spot-portfolio",
@@ -119,13 +114,11 @@
   "sh_lesson": "Oefengeld, echte kosten: kaart 1.8% erin, exchange 0.1%, DEX 0.3%, netwerkkosten en gas, 1% eruit. Niets hier betaalt echt geld uit.",
   "sh_cta": "Pak je eigen $10,000-kaart",
   "sh_loadfail": "Kon die kaart niet laden.",
-
   "nav_home": "← Home",
   "nav_map": "Kaart",
   "nav_bank": "Bank",
   "nav_ex": "Exchange",
   "nav_wal": "Wallet",
-
   "b_name": "MarginPad Bank",
   "b_tag": "lid sinds vandaag · verzekerd bij het garantiestelsel (doen alsof)",
   "b_greet_default": "Goedendag.",
@@ -156,7 +149,6 @@
   "b_outside1": "<b>Geld buiten de bank.</b> Nog 1 stap voordat het terug kan naar deze kaart.",
   "b_outsideN": "<b>Geld buiten de bank.</b> Nog {n} stappen voordat het terug kan naar deze kaart.",
   "b_plan": "Toon het plan",
-
   "e_name": "MarginPad Exchange",
   "e_tag": "custodial · zij bewaren het voor je · taker fee 0.1%",
   "e_bal": "Exchange-saldo",
@@ -189,7 +181,6 @@
   "e_nousdt": "Nog geen USDT — tik op Storten om wat te kopen met je kaart.",
   "e_stale": "verouderd",
   "e_avg": "{qty} @ {px} gem.",
-
   "o_open": "Open orders ({n})",
   "o_recent": "Recente orders",
   "o_sub": "limit · elke 10 min gecheckt",
@@ -205,7 +196,6 @@
   "o_st_cancelled": "geannuleerd",
   "o_st_failed": "mislukt",
   "o_st_expired": "verlopen",
-
   "dp_t": "Storten op de exchange",
   "dp_p": "Twee wegen naar binnen: direct kopen met je kaart, of crypto sturen naar je persoonlijke stortingsadres op de exchange.",
   "dp_card": "Koop USDT met kaart",
@@ -222,7 +212,6 @@
   "cd_fail": "Kon je stortingsadres niet laden — probeer het zo opnieuw.",
   "cd_na": "niet beschikbaar",
   "cd_copied": "Adres gekopieerd — open nu Wallet, tik op Versturen en plak het.",
-
   "w_name": "MarginPad Wallet",
   "w_tag": "self-custody · jouw keys, jouw coins",
   "w_setup": "Hier begint self-custody.<br><b style=\"color:#fff\">Nog geen wallet.</b> Genereer er een — je krijgt je eigen adressen en een seed phrase, net als bij Phantom of MetaMask.",
@@ -254,7 +243,6 @@
   "w_nochain": "Op dit moment geen memes op deze chain.",
   "w_more": "Toon {n} meer · nog {left}",
   "w_sol_copied": "Solana-adres gekopieerd. Plak het, typ het nooit over.",
-
   "tx_reset": "RESET",
   "tx_reset_t": "Verse $10,000-kaart",
   "tx_on": "KAART→EX",
@@ -278,20 +266,17 @@
   "tx_trade_s": "{qty} @ {px} · fee {fee} · {ago}",
   "tx_pnl": "PnL",
   "tx_meme": "meme",
-
   "r_confirm": "Je ENE reset gebruiken? Alles gaat terug naar een verse $10,000-kaart (posities gesloten, saldo's gewist, geschiedenis blijft). De volgende reset komt vrij over 7 dagen.",
   "r_done": "Frisse start — <b>$10,000</b> terug op je kaart.",
   "r_cd1": "0 resets over — de volgende over ~1 dag.",
   "r_cdN": "0 resets over — de volgende over ~{d} dagen.",
   "r_fail": "Reset mislukt — probeer het opnieuw.",
-
   "err_net": "Netwerkfout.",
   "err_net2": "Netwerkfout — probeer het opnieuw.",
   "err_transient": "Onze opslag hikte even — er is niets afgeschreven. Probeer het over een paar seconden opnieuw.",
   "err_failed": "Mislukt ({e}) — probeer het opnieuw.",
   "err_noans": "geen antwoord",
   "err_noprice": "Nu geen live prijs — probeer het zo opnieuw.",
-
   "mc_t": "Je virtuele kaart",
   "mc_linked": "Kaart is gekoppeld aan de exchange. Gebruik hem om op elk moment USDT te kopen (1.8% kaartkosten gelden).",
   "mc_buy": "Koop USDT met deze kaart",
@@ -301,7 +286,6 @@
   "mc_wrong": "Dat zijn niet de laatste 4 cijfers van deze kaart (kijk op de kaart hierboven).",
   "mc_linking": "Koppelen…",
   "mc_ok": "Kaart gekoppeld. Volgende: USDT kopen.",
-
   "mo_t": "Koop USDT met je kaart",
   "mo_p": "USDT is een stablecoin — 1 USDT blijft ~$1 waard. Het is waar je daadwerkelijk mee handelt. Kaartsaldo: <b>{usd}</b>",
   "mo_amt": "Bedrag (USD) · min $10",
@@ -318,7 +302,6 @@
   "mo_toast": "USDT gekocht — de Exchange-app is open voor zaken.",
   "mo_notlinked": "Koppel eerst de kaart aan de exchange.",
   "mo_cardonly": "Op de kaart staat maar {usd} (denk aan de 1.8% fee).",
-
   "mf_nothing": "Niets om uit te cashen — alles staat al op je kaart.",
   "mf_t": "Uitcashen naar je kaart",
   "mf_p": "USDT terug verkopen naar dollars op je kaart — zo verlaat winst crypto echt. Exchange-saldo: <b>{usd} USDT</b>",
@@ -336,7 +319,6 @@
   "mf_ok": "Klaar — {usd} is op je kaart geland (fee {fee}).",
   "mf_toast": "{usd} staat weer op je kaart. De cirkel is rond.",
   "mf_exonly": "Op de exchange staat maar {usd} USDT.",
-
   "wc_t": "Opnemen van de exchange",
   "wc_p": "Twee heel verschillende uitgangen. Kies waar het geld heen gaat:",
   "wc_fiat": "Naar je bankkaart",
@@ -347,7 +329,6 @@
   "wc_ready": "wallet klaar",
   "wc_nowallet": "nog geen wallet",
   "wc_lesson": "Op een echte exchange zijn dit ook aparte menu's: \"Fiat opnemen\" en \"Crypto opnemen\". Crypto naar een verkeerd adres of netwerk is weg — fiat kost alleen een dag en een fee.",
-
   "mw_t": "Maak je self-custody wallet",
   "mw_p": "Op een exchange bewaren ZIJ je coins. Een self-custody wallet (zoals Phantom of MetaMask) is alleen van jou — beveiligd met een <b>seed phrase</b>. Wie de phrase kent, bezit het geld.",
   "mw_go": "Mijn wallet genereren",
@@ -359,7 +340,6 @@
   "mw_ck": "Ik heb mijn seed phrase opgeschreven en begrijp dat in het echte leven verliezen ervan betekent dat ik mijn geld verlies — en delen ervan dat ik het nog sneller verlies.",
   "mw_cont": "Doorgaan",
   "mw_toast": "Wallet aangemaakt. Volgende: stuur er USDT naartoe vanaf de exchange.",
-
   "wd_need": "Je hebt eerst USDT op de exchange nodig — koop wat met je kaart.",
   "wd_t": "USDT opnemen naar je wallet",
   "wd_p": "Coins van de exchange naar JOUW wallet verplaatsen is een echte on-chain overboeking. Jij kiest het netwerk — de coins zijn hetzelfde, de kosten niet. Exchange-saldo: <b>{usd}</b>",
@@ -384,7 +364,6 @@
   "wd_badaddr": "Dat adres past niet bij het formaat van het gekozen netwerk.",
   "wd_min": "Minimale opname is $5.",
   "wd_insuf": "Niet genoeg op de exchange (denk aan de netwerkkosten).",
-
   "sw_nousdt": "Je wallet heeft nog geen USDT — stort eerst wat vanaf de exchange.",
   "sw_t": "Swappen",
   "sw_buy": "USDT → gas-coin",
@@ -420,7 +399,6 @@
   "sw_toast_sell": "{usd} USDT in je wallet.",
   "sw_walonly": "In de wallet staat maar {usd} USDT.",
   "sw_dust": "Dat is na de fee minder dan $1 aan USDT — de DEX routeert geen dust. Je hebt {qty} {a} ({usd}); houd het als gas.",
-
   "ec_t": "Wallet ↔ Exchange",
   "ec_p": "USDT beweegt tussen je exchange-account en je eigen wallet via het netwerk van je keuze — elke hop kost netwerkkosten of gas.",
   "ec_from": "Storten vanaf de exchange",
@@ -430,7 +408,6 @@
   "ec_to_s": "Wallet-USDT → exchange · alleen gas · daarna uitcashen naar je kaart",
   "ec_inwal": "{usd} in wallet",
   "ec_lesson": "Echte leven: een exchange geeft je per netwerk een stortingsadres; je stuurt ernaartoe vanuit je wallet en het saldo verschijnt op de exchange. Hier wordt het adres voor je ingevuld — de gas is nog steeds echt.",
-
   "te_dust": "Er is alleen nog dust in de wallet ({usd} in gas-coins) — onder het minimum van $1, niet de moeite waard om te verplaatsen. Al het andere staat al op de exchange of de kaart.",
   "te_nousdt_swap": "Nog geen USDT in de wallet — swap eerst je {a} terug naar USDT.",
   "te_coins": "coins",
@@ -454,7 +431,6 @@
   "te_ok": "{usd} USDT staat op je exchange-saldo (blok #{h}). <a href=\"#\" id=\"teCash\">Uitcashen naar je kaart</a>",
   "te_toast": "{usd} USDT is aangekomen op de exchange.",
   "te_nogas_err": "Geen gas op dat netwerk. <a href=\"#\" id=\"teGas\">Swap USDT naar {a}</a>",
-
   "co_bags": "Verkoop je meme-bags",
   "co_bags_s": "{usd} in memes — ze verkopen naar de chain-coin",
   "co_openwal": "Wallet openen",
@@ -476,7 +452,6 @@
   "co_t": "Uitcashen — de hele weg terug",
   "co_p": "Geld verlaat alleen via de exchange: alles on-chain moet eerst terug als USDT, daarna verkoopt USDT naar dollars op je kaart. In volgorde:",
   "co_lesson": "Dit is ook de vorm van een cash-out in de echte wereld: DEX → wallet → exchange → bank, een fee bij elke hop. Daarom plannen traders de uitgang vóór de ingang.",
-
   "sd_nousdt": "Je wallet heeft geen USDT om te versturen — stort eerst vanaf de exchange.",
   "sd_t": "USDT versturen",
   "sd_p": "Stuur wallet-USDT naar ELKE andere MarginPad-gebruiker — van persoon tot persoon, vastgelegd op de MarginPad Chain. Wallet-saldo: <b>{usd}</b>",
@@ -503,7 +478,6 @@
   "sd_nogas": "Niet genoeg {a} voor gas: je hebt {have}, deze overboeking heeft {need} nodig. <a href=\"#\" id=\"sdGas\">Swap een paar dollar USDT naar {a}</a>",
   "sd_invalid": "Ongeldig adres.",
   "sd_fail": "Versturen mislukt — probeer het opnieuw.",
-
   "ch_t": "MarginPad Chain",
   "ch_loading": "Het grootboek laden…",
   "ch_lesson": "Zo werkt een block explorer: elke overboeking ooit gedaan is publiek, voor altijd — bedrag, adressen, tijd en een tx-hash. Niemand kan een verzegeld blok aanpassen of verwijderen. Echte chains (Solscan, Etherscan) zien er precies zo uit.",
@@ -511,13 +485,11 @@
   "ch_empty": "Nog geen overboekingen — wees het eerste blok. Stuur een vriend wat USDT vanuit je wallet.",
   "ch_you": "(jij)",
   "ch_fail": "Kon de chain niet laden — probeer het opnieuw.",
-
   "rc_t": "Ontvangen",
   "rc_p": "Deel het JUISTE adres voor het JUISTE netwerk. Solana-coins gaan naar het Solana-adres; Ethereum, Base en BNB Chain gebruiken allemaal je EVM-adres.",
   "rc_qr": "Demo-QR — scant nergens naartoe. Tik op het adres om te kopiëren.",
   "rc_lesson": "Gewoonte uit het echte leven: kopiëren en plakken, eerst een klein testbedrag sturen, en na het plakken de eerste + laatste 4 tekens checken. Clipboard-hijack-malware verwisselt adressen.",
   "rc_copied": "Adres gekopieerd. Check de eerste en laatste 4 tekens als je plakt.",
-
   "tm_loading": "Grafiek laden…",
   "tm_buy": "Kopen",
   "tm_sell": "Verkopen",
@@ -596,9 +568,12 @@
   "tm_nochart": "Geen grafiekdata voor dit paar.",
   "tm_chartfail": "Grafiek kon niet laden.",
   "tm_libfail": "Grafiekbibliotheek kon niet laden.",
-
   "ago_s": "{n}s geleden",
   "ago_m": "{n}m geleden",
   "ago_h": "{n}u geleden",
-  "f_text": "Demo-levenssimulatie met oefengeld — prijzen, kosten, gas, netwerken en slippage volgen echte markten, maar er is geen echt geld bij betrokken en er kan niets opgenomen worden. De bank, kaart, exchange, wallet, adressen en seed phrase zijn gesimuleerd voor educatie. Geen financieel advies. · <a href=\"/paper-trade\">Probeer futures paper trading</a> · <a href=\"/academy/\">Leer in de Academy</a>"
+  "f_text": "Demo-levenssimulatie met oefengeld — prijzen, kosten, gas, netwerken en slippage volgen echte markten, maar er is geen echt geld bij betrokken en er kan niets opgenomen worden. De bank, kaart, exchange, wallet, adressen en seed phrase zijn gesimuleerd voor educatie. Geen financieel advies. · <a href=\"/paper-trade\">Probeer futures paper trading</a> · <a href=\"/academy/\">Leer in de Academy</a>",
+  "sb_sells": "{n} verkopen",
+  "tm_e_thin_pool": "De pool achter deze token bevat minder dan $1.000 — een verkoop van deze omvang kan niet worden uitgevoerd. Echte rugs zien er precies zo uit.",
+  "tm_e_bad_pool": "Die pool prijst een andere token. Er is niets uitgevoerd.",
+  "sb_sell1": "1 verkoop"
 }
