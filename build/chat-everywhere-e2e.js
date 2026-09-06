@@ -19,7 +19,7 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
   await withBrowser(async (browser) => {
     async function fresh(w, h, mobile) { const ctx = await browser.createBrowserContext(); const page = await ctx.newPage(); await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: w, height: h, isMobile: !!mobile, hasTouch: !!mobile }); const errs = []; page.on('pageerror', e => errs.push(String(e.message || e))); return { ctx, page, errs }; }
 
-    for (const p of ['/vault/', '/pass/', '/levels/', '/academy/']) {
+    for (const p of ['/vault/', '/season/', '/levels/', '/academy/']) {
       const { ctx, page, errs } = await fresh(1280, 860);
       await page.goto(ORIGIN + p + '?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       await page.waitForFunction("!!document.getElementById('chatFab')", { timeout: 15000 }).catch(() => {});
@@ -34,7 +34,7 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
       await ctx.close();
     }
 
-    for (const p of ['/vault/', '/pass/']) {
+    for (const p of ['/vault/', '/season/']) {
       const { ctx, page } = await fresh(390, 800, true);
       await page.goto(ORIGIN + p + '?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       await page.waitForFunction("!!document.querySelector('[data-mpbn=\"chat\"]')", { timeout: 15000 }).catch(() => {});
