@@ -240,6 +240,39 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { return res.status(502).json({ error: 'okx_unreachable', detail: String(e).slice(0, 120) }); }
   });
 
+  // LATAM quotes proxy (2026-09-07): CriptoYa (ARS/BRL per-exchange quotes) answers Cloudflare Workers with
+  // error 1106 and awesomeapi (USD/BRL comercial) rate-limits the shared CF egress — this box reaches both.
+  // Strict whitelist of read-only paths, 60 s cache for quotes, 300 s for the dollar; the worker adds its own edge
+  // cache + KV last-good on top, so the upstreams see a handful of requests per minute at most.
+  const CY_ALLOW = /^\/(dolar|usdt\/ars\/1|usdt\/brl\/1|btc\/brl\/1|usdc\/ars\/1)$/;
+  const latamCache = new Map();
+  setInterval(() => { const c = Date.now() - 600000; for (const [k, v] of latamCache) if (v.t < c) latamCache.delete(k); }, 120000).unref?.();
+  app.get('/api/v1/latam', async (req, res) => {
+    const src = String(req.query.src || 'cy'), p3 = String(req.query.path || '');
+    let url, ttl;
+    if (src === 'usdbrl') { url = 'https://economia.awesomeapi.com.br/last/USD-BRL'; ttl = 300000; }
+    else { if (!CY_ALLOW.test(p3)) return res.status(400).json({ error: 'path_not_allowed' }); url = 'https://criptoya.com/api' + p3; ttl = 60000; }
+    const hitL = latamCache.get(url);
+    if (hitL && Date.now() - hitL.t < ttl) { res.set('Cache-Control', 'public, max-age=' + Math.round(ttl / 1000)); res.set('x-latam-cache', 'hit'); return res.status(hitL.status).type('application/json').send(hitL.body); }
+    try {
+      let r = await fetch(url, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' } });
+      let body = await r.text(), status = r.status;
+      if (src === 'usdbrl' && status !== 200) { // awesomeapi quota (429 even from here) -> Banco Central PTAX (official, daily, no key): normalised to the same shape
+        try {
+          const dd = (d) => { const x = new Date(d); return String(x.getUTCMonth() + 1).padStart(2, '0') + '-' + String(x.getUTCDate()).padStart(2, '0') + '-' + x.getUTCFullYear(); };
+          const bu = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='" + dd(Date.now() - 10 * 86400000) + "'&@dataFinalCotacao='" + dd(Date.now()) + "'&$top=100&$format=json";
+          const br = await fetch(bu, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json' } });
+          const bj = await br.json(); const rows = (bj && bj.value || []).filter(x => +x.cotacaoCompra > 0).sort((a, b) => String(b.dataHoraCotacao).localeCompare(String(a.dataHoraCotacao)));
+          if (rows.length) { const q = rows[0]; body = JSON.stringify({ USDBRL: { code: 'USD', codein: 'BRL', name: 'Dólar PTAX (Banco Central)', bid: String(q.cotacaoCompra), ask: String(q.cotacaoVenda), timestamp: String(Math.round(new Date(String(q.dataHoraCotacao).replace(' ', 'T') + 'Z').getTime() / 1000)), src: 'ptax' } }); status = 200; }
+        } catch (e) {}
+      }
+      if (status === 200) latamCache.set(url, { t: Date.now(), status, body });
+      else if (hitL) { res.set('x-latam-cache', 'stale'); return res.status(200).type('application/json').send(hitL.body); } // upstream hiccup: serve the last good body rather than the error
+      res.set('Cache-Control', 'public, max-age=' + Math.round(ttl / 1000));
+      return res.status(status).type('application/json').send(body);
+    } catch (e) { if (hitL) { res.set('x-latam-cache', 'stale'); return res.status(200).type('application/json').send(hitL.body); } return res.status(502).json({ error: 'latam_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
   // Hyperliquid whale tracker (phase D): biggest open positions + recent changes, from src/whales.js
   app.get('/api/v1/whales', (req, res) => {
     try { res.set('Cache-Control', 'public, max-age=60'); res.json(getWhales()); }
