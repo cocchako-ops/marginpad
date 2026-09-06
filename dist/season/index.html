@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Your Season — boards, pass, daily call, goals and the live floor | MarginPad</title>
-<meta name="description" content="Every 14 days MarginPad runs a season: five boards that pay real USDT, a 20-tier pass unlocked by the XP you earn, a daily BTC call, two self-chosen goals and the live floor of closes and duels. This is where your season lives." />
+<meta name="description" content="Every 14 days MarginPad runs a season: five boards that pay real USDT, a 40-tier pass unlocked by the XP you earn, a daily BTC call, two self-chosen goals and the live floor of closes and duels. This is where your season lives." />
 <link rel="canonical" href="https://marginpad.io/season/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Your Season — MarginPad" />
-<meta property="og:description" content="Five boards paying real USDT, a 20-tier pass, a daily BTC call, season goals and the live floor. Fourteen days, then it starts again." />
+<meta property="og:description" content="Five boards paying real USDT, a 40-tier pass, a daily BTC call, season goals and the live floor. Fourteen days, then it starts again." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/season/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -147,7 +147,7 @@ h1 b{color:var(--lime)}
 .road-shell .arr.l{left:6px}.road-shell .arr.r{right:6px}
 .road-shell.sl:hover .arr.l,.road-shell.sr:hover .arr.r,.road-shell .arr:focus-visible{opacity:1}
 @media(hover:none),(max-width:1000px){.road-shell .arr{display:none}}
-.road{position:relative;display:grid;grid-template-columns:46px repeat(20,118px);gap:6px;width:max-content;align-items:stretch}
+.road{position:relative;display:grid;grid-template-columns:46px repeat(40,118px);gap:6px;width:max-content;align-items:stretch}
 .road::before{content:"";position:absolute;left:52px;right:0;top:15px;height:3px;background:repeating-linear-gradient(90deg,#2a323c 0 6px,transparent 6px 11px)}
 .road .fill{position:absolute;left:52px;top:14px;height:5px;border-radius:3px;background:linear-gradient(90deg,#7f5fd6,var(--pro));box-shadow:0 0 14px rgba(199,146,255,.7);transition:width .7s ease;width:0;z-index:1}
 .road .fill::after{content:"";position:absolute;right:-5px;top:-3px;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 0 12px var(--pro)}
@@ -257,7 +257,7 @@ h1 b{color:var(--lime)}
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
 @media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
-@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(20,112px)}.road::before,.road .fill{left:46px}}
+@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(40,112px)}.road::before,.road .fill{left:46px}}
 </style>
 </head>
 <body>
@@ -270,7 +270,7 @@ h1 b{color:var(--lime)}
       <div>
         <span class="eyebrow"><i></i><span id="eyeb">Season</span></span>
         <h1 id="h1">Your <b>season</b></h1>
-        <div class="lead" id="lead">Fourteen days. Five boards that pay real USDT, a 20-tier pass unlocked by the XP you already earn, one BTC call a day, two goals you choose yourself, and the live floor. Then it starts again.</div>
+        <div class="lead" id="lead">Fourteen days. Five boards that pay real USDT, a 40-tier pass unlocked by the XP you already earn, one BTC call a day, two goals you choose yourself, and the live floor. Then it starts again.</div>
         <div class="days" id="days" aria-label="Season days"></div>
         <div class="dl"><div>ends in<b id="ends">—</b></div><div>payouts<b>00:00 UTC, season end</b></div><div>calling today<b id="callers">—</b></div></div>
       </div>
@@ -316,12 +316,12 @@ h1 b{color:var(--lime)}
   </section>
 
   <section class="sec" id="pass">
-    <div class="sh"><div><span class="eb">Unlocked by the XP you already earn</span><h2>The season ticket</h2></div><span class="s">Twenty stubs, one every 100 XP. Tear off what you reach; whatever is left is handed over when the season ends.</span></div>
+    <div class="sh"><div><span class="eb">Unlocked by the XP you already earn</span><h2>The season ticket</h2></div><span class="s">Forty stubs, one every 100 XP. Tear off what you reach; whatever is left is handed over when the season ends.</span></div>
     <div class="card pro" style="padding-bottom:12px">
       <div class="ph">
         <div>
           <span class="eyebrow"><i></i><span id="passSeason">Season pass</span></span>
-          <div class="ph-tier"><b><small>Tier</small><em id="passTierBig">0</em></b><span>of 20</span></div>
+          <div class="ph-tier"><b><small>Tier</small><em id="passTierBig">0</em></b><span id="passOf">of 40</span></div>
           <div class="ph-bar"><i id="passBar"></i></div>
           <div class="sub" id="passNext"><span class="sk" style="width:60%"></span></div>
         </div>
@@ -414,7 +414,7 @@ h1 b{color:var(--lime)}
     var signed=!!m;$('gate').hidden=signed;$('meIn').hidden=!signed;
     if(signed){var nm=m.username||(m.email||'you').split('@')[0];$('meName').textContent='@'+nm;$('meLvl').setAttribute('data-lvln',nm);$('meLvl').removeAttribute('data-lvldone');$('meAv').innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc((m.avatar&&m.avatar.length<3)?m.avatar:nm.charAt(0).toUpperCase());
       var L=m.level||null;$('meLvlT').textContent=L?(L.name+(L.next?' · '+int(L.toNext||0)+' XP to '+L.next:'')):'';
-      if(PASS){$('meXp').textContent=int(PASS.xp);$('meTier').textContent=PASS.tier+'/20';$('meClaim').textContent=PASS.claimable||0;}
+      if(PASS){$('meXp').textContent=int(PASS.xp);$('meTier').textContent=PASS.tier+'/'+(PASS.n||PASS.tiers.length);$('meClaim').textContent=PASS.claimable||0;}
       if(LB){var ranks=[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']];
         $('meRanks').innerHTML=ranks.map(function(b){var rows=LB[b[0]]||[];var r=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm.toLowerCase();})[0];var pz=(LB.boardPrizes||{})[b[2]]||[];var pay=r&&r.rank<=5&&pz[r.rank-1]?'$'+pz[r.rank-1]:'';return '<span class="chip'+(r?(pay?' pay':' in'):'')+'"><em>'+b[1]+'</em><b>'+(r?'#'+r.rank+(pay?' · '+pay:''):'—')+'</b></span>';}).join('');}
       try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
@@ -507,18 +507,19 @@ h1 b{color:var(--lime)}
   /* the fill starts where stub 1 starts (after the row label) and ends at a point MEASURED between two punched holes, never a % of the strip */
   function placeFill(D){var road=$('road'),fill=$('roadFill');if(!fill)return;var nodes=road.querySelectorAll('.tier[data-t] .n');if(!nodes.length)return;
     var c=function(i){var n=nodes[i];return n.parentNode.offsetLeft+n.offsetLeft+n.offsetWidth/2;};
-    var step=D.step||100,into=Math.max(0,Math.min(step,D.xp-D.tier*step)),T=D.tier,x0=nodes[0].parentNode.offsetLeft;
-    var x=T>0?c(Math.min(19,T-1)):x0,nx=T<20?c(Math.min(19,T)):c(19),w=T>=20?c(19):x+(nx-x)*(into/step);
+    var step=D.step||100,into=Math.max(0,Math.min(step,D.xp-D.tier*step)),T=D.tier,x0=nodes[0].parentNode.offsetLeft,N=nodes.length;
+    var x=T>0?c(Math.min(N-1,T-1)):x0,nx=T<N?c(Math.min(N-1,T)):c(N-1),w=T>=N?c(N-1):x+(nx-x)*(into/step);
     var fw=Math.max(0,Math.round(w-x0));fill.style.left=x0+'px';fill.style.width=fw+'px';fill.classList.toggle('zero',fw===0);}
   function paintPass(){var D=PASS;if(!D)return;var signed=!!D.signedIn,step=D.step||100;
     if(D.names)Object.keys(D.names).forEach(function(k){NAMES[k]=D.names[k];});
     $('pTicks').textContent=int(D.price.ticks)+' T';$('pUsd').textContent='$'+(D.price.cents/100).toFixed(2);
     var pill=$('passPill');pill.textContent=D.pro?'Pro track':'Free track';pill.className='stamp '+(D.pro?'pro':'free');
-    $('passTierBig').textContent=signed?D.tier:0;$('passBar').style.width=(signed?(D.tier>=20?100:Math.round(Math.max(0,Math.min(step,D.xp-D.tier*step))/step*100)):0)+'%';
+    var N=D.n||D.tiers.length;$('passOf').textContent='of '+N;
+    $('passTierBig').textContent=signed?D.tier:0;$('passBar').style.width=(signed?(D.tier>=N?100:Math.round(Math.max(0,Math.min(step,D.xp-D.tier*step))/step*100)):0)+'%';
     if(D.season&&D.season.idx!=null)$('passSeason').textContent='Season pass · S'+D.season.idx;
-    var nextT=D.tiers[Math.min(19,D.tier)],nr=nextT[D.pro?'pro':'free'],nb=[];
+    var nextT=D.tiers[Math.min(N-1,D.tier)],nr=nextT[D.pro?'pro':'free'],nb=[];
     if(nr.cents)nb.push('$'+(nr.cents/100).toFixed(2)+' balance');if(nr.item)nb.push(esc(nm(nr.item)));if(nr.sup)nb.push(esc(nm(nr.sup)));if(nr.prem)nb.push(nr.prem+' days Premium');if(nr.gift)nb.push('a skin gift');
-    $('passNext').innerHTML=signed?(D.tier>=20?'<b>Every tier reached.</b>':'<b>'+int(D.next)+' XP</b> to tier '+(D.tier+1)+' · next: <b>+'+nextT.free.ticks+' T</b> free'+(D.pro?', <b>+'+nextT.pro.ticks+' T</b> pro':'')+(nb.length?' · '+nb.join(' · '):'')):'Sign in and the road is yours: tiers unlock from the XP you already earn.';
+    $('passNext').innerHTML=signed?(D.tier>=N?'<b>Every tier reached.</b>':'<b>'+int(D.next)+' XP</b> to tier '+(D.tier+1)+' · next: <b>+'+nextT.free.ticks+' T</b> free'+(D.pro?', <b>+'+nextT.pro.ticks+' T</b> pro':'')+(nb.length?' · '+nb.join(' · '):'')):'Sign in and the road is yours: tiers unlock from the XP you already earn.';
     proSum(D);paintGifts(D,signed);
     var ca=$('claimAll');ca.hidden=!(signed&&D.claimable>1);ca.textContent='Claim all '+(D.claimable||0);var sn=$('snClaim');sn.hidden=!(signed&&D.claimable);sn.textContent=D.claimable||'';
     if(!roadBuilt)buildRoad(D);

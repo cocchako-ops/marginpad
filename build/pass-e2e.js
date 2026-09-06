@@ -1,5 +1,5 @@
-/* Season pass E2E (2026-09-06). 20 tiers per 14-day season, one every 100 season XP. Free track: 15 Ticks a tier
-   and the Arctic frame at 20. Pro track (2,500 Ticks, $2.99 from the rewards balance, or a code): 30 Ticks a tier
+/* Season pass E2E (2026-09-06). 40 tiers per 14-day season, one every 100 season XP. Free track: 12 Ticks a tier,
+   Arctic at 20, Jade at 40. Pro track (2,500 Ticks, $2.99 from the rewards balance, or a code): 24 Ticks a tier
    plus Vault items, supplies (Shield / Surge), <= $1.00 of real money a season, 3 days of Premium and two skin-gift vouchers
    (2026-09-06). Claims are per tier per track, once; unclaimed reached tiers are granted at season end.
 
@@ -35,12 +35,12 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
 
 (async () => {
   const pub = await fetch(ORIGIN + '/api/pass').then(r => r.json());
-  chk('guest: 20 tiers, prices, step 100, not signed in', pub && (pub.tiers || []).length === 20 && pub.price && pub.price.ticks === 2500 && pub.price.cents === 299 && pub.step === 100 && !pub.signedIn, pub && { n: (pub.tiers || []).length, price: pub.price });
-  chk('guest: tier 20 free = Arctic, pro items at 5/10/15/20 ending on Leviathan', pub.tiers[19].free.item === 'arctic' && pub.tiers[4].pro.item === 'bg_static' && pub.tiers[19].pro.item === 'leviathan' && pub.tiers[0].free.ticks === 15 && pub.tiers[0].pro.ticks === 30);
+  chk('guest: 40 tiers (n echoed), prices, step 100, not signed in', pub && (pub.tiers || []).length === 40 && pub.n === 40 && pub.price && pub.price.ticks === 2500 && pub.price.cents === 299 && pub.step === 100 && !pub.signedIn, pub && { n: (pub.tiers || []).length, price: pub.price });
+  chk('guest: free = 12 T a tier, Arctic at 20, Jade at 40; pro = 24 T a tier, Static at 6, Leviathan at 40, nine skins in all', pub.tiers[19].free.item === 'arctic' && pub.tiers[39].free.item === 'jade' && pub.tiers[5].pro.item === 'bg_static' && pub.tiers[39].pro.item === 'leviathan' && pub.tiers[0].free.ticks === 12 && pub.tiers[0].pro.ticks === 24 && pub.tiers.filter(t => t.pro.item).length === 9, pub.tiers.filter(t => t.pro.item).map(t => t.t + ':' + t.pro.item));
   // 2026-09-06 (owner): the pro track carries real money (<= $1.00 a season, enforced in passTiers), supplies, Premium days and skin-gift vouchers
   const proCents = pub.tiers.reduce((a, t) => a + (t.pro.cents || 0), 0), freeCents = pub.tiers.reduce((a, t) => a + (t.free.cents || 0), 0);
   chk('pro track money: season total <= $1.00 cap, spread over several tiers, none on the free track', proCents > 0 && proCents <= 100 && pub.centsCap === 100 && pub.centsTotal === proCents && pub.tiers.filter(t => t.pro.cents > 0).length >= 3 && freeCents === 0, { proCents, cap: pub.centsCap, tiers: pub.tiers.filter(t => t.pro.cents).map(t => t.t + ':' + t.pro.cents) });
-  chk('pro track extras: Streak Shield at 3, skin gift (300 T) at 6, XP Surge at 9, 3 days Premium at 11, skin gift (1,200 T) at 14', pub.tiers[2].pro.sup === 'shield' && pub.tiers[5].pro.gift === 300 && pub.tiers[8].pro.sup === 'surge' && pub.tiers[10].pro.prem === 3 && pub.tiers[13].pro.gift === 1200, pub.tiers.map(t => t.pro.sup || t.pro.gift || t.pro.prem || '').join(','));
+  chk('pro track extras: Shield at 4/14/26, skin gift (300 T) at 8, Surge at 19/29/34, 3 days Premium at 16 and 38, skin gift (1,200 T) at 22', pub.tiers[3].pro.sup === 'shield' && pub.tiers[13].pro.sup === 'shield' && pub.tiers[25].pro.sup === 'shield' && pub.tiers[7].pro.gift === 300 && pub.tiers[18].pro.sup === 'surge' && pub.tiers[28].pro.sup === 'surge' && pub.tiers[33].pro.sup === 'surge' && pub.tiers[15].pro.prem === 3 && pub.tiers[37].pro.prem === 3 && pub.tiers[21].pro.gift === 1200, pub.tiers.map(t => t.pro.sup || t.pro.gift || t.pro.prem || '').join(','));
   chk('names for every item and supply come from the catalogue', pub.names && pub.names.shield === 'Streak Shield' && pub.names.surge === 'XP Surge' && pub.names.leviathan === 'Leviathan' && pub.names.tkt_kraft === 'Kraft Stub', pub.names);
   const gi = pub.giftItems || [];
   chk('giftable skins: Ticks-priced only, <= 1,200 T, no supplies / nation frames / earn-only frames, frames + tickets + backgrounds present', gi.length >= 20 && gi.every(i => i.ticks > 0 && i.ticks <= 1200 && i.kind !== 'c' && !/^nat_/.test(i.id)) && gi.some(i => i.kind === 'frame') && gi.some(i => i.kind === 't') && gi.some(i => i.kind === 'bg') && !gi.some(i => i.id === 'ice' || i.id === 'streak7' || i.id === 'realtrader'), { n: gi.length, kinds: gi.reduce((a, i) => { a[i.kind] = (a[i.kind] || 0) + 1; return a; }, {}) });
@@ -53,17 +53,17 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   const c1 = await claim(UID, 1, 'pro');
   chk('pro claim without a pass -> no_pass (once reached it still needs the pass)', c1.body.error === 'not_reached' || c1.body.error === 'no_pass', c1.body);
 
-  // 600+ season XP through the Academy: 24 lessons x 25 (reaches tier 6 = the first skin-gift voucher, past the $0.10 tier and the Shield tier)
+  // 800+ season XP through the Academy: 32 lessons x 25 (reaches tier 8 = the first skin-gift voucher, past the Shield tier (4) and the $0.05 tier (5))
   const html = await fetch(ORIGIN + '/academy/?cb=' + Date.now()).then(r => r.text());
   const data = JSON.parse((html.match(/<script type="application\/json" id="acadData">([\s\S]*?)<\/script>/) || [])[1] || '{}');
-  const ids = (data.courses || []).flatMap(c => c.lessons.map(l => l.id)).slice(0, 24);
+  const ids = (data.courses || []).flatMap(c => c.lessons.map(l => l.id)).slice(0, 32);
   for (const id of ids) await post('/api/academy?uid=' + UID, { lesson: id, mistakes: 2 });
   const s1 = (await pass(UID)).body;
-  // 24 lessons = 600 XP, +50 per whole course completed: the tier follows the real XP, so everything below is relative to it
+  // 32 lessons = 800 XP, +50 per whole course completed: the tier follows the real XP, so everything below is relative to it
   const T = s1.tier;
-  chk('after 24 lessons: season XP >= 600, tier = floor(xp/100), claimable = tier', s1.xp >= 600 && T === Math.floor(s1.xp / 100) && s1.claimable === T && T >= 6, { xp: s1.xp, tier: T, claimable: s1.claimable });
+  chk('after 32 lessons: season XP >= 800, tier = floor(xp/100), claimable = tier', s1.xp >= 800 && T === Math.floor(s1.xp / 100) && s1.claimable === T && T >= 8, { xp: s1.xp, tier: T, claimable: s1.claimable });
   const f1 = await claim(UID, 1, 'free');
-  chk('free tier 1 claimed: 15 Ticks', f1.body.ok && f1.body.ticks === 15 && f1.body.track === 'free', f1.body);
+  chk('free tier 1 claimed: 12 Ticks', f1.body.ok && f1.body.ticks === 12 && f1.body.track === 'free', f1.body);
   const f1b = await claim(UID, 1, 'free');
   chk('claiming it again -> claimed', f1b.status === 409 && f1b.body.error === 'claimed', f1b.body);
   const f3 = await claim(UID, T + 1, 'free');
@@ -86,23 +86,23 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   const rc3 = await buy(UID, 'code', CODE2);
   chk('the second code of the same drop is refused for the member who already took one (batch_taken; one code per drop per account, 2026-09-06)', rc3.status === 409 && rc3.body.error === 'batch_taken', rc3.body);
   const p1b = await claim(UID, 1, 'pro');
-  chk('pro tier 1 claimed: 30 Ticks', p1b.body.ok && p1b.body.ticks === 30, p1b.body);
+  chk('pro tier 1 claimed: 24 Ticks', p1b.body.ok && p1b.body.ticks === 24, p1b.body);
   const f2 = await claim(UID, 2, 'free');
-  chk('free tier 2 claimed: 15 Ticks', f2.body.ok && f2.body.ticks === 15, f2.body);
+  chk('free tier 2 claimed: 12 Ticks', f2.body.ok && f2.body.ticks === 12, f2.body);
   const s2 = (await pass(UID)).body;
   // reached T tiers, 2 tracks = 2T rewards; claimed so far: free 1, free 2, pro 1
   chk('state: pro, tiers 1 (both) and 2 (free) claimed, the rest still claimable', s2.pro && s2.tiers[0].free.claimed && s2.tiers[0].pro.claimed && s2.tiers[1].free.claimed && !s2.tiers[1].pro.claimed && s2.claimable === 2 * T - 3, { pro: s2.pro, claimable: s2.claimable, T });
   // ---- the richer pro track (2026-09-06): a supply, real money, a skin-gift voucher, and the voucher spent on another member
-  const p3 = await claim(UID, 3, 'pro');
-  chk('pro tier 3: 30 Ticks + Streak Shield banked (supply applied on claim)', p3.body.ok && p3.body.ticks === 30 && p3.body.sup === 'shield' && !p3.body.supErr, p3.body);
-  const p4 = await claim(UID, 4, 'pro');
-  chk('pro tier 4: $0.10 credited on the rewards ledger (credited flag + balance)', p4.body.ok && p4.body.cents === 10 && p4.body.credited === true && +p4.body.balanceUsd >= 0.10, p4.body);
+  const p3 = await claim(UID, 4, 'pro');
+  chk('pro tier 4: 24 Ticks + Streak Shield banked (supply applied on claim)', p3.body.ok && p3.body.ticks === 24 && p3.body.sup === 'shield' && !p3.body.supErr, p3.body);
+  const p4 = await claim(UID, 5, 'pro');
+  chk('pro tier 5: $0.05 credited on the rewards ledger (credited flag + balance)', p4.body.ok && p4.body.cents === 5 && p4.body.credited === true && +p4.body.balanceUsd >= 0.05, p4.body);
   const ml = (await get('/api/admin/acctlog?uid=' + UID)).body;
-  chk('money history: the pass cents show as a durable ledger row (gift, from pass, 10 cents)', (ml.rows || []).some(r => r.type === 'gift' && r.detail === 'pass' && r.amount === 10), (ml.rows || []).map(r => r.type + ':' + r.detail + ':' + r.amount));
-  const p6 = await claim(UID, 6, 'pro');
-  chk('pro tier 6: a skin-gift voucher (cap 300 T) with an id', p6.body.ok && p6.body.gift && p6.body.gift.cap === 300 && p6.body.gift.id > 0, p6.body);
+  chk('money history: the pass cents show as a durable ledger row (gift, from pass, 5 cents)', (ml.rows || []).some(r => r.type === 'gift' && r.detail === 'pass' && r.amount === 5), (ml.rows || []).map(r => r.type + ':' + r.detail + ':' + r.amount));
+  const p6 = await claim(UID, 8, 'pro');
+  chk('pro tier 8: a skin-gift voucher (cap 300 T) with an id', p6.body.ok && p6.body.gift && p6.body.gift.cap === 300 && p6.body.gift.id > 0, p6.body);
   const s3 = (await pass(UID)).body;
-  chk('state lists the voucher, unused, with the giftable catalogue beside it', (s3.gifts || []).length === 1 && !s3.gifts[0].used && s3.gifts[0].cap === 300 && s3.gifts[0].t === 6 && (s3.giftItems || []).length > 0, s3.gifts);
+  chk('state lists the voucher, unused, with the giftable catalogue beside it', (s3.gifts || []).length === 1 && !s3.gifts[0].used && s3.gifts[0].cap === 300 && s3.gifts[0].t === 8 && (s3.giftItems || []).length > 0, s3.gifts);
   const GID = s3.gifts[0].id;
   const gift = (uid, body) => post('/api/pass?uid=' + uid, Object.assign({ op: 'gift' }, body));
   const g1 = await gift(UID, { id: GID, to: 'e2e_' + UID, item: 'carbon' });
@@ -125,8 +125,8 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
   chk('state shows the voucher spent: to + item recorded', s4.gifts[0].used && s4.gifts[0].to === 'e2e_' + UID2 && s4.gifts[0].item === 'carbon', s4.gifts[0]);
   // the gift row is written by the store under the member; the claim row is written by the worker under the REQUEST's identity (the admin hook here), so it is looked up without the actor filter
   const act = (await get('/api/admin/activity?h=1&e2e=1&actor=u:e2e_' + UID)).body, actAll = (await get('/api/admin/activity?h=1&e2e=1&n=2000')).body;
-  const giftRows = (act.rows || []).filter(r => r.t === 'pass'), claimRows = (actAll.rows || []).filter(r => r.t === 'pass' && /claim 4 pro \+\$0\.10/.test(r.e || ''));
-  chk('live activity: the gift is a pass row under the member, the $0.10 claim is a pass row with the amount', giftRows.some(r => /gift Carbon -> @e2e_/.test(r.e || '')) && claimRows.length >= 1, { gift: giftRows.map(r => r.e), claim: claimRows.map(r => r.e) });
+  const giftRows = (act.rows || []).filter(r => r.t === 'pass'), claimRows = (actAll.rows || []).filter(r => r.t === 'pass' && /claim 5 pro \+\$0\.05/.test(r.e || ''));
+  chk('live activity: the gift is a pass row under the member, the $0.05 claim is a pass row with the amount', giftRows.some(r => /gift Carbon -> @e2e_/.test(r.e || '')) && claimRows.length >= 1, { gift: giftRows.map(r => r.e), claim: claimRows.map(r => r.e) });
 
   const list = await get('/api/admin/passcodes');
   const row = (list.body.codes || []).filter(c => c.code === CODE)[0];
@@ -150,7 +150,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
     // claims are answered too (and mutate the state) so "Claim all" can be exercised end-to-end in the DOM.
     const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp: 4100, next: 'Gold', nextMin: 12000, toNext: 7900, pct: 12, stars: 0 };
     const st = JSON.parse(JSON.stringify(s2)); st.signedIn = true;
-    st.gifts = [{ id: 7, season: st.season.idx, t: 6, cap: 300, ts: Date.now(), used: false, to: null, item: null }]; st.giftItems = pub.giftItems; st.names = pub.names; // one unspent voucher for the modal
+    st.gifts = [{ id: 7, season: st.season.idx, t: 8, cap: 300, ts: Date.now(), used: false, to: null, item: null }]; st.giftItems = pub.giftItems; st.names = pub.names; // one unspent voucher for the modal
     const recount = () => { st.claimable = st.tiers.reduce((a, t) => a + (t.reached ? (t.free.claimed ? 0 : 1) + (st.pro && !t.pro.claimed ? 1 : 0) : 0), 0); };
     recount();
     const ctx2 = await browser.createBrowserContext(); const p2 = await ctx2.newPage();
@@ -208,11 +208,11 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
     member.gm.sent = await p2.evaluate(() => ({ closed: !document.getElementById('gm').classList.contains('on'), toast: document.getElementById('tst').textContent, rowSent: /SENT/.test(document.getElementById('gifts').textContent), give0: /0 to give/.test(document.getElementById('gifts').textContent) }));
     await ctx2.close();
   });
-  chk('page: guest sees the gate and all 40 tier cells, no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 40 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '—', guest);
-  chk('page: pro member sees reachable Claim buttons for every remaining reward, PRO pill, tier, Claim all, no gate', member && member.claim && member.n === 2 * T - 3 && member.reach && /pro/i.test(member.pill) && member.tier === T + '/20' && member.claimAll && member.claimAllT === 'Claim all ' + (2 * T - 3) && !member.scrollsX && !member.gate, member);
+  chk('page: guest sees the gate and all 80 tier cells (40 x 2 tracks), no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 80 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '—', guest);
+  chk('page: pro member sees reachable Claim buttons for every remaining reward, PRO pill, tier, Claim all, no gate', member && member.claim && member.n === 2 * T - 3 && member.reach && /pro/i.test(member.pill) && member.tier === T + '/40' && member.claimAll && member.claimAllT === 'Claim all ' + (2 * T - 3) && !member.scrollsX && !member.gate, member);
   chk('page: the road fill ends between the reached tier node and the next one (measured from node centers, not a %; fill = its left offset + width)', member && member.nextCenter > member.curCenter + 50 && member.fill >= member.curCenter - 1 && member.fill <= member.nextCenter + 1, member && { fill: member.fill, cur: member.curCenter, next: member.nextCenter });
   chk('page: Claim all claims every reward in place: 0 buttons left, toast, scroll kept, counter 0', member && member.after && member.after.n === 0 && /Claimed/.test(member.after.toast) && Math.abs(member.after.scrollL - member.after.before) < 2 && member.after.claimed >= 2 * T - 3 && !member.after.claimAll && member.after.toClaim === '0', member && member.after);
-  chk('page: the pro track sums itself up in ONE muted label line (Ticks, $, items, supplies, Premium, gifts), no chips; every extra is drawn in its tier cell', member && member.sum >= 6 && member.sumOneLine && /\$1\.00/.test(member.sumText) && /Premium/.test(member.sumText) && /skin gift/.test(member.sumText) && member.usdCells === 5 && member.giftCells === 2 && member.supCells === 4 && member.premCells === 1, member && { sum: member.sum, oneLine: member.sumOneLine, text: member.sumText, usd: member.usdCells, gift: member.giftCells, sup: member.supCells, prem: member.premCells });
+  chk('page: the pro track sums itself up in ONE muted label line (Ticks, $, items, supplies, Premium, gifts), no chips; every extra is drawn in its tier cell', member && member.sum >= 6 && member.sumOneLine && /\$1\.00/.test(member.sumText) && /Premium/.test(member.sumText) && /skin gift/.test(member.sumText) && member.usdCells === 8 && member.giftCells === 2 && member.supCells === 6 && member.premCells === 2, member && { sum: member.sum, oneLine: member.sumOneLine, text: member.sumText, usd: member.usdCells, gift: member.giftCells, sup: member.supCells, prem: member.premCells });
   chk('page: the gift modal is EMPTY until opened (no idle "name" input for iOS to autofill on load)', member && member.gmEmpty && member.idleInputs === 0, member && { gmEmpty: member.gmEmpty, idleInputs: member.idleInputs });
   chk('page: one redeem box for every code, outside the pro purchase card, reachable; the buy card has only Ticks + balance', member && member.redeemReach && !member.redeemInBuy && member.buyOpts === 2, member && { reach: member.redeemReach, inBuy: member.redeemInBuy, opts: member.buyOpts });
   chk('page: the voucher row shows a reachable Choose button', member && member.giftBtn && member.giftReach, member && { btn: member.giftBtn, reach: member.giftReach });

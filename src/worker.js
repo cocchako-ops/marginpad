@@ -9305,7 +9305,7 @@ const TICK_SOURCES = [
   { k: 'duel', label: 'Duels won', cap: 30 },
   { k: 'predict', label: 'Daily call', cap: 13 },
   { k: 'goal', label: 'Season goals', cap: 80 },
-  { k: 'pass', label: 'Season pass', cap: 400 },
+  { k: 'pass', label: 'Season pass', cap: 1500 }, // 2026-09-06: 40 tiers x (12 + 24) = 1,440 T — a season-end "Claim all" must fit in one day
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
@@ -9516,11 +9516,14 @@ const GOAL_DEFS = [
   { k: 'checkins', name: 'Check in 10 days', target: 10, unit: 'days' },
 ];
 const GOAL_XP = 100, GOAL_TICKS = 40, GOAL_MAX = 2;
-// Season pass. 20 tiers, one every PASS_STEP season XP (XP earned since the season anchor). The free track pays
+// Season pass. PASS_TIERS_N tiers, one every PASS_STEP season XP (XP earned since the season anchor). The free track pays
 // Ticks at every tier and one common frame at the top; the pro track doubles the Ticks and adds the PASS_PRO extras
 // below, all from the existing catalogue so nothing here needs new CSS. Sized from data: an active day is ~100-150 XP,
 // so tier 20 (2,000) is a full season of showing up, not a weekend.
-const PASS_STEP = 100, PASS_TIERS_N = 20, PASS_PRICE_TICKS = 2500, PASS_PRICE_CENTS = 299;
+// 2026-09-06 (owner): 40 tiers, same money budget, a little more Ticks, the extras stretched over the longer road. Step stays 100 XP
+// because it is MEASURED: on day 7 of 14 the season-XP board already ran 2,754-5,412 for its top 15, so tier 20 (2,000) was a
+// mid-season stop for the top and tier 40 (4,000) is a full season for a strong regular — not a weekend and not unreachable.
+const PASS_STEP = 100, PASS_TIERS_N = 40, PASS_PRICE_TICKS = 2500, PASS_PRICE_CENTS = 299;
 // Owner 2026-09-06: the pro track may pay small amounts of real money, but never more than $1.00 over a whole season, and it
 // should carry things that make people say "look at everything in here", not just Ticks. Per tier, on top of the Ticks:
 //   item  = a Vault cosmetic (existing catalogue, no new CSS)          cents = rewards balance (real money, season total <= PASS_CENTS_CAP)
@@ -9528,14 +9531,22 @@ const PASS_STEP = 100, PASS_TIERS_N = 20, PASS_PRICE_TICKS = 2500, PASS_PRICE_CE
 //   gift  = a skin-gift voucher: the holder gives ANY Ticks-priced cosmetic up to that many Ticks to another member,
 //           free (never a cash-only item; the tier caps it at common 300 / rare 1,200). Two social moments per season.
 const PASS_CENTS_CAP = 100;
-const PASS_FREE = { 20: { item: 'arctic' } };
-const PASS_PRO = { 3: { sup: 'shield' }, 4: { cents: 10 }, 5: { item: 'bg_static' }, 6: { gift: 300 }, 8: { cents: 15 }, 9: { sup: 'surge' }, 10: { item: 'tkt_kraft' }, 11: { prem: 3 }, 12: { cents: 20 }, 13: { sup: 'shield' }, 14: { gift: 1200 }, 15: { item: 'sandstone' }, 16: { cents: 25 }, 17: { sup: 'surge' }, 20: { cents: 30, item: 'leviathan' } };
+const PASS_TICKS_FREE = 12, PASS_TICKS_PRO = 24; // per tier: 480 T free / 960 T pro over 40 tiers (was 300 / 600 over 20)
+const PASS_FREE = { 20: { item: 'arctic' }, 40: { item: 'jade' } };
+// Pro extras over 40 tiers. Money: 5/10/15/20/25/30/35/40 = 5+10+10+10+15+15+15+20 = exactly $1.00. Nine catalogue skins (Ticks-priced,
+// no new CSS) rising in rarity; three Shields, three Surges; two 3-day Premium tastes; the two skin-gift vouchers.
+const PASS_PRO = {
+  4: { sup: 'shield' }, 5: { cents: 5 }, 6: { item: 'bg_static' }, 8: { gift: 300 }, 9: { item: 'sandstone' }, 10: { cents: 10 },
+  12: { item: 'tkt_kraft' }, 14: { sup: 'shield' }, 15: { cents: 10 }, 16: { prem: 3 }, 18: { item: 'copper' }, 19: { sup: 'surge' }, 20: { cents: 10 },
+  22: { gift: 1200 }, 24: { item: 'bg_trench' }, 25: { cents: 15 }, 26: { sup: 'shield' }, 28: { item: 'tkt_terminal' }, 29: { sup: 'surge' }, 30: { cents: 15 },
+  32: { item: 'neonoir' }, 34: { sup: 'surge' }, 35: { cents: 15 }, 36: { item: 'storm' }, 38: { prem: 3 }, 40: { cents: 20, item: 'leviathan' },
+};
 function passTiers() { // the cap is enforced HERE, mechanically: a cents entry that would push the season total past PASS_CENTS_CAP is dropped, whatever the table says
   const out = []; let cents = 0;
   for (let t = 1; t <= PASS_TIERS_N; t++) {
     const f = PASS_FREE[t] || {}, p = PASS_PRO[t] || {};
     let c = Math.max(0, Math.round(+p.cents || 0)); if (cents + c > PASS_CENTS_CAP) c = 0; cents += c;
-    out.push({ t, xp: t * PASS_STEP, free: { ticks: 15, item: f.item || null, cents: 0, sup: null, prem: 0, gift: 0 }, pro: { ticks: 30, item: p.item || null, cents: c, sup: p.sup || null, prem: Math.max(0, Math.round(+p.prem || 0)), gift: Math.max(0, Math.round(+p.gift || 0)) } });
+    out.push({ t, xp: t * PASS_STEP, free: { ticks: PASS_TICKS_FREE, item: f.item || null, cents: 0, sup: null, prem: 0, gift: 0 }, pro: { ticks: PASS_TICKS_PRO, item: p.item || null, cents: c, sup: p.sup || null, prem: Math.max(0, Math.round(+p.prem || 0)), gift: Math.max(0, Math.round(+p.gift || 0)) } });
   }
   return out;
 }
@@ -19615,7 +19626,7 @@ export class UserStore {
       const gifts = uid ? this.rows('SELECT id, season, t, cap, ts, used_ts, to_user, item_id FROM pgift WHERE user_id=? ORDER BY (used_ts IS NOT NULL), id DESC LIMIT 20', uid).map(g => ({ id: +g.id, season: +g.season, t: +g.t, cap: +g.cap, ts: +g.ts, used: !!g.used_ts, to: g.to_user || null, item: g.item_id || null })) : [];
       const maxCap = Math.max(0, ...Object.values(PASS_PRO).map(p => +p.gift || 0));
       const giftItems = passGiftable(maxCap).map(it => ({ id: it.id, name: it.name, kind: it.kind || 'frame', tier: it.tier || '', ticks: it.ticks, desc: String(it.desc || '').replace(/&#39;/g, "'") }));
-      return this.j({ season: sk, xp, tier, next: tier < PASS_TIERS_N ? (tier + 1) * PASS_STEP - xp : 0, pro: !!(row && +row.pro), boughtTs: row ? +row.bought_ts || 0 : 0, tiers, price: { ticks: PASS_PRICE_TICKS, cents: PASS_PRICE_CENTS }, step: PASS_STEP, claimable: tiers.reduce((n, t) => n + (t.reached && !t.free.claimed ? 1 : 0) + (t.reached && (row && +row.pro) && !t.pro.claimed ? 1 : 0), 0), gifts, giftItems, names: passNames(), centsTotal: tiers.reduce((n, t) => n + (t.pro.cents || 0), 0), centsCap: PASS_CENTS_CAP }); // rewards, not tiers: the page says "N rewards to claim"
+      return this.j({ season: sk, xp, tier, n: PASS_TIERS_N, next: tier < PASS_TIERS_N ? (tier + 1) * PASS_STEP - xp : 0, pro: !!(row && +row.pro), boughtTs: row ? +row.bought_ts || 0 : 0, tiers, price: { ticks: PASS_PRICE_TICKS, cents: PASS_PRICE_CENTS }, step: PASS_STEP, claimable: tiers.reduce((n, t) => n + (t.reached && !t.free.claimed ? 1 : 0) + (t.reached && (row && +row.pro) && !t.pro.claimed ? 1 : 0), 0), gifts, giftItems, names: passNames(), centsTotal: tiers.reduce((n, t) => n + (t.pro.cents || 0), 0), centsCap: PASS_CENTS_CAP }); // rewards, not tiers: the page says "N rewards to claim"
     }
     if (path === '/pass/gift' && request.method === 'POST') { // {uid, id, to, item}: spend a skin-gift voucher on another member. The worker announces it in chat afterwards.
       const uid = String(b.uid || '').replace(/^u:/, ''), gid = Math.round(+b.id || 0), toUn = String(b.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24), itemId = String(b.item || '').slice(0, 40);

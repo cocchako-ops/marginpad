@@ -1631,13 +1631,13 @@ body.mpa-authed .hero{display:none}
       var rows=[],P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
       if(signed){
         document.getElementById('ssBig').innerHTML='Your <b>season</b>';
-        if(P)rows.push('<div class="ss-row"><span>Pass tier</span><b class="pro">'+P.tier+' / 20'+(P.claimable?' · '+P.claimable+' to claim':'')+'</b></div>');
+        if(P)rows.push('<div class="ss-row"><span>Pass tier</span><b class="pro">'+P.tier+' / '+(P.n||40)+(P.claimable?' · '+P.claimable+' to claim':'')+'</b></div>');
         if(D){var t=D.me&&D.me.today;rows.push('<div class="ss-row"><span>Daily call</span><b class="'+(t?'ok':'')+'">'+(t?'made · $'+int(t.guess):(D.open?'open until '+D.cutoffH+':00 UTC':'closed today'))+'</b></div>');}
         if(G){var pk=G.picks||[],dn=pk.filter(function(x){return x.done&&!x.paid;}).length;rows.push('<div class="ss-row"><span>Goals</span><b class="'+(dn?'gold':'')+'">'+(pk.length?pk.length+' picked'+(dn?' · '+dn+' to claim':''):'pick two')+'</b></div>');}
         if(LB){var nm=(m.username||'').toLowerCase(),best=null;[['topGreen','Green days'],['top','Highest ROE'],['topWr','Win rate'],['topXp','Season XP'],['topGold','Gold Room']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1]};});rows.push('<div class="ss-row"><span>Boards</span><b class="'+(best&&best.rank<=5?'ok':'')+'">'+(best?'#'+best.rank+' '+best.name:'not ranked yet')+'</b></div>');}
       }else{
         document.getElementById('ssBig').innerHTML='Boards, pass, calls, goals';
-        rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">20 tiers · free track</b></div>');
+        rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">40 tiers · free track</b></div>');
         rows.push('<div class="ss-row"><span>Daily call</span><b>'+(D?(D.open?'open · up to 12 Ticks':'closed today'):'one a day')+'</b></div>');
         rows.push('<div class="ss-row"><span>Season goals</span><b class="gold">pick two · 100 XP each</b></div>');
         if(H)rows.push('<div class="ss-row"><span>XP Happy Hour</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
@@ -1650,7 +1650,7 @@ body.mpa-authed .hero{display:none}
         var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
         document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
         var ch=[],todo=[];
-        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/20</small></b><em>Pass tier</em><i>'+(P.claimable?P.claimable+' to claim':P.tier>=20?'complete':int(P.next||0)+' XP to next')+'</i></span>');if(P.claimable)todo.push(['ok','Claim '+P.claimable+' pass reward'+(P.claimable>1?'s':'')]);}
+        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/'+(P.n||40)+'</small></b><em>Pass tier</em><i>'+(P.claimable?P.claimable+' to claim':P.tier>=(P.n||40)?'complete':int(P.next||0)+' XP to next')+'</i></span>');if(P.claimable)todo.push(['ok','Claim '+P.claimable+' pass reward'+(P.claimable>1?'s':'')]);}
         if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>Daily call</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+' days in a row':''):D.open?'until '+D.cutoffH+':00 UTC':'tomorrow 00:00 UTC')+'</i></span>');if(!td&&D.open)todo.push(['hot','Make today\'s BTC call']);}
         if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>Goals</em><i>'+(gd.length?gd.length+' to claim':pk2.length<2?'pick '+(2-pk2.length)+' more':pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok','Claim goal: '+x.name]);});if(pk2.length<2)todo.push(['pro','Pick your season goal'+(pk2.length?'':'s')]);}
         if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
@@ -1752,10 +1752,10 @@ body.mpa-authed .hero{display:none}
     function load(){fetch('/api/pass',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(!d||!d.tiers)return;box.hidden=false;
       var st=document.getElementById('spState'),t=document.getElementById('spT'),n=document.getElementById('spN'),bar=document.getElementById('spBar'),sub=document.getElementById('spSub');
       st.textContent=d.pro?'PRO':'FREE';
-      if(!d.signedIn){t.innerHTML='20 tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.';return;}
-      var step=d.step||100,into=d.xp-d.tier*step,pct=d.tier>=20?100:Math.round(into/step*100);
-      t.innerHTML='Tier '+d.tier+' <small>/ 20</small>';n.textContent=fmt(d.xp)+' XP this season';bar.style.width=pct+'%';
-      sub.innerHTML=(d.tier>=20?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.');
+      if(!d.signedIn){t.innerHTML=(d.n||40)+' tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.';return;}
+      var step=d.step||100,N=d.n||40,into=d.xp-d.tier*step,pct=d.tier>=N?100:Math.round(into/step*100);
+      t.innerHTML='Tier '+d.tier+' <small>/ '+N+'</small>';n.textContent=fmt(d.xp)+' XP this season';bar.style.width=pct+'%';
+      sub.innerHTML=(d.tier>=N?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.');
     }).catch(function(){});}
     window.addEventListener('mp-auth-change',load);setTimeout(load,1300);window.addEventListener('mp:xp',function(){setTimeout(load,1700);});
   })();
