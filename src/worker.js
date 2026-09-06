@@ -12599,7 +12599,7 @@ async function spotMemeList(env) { // the MULTI-CHAIN meme universe: trending + 
   try { await caches.default.put(ck, new Response(JSON.stringify(list), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=170' } })); } catch (e) {}
   return list;
 }
-const SPOT_ROW_MAX_AGE = 2 * 3600000; // a meme-list row older than this has left every feed (rug / delist) and is dropped from the universe
+const SPOT_ROW_MAX_AGE = 12 * 3600000; // a meme-list row older than this has left every feed (rug / delist) and is dropped from the universe. 12 h, not 2: GeckoTerminal 429s the shared CF egress for hours at a time (measured right after the 2026-09-06 deploy: 40 Solana rows, three chains gone) and the list is DISPLAY — the fill price is bounded separately by SPOT_FALLBACK_MAX_AGE
 const SPOT_FALLBACK_MAX_AGE = 180000; // the trade-time list fallback accepts a row only this young — a 3-minute-old price cannot be a pre-rug price
 const SPOT_JUMP_X = 20; // a sell fill this many times above the position's last mark is implausible enough to alarm (and to refuse when the pool is thin)
 const SPOT_THIN_LIQ = 1000; // a pool holding less than this in USD cannot honestly fill a sale that claims a 20x move

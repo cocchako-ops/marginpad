@@ -23,7 +23,7 @@ const guard = async (q) => (await fetch(ORIGIN + '/api/admin/spotguard?' + q, { 
   g = await guard('price=19&lastPx=1&liq=50'); chk('A 19x stays under the line', g.guard && !g.guard.block && !g.guard.alert && g.limits.jumpX === 20, g.guard);
   g = await guard('price=1&lastPx=1&age=60000'); chk('A 1-minute-old list row: usable for the list AND the trade fallback', g.fresh && g.fresh.list && g.fresh.fallback, g.fresh);
   g = await guard('price=1&lastPx=1&age=600000'); chk('A 10-minute-old row: in the list, NOT a fill price', g.fresh && g.fresh.list && !g.fresh.fallback, g.fresh);
-  g = await guard('price=1&lastPx=1&age=' + (3 * 3600000)); chk('A 3-hour-old row: dropped from the universe', g.fresh && !g.fresh.list && !g.fresh.fallback, g.fresh);
+  g = await guard('price=1&lastPx=1&age=' + (13 * 3600000)); chk('A 13-hour-old row: dropped from the universe', g.fresh && !g.fresh.list && !g.fresh.fallback, g.fresh);
   chk('A a row without a timestamp (pre-fix) is never fresh', g.fresh && g.fresh.noTs === false, g.fresh);
 
   // B. real account
@@ -33,7 +33,7 @@ const guard = async (q) => (await fetch(ORIGIN + '/api/admin/spotguard?' + q, { 
   r = await api('/withdraw', { usd: 200, net: 'solana', address: sol }); chk('B withdraw 200 to solana', r.ok, r);
   r = await api('/swap', { asset: 'SOL', usd: 80, dir: 'buy' }); chk('B swap 80 USDT -> SOL', r.ok && r.gas && r.gas.SOL > 0, { SOL: r.gas && r.gas.SOL });
   const memes = ((await (await fetch(B + '/memes')).json()).memes || []).filter(m => m.net === 'solana' && m.liqUsd > 20000 && m.ts);
-  chk('B meme list rows carry a timestamp', memes.length >= 2 && memes.every(m => Date.now() - m.ts < 3 * 3600000), { n: memes.length, ageMin: memes[0] && Math.round((Date.now() - memes[0].ts) / 60000) });
+  chk('B meme list rows carry a timestamp', memes.length >= 2 && memes.every(m => Date.now() - m.ts < 13 * 3600000), { n: memes.length, ageMin: memes[0] && Math.round((Date.now() - memes[0].ts) / 60000) });
   const m1 = memes[0], m2 = memes.find(m => m.mint !== m1.mint && m.pool !== m1.pool);
   r = await api('/trade', { side: 'buy', kind: 'meme', mint: m1.mint, pool: m2.pool, net: 'solana', symbol: m1.sym, usd: 10 }); chk('B buy through a FOREIGN pool is refused (bad_pool)', r.error === 'bad_pool', r);
   r = await api('/trade', { side: 'buy', kind: 'meme', mint: m1.mint, pool: m1.pool, net: 'solana', symbol: m1.sym, usd: 10 }); chk('B buy $10 through the token\'s own pool', r.ok && r.qty > 0, { sym: m1.sym, px: r.price }); const buyPx = +r.price;
