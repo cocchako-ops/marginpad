@@ -450,7 +450,7 @@ h1 b{color:var(--lime)}
     if(r.item)h+='<div class="it">'+esc(nm(r.item))+'</div>';
     if(r.sup)h+='<div class="x sup">'+esc(nm(r.sup))+'</div>';
     if(r.prem)h+='<div class="x prem">'+r.prem+' days Premium</div>';
-    if(r.gift)h+='<div class="x gift" title="Gift any skin worth up to '+int(r.gift)+' Ticks to another member">Skin gift · '+(r.gift>=1000?(r.gift/1000)+'k':r.gift)+'T</div>';
+    if(r.gift)h+='<div class="x gift" title="Gift any skin worth up to '+int(r.gift)+' Ticks to another member">Gift · '+(r.gift>=1000?(r.gift/1000)+'k':r.gift)+'T</div>';
     return h;}
   function cellHtml(t,tr,D,signed){var r=t[tr],can=signed&&t.reached&&!r.claimed&&(tr==='free'||D.pro);
     return '<b>+'+r.ticks+'<small>TICKS</small></b>'+extras(r)+(r.claimed?'<div class="done">Claimed</div>':(can?'<button type="button" class="c" data-claim="'+t.t+'" data-track="'+tr+'">Claim</button>':(tr==='pro'&&signed&&t.reached&&!D.pro?'<div class="done lk">Pro only</div>':'')));}
