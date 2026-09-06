@@ -14724,6 +14724,21 @@ export default {
     if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
       return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
     }
+    if (url.pathname === '/api/admin/geo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one country's traffic (2026-09-07): pageviews by path / source / language / day, money clicks by exchange + page — the input for any geo SEO decision
+      const cc = String(url.searchParams.get('cc') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2); if (!cc) return J({ error: 'cc' }, 400);
+      const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
+      const [total, paths, srcs, langs, byDay, clicksEx, clicksPage, uv] = await Promise.all([
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob2='${cc}' AND ${D}`),
+        aeQuery(env, `SELECT blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob2='${cc}' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 40`),
+        aeQuery(env, `SELECT blob4 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob2='${cc}' AND ${D} GROUP BY src ORDER BY n DESC LIMIT 20`),
+        aeQuery(env, `SELECT blob7 AS lang, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob2='${cc}' AND ${D} GROUP BY lang ORDER BY n DESC LIMIT 10`),
+        aeQuery(env, `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS d, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob2='${cc}' AND ${D} GROUP BY d ORDER BY d`),
+        aeQuery(env, `SELECT blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND blob4='${cc}' AND ${D} GROUP BY ex ORDER BY n DESC LIMIT 12`),
+        aeQuery(env, `SELECT blob5 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND blob4='${cc}' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 12`),
+        aeQuery(env, `SELECT blob2 AS cc, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D} GROUP BY cc ORDER BY n DESC LIMIT 40`),
+      ]);
+      return J({ cc, days, pageviews: (total && total[0] && +total[0].n) || 0, paths: paths || [], sources: srcs || [], langs: langs || [], byDay: byDay || [], clicksByExchange: clicksEx || [], clicksByPage: clicksPage || [], countries: uv || [] });
+    }
     if (url.pathname === '/api/admin/spotdaily' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // day-2 line preview: ?uid= computes the exact line for one account (dry unless &send=1); no uid = whole watch list, dry
       const uid = url.searchParams.get('uid') || null, send = url.searchParams.get('send') === '1';
       const r = await spotDailyLine(env, new Date().toISOString().slice(0, 10), { uid, dry: !send || !uid });
