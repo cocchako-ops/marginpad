@@ -60,12 +60,12 @@ const get = async (u) => { const r = await fetch(ORIGIN + u, { headers: H }); re
   const me2 = await get('/api/goals?uid=' + UID);
   chk('state shows the paid goal', (me2.body.picks || []).some(p => p.k === 'lessons' && p.paid && p.doneTs > 0));
 
-  // browser: the homepage card
+  // browser: the goals card on /season/ (Today section)
   let guest = null, member = null;
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: 1366, height: 900 });
-    await page.goto(ORIGIN + '/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 }); // the goals card moved from the homepage to /season/ (2026-09-06 homepage by intent)
     await page.waitForFunction("document.getElementById('sg') && !document.getElementById('sg').hidden", { timeout: 20000 }).catch(() => {});
     guest = await page.evaluate(() => { const b = document.getElementById('sg'); if (!b || b.hidden) return { shown: false }; const t = document.getElementById('sgSub').textContent; return { shown: true, opts: b.querySelectorAll('.sg-opt').length, buttons: b.querySelectorAll('button').length, signin: /Sign in/.test(t), sub: t.slice(0, 60) }; });
     await ctx.close();
@@ -84,7 +84,7 @@ const get = async (u) => { const r = await fetch(ORIGIN + u, { headers: H }); re
       if (u.indexOf('/api/goals') >= 0 && req.method() === 'POST') { state = 1; return req.respond({ status: 200, contentType: 'application/json', body: '{"ok":true,"k":"lessons"}' }); }
       return req.continue();
     });
-    await p2.goto(ORIGIN + '/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await p2.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 });
     await p2.waitForFunction("document.querySelectorAll('#sg [data-pick]').length>0", { timeout: 20000 }).catch(() => {});
     const before = await p2.evaluate(() => { const b = document.querySelector('#sg [data-pick]'); if (!b) return { pick: false }; const r = b.getBoundingClientRect(); b.scrollIntoView({ block: 'center' }); const r2 = b.getBoundingClientRect(); const hit = document.elementFromPoint(r2.left + r2.width / 2, r2.top + r2.height / 2); return { pick: true, n: document.querySelectorAll('#sg [data-pick]').length, reach: !!(hit && b.contains(hit)), inside: (function () { const c = document.getElementById('sg').getBoundingClientRect(), col = document.getElementById('sg').parentElement.getBoundingClientRect(); return c.left >= col.left - .5 && c.right <= col.right + .5; })() }; });
     await p2.click('#sg [data-pick]');
@@ -94,9 +94,9 @@ const get = async (u) => { const r = await fetch(ORIGIN + u, { headers: H }); re
     member = Object.assign(before, after);
     await ctx2.close();
   });
-  chk('homepage: guest sees the five targets, no buttons, the sign-in line', guest && guest.shown && guest.opts === 5 && guest.buttons === 0 && guest.signin, guest);
-  chk('homepage: member sees pick buttons, reachable, card inside its column', member && member.pick && member.n === 5 && member.reach && member.inside, member);
-  chk('homepage: after picking, progress rows and a claim button on the done goal', member && member.bars === 2 && member.claim && /Claim \+100 XP/.test(member.claimText) && !member.scrollsX, member && { bars: member.bars, claim: member.claimText });
+  chk('season page: guest sees the five targets, no buttons, the sign-in line', guest && guest.shown && guest.opts === 5 && guest.buttons === 0 && guest.signin, guest);
+  chk('season page: member sees pick buttons, reachable, card inside its column', member && member.pick && member.n === 5 && member.reach && member.inside, member);
+  chk('season page: after picking, progress rows and a claim button on the done goal', member && member.bars === 2 && member.claim && /Claim \+100 XP/.test(member.claimText) && !member.scrollsX, member && { bars: member.bars, claim: member.claimText });
 
   await post('/api/admin/e2euser', { uid: UID, op: 'rm' });
   const gone = await get('/api/goals?uid=' + UID);

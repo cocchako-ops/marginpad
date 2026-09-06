@@ -72,7 +72,7 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: 1366, height: 900 });
-    await page.goto(ORIGIN + '/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 }); // the daily-call card moved from the homepage to /season/ (2026-09-06 homepage by intent)
     await page.waitForFunction("document.getElementById('dc') && !document.getElementById('dc').hidden", { timeout: 20000 }).catch(() => {});
     guest = await page.evaluate(() => { const b = document.getElementById('dc'); if (!b || b.hidden) return { shown: false }; return { shown: true, formHidden: document.getElementById('dcForm').hidden, sub: document.getElementById('dcSub').textContent.slice(0, 60), state: document.getElementById('dcState').textContent }; });
     await ctx.close();
@@ -85,7 +85,7 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
       if (u.indexOf('/api/predict') >= 0 && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ day, yday: day, cutoff: Date.now() + 3600000, open: true, live, cutoffH: 20, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], board: [{ name: 'alpha', pts: 20, n: 2 }, { name: 'beta', pts: 8, n: 1 }], callers: 2, me: { today: null, yday: { guess: live * 1.004, close: live, err: 0.4, pts: 8, ticks: 9, settled: 1 }, streak: 1, season: { pts: 8, n: 1, rank: 2 } }, signedIn: true }) });
       return req.continue();
     });
-    await p2.goto(ORIGIN + '/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await p2.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 });
     await p2.waitForFunction("document.getElementById('dc') && !document.getElementById('dc').hidden && !document.getElementById('dcForm').hidden", { timeout: 20000 }).catch(() => {});
     member = await p2.evaluate(() => {
       const b = document.getElementById('dc'); if (!b || b.hidden) return { shown: false };
@@ -99,10 +99,10 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
     await p2.screenshot({ path: path.join(__dirname, 'vault-shots', 'predict-member.png') });
     await ctx2.close();
   });
-  chk('homepage: guest sees the card with the sign-in copy and no form', guest && guest.shown && guest.formHidden && /Sign in/.test(guest.sub), guest);
-  chk('homepage: member sees the form, input and button reachable', member && member.shown && !member.formHidden && member.inputReach && member.buttonReach, member);
-  chk('homepage: card inside its column, clear of Happy Hour, no horizontal scroll', member && member.inside && member.clearOfHH && !member.scrollsX, member && { inside: member.inside, clear: member.clearOfHH, sx: member.scrollsX });
-  chk('homepage: yesterday result and the board render', member && /Yesterday/.test(member.yday) && /alpha/.test(member.board), member && { y: member.yday, b: member.board });
+  chk('season page: guest sees the card with the sign-in copy and no form', guest && guest.shown && guest.formHidden && /Sign in/.test(guest.sub), guest);
+  chk('season page: member sees the form, input and button reachable', member && member.shown && !member.formHidden && member.inputReach && member.buttonReach, member);
+  chk('season page: card inside its column, clear of Happy Hour, no horizontal scroll', member && member.inside && member.clearOfHH && !member.scrollsX, member && { inside: member.inside, clear: member.clearOfHH, sx: member.scrollsX });
+  chk('season page: yesterday result and the board render', member && /Yesterday/.test(member.yday) && /alpha/.test(member.board), member && { y: member.yday, b: member.board });
 
   await dropUser(UID); await dropUser(UID2);
   const gone = await get('/api/predict?uid=' + UID);
