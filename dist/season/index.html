@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Your Season — boards, pass, daily call, goals and the live floor | MarginPad</title>
+<meta name="description" content="Every 14 days MarginPad runs a season: five boards that pay real USDT, a 20-tier pass unlocked by the XP you earn, a daily BTC call, two self-chosen goals and the live floor of closes and duels. This is where your season lives." />
+<link rel="canonical" href="https://marginpad.io/season/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Your Season — MarginPad" />
+<meta property="og:description" content="Five boards paying real USDT, a 20-tier pass, a daily BTC call, season goals and the live floor. Fourteen days, then it starts again." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/season/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+:root{--bg:#0a0b0d;--panel:#11151c;--panel2:#0d1015;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--gold:#ffd75a;--pro:#c792ff;--sky:#57c7f7;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--pad:clamp(16px,3vw,34px)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-variant-numeric:tabular-nums}
+a{color:var(--lime);text-decoration:none}
+button{font:inherit}
+[hidden]{display:none!important}
+.fx{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(70% 50% at 8% 0%,rgba(199,146,255,.13),transparent 60%),radial-gradient(50% 40% at 95% 8%,rgba(194,246,74,.09),transparent 60%),radial-gradient(60% 40% at 50% 100%,rgba(255,215,90,.06),transparent 60%)}
+.fx::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(80% 60% at 50% 0,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(80% 60% at 50% 0,#000 20%,transparent 75%)}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:16px var(--pad) calc(70px + env(safe-area-inset-bottom))}
+.crumb{font-size:12.5px;color:var(--faint);margin:6px 0 16px}.crumb a{color:var(--dim)}
+.mono{font-family:'Space Mono',monospace}
+.num{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums}
+.up{color:var(--grn)}.dn{color:var(--red)}.err{color:#ff8a80}
+/* ---- banner ---- */
+.ban{position:relative;border:1px solid rgba(199,146,255,.32);border-radius:22px;padding:clamp(20px,3vw,32px);background:linear-gradient(135deg,rgba(199,146,255,.12),rgba(17,21,28,.9) 46%,rgba(194,246,74,.07));overflow:hidden;box-shadow:0 40px 90px -50px rgba(199,146,255,.35),inset 0 1px 0 rgba(255,255,255,.05)}
+.ban::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(199,146,255,.7),transparent 35%,transparent 65%,rgba(194,246,74,.55));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.ban-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.85fr);gap:clamp(18px,3vw,40px);align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font:700 11px 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--pro)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--pro);box-shadow:0 0 12px var(--pro)}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(34px,5.4vw,58px);letter-spacing:-.035em;line-height:1;margin:12px 0 10px}
+h1 b{color:var(--lime)}
+.lead{color:var(--dim);font-size:15px;line-height:1.55;max-width:560px}
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:5px;margin:22px 0 10px;max-width:620px}
+.days i{display:block;height:12px;border-radius:4px;background:#1a1f27;border:1px solid #242a33;position:relative;transition:background .4s,box-shadow .4s}
+.days i.on{background:linear-gradient(180deg,#d6ff7a,var(--lime));border-color:transparent;box-shadow:0 0 10px -2px rgba(194,246,74,.8)}
+.days i.now{background:linear-gradient(180deg,#fff,var(--lime));box-shadow:0 0 0 2px #0a0b0d,0 0 0 3px var(--lime),0 0 14px rgba(194,246,74,.9)}
+.days i.now::after{content:"today";position:absolute;top:16px;left:50%;transform:translateX(-50%);font:700 9px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);white-space:nowrap}
+.dl{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:22px;font:600 12px 'Space Mono',monospace;color:var(--dim)}
+.dl b{display:block;font-size:18px;color:#fff;letter-spacing:-.02em;margin-top:2px;min-width:9ch}
+/* member card */
+.me{background:rgba(10,12,16,.72);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px 18px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.me-h{display:flex;align-items:center;gap:12px}
+.me-av{width:46px;height:46px;border-radius:13px;background:linear-gradient(160deg,#1b2230,#0d1117);border:1px solid #2a323c;display:flex;align-items:center;justify-content:center;font:800 20px 'Bricolage Grotesque',sans-serif;color:var(--lime);flex:0 0 46px;overflow:hidden}
+.me-av img{width:100%;height:100%;object-fit:cover}
+.me-n{font:800 17px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;display:flex;align-items:center;gap:6px;min-width:0}
+.me-n span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.me-l{font:700 10.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.me-g div{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:9px 8px;text-align:center;min-width:0}
+.me-g b{display:block;font:800 18px 'Space Mono',monospace;letter-spacing:-.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me-g span{display:block;font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.me-g b.pro{color:var(--pro)}.me-g b.lime{color:var(--lime)}
+.me-r{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.chip{display:flex;align-items:center;justify-content:space-between;gap:6px;font:700 10.5px 'Space Mono',monospace;letter-spacing:.02em;padding:6px 9px;border-radius:9px;border:1px solid #2a323c;color:var(--dim);background:rgba(255,255,255,.03);min-width:0}
+.chip em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip b{color:#fff;white-space:nowrap}.chip.in{border-color:rgba(255,215,90,.55);color:var(--gold)}.chip.in b{color:#fff}.chip.pay{border-color:rgba(194,246,74,.6);color:var(--lime)}.chip.pay b{color:var(--lime)}
+.gate{display:flex;flex-direction:column;gap:10px}
+.gate p{color:var(--dim);font-size:13.5px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--lime);color:#0a0b0d;border:0;border-radius:12px;padding:12px 18px;font:800 14px 'Bricolage Grotesque',sans-serif;cursor:pointer;transition:filter .14s,transform .1s,opacity .2s}
+.btn:hover{filter:brightness(1.06)}.btn:active{transform:translateY(1px)}.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.pro{background:var(--pro);color:#160a26}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}.btn.sm{padding:8px 12px;font-size:12.5px;border-radius:9px}
+/* sticky in-page nav */
+.snav{position:sticky;top:0;z-index:30;margin:14px calc(var(--pad) * -1) 0;padding:8px var(--pad);background:rgba(10,11,13,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.snav::-webkit-scrollbar{display:none}
+.snav a{flex:0 0 auto;font:700 11.5px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:7px 12px;border-radius:999px;border:1px solid transparent;transition:color .14s,border-color .14s,background .14s}
+.snav a.on{color:#fff;border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.05)}
+.snav a b{color:var(--lime);margin-left:5px}
+/* ---- sections ---- */
+.sec{margin-top:26px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.sh h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(21px,2.4vw,28px);letter-spacing:-.03em}
+.sh h2 i{font:700 11px 'Space Mono',monospace;letter-spacing:.14em;color:var(--faint);font-style:normal;margin-right:10px;vertical-align:middle}
+.sh .s{color:var(--dim);font-size:13px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line2);border-radius:16px;padding:16px 17px;position:relative;min-width:0}
+.card.lime{border-color:rgba(194,246,74,.3)}.card.gold{border-color:rgba(255,215,90,.32)}.card.amber{border-color:rgba(255,176,32,.32)}.card.pro{border-color:rgba(199,146,255,.35)}
+.k{display:flex;align-items:center;gap:7px;font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+.k .st{margin-left:auto;font-size:9px;letter-spacing:.08em;border-radius:20px;padding:2px 9px;color:#0a0b0d;background:var(--lime);white-space:nowrap}
+.k .st.off{background:#3a4450;color:#c7ccd4}.k .st.amber{background:var(--amber);color:#1a1200}.k .st.gold{background:var(--gold);color:#1a1200}
+.card.lime .k{color:var(--lime)}.card.gold .k{color:var(--gold)}.card.amber .k{color:var(--amber)}.card.pro .k{color:var(--pro)}
+.q{margin:9px 0 10px;font-size:14px;color:#d7dce2;line-height:1.45}.q b{color:#fff}
+.sub{font-size:12px;color:var(--dim);line-height:1.5;margin-top:9px}.sub b{color:#d7dce2}
+.sk{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,#161b22,#1c222b,#161b22);background-size:200% 100%;margin:8px 0}
+/* daily call */
+.dc-form{display:flex;gap:7px}
+.dc-in{flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:0 11px}.dc-in:focus-within{border-color:var(--lime)}
+.dc-in span{font:700 13px 'Space Mono',monospace;color:var(--faint)}.dc-in input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:700 16px 'Space Mono',monospace;padding:10px 0}.dc-in input::placeholder{color:#4e5864;font-weight:400}
+.dc-mine{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;font:600 12px 'Space Mono',monospace;color:#c7ccd4}.dc-mine b{color:#fff}.dc-mine button{color:var(--lime);background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.dc-y{margin-top:9px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font:600 11.5px 'Space Mono',monospace;color:#b9c2cc;line-height:1.5}.dc-y b{color:#fff}.dc-y .win{color:var(--lime)}.dc-y .mid{color:var(--gold)}
+.lst{margin-top:10px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px}
+.lst .lh{display:flex;justify-content:space-between;font:700 10px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.lst .r{display:grid;grid-template-columns:20px minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:12.5px;color:#d7dce2;padding:3px 0}.lst .r i{font:700 10px 'Space Mono',monospace;color:var(--faint);text-align:right;font-style:normal}.lst .r span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lst .r b{font:700 12px 'Space Mono',monospace;color:var(--lime);text-align:right}.lst .r.me span{color:#fff;font-weight:700}
+/* happy hour */
+.hh-big{font:800 28px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;margin:8px 0 2px;white-space:nowrap}
+.hh-big small{font-size:12px;color:var(--dim);font-weight:600;letter-spacing:0;display:block;margin-bottom:2px}
+.hh-big.on{color:var(--amber);text-shadow:0 0 22px rgba(255,176,32,.5)}
+.hh-rows{margin-top:10px;display:grid;gap:5px}.hh-rows div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;font-size:12.5px;color:var(--dim)}.hh-rows b{color:#e9e7df;font-family:'Space Mono',monospace;font-size:12px;text-align:right;white-space:nowrap}
+/* goals */
+.sg-list{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.sg-opt{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;text-align:left;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;color:#d7dce2;font-weight:600;font-size:13px;cursor:pointer;transition:border-color .14s}.sg-opt:hover{border-color:var(--gold)}.sg-opt[disabled]{opacity:.5;cursor:not-allowed}.sg-opt i{font:700 10.5px 'Space Mono',monospace;color:var(--gold);font-style:normal;white-space:nowrap}
+.sg-g{background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;transition:border-color .3s}.sg-g.done{border-color:rgba(255,215,90,.55)}
+.sg-g .t{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:8px;font-size:13px;color:#e9e7df;font-weight:700}.sg-g .t span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg-g .t b{font:700 12px 'Space Mono',monospace;color:var(--gold);white-space:nowrap}
+.bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#b8901f,var(--gold));width:0;transition:width .6s ease}
+.sg-claim{margin-top:8px;width:100%;background:var(--gold);color:#1a1200;border:0;border-radius:9px;padding:9px 12px;font:800 12.5px 'Bricolage Grotesque',sans-serif;cursor:pointer}
+.sg-paid{margin-top:7px;font:700 11px 'Space Mono',monospace;color:var(--gold)}
+/* pass road */
+.road-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.road-head .sub{margin:4px 0 0}
+.claimall{white-space:nowrap}
+.road-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:28px 6px 10px;scrollbar-width:thin;margin-top:6px;scroll-snap-type:x proximity}
+.road{position:relative;display:grid;grid-template-columns:repeat(20,112px);gap:8px;width:max-content}
+.road::before{content:"";position:absolute;left:0;right:0;top:14px;height:4px;border-radius:2px;background:#1a1f27}
+.road .fill{position:absolute;left:0;top:14px;height:4px;border-radius:2px;background:linear-gradient(90deg,#7f5fd6,var(--pro));box-shadow:0 0 14px rgba(199,146,255,.7);transition:width .7s ease;width:0}
+.road .fill::after{content:"";position:absolute;right:-5px;top:-3px;width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 12px var(--pro)}
+.tier{position:relative;padding-top:34px;text-align:center;scroll-snap-align:center}
+.tier .n{position:absolute;left:50%;top:0;transform:translate(-50%,0);width:30px;height:30px;border-radius:50%;background:#12161d;border:2px solid #2a323c;display:flex;align-items:center;justify-content:center;font:800 12px 'Space Mono',monospace;color:var(--dim);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;z-index:2}
+.tier.on .n{background:#1b1230;border-color:var(--pro);color:#fff}
+.tier.cur .n{background:var(--pro);border-color:#fff;color:#160a26;box-shadow:0 0 0 4px rgba(199,146,255,.25),0 0 22px rgba(199,146,255,.9)}
+.tier .xp{font:700 10px 'Space Mono',monospace;color:var(--faint);letter-spacing:.04em}
+.rw{margin-top:8px;background:#0a0d11;border:1px solid var(--line);border-radius:11px;padding:8px 6px;display:flex;flex-direction:column;gap:5px;min-height:76px;justify-content:center;transition:border-color .35s,background .35s,opacity .35s}
+.rw.pro{border-color:rgba(199,146,255,.3);background:linear-gradient(180deg,rgba(199,146,255,.08),#0a0d11)}
+.tier.lock .rw{opacity:.42}
+.rw.can{border-color:rgba(194,246,74,.55);box-shadow:0 0 0 1px rgba(194,246,74,.2),0 0 18px -6px rgba(194,246,74,.6)}.rw.pro.can{border-color:rgba(199,146,255,.7);box-shadow:0 0 0 1px rgba(199,146,255,.25),0 0 18px -6px rgba(199,146,255,.7)}
+.rw.just{background:rgba(194,246,74,.16)}.rw.pro.just{background:rgba(199,146,255,.2)}
+.rw b{font:800 13px 'Space Mono',monospace;color:#fff;white-space:nowrap}.rw b small{font-size:9.5px;color:var(--dim);font-weight:400;margin-left:2px}
+.rw .it{font-size:10.5px;color:var(--gold);font-weight:700;line-height:1.25}
+.rw .c{background:var(--lime);color:#0a0b0d;border:0;border-radius:8px;padding:6px 8px;font:800 11px 'Bricolage Grotesque',sans-serif;cursor:pointer;transition:opacity .2s}.rw.pro .c{background:var(--pro);color:#160a26}.rw .c[disabled]{opacity:.5}
+.rw .done{font:700 9.5px 'Space Mono',monospace;color:var(--faint);letter-spacing:.06em}
+.road-lab{display:flex;gap:14px;margin-top:6px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.road-lab b{color:var(--pro)}
+.buy{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.opt{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;display:flex;flex-direction:column;gap:8px}
+.opt .t{font-weight:700;font-size:14px;color:#fff}.opt .p{font:800 18px 'Space Mono',monospace;color:var(--pro)}.opt .d{font-size:12px;color:var(--dim);line-height:1.4}
+.code{display:flex;gap:7px}.code input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0}.code input:focus{border-color:var(--pro)}
+/* board switcher: five cards, one selected */
+.bsw{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.bs{position:relative;text-align:left;background:#0a0d11;border:1px solid var(--line2);border-radius:14px;padding:12px 12px 11px;cursor:pointer;color:inherit;min-width:0;transition:border-color .16s,transform .12s,background .16s;--c:#ffd75a}
+.bs:hover{border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
+.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,#0a0d11),#0a0d11);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent),0 16px 36px -22px var(--c)}
+.bs .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:8px}
+.bs .ic svg{width:16px;height:16px}
+.bs .nm{font:800 13.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bs .pz{margin-top:2px;font:700 11px 'Space Mono',monospace;color:var(--c);white-space:nowrap}
+.bs .ld{margin-top:8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap}.bs .ld span{overflow:hidden;text-overflow:ellipsis}.bs .ld b{color:#e9e7df}
+.bs .you{margin-top:4px;font:700 10.5px 'Space Mono',monospace;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bs .you.in{color:var(--c)}
+.bs.on::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#0a0d11;border-right:1px solid var(--c);border-bottom:1px solid var(--c)}
+/* board table: fixed columns, never wraps, scrolls in its own box */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin-top:6px}
+.tbl{min-width:100%;width:max-content}
+.tr{display:grid;align-items:center;gap:10px;padding:0 6px;border-top:1px solid var(--line);min-height:44px;white-space:nowrap}
+.tr.th{border-top:0;min-height:30px;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tr>*{min-width:0}
+.tr .rk{font:800 12px 'Space Mono',monospace;color:var(--faint);text-align:right}
+.tr.t1 .rk{color:var(--gold)}.tr.t2 .rk{color:#cfd6df}.tr.t3 .rk{color:#d19a66}
+.tr .who{display:flex;align-items:center;gap:6px;min-width:0}.tr .who a{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.tr .who a:hover{color:var(--lime)}
+.tr .v{font:700 12.5px 'Space Mono',monospace;color:#d7dce2;text-align:right}.tr .v.dim{color:var(--dim);font-weight:600}
+.tr .pay{font:800 12.5px 'Space Mono',monospace;color:var(--lime);text-align:right}
+.tr.me{background:rgba(194,246,74,.07);border-radius:8px}.tr.me .who a{color:var(--lime)}
+.tr .tag{font:700 10.5px 'Space Mono',monospace;color:var(--dim);border:1px solid var(--line2);border-radius:6px;padding:2px 6px;justify-self:start}.tr .tag.l{color:var(--grn);border-color:rgba(46,189,133,.5)}.tr .tag.s{color:var(--red);border-color:rgba(255,90,77,.5)}
+.bd-note{font-size:12px;color:var(--faint);margin-top:10px;line-height:1.5}
+.rules{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.rules summary{cursor:pointer;font:700 12px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.rules p{font-size:13px;color:#c7ccd4;line-height:1.55;margin:8px 0}.rules b{color:#fff}
+/* floor: fixed columns */
+.feed{display:flex;flex-direction:column}
+.fr{display:grid;grid-template-columns:minmax(0,1fr) 128px 118px 42px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px;white-space:nowrap;min-height:38px}
+.fr.duel{grid-template-columns:minmax(0,1fr) 118px 96px}
+.fr:first-child{border-top:0}
+.fr>*{min-width:0}
+.fr .w{font-weight:700;color:#fff;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.fr .w:hover{color:var(--lime)}
+.fr .pair{display:flex;align-items:center;gap:5px;min-width:0}.fr .pair .w{flex:0 1 auto}.fr .pair i{font-style:normal;color:var(--faint);font-size:11px;flex:0 0 auto}
+.fr .sy{font:700 11px 'Space Mono',monospace;color:var(--dim);border:1px solid var(--line2);border-radius:7px;padding:3px 7px;overflow:hidden;text-overflow:ellipsis;text-align:center}.fr .sy.l{color:var(--grn);border-color:rgba(46,189,133,.5)}.fr .sy.s{color:var(--red);border-color:rgba(255,90,77,.5)}
+.fr .p{font:700 12.5px 'Space Mono',monospace;text-align:right}.fr .p.liq{color:var(--red);font-size:10.5px;letter-spacing:.08em}
+.fr .t{font:600 11px 'Space Mono',monospace;color:var(--faint);text-align:right}
+.empty{color:var(--faint);font-size:13px;padding:10px 0}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.how div{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:13px;color:#c7ccd4;line-height:1.5}.how b{color:#fff;display:block;margin-bottom:3px}
+/* toast */
+.tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
+.tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
+@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
+@media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 112px 96px}.fr .t{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 96px 80px}.me-r{grid-template-columns:1fr}.road-head{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="fx"></div>
+<div class="wrap">
+  <div class="crumb"><a href="/">Home</a> / Season</div>
+
+  <section class="ban" id="ban">
+    <div class="ban-grid">
+      <div>
+        <span class="eyebrow"><i></i><span id="eyeb">Season</span></span>
+        <h1 id="h1">Your <b>season</b></h1>
+        <div class="lead" id="lead">Fourteen days. Five boards that pay real USDT, a 20-tier pass unlocked by the XP you already earn, one BTC call a day, two goals you choose yourself, and the live floor. Then it starts again.</div>
+        <div class="days" id="days" aria-label="Season days"></div>
+        <div class="dl"><div>ends in<b id="ends">—</b></div><div>payouts<b>00:00 UTC, season end</b></div><div>calling today<b id="callers">—</b></div></div>
+      </div>
+      <div class="me" id="me">
+        <div class="gate" id="gate"><div class="k" style="color:var(--lime)">Not signed in</div><p>Sign in (free, email code) and every tier, board rank and goal here becomes yours. Nothing on this page costs money to enter.</p><button class="btn" type="button" data-auth-open>Sign in to enter the season</button></div>
+        <div id="meIn" hidden>
+          <div class="me-h"><div class="me-av" id="meAv">M</div><div style="min-width:0"><div class="me-n"><span id="meName">—</span><span data-lvln="" id="meLvl"></span></div><div class="me-l" id="meLvlT">—</div></div></div>
+          <div class="me-g"><div><b id="meXp">0</b><span>season XP</span></div><div><b class="pro" id="meTier">0</b><span>pass tier</span></div><div><b class="lime" id="meClaim">0</b><span>to claim</span></div></div>
+          <div class="me-r" id="meRanks"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="snav" id="snav" aria-label="On this page">
+    <a href="#today" data-s="today">Today</a><a href="#pass" data-s="pass">Pass<b id="snClaim" hidden></b></a><a href="#boards" data-s="boards">Boards</a><a href="#floor" data-s="floor">Live floor</a>
+  </nav>
+
+  <section class="sec" id="today">
+    <div class="sh"><h2><i>01</i>Today</h2><span class="s">Three things that reset every day.</span></div>
+    <div class="g3">
+      <div class="card lime" id="dc">
+        <div class="k">Daily call<span class="st" id="dcState">…</span></div>
+        <div class="q">Where does <b>BTC</b> close today? <span class="mono" id="dcLive" style="font-size:11.5px;color:var(--dim)"></span></div>
+        <form class="dc-form" id="dcForm" autocomplete="off" hidden><div class="dc-in"><span>$</span><input id="dcIn" type="text" inputmode="decimal" placeholder="your call" maxlength="12" /></div><button type="submit" class="btn sm" id="dcGo">Call it</button></form>
+        <div class="dc-mine" id="dcMine" hidden></div>
+        <div class="dc-y" id="dcY" hidden></div>
+        <div class="sub" id="dcSub"><span class="sk"></span></div>
+        <div class="lst" id="dcBoard" hidden></div>
+      </div>
+      <div class="card amber" id="hh">
+        <div class="k">XP Happy Hour<span class="st amber" id="hhState">DAILY</span></div>
+        <div class="hh-big" id="hhBig"><small>&nbsp;</small>—</div>
+        <div class="sub" id="hhSub">Every day, one hour, extra XP on every winning close.</div>
+        <div class="hh-rows" id="hhRows"></div>
+      </div>
+      <div class="card gold" id="sg">
+        <div class="k">Season goals<span class="st gold" id="sgState"></span></div>
+        <div class="sub" id="sgSub" style="margin-top:8px"><span class="sk"></span></div>
+        <div class="sg-list" id="sgList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pass">
+    <div class="sh"><h2><i>02</i>The pass</h2><span class="s">20 tiers, one every 100 XP. Claim what you reach; the rest is granted when the season ends.</span></div>
+    <div class="card pro" style="padding-bottom:12px">
+      <div class="road-head">
+        <div><div class="k">Your road<span class="st" id="passPill" style="background:var(--pro);color:#160a26;margin-left:8px">FREE TRACK</span></div><div class="sub" id="passNext"><span class="sk" style="width:60%"></span></div></div>
+        <button type="button" class="btn sm claimall" id="claimAll" hidden>Claim all</button>
+      </div>
+      <div class="road-wrap" id="roadWrap"><div class="road" id="road"><div class="fill" id="roadFill"></div></div></div>
+      <div class="road-lab"><span>Top row: free · everyone</span><b>Bottom row: pro · double Ticks + four Vault items</b></div>
+      <div id="buyWrap">
+        <div class="buy" id="buy" hidden>
+          <div class="opt"><div class="t">With Ticks</div><div class="p" id="pTicks">2,500 T</div><div class="d">Earned Ticks, no money. About a month of showing up.</div><button class="btn pro sm" data-buy="ticks">Unlock pro with Ticks</button></div>
+          <div class="opt"><div class="t">With your rewards balance</div><div class="p" id="pUsd">$2.99</div><div class="d">Straight from your withdrawable balance. Final, like a Vault buy.</div><button class="btn pro sm" data-buy="usd">Unlock pro with balance</button></div>
+          <div class="opt"><div class="t">With a code</div><div class="p" style="font-size:14px">MP-XXXXX-XXXXX</div><div class="d">Codes drop in chat, on Telegram and in events. One per account.</div><div class="code"><input id="codeIn" placeholder="MP-" maxlength="16" autocomplete="off" spellcheck="false" /><button class="btn ghost sm" data-buy="code">Redeem</button></div></div>
+        </div>
+        <div class="sub" id="buyMsg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="boards">
+    <div class="sh"><h2><i>03</i>The boards</h2><span class="s">Five boards, top five paid in real USDT at season end. Pick one.</span></div>
+    <div class="bsw" id="bsw" role="tablist"></div>
+    <div class="card gold">
+      <div class="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>
+      <div class="bd-note" id="bdNote"></div>
+      <details class="rules"><summary>How each board counts</summary>
+        <p><b>Green days.</b> Counts the days of the season you finished in profit — everything you closed that day, added up. A day only turns green with at least 3 closed trades, so one lucky micro-trade cannot buy a day. You need 10 closed trades in the season, and you must be up on the season overall, to rank. Ties go to the bigger season profit. Days run from the season start in UTC.</p>
+        <p><b>Highest ROE.</b> Your best single closed paper trade of the season, by ROE (profit as % of margin). Only trades opened and closed this season count, filled and closed by the server. The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</p>
+        <p><b>Best win rate.</b> At least 20 counted trades closed this season. A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count. Copies count once. Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a higher one.</p>
+        <p><b>Season XP.</b> All XP earned during the season counts: trading, Academy, missions, duels, streaks, goals. Rewards activity, not position size.</p>
+        <p><b>Gold Room.</b> Gold members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.</p>
+        <p>Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="sec" id="floor">
+    <div class="sh"><h2><i>04</i>The live floor</h2><span class="s">Every close and every duel on the desk, the second they land.</span></div>
+    <div class="g2">
+      <div class="card"><div class="k" style="color:var(--grn)">Closes<span class="st" id="cfN" style="background:var(--grn);color:#04150d">LIVE</span></div><div class="feed" id="closeFeed" style="margin-top:8px"><div class="empty">Loading…</div></div></div>
+      <div class="card"><div class="k" style="color:var(--sky)">Duels<span class="st" id="dfN" style="background:var(--sky);color:#04121c">LIVE</span></div><div class="feed" id="duelFeed" style="margin-top:8px"><div class="empty">Loading…</div></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sh"><h2><i>05</i>How a season works</h2></div>
+    <div class="how">
+      <div><b>Fourteen days, 00:00 UTC to 00:00 UTC</b>Every board, the pass, the goals and the calls share one clock. When it ends, the top five on each board are paid, unclaimed pass tiers are granted, and a new season opens.</div>
+      <div><b>Nothing here costs money to enter</b>Boards, the free pass track, goals and calls are open to every member. The pro track is the only thing you can buy, and Ticks buy it too.</div>
+      <div><b>Everything is measured server-side</b>Ranks, tiers, goals and calls are counted from what the server recorded, never from the browser. What you see here is what pays.</div>
+      <div><b>Ticks are earned, never bought</b>Calls, goals and the pass pay Ticks. The Vault spends them. Money only ever moves one way: from the boards to your rewards balance.</div>
+    </div>
+  </section>
+</div>
+<div class="tst" id="tst" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var int=function(n){return Math.round(+n||0).toLocaleString('en-US');};
+  var px=function(n){n=+n||0;return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:0}):n.toFixed(2);};
+  var money=function(v){v=+v||0;var s=v<0?'-$':'+$',a=Math.abs(v);return s+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e4?(a/1e3).toFixed(1)+'k':a>=1e3?a.toLocaleString('en-US',{maximumFractionDigits:0}):a.toFixed(2));};
+  var pct=function(v){v=+v||0;var a=Math.abs(v);return (v<0?'-':'+')+(a>=1000?(a/1000).toFixed(1)+'k':a>=100?Math.round(a):a.toFixed(1))+'%';};
+  var left=function(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;return d?d+'d '+h+'h '+m+'m':h?h+'h '+m+'m '+(x<10?'0':'')+x+'s':m+'m '+(x<10?'0':'')+x+'s';};
+  var ago=function(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';};
+  var me=function(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;};
+  var SEASON=null,LB=null,PASS=null,GOALS=null,PRED=null,HH=null;
+  var toastT=null;function toast(html){var t=$('tst');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
+
+  /* ---- banner ---- */
+  function paintBanner(){
+    var sk=(PASS&&PASS.season)||(GOALS&&GOALS.season)||null,m=me();
+    if(sk){var from=Date.parse(sk.from+'T00:00:00Z'),day=Math.min(14,Math.max(1,Math.floor((Date.now()-from)/86400000)+1));
+      $('eyeb').textContent='Season '+(sk.idx+1)+' · day '+day+' of 14';
+      $('days').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'" title="Day '+(i+1)+'"></i>';}).join('');SEASON=sk;}
+    if(PRED)$('callers').textContent=int(PRED.callers||0)+' calling';
+    var signed=!!m;$('gate').hidden=signed;$('meIn').hidden=!signed;
+    if(signed){var nm=m.username||(m.email||'you').split('@')[0];$('meName').textContent='@'+nm;$('meLvl').setAttribute('data-lvln',nm);$('meLvl').removeAttribute('data-lvldone');$('meAv').innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc((m.avatar&&m.avatar.length<3)?m.avatar:nm.charAt(0).toUpperCase());
+      var L=m.level||null;$('meLvlT').textContent=L?(L.name+(L.next?' · '+int(L.toNext||0)+' XP to '+L.next:'')):'';
+      if(PASS){$('meXp').textContent=int(PASS.xp);$('meTier').textContent=PASS.tier+'/20';$('meClaim').textContent=PASS.claimable||0;}
+      if(LB){var ranks=[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']];
+        $('meRanks').innerHTML=ranks.map(function(b){var rows=LB[b[0]]||[];var r=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm.toLowerCase();})[0];var pz=(LB.boardPrizes||{})[b[2]]||[];var pay=r&&r.rank<=5&&pz[r.rank-1]?'$'+pz[r.rank-1]:'';return '<span class="chip'+(r?(pay?' pay':' in'):'')+'"><em>'+b[1]+'</em><b>'+(r?'#'+r.rank+(pay?' · '+pay:''):'—')+'</b></span>';}).join('');}
+      try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
+  }
+  function tickClock(){if(SEASON)$('ends').textContent=left(SEASON.endMs-Date.now()).replace(/ \d+s$/,'');if(PRED&&PRED.open&&Date.now()<PRED.cutoff)$('dcState').textContent='OPEN · '+left(PRED.cutoff-Date.now()).replace(/ \d+s$/,'')+' left';if(HH)paintHH(true);}
+  setInterval(tickClock,1000);
+
+  /* ---- sticky nav highlight ---- */
+  (function(){var links=[].slice.call(document.querySelectorAll('#snav a'));if(!('IntersectionObserver' in window))return;var cur='';var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){cur=x.target.id;links.forEach(function(a){a.classList.toggle('on',a.getAttribute('data-s')===cur);});}});},{rootMargin:'-40% 0px -55% 0px'});['today','pass','boards','floor'].forEach(function(id){var el=$(id);if(el)io.observe(el);});})();
+
+  /* ---- daily call ---- */
+  var dcBusy=false;
+  function paintDC(){var D=PRED;if(!D)return;var m=me(),signed=!!D.signedIn||!!m,today=D.me&&D.me.today,mine=D.me;
+    $('dcState').textContent=D.open?('OPEN · '+left(D.cutoff-Date.now()).replace(/ \d+s$/,'')+' left'):'CLOSED';$('dcState').className='st'+(D.open?'':' off');
+    $('dcLive').textContent=D.live?('now $'+px(D.live)):'';
+    var form=$('dcForm'),mn=$('dcMine'),sub=$('dcSub'),y=$('dcY'),bd=$('dcBoard');
+    if(!signed){form.hidden=true;mn.hidden=true;sub.innerHTML='<b>Sign in</b> to make your call. Calls close at '+D.cutoffH+':00 UTC; the 00:00 UTC close settles it. Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up.';}
+    else if(today&&!$('dc').getAttribute('data-edit')){form.hidden=true;mn.hidden=false;mn.innerHTML='<span>Your call <b>$'+px(today.guess)+'</b></span>'+(D.open?'<button type="button" id="dcChg">change</button>':'');var cb=$('dcChg');if(cb)cb.onclick=function(){$('dc').setAttribute('data-edit','1');paintDC();$('dcIn').focus();};
+      sub.innerHTML=(D.open?'Locked in until '+D.cutoffH+':00 UTC. ':'Calls are closed for today. ')+'Settles at 00:00 UTC'+(mine.streak>1?' · <b>'+mine.streak+' days in a row</b>':'')+(mine.season&&mine.season.n?' · season <b>'+mine.season.pts+' pts</b>'+(mine.season.rank?' (#'+mine.season.rank+')':''):'')+'.';}
+    else{form.hidden=!D.open;mn.hidden=true;sub.innerHTML=D.open?'Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up. One call a day, changeable until '+D.cutoffH+':00 UTC.':'Calls for today closed at '+D.cutoffH+':00 UTC. Tomorrow opens at 00:00 UTC'+(mine&&mine.streak>1?' · <b>'+mine.streak+' days in a row</b>':'')+'.';if(!$('dcIn').value&&D.live)$('dcIn').placeholder=px(D.live);}
+    if(mine&&mine.yday&&mine.yday.settled){var yy=mine.yday,cls=yy.pts>=8?'win':yy.pts>0?'mid':'';y.hidden=false;y.innerHTML='Yesterday: you said <b>$'+px(yy.guess)+'</b>, it closed <b>$'+px(yy.close)+'</b> · <span class="'+cls+'">'+(Math.round(yy.err*100)/100)+'% off · +'+yy.ticks+' Ticks</span>';}else y.hidden=true;
+    var rows=D.board||[],myName=(m&&m.username)||'';
+    if(rows.length){bd.hidden=false;bd.innerHTML='<div class="lh"><span>Top callers · this season</span><span>'+int(D.callers||0)+' calling</span></div>'+rows.slice(0,5).map(function(r,i){return '<div class="r'+(r.name===myName?' me':'')+'"><i>'+(i+1)+'</i><span title="'+esc(r.name)+'">@'+esc(r.name)+'</span><b>'+r.pts+' pts</b></div>';}).join('');}else bd.hidden=true;
+    $('dcGo').disabled=false;}
+  $('dcForm').addEventListener('submit',function(e){e.preventDefault();if(dcBusy)return;var v=parseFloat(String($('dcIn').value).replace(/[^0-9.]/g,''));var sub=$('dcSub');if(!(v>0)){sub.innerHTML='<b class="err">Type a price first.</b>';return;}dcBusy=true;$('dcGo').disabled=true;
+    fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){dcBusy=false;if(d&&d.ok){$('dcIn').value='';$('dc').removeAttribute('data-edit');toast('Call locked: <b>$'+px(d.guess)+'</b>');loadPred();}else{$('dcGo').disabled=false;sub.innerHTML='<b class="err">'+(d&&d.error==='range'?'That is more than 30% from the price right now.':d&&d.error==='closed'?'Calls closed for today.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save your call.')+'</b>';}}).catch(function(){dcBusy=false;$('dcGo').disabled=false;});});
+
+  /* ---- happy hour ---- */
+  function paintHH(tickOnly){var H=HH;if(!H)return;var now=Date.now();var on=!!H.active&&H.endMs&&H.endMs>now;
+    $('hhState').textContent=on?'LIVE NOW':H.enabled===false?'PAUSED':'DAILY';$('hhState').className='st'+(on?' amber':H.enabled===false?' off':' amber');
+    var big=$('hhBig');big.className='hh-big'+(on?' on':'');big.innerHTML='<small>'+(on?'ends in':'starts in')+'</small>'+(on?left(H.endMs-now):(H.nextStartMs?left(H.nextStartMs-now):'—'));
+    if(tickOnly)return;
+    var h2=String(H.hourUTC).padStart(2,'0'),e=String((H.hourUTC+Math.round((H.durMin||60)/60))%24).padStart(2,'0');
+    $('hhSub').innerHTML='Every day <b>'+h2+':00–'+e+':00 UTC</b>. Close a winning paper trade at <b>'+H.roeMin+'% ROE</b> or better, up to <b>'+(H.levMax||100)+'x</b>, and it pays <b>+'+(H.xp||0)+' XP</b> per trade on top of the usual.';
+    $('hhRows').innerHTML='<div><span>Window</span><b>'+h2+':00–'+e+':00 UTC</b></div><div><span>Condition</span><b>win · ≥'+H.roeMin+'% ROE · ≤'+(H.levMax||100)+'x</b></div><div><span>Bonus</span><b>+'+(H.xp||0)+' XP / trade</b></div>'+((H.promos||[]).length?'<div><span>Promo</span><b>'+(H.promos.length)+' running</b></div>':'');}
+
+  /* ---- goals ---- */
+  var sgBusy=false;
+  function paintSG(){var G=GOALS;if(!G)return;var picks=G.picks||[],max=G.max||2,rw=G.reward||{xp:100,ticks:40},signed=!!G.signedIn;
+    var d=G.season?Math.max(0,Math.ceil((G.season.endMs-Date.now())/86400000)):0;$('sgState').textContent=d+'d left';
+    var sub=$('sgSub'),list=$('sgList');
+    function row(p){var pc=Math.min(100,Math.round((p.n||0)/(p.target||1)*100));return '<div class="sg-g'+(p.done?' done':'')+'"><div class="t"><span title="'+esc(p.name)+'">'+esc(p.name)+'</span><b>'+Math.min(p.n||0,p.target)+' / '+p.target+'</b></div><div class="bar"><i style="width:'+pc+'%"></i></div>'+(p.paid?'<div class="sg-paid">Claimed · +'+rw.xp+' XP · +'+rw.ticks+' Ticks</div>':(p.done?'<button type="button" class="sg-claim" data-claim="'+p.k+'">Claim +'+rw.xp+' XP · +'+rw.ticks+' Ticks</button>':''))+'</div>';}
+    if(!signed){sub.innerHTML='Pick <b>two</b> targets for the season; each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
+    var leftN=max-picks.length;
+    if(leftN>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';var taken={};picks.forEach(function(p){taken[p.k]=1;});list.innerHTML=picks.map(row).join('')+(G.catalogue||[]).filter(function(c){return !taken[c.k];}).map(function(c){return '<button type="button" class="sg-opt" data-pick="'+c.k+'"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></button>';}).join('');}
+    else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}}
+  $('sg').addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||sgBusy)return;sgBusy=true;b.disabled=true;var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
+    fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){sgBusy=false;if(d&&d.ok){if(op==='claim'){toast('Goal claimed: <b>+'+(d.xp||0)+' XP · +'+(d.ticks||0)+' Ticks</b>');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);}loadGoals();loadPass();}else{b.disabled=false;$('sgSub').innerHTML='<b class="err">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}}).catch(function(){sgBusy=false;b.disabled=false;});});
+
+  /* ---- pass road: built once, updated in place (no re-layout, no scroll jump) ---- */
+  var NAMES={arctic:'Arctic frame',bg_static:'Static background',tkt_kraft:'Kraft Stub ticket',sandstone:'Sandstone frame',leviathan:'Leviathan frame'};
+  var passBusy=false,roadBuilt=false;
+  function cellHtml(t,tr,D,signed){var r=t[tr],can=signed&&t.reached&&!r.claimed&&(tr==='free'||D.pro);
+    return '<b>+'+r.ticks+'<small>T</small></b>'+(r.item?'<div class="it">'+esc(NAMES[r.item]||r.item)+'</div>':'')+(r.claimed?'<div class="done">CLAIMED</div>':(can?'<button type="button" class="c" data-claim="'+t.t+'" data-track="'+tr+'">Claim</button>':(tr==='pro'&&signed&&t.reached&&!D.pro?'<div class="done">PRO</div>':'')));}
+  function buildRoad(D){var road=$('road');var html='<div class="fill" id="roadFill"></div>';
+    ['free','pro'].forEach(function(tr){html+=D.tiers.map(function(t){return tr==='free'
+      ?'<div class="tier" data-t="'+t.t+'"><span class="n">'+t.t+'</span><div class="xp">'+int(t.xp)+' XP</div><div class="rw" data-cell="free-'+t.t+'"></div></div>'
+      :'<div class="tier" data-tp="'+t.t+'" style="padding-top:0"><div class="rw pro" data-cell="pro-'+t.t+'"></div></div>';}).join('');});
+    road.innerHTML=html;roadBuilt=true;}
+  function placeFill(D){var road=$('road'),fill=$('roadFill');if(!fill)return;var nodes=road.querySelectorAll('.tier[data-t] .n');if(!nodes.length)return;
+    var c=function(i){var n=nodes[i];return n.parentNode.offsetLeft+n.offsetLeft+n.offsetWidth/2;};
+    var step=D.step||100,into=Math.max(0,Math.min(step,D.xp-D.tier*step)),T=D.tier;
+    var x=T>0?c(Math.min(19,T-1)):0,nx=T<20?c(Math.min(19,T)):c(19),w=T>=20?c(19):x+(nx-x)*(into/step);
+    fill.style.width=Math.max(0,Math.round(w))+'px';}
+  function paintPass(){var D=PASS;if(!D)return;var signed=!!D.signedIn,step=D.step||100;
+    $('pTicks').textContent=int(D.price.ticks)+' T';$('pUsd').textContent='$'+(D.price.cents/100).toFixed(2);
+    $('passPill').textContent=D.pro?'PRO TRACK':'FREE TRACK';$('passPill').style.background=D.pro?'var(--pro)':'#3a4450';$('passPill').style.color=D.pro?'#160a26':'#c7ccd4';
+    var nextT=D.tiers[Math.min(19,D.tier)];
+    $('passNext').innerHTML=signed?(D.tier>=20?'<b>Every tier reached.</b>':'<b>'+int(D.next)+' XP</b> to tier '+(D.tier+1)+' · next: <b>+'+nextT.free.ticks+' T</b> free'+(D.pro?', <b>+'+nextT.pro.ticks+' T</b> pro':'')+(nextT[D.pro?'pro':'free'].item?' · '+esc(NAMES[nextT[D.pro?'pro':'free'].item]||''):'')):'Sign in and the road is yours: tiers unlock from the XP you already earn.';
+    var ca=$('claimAll');ca.hidden=!(signed&&D.claimable>1);ca.textContent='Claim all '+(D.claimable||0);var sn=$('snClaim');sn.hidden=!(signed&&D.claimable);sn.textContent=D.claimable||'';
+    if(!roadBuilt)buildRoad(D);
+    var road=$('road');
+    D.tiers.forEach(function(t){var tf=road.querySelector('.tier[data-t="'+t.t+'"]'),tp=road.querySelector('.tier[data-tp="'+t.t+'"]');
+      [tf,tp].forEach(function(el){if(!el)return;el.classList.toggle('on',!!t.reached);el.classList.toggle('lock',!t.reached);});
+      if(tf)tf.classList.toggle('cur',signed&&t.t===D.tier);
+      ['free','pro'].forEach(function(tr){var cell=road.querySelector('[data-cell="'+tr+'-'+t.t+'"]');if(!cell)return;var h=cellHtml(t,tr,D,signed);if(cell.getAttribute('data-h')!==h){cell.innerHTML=h;cell.setAttribute('data-h',h);}cell.classList.toggle('can',!!cell.querySelector('.c'));});});
+    requestAnimationFrame(function(){placeFill(D);
+      if(!road.getAttribute('data-scrolled')&&signed&&D.tier>0){road.setAttribute('data-scrolled','1');var cur=road.querySelector('.tier.cur');if(cur){var wrap=$('roadWrap');wrap.scrollLeft=Math.max(0,cur.offsetLeft-wrap.clientWidth/2+56);}}});
+    $('buy').hidden=!signed||!!D.pro;$('buyMsg').textContent=D.pro?('Pro track active this season'+(D.boughtTs?' since '+new Date(D.boughtTs).toISOString().slice(0,10):'')+'.'):'';}
+  function claimTier(t,track,btn){return fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'claim',t:t,track:track})}).then(function(r){return r.json();}).then(function(d){
+    if(d&&d.ok){var cell=$('road').querySelector('[data-cell="'+track+'-'+t+'"]');if(cell){cell.classList.add('just');setTimeout(function(){cell.classList.remove('just');},900);}return d;}
+    throw d||{};});}
+  document.addEventListener('click',function(e){
+    var c=e.target.closest&&e.target.closest('#road [data-claim]');
+    if(c&&!passBusy){passBusy=true;c.disabled=true;claimTier(+c.getAttribute('data-claim'),c.getAttribute('data-track'),c).then(function(d){passBusy=false;toast('Tier '+d.t+' claimed: <b>+'+(d.ticks||0)+' Ticks</b>'+(d.item?' · '+esc(NAMES[d.item]||d.item):''));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}).catch(function(){passBusy=false;c.disabled=false;});return;}
+    var all=e.target.closest&&e.target.closest('#claimAll');
+    if(all&&!passBusy&&PASS){passBusy=true;all.disabled=true;var todo=[];PASS.tiers.forEach(function(t){if(!t.reached)return;if(!t.free.claimed)todo.push([t.t,'free']);if(PASS.pro&&!t.pro.claimed)todo.push([t.t,'pro']);});
+      var got=0,items=[];(function next(){var x=todo.shift();if(!x){passBusy=false;all.disabled=false;toast('Claimed <b>+'+got+' Ticks</b>'+(items.length?' · '+items.map(function(i){return esc(NAMES[i]||i);}).join(', '):''));if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();return;}
+        claimTier(x[0],x[1]).then(function(d){got+=d.ticks||0;if(d.item)items.push(d.item);setTimeout(next,140);}).catch(function(){setTimeout(next,140);});})();return;}
+    var b=e.target.closest&&e.target.closest('[data-buy]');
+    if(b&&!passBusy){var src=b.getAttribute('data-buy'),msg=$('buyMsg'),body={op:'buy',src:src};
+      if(src==='code'){body.code=String($('codeIn').value||'').trim().toUpperCase();if(!body.code){msg.innerHTML='<b class="err">Type the code first.</b>';return;}}
+      if(src==='usd'&&!confirm('Pay $'+(PASS.price.cents/100).toFixed(2)+' from your rewards balance for the pro track this season?'))return;
+      passBusy=true;b.disabled=true;msg.textContent='…';
+      fetch('/api/pass',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){passBusy=false;b.disabled=false;if(d&&d.ok){msg.innerHTML='<b style="color:var(--lime)">Pro track unlocked for this season.</b>';toast('<b>Pro track</b> unlocked');if(window.mpXpCheck)setTimeout(window.mpXpCheck,600);loadPass();}else{var er=d&&d.error;msg.innerHTML='<b class="err">'+(er==='short_ticks'?('Not enough Ticks: this costs '+int(d.need)+' T and you have '+int(d.have)+' T.'):er==='insufficient'?('Not enough balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='bad_code'?'That code does not exist.':er==='expired'?'That code has expired.':er==='used_up'?'That code has been fully used.':er==='code_taken'?'You already used this code.':er==='already'?'You already have the pro track this season.':er==='not_signed_in'?'Sign in first.':'Could not complete that.')+'</b>';}}).catch(function(){passBusy=false;b.disabled=false;msg.innerHTML='<b class="err">Network error.</b>';});}
+  });
+  window.addEventListener('resize',function(){if(PASS)placeFill(PASS);});
+
+  /* ---- boards: five cards to choose, one fixed-column table ---- */
+  var IC={green:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',roe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',wr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',xp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>',gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z"/><path d="M6 20h12"/></svg>'};
+  var BOARDS=[
+    {k:'green',key:'topGreen',name:'Green days',c:'#2ebd85',cols:'36px minmax(140px,1fr) 78px 64px 84px 96px 56px',head:['#','Trader','green','red','trades','season P&L','pays'],cells:function(r){return [r.days+' green',r.red+' red',int(r.trades)+' tr',money(r.pnl)];},lead:function(r){return r.days+' green';}},
+    {k:'roe',key:'top',name:'Highest ROE',c:'#c2f64a',cols:'36px minmax(140px,1fr) 88px 120px 96px 56px',head:['#','Trader','best ROE','trade','P&L','pays'],cells:function(r){return [pct(r.roe),'<span class="tag '+(r.side==='short'?'s':'l')+'">'+esc(String(r.symbol||'').toUpperCase())+' '+(r.side==='short'?'Short':'Long')+'</span>',money(r.pnl)];},lead:function(r){return pct(r.roe);}},
+    {k:'wr',key:'topWr',name:'Win rate',c:'#57c7f7',cols:'36px minmax(140px,1fr) 78px 104px 76px 56px',head:['#','Trader','win rate','record','score','pays'],cells:function(r){return [r.wr+'%',r.w+'W · '+r.l+'L',String(r.score)];},lead:function(r){return r.wr+'%';}},
+    {k:'xp',key:'topXp',name:'Season XP',c:'#c792ff',cols:'36px minmax(140px,1fr) 110px 56px',head:['#','Trader','season XP','pays'],cells:function(r){return [int(r.xp)+' XP'];},lead:function(r){return int(r.xp)+' XP';}},
+    {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#','Trader','points','record','pays'],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}}];
+  var curBoard='green';
+  function paintBoards(){var D=LB;if(!D)return;var pz=D.boardPrizes||{},m=me(),nm=(m&&m.username||'').toLowerCase();
+    $('bsw').innerHTML=BOARDS.map(function(b){var rows=D[b.key]||[],p=pz[b.k]||[],tot=p.reduce(function(a,c){return a+c;},0),ld=rows[0],mine=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];
+      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div><div class="pz">'+(tot?'$'+tot+' to the top 5':'title · Gold only')+'</div><div class="ld">'+(ld?'<span title="'+esc(ld.who)+'">1. '+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>—</b>')+'</div><div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' · $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
+    var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
+    var head='<div class="tr th" style="grid-template-columns:'+B.cols+'">'+B.head.map(function(h,i){return '<div'+(i>=2?' style="text-align:right"':'')+'>'+h+'</div>';}).join('')+'</div>';
+    var body=rows.length?rows.slice(0,10).map(function(r){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):'<div class="empty">Nobody qualifies yet this season. The rules below say what it takes.</div>';
+    $('tbl').innerHTML=head+body;
+    $('bdNote').textContent=curBoard==='gold'?('Gold members only · a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' · needs '+int(D.goldMin||0)+' XP'):('Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' · '));
+    try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
+  $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;curBoard=t.getAttribute('data-board');paintBoards();});
+
+  /* ---- floor ---- */
+  var MET={roe:'ROE',wr:'win rate',win:'biggest win',pnl:'profit',survival:'survival',streak:'win streak',sniper:'sniper'};
+  function paintFeeds(closes,duels){
+    if(closes){$('closeFeed').innerHTML=closes.length?closes.slice(0,20).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="fr"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span>'+(c.liq?'<span class="p liq">REKT · '+money(c.pnl)+'</span>':'<span class="p '+(up?'up':'dn')+'">'+money(c.pnl)+' · '+pct(c.roe)+'</span>')+'<span class="t">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="empty">Quiet on the floor right now.</div>';$('cfN').textContent=closes.length?closes.length+' LIVE':'LIVE';}
+    if(duels){$('duelFeed').innerHTML=duels.length?duels.slice(0,12).map(function(d){var done=d.status==='done';var w=done?(d.winner==='a'?d.a:d.winner==='b'?d.b:''):'';return '<div class="fr duel"><span class="pair"><span class="w" data-lbu="'+esc(d.a)+'" title="'+esc(d.a)+'">'+esc(d.a)+'</span><i>vs</i><span class="w" data-lbu="'+esc(d.b)+'" title="'+esc(d.b)+'">'+esc(d.b)+'</span></span><span class="sy">'+esc(MET[d.metric]||d.metric)+(d.stake?' · '+d.stake+'T':'')+'</span><span class="p" style="color:'+(done?'var(--sky)':'var(--dim)')+'" title="'+(done?esc(w)+' won':'live')+'">'+(done?(w?esc(w.length>9?w.slice(0,8)+'…':w)+' won':'draw'):'live')+'</span></div>';}).join(''):'<div class="empty">No duels yet this season.</div>';$('dfN').textContent=duels.length?duels.length+' LIVE':'LIVE';}
+    try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
+
+  /* ---- loads ---- */
+  function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
+  function loadPass(){return J('/api/pass').then(function(d){if(d&&d.tiers){PASS=d;paintPass();paintBanner();}});}
+  function loadGoals(){return J('/api/goals').then(function(d){if(d&&d.catalogue){GOALS=d;paintSG();paintBanner();}});}
+  function loadPred(){return J('/api/predict').then(function(d){if(d&&d.day){PRED=d;paintDC();paintBanner();}});}
+  function loadLB(){return J('/api/reward/lb').then(function(d){if(d&&d.weekStart){LB=d;paintBoards();paintBanner();}});}
+  function loadHH(){return J('/api/happyhour').then(function(d){if(d){HH=d;paintHH(false);}});}
+  function loadFeeds(){J('/api/trades/feed').then(function(d){paintFeeds((d&&d.closes)||[],null);});J('/api/duel/feed').then(function(d){paintFeeds(null,(d&&d.duels)||[]);});}
+  function loadAll(){loadPass();loadGoals();loadPred();loadLB();loadHH();loadFeeds();}
+  loadAll();
+  window.addEventListener('mp-auth-change',function(){setTimeout(loadAll,400);});
+  window.addEventListener('mp:xp',function(){setTimeout(function(){loadPass();loadGoals();},1500);});
+  setInterval(function(){if(document.hidden)return;loadFeeds();},45000);
+  setInterval(function(){if(document.hidden)return;loadPred();loadHH();loadLB();},300000);
+  if(location.hash&&document.querySelector(location.hash)){setTimeout(function(){try{document.querySelector(location.hash).scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}},600);}
+})();
+</script>
+<script defer src="/assets/mp-auth.js?v=78d3ebd1"></script>
+<script defer src="/assets/mp-nav.js?v=74c5e53c"></script>
+<script defer src="/assets/mp-profile.js?v=557b2454"></script>
+</body>
+</html>

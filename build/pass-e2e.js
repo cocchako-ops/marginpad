@@ -94,26 +94,57 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: 1280, height: 900 });
-    await page.goto(ORIGIN + '/pass/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
-    await page.waitForFunction("document.querySelectorAll('#grid .tier').length>=40", { timeout: 20000 }).catch(() => {});
-    guest = await page.evaluate(() => ({ gate: !document.getElementById('gate').hidden, tiers: document.querySelectorAll('#grid .tier').length, buyHidden: document.getElementById('buyCard').hidden, scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, ends: document.getElementById('ends').textContent }));
+    await page.goto(ORIGIN + '/season/?cb=' + Date.now() + '#pass', { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.waitForFunction("document.querySelectorAll('#road .tier').length>=40", { timeout: 20000 }).catch(() => {});
+    guest = await page.evaluate(() => ({ gate: !document.getElementById('gate').hidden, tiers: document.querySelectorAll('#road .tier').length, buyHidden: document.getElementById('buy').hidden, scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, ends: document.getElementById('ends').textContent, fill: parseFloat(document.getElementById('roadFill').style.width) || 0 }));
     await ctx.close();
 
+    // simulated pro member: the page's own /api/pass + /api/auth/* are answered from the state minted above;
+    // claims are answered too (and mutate the state) so "Claim all" can be exercised end-to-end in the DOM.
+    const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp: 4100, next: 'Gold', nextMin: 12000, toNext: 7900, pct: 12, stars: 0 };
+    const st = JSON.parse(JSON.stringify(s2)); st.signedIn = true;
+    const recount = () => { st.claimable = st.tiers.reduce((a, t) => a + (t.reached ? (t.free.claimed ? 0 : 1) + (st.pro && !t.pro.claimed ? 1 : 0) : 0), 0); };
+    recount();
     const ctx2 = await browser.createBrowserContext(); const p2 = await ctx2.newPage();
     await p2.setCacheEnabled(false); await p2.setBypassServiceWorker(true); await p2.setViewport({ width: 1280, height: 900 });
     await p2.setRequestInterception(true);
     p2.on('request', (req) => {
-      if (req.url().indexOf('/api/pass') >= 0 && req.method() === 'GET') { const b = JSON.parse(JSON.stringify(s2)); b.signedIn = true; return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(b) }); }
+      const u = req.url();
+      if (u.indexOf('/api/auth/me') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'e2e', username: 'e2e_' + UID, xp: 4100, level: LV } }) });
+      if (u.indexOf('/api/auth/xp') >= 0 && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ signedIn: true, xp: 4100, level: LV, log: [], notifUnread: 0, dmUnread: 0, duelPending: 0 }) });
+      if (u.indexOf('/api/pass') >= 0 && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(st) });
+      if (u.indexOf('/api/pass') >= 0 && req.method() === 'POST') {
+        let b = {}; try { b = JSON.parse(req.postData() || '{}'); } catch (e) {}
+        const t = st.tiers[b.t - 1]; if (b.op !== 'claim' || !t || !t.reached || t[b.track].claimed) return req.respond({ status: 400, contentType: 'application/json', body: '{"error":"bad"}' });
+        t[b.track].claimed = true; recount();
+        return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, t: b.t, track: b.track, ticks: t[b.track].ticks, item: t[b.track].item || null }) });
+      }
       return req.continue();
     });
-    await p2.goto(ORIGIN + '/pass/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
-    await p2.waitForFunction("document.querySelectorAll('#grid [data-claim]').length>0", { timeout: 20000 }).catch(() => {});
-    member = await p2.evaluate(() => { const b = document.querySelector('#grid [data-claim]'); if (!b) return { claim: false }; b.scrollIntoView({ block: 'center', inline: 'center' }); const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { claim: true, n: document.querySelectorAll('#grid [data-claim]').length, reach: !!(hit && b.contains(hit)), pro: !document.getElementById('proPill').hidden, tier: document.getElementById('tier').textContent, scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, gate: !document.getElementById('gate').hidden }; });
+    await p2.goto(ORIGIN + '/season/?cb=' + Date.now() + '#pass', { waitUntil: 'networkidle2', timeout: 90000 });
+    await p2.waitForFunction("document.querySelectorAll('#road [data-claim]').length>0 && parseFloat(document.getElementById('roadFill').style.width)>0", { timeout: 20000 }).catch(() => {});
+    member = await p2.evaluate(() => {
+      const road = document.getElementById('road'), nodes = road.querySelectorAll('.tier[data-t] .n');
+      const c = (i) => nodes[i].parentNode.offsetLeft + nodes[i].offsetLeft + nodes[i].offsetWidth / 2;
+      const b = document.querySelector('#road [data-claim]'); if (!b) return { claim: false };
+      b.scrollIntoView({ block: 'center', inline: 'center' }); const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      const cur = road.querySelector('.tier.cur .n');
+      return { claim: true, n: document.querySelectorAll('#road [data-claim]').length, reach: !!(hit && b.contains(hit)), pill: document.getElementById('passPill').textContent, tier: document.getElementById('meTier').textContent, scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, gate: !document.getElementById('gate').hidden, fill: parseFloat(document.getElementById('roadFill').style.width), curCenter: cur ? cur.parentNode.offsetLeft + cur.offsetLeft + cur.offsetWidth / 2 : -1, nextCenter: cur ? c(Math.min(19, +cur.parentNode.getAttribute('data-t'))) : -1, claimAll: !document.getElementById('claimAll').hidden, claimAllT: document.getElementById('claimAll').textContent, scrollL: document.getElementById('roadWrap').scrollLeft };
+    });
+    // Claim all: the road must update in place (same scroll position), every button gone, toast shown
+    await p2.evaluate(() => { document.getElementById('claimAll').scrollIntoView({ block: 'center' }); });
+    const before = await p2.evaluate(() => document.getElementById('roadWrap').scrollLeft);
+    await p2.click('#claimAll');
+    await p2.waitForFunction("document.querySelectorAll('#road [data-claim]').length===0 && document.getElementById('tst').classList.contains('on')", { timeout: 20000 }).catch(() => {});
+    member.after = await p2.evaluate(() => ({ n: document.querySelectorAll('#road [data-claim]').length, scrollL: document.getElementById('roadWrap').scrollLeft, toast: document.getElementById('tst').textContent, claimed: document.querySelectorAll('#road .rw .done').length, claimAll: !document.getElementById('claimAll').hidden, toClaim: document.getElementById('meClaim').textContent }));
+    member.after.before = before;
     await p2.screenshot({ path: path.join(__dirname, 'vault-shots', 'pass-member.png') });
     await ctx2.close();
   });
-  chk('page: guest sees the gate and all 40 tier cells, no buy card, no horizontal page scroll', guest && guest.gate && guest.tiers === 40 && guest.buyHidden && !guest.scrollsX && guest.ends !== '—', guest);
-  chk('page: pro member sees reachable Claim buttons for every remaining reward, the pro pill, the tier, no gate', member && member.claim && member.n === 2 * T - 3 && member.reach && member.pro && member.tier === String(T) && !member.scrollsX && !member.gate, member);
+  chk('page: guest sees the gate and all 40 tier cells, no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 40 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '—', guest);
+  chk('page: pro member sees reachable Claim buttons for every remaining reward, PRO pill, tier, Claim all, no gate', member && member.claim && member.n === 2 * T - 3 && member.reach && /PRO/.test(member.pill) && member.tier === T + '/20' && member.claimAll && member.claimAllT === 'Claim all ' + (2 * T - 3) && !member.scrollsX && !member.gate, member);
+  chk('page: the road fill ends between the reached tier node and the next one (measured from node centers, not a %)', member && member.nextCenter > member.curCenter + 50 && member.fill >= member.curCenter - 1 && member.fill <= member.nextCenter + 1, member && { fill: member.fill, cur: member.curCenter, next: member.nextCenter });
+  chk('page: Claim all claims every reward in place: 0 buttons left, toast, scroll kept, counter 0', member && member.after && member.after.n === 0 && /Claimed/.test(member.after.toast) && Math.abs(member.after.scrollL - member.after.before) < 2 && member.after.claimed >= 2 * T - 3 && !member.after.claimAll && member.after.toClaim === '0', member && member.after);
 
   for (const u of [UID, UID2]) await post('/api/admin/e2euser', { uid: u, op: 'rm' });
   const gone = (await pass(UID)).body;
