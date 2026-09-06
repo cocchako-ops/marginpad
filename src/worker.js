@@ -19614,6 +19614,11 @@ export class UserStore {
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
       const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid)) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
+      if (b.op === 'sweep') { // remove every e2e_* member older than an hour: an E2E that crashed mid-run leaves its throwaway behind (goals-e2e 2026-09-06)
+        const olds = this.rows("SELECT id FROM users WHERE username LIKE 'e2e\\_%' ESCAPE '\\' AND created < ?", Date.now() - 3600000).map(r => String(r.id));
+        for (const id of olds) { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', id); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', id); } catch (e) {} }
+        return this.j({ ok: true, removed: olds.length, ids: olds });
+      }
       if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       return this.j({ ok: true, uid, username: 'e2e_' + uid });
