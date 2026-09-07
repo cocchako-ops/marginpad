@@ -4572,7 +4572,8 @@ async function handleTrack(url, request, env, ctx) {
         // along on every direct pageview, so the feed told the admin a returning regular had 'come from telegram'
         // on every single visit (owner, 2026-08-17 — it was neither true of that visit nor wanted).
         const s0 = (_newVisitor && src === 'direct') ? await normRef9((p.get('s0') || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40)) : '';
- // TEMP DIAGNOSTIC (2026-08-20, owner: "kako da saznamo da li su ovo botovi"): a burst of X-referred hits was
+ // Network / browser / RTT on every pageview row. Started as a TEMP diagnostic (2026-08-20, owner: "kako da saznamo da li su ovo botovi") and became
+ // PERMANENT on 2026-09-07: the live Activity feed prints `net` and `b` on every arrival line ("Mobile · Chrome · MTN Nigeria"). A burst of X-referred hits was
  // 1 pageview each, homepage only, mobile, BR/IN/AR/TR. The origin NETWORK settles it — a datacenter/hosting
  // ASN is automation, a mobile carrier ASN is a real handset. Also carry the TCP RTT (datacenter egress sits
  // near 0-10ms, a real phone is tens of ms) and the browser. Remove after the question is answered.
