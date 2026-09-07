@@ -77,8 +77,8 @@ ${crumbLd}
   <article>
     <h1>${name} (${sym}) Liquidation Map</h1>
     <div class="meta">Live liquidation data · 9 exchanges</div>
+    <div class="liqmap-cta top"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a><span class="cta-s">Free 5-minute live preview · no login · unlimited with Premium</span></div>
     <p><strong>What this is:</strong> a ${name} liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) — it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
-    <div class="liqmap-cta"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a></div>
     <h2>What the ${sym} liquidation map shows</h2>
     <p>MarginPad streams real liquidation events from nine perpetual-futures venues — Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
     <h2>How to read it</h2>

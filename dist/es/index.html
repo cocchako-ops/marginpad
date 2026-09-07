@@ -2,14 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<!-- Google tag (gtag.js) -->
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+
 <meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:(window.innerWidth>880),clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-<meta name="description" content="Calculadoras gratis para traders de futuros cripto: precio de liquidación, tamaño de posición, PnL, DCA y take-profit. Al instante, sin registro." />
+
+<meta name="description" content="Practicá futuros cripto con precios reales y dinero de mentira, calculá liquidación y tamaño de posición, mirá las liquidaciones en vivo de 9 exchanges, screener, calendario y academia. Gratis, sin registro." />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="https://marginpad.io/es/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
@@ -28,12 +24,12 @@
 <link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/" />
-<meta property="og:title" content="Calculadora de Liquidación y Tamaño de Posición Cripto — MarginPad" />
+<meta property="og:title" content="MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo" />
 <meta property="og:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Calculadora de Liquidación y Tamaño de Posición Cripto — MarginPad" />
+<meta name="twitter:title" content="MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo" />
 <meta name="twitter:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC."}</script>
@@ -58,7 +54,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07080a" />
-<title>Calculadora de Liquidación y Tamaño de Posición Cripto — MarginPad</title>
+<title>MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -185,7 +181,11 @@
 
   /* ================= sections ================= */
   .band{position:relative;padding:clamp(40px,5vw,72px) var(--pad) clamp(26px,3vw,44px);}
-  .band::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(1100px,90vw);height:420px;pointer-events:none;background:radial-gradient(ellipse 60% 100% at 50% 0%,var(--glow,rgba(46,189,133,.05)),transparent 70%);}
+  .band::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(1100px,90vw);height:420px;pointer-events:none;background:radial-gradient(ellipse 60% 100% at 50% 0%,var(--glow,rgba(46,189,133,.05)),transparent 70%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 150px);mask-image:linear-gradient(180deg,transparent 0,#000 150px);}
+/* SEAM FIX (2026-09-05, owner: "tacno se vidi odakle pocinje ta pozadina"): the section glow is a radial centred AT the
+   top edge (at 50% 0%), so its bright half is clipped and the colour appeared at FULL strength on the band's first pixel.
+   Measured at x=640: luminance 13 -> 27 across one pixel row on every band. The mask ramps it in over 150px, so the glow
+   still reads but has no edge. Its bottom already fades on its own (transparent at 70% of a 420px ellipse). */
   .band-head{position:relative;z-index:2;display:flex;align-items:baseline;gap:18px;margin-bottom:22px;}
   .band-idx{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--bandc,var(--grn));}
   .band-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,38px);letter-spacing:-.03em;}
@@ -360,6 +360,71 @@
 
   /* ---------- Leaderboard band ---------- */
   .lb-wrap{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;}
+/* This season (2026-09-06): the homepage keeps a compact season section; everything deep lives on /season/. */
+.ss-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr);gap:12px}
+.ss-card{display:block;min-width:0;background:linear-gradient(180deg,#12161d,#0c0f13);border:1px solid #2a323c;border-radius:16px;padding:16px 17px;color:inherit;text-decoration:none;position:relative}
+.ss-you{border-color:rgba(255,215,90,.4);background:radial-gradient(110% 80% at 100% 0,rgba(255,215,90,.1),transparent 55%),linear-gradient(180deg,#12161d,#0c0f13);transition:border-color .14s,transform .1s}
+.ss-you:hover{border-color:rgba(255,215,90,.8)}.ss-you:active{transform:translateY(1px)}
+.ss-k{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#ffd75a}
+.ss-k span{margin-left:auto;font-size:10px;color:#c2f64a;background:rgba(194,246,74,.12);border-radius:20px;padding:2px 8px}
+.ss-k .ss-dot{display:block;flex:0 0 7px;width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#2ebd85;box-shadow:0 0 10px #2ebd85;margin-left:auto;align-self:center}
+.ss-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin:12px 0 10px}
+.ss-days i{display:block;height:7px;border-radius:3px;background:#1a1f27}.ss-days i.on{background:#c2f64a;box-shadow:0 0 8px -2px rgba(194,246,74,.9)}.ss-days i.now{background:#fff}
+.ss-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1.05;color:#fff;margin:2px 0 10px}
+.ss-big b{color:#c2f64a}
+.ss-rows{display:grid;gap:6px}
+.ss-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;font-size:13px;color:#c7ccd4;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;min-width:0}
+.ss-row b{font-family:'Space Mono',monospace;font-size:12px;color:#fff;white-space:nowrap;text-align:right}.ss-row b.ok{color:#c2f64a}.ss-row b.pro{color:#c792ff}.ss-row b.gold{color:#ffd75a}
+.ss-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ss-go{margin-top:12px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a}.ss-go span{display:inline-block;transition:transform .15s}.ss-you:hover .ss-go span{transform:translateX(4px)}
+.ss-list{margin-top:10px;display:flex;flex-direction:column}
+.ss-r{display:grid;grid-template-columns:24px minmax(0,1fr) 78px 44px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #1f252e;font-size:13px;white-space:nowrap;min-height:34px}.ss-r:first-child{border-top:0}.ss-r>*{min-width:0}.ss-r.cl{grid-template-columns:minmax(0,1fr) 84px 92px 36px}
+.ss-r i{font:800 11px 'Space Mono',monospace;color:#5c656f;font-style:normal;text-align:right}.ss-r.t1 i{color:#ffd75a}.ss-r.t2 i{color:#cfd6df}.ss-r.t3 i{color:#d19a66}
+.ss-r .w{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ss-r .w:hover{color:#c2f64a}
+.ss-r .v{font:700 12px 'Space Mono',monospace;color:#c7ccd4;text-align:right;overflow:hidden;text-overflow:ellipsis}.ss-r .v.up{color:#2ebd85}.ss-r .v.dn{color:#ff5a4d}
+.ss-r .pz{font:700 11px 'Space Mono',monospace;color:#c2f64a;min-width:28px;text-align:right}
+.ss-r .sy{font:700 10.5px 'Space Mono',monospace;color:#9aa3ad;border:1px solid #2a323c;border-radius:6px;padding:2px 6px;text-align:center;overflow:hidden;text-overflow:ellipsis}.ss-r .sy.l{color:#2ebd85;border-color:rgba(46,189,133,.5)}.ss-r .sy.s{color:#ff5a4d;border-color:rgba(255,90,77,.5)}
+.ss-r .ago{font:600 10.5px 'Space Mono',monospace;color:#5c656f;text-align:right}
+.ss-empty{color:#5c656f;font-size:13px;padding:8px 0}
+.ss-more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;color:#ffd75a;text-decoration:none}
+/* member strip: replaces the hero for a signed-in visitor */
+.dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.35fr) minmax(220px,.8fr);align-items:stretch;gap:18px;margin:14px var(--pad) 0;padding:20px 22px;border-radius:22px;border:1px solid rgba(199,146,255,.3);background:radial-gradient(70% 90% at 0 0,rgba(199,146,255,.16),transparent 60%),radial-gradient(50% 80% at 100% 100%,rgba(194,246,74,.1),transparent 60%),linear-gradient(180deg,#12161d,#0b0e12);color:inherit;text-decoration:none;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 80px -40px rgba(199,146,255,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .2s,transform .2s}
+.dash:hover{border-color:rgba(194,246,74,.5);transform:translateY(-1px)}
+.dash{margin-bottom:26px} /* owner 2026-09-06: the member card sat straight on the market strip (cap / volume / dominance / fear & greed) */
+@media(max-width:640px){.dash{margin-bottom:16px}}
+.dash::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(199,146,255,.75),transparent 35%,transparent 65%,rgba(194,246,74,.6));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.dash::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);-webkit-mask-image:radial-gradient(60% 80% at 20% 0,#000 10%,transparent 70%);pointer-events:none}
+.dash[hidden]{display:none}
+.dash>*{position:relative;z-index:1;min-width:0}
+.dash-hero{display:flex;gap:14px;align-items:center;min-width:0}
+.dash-av{width:64px;height:64px;border-radius:20px;flex:0 0 64px;display:flex;align-items:center;justify-content:center;font:800 26px 'Bricolage Grotesque',sans-serif;color:#0a0b0d;background:linear-gradient(160deg,#d6ff7a,#c2f64a);box-shadow:0 0 0 3px #0a0b0d,0 0 0 5px var(--lvl,#c2f64a),0 14px 30px -12px var(--lvl,#c2f64a);overflow:hidden}
+.dash-av img{width:100%;height:100%;object-fit:cover}
+.dash-l{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 auto}
+.dash-k{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c792ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-t b{color:#c2f64a}
+.dash-lvl{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;margin-top:4px;font:700 11px 'Space Mono',monospace;color:#9aa3ad;white-space:nowrap}
+.dash-lvl .nm{color:var(--lvl,#c2f64a)}
+.dash-bar{display:block;height:6px;border-radius:4px;background:#161b22;overflow:hidden}.dash-bar b{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--lvl,#c2f64a),#fff);transition:width .8s ease}
+.dash-nx{grid-column:1/-1;font-size:10.5px;color:#5c656f;overflow:hidden;text-overflow:ellipsis}
+.dash-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-content:center}
+.dash-stats .dst{display:flex;flex-direction:column;gap:2px;padding:10px 10px 9px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);min-width:0}
+.dash-stats .dst b{font:800 22px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dash-stats .dst b small{font-size:11px;color:#5c656f;font-weight:600;margin-left:2px}
+.dash-stats .dst em{font-style:normal;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst i{font-style:normal;font-size:11px;color:#5c656f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst.ok{border-color:rgba(194,246,74,.45)}.dash-stats .dst.ok b{color:#c2f64a}.dash-stats .dst.pro{border-color:rgba(199,146,255,.45)}.dash-stats .dst.pro b{color:#c792ff}.dash-stats .dst.gold{border-color:rgba(255,215,90,.45)}.dash-stats .dst.gold b{color:#ffd75a}.dash-stats .dst.hot{border-color:rgba(255,176,32,.55);background:rgba(255,176,32,.08)}.dash-stats .dst.hot i{color:#ffb020}
+.dash-next{display:flex;flex-direction:column;gap:8px;padding-left:18px;border-left:1px solid rgba(255,255,255,.07);min-width:0}
+.dash-todo{display:flex;flex-direction:column;gap:6px}
+.dash-todo span{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:center;font-size:13px;color:#d7dce2;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-todo span i{width:18px;height:18px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font:800 11px 'Space Mono',monospace;background:rgba(255,255,255,.06);color:#9aa3ad;font-style:normal}
+.dash-todo span.ok i{background:rgba(194,246,74,.18);color:#c2f64a}.dash-todo span.hot i{background:rgba(255,176,32,.2);color:#ffb020}.dash-todo span.pro i{background:rgba(199,146,255,.2);color:#c792ff}
+.dash-go{margin-top:auto;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a;white-space:nowrap}
+.dash-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}.dash-days i{display:block;height:5px;border-radius:3px;background:#1a1f27}.dash-days i.on{background:#c792ff}.dash-days i.now{background:#fff;box-shadow:0 0 8px #c792ff}
+@media(max-width:980px){.dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dash-next{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.07);padding-top:12px}}
+@media(max-width:640px){.dash{grid-template-columns:1fr;padding:16px}.dash-stats{grid-template-columns:1fr 1fr}.dash-t{font-size:21px}}
+body.mpa-authed .hero{display:none}
+@media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
+@media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
   .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;}
   .lb-info{border-color:rgba(255,215,90,.3);background:linear-gradient(160deg,rgba(255,215,90,.09),rgba(255,215,90,.015) 55%),var(--panel);}
@@ -375,6 +440,40 @@
   .lb-reset b{color:var(--amber);font-variant-numeric:tabular-nums;}
   /* ---- switchable 3-board prize showcase (locked preview of next week) ---- */
   .lbpz{margin-top:15px;}
+/* ===== board rail: one snap-scrolling picker, used by BOTH leaderboard widgets (2026-09-05) ===== */
+.mprail{position:relative;--railbg:#0d1014}
+/* ROOT FIX (2026-09-05): .lb-card sits in a grid cell and grid items default to min-width:auto, so the card grew to
+   its widest CONTENT (604px inside a 354px cell on a phone) instead of letting the rail scroll. Every rail ancestor may
+   now shrink; the rail is what scrolls. This is what made the card widen each time a board was added. */
+.lb-card{min-width:0}
+.lb-card>*{min-width:0;max-width:100%}
+.mprail,.mprail-s{min-width:0;max-width:100%}
+
+.mprail-s{display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;padding:4px;margin:0;scroll-padding:0 4px}
+.mprail-s::-webkit-scrollbar{display:none}
+.mprail-s>*{flex:0 0 auto;scroll-snap-align:start}
+.mprail-f{position:absolute;top:0;bottom:7px;width:38px;pointer-events:none;z-index:3;opacity:0;transition:opacity .22s}
+.mprail-f.l{left:0;background:linear-gradient(90deg,var(--railbg),rgba(0,0,0,0))}
+.mprail-f.r{right:0;background:linear-gradient(270deg,var(--railbg),rgba(0,0,0,0))}
+.mprail.can-l .mprail-f.l,.mprail.can-r .mprail-f.r{opacity:1}
+.mprail-f{display:none}/* replaced by a mask: a colour-matched overlay cannot sit on a gradient card, a mask fades the CONTENT itself and works on any background */
+.mprail.can-r .mprail-s{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+.mprail.can-l .mprail-s{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px);mask-image:linear-gradient(90deg,transparent,#000 40px)}
+.mprail.can-l.can-r .mprail-s{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.mprail-bar{height:2px;border-radius:2px;background:rgba(255,255,255,.07);margin:5px 4px 0;overflow:hidden}
+.mprail-bar i{display:block;height:100%;width:30%;border-radius:2px;background:currentColor;opacity:.5;transition:transform .12s linear,width .2s}
+.mprail.full .mprail-bar{visibility:hidden}
+.lbpz-tabs{display:flex;gap:7px;background:rgba(0,0,0,.28);border:1px solid rgba(255,215,90,.16);border-radius:12px;padding:4px}
+.lbpz-tab{flex:0 0 auto;min-width:96px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 12px;border:none;border-radius:9px;background:rgba(255,255,255,.03);color:#b9a86a;font:700 10.5px/1.15 'Space Mono',ui-monospace,monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:.16s;white-space:nowrap;text-align:left}
+.lbpz-tab .pz{font:700 13px/1 'Space Mono',ui-monospace,monospace;color:#ffd75a;letter-spacing:0}
+.lbpz-tab.on{background:linear-gradient(180deg,#ffdf7a,#ffc13c);color:#2a1e00;box-shadow:0 4px 14px -6px rgba(255,215,90,.75)}
+.lbpz-tab.on .pz{color:#3a2a00}
+.mprail.pz-rail{color:#ffd75a;--railbg:#121016}
+.lb-tabs{display:flex;gap:8px;margin:0}
+.lb-tab{flex:0 0 auto;padding:8px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#95a1b0;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:.15s;white-space:nowrap}
+.mprail.lb-rail{color:#c2f64a;--railbg:#0e1116;margin:12px 0 6px}
+@media(max-width:560px){.lbpz-tab{min-width:88px;padding:8px 10px}.lb-tab{padding:8px 11px;font-size:10.5px}}
+
   .lbpz-tabs{display:flex;gap:5px;background:rgba(0,0,0,.28);border:1px solid rgba(255,215,90,.16);border-radius:12px;padding:4px;}
   .lbpz-tab{flex:1;padding:8px 4px;border:none;border-radius:9px;background:none;color:#b9a86a;font:700 10.5px/1.15 'Space Mono',ui-monospace,monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:.16s;white-space:nowrap;}
   .lbpz-tab:hover{color:#ffd75a;}
@@ -496,6 +595,70 @@
   .hh-promo.live{border-color:rgba(56,189,248,.75);box-shadow:0 0 26px -10px rgba(56,189,248,.7);}
   button.hh-promo:hover{border-color:rgba(56,189,248,.7);box-shadow:0 6px 22px -12px rgba(56,189,248,.6);}
   .hh-promo .hh-more{color:#57c7f7;}
+/* Daily call (2026-09-06): one BTC close guess a day, Ticks for accuracy. Same card family as Happy Hour, lime. */
+.dc{margin:10px 0 2px;border:1px solid rgba(194,246,74,.28);background:linear-gradient(180deg,rgba(194,246,74,.075),rgba(194,246,74,.012));border-radius:12px;padding:11px 13px 12px;}
+.dc[hidden]{display:none}
+.dc-top{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:var(--lime);}
+.dc-state{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#0a0b0d;background:var(--lime);border-radius:20px;padding:2px 9px;}
+.dc-state.off{background:#3a4450;color:#c7ccd4}
+.dc-q{margin:7px 0 9px;font-size:13.5px;color:#d7dce2;line-height:1.4}
+.dc-q b{color:#fff}
+.dc-live{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--dim);white-space:nowrap}
+.dc-form{display:flex;gap:7px;align-items:stretch}
+.dc-in{flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:0 11px;transition:border-color .14s}
+.dc-in:focus-within{border-color:var(--lime)}
+.dc-in span{font-family:'Space Mono',monospace;font-size:13px;color:var(--faint)}
+.dc-in input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:700 16px 'Space Mono',monospace;padding:10px 0;letter-spacing:.01em}
+.dc-in input::placeholder{color:#4e5864;font-weight:400}
+.dc-go{flex:0 0 auto;background:var(--lime);color:#0a0b0d;border:0;border-radius:10px;padding:0 15px;font:800 13px 'Bricolage Grotesque',sans-serif;cursor:pointer;transition:filter .14s,transform .1s}
+.dc-go:hover{filter:brightness(1.06)}
+.dc-go:active{transform:translateY(1px)}
+.dc-go[disabled]{opacity:.55;cursor:not-allowed}
+.dc-mine{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:11.5px;color:#c7ccd4}
+.dc-mine b{color:#fff}
+.dc-mine .dc-chg{color:var(--lime);background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.dc-y{margin-top:9px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);font-family:'Space Mono',monospace;font-size:11px;color:#b9c2cc;line-height:1.45}
+.dc-y b{color:#fff}.dc-y .win{color:var(--lime)}.dc-y .mid{color:#ffd75a}
+.dc-sub{margin-top:8px;font-size:11.5px;color:var(--dim);line-height:1.45}
+.dc-sub b{color:#c7ccd4}
+.dc-board{margin-top:9px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px}
+.dc-board .dc-bh{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.dc-board .dc-r{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#d7dce2;padding:3px 0}
+.dc-board .dc-r i{font:700 10px 'Space Mono',monospace;color:var(--faint);width:14px;text-align:right;font-style:normal}
+.dc-board .dc-r span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-board .dc-r b{font:700 12px 'Space Mono',monospace;color:var(--lime)}
+.dc-board .dc-r.me{color:#fff}.dc-board .dc-r.me span{font-weight:700}
+@media(max-width:560px){.dc-q{font-size:13px}.dc-in input{font-size:15px}}
+/* Season goals (2026-09-06): pick two targets a season, verified from the real tables, one reward each. Gold = season. */
+.sg{margin:10px 0 2px;border:1px solid rgba(255,215,90,.3);background:linear-gradient(180deg,rgba(255,215,90,.075),rgba(255,215,90,.012));border-radius:12px;padding:11px 13px 12px;}
+.sg[hidden]{display:none}
+.sg-top{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:#ffd75a;}
+.sg-state{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#1a1200;background:#ffd75a;border-radius:20px;padding:2px 9px;}
+.sg-sub{margin:7px 0 9px;font-size:12px;color:var(--dim);line-height:1.45}
+.sg-sub b{color:#d7dce2}
+.sg-list{display:flex;flex-direction:column;gap:7px}
+.sg-opt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;color:#d7dce2;font:600 13px 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer;transition:border-color .14s,transform .1s}
+.sg-opt:hover{border-color:#ffd75a}.sg-opt:active{transform:translateY(1px)}.sg-opt[disabled]{opacity:.5;cursor:not-allowed}
+.sg-opt i{font:700 10.5px 'Space Mono',monospace;color:#ffd75a;font-style:normal;white-space:nowrap}
+.sg-g{background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px}
+.sg-g .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:#e9e7df;font-weight:700}
+.sg-g .t b{font:700 12px 'Space Mono',monospace;color:#ffd75a;white-space:nowrap}
+.sg-g .bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin-top:7px}.sg-g .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#b8901f,#ffd75a);width:0;transition:width .6s ease}
+.sg-g.done{border-color:rgba(255,215,90,.55)}
+.sg-claim{margin-top:8px;width:100%;background:#ffd75a;color:#1a1200;border:0;border-radius:9px;padding:9px 12px;font:800 12.5px 'Bricolage Grotesque',sans-serif;cursor:pointer}
+.sg-claim[disabled]{opacity:.55;cursor:not-allowed}
+.sg-paid{margin-top:7px;font:700 11px 'Space Mono',monospace;color:#ffd75a}
+/* Season pass card (2026-09-06): the whole card is the link to /pass/. Violet = the pro track. */
+.sp{display:block;margin:10px 0 2px;border:1px solid rgba(199,146,255,.32);background:linear-gradient(180deg,rgba(199,146,255,.08),rgba(199,146,255,.012));border-radius:12px;padding:11px 13px 12px;color:inherit;text-decoration:none;transition:border-color .14s,transform .1s}
+.sp:hover{border-color:rgba(199,146,255,.7)}.sp:active{transform:translateY(1px)}
+.sp[hidden]{display:none}
+.sp-top{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:uppercase;color:#c792ff}
+.sp-state{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#160a26;background:#c792ff;border-radius:20px;padding:2px 9px}
+.sp-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:7px}
+.sp-t{font-family:'Space Mono',monospace;font-weight:800;font-size:18px;color:#fff}.sp-t small{font-size:11px;color:var(--dim);font-weight:400}
+.sp-n{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap}
+.sp-bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin-top:7px}.sp-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#7f5fd6,#c792ff);width:0;transition:width .6s ease}
+.sp-sub{margin-top:8px;font-size:11.5px;color:var(--dim);line-height:1.45}.sp-sub b{color:#d7dce2}
   /* details modal */
   .hhm{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,7,10,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
   .hhm[hidden]{display:none;}
@@ -715,7 +878,13 @@
     .mobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(env(safe-area-inset-bottom) + 10px);padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.72);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(56,189,248,.28);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(56,189,248,.35);}
     body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
     /* MOBILE = only bands 01 Trade -> 03 Go live (owner request) */
-    .tape,.hero,.snap,.trust,.b-learn,.foot{display:none!important;}
+    .tape,.snap,.trust,.b-learn,.foot{display:none!important;}
+    .hero{display:grid;grid-template-columns:1fr;padding:22px var(--pad) 10px;gap:0;}
+    .hero>div:nth-child(2),.hero-note,.hero .btn-g{display:none!important;}
+    .hero h1{font-size:34px;line-height:1.05;margin:10px 0 8px;}
+    .hero .sub{font-size:14px;line-height:1.55;margin:0 0 4px;}
+    .hero-ctas{margin-top:14px;}
+    .hero .eyebrow{font-size:10px;}
     .band{padding-top:26px;}
   }
   .mobnav button,.mobnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:rgba(255,255,255,.6);font-size:9.5px;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:none;padding:0;}
@@ -754,7 +923,7 @@
 
 <header>
   <div class="brand">
-    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span></button>
+    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
     <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
   </div>
   <nav class="hnav">
@@ -771,6 +940,11 @@
 
 <div class="tape"><div class="tape-in" id="tape"></div></div>
 
+<a class="dash" id="dash" href="/season/" hidden>
+  <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
+  <div class="dash-stats" id="dashChips"></div>
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"></div><span class="dash-go">Open your season →</span></div>
+</a>
 <section class="hero">
   <div>
     <span class="eyebrow"><span class="d"></span>Herramientas gratuitas de futuros cripto — sin depósito, sin KYC</span>
@@ -846,6 +1020,13 @@
       <div class="rk-strip s3"><b>SOL LONG</b> 100× <span class="amt">−$41,900</span></div>
       </div>
       <div class="t-go">Mira la masacre <i>→</i></div>
+    </a>
+
+    <a class="tile s3" href="/spot/" style="--ac:#a06bff">
+      <div class="t-kick"><span class="dot"></span> Life-simulation · fake money</div>
+      <div class="t-title">Demo Spot</div>
+      <div class="t-sub">A $10,000 card, an exchange, a self-custody wallet and memes on 4 chains. Real fees, real gas, nothing at stake.</div>
+      <div class="t-go">Start from zero <i>→</i></div>
     </a>
 
     <a class="tile s3" href="/charts" style="--ac:#3fd8e6">
@@ -1005,55 +1186,25 @@
   <div class="exch-disc">Enlaces de referido — MarginPad puede ganar una comisión si abres una cuenta, sin costo alguno para ti. Eso es lo que mantiene gratuitas todas las herramientas de este sitio. Opera con responsabilidad: el apalancamiento puede liquidar todo tu margen.</div>
 </section>
 
-<section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Tabla de posiciones de la temporada</h2><span class="band-s">Four boards — Green days, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
-  <div class="lb-wrap">
-    <div class="lb-card lb-info">
-      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 4 tablas · gana USDT real</div>
-      <div class="t-title" style="font-size:22px">Cuatro tablas, premios más grandes</div>
-      <div class="t-sub">Cuatro tablas de temporada — <b>Green days</b>, <b>Mayor ROE</b>, <b>Mejor tasa de acierto</b> y <b>XP de temporada</b> — cada una paga a los <b>5 primeros</b> en USDT real cuando termina la temporada de 14 días. Elige tu juego:</div>
-      <div class="lbpz">
-        <div class="lbpz-tabs" id="lbpzTabs">
-          <button type="button" class="lbpz-tab on" data-pz="roe">Green days</button>
-          <button type="button" class="lbpz-tab" data-pz="roe2">Mayor ROE</button>
-          <button type="button" class="lbpz-tab" data-pz="wr">Tasa de acierto</button>
-          <button type="button" class="lbpz-tab" data-pz="xp">XP de temporada</button>
-        </div>
-        <div class="lbpz-panel" id="lbpzPanel"></div>
-        <button type="button" class="lbr-open" id="lbRulesOpen">Ver reglas &mdash; cómo puntúa cada tabla</button>
-      </div>
-      <div class="hh-wrap" id="hhWrap" hidden>
-        <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
-          <div class="hh-top">Hora Feliz de XP<span class="hh-state" id="hhState">DIARIO</span><span class="hh-more">Detalles ›</span></div>
-          <div class="hh-count" id="hhCount">—</div>
-          <div class="hh-sub">Todos los días · <b>18:00–19:00 UTC</b> · toca para más detalles</div>
-        </button>
-        <div id="hhPromos"></div>
-      </div>
-      <div class="lb-cta"><a class="btn-l" href="/paper-trade">Abrir Paper Trade →</a><span class="note" id="lbYou">Inicia sesión (gratis) y tu mejor operación entra automáticamente.</span></div>
+<section class="band" id="season" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">This season</h2><span class="band-s">Five boards pay the top 5 in real USDT every 14 days. The pass, the daily call, your goals and the live floor all live on one page.</span></div>
+  <div class="ss-grid">
+    <a class="ss-card ss-you" id="ssYou" href="/season/">
+      <div class="ss-k" id="ssEye">Season</div>
+      <div class="ss-days" id="ssDays"></div>
+      <div class="ss-big" id="ssBig">Your season</div>
+      <div class="ss-rows" id="ssRows"></div>
+      <div class="ss-go">Open your season <span>→</span></div>
+    </a>
+    <div class="ss-card ss-board">
+      <div class="ss-k" id="ssBoardK">Green days <span id="ssPz"></span></div>
+      <div class="ss-list" id="ssBoard"><div class="ss-empty">Loading…</div></div>
+      <a class="ss-more" href="/season/#boards">All five boards, rules and payouts →</a>
     </div>
-    <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="green">Green days</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Tasa de acierto</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Siguiendo</button></div>
-      <div class="lb-note" id="lbNote">Todos <b>cuatro tablas</b> pagan a los 5 primeros en USDT real cada temporada de 14 días. <button type="button" class="lbr-open lbr-inline" data-lbr="1">Ver reglas</button></div>
-      <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
-    </div>
-    <div class="lb-card close-feed" style="grid-column:1/-1">
-      <div class="df-head">
-        <span class="df-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-        <div class="df-h"><b>Live closes</b><span>Every closed trade on the floor — wins, losses and liquidations, the second they land</span></div>
-        <span class="df-live"><i></i>EN VIVO</span>
-      </div>
-      <div class="df-list" id="closeFeed"><div class="cf-empty">Loading trades…</div></div>
-    </div>
-    <div class="lb-card duel-feed" style="grid-column:1/-1">
-      <div class="df-head">
-        <span class="df-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m3 19 2-2"/></svg></span>
-        <div class="df-h"><b>Duelos en vivo</b><span>Post an open challenge, or take one off the board — best stat when the clock ends takes the pot</span></div>
-        <button type="button" class="df-post" id="dfPost">Post open challenge</button>
-        <span class="df-live"><i></i>EN VIVO</span>
-      </div>
-      <div class="df-list" id="duelFeed"><div class="df-empty">Cargando duelos…</div></div>
-      <div class="df-foot"><span class="df-note">Anyone signed in can take an open challenge — first taker starts the clock. <span class="df-prem">Los nombres dorados son Premium.</span></span></div>
+    <div class="ss-card ss-live">
+      <div class="ss-k">Live floor <span class="ss-dot"></span></div>
+      <div class="ss-list" id="ssLive"><div class="ss-empty">Loading…</div></div>
+      <a class="ss-more" href="/season/#floor">Every close and every duel →</a>
     </div>
   </div>
 </section>
@@ -1236,6 +1387,37 @@
     document.addEventListener('keydown',onKey);
     document.body.appendChild(w);
   }
+  /* Board rail: edge fades, a position hairline, and "scroll the chosen chip into view". Every selection path
+     (pointer, keyboard, programmatic) goes through window.mpRailShow. A rail with nothing to scroll hides its bar. */
+  (function(){
+    if(window.mpRailShow)return;
+    function sync(r){
+      var s=r.querySelector('.mprail-s');if(!s)return;
+      var max=s.scrollWidth-s.clientWidth;
+      r.classList.toggle('full',max<=2);
+      r.classList.toggle('can-l',s.scrollLeft>4);
+      r.classList.toggle('can-r',s.scrollLeft<max-4);
+      var bar=r.querySelector('.mprail-bar i');
+      if(bar&&max>2){var vis=Math.max(14,Math.min(100,s.clientWidth/s.scrollWidth*100));bar.style.width=vis+'%';bar.style.transform='translateX('+(s.scrollLeft/max*(100/vis*100-100))+'%)';}
+    }
+    function wire(r){
+      var s=r.querySelector('.mprail-s');if(!s||s.__railed)return;s.__railed=1;
+      s.addEventListener('scroll',function(){sync(r);},{passive:true});
+      window.addEventListener('resize',function(){sync(r);});
+      sync(r);setTimeout(function(){sync(r);},400);
+    }
+    window.mpRailShow=function(el){
+      try{
+        var s=el&&el.closest?el.closest('.mprail-s'):null;if(!s)return;
+        var er=el.getBoundingClientRect(),sr=s.getBoundingClientRect();
+        if(er.left<sr.left+6)s.scrollLeft-=(sr.left+6-er.left);
+        else if(er.right>sr.right-6)s.scrollLeft+=(er.right-(sr.right-6));
+      }catch(e){}
+    };
+    function init(){document.querySelectorAll('[data-rail]').forEach(wire);}
+    if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+    setTimeout(init,1200);
+  })();
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
@@ -1246,7 +1428,7 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='green'?' pay':'');
-        note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">Ver reglas</button>';}}
+        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">Ver reglas</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
@@ -1264,6 +1446,12 @@
       var xt=((d&&d.topXp)||[]).slice(0,15);
       el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this season',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
         :'<div class="lb-empty">No XP earned yet this season — trade, learn in the Academy, and complete missions to climb.</div>';
+      lbAfter(el);return;
+    }
+    if(lbMode==='gold'){
+      var gt=((d&&d.topGold)||[]).slice(0,15);
+      el.innerHTML=gt.length?gt.map(function(t,i){var gp=+t.pts||0;return lbRow(i,t.who,((+t.w||0)+'W-'+(+t.l||0)+'L'),(gp>0?'+':'')+gp+' pts',gp>=0?'up':'down');}).join('')
+        :'<div class="lb-empty">No Gold member has scored yet this season. Reach Gold (12,000 XP) to enter the room.</div>';
       lbAfter(el);return;
     }
     var st=((d&&d.topGreen)||[]).slice(0,15);
@@ -1450,7 +1638,7 @@
     draw();setInterval(function(){if(!document.hidden)draw();},20000);
   })();
   document.addEventListener('keydown',function(e){if(e.key==='Escape')lbCloseModal();});
-  document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
+  document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');if(window.mpRailShow)window.mpRailShow(b);document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
     lbData=d;lbRender();
     var pz=(d&&d.prizes)||[35,20,10];
@@ -1462,6 +1650,154 @@
   // reflect sign-in state on the leaderboard CTA
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
+  /* This season (compact) + the member strip: one state from six endpoints, rendered twice. */
+  (function(){
+    var you=document.getElementById('ssYou'),board=document.getElementById('ssBoard'),live=document.getElementById('ssLive'),dash=document.getElementById('dash');if(!you||!dash)return;
+    var S={};
+    function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function int(n){return Math.round(+n||0).toLocaleString('en-US');}
+    function money(v){v=+v||0;var a=Math.abs(v);return (v<0?'-$':'+$')+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'k':a.toFixed(2));}
+    function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
+    function ago(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
+    function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;}
+    function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
+    function paint(){
+      var m=me(),signed=!!m,sk=(S.pass&&S.pass.season)||(S.goals&&S.goals.season)||null;
+      var day=sk?Math.min(14,Math.max(1,Math.floor((Date.now()-Date.parse(sk.from+'T00:00:00Z'))/86400000)+1)):0;
+      var eye=sk?('Season '+(sk.idx+1)+' · day '+day+' of 14 · ends in '+left(sk.endMs-Date.now())):'Season';
+      document.getElementById('ssEye').textContent=eye;
+      document.getElementById('ssDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+      var rows=[],P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
+      if(signed){
+        document.getElementById('ssBig').innerHTML='Your <b>season</b>';
+        if(P)rows.push('<div class="ss-row"><span>Pass tier</span><b class="pro">'+P.tier+' / '+(P.n||40)+(P.claimable?' · '+P.claimable+' to claim':'')+'</b></div>');
+        if(D){var t=D.me&&D.me.today;rows.push('<div class="ss-row"><span>Daily call</span><b class="'+(t?'ok':'')+'">'+(t?'made · $'+int(t.guess):(D.open?'open until '+D.cutoffH+':00 UTC':'closed today'))+'</b></div>');}
+        if(G){var pk=G.picks||[],dn=pk.filter(function(x){return x.done&&!x.paid;}).length;rows.push('<div class="ss-row"><span>Goals</span><b class="'+(dn?'gold':'')+'">'+(pk.length?pk.length+' picked'+(dn?' · '+dn+' to claim':''):'pick two')+'</b></div>');}
+        if(LB){var nm=(m.username||'').toLowerCase(),best=null;[['topGreen','Green days'],['top','Highest ROE'],['topWr','Win rate'],['topXp','Season XP'],['topGold','Gold Room']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1]};});rows.push('<div class="ss-row"><span>Boards</span><b class="'+(best&&best.rank<=5?'ok':'')+'">'+(best?'#'+best.rank+' '+best.name:'not ranked yet')+'</b></div>');}
+      }else{
+        document.getElementById('ssBig').innerHTML='Boards, pass, calls, goals';
+        rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">40 tiers · free track</b></div>');
+        rows.push('<div class="ss-row"><span>Daily call</span><b>'+(D?(D.open?'open · up to 12 Ticks':'closed today'):'one a day')+'</b></div>');
+        rows.push('<div class="ss-row"><span>Season goals</span><b class="gold">pick two · 100 XP each</b></div>');
+        if(H)rows.push('<div class="ss-row"><span>Hora Feliz de XP</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
+      }
+      document.getElementById('ssRows').innerHTML=rows.join('');
+      /* strip */
+      if(signed&&sk){dash.hidden=false;var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+        document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
+        var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
+        var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
+        document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+        var ch=[],todo=[];
+        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/'+(P.n||40)+'</small></b><em>Pass tier</em><i>'+(P.claimable?P.claimable+' to claim':P.tier>=(P.n||40)?'complete':int(P.next||0)+' XP to next')+'</i></span>');if(P.claimable)todo.push(['ok','Claim '+P.claimable+' pass reward'+(P.claimable>1?'s':'')]);}
+        if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>Daily call</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+' days in a row':''):D.open?'until '+D.cutoffH+':00 UTC':'tomorrow 00:00 UTC')+'</i></span>');if(!td&&D.open)todo.push(['hot','Make today\'s BTC call']);}
+        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>Goals</em><i>'+(gd.length?gd.length+' to claim':pk2.length<2?'pick '+(2-pk2.length)+' more':pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok','Claim goal: '+x.name]);});if(pk2.length<2)todo.push(['pro','Pick your season goal'+(pk2.length?'':'s')]);}
+        if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
+          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'—')+'</b><em>Boards</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):'not ranked yet')+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' — $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
+        if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
+        document.getElementById('dashChips').innerHTML=ch.join('');
+        document.getElementById('dashTodo').innerHTML=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('')||'<span class="ok"><i>1</i>All caught up — go trade</span>';}
+      else dash.hidden=true;
+      /* leading board: green days, top 5 with prizes */
+      if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
+        board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet — 10 closes and a green season get you on.</div>';}
+      if(S.closes){live.innerHTML=S.closes.length?S.closes.slice(0,5).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="ss-r cl"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span><span class="v '+(c.liq?'dn':up?'up':'dn')+'">'+(c.liq?'REKT':money(c.pnl))+'</span><span class="ago">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="ss-empty">Quiet on the floor right now.</div>';}
+      try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}
+    }
+    function load(all){var ps=[J('/api/pass').then(function(d){if(d&&d.tiers)S.pass=d;}),J('/api/goals').then(function(d){if(d&&d.catalogue)S.goals=d;}),J('/api/predict').then(function(d){if(d&&d.day)S.pred=d;})];
+      if(all){ps.push(J('/api/reward/lb').then(function(d){if(d&&d.weekStart)S.lb=d;}),J('/api/happyhour').then(function(d){if(d)S.hh=d;}),J('/api/trades/feed').then(function(d){if(d)S.closes=d.closes||[];}));}
+      Promise.all(ps).then(paint);}
+    if(window.mpWhenVisible&&document.getElementById('season'))mpWhenVisible(document.getElementById('season'),function(){load(true);});else setTimeout(function(){load(true);},900);
+    setTimeout(function(){load(true);},1200); /* the strip sits above the fold: do not wait for the section to scroll into view */
+    window.addEventListener('mp-auth-change',function(){setTimeout(function(){load(true);},400);});
+    window.addEventListener('mp:xp',function(){setTimeout(function(){load(false);},1500);});
+    setInterval(function(){if(!document.hidden)load(true);},300000);
+  })();
+  /* Section-view beacon (2026-09-06): which homepage blocks people actually reach. One AE event per block per
+     pageview at 30% visibility, so the next cut of this page is measured, not guessed. */
+  (function(){
+    if(!('IntersectionObserver' in window)||!navigator.sendBeacon)return;
+    var els=[].slice.call(document.querySelectorAll('section.hero, section.band, .snap, .trust, footer.foot, #dash'));if(!els.length)return;
+    var seen={};
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:.3});
+    els.forEach(function(el){io.observe(el);});
+  })();
+  /* Daily call: state comes whole from /api/predict; re-fetched on sign-in, after a call, and every 5 min. */
+  (function(){
+    var box=document.getElementById('dc');if(!box)return;var D=null,busy=false;
+    function fmt(n){n=+n||0;return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:0}):n.toFixed(2);}
+    function esc(x){return String(x==null?'':x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function hm(ms){var s=Math.max(0,Math.round(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+(m<10?'0':'')+m+'m':m+'m';}
+    function paint(){
+      if(!D){return;}
+      box.hidden=false;
+      var st=document.getElementById('dcState'),live=document.getElementById('dcLive'),form=document.getElementById('dcForm'),mine=document.getElementById('dcMine'),y=document.getElementById('dcY'),sub=document.getElementById('dcSub'),bd=document.getElementById('dcBoard'),inp=document.getElementById('dcIn'),go=document.getElementById('dcGo');
+      var me=D.me,today=me&&me.today,signed=!!D.signedIn;
+      st.textContent=D.open?('OPEN · '+hm(D.cutoff-Date.now())+' left'):'CLOSED';st.className='dc-state'+(D.open?'':' off');
+      live.textContent=D.live?('now $'+fmt(D.live)):'';
+      if(!signed){form.hidden=true;mine.hidden=true;sub.innerHTML='<b>Sign in (free)</b> to make your call. Calls close at '+D.cutoffH+':00 UTC; the 00:00 UTC close settles it. Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up.';}
+      else if(today&&!box.getAttribute('data-edit')){form.hidden=true;mine.hidden=false;mine.innerHTML='Your call: <b>$'+fmt(today.guess)+'</b>'+(D.open?' <button type="button" class="dc-chg" id="dcChg">change</button>':'');var cb=document.getElementById('dcChg');if(cb)cb.onclick=function(){box.setAttribute('data-edit','1');paint();inp.focus();};
+        sub.innerHTML=(D.open?'Locked in until '+D.cutoffH+':00 UTC. ':'Calls are closed for today. ')+'Settles at 00:00 UTC'+(me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+(me.season&&me.season.n?' · season <b>'+me.season.pts+' pts</b>'+(me.season.rank?' (#'+me.season.rank+')':''):'')+'.';}
+      else{form.hidden=!D.open;mine.hidden=true;if(!D.open){sub.innerHTML='Calls for today closed at '+D.cutoffH+':00 UTC. Come back after midnight UTC for tomorrow'+(me&&me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+'.';}else{sub.innerHTML='Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up. One call a day, changeable until '+D.cutoffH+':00 UTC.';}
+        if(!inp.value&&D.live)inp.placeholder=fmt(D.live);}
+      if(me&&me.yday&&me.yday.settled){var yy=me.yday,cls=yy.pts>=8?'win':yy.pts>0?'mid':'';y.hidden=false;y.innerHTML='Yesterday: you said <b>$'+fmt(yy.guess)+'</b>, it closed <b>$'+fmt(yy.close)+'</b> · <span class="'+cls+'">'+(Math.round(yy.err*100)/100)+'% off · +'+yy.ticks+' Ticks</span>';}else{y.hidden=true;}
+      var rows=D.board||[],myName=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'';
+      if(rows.length){bd.hidden=false;bd.innerHTML='<div class="dc-bh"><span>Top callers · this season</span><span>'+(D.callers||0)+' calling</span></div>'+rows.slice(0,5).map(function(r,i){return '<div class="dc-r'+(r.name===myName?' me':'')+'"><i>'+(i+1)+'</i><span>@'+esc(r.name)+'</span><b>'+r.pts+' pts</b></div>';}).join('');}else{bd.hidden=true;}
+      go.disabled=false;
+    }
+    function load(){fetch('/api/predict',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.day){D=d;box.removeAttribute('data-edit');paint();}}).catch(function(){});}
+    document.getElementById('dcForm').addEventListener('submit',function(e){e.preventDefault();if(busy)return;var v=parseFloat(String(document.getElementById('dcIn').value).replace(/[^0-9.]/g,''));var sub=document.getElementById('dcSub');
+      if(!(v>0)){sub.innerHTML='<b style="color:#ff8a80">Type a price first.</b>';return;}
+      busy=true;document.getElementById('dcGo').disabled=true;
+      fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){busy=false;
+        if(d&&d.ok){document.getElementById('dcIn').value='';load();}
+        else{document.getElementById('dcGo').disabled=false;sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='range'?'That is more than 30% from the price right now.':d&&d.error==='closed'?'Calls closed for today.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save your call.')+'</b>';}
+      }).catch(function(){busy=false;document.getElementById('dcGo').disabled=false;});});
+    window.addEventListener('mp-auth-change',load);setTimeout(load,900);setInterval(function(){if(!document.hidden)load();},300000);
+    setInterval(function(){if(D&&D.open&&!document.hidden){var st=document.getElementById('dcState');if(st&&Date.now()<D.cutoff)st.textContent='OPEN · '+hm(D.cutoff-Date.now())+' left';}},60000);
+  })();
+  /* Season goals: pick two, watch them fill from real activity, claim once each. */
+  (function(){
+    var box=document.getElementById('sg');if(!box)return;var G=null,busy=false;
+    function esc(x){return String(x==null?'':x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function daysLeft(){if(!G||!G.season)return '';var d=Math.max(0,Math.ceil((G.season.endMs-Date.now())/86400000));return d+'d left';}
+    function paint(){
+      if(!G){return;}box.hidden=false;
+      var st=document.getElementById('sgState'),sub=document.getElementById('sgSub'),list=document.getElementById('sgList');
+      st.textContent=daysLeft();
+      var picks=G.picks||[],max=G.max||2,rw=G.reward||{xp:100,ticks:40};
+      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
+      var left=max-picks.length;
+      if(left>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';
+        var taken={};picks.forEach(function(p){taken[p.k]=1;});
+        list.innerHTML=picks.map(row).join('')+(G.catalogue||[]).filter(function(c){return !taken[c.k];}).map(function(c){return '<button type="button" class="sg-opt" data-pick="'+c.k+'"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></button>';}).join('');}
+      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
+    }
+    function row(p){var pct=Math.min(100,Math.round((p.n||0)/(p.target||1)*100));return '<div class="sg-g'+(p.done?' done':'')+'"><div class="t"><span>'+esc(p.name)+'</span><b>'+(Math.min(p.n||0,p.target))+' / '+p.target+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div>'+(p.paid?'<div class="sg-paid">Claimed · +'+(G.reward.xp)+' XP · +'+(G.reward.ticks)+' Ticks</div>':(p.done?'<button type="button" class="sg-claim" data-claim="'+p.k+'">Claim +'+G.reward.xp+' XP · +'+G.reward.ticks+' Ticks</button>':''))+'</div>';}
+    function load(){fetch('/api/goals',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.catalogue){G=d;paint();}}).catch(function(){});}
+    box.addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||busy)return;busy=true;b.disabled=true;
+      var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
+      fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){busy=false;
+        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)setTimeout(window.mpXpCheck,600);load();}
+        else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}
+      }).catch(function(){busy=false;b.disabled=false;});});
+    window.addEventListener('mp-auth-change',load);setTimeout(load,1100);setInterval(function(){if(!document.hidden)load();},300000);
+    window.addEventListener('mp:xp',function(){setTimeout(load,1500);});
+  })();
+  /* Season pass: a glance at the tier; the page does the rest. */
+  (function(){
+    var box=document.getElementById('sp');if(!box)return;
+    function fmt(n){return String(Math.round(+n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+    function load(){fetch('/api/pass',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(!d||!d.tiers)return;box.hidden=false;
+      var st=document.getElementById('spState'),t=document.getElementById('spT'),n=document.getElementById('spN'),bar=document.getElementById('spBar'),sub=document.getElementById('spSub');
+      st.textContent=d.pro?'PRO':'FREE';
+      if(!d.signedIn){t.innerHTML=(d.n||40)+' tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.';return;}
+      var step=d.step||100,N=d.n||40,into=d.xp-d.tier*step,pct=d.tier>=N?100:Math.round(into/step*100);
+      t.innerHTML='Tier '+d.tier+' <small>/ '+N+'</small>';n.textContent=fmt(d.xp)+' XP this season';bar.style.width=pct+'%';
+      sub.innerHTML=(d.tier>=N?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.');
+    }).catch(function(){});}
+    window.addEventListener('mp-auth-change',load);setTimeout(load,1300);window.addEventListener('mp:xp',function(){setTimeout(load,1700);});
+  })();
 
   // ---- 3-board prize showcase (switchable, locked preview of next week's leaderboards) ----
   (function(){
@@ -1471,7 +1807,8 @@
       roe:{name:'Green days',pool:25,p:[10,6,4,3,2],live:true,desc:"Every day of the season you finish in profit counts as one green day — the trader with the most of them wins. A day needs at least 3 closed trades to turn green, you need 10 closed trades in the season to rank, and you have to be up on the season overall. It is the one board you cannot win in a single session."},
       roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season — server-verified trades only. One well-timed call can top it, on any account size."},
       wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
-      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
+      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."},
+      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold members only, scored in points: close a trade in profit and it is +1, close it red and it is -1. Your season score is simply the difference, so volume alone gets you nowhere — you need to be right more often than you are wrong. A trade that never moved the price 0.2% counts neither way, partial closes of one position count once, and so does a batch of the same trade opened together. Minimum $1 margin, server-settled trades, opened during the season. Reach Gold (12,000 XP) to enter."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
     var START=seasonEnd();
@@ -1481,17 +1818,19 @@
       var b=PZ[cur],rows='';
       for(var i=0;i<b.p.length;i++){var r=i+1,lbl=r+(r===1?'st':r===2?'nd':r===3?'rd':'th');rows+='<div class="lbpz-row p'+r+'"><span class="m">'+r+'</span><span class="l">'+lbl+' place</span><span class="v">$'+b.p[i]+'</span></div>';}
       var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge"> Next season</span>';
+      if(b.gold&&!b.p.length){rows='<div class="lbpz-row p1"><span class="m">!</span><span class="l">No prizes this season</span><span class="v">$0</span></div>';}
       var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');
+      if(b.gold&&!b.p.length)foot='This season runs for the title only — <b>prize money starts next season</b> · <b>'+ctd()+'</b>';
       panel.innerHTML='<div class="lbpz-name">'+b.name+badge+'</div>'
-        +'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>'
+        +(b.gold&&!b.p.length?'<div class="lbpz-pool">TITLE<small>no prize pool this season</small></div>':'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>')
         +'<div class="lbpz-desc">'+b.desc+'</div>'
         +'<div class="lbpz-rows">'+rows+'</div>'
         +'<div class="lbpz-count">'+foot+'</div>';
     }
-    tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
+    tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');if(window.mpRailShow)window.mpRailShow(t);for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
     // keep all 3 boards' prizes in sync with the LIVE reward config (owner tunes them in mp-ops Settings) — set from /api/reward/lb below
     function setArr(bk,pz){if(!Array.isArray(pz))return;var a=pz.map(function(x){return Math.round(+x||0);});while(a.length&&a[a.length-1]===0)a.pop();if(!a.length)return;PZ[bk].p=a;PZ[bk].pool=a.reduce(function(s,x){return s+x;},0);}
-    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.green||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
+    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.green||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);setArr('gold',bp.gold);try{for(var k in PZ){var c=document.querySelector('[data-pzv="'+k+'"]');if(c)c.textContent=(PZ[k].gold&&!PZ[k].p.length)?'TITLE':('$'+PZ[k].pool);}}catch(e){}render();};
     render();setInterval(render,60000);
   })();
 
@@ -1648,7 +1987,7 @@
   })();
 
   // ---- tracking: pageview + affiliate click-outs (same /api/track events as the live site) ----
-  try{var pv='/api/track?t=pageview&p=/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);
+  try{var pv='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);/* this markup becomes the live / via gen-home-live — the hardcoded /demo-home/ counted the homepage as the demo (2026-09-02) */if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);
     var _es='';try{var _s=sessionStorage.getItem('mp_src');if(_s)_es=_s;else{var _q=new URLSearchParams(location.search||'');if(_q.get('gclid')||_q.get('gbraid')||_q.get('wbraid'))_es='google-ads';else if(_q.get('msclkid'))_es='bing-ads';else if(_q.get('utm_source'))_es=_q.get('utm_source')+(_q.get('utm_medium')?' / '+_q.get('utm_medium'):'')+(function(){var _c=_q.get('utm_campaign')||_q.get('utm_content');return _c?' / '+String(_c).slice(0,14):'';})();else if(_q.get('fbclid'))_es='facebook';else if(_q.get('twclid'))_es='twitter';else if(_q.get('ttclid'))_es='tiktok';else if(_q.get('ref'))_es='referral';if(!_es&&document.referrer){try{var _h=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h&&_h!=='marginpad.io')_es=_h;}catch(e2){}}_es=(_es||'').slice(0,40);try{sessionStorage.setItem('mp_src',_es);}catch(e3){}}}catch(e4){}
     var _s0='';try{var _r0=localStorage.getItem('mp_src0');if(_r0){var _o0=JSON.parse(_r0);if(_o0&&_o0.s&&(Date.now()-(+_o0.ts||0))<=7776e6)_s0=String(_o0.s).slice(0,40);else try{localStorage.removeItem('mp_src0');}catch(e5){}}}catch(e6){}
     if(_es&&!_s0){try{localStorage.setItem('mp_src0',JSON.stringify({s:_es,ts:Date.now()}));}catch(e7){}}
@@ -1656,7 +1995,7 @@
     navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-ex]'):null;if(!a)return;
     try{var _ms='';try{_ms=sessionStorage.getItem('mp_src')||'';if(!_ms){var _f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(_f0&&_f0.s&&(Date.now()-(+_f0.ts||0))<=7776e6)_ms=String(_f0.s);}}catch(e8){}
-      navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/'+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
+      navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname)+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
 
   // ---- geo-aware exchange cards: US/CA visitors see US-legal venues first (Bybit/Binance/OKX geoblock them) ----
   try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){
@@ -1748,8 +2087,8 @@
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=7c1114a2"></script>
-<script defer src="/assets/mp-auth.js?v=daabc67c"></script>
-<script defer src="/assets/mp-nav.js?v=74c5e53c"></script>
+<script defer src="/assets/mp-auth.js?v=a2846426"></script>
+<script defer src="/assets/mp-nav.js?v=2eb1eb08"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

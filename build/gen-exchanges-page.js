@@ -287,7 +287,7 @@ ${ld}
       <div class="mb-t">
         <span class="mb-tag">New partner — not a futures exchange</span>
         <h3>Moon — call crypto, stocks, forex &amp; commodities up or down. 24/7.</h3>
-        <p>Moon isn't in the table above because it plays a different game: instead of an order book, you call any market up or down with leverage — including stocks, forex and commodities crypto exchanges don't carry — from one account, around the clock, with a public leaderboard and traders you can follow. MarginPad members can even cash <a href="/rewards">rewards</a> out straight to a Moon account. Full breakdown in our <a href="/blog/moon-trading-platform-review/">Moon review</a>.</p>
+        <p>Moon isn't in the table above because it plays a different game: instead of an order book, you call any market up or down with leverage — including stocks, forex and commodities crypto exchanges don't carry — from one account, around the clock, with a public leaderboard and traders you can follow. MarginPad members can even cash <a href="/rewards/">rewards</a> out straight to a Moon account. Full breakdown in our <a href="/blog/moon-trading-platform-review/">Moon review</a>.</p>
         <a class="mb-cta" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer">Create a Moon account →</a>
       </div>
     </div>

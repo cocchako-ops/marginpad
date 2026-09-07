@@ -132,6 +132,9 @@ footer a{color:var(--ink-dim);text-decoration:none}footer a:hover{color:var(--li
 
 .liqmap-cta{text-align:center;margin:26px 0}
 .liqmap-cta .cta{font-size:14px}
+.liqmap-cta.top{text-align:left;margin:10px 0 22px}
+.liqmap-cta.top .cta{display:inline-block}
+.liqmap-cta .cta-s{display:block;margin-top:8px;font-size:12px;color:var(--faint,#6b7380)}
 
 /* ===== blog cards v2 ===== */
 .post-card{position:relative;overflow:hidden}

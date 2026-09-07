@@ -84,7 +84,7 @@
   .hrwd{color:#c2f64a;}
   .hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
   .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
-  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}.hnav{gap:2px;}}
+  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}.hnav{gap:2px;}}
 
   /* ================= ticker ================= */
   .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
@@ -845,7 +845,13 @@ body.mpa-authed .hero{display:none}
     .mobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(env(safe-area-inset-bottom) + 10px);padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.72);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(56,189,248,.28);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(56,189,248,.35);}
     body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
     /* MOBILE = only bands 01 Trade -> 03 Go live (owner request) */
-    .tape,.hero,.snap,.trust,.b-learn,.foot{display:none!important;}
+    .tape,.snap,.trust,.b-learn,.foot{display:none!important;}
+    .hero{display:grid;grid-template-columns:1fr;padding:22px var(--pad) 10px;gap:0;}
+    .hero>div:nth-child(2),.hero-note,.hero .btn-g{display:none!important;}
+    .hero h1{font-size:34px;line-height:1.05;margin:10px 0 8px;}
+    .hero .sub{font-size:14px;line-height:1.55;margin:0 0 4px;}
+    .hero-ctas{margin-top:14px;}
+    .hero .eyebrow{font-size:10px;}
     .band{padding-top:26px;}
   }
   .mobnav button,.mobnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:rgba(255,255,255,.6);font-size:9.5px;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:none;padding:0;}
@@ -2048,8 +2054,8 @@ body.mpa-authed .hero{display:none}
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=7c1114a2"></script>
-<script defer src="/assets/mp-auth.js?v=daabc67c"></script>
-<script defer src="/assets/mp-nav.js?v=74c5e53c"></script>
+<script defer src="/assets/mp-auth.js?v=a2846426"></script>
+<script defer src="/assets/mp-nav.js?v=2eb1eb08"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

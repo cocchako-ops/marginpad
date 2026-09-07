@@ -1339,16 +1339,33 @@
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);
       return;
     }
-    bodyEl.innerHTML = '<h3 class="mpa-h">Sign in or sign up</h3><p class="mpa-sub">Enter your email and we’ll send a 6-digit code. No password.</p>'
-      + '<input class="mpa-in" id="mpaEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com">'
-      + '<button class="mpa-btn" id="mpaSend" type="button">Send code</button><div class="mpa-msg"></div>'
-      + '<p class="mpa-foot">Optional — MarginPad works without an account. We use email only to save your progress.</p>';
+  // Sign-in modal strings in the site's languages (2026-09-07 UX pass: a Spanish or Portuguese visitor met an English sign-in box on every page). Language = the page's own choice.
+  var AUTH_T = {
+    es: { t: 'Iniciar sesión o registrarse', h: 'Escribí tu email y te mandamos un código de 6 dígitos. Sin contraseña.', ph: 'tu@email.com', send: 'Enviar código', opt: 'Opcional — MarginPad funciona sin cuenta. Usamos el email solo para guardar tu progreso.', inbox: 'Revisá tu correo', sent: 'Te enviamos un código de 6 dígitos a', spam: '¿No llegó? Mirá la carpeta de <b>spam</b>: a veces cae ahí.', verify: 'Verificar', back: '← usar otro email', bad: 'Escribí un email válido.', code6: 'Escribí el código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
+    pt: { t: 'Entrar ou criar conta', h: 'Digite seu e-mail e enviamos um código de 6 dígitos. Sem senha.', ph: 'voce@email.com', send: 'Enviar código', opt: 'Opcional — o MarginPad funciona sem conta. Usamos o e-mail só para guardar seu progresso.', inbox: 'Confira sua caixa de entrada', sent: 'Enviamos um código de 6 dígitos para', spam: 'Não chegou? Olhe a pasta de <b>spam</b>: às vezes cai lá.', verify: 'Verificar', back: '← usar outro e-mail', bad: 'Digite um e-mail válido.', code6: 'Digite o código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
+    de: { t: 'Anmelden oder registrieren', h: 'E-Mail eingeben, wir schicken einen 6-stelligen Code. Kein Passwort.', ph: 'du@email.com', send: 'Code senden', opt: 'Optional — MarginPad funktioniert ohne Konto. Die E-Mail dient nur zum Speichern deines Fortschritts.', inbox: 'Schau in dein Postfach', sent: 'Wir haben einen 6-stelligen Code geschickt an', spam: 'Nichts da? Prüfe den <b>Spam</b>-Ordner.', verify: 'Bestätigen', back: '← andere E-Mail verwenden', bad: 'Gib eine gültige E-Mail ein.', code6: 'Gib den 6-stelligen Code ein.', sending: 'Wird gesendet…', verifying: 'Wird geprüft…' },
+    fr: { t: 'Se connecter ou s’inscrire', h: 'Entre ton e-mail, on t’envoie un code à 6 chiffres. Pas de mot de passe.', ph: 'toi@email.com', send: 'Envoyer le code', opt: 'Facultatif — MarginPad fonctionne sans compte. L’e-mail sert seulement à sauvegarder ta progression.', inbox: 'Regarde ta boîte mail', sent: 'Nous avons envoyé un code à 6 chiffres à', spam: 'Rien reçu ? Regarde dans les <b>spams</b>.', verify: 'Vérifier', back: '← utiliser un autre e-mail', bad: 'Entre un e-mail valide.', code6: 'Entre le code à 6 chiffres.', sending: 'Envoi…', verifying: 'Vérification…' },
+    ru: { t: 'Войти или зарегистрироваться', h: 'Введите e-mail, мы пришлём 6-значный код. Без пароля.', ph: 'you@email.com', send: 'Отправить код', opt: 'Необязательно — MarginPad работает без аккаунта. E-mail нужен только чтобы сохранить прогресс.', inbox: 'Проверьте почту', sent: 'Мы отправили 6-значный код на', spam: 'Нет письма? Загляните в папку <b>спам</b>.', verify: 'Подтвердить', back: '← другой e-mail', bad: 'Введите корректный e-mail.', code6: 'Введите 6-значный код.', sending: 'Отправляем…', verifying: 'Проверяем…' },
+    tr: { t: 'Giriş yap veya kaydol', h: 'E-postanı yaz, 6 haneli bir kod gönderelim. Şifre yok.', ph: 'sen@email.com', send: 'Kod gönder', opt: 'İsteğe bağlı — MarginPad hesapsız da çalışır. E-postayı yalnızca ilerlemeni kaydetmek için kullanırız.', inbox: 'Gelen kutuna bak', sent: '6 haneli kodu şu adrese gönderdik:', spam: 'Gelmedi mi? <b>Spam</b> klasörüne bak.', verify: 'Doğrula', back: '← başka e-posta kullan', bad: 'Geçerli bir e-posta gir.', code6: '6 haneli kodu gir.', sending: 'Gönderiliyor…', verifying: 'Doğrulanıyor…' },
+    zh: { t: '登录或注册', h: '输入邮箱，我们会发送 6 位验证码。无需密码。', ph: 'you@email.com', send: '发送验证码', opt: '可选 — 不注册也能使用 MarginPad。邮箱只用于保存你的进度。', inbox: '请查看邮箱', sent: '我们已将 6 位验证码发送至', spam: '没收到？看看<b>垃圾邮件</b>文件夹。', verify: '验证', back: '← 换一个邮箱', bad: '请输入有效的邮箱。', code6: '请输入 6 位验证码。', sending: '发送中…', verifying: '验证中…' },
+    ja: { t: 'ログインまたは登録', h: 'メールアドレスを入力すると 6 桁のコードを送ります。パスワード不要。', ph: 'you@email.com', send: 'コードを送信', opt: '任意 — MarginPad はアカウントなしでも使えます。メールは進捗の保存にのみ使います。', inbox: '受信箱を確認してください', sent: '6 桁のコードを送信しました：', spam: '届かない場合は<b>迷惑メール</b>フォルダを確認してください。', verify: '確認', back: '← 別のメールを使う', bad: '有効なメールアドレスを入力してください。', code6: '6 桁のコードを入力してください。', sending: '送信中…', verifying: '確認中…' },
+    ko: { t: '로그인 또는 가입', h: '이메일을 입력하면 6자리 코드를 보내드려요. 비밀번호 없음.', ph: 'you@email.com', send: '코드 보내기', opt: '선택 사항 — 계정 없이도 MarginPad를 쓸 수 있어요. 이메일은 진행 상황 저장에만 사용합니다.', inbox: '받은편지함을 확인하세요', sent: '6자리 코드를 보냈어요:', spam: '안 왔나요? <b>스팸</b> 폴더를 확인해 보세요.', verify: '확인', back: '← 다른 이메일 사용', bad: '올바른 이메일을 입력하세요.', code6: '6자리 코드를 입력하세요.', sending: '보내는 중…', verifying: '확인 중…' },
+    ar: { t: 'تسجيل الدخول أو إنشاء حساب', h: 'اكتب بريدك الإلكتروني وسنرسل رمزًا من 6 أرقام. بلا كلمة مرور.', ph: 'you@email.com', send: 'إرسال الرمز', opt: 'اختياري — يعمل MarginPad بدون حساب. نستخدم البريد فقط لحفظ تقدمك.', inbox: 'تحقق من بريدك', sent: 'أرسلنا رمزًا من 6 أرقام إلى', spam: 'لم يصل؟ تحقق من مجلد <b>الرسائل غير المرغوبة</b>.', verify: 'تحقق', back: '← استخدام بريد آخر', bad: 'اكتب بريدًا إلكترونيًا صالحًا.', code6: 'اكتب الرمز المكوّن من 6 أرقام.', sending: 'جارٍ الإرسال…', verifying: 'جارٍ التحقق…' },
+    id: { t: 'Masuk atau daftar', h: 'Masukkan email, kami kirim kode 6 digit. Tanpa kata sandi.', ph: 'kamu@email.com', send: 'Kirim kode', opt: 'Opsional — MarginPad bisa dipakai tanpa akun. Email hanya untuk menyimpan progresmu.', inbox: 'Cek kotak masukmu', sent: 'Kami mengirim kode 6 digit ke', spam: 'Belum masuk? Cek folder <b>spam</b>.', verify: 'Verifikasi', back: '← pakai email lain', bad: 'Masukkan email yang valid.', code6: 'Masukkan kode 6 digit.', sending: 'Mengirim…', verifying: 'Memverifikasi…' },
+    nl: { t: 'Inloggen of registreren', h: 'Vul je e-mail in, we sturen een 6-cijferige code. Geen wachtwoord.', ph: 'jij@email.com', send: 'Code sturen', opt: 'Optioneel — MarginPad werkt zonder account. E-mail gebruiken we alleen om je voortgang op te slaan.', inbox: 'Check je inbox', sent: 'We hebben een 6-cijferige code gestuurd naar', spam: 'Niets ontvangen? Kijk in je <b>spam</b>-map.', verify: 'Bevestigen', back: '← ander e-mailadres', bad: 'Vul een geldig e-mailadres in.', code6: 'Vul de 6-cijferige code in.', sending: 'Versturen…', verifying: 'Controleren…' },
+    sr: { t: 'Prijava ili registracija', h: 'Upiši email i šaljemo ti kod od 6 cifara. Bez lozinke.', ph: 'ti@email.com', send: 'Pošalji kod', opt: 'Opciono — MarginPad radi i bez naloga. Email koristimo samo da sačuvamo tvoj napredak.', inbox: 'Proveri poštu', sent: 'Poslali smo kod od 6 cifara na', spam: 'Nije stigao? Pogledaj <b>spam</b> folder.', verify: 'Potvrdi', back: '← koristi drugi email', bad: 'Upiši ispravan email.', code6: 'Upiši kod od 6 cifara.', sending: 'Šaljem…', verifying: 'Proveravam…' }
+  };
+  function authT(k, en) { var L = String(window.__mpLangCur || window.mpLang || (document.documentElement.lang || 'en')).slice(0, 2).toLowerCase(); var d = AUTH_T[L]; return (d && d[k]) || en; }
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('t', 'Sign in or sign up') + '</h3><p class="mpa-sub">' + authT('h', 'Enter your email and we’ll send a 6-digit code. No password.') + '</p>'
+      + '<input class="mpa-in" id="mpaEmail" type="email" inputmode="email" autocomplete="email" placeholder="' + authT('ph', 'you@email.com') + '">'
+      + '<button class="mpa-btn" id="mpaSend" type="button">' + authT('send', 'Send code') + '</button><div class="mpa-msg"></div>'
+      + '<p class="mpa-foot">' + authT('opt', 'Optional — MarginPad works without an account. We use email only to save your progress.') + '</p>';
     var em = bodyEl.querySelector('#mpaEmail'), sb = bodyEl.querySelector('#mpaSend');
     setTimeout(function () { em.focus(); }, 40);
     function send() {
       var v = (em.value || '').trim().toLowerCase();
-      if (!emailOk(v)) { setMsg('Enter a valid email.', 'err'); return; }
-      sb.disabled = true; setMsg('Sending…', '');
+      if (!emailOk(v)) { setMsg(authT('bad', 'Enter a valid email.'), 'err'); return; }
+      sb.disabled = true; setMsg(authT('sending', 'Sending…'), '');
       fetch('/api/auth/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: v }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           sb.disabled = false;
@@ -1365,17 +1382,17 @@
   }
 
   function codeStep(email) {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Check your inbox</h3><p class="mpa-sub">We sent a 6-digit code to <b>' + esc(email) + '</b>.</p>'
-      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">No email? Check your <b>spam / junk</b> folder — our codes sometimes land there.</p>'
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('inbox', 'Check your inbox') + '</h3><p class="mpa-sub">' + authT('sent', 'We sent a 6-digit code to') + ' <b>' + esc(email) + '</b>.</p>'
+      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">' + authT('spam', 'No email? Check your <b>spam / junk</b> folder — our codes sometimes land there.') + '</p>'
       + '<input class="mpa-in mpa-code" id="mpaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">'
-      + '<button class="mpa-btn" id="mpaVerify" type="button">Verify</button><div class="mpa-msg"></div>'
-      + '<button class="mpa-link" id="mpaBack" type="button">← use a different email</button>';
+      + '<button class="mpa-btn" id="mpaVerify" type="button">' + authT('verify', 'Verify') + '</button><div class="mpa-msg"></div>'
+      + '<button class="mpa-link" id="mpaBack" type="button">' + authT('back', '← use a different email') + '</button>';
     var ci = bodyEl.querySelector('#mpaCode'), vb = bodyEl.querySelector('#mpaVerify');
     setTimeout(function () { ci.focus(); }, 40);
     function verify() {
       var c = (ci.value || '').replace(/\D/g, '');
-      if (c.length !== 6) { setMsg('Enter the 6-digit code.', 'err'); return; }
-      vb.disabled = true; setMsg('Verifying…', '');
+      if (c.length !== 6) { setMsg(authT('code6', 'Enter the 6-digit code.'), 'err'); return; }
+      vb.disabled = true; setMsg(authT('verifying', 'Verifying…'), '');
       fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode(), src: landingSrc() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;

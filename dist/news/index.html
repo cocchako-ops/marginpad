@@ -202,7 +202,7 @@
     // the first story WITH an image leads the grid on desktop
     var leadIdx=-1;for(var i=0;i<items.length;i++){if(items[i].img){leadIdx=i;break;}}
     feed.innerHTML=items.map(function(n,i){
-      var img=n.img?'<img class="n-img" src="'+esc(n.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'';
+      var img=n.img?'<img class="n-img" src="'+esc(n.img)+'" alt="'+esc(n.title||'')+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
       return '<article class="n-item'+(i===leadIdx?' lead':'')+'" data-i="'+i+'" tabindex="0" role="button" aria-label="Read: '+esc(n.title)+'">'+img+'<div class="n-b"><span class="n-t">'+esc(n.title)+'</span>'+(n.body?'<p class="n-d">'+esc(n.body)+'</p>':'')+'<div class="n-m"><span class="n-src">'+esc(n.src)+'</span><span>·</span><span>'+ago(n.ts)+'</span><span class="n-read">READ HERE →</span></div></div></article>';
     }).join('');
     var up=document.getElementById('nUpd');if(up)up.textContent='Updated '+ago(Date.now()-1000);
@@ -246,7 +246,7 @@
   (function(){var t=document.getElementById('newsTicker');if(!t)return;var WANT=['BTC','ETH','SOL','BNB','XRP','DOGE'];function f(px){return '$'+(+px).toLocaleString('en-US',{maximumFractionDigits:+px>=1?2:5});}function tl(){fetch('/api/prices').then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.pairs)return;var by={};d.pairs.forEach(function(p){by[(p.symbol||'').replace('USDT','')]=p;});t.innerHTML=WANT.map(function(s){var p=by[s];if(!p)return '';var c=+p.changePct;return '<div class="nt-pill"><span class="nt-sym">'+s+'</span><span class="nt-px">'+f(p.price)+'</span><span class="nt-chg '+(c>=0?'up':'dn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span></div>';}).join('');}).catch(function(){});}tl();setInterval(tl,30000);})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=daabc67c"></script>
-<script defer src="/assets/mp-nav.js?v=74c5e53c"></script>
+<script defer src="/assets/mp-auth.js?v=a2846426"></script>
+<script defer src="/assets/mp-nav.js?v=2eb1eb08"></script>
 </body>
 </html>
