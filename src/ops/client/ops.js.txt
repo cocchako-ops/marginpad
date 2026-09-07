@@ -62,7 +62,8 @@
 
   function route() { var h = (location.hash || '').replace(/^#\/?/, ''); var p = h.split('/'); var sec = NAV.filter(function (s) { return s.id === p[0]; })[0] || NAV[0]; var v = sec.views.filter(function (x) { return x.id === p[1]; })[0] || sec.views[0]; return { sec: sec, view: v, key: sec.id + '/' + v.id, arg: p.slice(2).join('/') }; }
   function renderNav() { var r = route(); $('nav').innerHTML = NAV.map(function (s) { return '<div class="sec">' + esc(s.title) + '</div>' + s.views.map(function (v) { var k = s.id + '/' + v.id; return '<a href="#' + k + '" class="' + (k === r.key ? 'on' : '') + '">' + esc(v.title) + (counts[k] ? '<span class="cnt">' + counts[k] + '</span>' : '') + '</a>'; }).join(''); }).join(''); }
-  function clearTimers() { timers.forEach(clearInterval); timers = []; }
+  var onLeave = null; // a view that holds a socket (People > Activity) sets this; it runs on the next route change
+  function clearTimers() { timers.forEach(clearInterval); timers = []; if (onLeave) { try { onLeave(); } catch (e) {} onLeave = null; } }
   function every(ms, fn) { timers.push(setInterval(function () { if (!document.hidden) fn(); }, ms)); }
   function show() {
     var r = route(); cur = r; clearTimers(); renderNav(); $('side').classList.remove('open'); stampTs = 0; tickStamp();
@@ -776,35 +777,49 @@
 
   // ---------- PEOPLE / ACTIVITY ----------
   // ---------- PEOPLE / ACTIVITY (rewritten 2026-09-06 — the owner's daily read: "ko sta radi, sta se abjuza, gde puca") ----------
-  // /api/admin/activity?h=&n=&pv=1&actor= : the 24h ring (server-written trade rows since 2026-09-06, client clicks, sign-ins,
-  // pageviews on demand), one actor per person (username, else the device-derived guest id), and the abuse radar computed
-  // server-side from plain counts. The stream refreshes by PREPENDING new rows (never a rebuild — the scroll stays put).
+  // /api/admin/activity — rewritten 2026-09-07 (owner: "logovi deluju mrtvo, izlaze u grupama, nemam guest logove, radar laze; hocu next level").
+  // LIVE: every row is PUSHED over /api/admin/activity/ws the moment the OpsLog DO stores it (the worker no longer buffers pushes);
+  // a 30 s ?since= poll only reconciles tiles, radar, actors and the online list (5 s while the socket is down). GUESTS: pageviews
+  // are in the stream by default — an arrival is one bold line (where from, new or returning, device / browser / network) and every
+  // hop a quiet "→ /page" row, so a visitor is watched walking the site as it happens; the Visitors layout shows one card per
+  // person with the whole path. IDENTITY: one person = one account (uid) — a username change is one person, never two.
+  // Hovering the stream pauses it (rows queue in a pill), so nothing jumps under the cursor while the owner reads.
   VIEWS['people/activity'] = { render: function (el, arg) {
-    var st = { h: 24, g: 'all', who: 'all', q: '', pv: false, live: true }; recall('people/activity', st, ['h', 'g', 'who', 'pv', 'live']);
+    var st = { h: 24, g: 'all', who: 'all', q: '', nopv: false, live: true, lay: 'stream' }; recall('people/activity', st, ['h', 'g', 'who', 'nopv', 'live', 'lay']);
+    var FIELDS = ['h', 'g', 'who', 'nopv', 'live', 'lay'];
+    var E2E = arg === 'e2e'; if (E2E) arg = ''; // #people/activity/e2e: the E2E suite watches its own (key-tagged) rows arrive over the socket
     var GROUPS = {
       trades: ['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder', 'ratelimit'],
-      money: ['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'gift', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'exsignpaid', 'pass', 'premgrant', 'refclick', 'exchange', 'tool', 'promo', 'exsign'],
+      money: ['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'gift', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'exsignpaid', 'pass', 'premgrant', 'refclick', 'exchange', 'tool', 'promo', 'exsign', 'code'],
       social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift'],
       account: ['signup', 'login', 'logout', 'signin', 'otp', 'otpfail', 'username', 'profile_edit', 'push', 'alert', 'support', 'telegram', 'lang', 'frame', 'admin'],
       progress: ['academy', 'goal', 'predict', 'xpboost', 'pass', 'premview', 'premgate', 'brief', 'ai', 'ind', 'draw', 'watch', 'search', 'coin', 'screener', 'tab', 'nav', 'prod', 'hotpair', 'nudge', 'grad', 'sect'],
       spot: ['spottrade'],
+      pages: ['pv'],
       problems: ['otpfail', 'ratelimit', 'jserr', 'liq', 'wdreject', 'admin', 'premgate'],
       system: ['backup', 'wrap', 'signal', 'sigresult', 'digest', 'liqalert', 'alertfired', 'cpaper', 'bot', 'cfgchange', 'subkick']
     };
-    var SEV = { liq: 'red', otpfail: 'amber', ratelimit: 'amber', jserr: 'amber', wdreject: 'amber', admin: 'info', withdraw: 'gold', claim: 'gold', sale: 'gold', shopbuy: 'gold', gift: 'gold', exchange: 'gold', signup: 'ok', login: 'ok' };
-    function sev(e) { return SEV[e.t] || ''; }
+    var SEV = { liq: 'red', otpfail: 'amber', ratelimit: 'amber', jserr: 'amber', wdreject: 'amber', admin: 'info', withdraw: 'gold', claim: 'gold', sale: 'gold', shopbuy: 'gold', gift: 'gold', exchange: 'gold', code: 'gold', signup: 'ok', login: 'ok' };
+    var lc = function (s) { return String(s || '').toLowerCase(); };
+    function sev(e) { if (e.t === 'pv') return e._arr ? (e.nv ? 'ok' : 'pv') : 'hop'; return SEV[e.t] || ''; }
+    function pvLabel(e) {
+      var p = '<b>' + esc(e.p || '/') + '</b>';
+      if (!e._arr) return '<span class="hop">→</span> ' + esc(e.p || '/') + (e.f ? '' : '');
+      var from = (e.s && e.s !== 'direct') ? ' from <b>' + esc(e.s) + '</b>' : e.f ? ' <span class="meta">(from ' + esc(e.f) + ')</span>' : e.s0 ? ' <span class="meta">direct · first came via ' + esc(e.s0) + '</span>' : ' <span class="meta">direct</span>';
+      return (e.nv ? '<b class="up">new visitor</b> landed on ' : e.u ? 'is back on ' : 'landed on ') + p + from;
+    }
     function L(e) { // one sentence per type, the label in bold; unknown types still read
       var t = e.t || '', x = esc(e.e || ''), X = x ? '<b>' + x + '</b>' : '', srv = e.v === 'srv' || !!e.x;
+      if (t === 'pv') return pvLabel(e);
       var M = {
-        pv: 'viewed <b>' + esc(e.p || '/') + '</b>' + (e.s && e.s !== 'direct' ? ' <span class="meta">from ' + esc(e.s) + '</span>' : e.f ? ' <span class="meta">from ' + esc(e.f) + '</span>' : ''),
         open: 'opened ' + X, close: (srv ? 'closed ' : 'closed a trade ') + X, liq: '<b class="dn">LIQUIDATED</b> ' + X, trim: 'reduced ' + X, sltp: 'set SL/TP ' + X, order: 'limit order ' + X, sync: X,
         paper: 'opened a paper trade ' + X + ' <span class="meta">(guest, browser-side)</span>', limitorder: 'placed a limit order ' + X + ' <span class="meta">(browser-side)</span>',
         claim: 'claimed ' + X + ' from the faucet', withdraw: 'requested a withdrawal ' + X, wdpaid: 'withdrawal marked <b>paid</b>', wdreject: 'withdrawal <b>rejected</b> ' + X, wdcancel: 'withdrawal cancelled ' + X,
         mission: 'completed mission ' + X, shopbuy: 'bought ' + X + ' in the Vault', gift: 'gift ' + X, sale: '<b class="up">PAID</b> ' + X, checkout: 'opened checkout ' + X, refpaid: 'referral paid ' + X, promopaid: 'promo paid ' + X, lbpaid: 'board prize paid ' + X, exsignpaid: 'sign-up bonus paid ' + X,
-        pass: 'season pass ' + X, premgrant: 'Premium granted ' + X, refclick: 'arrived through a referral link ' + X, exchange: 'clicked <b class="gold">' + x + '</b> (exchange)', tool: 'clicked tool ' + X, promo: 'submitted a promo post ' + X, exsign: 'exchange sign-up ' + X,
+        pass: 'season pass ' + X, premgrant: 'Premium granted ' + X, refclick: 'arrived through a referral link ' + X, exchange: 'clicked <b class="gold">' + x + '</b> (exchange)', tool: 'clicked tool ' + X, promo: 'submitted a promo post ' + X, exsign: 'exchange sign-up ' + X, code: 'redeemed a code ' + X,
         chatmsg: 'chat: <i>' + x + '</i>', chat: 'opened the chat', dm: 'sent a DM to <b>@' + x + '</b>', follow: 'followed <b>@' + x + '</b>', duel: 'duel: ' + X, post: 'posted in Community', comment: 'commented ' + X, like: 'liked a post', save: 'saved a post',
         profile: 'viewed <b>@' + x + '</b>', myprofile: 'opened their own profile', share: 'shared ' + X,
-        signup: '<b class="up">created an account</b> ' + X, login: 'signed in', logout: 'signed out', signin: 'opened the sign-in box', otp: 'asked for a sign-in code ' + X, otpfail: '<b class="dn">wrong or expired code</b> ' + X, username: 'chose the username <b>@' + x + '</b>', profile_edit: 'edited profile (' + x + ')',
+        signup: '<b class="up">created an account</b> ' + X, login: 'signed in', logout: 'signed out', signin: 'opened the sign-in box', otp: 'asked for a sign-in code ' + X, otpfail: '<b class="dn">wrong or expired code</b> ' + X, username: 'changed username <b>@' + esc(e.u || '?') + '</b> → <b>@' + x + '</b>', profile_edit: 'edited profile (' + x + ')',
         push: 'enabled push notifications', alert: 'set a price alert ' + X, support: 'wrote to support', telegram: 'clicked Telegram', lang: 'switched language to ' + X, frame: 'equipped frame ' + X, admin: '<b>owner:</b> ' + x,
         academy: 'Academy lesson ' + X, goal: 'season goal ' + X, predict: 'daily call ' + X, xpboost: 'XP boost ' + X, premview: 'viewed Premium', premgate: 'hit the Premium gate ' + X, brief: 'read the daily brief', ai: 'asked the AI ' + X,
         ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
@@ -815,72 +830,144 @@
       if (x && s.indexOf(x) < 0) s += ' <span class="meta">' + x + '</span>'; // a template that has no slot for the label still shows it (search matched on it, the eye must see it too)
       return s;
     }
-    function who(e) { if (e.u) return userLink(e.u); if (e.v && e.v !== 'srv') return '<button type="button" class="lnk" data-actor="v:' + esc(e.v) + '" title="guest device ' + esc(e.v) + ' — click for everything this device did">guest ' + esc(e.v) + '</button>'; if (e.uid) return '<button type="button" class="lnk" data-actor="uid:' + esc(e.uid) + '">#' + esc(String(e.uid).slice(0, 6)) + '</button>'; return '<span class="meta">system</span>'; }
+    var uidKey = {}, vidKey = {}; // account id / visitor id -> resolved actor key, from the last poll (the socket rows have no key of their own)
+    function keyFor(e) { if (e.k) return e.k; if (e.uid && uidKey[e.uid]) return uidKey[e.uid]; if (e.u) return 'u:' + lc(e.u); if (e.v && e.v !== 'srv' && vidKey[e.v]) return vidKey[e.v]; if (e.v && e.v !== 'srv') return 'v:' + e.v; return e.uid ? 'uid:' + e.uid : 'sys'; }
+    function who(e) { var k = keyFor(e); if (k.indexOf('u:') === 0) return userLink(e.un || e.u || k.slice(2)); if (k.indexOf('v:') === 0) return '<button type="button" class="lnk gst" data-actor="' + esc(k) + '" title="guest ' + esc(k.slice(2)) + ' — click for everything this visitor did">guest ' + esc(k.slice(2)) + '</button>'; if (k.indexOf('uid:') === 0) return '<button type="button" class="lnk" data-actor="' + esc(k) + '">#' + esc(k.slice(4, 10)) + '</button>'; return '<span class="meta">system</span>'; }
     function tcol(ts) { var d = dt(ts); var today = dt(Date.now()).slice(0, 10) === d.slice(0, 10); return '<span class="meta mono t" title="' + esc(dtFull(ts)) + '">' + esc(today ? d.slice(11) : d.slice(5)) + '</span>'; }
     function rowKey(e) { return (e.ts || 0) + '|' + (e.t || '') + '|' + (e.u || e.v || '') + '|' + String(e.e || e.p || '').slice(0, 40); }
-    function rowHtml(e, fresh) { var m = []; if (e.p && e.t !== 'pv') m.push(esc(e.p)); if (e.cc) m.push(flag(e.cc)); if (e.d) m.push(esc(e.d)); if (st.q && e.ip && st.q === String(e.ip).toLowerCase()) m.push('<span class="mono">' + esc(e.ip) + '</span>');
-      return '<div class="row ev sev-' + sev(e) + (fresh ? ' new' : '') + (e.t === 'pv' ? ' pvrow' : '') + '" data-k="' + esc(rowKey(e)) + '" data-ts="' + (+e.ts || 0) + '">' + tcol(e.ts) + '<span class="who">' + who(e) + '</span><span class="grow">' + L(e) + (m.length ? ' <span class="meta">' + m.join(' · ') + '</span>' : '') + '</span><span class="meta">' + ago(e.ts) + '</span></div>'; }
+    function rowHtml(e, fresh) { var m = []; if (e.p && e.t !== 'pv') m.push(esc(e.p)); if (e.cc) m.push(flag(e.cc)); if (e.d) m.push(esc(e.d));
+      if (e.t === 'pv' && e._arr) { if (e.b) m.push(esc(e.b)); if (e.net) m.push('<span title="network (ASN)">' + esc(e.net) + '</span>'); }
+      if (st.q && e.ip && st.q === String(e.ip).toLowerCase()) m.push('<span class="mono">' + esc(e.ip) + '</span>');
+      return '<div class="row ev sev-' + sev(e) + (fresh ? ' new' : '') + (e.t === 'pv' ? (e._arr ? ' pvrow arr' : ' pvrow hop') : '') + '" data-k="' + esc(rowKey(e)) + '" data-ts="' + (+e.ts || 0) + '">' + tcol(e.ts) + '<span class="who">' + who(e) + '</span><span class="grow">' + L(e) + (m.length ? ' <span class="meta">' + m.join(' · ') + '</span>' : '') + '</span><span class="meta ago" data-ts="' + (+e.ts || 0) + '">' + ago(e.ts) + '</span></div>'; }
     function pass(e) {
+      if (e.t === 'pv' && st.nopv && st.g !== 'pages') return false;
       if (st.g !== 'all' && (GROUPS[st.g] || []).indexOf(e.t) < 0) return false;
-      if (st.who === 'users' && !e.u) return false; if (st.who === 'guests' && (e.u || !e.v || e.v === 'srv')) return false; if (st.who === 'system' && (e.u || (e.v && e.v !== 'srv'))) return false;
-      if (st.q) { var s = ((e.u || '') + ' ' + (e.e || '') + ' ' + (e.t || '') + ' ' + (e.p || '') + ' ' + (e.cc || '') + ' ' + (e.ip || '') + ' ' + (e.di || '') + ' ' + (e.v || '') + ' ' + (e.x && e.x.sym ? e.x.sym : '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      var k = keyFor(e);
+      if (st.who === 'users' && k.indexOf('u:') !== 0) return false; if (st.who === 'guests' && k.indexOf('v:') !== 0) return false; if (st.who === 'system' && k !== 'sys') return false;
+      if (st.q) { var s = ((e.u || '') + ' ' + (e.un || '') + ' ' + (e.e || '') + ' ' + (e.t || '') + ' ' + (e.p || '') + ' ' + (e.cc || '') + ' ' + (e.ip || '') + ' ' + (e.di || '') + ' ' + (e.v || '') + ' ' + (e.s || '') + ' ' + (e.x && e.x.sym ? e.x.sym : '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
       return true;
     }
-    var data = null, rendered = {}, MAXROWS = 700;
+    function passActor(a) {
+      if (st.who === 'users' && a.key.indexOf('u:') !== 0) return false; if (st.who === 'guests' && a.key.indexOf('v:') !== 0) return false; if (st.who === 'system') return false;
+      if (st.g !== 'all' && st.g !== 'pages') { var g = GROUPS[st.g] || [], hit = false; for (var i = 0; i < g.length; i++) if (a.types[g[i]]) { hit = true; break; } if (!hit) return false; }
+      if (st.g === 'pages' && !a.pv) return false;
+      if (st.q) { var s = ((a.u || '') + ' ' + (a.v || '') + ' ' + (a.cc || '') + ' ' + (a.d || '') + ' ' + (a.b || '') + ' ' + (a.net || '') + ' ' + (a.s || '') + ' ' + a.ips.join(' ') + ' ' + a.dids.join(' ') + ' ' + a.path.join(' ')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      return true;
+    }
+    // arrival = the first pageview of a visit: no in-site previous page, or 30+ min since this person's last pageview
+    var lastPvTs = {};
+    function prep(rows) { lastPvTs = {}; var asc = rows.slice().sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); }); asc.forEach(function (e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; lastPvTs[k] = e.ts; }); }
+    function prepOne(e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; if (e.ts > prev) lastPvTs[k] = e.ts; }
+    var data = null, rendered = {}, MAXROWS = 800, onlineN = 0, paused = false, pending = [], lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
     function actorName(k) { if (!k) return ''; return k.indexOf('u:') === 0 ? '@' + k.slice(2) : k.indexOf('v:') === 0 ? 'guest ' + k.slice(2) : k.indexOf('d:') === 0 ? 'device ' + k.slice(2) : k.indexOf('ip:') === 0 ? 'ip ' + k.slice(3) : k; }
     function actorBtn(k, label) { return k ? '<button type="button" class="lnk" data-actor="' + esc(k) + '">' + (label || esc(actorName(k))) + '</button>' : ''; }
+    function save() { remember('people/activity', st, FIELDS); }
     function head() {
       var chips = function (list, cur, attr) { return '<div class="chips" style="margin:0">' + list.map(function (f) { return '<span class="chip ' + (cur === f[0] ? 'on' : '') + '" data-' + attr + '="' + f[0] + '">' + f[1] + '</span>'; }).join('') + '</div>'; };
-      return '<div class="bar">' + chips([['all', 'All'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
-        + chips([['all', 'Everyone'], ['users', 'Users'], ['guests', 'Guests'], ['system', 'System']], st.who, 'who')
-        + '<input class="in" id="acq" placeholder="filter: @user, guest id, coin, page, country, ip" value="' + esc(st.q) + '" style="flex:1 1 200px"><select class="in" id="ach" style="flex:0 0 auto">' + [[1, '1h'], [3, '3h'], [6, '6h'], [12, '12h'], [24, '24h']].map(function (o) { return '<option value="' + o[0] + '"' + (st.h === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
-        + '<label class="chip ' + (st.pv ? 'on' : '') + '" id="acpv" title="include every pageview in the stream">pageviews</label><label class="chip ' + (st.live ? 'on' : '') + '" id="aclive" title="new rows arrive at the top every 15 s">live</label></div>';
+      return '<div class="bar">' + chips([['all', 'All'], ['pages', 'Pages'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
+        + chips([['all', 'Everyone'], ['users', 'Members'], ['guests', 'Guests'], ['system', 'System']], st.who, 'who')
+        + '<input class="in" id="acq" placeholder="filter: @user, guest id, coin, page, country, ip, source" value="' + esc(st.q) + '" style="flex:1 1 200px"><select class="in" id="ach" style="flex:0 0 auto">' + [[1, '1h'], [3, '3h'], [6, '6h'], [12, '12h'], [24, '24h']].map(function (o) { return '<option value="' + o[0] + '"' + (st.h === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
+        + chips([['stream', 'Stream'], ['visitors', 'Visitors']], st.lay, 'lay')
+        + '<label class="chip ' + (st.nopv ? '' : 'on') + '" id="acpv" title="pageviews in the stream: an arrival in bold, every hop as a quiet row">pageviews</label>'
+        + '<span class="chip lv ' + (st.live ? 'on' : '') + '" id="aclive" title="rows are pushed over a WebSocket the moment they are stored; click to pause"><i class="ldot"></i><span id="acLv">live</span></span></div>';
     }
+    function setLive() { var c = $('aclive'), t = $('acLv'); if (!c) return; c.classList.toggle('on', st.live); c.classList.toggle('ok', st.live && wsOk); c.classList.toggle('warn', st.live && !wsOk); if (t) t.textContent = !st.live ? 'paused' : wsOk ? (paused ? 'live · held' : 'live') : 'connecting…'; }
     function shell() {
-      el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div class="jm" style="margin-top:12px"><div>' + card('Activity <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', 'newest first · click a guest id or @user for everything that person did') + '</div><div class="jm-rail" id="acRail"></div></div>';
-      el.querySelectorAll('[data-g]').forEach(function (c) { c.onclick = function () { st.g = c.getAttribute('data-g'); remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); shell(); paintAll(true); }; });
-      el.querySelectorAll('[data-who]').forEach(function (c) { c.onclick = function () { st.who = c.getAttribute('data-who'); remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); shell(); paintAll(true); }; });
-      var q = $('acq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paintStream(true); }, 220); }; }
-      var hs = $('ach'); if (hs) hs.onchange = function () { st.h = +hs.value || 24; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); load(true); };
-      var pvb = $('acpv'); if (pvb) pvb.onclick = function () { st.pv = !st.pv; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); load(true); };
-      var lv = $('aclive'); if (lv) lv.onclick = function () { st.live = !st.live; remember('people/activity', st, ['h', 'g', 'who', 'pv', 'live']); lv.classList.toggle('on', st.live); };
+      el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div id="acOnline"></div><div class="jm" style="margin-top:12px"><div>' + card('<span id="acTitle">' + (st.lay === 'visitors' ? 'Visitors' : 'Activity') + '</span> <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', st.lay === 'visitors' ? 'one card per person, latest first · the path is every page in order · click a card for the full timeline' : 'newest first · hover to hold the stream · click a guest id or @user for everything that person did') + '</div><div class="jm-rail" id="acRail"></div></div>';
+      el.querySelectorAll('[data-g]').forEach(function (c) { c.onclick = function () { st.g = c.getAttribute('data-g'); save(); shell(); paintAll(true); }; });
+      el.querySelectorAll('[data-who]').forEach(function (c) { c.onclick = function () { st.who = c.getAttribute('data-who'); save(); shell(); paintAll(true); }; });
+      el.querySelectorAll('[data-lay]').forEach(function (c) { c.onclick = function () { st.lay = c.getAttribute('data-lay'); save(); shell(); paintAll(true); if (st.lay === 'visitors') load(false); }; });
+      var q = $('acq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { st.q = q.value.trim().toLowerCase(); paintBody(true); }, 220); }; }
+      var hs = $('ach'); if (hs) hs.onchange = function () { st.h = +hs.value || 24; save(); load(true); };
+      var pvb = $('acpv'); if (pvb) pvb.onclick = function () { st.nopv = !st.nopv; save(); pvb.classList.toggle('on', !st.nopv); paintBody(true); };
+      var lv = $('aclive'); if (lv) lv.onclick = function () { st.live = !st.live; save(); if (st.live) { wsOpen(); load(false); } else wsClose(); setLive(); };
+      var box = $('acStream'); if (box) { box.onmouseenter = function () { if (st.lay !== 'stream') return; paused = true; setLive(); }; box.onmouseleave = function () { paused = false; release(); setLive(); }; }
+      setLive();
     }
-    function paintTiles() { var d = data; var users = d.actors.filter(function (a) { return a.key.indexOf('u:') === 0; }).length, guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0; }).length, red = d.radar.filter(function (r) { return r.sev === 'red'; }).length, amber = d.radar.filter(function (r) { return r.sev === 'amber'; }).length;
-      $('acTiles').innerHTML = tile(N(d.online), 'online now') + tile(N(d.nEv), 'events in ' + d.h + 'h', 'dim', d.ringOldest ? 'ring reaches back ' + ago(d.ringOldest) : '') + tile(N(users) + ' <small class="meta">+ ' + N(guests) + ' guests</small>', 'people seen', 'dim') + tile(N(red + amber), 'radar hits', red ? 'bad' : amber ? 'warn' : 'dim', red ? N(red) + ' red' : ''); }
+    function paintTiles() { var d = data; if (!d || !$('acTiles')) return; var users = d.actors.filter(function (a) { return a.key.indexOf('u:') === 0; }).length, guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0; }).length, red = d.radar.filter(function (r) { return r.sev === 'red'; }).length, amber = d.radar.filter(function (r) { return r.sev === 'amber'; }).length;
+      $('acTiles').innerHTML = tile('<span id="acOn">' + N(onlineN) + '</span>', 'online now', onlineN ? '' : 'dim', 'last 2.5 min') + tile(N(d.nEv) + ' <small class="meta">+ ' + N(d.nPv) + ' pv</small>', 'events in ' + d.h + 'h', 'dim', d.ringOldest ? 'ring reaches back ' + ago(d.ringOldest) : '') + tile(N(users) + ' <small class="meta">+ ' + N(guests) + ' guests</small>', 'people seen', 'dim') + tile(N(red + amber), 'radar hits', red ? 'bad' : amber ? 'warn' : 'dim', red ? N(red) + ' red' : ''); }
+    function paintOnlineN() { var e = $('acOn'); if (e) e.textContent = N(onlineN); }
+    var onMore = false;
+    function paintOnline() { var d = data, box = $('acOnline'); if (!d || !box) return; var list = d.onlineList || []; var LIM = 16, cut = (!onMore && list.length > LIM) ? LIM : 80;
+      box.innerHTML = list.length ? '<div class="card acon"><div class="acon-h">Here now <span class="meta">' + list.length + ' · page they are on</span></div><div class="acon-l">' + list.slice(0, cut).map(function (o) { var guest = !o.u; return '<button type="button" class="acon-i' + (guest ? ' guest' : '') + '" data-actor="' + esc(o.k) + '" title="' + esc(dtFull(o.ts)) + '"><b>' + (guest ? 'guest ' + esc(o.v) : '@' + esc(o.u)) + '</b>' + (o.nv ? ' <span class="badge lime">new</span>' : '') + ' <span class="meta">' + esc(o.p || '?') + '</span> ' + flag(o.cc) + '</button>'; }).join('') + (list.length > LIM ? '<button type="button" class="acon-i more" id="acOnMore">' + (onMore ? 'show fewer' : '+' + (list.length - LIM) + ' more') + '</button>' : '') + '</div></div>' : '';
+      var mb = $('acOnMore'); if (mb) mb.onclick = function () { onMore = !onMore; paintOnline(); }; }
     function paintStream(full) { var box = $('acStream'); if (!box || !data) return; var list = data.rows.filter(pass);
-      if (full) { rendered = {}; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
-      else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) { var emp = box.querySelector('.empty'); if (emp) emp.remove();
-          // a row that arrives late (the ring batches up to a few seconds; the DO writes its own rows) carries its REAL time — it is slotted
-          // where it belongs by timestamp, never pinned to the top out of order (owner 2026-09-06: "ne izlaze redom")
-          fresh.slice(0, 300).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }).forEach(function (e) { var tmp = document.createElement('div'); tmp.innerHTML = rowHtml(e, true); var node = tmp.firstChild, ts = +e.ts || 0, kids = box.children, at = null; for (var i = 0; i < kids.length; i++) { if ((+kids[i].getAttribute('data-ts') || 0) <= ts) { at = kids[i]; break; } } box.insertBefore(node, at); });
-          fresh.forEach(function (e) { rendered[rowKey(e)] = 1; }); while (box.children.length > MAXROWS + 200) box.removeChild(box.lastChild); setTimeout(function () { box.querySelectorAll('.row.new').forEach(function (r) { r.classList.remove('new'); }); }, 2500); } }
-      var n = $('acN'); if (n) n.textContent = N(list.length) + (list.length > MAXROWS ? ' (showing ' + N(MAXROWS) + ')' : ''); }
+      if (full) { rendered = {}; pending = []; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
+      else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) { if (paused) { pending = pending.concat(fresh); pending.forEach(function (e) { rendered[rowKey(e)] = 1; }); paintPending(); } else insertRows(fresh); } }
+      countN(list.length);
+    }
+    function insertRows(fresh) { var box = $('acStream'); if (!box) return; var emp = box.querySelector('.empty'); if (emp) emp.remove();
+      // a row that arrives late carries its REAL time — it is slotted where it belongs by timestamp, never pinned to the top out of order
+      fresh.slice(0, 400).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }).forEach(function (e) { var tmp = document.createElement('div'); tmp.innerHTML = rowHtml(e, true); var node = tmp.firstChild, ts = +e.ts || 0, kids = box.children, at = null; for (var i = 0; i < kids.length; i++) { if (kids[i].classList.contains('acpend')) continue; if ((+kids[i].getAttribute('data-ts') || 0) <= ts) { at = kids[i]; break; } } box.insertBefore(node, at); rendered[rowKey(e)] = 1; });
+      while (box.children.length > MAXROWS + 200) box.removeChild(box.lastChild);
+      setTimeout(function () { box.querySelectorAll('.row.new').forEach(function (r) { r.classList.remove('new'); }); }, 2500); }
+    function paintPending() { var box = $('acStream'); if (!box) return; var p = box.querySelector('.acpend'); if (!pending.length) { if (p) p.remove(); return; } if (!p) { p = document.createElement('button'); p.type = 'button'; p.className = 'acpend'; p.onclick = function () { release(); }; box.insertBefore(p, box.firstChild); } p.textContent = pending.length + ' new row' + (pending.length === 1 ? '' : 's') + ' waiting — click to show'; }
+    function release() { if (!pending.length) { paintPending(); return; } var l = pending; pending = []; paintPending(); insertRows(l); }
+    function countN(n) { var c = $('acN'); if (c) c.textContent = N(n) + (st.lay === 'stream' && n > MAXROWS ? ' (showing ' + N(MAXROWS) + ')' : ''); }
+    function summary(a) { var ts = Object.keys(a.types).map(function (k) { return [k, a.types[k]]; }).sort(function (x, y) { return y[1] - x[1]; }).slice(0, 5).map(function (p) { return '<span class="meta">' + p[1] + ' ' + esc(p[0]) + '</span>'; }); if (a.money) ts.unshift('<span class="gold">' + a.money + ' money</span>'); if (a.problems) ts.unshift('<span class="dn">' + a.problems + ' problems</span>'); return ts.join(' · ') || '<span class="meta">only pageviews</span>'; }
+    function span(a) { var s = Math.round((a.last - a.first) / 60000); return s < 1 ? 'one hit' : s < 60 ? s + ' min on site' : Math.floor(s / 60) + 'h ' + (s % 60) + 'm on site'; }
+    function visCard(a) { var on = a.on && Date.now() - a.on < 150000, guest = a.key.indexOf('v:') === 0;
+      return '<div class="vc' + (on ? ' on' : '') + (guest ? ' guest' : '') + (a.problems ? ' bad' : '') + '" data-actor="' + esc(a.key) + '"><div class="vc-h"><i class="ldot"></i>' + (guest ? '<b>guest ' + esc(a.v) + '</b>' : userLink(a.u)) + (a.nv ? ' <span class="badge lime">new</span>' : '') + (a.names && a.names.length > 1 ? ' <span class="badge" title="also seen as">' + esc(a.names.join(' / ')) + '</span>' : '') + '<span class="meta">' + flag(a.cc) + ' ' + esc(a.d || '') + (a.b ? ' · ' + esc(a.b) : '') + (a.net ? ' · ' + esc(a.net) : '') + '</span><span class="meta r">' + (on ? '<b class="up">online</b> · ' : '') + ago(a.last) + ' ago</span></div>'
+        + '<div class="vc-p">' + (a.s ? 'came from <b>' + esc(a.s) + '</b> · ' : '') + span(a) + ' · ' + N(a.pv) + ' pv · ' + N(a.n) + ' events' + (a.dids.length > 1 ? ' · <span class="dn">' + a.dids.length + ' devices</span>' : '') + '</div>'
+        + '<div class="vc-path">' + (a.path.length ? a.path.map(function (p) { return '<span>' + esc(p) + '</span>'; }).join('<i>→</i>') : '<span class="meta">no pageview in this window</span>') + '</div><div class="vc-s">' + summary(a) + '</div></div>'; }
+    function paintVisitors() { var box = $('acStream'); if (!box || !data) return; visDirty = false; var list = data.actors.filter(passActor); box.innerHTML = '<div class="vcs">' + (list.slice(0, 150).map(visCard).join('') || '<div class="empty">nobody matches in this window</div>') + '</div>'; countN(list.length); }
+    function paintBody(full) { if (st.lay === 'visitors') paintVisitors(); else paintStream(full); }
     function bars2(items) { var mx = 1; items.forEach(function (x) { if (x.n > mx) mx = x.n; }); return items.map(function (x) { return '<div class="row" style="padding:5px 0"><span class="grow">' + x.html + '</span><span class="mono" style="min-width:34px;text-align:right">' + N(x.n) + '</span></div><div class="bar2"><i style="width:' + Math.round(x.n / mx * 100) + '%"></i></div>'; }).join(''); }
-    function paintRail() { var d = data, rail = $('acRail'); if (!rail) return;
-      var radar = d.radar.length ? d.radar.slice(0, 40).map(function (r) { return '<div class="rd ' + r.sev + '"><b>' + esc(r.title) + '</b><div class="meta">' + esc(r.detail) + (r.ts ? ' · ' + ago(r.ts) + ' ago' : '') + '</div>' + (r.actor ? '<div>' + actorBtn(r.actor, 'open ' + esc(actorName(r.actor))) + '</div>' : '') + '</div>'; }).join('') : '<div class="empty">nothing suspicious in this window — every rule is a plain count (shared device, shared IP with money, 30 trade actions in 10 min, 15 chat lines in 10 min, 3 failed codes, rate limits, claims from one device, guests with 10+ closes, 5 JS errors on a page, money within an hour of sign-up)</div>';
+    function paintRail() { var d = data, rail = $('acRail'); if (!rail || !d) return;
+      var radar = d.radar.length ? d.radar.slice(0, 40).map(function (r) { return '<div class="rd ' + r.sev + '"><b>' + esc(r.title) + '</b><div class="meta">' + esc(r.detail) + (r.ts ? ' · ' + ago(r.ts) + ' ago' : '') + '</div>' + (r.actor ? '<div>' + actorBtn(r.actor, 'open ' + esc(actorName(r.actor))) + '</div>' : '') + '</div>'; }).join('') : '<div class="empty">nothing suspicious in this window — every rule is a plain count per ACCOUNT (a renamed user is one account): shared device, shared IP with money on few devices (4+ devices = carrier network, listed as info), 30 trade actions in 10 min, 15 chat lines in 10 min, 3 failed codes, rate limits, claims from one device, guests with 10+ closes, 5 JS errors on a page, money within an hour of sign-up</div>';
       var types = Object.keys(d.types).map(function (k) { return { html: esc(k), n: d.types[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 14);
       var act = d.actors.slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 14).map(function (a) { return { html: actorBtn(a.key) + ' ' + flag(a.cc) + (a.problems ? ' <span class="dn">' + a.problems + ' problems</span>' : '') + (a.money ? ' <span class="gold">' + a.money + ' money</span>' : ''), n: a.n }; });
       var guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0 && a.trades; }).sort(function (a, b) { return b.trades - a.trades; }).slice(0, 8).map(function (a) { return { html: actorBtn(a.key) + ' ' + flag(a.cc) + ' <span class="meta">' + esc(a.d || '') + ' · ' + N(a.pv) + ' pv</span>', n: a.trades }; });
+      var srcs = {}; d.actors.forEach(function (a) { if (a.s) srcs[a.s] = (srcs[a.s] || 0) + 1; }); var src = Object.keys(srcs).map(function (k) { return { html: esc(k), n: srcs[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 8);
       var auth = (d.auth || []).slice(0, 25).map(function (x) { return '<div class="row" style="padding:5px 0"><span class="meta mono t">' + esc(dt(x.ts).slice(11)) + '</span><span class="who">' + (x.u ? userLink(x.u) : '<span class="meta">?</span>') + '</span><span class="grow meta">' + esc(x.k) + ' · <span class="mono">' + esc(x.ip || '') + '</span>' + (x.did ? ' · ' + actorBtn('d:' + x.did, 'dev ' + esc(x.did)) : '') + '</span>' + flag(x.cc) + '</div>'; }).join('');
-      rail.innerHTML = card('Radar', '<div class="radar">' + radar + '</div>', d.radar.length ? d.radar.length + ' hits' : '') + card('What happened', bars2(types), 'by type') + card('Most active', bars2(act) || '<div class="empty">nobody yet</div>', 'events per person') + (guests.length ? card('Guests trading', bars2(guests), 'no account, browser-side trades') : '') + card('Sign-ins', auth || '<div class="empty">none in this window</div>', 'ip + device'); }
-    function paintAll(full) { if (!data) return; paintTiles(); paintStream(full); paintRail(); }
-    function load(full) { var u = '/api/admin/activity?h=' + st.h + '&n=' + (st.pv ? 4000 : 2500) + (st.pv ? '&pv=1' : '') + '&_=' + Date.now();
-      J(u).then(function (d) { if (!d || d.error) throw new Error(d && d.error); data = d; if (full || !$('acStream')) { shell(); paintAll(true); } else paintAll(false); stamp(); }).catch(function () { if (!data) el.innerHTML = head() + failHtml('could not load the activity ring'); }); }
-    // one person, everything: timeline WITH pageviews, devices, ips, sign-ins, what kind of things they do
+      rail.innerHTML = card('Radar', '<div class="radar">' + radar + '</div>', d.radar.length ? d.radar.length + ' hits' : '') + card('What happened', bars2(types), 'by type') + card('Most active', bars2(act) || '<div class="empty">nobody yet</div>', 'events per person') + (src.length ? card('Where people came from', bars2(src), 'people per source, this window') : '') + (guests.length ? card('Guests trading', bars2(guests), 'no account, browser-side trades') : '') + card('Sign-ins', auth || '<div class="empty">none in this window</div>', 'ip + device'); }
+    function paintAll(full) { if (!data) return; paintTiles(); paintOnline(); paintBody(full); paintRail(); }
+    function absorb(d, full) { // a poll answer: full = the whole window replaces everything; else new rows merge and the summaries refresh
+      uidKey = {}; vidKey = {}; (d.actors || []).forEach(function (a) { if (a.uid) uidKey[a.uid] = a.key; if (a.v) vidKey[a.v] = a.key; });
+      onlineN = d.online || 0;
+      if (full || !data) { data = d; prep(data.rows); return; }
+      var seen = {}; data.rows.forEach(function (e) { seen[rowKey(e)] = 1; });
+      var fresh = (d.rows || []).filter(function (e) { return !seen[rowKey(e)]; });
+      fresh.forEach(function (e) { prepOne(e); data.rows.push(e); });
+      var cut = Date.now() - st.h * 3600000; data.rows = data.rows.filter(function (e) { return (e.ts || 0) >= cut; }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+      ['actors', 'radar', 'onlineList', 'types', 'auth', 'nEv', 'nPv', 'ringOldest', 'h', 'now'].forEach(function (k) { data[k] = d[k]; });
+    }
+    function load(full) { lastPoll = Date.now(); var newest = (!full && data && data.rows.length) ? data.rows[0].ts : 0;
+      var u = '/api/admin/activity?h=' + st.h + '&n=4000&pv=1' + (E2E ? '&e2e=1' : '') + (newest ? '&since=' + newest : '') + '&_=' + Date.now();
+      J(u).then(function (d) { if (!d || d.error) throw new Error(d && d.error); if (!document.body.contains(el)) return; absorb(d, full || !data); if (full || !$('acStream')) { shell(); paintAll(true); } else paintAll(false); stamp(); }).catch(function () { if (!data) el.innerHTML = head() + failHtml('could not load the activity ring'); }); }
+    // ---- the socket: every stored row arrives here within a second of the beacon ----
+    function ingest(k, items) { if (!data) return; if (k === 'authlog') return; var fresh = [];
+      items.forEach(function (it) { if (!it || (!E2E && (it.e2 || /^e2e_/i.test(it.u || '')))) return; var e = k === 'pvlog' ? Object.assign({ t: 'pv' }, it) : it; if (!e.ts) e.ts = Date.now(); e.k = keyFor(e); var rk = rowKey(e); if (rendered[rk]) return; for (var i = 0; i < Math.min(60, data.rows.length); i++) if (rowKey(data.rows[i]) === rk) return; prepOne(e); data.rows.unshift(e); fresh.push(e); });
+      if (!fresh.length) return; if (data.rows.length > 6000) data.rows.length = 6000; data.rows.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+      if (st.lay === 'stream') { var show = fresh.filter(pass); if (!show.length) return; if (paused) { pending = pending.concat(show); show.forEach(function (e) { rendered[rowKey(e)] = 1; }); paintPending(); } else insertRows(show); countN(data.rows.filter(pass).length); }
+      else { visDirty = true; var known = {}; (data.actors || []).forEach(function (a) { known[a.key] = 1; }); if (fresh.some(function (e) { return !known[e.k]; }) && Date.now() - lastPoll > 3000) load(false); } }
+    function wsOpen() { if (!st.live || ws || !document.body.contains(el)) return;
+      try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/api/admin/activity/ws'); } catch (e) { ws = null; wsRetry(); return; }
+      var me = ws;
+      me.onopen = function () { if (ws !== me) return; wsOk = true; wsTry = 0; setLive(); clearInterval(pings); pings = setInterval(function () { if (!document.body.contains(el)) { wsClose(); return; } try { me.send('ping'); } catch (e) {} }, 25000); if (data) load(false); };
+      me.onmessage = function (m) { if (ws !== me) return; if (!document.body.contains(el)) { wsClose(); return; } var d; try { d = JSON.parse(m.data); } catch (e) { return; } if (typeof d.on === 'number') { onlineN = d.on; paintOnlineN(); } if (d.k && d.items) ingest(d.k, d.items); };
+      me.onclose = me.onerror = function () { if (ws !== me) return; ws = null; wsOk = false; clearInterval(pings); setLive(); if (document.body.contains(el) && st.live) wsRetry(); };
+    }
+    function wsRetry() { clearTimeout(wsTimer); wsTimer = setTimeout(wsOpen, Math.min(30000, 1000 * Math.pow(2, wsTry++))); }
+    function wsClose() { clearTimeout(wsTimer); clearInterval(pings); var w = ws; ws = null; wsOk = false; if (w) { try { w.close(); } catch (e) {} } }
+    // one person, everything: timeline WITH pageviews, visits split at 30-minute gaps, devices, ips, sign-ins
     function actorView(key) {
       var m = modal('<div class="mhead"><b>' + esc(actorName(key)) + '</b><span class="meta" id="avSub"></span><button class="btn sm x" id="avX">close</button></div><div id="avBody"><div class="empty">loading…</div></div>'); $('avX').onclick = closeModal;
-      J('/api/admin/activity?h=' + st.h + '&n=1200&actor=' + encodeURIComponent(key) + '&_=' + Date.now()).then(function (d) { var b = $('avBody'); if (!b) return; var a = d.actorInfo;
-        var info = a ? '<div class="line">' + (a.u ? userLink(a.u) + ' · ' : '') + flag(a.cc) + ' ' + esc(a.d || '') + ' · first seen ' + ago(a.first) + ' ago · last ' + ago(a.last) + ' ago · <b>' + N(a.n) + '</b> events · <b>' + N(a.pv) + '</b> pageviews on ' + N(a.pages) + ' pages' + (a.trades ? ' · <b>' + N(a.trades) + '</b> trade actions' : '') + (a.money ? ' · <b class="gold">' + N(a.money) + '</b> money events' : '') + (a.problems ? ' · <b class="dn">' + N(a.problems) + '</b> problems' : '') + '</div><div class="line" style="font-size:12px">devices: ' + (a.dids.length ? a.dids.map(function (x) { return actorBtn('d:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + ' · ips: ' + (a.ips.length ? a.ips.map(function (x) { return actorBtn('ip:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + (a.vids > 1 ? ' · ' + a.vids + ' visitor ids' : '') + '</div>' : '<div class="line meta">no summary for this key in the window</div>';
+      J('/api/admin/activity?h=' + st.h + '&n=1500' + (E2E ? '&e2e=1' : '') + '&actor=' + encodeURIComponent(key) + '&_=' + Date.now()).then(function (d) { var b = $('avBody'); if (!b) return; var a = d.actorInfo; var rows = (d.rows || []); prep(rows);
+        var info = a ? '<div class="line">' + (a.u ? userLink(a.u) + ' · ' : '') + (a.names && a.names.length > 1 ? '<span class="badge" title="also seen as">' + esc(a.names.join(' / ')) + '</span> · ' : '') + flag(a.cc) + ' ' + esc(a.d || '') + (a.b ? ' · ' + esc(a.b) : '') + (a.net ? ' · ' + esc(a.net) : '') + (a.s ? ' · came from <b>' + esc(a.s) + '</b>' : '') + (a.nv ? ' · <span class="badge lime">new visitor</span>' : '') + ' · first seen ' + ago(a.first) + ' ago · last ' + ago(a.last) + ' ago · <b>' + N(a.n) + '</b> events · <b>' + N(a.pv) + '</b> pageviews on ' + N(a.pages) + ' pages' + (a.trades ? ' · <b>' + N(a.trades) + '</b> trade actions' : '') + (a.money ? ' · <b class="gold">' + N(a.money) + '</b> money events' : '') + (a.problems ? ' · <b class="dn">' + N(a.problems) + '</b> problems' : '') + '</div><div class="line" style="font-size:12px">devices: ' + (a.dids.length ? a.dids.map(function (x) { return actorBtn('d:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + ' · ips: ' + (a.ips.length ? a.ips.map(function (x) { return actorBtn('ip:' + x, esc(x)); }).join(' ') : '<span class="meta">none</span>') + (a.vids > 1 ? ' · ' + a.vids + ' visitor ids' : '') + '</div>' + (a.path && a.path.length ? '<div class="vc-path" style="margin-top:6px">' + a.path.map(function (p) { return '<span>' + esc(p) + '</span>'; }).join('<i>→</i>') + '</div>' : '') : '<div class="line meta">no summary for this key in the window</div>';
         var auth = (d.auth || []).slice(0, 12).map(function (x) { return '<span class="meta">' + esc(x.k) + ' ' + ago(x.ts) + ' ago · ' + esc(x.ip || '') + (x.u ? ' · @' + esc(x.u) : '') + '</span>'; }).join('<br>');
-        var rows = (d.rows || []).slice(0, 600).map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing in this window</div>';
-        b.innerHTML = info + (auth ? '<div class="line" style="font-size:12px;margin-top:4px">sign-ins: <br>' + auth + '</div>' : '') + '<div class="feed acfeed" style="max-height:60vh;margin-top:8px">' + rows + '</div>'; var sub = $('avSub'); if (sub) sub.textContent = N((d.rows || []).length) + ' rows · ' + st.h + 'h';
+        var html = '', prevTs = 0; rows.slice(0, 700).forEach(function (e) { if (prevTs && prevTs - e.ts > 1800000) html += '<div class="vdiv">earlier visit · ' + ago(e.ts) + ' ago</div>'; html += rowHtml(e, false); prevTs = e.ts; });
+        b.innerHTML = info + (auth ? '<div class="line" style="font-size:12px;margin-top:4px">sign-ins: <br>' + auth + '</div>' : '') + '<div class="feed acfeed" style="max-height:60vh;margin-top:8px">' + (html || '<div class="empty">nothing in this window</div>') + '</div>'; var sub = $('avSub'); if (sub) sub.textContent = N(rows.length) + ' rows · ' + st.h + 'h';
       }).catch(function () { var b = $('avBody'); if (b) b.innerHTML = failHtml(); });
     }
-    document.addEventListener('click', function onA(e) { if (!document.body.contains(el)) { document.removeEventListener('click', onA); return; } var b = e.target.closest && e.target.closest('[data-actor]'); if (!b) return; e.preventDefault(); actorView(b.getAttribute('data-actor')); });
+    document.addEventListener('click', function onA(e) { if (!document.body.contains(el)) { document.removeEventListener('click', onA); return; } var b = e.target.closest && e.target.closest('[data-actor]'); if (!b) return; if (e.target.closest && e.target.closest('a')) return; e.preventDefault(); actorView(b.getAttribute('data-actor')); });
     el.innerHTML = head() + SKEL;
     load(true);
+    onLeave = wsClose;
+    wsOpen();
     if (arg) setTimeout(function () { actorView(decodeURIComponent(arg)); }, 400);
-    every(15000, function () { if (st.live) load(false); });
+    every(5000, function () { if (!st.live || !data) return; if (Date.now() - lastPoll >= (wsOk ? 30000 : 5000)) load(false); if (visDirty && st.lay === 'visitors') paintVisitors(); });
+    every(10000, function () { var box = $('acStream'); if (!box) return; var a = box.querySelectorAll('.ago'); for (var i = 0; i < a.length && i < 400; i++) a[i].textContent = ago(+a[i].getAttribute('data-ts')); var r = el.querySelectorAll('.vc .r'); if (!r.length) return; });
   } };
   // ---------- INBOX / TRADER CHAT ----------
   // /chat/admin/history (messages newest-last), /chat/admin/post {text}, /chat/admin/delete {ts}, /chat/admin/poll {q,opts}|{close:1}|{clear:1},

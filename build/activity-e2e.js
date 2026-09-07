@@ -57,10 +57,10 @@ const act = (q) => get('/api/admin/activity?e2e=1&' + q).then(r => r.body);
   const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36 e2e-activity';
   const beacon = (q) => fetch(ORIGIN + '/api/track?' + q, { headers: { cookie: 'mp_did=' + DID, 'user-agent': UA, 'x-admin-key': K } }).then(r => r.status); // the key tags the rows e2 so the owner's daily read never shows test traffic
   const b1 = await beacon('t=pageview&p=%2Fpaper-trade');
-  await sleep(9000); // the ring batcher flushes an idle isolate's buffer on the next push after 8 s
+  await sleep(1500); // no batcher since 2026-09-07 — the DO stores the row at once
   const b2 = await beacon('t=paper&e=BTC%20long%205x&p=%2Fpaper-trade');
   chk('guest beacons accepted', b1 === 204 && b2 === 204, { b1, b2 });
-  await sleep(9000); await beacon('t=close&e=BTC%20%2B%241.20&p=%2Fpaper-trade'); await sleep(3000);
+  await sleep(1500); await beacon('t=close&e=BTC%20%2B%241.20&p=%2Fpaper-trade'); await sleep(3000);
 
   // ---- the ring, through the endpoint
   let A = null; for (let w = 0; w < 6; w++) { A = await act('h=1&n=2000&actor=u:' + UN); if ((A.rows || []).some(r => r.t === 'close')) break; await sleep(2000); }
@@ -108,7 +108,7 @@ const act = (q) => get('/api/admin/activity?e2e=1&' + q).then(r => r.body);
       await page.goto(ORIGIN + '/api/stats#people/activity', { waitUntil: 'networkidle2', timeout: 120000 });
       for (let w = 0; w < 40; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#acStream .row').length > 0)) break; }
       const v = await page.evaluate(() => { const rows = document.querySelectorAll('#acStream .row'); const r0 = rows[0]; let reach = false; if (r0) { r0.scrollIntoView({ block: 'center' }); const b = r0.getBoundingClientRect(); const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); reach = !!(hit && r0.contains(hit)); } return { rows: rows.length, tiles: document.querySelectorAll('#acTiles .tile').length, rail: document.querySelectorAll('#acRail .card').length, radar: !!document.querySelector('.radar'), chips: document.querySelectorAll('[data-g]').length, reach, sx: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, n: (document.getElementById('acN') || {}).textContent }; });
-      chk(vp.t + ': activity view renders stream, tiles, rail with radar, chips; first row reachable; no horizontal scroll', v.rows > 0 && v.tiles === 4 && v.rail >= 4 && v.radar && v.chips === 9 && v.reach && !v.sx && errs.length === 0, Object.assign(v, { errs }));
+      chk(vp.t + ': activity view renders stream, tiles, rail with radar, chips; first row reachable; no horizontal scroll', v.rows > 0 && v.tiles === 4 && v.rail >= 4 && v.radar && v.chips === 10 && v.reach && !v.sx && errs.length === 0, Object.assign(v, { errs }));
       if (vp.t === 'desktop') {
         const before = v.rows;
         await page.click('[data-g="money"]'); await sleep(700);

@@ -4344,7 +4344,7 @@ async function authLogPush(env, kind, request, uid, username) {
 }
 // Live activity ring sizing (2026-09-06, owner: "ovo gledam svakodnevno"): 24 hours, not 3 — the owner reads the log once a day and
 // the old 3h/800 window had already dropped the night by the time he opened it. 5,000 rows x ~220 B = ~1 MB in the OpsLog DO.
-const EVLOG_CAP = 5000, EVLOG_CUT = 86400000, PVLOG_CAP = 2500;
+const EVLOG_CAP = 5000, EVLOG_CUT = 86400000, PVLOG_CAP = 4000; // pv cap 2500 -> 4000 on 2026-09-07: a 24h day already held 2,494 pageviews, the ring was trimming inside the window
 // One visitor id for EVERY row (pageview, click, server event): device cookie first, ip+ua only for cookieless hits. Until
 // 2026-09-06 pageviews hashed the mp_did cookie while events hashed ip|ua, so a guest's clicks never joined his own
 // journey — every guest looked like he only ever looked at pages. `di` (device) and `ip` ride along for multi-account work.
@@ -4356,7 +4356,10 @@ async function actorOf(request, env) {
   // e2: the request carried the ADMIN key — an E2E run or the owner's own tooling. Such rows are hidden from the daily
   // read unless asked for (?e2e=1); a visitor cannot fake the flag without the secret.
   let e2 = false; try { e2 = !!(env && request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))); } catch (e) {}
-  return { v: v.slice(0, 6), di: did.slice(0, 8), ip: String(ip).slice(0, 45), e2 };
+  // uid (2026-09-07): the ACCOUNT id rides on every row a signed-in browser produces, so the ops feed groups people by account,
+  // never by username — a username change made one person read as "one device, 2 accounts" in the abuse radar.
+  const uidc = getCookie(request, 'mp_uid') || '';
+  return { v: v.slice(0, 6), di: did.slice(0, 8), ip: String(ip).slice(0, 45), e2, uid: /^[0-9a-f]{32}$/.test(uidc) ? uidc : '' };
 }
 function maskEmail(e) { const s = String(e || '').toLowerCase(); const i = s.indexOf('@'); if (i < 1) return s.slice(0, 3) + '***'; return s.slice(0, Math.min(2, i)) + '***@' + s.slice(i + 1); }
 // uid -> username for ops rows written without a signed-in cookie (admin/E2E ?uid= hooks, bot keys). Cached per isolate.
@@ -4373,9 +4376,9 @@ async function evPush(env, request, type, label, pg, extra) {
   try {
     const cc = (request && request.cf && request.cf.country) || '';
     let u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
-    const xuid = extra && extra.uid ? String(extra.uid).slice(0, 32) : '';
-    if (!u && xuid) u = await usernameOf(env, xuid);
     const a = await actorOf(request, env);
+    const xuid = extra && extra.uid ? String(extra.uid).slice(0, 32) : (a.uid || '');
+    if (!u && xuid) u = await usernameOf(env, xuid);
     await opslogPush(env, 'evlog', Object.assign({ t: type, e: String(label || '').slice(0, 64), cc, v: a.v, di: a.di, ip: a.ip, u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() }, a.e2 ? { e2: 1 } : {}, xuid ? { uid: xuid } : {}, extra && typeof extra === 'object' ? { x: extra } : {}), EVLOG_CAP, EVLOG_CUT);
     try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
@@ -4429,17 +4432,15 @@ async function kvRingFlush(env, key, items, cap, cutMs, ttl) {
   await opslogPush(env, key, items, cap, cutMs);
 }
 function kvRingPush(env, ctx, key, entry, cap, cutMs) {
-  // `lf` = when this key was last flushed, and it survives the buffer reset. The old rule timed the
-  // buffer's own age, which is only ever re-checked by a LATER push — so a one-page visit sat in an
-  // isolate nothing else touched and was lost. Timing from the last flush means a fresh or idle
-  // isolate writes its first entry immediately (lf = 0), while a burst still batches to 8.
-  try { const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], t: Date.now(), lf: 0 }; b.a.push(entry);
-    if (b.a.length >= 8 || Date.now() - (b.lf || 0) > 8000) { const items = b.a; B[key] = { a: [], t: Date.now(), lf: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); }
-    else if (!b.tm && ctx) { // an entry that missed the burst/8s rule used to wait for the NEXT push to this isolate — minutes on a quiet
-      // site (owner 2026-09-06: "logovi kasne"). A 2.5s timer flushes whatever is buffered; the flag lives on the buffer object,
-      // so a burst flush that swaps the object simply leaves the timer nothing to do.
-      b.tm = 1; ctx.waitUntil(new Promise(r => setTimeout(r, 2500)).then(() => { const B2 = globalThis.__ringB, bb = B2 && B2[key]; if (!bb || bb !== b || !bb.a.length) return; const items = bb.a; B2[key] = { a: [], t: Date.now(), lf: Date.now() }; return kvRingFlush(env, key, items, cap, cutMs); }).catch(() => {}));
-    } } catch (e) {}
+  // 2026-09-07: NO batching delay any more. The ring lives in the OpsLog DO (one request per push, not a KV RMW), and the
+  // ops Activity feed is pushed to the owner's browser over a WebSocket the moment the DO stores a row — a 2.5 s / 8 s buffer
+  // here was the single biggest reason the feed "came in groups". One flush per key is in flight per isolate; whatever
+  // arrives meanwhile is sent right behind it (so a burst still costs a handful of DO calls, never one per row).
+  try {
+    const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], busy: false }; b.a.push(entry);
+    const drain = async () => { while (b.a.length) { const items = b.a.splice(0, 64); try { await kvRingFlush(env, key, items, cap, cutMs); } catch (e) {} } b.busy = false; };
+    if (!b.busy) { b.busy = true; const pr = drain(); if (ctx && ctx.waitUntil) ctx.waitUntil(pr); }
+  } catch (e) {}
 }
 async function onlogFlush(env, mm) {
   try { const r = await opslogDo(env).fetch(new Request('https://do/mark', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ m: mm }) })); if (r && r.ok) return; } catch (e) {}
@@ -4447,8 +4448,10 @@ async function onlogFlush(env, mm) {
   try { let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {} Object.assign(om, mm); const cut = Date.now() - 240000; for (const k in om) if (om[k] < cut) delete om[k]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
 }
 function onlogMark(env, ctx, vid6) {
-  try { const B = globalThis.__onB = globalThis.__onB || { m: {}, t: Date.now() }; B.m[vid6] = Date.now();
-    if (Object.keys(B.m).length >= 10 || Date.now() - B.t > 30000) { const mm = B.m; globalThis.__onB = { m: {}, t: Date.now() }; if (ctx) ctx.waitUntil(onlogFlush(env, mm)); } } catch (e) {}
+  // 2026-09-07: coalesce for 1.5 s, then flush — the old "10 vids or 30 s, checked on the NEXT mark" rule left a quiet isolate's
+  // marks unflushed for minutes (a lone visitor never showed as online; the live feed's "here now" list was stale by design).
+  try { const B = globalThis.__onB = globalThis.__onB || { m: {}, busy: false }; B.m[vid6] = Date.now();
+    if (!B.busy && ctx) { B.busy = true; ctx.waitUntil(new Promise(r => setTimeout(r, 1500)).then(() => { const mm = B.m; B.m = {}; B.busy = false; return onlogFlush(env, mm); })); } } catch (e) {}
 }
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
@@ -4576,7 +4579,7 @@ async function handleTrack(url, request, env, ctx) {
  const cfx = request.cf || {};
  const net = String(cfx.asOrganization || '').replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 24);
  const bscore = (cfx.botManagement && typeof cfx.botManagement.score === 'number') ? cfx.botManagement.score : null;
- kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), di: String(did0 || '').slice(0, 8), ip: String(ip).slice(0, 45), ...((request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))) ? { e2: 1 } : {}), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), net, asn: +cfx.asn || 0, rtt: +cfx.clientTcpRtt || 0, b: browserOf(ua), ...(bscore !== null ? { bs: bscore } : {}), ts: Date.now() }, PVLOG_CAP, EVLOG_CUT); // A5 batched; 24h window since 2026-09-06
+ kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), di: String(did0 || '').slice(0, 8), ip: String(ip).slice(0, 45), ...((request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))) ? { e2: 1 } : {}), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), net, asn: +cfx.asn || 0, rtt: +cfx.clientTcpRtt || 0, b: browserOf(ua), ...(bscore !== null ? { bs: bscore } : {}), ...(_newVisitor ? { nv: 1 } : {}), ...((/^[0-9a-f]{32}$/.test(getCookie(request, 'mp_uid') || '')) ? { uid: getCookie(request, 'mp_uid') } : {}), ts: Date.now() }, PVLOG_CAP, EVLOG_CUT); // 24h window since 2026-09-06; nv = first pageview ever (2026-09-07), uid = account id when signed in
         void 0; // (old inline RMW removed)
         if (false) await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
       } catch (e) {}
@@ -4621,7 +4624,7 @@ async function handleTrack(url, request, env, ctx) {
             } catch (e) {}
           }
         }
-        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), di: evAct.di, ip: evAct.ip, ...(evAct.e2 ? { e2: 1 } : {}), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, EVLOG_CAP, EVLOG_CUT); // A5 batched (cap aligned with evPush)
+        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), di: evAct.di, ip: evAct.ip, ...(evAct.e2 ? { e2: 1 } : {}), ...(evAct.uid ? { uid: evAct.uid } : {}), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, EVLOG_CAP, EVLOG_CUT); // A5 batched (cap aligned with evPush)
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { await opslogPush(env, 'mclog', { ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9, src: _evSrc(p) }, 50, 0); } catch (e) {}
         }
@@ -15021,12 +15024,18 @@ export default {
         const q = String(url.searchParams.get('purge') || '').slice(0, 64);
         try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, keys: ['evlog', 'pvlog', 'authlog'] }) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info' }); } catch (e) {} return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); }
       }
+      if (request.method === 'POST' && url.searchParams.get('inject') && isAdminKey(env, adminKeyFrom(request, url))) { // E2E hook (key only): store rows as if the site had written them — every row is forced e2 so the daily read never shows them
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        const out = {}; for (const k of ['evlog', 'pvlog']) { const arr = Array.isArray(b[k]) ? b[k].slice(0, 40).map(x => Object.assign({}, x, { e2: 1, ts: +x.ts || Date.now() })) : []; if (arr.length) out[k] = await opslogPush(env, k, arr, k === 'pvlog' ? PVLOG_CAP : EVLOG_CAP, EVLOG_CUT); }
+        return new Response(JSON.stringify({ ok: 1, out }), { headers: jh2 });
+      }
       const h = Math.min(24, Math.max(1, +url.searchParams.get('h') || 24));
       const nMax = Math.min(5000, Math.max(50, +url.searchParams.get('n') || 2000));
       const withPv = url.searchParams.get('pv') === '1';
+      const since = +url.searchParams.get('since') || 0; // rows newer than this only (the live view reconciles every 30 s without re-downloading the window)
       const actorQ = String(url.searchParams.get('actor') || '').slice(0, 80).toLowerCase();
       const showE2E = url.searchParams.get('e2e') === '1';
-      const rr = await ringRead(env, ['evlog', 'pvlog', 'authlog'], { n: 5000, online: true });
+      const rr = await ringRead(env, ['evlog', 'pvlog', 'authlog'], { n: 5000, online: true, onts: true });
       const now = Date.now(), from = now - h * 3600000;
       const isE2E = x => !!x.e2 || /^e2e_/i.test(String(x.u || ''));
       let ev = (rr.rings.evlog || []).filter(x => x && x.ts >= from && (showE2E || !isE2E(x)));
@@ -15035,29 +15044,45 @@ export default {
       const ringOldest = (rr.rings.evlog || []).length ? (rr.rings.evlog[rr.rings.evlog.length - 1].ts || 0) : 0;
       { // a limited burst spread over several isolates leaves one 'ratelimit' row per isolate that saw the limit — fold them into one per actor per 2 minutes
         const seen = new Map(); ev = ev.filter(x => { if (x.t !== 'ratelimit') return true; const k = (x.u || x.v || '') + '|' + (x.e || ''); const last = seen.get(k); if (last != null && last - x.ts < 120000) return false; seen.set(k, x.ts); return true; }); }
-      const MONEY = new Set(['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'gift', 'pass', 'premgrant']);
+      const MONEY = new Set(['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'gift', 'pass', 'premgrant', 'code']);
       const TRADE = new Set(['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder']);
       const PROBLEM = new Set(['otpfail', 'ratelimit', 'jserr', 'wdreject', 'liq', 'premgate']);
-      // the same person under one key: a username when there is one, else the device-derived visitor id
+      // ---- identity (2026-09-07): one person = one ACCOUNT. Rows from a signed-in browser carry `uid` (mp_uid cookie) and the
+      // UserStore's own rows always did; a `username` event (u = old name, e = new name) folds the old name into the new one for
+      // rows written before the rename. Until today the radar counted NAMES per device, so a rename read as "one device, 2 accounts"
+      // (owner 2026-09-07: "kaze za istog korisnika da ima dva naloga a on ima samo jedan" — both hits of the day were renames).
       const lc = s => String(s || '').toLowerCase();
-      const vidUser = new Map(); ev.concat(pv).forEach(x => { if (x.u && x.v && x.v !== 'srv') vidUser.set(x.v, lc(x.u)); });
-      const keyOf = x => x.u ? 'u:' + lc(x.u) : (x.v && x.v !== 'srv' && vidUser.has(x.v)) ? 'u:' + vidUser.get(x.v) : (x.v && x.v !== 'srv') ? 'v:' + x.v : (x.uid ? 'uid:' + x.uid : 'sys');
+      const alias = new Map(); ev.forEach(x => { if (x.t === 'username' && x.u && x.e && lc(x.u) !== lc(x.e)) alias.set(lc(x.u), lc(x.e)); });
+      const canon = n => { let s = lc(n), i = 0; while (alias.has(s) && i++ < 5) s = alias.get(s); return s; };
+      const uidName = new Map(); // account id -> the newest username seen for it in the window
+      const nameUid = new Map();
+      [ev, pv, au].forEach(arr => arr.forEach(x => { if (x.uid && x.u) { const cur = uidName.get(x.uid); if (!cur || x.ts > cur.ts) uidName.set(x.uid, { n: canon(x.u), ts: x.ts }); nameUid.set(canon(x.u), x.uid); } }));
+      const nameOf = x => (x.uid && uidName.has(x.uid)) ? uidName.get(x.uid).n : canon(x.u);
+      const vidUser = new Map(); ev.concat(pv).forEach(x => { if ((x.u || (x.uid && uidName.has(x.uid))) && x.v && x.v !== 'srv') vidUser.set(x.v, nameOf(x)); });
+      const keyOf = x => (x.u || (x.uid && uidName.has(x.uid))) ? 'u:' + nameOf(x) : (x.v && x.v !== 'srv' && vidUser.has(x.v)) ? 'u:' + vidUser.get(x.v) : (x.v && x.v !== 'srv') ? 'v:' + x.v : (x.uid ? 'uid:' + x.uid : 'sys');
+      const onTs = new Map(); (rr.onts || []).forEach(r => { if (r && r.vid && +r.ts > now - 150000) onTs.set(String(r.vid), +r.ts); });
       const A = new Map();
-      const touch = (x, kind) => { const k = keyOf(x); if (k === 'sys') return; let a = A.get(k); if (!a) { a = { key: k, u: x.u || '', v: '', uid: x.uid || '', cc: x.cc || '', d: x.d || '', n: 0, pv: 0, first: x.ts, last: x.ts, types: {}, dids: new Set(), ips: new Set(), vids: new Set(), pages: new Set(), money: 0, trades: 0, problems: 0, chat: 0 }; A.set(k, a); }
-        if (kind === 'pv') { a.pv++; if (x.p) a.pages.add(x.p); } else { a.n++; a.types[x.t] = (a.types[x.t] || 0) + 1; if (MONEY.has(x.t)) a.money++; if (TRADE.has(x.t)) a.trades++; if (PROBLEM.has(x.t)) a.problems++; if (x.t === 'chatmsg' || x.t === 'chat') a.chat++; }
+      const touch = (x, kind) => { const k = keyOf(x); if (k === 'sys') return; let a = A.get(k); if (!a) { a = { key: k, u: '', v: '', uid: x.uid || '', cc: x.cc || '', d: x.d || '', b: '', net: '', s: '', nv: 0, n: 0, pv: 0, first: x.ts, last: x.ts, types: {}, dids: new Set(), ips: new Set(), vids: new Set(), pages: new Set(), pvs: [], money: 0, trades: 0, problems: 0, chat: 0, names: new Set() }; A.set(k, a); }
+        if (kind === 'pv') { a.pv++; if (x.p) { a.pages.add(x.p); a.pvs.push([x.ts, x.p]); } if (x.nv) a.nv = 1; if (x.b && !a.b) a.b = x.b; if (x.net && !a.net) a.net = x.net; if (x.s && x.s !== 'direct' && !a.s) a.s = x.s; else if (x.s0 && !a.s) a.s = x.s0; }
+        else { a.n++; a.types[x.t] = (a.types[x.t] || 0) + 1; if (MONEY.has(x.t)) a.money++; if (TRADE.has(x.t)) a.trades++; if (PROBLEM.has(x.t)) a.problems++; if (x.t === 'chatmsg' || x.t === 'chat') a.chat++; }
         if (x.ts < a.first) a.first = x.ts; if (x.ts > a.last) { a.last = x.ts; if (x.cc) a.cc = x.cc; if (x.d) a.d = x.d; }
-        if (x.di) a.dids.add(x.di); if (x.ip) a.ips.add(x.ip); if (x.v && x.v !== 'srv') { a.vids.add(x.v); if (!a.v) a.v = x.v; } if (x.u && !a.u) a.u = x.u; if (x.uid && !a.uid) a.uid = x.uid; };
+        if (x.di) a.dids.add(x.di); if (x.ip) a.ips.add(x.ip); if (x.v && x.v !== 'srv') { a.vids.add(x.v); if (!a.v) a.v = x.v; } if (x.u) a.names.add(x.u); if (x.uid && !a.uid) a.uid = x.uid; };
       ev.forEach(x => touch(x, 'ev')); pv.forEach(x => touch(x, 'pv'));
-      au.forEach(x => { const k = x.u ? 'u:' + lc(x.u) : null; if (!k) return; const a = A.get(k); if (!a) return; if (x.did) a.dids.add(String(x.did).slice(0, 8)); if (x.ip) a.ips.add(x.ip); });
+      A.forEach(a => { if (a.key.indexOf('u:') === 0) { const want = a.key.slice(2); let best = ''; a.names.forEach(n => { if (lc(n) === want) best = n; }); a.u = best || Array.from(a.names)[0] || want; } });
+      au.forEach(x => { const k = x.u ? 'u:' + canon(x.u) : null; if (!k) return; const a = A.get(k); if (!a) return; if (x.did) a.dids.add(String(x.did).slice(0, 8)); if (x.ip) a.ips.add(x.ip); });
       // ---- abuse radar: every rule is a plain count over the window, so the owner can check it by hand ----
       const radar = [];
       const push9 = (k, sev, title, detail, actor, n, ts) => radar.push({ k, sev, title, detail, actor: actor || '', n: n || 0, ts: ts || 0 });
-      { const byDid = new Map(); const add = (di, u) => { if (!di || !u) return; const s = byDid.get(di) || new Set(); s.add(lc(u)); byDid.set(di, s); };
-        ev.forEach(x => add(x.di, x.u)); pv.forEach(x => add(x.di, x.u)); au.forEach(x => add(String(x.did || '').slice(0, 8), x.u));
+      alias.forEach((nu, old) => push9('rename', 'info', 'Username changed', '@' + old + ' is now @' + nu + ' (one account)', 'u:' + canon(nu), 1, 0));
+      { const byDid = new Map(); const add = (di, x) => { const nm = nameOf(x); if (!di || !nm) return; const s = byDid.get(di) || new Set(); s.add(nm); byDid.set(di, s); };
+        ev.forEach(x => add(x.di, x)); pv.forEach(x => add(x.di, x)); au.forEach(x => add(String(x.did || '').slice(0, 8), { u: x.u, uid: x.uid }));
         byDid.forEach((s, di) => { if (s.size >= 2) push9('multi_device', 'red', 'One device, ' + s.size + ' accounts', Array.from(s).map(n => '@' + n).join(', ') + ' share device ' + di, 'd:' + di, s.size); }); }
-      { const byIp = new Map(); const add = (ip, u, t) => { if (!ip || !u) return; const o = byIp.get(ip) || { s: new Set(), money: 0 }; o.s.add(lc(u)); if (MONEY.has(t)) o.money++; byIp.set(ip, o); };
-        ev.forEach(x => add(x.ip, x.u, x.t)); pv.forEach(x => add(x.ip, x.u, '')); au.forEach(x => add(x.ip, x.u, ''));
-        byIp.forEach((o, ip) => { if (o.s.size >= 3 || (o.s.size >= 2 && o.money)) push9('multi_ip', o.money ? 'red' : 'amber', 'One IP, ' + o.s.size + ' accounts' + (o.money ? ' (money moved)' : ''), Array.from(o.s).map(n => '@' + n).join(', ') + ' from ' + ip, 'ip:' + ip, o.s.size); }); }
+      { const byIp = new Map(); const add = (ip, x, t) => { const nm = nameOf(x); if (!ip) return; const o = byIp.get(ip) || { s: new Set(), money: 0, dids: new Set() }; if (nm) o.s.add(nm); if (x.di) o.dids.add(x.di); if (nm && MONEY.has(t)) o.money++; byIp.set(ip, o); };
+        ev.forEach(x => add(x.ip, x, x.t)); pv.forEach(x => add(x.ip, x, '')); au.forEach(x => add(x.ip, { u: x.u, uid: x.uid, di: String(x.did || '').slice(0, 8) }, ''));
+        // a mobile carrier puts thousands of phones behind one address (NG/PK/ID/BR all do): 4+ distinct devices on the IP means a
+        // shared network, and two accounts there prove nothing — it is listed as information, never as a red hit
+        byIp.forEach((o, ip) => { if (o.s.size < 2) return; if (o.dids.size >= 4) { push9('shared_net', 'info', 'Shared network: ' + o.s.size + ' accounts, ' + o.dids.size + ' devices on one IP', Array.from(o.s).slice(0, 8).map(n => '@' + n).join(', ') + (o.s.size > 8 ? ' +' + (o.s.size - 8) : '') + ' behind ' + ip + ' (carrier NAT)', 'ip:' + ip, o.s.size); return; }
+          if (o.s.size >= 3 || (o.s.size >= 2 && o.money)) push9('multi_ip', o.money ? 'red' : 'amber', 'One IP, ' + o.s.size + ' accounts' + (o.money ? ' (money moved)' : '') + ' on ' + o.dids.size + ' device' + (o.dids.size === 1 ? '' : 's'), Array.from(o.s).map(n => '@' + n).join(', ') + ' from ' + ip, 'ip:' + ip, o.s.size); }); }
       { const bk = new Map(); ev.forEach(x => { if (!TRADE.has(x.t) || x.t === 'sltp' || x.t === 'sync') return; const k = keyOf(x); if (k === 'sys') return; const b = k + '|' + Math.floor(x.ts / 600000); bk.set(b, (bk.get(b) || 0) + 1); });
         const seen = new Set(); bk.forEach((n, b) => { const k = b.split('|')[0]; if (n >= 30 && !seen.has(k)) { seen.add(k); push9('trade_burst', 'amber', n + ' trade actions in 10 minutes', (k.indexOf('u:') === 0 ? '@' + k.slice(2) : 'guest ' + k.slice(2)) + ' — a bot or a click storm', k, n); } }); }
       { const bk = new Map(); ev.forEach(x => { if (x.t !== 'chatmsg') return; const k = keyOf(x); if (k === 'sys') return; const b = k + '|' + Math.floor(x.ts / 600000); bk.set(b, (bk.get(b) || 0) + 1); });
@@ -15067,30 +15092,43 @@ export default {
         byIp.forEach((n, ip) => { if (n >= 6) push9('otp_fail_ip', 'red', n + ' failed codes from one IP', ip, 'ip:' + ip, n); }); }
       { const byA = new Map(); ev.forEach(x => { if (x.t !== 'ratelimit') return; const k = keyOf(x); byA.set(k, (byA.get(k) || 0) + 1); });
         byA.forEach((n, k) => push9('ratelimit', 'amber', 'Hit a rate limit ' + n + 'x', (k.indexOf('u:') === 0 ? '@' + k.slice(2) : k === 'sys' ? 'unknown' : 'guest ' + k.slice(2)), k === 'sys' ? '' : k, n)); }
-      { const byDid = new Map(), byU = new Map(); ev.forEach(x => { if (x.t !== 'claim') return; if (x.di) { const s = byDid.get(x.di) || new Set(); if (x.u) s.add(lc(x.u)); byDid.set(x.di, s); } if (x.u) byU.set(lc(x.u), (byU.get(lc(x.u)) || 0) + 1); });
+      { const byDid = new Map(), byU = new Map(); ev.forEach(x => { if (x.t !== 'claim') return; const nm = nameOf(x); if (x.di) { const s = byDid.get(x.di) || new Set(); if (nm) s.add(nm); byDid.set(x.di, s); } if (nm) byU.set(nm, (byU.get(nm) || 0) + 1); });
         byDid.forEach((s, di) => { if (s.size >= 2) push9('claim_device', 'red', 'Faucet claims from ' + s.size + ' accounts on one device', Array.from(s).map(n => '@' + n).join(', ') + ' · device ' + di, 'd:' + di, s.size); });
         byU.forEach((n, u) => { if (n >= 6) push9('claim_many', 'amber', n + ' faucet claims in ' + h + 'h', '@' + u, 'u:' + u, n); }); } // measured 2026-09-06: 4 claims in 3h is an ordinary regular on the cooldown, not a signal
       { A.forEach(a => { if (a.key.indexOf('v:') !== 0) return; const c = (a.types.close || 0) + (a.types.paper || 0); if (c >= 10) push9('guest_heavy', 'info', 'Guest with ' + c + ' trade actions and no account', 'guest ' + a.key.slice(2) + ' ' + (a.cc || '') + ' ' + (a.d || ''), a.key, c, a.last); }); }
       { const byP = new Map(); ev.forEach(x => { if (x.t !== 'jserr') return; const p = x.p || '?'; byP.set(p, (byP.get(p) || 0) + 1); }); byP.forEach((n, p) => { if (n >= 5) push9('jserr', 'amber', n + ' JS errors on ' + p, 'the page is breaking for people', '', n); }); }
-      { const su = new Map(); ev.forEach(x => { if (x.t === 'signup' && x.u) su.set(lc(x.u), x.ts); });
-        ev.forEach(x => { if ((x.t === 'claim' || x.t === 'withdraw') && x.u && su.has(lc(x.u)) && x.ts - su.get(lc(x.u)) < 3600000) push9('fast_money', 'amber', 'Money within an hour of signing up', '@' + x.u + ' ' + x.t + ' ' + (x.e || ''), 'u:' + lc(x.u), 1, x.ts); }); }
-      ev.forEach(x => { if (x.t === 'withdraw') push9('withdraw', 'info', 'Withdrawal requested ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + lc(x.u) : '', 1, x.ts); if (x.t === 'wdreject') push9('wdreject', 'amber', 'Withdrawal rejected ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + lc(x.u) : '', 1, x.ts); if (x.t === 'admin') push9('admin', 'info', 'Owner action: ' + (x.e || ''), '', '', 1, x.ts); });
+      { const su = new Map(); ev.forEach(x => { if (x.t === 'signup') { const nm = nameOf(x); if (nm) su.set(nm, x.ts); } });
+        ev.forEach(x => { const nm = nameOf(x); if ((x.t === 'claim' || x.t === 'withdraw') && nm && su.has(nm) && x.ts - su.get(nm) < 3600000) push9('fast_money', 'amber', 'Money within an hour of signing up', '@' + nm + ' ' + x.t + ' ' + (x.e || ''), 'u:' + nm, 1, x.ts); }); }
+      ev.forEach(x => { if (x.t === 'withdraw') push9('withdraw', 'info', 'Withdrawal requested ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + nameOf(x) : '', 1, x.ts); if (x.t === 'wdreject') push9('wdreject', 'amber', 'Withdrawal rejected ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + nameOf(x) : '', 1, x.ts); if (x.t === 'admin') push9('admin', 'info', 'Owner action: ' + (x.e || ''), '', '', 1, x.ts); });
       const sevN = { red: 0, amber: 1, info: 2 }; radar.sort((a, b) => (sevN[a.sev] - sevN[b.sev]) || (b.n - a.n));
-      // ---- rows: events (+ pageviews when asked or when one actor is traced), newest first ----
+      // ---- rows: events (+ pageviews when asked or when one actor is traced), newest first; every row carries its resolved actor key ----
       let rows = ev.map(x => x);
       if (withPv || actorQ) rows = rows.concat(pv.map(x => Object.assign({ t: 'pv' }, x)));
       if (actorQ) {
         const kind = actorQ.slice(0, actorQ.indexOf(':')), val = actorQ.slice(actorQ.indexOf(':') + 1);
         const a = A.get(actorQ);
         const vids = a ? a.vids : new Set();
-        rows = rows.filter(x => kind === 'u' ? (lc(x.u) === val || (x.v && x.v !== 'srv' && vids.has(x.v)) || (a && a.uid && x.uid === a.uid)) : kind === 'v' ? (x.v === val) : kind === 'd' ? (x.di === val) : kind === 'ip' ? (x.ip === val) : kind === 'uid' ? (x.uid === val) : false);
+        rows = rows.filter(x => kind === 'u' ? (nameOf(x) === val || (x.v && x.v !== 'srv' && vids.has(x.v)) || (a && a.uid && x.uid === a.uid)) : kind === 'v' ? (x.v === val) : kind === 'd' ? (x.di === val) : kind === 'ip' ? (x.ip === val) : kind === 'uid' ? (x.uid === val) : false);
       }
+      if (since) rows = rows.filter(x => (x.ts || 0) > since);
       rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      rows = rows.slice(0, nMax).map(x => { const k = keyOf(x); const nm = k.indexOf('u:') === 0 ? k.slice(2) : ''; return (nm && lc(x.u) !== nm) ? Object.assign({}, x, { k, un: (A.get(k) || {}).u || nm }) : Object.assign({}, x, { k }); });
       const types = {}; ev.forEach(x => { types[x.t] = (types[x.t] || 0) + 1; });
-      const actors = Array.from(A.values()).map(a => ({ key: a.key, u: a.u, v: a.v, uid: a.uid, cc: a.cc, d: a.d, n: a.n, pv: a.pv, first: a.first, last: a.last, types: a.types, dids: Array.from(a.dids).slice(0, 8), ips: Array.from(a.ips).slice(0, 8), vids: a.vids.size, pages: a.pages.size, money: a.money, trades: a.trades, problems: a.problems, chat: a.chat })).sort((x, y) => y.last - x.last);
+      const chain = a => { const out = []; a.pvs.sort((p, q) => p[0] - q[0]).forEach(pp => { if (!out.length || out[out.length - 1] !== pp[1]) out.push(pp[1]); }); return out.slice(-14); };
+      const actors = Array.from(A.values()).map(a => { let on = 0; a.vids.forEach(v => { const t = onTs.get(v); if (t && t > on) on = t; }); return { key: a.key, u: a.u, v: a.v, uid: a.uid, cc: a.cc, d: a.d, b: a.b, net: a.net, s: a.s, nv: a.nv, n: a.n, pv: a.pv, first: a.first, last: a.last, types: a.types, dids: Array.from(a.dids).slice(0, 8), ips: Array.from(a.ips).slice(0, 8), vids: a.vids.size, pages: a.pages.size, path: chain(a), money: a.money, trades: a.trades, problems: a.problems, chat: a.chat, on, names: a.names.size > 1 ? Array.from(a.names).slice(0, 4) : undefined }; }).sort((x, y) => y.last - x.last);
       const actorInfo = actorQ ? (actors.filter(a => a.key === actorQ)[0] || null) : null;
       const authRows = au.slice(0, 300).map(x => ({ k: x.k, u: x.u, ip: x.ip, did: String(x.did || '').slice(0, 8), cc: x.cc, ts: x.ts }));
-      return new Response(JSON.stringify({ now, h, online: (rr.on || []).length, nEv: ev.length, nPv: pv.length, ringOldest, rows: rows.slice(0, nMax), types, actors: actorQ ? actors.filter(a => a.key === actorQ) : actors.slice(0, 300), actorInfo, radar: radar.slice(0, 200), auth: actorQ ? authRows.filter(x => actorQ.indexOf('u:') === 0 ? lc(x.u) === actorQ.slice(2) : actorQ.indexOf('ip:') === 0 ? x.ip === actorQ.slice(3) : actorQ.indexOf('d:') === 0 ? x.did === actorQ.slice(2) : false) : authRows }), { headers: jh2 });
+      // who is here NOW: presence heartbeats joined to each visitor's latest pageview (the page they are on) and account
+      const lastPv = new Map(); pv.forEach(x => { if (x.v && !lastPv.has(x.v)) lastPv.set(x.v, x); }); // pv is newest-first
+      ev.forEach(x => { if (x.v && x.v !== 'srv' && x.p && !lastPv.has(x.v)) lastPv.set(x.v, x); }); // a tab open for hours: its pageview may have aged out, its last event still names the page
+      const online = []; onTs.forEach((ts, v) => { const x = lastPv.get(v); const a = x ? A.get(keyOf(x)) : null; online.push({ v, ts, u: a ? a.u : (x ? x.u : ''), k: a ? a.key : (x ? keyOf(x) : 'v:' + v), p: x ? x.p : '', cc: x ? x.cc : '', d: x ? x.d : '', nv: x ? (x.nv || 0) : 0 }); });
+      online.sort((a, b) => b.ts - a.ts);
+      return new Response(JSON.stringify({ now, h, since, online: online.length, onlineList: online.slice(0, 120), nEv: ev.length, nPv: pv.length, ringOldest, rows, types, actors: actorQ ? actors.filter(a => a.key === actorQ) : actors.slice(0, 400), actorInfo, radar: radar.slice(0, 200), auth: actorQ ? authRows.filter(x => actorQ.indexOf('u:') === 0 ? canon(x.u) === actorQ.slice(2) : actorQ.indexOf('ip:') === 0 ? x.ip === actorQ.slice(3) : actorQ.indexOf('d:') === 0 ? x.did === actorQ.slice(2) : false) : authRows }), { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/activity/ws') { // ops Activity live feed (2026-09-07): admin cookie or key, then the OpsLog DO holds the socket and pushes every stored row
+      if (!(await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) return new Response('{"error":"forbidden"}', { status: 403, headers: { 'content-type': 'application/json' } });
+      if ((request.headers.get('upgrade') || '').toLowerCase() !== 'websocket') return new Response('{"error":"expected_websocket"}', { status: 426, headers: { 'content-type': 'application/json' } });
+      try { return await opslogDo(env).fetch(new Request('https://do/ws', request)); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: { 'content-type': 'application/json' } }); }
     }
     if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: compare the three activity sources for one user
       const who = String(url.searchParams.get('user') || '').toLowerCase();
@@ -16051,6 +16089,8 @@ export class OpsLog {
   }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
   j(o, s2 = 200) { return new Response(JSON.stringify(o), { status: s2, headers: { 'content-type': 'application/json' } }); }
+  onN() { try { return +(this.rows('SELECT COUNT(*) c FROM onmap WHERE ts>?', Date.now() - 150000)[0] || {}).c || 0; } catch (e) { return 0; } }
+  bcast(o) { if (!this.socks || !this.socks.size) return; const s = JSON.stringify(o); for (const ws of Array.from(this.socks)) { try { ws.send(s); } catch (e) { try { this.socks.delete(ws); } catch (e2) {} } } }
   async seed() { // one-time import of the legacy KV rings, so the feed is not blank for 3h after cut-over
     if (this._seeded || this.rows("SELECT v FROM meta WHERE k='seeded'")[0]) { this._seeded = true; return; }
     this._seeded = true;
@@ -16076,7 +16116,19 @@ export class OpsLog {
       const items = Array.isArray(b.items) ? b.items.slice(0, 64) : [];
       for (const it of items) { try { this.state.storage.sql.exec('INSERT INTO ring(k,ts,j) VALUES(?,?,?)', k, +(it && it.ts) || Date.now(), JSON.stringify(it)); } catch (e) {} }
       this.trim(k, +b.cap || 800, +b.cutMs || 0);
+      if (items.length && (k === 'evlog' || k === 'pvlog' || k === 'authlog')) this.bcast({ k, items, on: this.onN() });
       return this.j({ ok: 1, n: items.length });
+    }
+    if (path === '/ws') { // ops Activity live feed (2026-09-07): every stored row is pushed to the owner's browser the moment it lands.
+      // Classic WebSocket API on purpose (hibernation broke on this platform for ChatRoom — never revert). Admin gating happens in the worker.
+      if ((request.headers.get('upgrade') || '').toLowerCase() !== 'websocket') return this.j({ error: 'upgrade_required' }, 426);
+      const pair = new WebSocketPair(); const client = pair[0], server = pair[1];
+      server.accept(); this.socks = this.socks || new Set(); this.socks.add(server);
+      const drop = () => { try { this.socks.delete(server); } catch (e) {} };
+      server.addEventListener('close', drop); server.addEventListener('error', drop);
+      server.addEventListener('message', ev => { try { if (String(ev.data) === 'ping') server.send(JSON.stringify({ pong: Date.now(), on: this.onN() })); } catch (e) {} });
+      try { server.send(JSON.stringify({ hello: Date.now(), on: this.onN(), socks: this.socks.size })); } catch (e) {}
+      return new Response(null, { status: 101, webSocket: client });
     }
     if (path === '/purge' && request.method === 'POST') { // ops: drop every ring row whose payload contains a substring (test-traffic cleanup, 2026-09-06: "e2e_ keeps gifting")
       let b = {}; try { b = await request.json(); } catch (e) {}
@@ -16091,6 +16143,7 @@ export class OpsLog {
       const m = (b && b.m) || {}; const now = Date.now();
       for (const vid in m) { try { this.state.storage.sql.exec('INSERT INTO onmap(vid,ts) VALUES(?,?) ON CONFLICT(vid) DO UPDATE SET ts=excluded.ts', String(vid).slice(0, 16), +m[vid] || now); } catch (e) {} }
       try { this.state.storage.sql.exec('DELETE FROM onmap WHERE ts<?', now - 240000); } catch (e) {}
+      { const on = this.onN(); if (on !== this._lastOn) { this._lastOn = on; this.bcast({ on }); } }
       return this.j({ ok: 1 });
     }
     if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
