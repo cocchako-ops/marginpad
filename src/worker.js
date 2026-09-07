@@ -14874,6 +14874,16 @@ export default {
     if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
       return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
     }
+    if (url.pathname === '/api/admin/mailstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Resend failures (AE mailerr) by day / hour / sender / status + sign-in code requests vs successful logins per day — the deliverability read (2026-09-07)
+      const days = Math.max(1, Math.min(30, +url.searchParams.get('days') || 7)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
+      const [byDay, byWhere, byHour, otpDay] = await Promise.all([
+        aeQuery(env, `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS d, SUM(_sample_interval) AS n FROM marginpad_events WHERE index1='mailerr' AND ${D} GROUP BY d ORDER BY d`),
+        aeQuery(env, `SELECT blob2 AS w, blob3 AS status, SUM(_sample_interval) AS n FROM marginpad_events WHERE index1='mailerr' AND ${D} GROUP BY w, status ORDER BY n DESC LIMIT 30`),
+        aeQuery(env, `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS h, blob2 AS w, SUM(_sample_interval) AS n FROM marginpad_events WHERE index1='mailerr' AND timestamp > NOW() - INTERVAL '48' HOUR GROUP BY h, w ORDER BY h`),
+        aeQuery(env, `SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS d, blob2 AS ty, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2 IN ('otp','otpfail','login','signup') AND ${D} GROUP BY d, ty ORDER BY d`),
+      ]);
+      return J({ days, mailerrByDay: byDay || [], mailerrByWhereStatus: byWhere || [], mailerrByHour48h: byHour || [], authByDay: otpDay || [] });
+    }
     if (url.pathname === '/api/admin/geo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one country's traffic (2026-09-07): pageviews by path / source / language / day, money clicks by exchange + page — the input for any geo SEO decision
       const cc = String(url.searchParams.get('cc') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2); if (!cc) return J({ error: 'cc' }, 400);
       const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
@@ -18242,9 +18252,14 @@ export class UserStore {
         if (ex.day === day && (ex.sends || 0) >= 8) return this.j({ error: 'too_many' });          // max 8 codes / email / day
         if (now - (ex.sent || 0) < 60000) return this.j({ error: 'cooldown', wait: Math.ceil((60000 - (now - ex.sent)) / 1000) }); // 60s resend gap
       }
-      const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
+      // Re-sending inside the code's own validity keeps the SAME code (2026-09-07). Every request used to rotate it, so a
+      // visitor who tapped "send" again while Gmail was slow received two emails and the first one — usually the one that
+      // arrived — carried a dead code: measured 43 bad codes against 22 requests on 2026-09-06 and 42 requests → 4 logins
+      // the next morning. A code stays valid until its own expiry; a brand-new code only after that or after the attempt cap.
+      const reuse = ex && ex.code && (ex.expires || 0) > now + 60000 && (ex.attempts || 0) < 4;
+      const code = reuse ? String(ex.code) : String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
       const sends = ((ex && ex.day === day) ? (ex.sends || 0) : 0) + 1;
-      sql.exec('INSERT INTO otp(email,code,expires,attempts,sent,sends,day) VALUES(?,?,?,?,?,?,?) ON CONFLICT(email) DO UPDATE SET code=excluded.code,expires=excluded.expires,attempts=0,sent=excluded.sent,sends=excluded.sends,day=excluded.day', email, code, now + 600000, 0, now, sends, day);
+      sql.exec('INSERT INTO otp(email,code,expires,attempts,sent,sends,day) VALUES(?,?,?,?,?,?,?) ON CONFLICT(email) DO UPDATE SET code=excluded.code,expires=CASE WHEN excluded.code=otp.code THEN otp.expires ELSE excluded.expires END,attempts=CASE WHEN excluded.code=otp.code THEN otp.attempts ELSE 0 END,sent=excluded.sent,sends=excluded.sends,day=excluded.day', email, code, now + 600000, 0, now, sends, day); // a re-sent (same) code keeps its original expiry and attempt count
       if (ip) sql.exec('INSERT INTO otpip(k,n) VALUES(?,1) ON CONFLICT(k) DO UPDATE SET n=n+1', ipk);
       return this.j({ ok: true, code });
     }
