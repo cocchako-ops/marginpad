@@ -12246,16 +12246,21 @@ async function handleAuth(url, request, env, ctx) {
     }
     // A2 scale fix: this is polled every 60s by EVERY signed-in tab — cache per-isolate 45s so repeat polls
     // (and multiple tabs of the same user) stop hammering the single UserStore DO. Badge staleness ≤45s.
-    { const xc = globalThis.__xpC = globalThis.__xpC || new Map(); const hitc = xc.get(tok); if (hitc && Date.now() - hitc.t < 45000) return jr(hitc.d); }
+    // 2026-09-07 (owner: the celebration after a claim came seconds late): ?fresh=1 skips the 45 s cache — every claim/close path calls
+    // mpXpCheck() right after its own response, so the toast must reflect the grant that JUST happened. The six per-user reads run in
+    // parallel (they were sequential: seven DO round-trips from Lagos added ~1.5 s by themselves).
+    const freshQ = url.searchParams.get('fresh') === '1';
+    { const xc = globalThis.__xpC = globalThis.__xpC || new Map(); const hitc = xc.get(tok); if (!freshQ && hitc && Date.now() - hitc.t < 45000) return jr(hitc.d); }
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
-    let log = []; try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); log = (d.log || []).slice(0, 12); } catch (e) {}
-    let followers = 0, lastFollower = null; try { const fr = await stub.fetch(new Request('https://do/myfollowers?uid=' + encodeURIComponent(sd.user.id))); const fd = await fr.json(); followers = fd.count || 0; lastFollower = fd.last || null; } catch (e) {}
-    let dmUnread = 0; try { const dr = await stub.fetch(new Request('https://do/dm/unread?uid=' + encodeURIComponent(sd.user.id))); const dd = await dr.json(); dmUnread = dd.unread || 0; } catch (e) {}
-    let duelPending = 0; try { const pr = await stub.fetch(new Request('https://do/duel/pending?uid=' + encodeURIComponent(sd.user.id))); const pd = await pr.json(); duelPending = pd.pending || 0; } catch (e) {}
-    let notifUnread = 0; try { const nr = await stub.fetch(new Request('https://do/unotifs?uid=' + encodeURIComponent(sd.user.id))); const nd = await nr.json(); notifUnread = nd.unread || 0; } catch (e) {}
-    let premium = false; try { const pf = await premiumFor(env, request); premium = !!(pf && pf.premium); } catch (e) {} // drives the client premium-upgrade celebration
-    let records = null; try { const pr2 = await stub.fetch(new Request('https://do/pb?uid=' + encodeURIComponent(sd.user.id))); records = ((await pr2.json()) || {}).records || null; } catch (e) {} // personal records + the last one broken (pbNew) for the toast
+    const uidQ = encodeURIComponent(sd.user.id);
+    const doJ = (pth) => stub.fetch(new Request('https://do/' + pth)).then(r => r.json()).catch(() => null);
+    const [xd, fd, dd, pd, nd, pf, pb] = await Promise.all([doJ('xplog?uid=' + uidQ), doJ('myfollowers?uid=' + uidQ), doJ('dm/unread?uid=' + uidQ), doJ('duel/pending?uid=' + uidQ), doJ('unotifs?uid=' + uidQ), premiumFor(env, request).catch(() => null), doJ('pb?uid=' + uidQ)]);
+    const log = ((xd && xd.log) || []).slice(0, 12);
+    const followers = (fd && fd.count) || 0, lastFollower = (fd && fd.last) || null;
+    const dmUnread = (dd && dd.unread) || 0, duelPending = (pd && pd.pending) || 0, notifUnread = (nd && nd.unread) || 0;
+    const premium = !!(pf && pf.premium); // drives the client premium-upgrade celebration
+    const records = (pb && pb.records) || null; // personal records + the last one broken (pbNew) for the toast
     const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread, premium, records: records ? { roe: records.roe, pnl: records.pnl, streak: records.streak, day: records.day } : null, pbNew: records && records.fresh ? records.fresh : null, premiumNew: premium && !(sd.user && sd.user.prem_seen) }; // premiumNew = premium AND not-yet-celebrated → the client fires the upgrade celebration once, regardless of WHEN they became premium (fixes first-login-already-premium: an owner grant / IPN that landed while offline)
     try { const xc2 = globalThis.__xpC = globalThis.__xpC || new Map(); xc2.set(tok, { t: Date.now(), d: xpOut }); if (xc2.size > 500) xc2.delete(xc2.keys().next().value); } catch (e) {}
     return jr(xpOut);

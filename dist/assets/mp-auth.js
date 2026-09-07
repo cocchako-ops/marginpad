@@ -1802,9 +1802,9 @@
       setTimeout(close9, 15000);
       try { if (navigator.vibrate) navigator.vibrate([15, 40, 15, 40, 60]); } catch (e) {}
     }
-    function check() {
+    function check(fresh) { // fresh = right after an action of our own (claim, close, tier): bypass the server's 45 s cache so the toast shows THAT grant
       if (!ME) return;
-      fetch('/api/auth/xp').then(function (r) { return r.json(); }).then(function (d) {
+      fetch('/api/auth/xp' + (fresh ? '?fresh=1' : '')).then(function (r) { return r.json(); }).then(function (d) {
         if (!d || !d.signedIn || !d.level) return;
         // DM unread + duel pending badges — run on EVERY poll incl. the first (before the seed early-return below)
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
@@ -1870,7 +1870,7 @@
       }).catch(function () {});
     }
     function startWatch() { if (watching || !ME) return; watching = true; setTimeout(check, 1500); setInterval(function () { if (!document.hidden) check(); }, 60000); document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); }); }
-    window.mpXpCheck = check; // let other flows (after a trade/claim) nudge an immediate check
+    window.mpXpCheck = function () { check(true); }; // other flows (after a trade/claim) ask for an immediate, cache-free check
     window.addEventListener('mp-auth-change', function () { if (ME) startWatch(); });
     var _iv = setInterval(function () { if (ME) { startWatch(); clearInterval(_iv); } }, 800);
     setTimeout(function () { clearInterval(_iv); }, 20000);

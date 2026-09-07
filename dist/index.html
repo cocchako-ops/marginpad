@@ -1778,7 +1778,7 @@ body.mpa-authed .hero{display:none}
     box.addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||busy)return;busy=true;b.disabled=true;
       var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
       fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){busy=false;
-        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)setTimeout(window.mpXpCheck,600);load();}
+        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)window.mpXpCheck();load();}
         else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}
       }).catch(function(){busy=false;b.disabled=false;});});
     window.addEventListener('mp-auth-change',load);setTimeout(load,1100);setInterval(function(){if(!document.hidden)load();},300000);
@@ -2087,7 +2087,7 @@ body.mpa-authed .hero{display:none}
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=7c1114a2"></script>
-<script defer src="/assets/mp-auth.js?v=a80a39ba"></script>
+<script defer src="/assets/mp-auth.js?v=0fbfe4c0"></script>
 <script defer src="/assets/mp-nav.js?v=2eb1eb08"></script>
 
 <style>
