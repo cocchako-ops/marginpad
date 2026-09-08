@@ -257,7 +257,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade'));if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
+  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=window._mpOpenWait?((window.mpT&&window.mpT('jOpening'))||'Opening…'):cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade')); /* _mpOpenWait: a server open in flight (add() in the journal IIFE) keeps "Opening…" on the button across the 1 s tick */ if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
   function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,'planLivePx',symPrec());}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
   // The price this ticket will actually be entered at: the live price for a market order, the typed level for a
   // limit order. Size, notional and the liquidation estimate must all be quoted off THAT — a limit ticket showing
@@ -1270,9 +1270,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
-    if(add._busy){ // 1s cooldown active — nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button
+    if(add._busy){ // 1s cooldown active (or a server open still in flight) — nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button
       var _nb=document.getElementById('planSave'); if(_nb){_nb.classList.remove('cd-nudge');void _nb.offsetWidth;_nb.classList.add('cd-nudge');setTimeout(function(){_nb.classList.remove('cd-nudge');},340);} return; }
-    add._busy=true; setTimeout(function(){add._busy=false;},1000); // 1s anti-spam lock (was a silent 650ms debounce) — paired with the visible cooldown bar below
+    add._busy=true; setTimeout(function(){if(!add._wait)add._busy=false;},1000); // 1s anti-spam lock (was a silent 650ms debounce) — paired with the visible cooldown bar below; a pending server open keeps the lock until it settles
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
     var _say=function(m){if(window.mpLimitToast)window.mpLimitToast(m);}; // honest micro-feedback: never swallow a click silently (UX audit: "enabled button that does nothing")
@@ -1348,17 +1348,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       try{drawLines();}catch(e){} // async server path finishes after add() returns — draw lines here too
     };
     var _me=null;try{_me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(_){ }
-    if(_me&&window.fetch){
-      var _ac=(typeof AbortController!=='undefined')?new AbortController():null;
-      var _to=setTimeout(function(){try{if(_ac)_ac.abort();}catch(_){}},1400);
-      fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:_ac?_ac.signal:undefined,body:JSON.stringify({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null})})
-        .then(function(r){return r.json();})
-        .then(function(d2){clearTimeout(_to);
-          if(d2&&d2.ok&&d2.position&&d2.position.id){var t=d2.position;t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.rr=isFinite(rr)?rr:null;_finishOpen(t);}
-          else if(d2&&d2.error==='market_closed'){_say(d2.message||'This market is closed right now.');} // the server refused: no local fallback, the position does not exist
-          else{_finishOpen(_tLocal);}
-        })
-        .catch(function(){clearTimeout(_to);_finishOpen(_tLocal);});
+    if(_me&&window.mpSrvOpen){
+      /* 2026-09-08 (Papis + igbekwu: "open one trade, it duplicates"): the server open is PATIENT and IDEMPOTENT now. mpSrvOpen sends the
+         local id as cid, waits up to 5 s, retries once with the same cid, and only then opens locally (carrying the cid, so the sync drops
+         the local copy if the server had filled it after all). The old 1.4 s abort + blind local open made ~9% of site opens double. */
+      _tLocal.cid=_tLocal.id; add._busy=true; add._wait=true; window._mpOpenWait=true; // window-scoped: setBtn() in the plan IIFE repaints the label every tick and must keep "Opening…"
+      var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
+      if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
+      var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||'This market is closed right now.');return;} _finishOpen(_tLocal);});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
@@ -2776,7 +2774,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=07a41b21'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=84ae3b29'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -2828,7 +2826,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+side+' '+lev+'x');}catch(e){} /* every open shows in ops Live activity (this quick-tap path was silent) */
     if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
     try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */};
-    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt},function(t){_finMt(t);},function(err){if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}_finMt(pos);});}else{_finMt(pos);}}
+    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,cid:pos.id},function(t){_finMt(t);},function(err){if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}pos.cid=pos.id;_finMt(pos);});}else{_finMt(pos);}} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
   var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,_mtq=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
@@ -3233,12 +3231,28 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
 window.mpSrvOpen=function(payload,ok,fail){
   var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}
   if(!me||!window.fetch){fail();return;}
-  var ac=(typeof AbortController!=='undefined')?new AbortController():null;
-  var to=setTimeout(function(){try{if(ac)ac.abort();}catch(e){}},1400);
-  fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:ac?ac.signal:undefined,body:JSON.stringify(payload)})
-    .then(function(r){return r.json();})
-    .then(function(d){clearTimeout(to);if(d&&d.ok&&d.position&&d.position.id)ok(d.position);else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}else fail();})
-    .catch(function(){clearTimeout(to);fail();});
+  /* 2026-09-08: PATIENT + IDEMPOTENT. The 1.4 s abort was the duplicate-position bug (Papis, igbekwu): the server needs 0.7-1.0 s at p95 plus
+     the trader's own mobile round trip, so the abort fired while the server open was still completing, and the "fallback" local open landed
+     next to it (measured 52 doubles in a day, ~9% of site opens). Now: cid = the caller's local id (the server files it on the position),
+     5 s, then ONE retry with the same cid (idempotent: the server answers with the position the first call created), and only then the local
+     fallback - which carries the cid too, so the journal sync drops it the moment the server copy turns out to exist. */
+  if(!payload.cid)payload.cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4);
+  var tries=0;
+  function retry(){if(tries<2){attempt();return;}fail({cid:payload.cid});}
+  function attempt(){
+    tries++;
+    var ac=(typeof AbortController!=='undefined')?new AbortController():null;
+    var to=setTimeout(function(){try{if(ac)ac.abort();}catch(e){}},tries===1?5000:6000);
+    fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:ac?ac.signal:undefined,body:JSON.stringify(payload)})
+      .then(function(r){return r.json();})
+      .then(function(d){clearTimeout(to);
+        if(d&&d.ok&&d.position&&d.position.id)ok(d.position);
+        else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}
+        else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (rate limit, bad symbol): the classic local open, as before
+        else retry();})
+      .catch(function(){clearTimeout(to);retry();});
+  }
+  attempt();
 };
 /* Daily-visit streak + comeback hook — pure client (localStorage), reaches every visitor. Builds a daily-return habit; window.mpStreak is exposed for the faucet/league to read. */
 (function(){try{
@@ -3332,7 +3346,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=28a53b81'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=fb537dd5'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

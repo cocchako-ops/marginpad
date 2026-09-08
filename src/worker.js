@@ -10975,11 +10975,17 @@ async function handleTrade(url, request, env, ctx) {
     const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv' }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    // cid (2026-09-08) = the opener's own id for THIS click. Filed on the position and used as the idempotency key: a retry after a
+    // timeout gets the position the first call created, never a second one; a local fallback carrying the same cid is dropped by the
+    // journal sync if the server had filled it after all. Measured before: the site aborted at 1.4 s and opened locally while the server
+    // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
+    const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
-    const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid });
+    const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
     mk('do_fill', tD);
     if (r && r.error) return jt(r, r.error === 'rate_limited' ? 429 : 400);
+    if (r && r.idempotent) return jt({ ok: true, position: r.raw || t, idempotent: true }); // the retry of a click that already filled: the SAME position, in the site's shape
     return jt({ ok: true, position: t });
   }
   if (path === '/close' && request.method === 'POST') {
@@ -18320,6 +18326,21 @@ export class UserStore {
         if ((t.status === 'win' || t.status === 'loss') && cur.status !== 'win' && cur.status !== 'loss') return false; // P0.6 — srv closes are SERVER-AUTHORITATIVE: manual close routes through /botclose (sets sc); auto-close (liq/SL/TP) is settled by the sweep/nudge candle-check at the server's OWN level. A client sync can NEVER close an srv trade (its exit price can't be trusted, and the position must stay OPEN in active_srv so the sweep settles it). The client's local close still shows instantly (pullTrades keeps a locally-closed trade over a stale server 'open'); the server reconciles with sc within one sweep/nudge.
         return true;
       });
+      // TWIN GUARD (2026-09-08, Papis + igbekwu in chat: "once you open one trade it duplicates to two"): a LOCAL copy of a position the
+      // server already filled. The site opener aborted the server open at 1.4 s and opened the same trade locally while the server open
+      // still completed (measured: 52 duplicate opens in a day, ~9% of site opens, every one on /paper-trade over a slow mobile network).
+      // Exact match = the same cid (new bundles file the click id on both copies); heuristic = same symbol, side and leverage, margin
+      // within 5% (the server copy is net of the open fee) and opened within 90 s of a server-filled row, for devices still running the
+      // old bundle from the SW cache. Only OPEN local rows are dropped, incoming AND already stored: a closed twin has been settled and
+      // counted, and rewriting history is the owner's call, not a sync's.
+      const twinGuard = (list) => {
+        const srvOpen = list.filter(e => e && String(e.id || '').slice(0, 3) === 'srv' && e.status !== 'win' && e.status !== 'loss');
+        if (!srvOpen.length) return () => false;
+        return (t) => { if (!t || String(t.id || '').slice(0, 3) === 'srv' || t.status === 'win' || t.status === 'loss') return false;
+          if (t.cid) return srvOpen.some(s => s.cid && String(s.cid) === String(t.cid));
+          const m = +t.margin || 0, ts = +t.ts || 0, sym = String(t.sym || '').toUpperCase(), side = t.side === 'short' ? 'short' : 'long', lev = +t.lev || 1;
+          return srvOpen.some(s => String(s.sym || '').toUpperCase() === sym && (s.side === 'short' ? 'short' : 'long') === side && (+s.lev || 1) === lev && Math.abs((+s.ts || 0) - ts) <= 90000 && (+s.margin || 0) > 0 && m > 0 && Math.abs(m - (+s.margin || 0)) / Math.max(m, +s.margin || 0) <= 0.05); }; };
+      { const isTwin = twinGuard(stored.concat(incoming)); const before = stored.length + incoming.length; stored = stored.filter(e => !isTwin(e)); incoming = incoming.filter(t => !isTwin(t)); const dropped = before - stored.length - incoming.length; if (dropped) this._opsEv(uid, 'twin', dropped + ' duplicate local position' + (dropped === 1 ? '' : 's') + ' dropped (server copy kept)', '/paper-trade', { n: dropped }); }
     }
     const byId = new Map();
     const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss';
@@ -18856,7 +18877,7 @@ export class UserStore {
         const prev = this.rows('SELECT tid FROM botidem WHERE uid=? AND coid=?', uid, coid)[0];
         if (prev) {
           const ex = jn.filter(x => x && String(x.id) === String(prev.tid))[0];
-          if (ex) return this.j({ ok: true, position: this._j2bot(ex, null), idempotent: true });
+          if (ex) return this.j({ ok: true, position: this._j2bot(ex, null), raw: ex, idempotent: true }); // raw = the journal row itself (the site opener answers in that shape)
           return this.j({ ok: true, position: null, idempotent: true, note: 'client_order_id already used; the trade is no longer in the recent journal' });
         }
       }

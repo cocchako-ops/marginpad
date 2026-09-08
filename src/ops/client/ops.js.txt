@@ -794,7 +794,7 @@
     var FIELDS = ['h', 'g', 'who', 'nopv', 'live', 'lay'];
     var E2E = arg === 'e2e'; if (E2E) arg = ''; // #people/activity/e2e: the E2E suite watches its own (key-tagged) rows arrive over the socket
     var GROUPS = {
-      trades: ['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder', 'ratelimit'],
+      trades: ['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder', 'ratelimit', 'twin'],
       money: ['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'gift', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'exsignpaid', 'pass', 'premgrant', 'refclick', 'exchange', 'tool', 'promo', 'exsign', 'code'],
       social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift'],
       account: ['signup', 'login', 'logout', 'signin', 'otp', 'otpfail', 'username', 'profile_edit', 'push', 'alert', 'support', 'telegram', 'lang', 'frame', 'admin'],
@@ -828,7 +828,7 @@
         push: 'enabled push notifications', alert: 'set a price alert ' + X, support: 'wrote to support', telegram: 'clicked Telegram', lang: 'switched language to ' + X, frame: 'equipped frame ' + X, admin: '<b>owner:</b> ' + x,
         academy: 'Academy lesson ' + X, goal: 'season goal ' + X, predict: 'daily call ' + X, xpboost: 'XP boost ' + X, premview: 'viewed Premium', premgate: 'hit the Premium gate ' + X, brief: 'read the daily brief', ai: 'asked the AI ' + X,
         ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
-        spottrade: 'Demo Spot ' + X, jserr: '<b class="dn">JS error</b> ' + X, ratelimit: '<b class="dn">rate limit</b> ' + X,
+        spottrade: 'Demo Spot ' + X, jserr: '<b class="dn">JS error</b> ' + X, ratelimit: '<b class="dn">rate limit</b> ' + X, twin: '<b class="warn">sync:</b> ' + X,
         backup: 'backup ' + X, wrap: 'daily wrap ' + X, signal: 'signal ' + X, sigresult: 'signal result ' + X, digest: 'digest ' + X, liqalert: 'liquidation alert ' + X, alertfired: 'price alert fired ' + X, cpaper: 'signal paper trade ' + X, bot: 'Telegram bot ' + X, cfgchange: 'config changed ' + X, subkick: 'subscription ended ' + X
       };
       var s = M[t] || (esc(t) + ' ' + X);

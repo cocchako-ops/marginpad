@@ -1477,6 +1477,18 @@
         var pq = +prev.qty, cq = +e.qty; if (isFinite(pq) && isFinite(cq) && cq > pq) return; byId[id] = e; } // both open → keep the more-reduced (partial-close safe)
       local.forEach(put); d.journal.forEach(put); // server applied last → wins same-state ties; a stale local 'open' never overwrites a stored close
       var merged = order.map(function (id) { return byId[id]; });
+      // TWIN GUARD (2026-09-08, mirror of the server's in _syncJournal): a local OPEN row that is a copy of a server-filled position — same cid,
+      // or (old bundles) same symbol/side/leverage, margin within 5% and opened within 90 s — is dropped here too, otherwise the union
+      // above would keep resurrecting it on this device after the server had already dropped it.
+      try {
+        var _srv = merged.filter(function (e) { return e && String(e.id || '').slice(0, 3) === 'srv' && e.status !== 'win' && e.status !== 'loss'; });
+        if (_srv.length) merged = merged.filter(function (t) {
+          if (!t || String(t.id || '').slice(0, 3) === 'srv' || t.status === 'win' || t.status === 'loss') return true;
+          if (t.cid) return !_srv.some(function (s) { return s.cid && String(s.cid) === String(t.cid); });
+          var m = +t.margin || 0, ts = +t.ts || 0, sym = String(t.sym || '').toUpperCase(), side = t.side === 'short' ? 'short' : 'long', lev = +t.lev || 1;
+          return !_srv.some(function (s) { return String(s.sym || '').toUpperCase() === sym && (s.side === 'short' ? 'short' : 'long') === side && (+s.lev || 1) === lev && Math.abs((+s.ts || 0) - ts) <= 90000 && (+s.margin || 0) > 0 && m > 0 && Math.abs(m - (+s.margin || 0)) / Math.max(m, +s.margin || 0) <= 0.05; });
+        });
+      } catch (e) {}
       try { var _bt = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; for (var _i = 0; _i < merged.length; _i++) { var _e = merged[_i]; if (_e && _e.id && !_e.bal && _bt[_e.id]) _e.bal = _bt[_e.id]; } } catch (e) {} // restore the Balance-Mode session tag the server strips — keeps the gold ticket (pp-gold) + BAL badge stable across syncs (no flicker)
       merged.sort(function (a, b) { return (+a.ts || 0) - (+b.ts || 0); });
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device

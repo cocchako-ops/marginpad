@@ -1316,13 +1316,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       },function(m){msg.style.color='#ff6258';msg.textContent=m||'Could not place the order.';});
       return;
     }
-    function open(p,srvT){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed — you can trade it when it reopens.');return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
+    function open(p,srvT,cid){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed — you can trade it when it reopens.');return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
       var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
       if(isFinite(_sl)&&((_lng&&_sl>=p)||(!_lng&&_sl<=p)))_sl=NaN;
       if(isFinite(_tp)&&((_lng&&_tp<=p)||(!_lng&&_tp>=p)))_tp=NaN;
-      var d=jload();d.push(srvT||{id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L))),status:'open',pnl:null});/* per-class taker fee (was hardcoded 0 → /charts quick-trades closed fee-free, inconsistent with the plan form; stocks/forex get their own rate) */
+      var d=jload();d.push(srvT||{id:cid||(String(Date.now())+'_'+Math.floor(Math.random()*1e4)),cid:cid||undefined,ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L))),status:'open',pnl:null});/* per-class taker fee (was hardcoded 0 → /charts quick-trades closed fee-free, inconsistent with the plan form; stocks/forex get their own rate) */
       if(window.mpLivePrices)window.mpLivePrices[sym]={p:(srvT?+srvT.entry:p),t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
       try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){} // haptic on open (chart quick-trade)
       try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
@@ -1337,7 +1337,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _lng=qtSide==='long',_sl2=sl,_tp2=tp;
       if(isFinite(_sl2)&&((_lng&&_sl2>=p)||(!_lng&&_sl2<=p)))_sl2=NaN;
       if(isFinite(_tp2)&&((_lng&&_tp2<=p)||(!_lng&&_tp2>=p)))_tp2=NaN;
-      if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null},function(t){open(p,t);},function(err){if(err&&err.blocked)return;open(p);});}
+      var _cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4); // this click's id: filed on the server position and on a local fallback, so the two can never coexist (2026-09-08)
+      if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null,cid:_cid},function(t){open(p,t);},function(err){if(err&&err.blocked)return;open(p,null,_cid);});}
       else open(p);};
     if(entry>0)openVia(entry);
     else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }
