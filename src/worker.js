@@ -4344,7 +4344,10 @@ async function authLogPush(env, kind, request, uid, username) {
 }
 // Live activity ring sizing (2026-09-06, owner: "ovo gledam svakodnevno"): 24 hours, not 3 — the owner reads the log once a day and
 // the old 3h/800 window had already dropped the night by the time he opened it. 5,000 rows x ~220 B = ~1 MB in the OpsLog DO.
-const EVLOG_CAP = 5000, EVLOG_CUT = 86400000, PVLOG_CAP = 4000; // pv cap 2500 -> 4000 on 2026-09-07: a 24h day already held 2,494 pageviews, the ring was trimming inside the window
+const EVLOG_CAP = 5000, EVLOG_CUT = 86400000, PVLOG_CAP = 4000;
+// Presence windows (2026-09-08): a browser tab heartbeats every 60 s while visible -> "here" for 2.5 min after the last one; an API key,
+// a bot stream or a Telegram user counts for 5 min after the last call; a row is kept 10 min so a short gap keeps the visit's `first`.
+const ON_WEB_MS = 150000, ON_API_MS = 300000, ON_KEEP_MS = 600000; // pv cap 2500 -> 4000 on 2026-09-07: a 24h day already held 2,494 pageviews, the ring was trimming inside the window
 // One visitor id for EVERY row (pageview, click, server event): device cookie first, ip+ua only for cookieless hits. Until
 // 2026-09-06 pageviews hashed the mp_did cookie while events hashed ip|ua, so a guest's clicks never joined his own
 // journey — every guest looked like he only ever looked at pages. `di` (device) and `ip` ride along for multi-account work.
@@ -4447,11 +4450,28 @@ async function onlogFlush(env, mm) {
   // DO unreachable -> legacy KV merge (racy, degraded)
   try { let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {} Object.assign(om, mm); const cut = Date.now() - 240000; for (const k in om) if (om[k] < cut) delete om[k]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
 }
-function onlogMark(env, ctx, vid6) {
+function onlogMark(env, ctx, vid6, info) {
   // 2026-09-07: coalesce for 1.5 s, then flush — the old "10 vids or 30 s, checked on the NEXT mark" rule left a quiet isolate's
   // marks unflushed for minutes (a lone visitor never showed as online; the live feed's "here now" list was stale by design).
-  try { const B = globalThis.__onB = globalThis.__onB || { m: {}, busy: false }; B.m[vid6] = Date.now();
+  // 2026-09-08: a mark carries the presence row's content (see presenceOf); two marks for one vid inside the window merge, newest field wins.
+  try { const B = globalThis.__onB = globalThis.__onB || { m: {}, busy: false }; const cur = B.m[vid6]; const o = Object.assign((cur && typeof cur === 'object') ? cur : {}, info || {}); o.ts = Date.now(); B.m[vid6] = o;
     if (!B.busy && ctx) { B.busy = true; ctx.waitUntil(new Promise(r => setTimeout(r, 1500)).then(() => { const mm = B.m; B.m = {}; B.busy = false; return onlogFlush(env, mm); })); } } catch (e) {}
+}
+// What a presence row knows about a browser: the page, the account (mp_uid + mp_un cookies), country, device, browser, network, device id.
+// null fields never overwrite what the row already holds (a heartbeat without a username keeps the name the pageview wrote).
+function presenceOf(request, env, path) {
+  const ua = request.headers.get('user-agent') || ''; const cfx = request.cf || {}; const uidc = getCookie(request, 'mp_uid') || '';
+  let e2 = false; try { e2 = !!(request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))); } catch (e) {}
+  const un = (getCookie(request, 'mp_un') || '').slice(0, 24);
+  return { k: 'web', p: String(path || '').slice(0, 44) || null, uid: /^[0-9a-f]{32}$/.test(uidc) ? uidc : null, u: un || null, cc: cfx.country || null, d: deviceOf(ua), di: (getCookie(request, 'mp_did') || '').slice(0, 8) || null, b: browserOf(ua) || null, net: String(cfx.asOrganization || '').replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 24) || null, ip: String(request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '').slice(0, 45) || null, e2: (e2 || /^e2e_/i.test(un)) ? 1 : 0 };
+}
+// A keyed Bot API call (REST or MCP) is presence too: one row per key, the account behind it, the endpoint it just hit and its calls this minute.
+function botPresence(env, ctx, request, key, auth, ep) {
+  try {
+    if (!auth || !auth.uid || !key) return;
+    let e2 = false; try { e2 = !!(request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))); } catch (e) {}
+    onlogMark(env, ctx, 'a:' + String(key).slice(4, 14), { k: 'api', uid: String(auth.uid), u: auth.un || null, kn: auth.name || null, via: request.headers.get('x-mp-via') === 'mcp' ? 'mcp' : 'rest', la: String(ep || 'other').slice(0, 24), lats: Date.now(), n: Math.max(1, (+auth.limit || 0) - (+auth.remaining || 0)), cc: (request.cf && request.cf.country) || null, ip: String(request.headers.get('cf-connecting-ip') || '').slice(0, 45) || null, e2: (e2 || /^e2e_/i.test(auth.un || '')) ? 1 : 0 });
+  } catch (e) {}
 }
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
@@ -4486,20 +4506,21 @@ async function handleTrack(url, request, env, ctx) {
       // them) — the mission credit now comes server-side from the ChatRoom quality gate (→ UserStore /chatcredit).
     }
   } catch (e) {}
-  // Bot/crawler filtering — keep them out of the visitor numbers so CTR/bounce/countries stay honest.
-  // We still tally how many we filtered (botf:*) so the dashboard can show "X bots filtered today".
-  if (isBot(request.headers.get('user-agent') || '')) {
-    if (type === 'pageview') { await inc('botf:total'); await inc('botf:day:' + new Date().toISOString().slice(0, 10), 3456000); }
-    return ok;
-  }
   if (type === 'hb') { // presence heartbeat (60s, samo vidljiv tab) — osvezava "online now" BEZ brojanja kao pageview/event
     try {
       const hIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
       const hUa = request.headers.get('user-agent') || '';
       const hDid = getCookie(request, 'mp_did');
+      if (isBot(hUa) && !getCookie(request, 'mp_uid')) return ok; // a signed-in member in an in-app browser (okhttp UA) is a person and stays "here"
       const hVid = hDid ? await sha8('d|' + hDid) : await sha8(hIp + '|' + hUa);
-      if (hVid) onlogMark(env, ctx, hVid.slice(0, 6)); // A5 batched presence (per-hit on:<vid> put dropped — onlog is what the online counter reads)
+      if (hVid) onlogMark(env, ctx, hVid.slice(0, 6), presenceOf(request, env, p.get('p') || '')); // the beacon names the page it is on (2026-09-08: it used to be dropped)
     } catch (e) {}
+    return ok;
+  }
+  // Bot/crawler filtering — keep them out of the visitor numbers so CTR/bounce/countries stay honest.
+  // We still tally how many we filtered (botf:*) so the dashboard can show "X bots filtered today".
+  if (isBot(request.headers.get('user-agent') || '')) {
+    if (type === 'pageview') { await inc('botf:total'); await inc('botf:day:' + new Date().toISOString().slice(0, 10), 3456000); }
     return ok;
   }
   if (type === 'pageview') {
@@ -4541,7 +4562,6 @@ async function handleTrack(url, request, env, ctx) {
     const did0 = getCookie(request, 'mp_did');
     const vid = did0 ? await sha8('d|' + did0) : await sha8(ip + '|' + ua);
     if (vid) {
-      onlogMark(env, ctx, vid.slice(0, 6)); // A5 batched presence
       let _newVisitor = false; // set below when this really is someone's first-ever pageview
       const seen = await env.STATS.get('uvd:' + day + ':' + vid);
       if (!seen) { // first visit today from this person — the per-visit counters live here so repeat pageviews stay cheap
@@ -4581,8 +4601,8 @@ async function handleTrack(url, request, env, ctx) {
  const net = String(cfx.asOrganization || '').replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 24);
  const bscore = (cfx.botManagement && typeof cfx.botManagement.score === 'number') ? cfx.botManagement.score : null;
  kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), di: String(did0 || '').slice(0, 8), ip: String(ip).slice(0, 45), ...((request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))) ? { e2: 1 } : {}), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), net, asn: +cfx.asn || 0, rtt: +cfx.clientTcpRtt || 0, b: browserOf(ua), ...(bscore !== null ? { bs: bscore } : {}), ...(_newVisitor ? { nv: 1 } : {}), ...((/^[0-9a-f]{32}$/.test(getCookie(request, 'mp_uid') || '')) ? { uid: getCookie(request, 'mp_uid') } : {}), ts: Date.now() }, PVLOG_CAP, EVLOG_CUT); // 24h window since 2026-09-06; nv = first pageview ever (2026-09-07), uid = account id when signed in
-        void 0; // (old inline RMW removed)
-        if (false) await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
+        // presence (after the source and first-visit flag are known): the pageview seeds the row the heartbeats keep warm
+        onlogMark(env, ctx, vid.slice(0, 6), Object.assign(presenceOf(request, env, pth0), { s: src || null, nv: _newVisitor ? 1 : 0 }));
       } catch (e) {}
     }
   } else {
@@ -6195,7 +6215,8 @@ async function handleStats(url, env, request, ctx) {
     // chart bez ijednog novog pageview-a (stari 5-min pvlog metod ih je gubio, a bounce-ove drzao predugo).
     (rr9.on || []).forEach(v9 => recent.add(v9));
     pvl.forEach(v => { if (v && v.v && now - v.ts < 150000) recent.add(v.v); });
-    return new Response(JSON.stringify({ online: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 300), feed: evl.slice(0, 400), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    // 2026-09-08: PEOPLE, not devices — a member on a phone and a laptop is one person here, in Here now and on Today alike (the pageview now marks presence itself, so the pv fallback only matters while the DO is unreachable)
+    return new Response(JSON.stringify({ online: (rr9.onPeople != null) ? +rr9.onPeople : recent.size, devices: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 300), feed: evl.slice(0, 400), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
   }
   // Serve a recent cached render. Each full render does a paginated KV `list`, and the free tier allows only
   // 1000 lists/day — so without this, auto-refresh (every 60s) + manual reloads blow the quota by midday. The
@@ -9167,6 +9188,8 @@ async function bumpBot(env, cmd, from) {
   if (cmd) await inc('bot:cmd:' + cmd.slice(0, 24));
   const userId = from && (typeof from === 'object' ? from.id : from);
   if (!userId) return;
+  // presence (2026-09-08): a Telegram user who just talked to the bot is "here" for 5 min in ops Here now; the linked site account is resolved on read
+  try { const nm = typeof from === 'object' ? String(from.username || from.first_name || '').replace(/[^a-zA-Z0-9_ .-]/g, '').slice(0, 24) : ''; await onlogFlush(env, { ['t:' + String(userId).slice(0, 13)]: { ts: Date.now(), k: 'tg', kn: nm || null, la: cmd ? String(cmd).slice(0, 24) : null, lats: Date.now() } }); } catch (e) {}
   try { const seen = await env.STATS.get('bu:' + userId); if (!seen) { await env.STATS.put('bu:' + userId, '1'); await inc('bot:users'); } } catch (e) {}
   // per-user record for the ops "Bot users" list (all in metadata → readable from the dashboard's KV list, no extra gets)
   if (typeof from === 'object') {
@@ -11300,7 +11323,8 @@ async function handleMcp(url, request, env, ctx) {
         // nothing. Calling the handlers directly is also one less network hop, and it keeps the API key, the rate
         // limit and the per-key metering on exactly the same code path as a real REST call.
         const target = new URL(url.origin + tool.path(args));
-        const hdr = { ...(tool.auth && key ? { 'x-api-key': key } : {}), ...(tool.method === 'POST' ? { 'content-type': 'application/json' } : {}) };
+        const hdr = { ...(tool.auth && key ? { 'x-api-key': key } : {}), ...(tool.method === 'POST' ? { 'content-type': 'application/json' } : {}), 'x-mp-via': 'mcp' }; // presence/metering tell an MCP call from a REST one
+        { const ak = request.headers.get('x-admin-key'); if (ak) hdr['x-admin-key'] = ak; } // an E2E run stays test traffic (e2) through the MCP hop too
         const cip = request.headers.get('cf-connecting-ip'); if (cip) hdr['cf-connecting-ip'] = cip; // keep per-IP limits attributed to the caller
         const req = new Request(target.toString(), {
           method: tool.method || 'GET', headers: hdr,
@@ -11412,9 +11436,10 @@ async function handleBot(url, request, env, ctx) {
   // the user's own network but NOT the worker-to-store distance, and for a region-pinned store that distance is
   // most of the number — which is the point, because it is precisely what Smart Placement or a per-user store
   // would collapse. Real traffic n=239: p50 54ms, p95 227ms. Sampled 1-in-4; ops Performance tab, group 'do-bot'.
+  const viaH = request.headers.get('x-mp-via') === 'mcp' ? 'mcp' : 'rest'; // MCP dispatches in-process with this header; the key's last `via` + presence read it
   const doCall = async (p, body) => {
     const _t0 = Date.now();
-    try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); const j = await r.json();
+    try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body && body.key ? Object.assign({ kvia: viaH }, body) : body) })); const j = await r.json();
       try { if (Math.random() < 0.25) perfPush(env, ctx, 'do-bot', Date.now() - _t0, true); } catch (e) {}
       return j;
     } catch (e) { try { if (Math.random() < 0.25) perfPush(env, ctx, 'do-bot', Date.now() - _t0, false); } catch (e2) {} return null; }
@@ -11486,7 +11511,7 @@ async function handleBot(url, request, env, ctx) {
     const prices = {}; if (pd && +pd.price > 0) prices[hint] = +pd.price;
     const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot', coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
     if (!r) return jb({ error: 'unavailable' }, 503);
-    const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; }
+    const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; botPresence(env, ctx, request, key, a, 'close'); }
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
     if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
     if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
@@ -11509,6 +11534,7 @@ async function handleBot(url, request, env, ctx) {
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   const uid = auth.uid;
+  botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
 
   if (path === '/v1/stream') { // WebSocket push — one BotStream instance per ACCOUNT, so all your keys share one poller
     if (request.headers.get('Upgrade') !== 'websocket') return jb({ error: 'expected_websocket', hint: 'Open this with a WebSocket client: wss://marginpad.io/api/bot/v2/stream?api_key=mpb_...' }, 426);
@@ -15024,6 +15050,45 @@ export default {
       for (const k in found) out[k] = (found[k] || []).map(w => { const id = String(w.acct || '').replace(/^u:/, ''); return { ...w, username: (names[id] && names[id].username) || '', accountStatus: (names[id] && names[id].status) || '' }; });
       return new Response(JSON.stringify({ uids: out }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/online' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops People > Here now (2026-09-08): everyone on the site, the API and the Telegram bot RIGHT NOW, grouped so 200 people stay readable
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (request.method === 'POST' && url.searchParams.get('inject') && isAdminKey(env, adminKeyFrom(request, url))) { // E2E hook (key only): presence rows as if the beacons had landed, forced e2 (hidden unless ?e2e=1); {purge:1} drops every e2 row
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        if (b.purge) { try { const pr = await opslogDo(env).fetch(new Request('https://do/online?purge=1', { method: 'POST' })); return new Response(await pr.text(), { headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); } }
+        const m = {}; Object.keys(b.m || {}).slice(0, 400).forEach(v => { const o = Object.assign({}, b.m[v], { e2: 1 }); o.ts = Math.min(+o.ts || Date.now(), Date.now()); if (o.first) o.first = Math.min(+o.first, o.ts); m[String(v).slice(0, 16)] = o; }); // never a future stamp: the E2E machine's clock runs ahead of the edge and a future row would outrank every real heartbeat
+        await onlogFlush(env, m);
+        return new Response(JSON.stringify({ ok: 1, n: Object.keys(m).length }), { headers: jh2 });
+      }
+      const showE2E = url.searchParams.get('e2e') === '1'; const now = Date.now();
+      let d = null; try { const r = await opslogDo(env).fetch(new Request('https://do/online' + (showE2E ? '?e2e=1' : ''))); d = await r.json(); } catch (e) {}
+      if (!d || !Array.isArray(d.rows)) return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 });
+      const rows = d.rows;
+      const web = rows.filter(r => (r.k || 'web') === 'web'), apiRows = rows.filter(r => r.k === 'api'), streams = rows.filter(r => r.k === 'stream'), tgRows = rows.filter(r => r.k === 'tg');
+      // one PERSON per account (a member on two devices is one row with devs:2); guests by device
+      const P = new Map();
+      web.forEach(r => { const key = r.uid ? 'u:' + r.uid : 'v:' + r.vid; let p = P.get(key);
+        if (!p) { p = { key, uid: r.uid || '', u: r.u || '', v: r.vid, di: r.di || '', cc: r.cc || '', d: r.d || '', b: r.b || '', net: r.net || '', p: r.p || '', s: r.s || '', first: +r.first || +r.ts, ts: +r.ts, la: r.la || '', lats: +r.lats || 0, nv: r.nv ? 1 : 0, devs: 0, dids: [], ips: [], e2: r.e2 ? 1 : 0 }; P.set(key, p); }
+        p.devs++; if (r.di && p.dids.indexOf(r.di) < 0) p.dids.push(r.di); if (r.ip && p.ips.indexOf(r.ip) < 0) p.ips.push(r.ip);
+        if (+r.first && +r.first < p.first) p.first = +r.first; if (+r.ts >= p.ts) { p.ts = +r.ts; if (r.p) p.p = r.p; if (r.cc) p.cc = r.cc; if (r.d) p.d = r.d; if (r.b) p.b = r.b; if (r.net) p.net = r.net; }
+        if (!p.u && r.u) p.u = r.u; if (!p.s && r.s) p.s = r.s; if (+r.lats > p.lats) { p.lats = +r.lats; p.la = r.la || p.la; } if (r.nv) p.nv = 1; });
+      const people = Array.from(P.values()).map(p => { p.dids = p.dids.length; p.ips = p.ips.length; return p; }).sort((a, b) => (Math.max(b.lats, b.ts) - Math.max(a.lats, a.ts)));
+      const cnt = (arr, f) => { const m = new Map(); arr.forEach(x => { const l = f(x) || '?'; m.set(l, (m.get(l) || 0) + 1); }); return Array.from(m.entries()).map(([l, n]) => ({ l, n })).sort((x, y) => y.n - x.n); };
+      const cntM = (arr, f) => { const m = new Map(); arr.forEach(x => { const l = f(x) || '?'; const o = m.get(l) || { l, n: 0, m: 0 }; o.n++; if (x.uid) o.m++; m.set(l, o); }); return Array.from(m.values()).sort((x, y) => y.n - x.n); };
+      const arr5 = people.filter(p => p.first > now - 300000), arr15 = people.filter(p => p.first > now - 900000);
+      // names for API/stream rows written by the store (no cookie) and the site accounts behind Telegram chats — one hop, only when needed
+      const names = { users: {}, chats: {} };
+      { const needU = Array.from(new Set(apiRows.concat(streams).filter(r => r.uid && !r.u).map(r => r.uid))), needC = tgRows.map(r => String(r.vid).slice(2));
+        if ((needU.length || needC.length) && env.USERS) { try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/presence/names', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uids: needU, chats: needC }) })); Object.assign(names, await rr.json()); } catch (e) {} } }
+      const api = { keys: apiRows.filter(r => +r.ts > now - ON_API_MS).map(r => ({ kid: String(r.vid).slice(2, 8), u: r.u || names.users[r.uid] || '', uid: r.uid || '', kn: r.kn || '', via: r.via || 'rest', ep: r.la || '', rpm: +r.n || 0, ts: +r.ts, cc: r.cc || '', e2: r.e2 ? 1 : 0 })),
+        streams: streams.map(r => ({ u: r.u || names.users[r.uid] || '', uid: r.uid || '', n: +r.n || 0, kn: r.kn || '', ts: +r.ts, e2: r.e2 ? 1 : 0 })) };
+      const tg = tgRows.map(r => ({ id: String(r.vid).slice(2), name: r.kn || '', la: r.la || '', ts: +r.ts, linked: names.chats[String(r.vid).slice(2)] || null, e2: r.e2 ? 1 : 0 }));
+      // chat sockets: the two live rooms, read in parallel (a room that fails to answer reads as unknown, never as 0)
+      const chat = { global: null, premium: null };
+      if (env.CHAT) { await Promise.all([['global', 'global2'], ['premium', 'room_PREMIUM']].map(([k, id]) => env.CHAT.get(env.CHAT.idFromName(id)).fetch(new Request('https://do/online')).then(r => r.json()).then(j => { chat[k] = { n: +j.online || 0, ips: +j.ips || 0 }; }).catch(() => {}))); }
+      const members = people.filter(p => p.uid).length;
+      return new Response(JSON.stringify({ now, n: people.length, members, guests: people.length - members, devices: web.length, newN: people.filter(p => p.nv).length, multiDev: people.filter(p => p.devs > 1).length, arrived5: arr5.length, arrived15: arr15.length, arrivedSrc: cnt(arr15, p => p.s || 'direct'), arrivedPage: cnt(arr15, p => p.p || '/'),
+        byPage: cntM(people, p => p.p || '/'), bySrc: cntM(people, p => p.s || 'direct'), byCc: cntM(people, p => p.cc), byDev: cnt(people, p => p.d), byBrowser: cnt(people, p => p.b), people: people.slice(0, 600), api, tg, chat, ops: { socks: +d.socks || 0 }, hist: d.hist || [], usual: d.usual || { n: 0, samples: 0 }, peak: d.peak || null, peakYday: d.peakYday || null, samples: +d.samples || 0, windows: { webMs: ON_WEB_MS, apiMs: ON_API_MS } }), { headers: jh2 });
+    }
     if (url.pathname === '/api/admin/activity' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops People > Activity (2026-09-06): the 24h ring, every actor (user or guest device), and the abuse radar computed over the window
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'POST' && url.searchParams.get('purge')) { // POST ?purge=<substring>: delete matching rows from the 24h rings (owner cleanup of test traffic)
@@ -15066,7 +15131,7 @@ export default {
       const nameOf = x => (x.uid && uidName.has(x.uid)) ? uidName.get(x.uid).n : canon(x.u);
       const vidUser = new Map(); ev.concat(pv).forEach(x => { if ((x.u || (x.uid && uidName.has(x.uid))) && x.v && x.v !== 'srv') vidUser.set(x.v, nameOf(x)); });
       const keyOf = x => (x.u || (x.uid && uidName.has(x.uid))) ? 'u:' + nameOf(x) : (x.v && x.v !== 'srv' && vidUser.has(x.v)) ? 'u:' + vidUser.get(x.v) : (x.v && x.v !== 'srv') ? 'v:' + x.v : (x.uid ? 'uid:' + x.uid : 'sys');
-      const onTs = new Map(); (rr.onts || []).forEach(r => { if (r && r.vid && +r.ts > now - 150000) onTs.set(String(r.vid), +r.ts); });
+      const onTs = new Map(), onRow = new Map(); (rr.onts || []).forEach(r => { if (r && r.vid && +r.ts > now - 150000 && (showE2E || !r.e2)) { onTs.set(String(r.vid), +r.ts); onRow.set(String(r.vid), r); } });
       const A = new Map();
       const touch = (x, kind) => { const k = keyOf(x); if (k === 'sys') return; let a = A.get(k); if (!a) { a = { key: k, u: '', v: '', uid: x.uid || '', cc: x.cc || '', d: x.d || '', b: '', net: '', s: '', nv: 0, n: 0, pv: 0, first: x.ts, last: x.ts, types: {}, dids: new Set(), ips: new Set(), vids: new Set(), pages: new Set(), pvs: [], money: 0, trades: 0, problems: 0, chat: 0, names: new Set() }; A.set(k, a); }
         if (kind === 'pv') { a.pv++; if (x.p) { a.pages.add(x.p); a.pvs.push([x.ts, x.p]); } if (x.nv) a.nv = 1; if (x.b && !a.b) a.b = x.b; if (x.net && !a.net) a.net = x.net; if (x.s && x.s !== 'direct' && !a.s) a.s = x.s; else if (x.s0 && !a.s) a.s = x.s0; }
@@ -15127,9 +15192,10 @@ export default {
       // who is here NOW: presence heartbeats joined to each visitor's latest pageview (the page they are on) and account
       const lastPv = new Map(); pv.forEach(x => { if (x.v && !lastPv.has(x.v)) lastPv.set(x.v, x); }); // pv is newest-first
       ev.forEach(x => { if (x.v && x.v !== 'srv' && x.p && !lastPv.has(x.v)) lastPv.set(x.v, x); }); // a tab open for hours: its pageview may have aged out, its last event still names the page
-      const online = []; onTs.forEach((ts, v) => { const x = lastPv.get(v); const a = x ? A.get(keyOf(x)) : null; online.push({ v, ts, u: a ? a.u : (x ? x.u : ''), k: a ? a.key : (x ? keyOf(x) : 'v:' + v), p: x ? x.p : '', cc: x ? x.cc : '', d: x ? x.d : '', nv: x ? (x.nv || 0) : 0 }); });
+      // the presence row itself carries the page/account/country (2026-09-08); the last pageview is only the fallback for rows written before that
+      const online = []; onTs.forEach((ts, v) => { const r = onRow.get(v) || {}; const x = lastPv.get(v); const a = x ? A.get(keyOf(x)) : (r.u ? A.get('u:' + canon(r.u)) : null); const u = a ? a.u : (x ? x.u : (r.u || '')); online.push({ v, ts, u, k: a ? a.key : (x ? keyOf(x) : (u ? 'u:' + canon(u) : 'v:' + v)), p: r.p || (x ? x.p : ''), cc: r.cc || (x ? x.cc : ''), d: r.d || (x ? x.d : ''), nv: (r.nv || (x ? x.nv : 0)) ? 1 : 0, first: +r.first || 0, la: r.la || '', lats: +r.lats || 0 }); });
       online.sort((a, b) => b.ts - a.ts);
-      return new Response(JSON.stringify({ now, h, since, online: online.length, onlineList: online.slice(0, 120), nEv: ev.length, nPv: pv.length, ringOldest, rows, types, actors: actorQ ? actors.filter(a => a.key === actorQ) : actors.slice(0, 400), actorInfo, radar: radar.slice(0, 200), auth: actorQ ? authRows.filter(x => actorQ.indexOf('u:') === 0 ? canon(x.u) === actorQ.slice(2) : actorQ.indexOf('ip:') === 0 ? x.ip === actorQ.slice(3) : actorQ.indexOf('d:') === 0 ? x.did === actorQ.slice(2) : false) : authRows }), { headers: jh2 });
+      return new Response(JSON.stringify({ now, h, since, online: online.length, onlineList: online.slice(0, 600), nEv: ev.length, nPv: pv.length, ringOldest, rows, types, actors: actorQ ? actors.filter(a => a.key === actorQ) : actors.slice(0, 400), actorInfo, radar: radar.slice(0, 200), auth: actorQ ? authRows.filter(x => actorQ.indexOf('u:') === 0 ? canon(x.u) === actorQ.slice(2) : actorQ.indexOf('ip:') === 0 ? x.ip === actorQ.slice(3) : actorQ.indexOf('d:') === 0 ? x.did === actorQ.slice(2) : false) : authRows }), { headers: jh2 });
     }
     if (url.pathname === '/api/admin/activity/ws') { // ops Activity live feed (2026-09-07): admin cookie or key, then the OpsLog DO holds the socket and pushes every stored row
       if (!(await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) return new Response('{"error":"forbidden"}', { status: 403, headers: { 'content-type': 'application/json' } });
@@ -16091,11 +16157,57 @@ export class OpsLog {
     s.exec('CREATE TABLE IF NOT EXISTS ring(id INTEGER PRIMARY KEY AUTOINCREMENT, k TEXT, ts INTEGER, j TEXT)');
     try { s.exec('CREATE INDEX IF NOT EXISTS ring_k ON ring(k, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS onmap(vid TEXT PRIMARY KEY, ts INTEGER)');
+    // PRESENCE v2 (2026-09-08, owner: "online now ne radi kako treba; hocu i API i bot"): a presence row is no longer a bare vid -> lastSeen
+    // that had to be JOINED to a pageview which may have aged out of the ring (measured: 3 of 6 "online" had no page, no country).
+    // The heartbeat itself now writes what the owner asks at a glance: kind (web | api | stream | tg), page, account, country, device,
+    // browser, network, the session's source, when this presence began (`first`), the last action (`la`) and its time. e2 = test traffic.
+    for (const col of ['k TEXT', 'p TEXT', 'uid TEXT', 'u TEXT', 'cc TEXT', 'd TEXT', 'di TEXT', 'b TEXT', 'net TEXT', 's TEXT', 'first INTEGER', 'la TEXT', 'lats INTEGER', 'e2 INTEGER DEFAULT 0', 'n INTEGER', 'nv INTEGER DEFAULT 0', 'ip TEXT', 'kn TEXT', 'via TEXT']) { try { s.exec('ALTER TABLE onmap ADD COLUMN ' + col); } catch (e) {} }
+    s.exec('CREATE TABLE IF NOT EXISTS onhist(ts INTEGER PRIMARY KEY, n INTEGER, m INTEGER, a INTEGER, api INTEGER)'); // one sample per minute: people on the site, members among them, arrivals in that minute, API keys live. 7 days -> "usual at this hour" is measured, never guessed
     s.exec('CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT)');
   }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
   j(o, s2 = 200) { return new Response(JSON.stringify(o), { status: s2, headers: { 'content-type': 'application/json' } }); }
-  onN() { try { return +(this.rows('SELECT COUNT(*) c FROM onmap WHERE ts>?', Date.now() - 150000)[0] || {}).c || 0; } catch (e) { return 0; } }
+  onN() { try { return +(this.rows("SELECT COUNT(*) c FROM onmap WHERE ts>? AND COALESCE(k,'web')='web' AND COALESCE(e2,0)=0", Date.now() - ON_WEB_MS)[0] || {}).c || 0; } catch (e) { return 0; } } // devices with a live tab
+  onPeople() { try { return +(this.rows("SELECT COUNT(DISTINCT COALESCE(NULLIF(uid,''), vid)) c FROM onmap WHERE ts>? AND COALESCE(k,'web')='web' AND COALESCE(e2,0)=0", Date.now() - ON_WEB_MS)[0] || {}).c || 0; } catch (e) { return 0; } } // people: a member on two devices is one person
+  // per-minute sample + the surge check. Called from every /mark (and from /online reads), so a quiet site simply has fewer samples.
+  sample(now) {
+    if (now - (this._lastS || 0) < 60000) return; this._lastS = now;
+    try {
+      const sql = this.state.storage.sql;
+      const web = this.rows("SELECT uid, first FROM onmap WHERE ts>? AND COALESCE(k,'web')='web' AND COALESCE(e2,0)=0", now - ON_WEB_MS);
+      const n = this.onPeople(), m = new Set(web.filter(r => r.uid).map(r => r.uid)).size, a = web.filter(r => +r.first > now - 60000).length;
+      const api = +(this.rows("SELECT COUNT(*) c FROM onmap WHERE ts>? AND k IN ('api','stream') AND COALESCE(e2,0)=0", now - ON_API_MS)[0] || {}).c || 0;
+      sql.exec('INSERT OR REPLACE INTO onhist(ts,n,m,a,api) VALUES(?,?,?,?,?)', Math.floor(now / 60000) * 60000, n, m, a, api);
+      if (Math.random() < 0.05) sql.exec('DELETE FROM onhist WHERE ts<?', now - 7 * 86400000);
+      // SURGE (owner 2026-09-08: "kako bi to izgledalo da odjednom dodje 100-200 korisnika"): people now >= 3x the measured usual for this
+      // time of day AND at least 40, with a real baseline (60+ samples), once per hour -> one Telegram line that says who came, from where, to which page
+      const us = this.usual(now);
+      if (n >= 40 && us.samples >= 60 && n >= 3 * us.n) {
+        const last = +((this.rows("SELECT v FROM meta WHERE k='surge:last'")[0] || {}).v || 0);
+        if (now - last > 3600000) {
+          try { sql.exec("INSERT OR REPLACE INTO meta(k,v) VALUES('surge:last',?)", String(now)); } catch (e) {}
+          const S = this.summary(now, false);
+          const top = (arr, k) => arr.slice(0, 3).map(x => x[k] + ' ' + x.n).join(', ');
+          const txt = '<b>Surge:</b> ' + n + ' people on the site now (usual at this hour: ' + us.n + '). Arrived in the last 15 min: ' + S.arrived15 + (S.arrivedSrc.length ? ' from ' + top(S.arrivedSrc, 'l') : '') + '. Landing: ' + top(S.byPage, 'l') + '. Members ' + m + ', guests ' + (n - m) + '. Open /api/stats#people/online.';
+          try { this.state.waitUntil(tgAdmin(this.env, txt, { kind: 'surge', sev: 'amber' })); } catch (e) {}
+        }
+      }
+    } catch (e) {}
+  }
+  usual(now) { // median of the samples taken within +-30 min of this minute-of-day over the last 7 days, the last 2 h excluded (they are "now", not "usual")
+    try { const mod = now % 86400000; const rows = this.rows('SELECT ts, n FROM onhist WHERE ts>? AND ts<?', now - 7 * 86400000, now - 7200000);
+      const near = rows.filter(r => { let d = Math.abs((r.ts % 86400000) - mod); if (d > 43200000) d = 86400000 - d; return d <= 1800000; }).map(r => +r.n).sort((x, y) => x - y);
+      if (!near.length) return { n: 0, samples: 0 }; return { n: near[Math.floor(near.length / 2)], samples: near.length }; } catch (e) { return { n: 0, samples: 0 }; }
+  }
+  summary(now, e2e) { // people on the site grouped by page / source / country / device + the arrival wave, one implementation for the surge text and the ops view
+    const rows = this.rows("SELECT * FROM onmap WHERE ts>? AND COALESCE(k,'web')='web'" + (e2e ? '' : ' AND COALESCE(e2,0)=0'), now - ON_WEB_MS);
+    const P = new Map();
+    rows.forEach(r => { const key = r.uid ? 'u:' + r.uid : 'v:' + r.vid; const p = P.get(key); if (!p) P.set(key, { key, first: +r.first || +r.ts, ts: +r.ts, p: r.p || '', s: r.s || '', cc: r.cc || '', d: r.d || '', uid: r.uid || '' }); else { if (+r.first && +r.first < p.first) p.first = +r.first; if (+r.ts > p.ts) { p.ts = +r.ts; p.p = r.p || p.p; } if (!p.s && r.s) p.s = r.s; } });
+    const people = Array.from(P.values());
+    const cnt = (arr, f) => { const m = new Map(); arr.forEach(x => { const l = f(x) || '?'; m.set(l, (m.get(l) || 0) + 1); }); return Array.from(m.entries()).map(([l, n]) => ({ l, n })).sort((x, y) => y.n - x.n); };
+    const arr15 = people.filter(p => p.first > now - 900000);
+    return { n: people.length, members: people.filter(p => p.uid).length, arrived5: people.filter(p => p.first > now - 300000).length, arrived15: arr15.length, byPage: cnt(people, p => p.p || '/'), bySrc: cnt(people, p => p.s || 'direct'), byCc: cnt(people, p => p.cc), byDev: cnt(people, p => p.d), arrivedSrc: cnt(arr15, p => p.s || 'direct'), arrivedPage: cnt(arr15, p => p.p || '/') };
+  }
   bcast(o) { if (!this.socks || !this.socks.size) return; const s = JSON.stringify(o); for (const ws of Array.from(this.socks)) { try { ws.send(s); } catch (e) { try { this.socks.delete(ws); } catch (e2) {} } } }
   async seed() { // one-time import of the legacy KV rings, so the feed is not blank for 3h after cut-over
     if (this._seeded || this.rows("SELECT v FROM meta WHERE k='seeded'")[0]) { this._seeded = true; return; }
@@ -16122,7 +16234,10 @@ export class OpsLog {
       const items = Array.isArray(b.items) ? b.items.slice(0, 64) : [];
       for (const it of items) { try { this.state.storage.sql.exec('INSERT INTO ring(k,ts,j) VALUES(?,?,?)', k, +(it && it.ts) || Date.now(), JSON.stringify(it)); } catch (e) {} }
       this.trim(k, +b.cap || 800, +b.cutMs || 0);
-      if (items.length && (k === 'evlog' || k === 'pvlog' || k === 'authlog')) this.bcast({ k, items, on: this.onN() });
+      if (k === 'evlog') { // the person's presence row learns their last action ("opened BTC long 20x · 40 s ago") — same DO, no extra hop
+        for (const it of items) { try { if (!it || !it.t || it.t === 'sect' || it.t === 'nudge' || it.t === 'hb') continue; const la = (String(it.t) + (it.e ? ' ' + String(it.e) : '')).slice(0, 56); const v = (it.v && it.v !== 'srv') ? String(it.v).slice(0, 16) : ''; const uid = it.uid ? String(it.uid).slice(0, 32) : ''; if (!v && !uid) continue; this.state.storage.sql.exec("UPDATE onmap SET la=?, lats=? WHERE (vid=? AND ?<>'') OR (uid=? AND ?<>'')", la, +it.ts || Date.now(), v, v, uid, uid); } catch (e) {} }
+      }
+      if (items.length && (k === 'evlog' || k === 'pvlog' || k === 'authlog')) this.bcast({ k, items, on: this.onPeople() });
       return this.j({ ok: 1, n: items.length });
     }
     if (path === '/ws') { // ops Activity live feed (2026-09-07): every stored row is pushed to the owner's browser the moment it lands.
@@ -16132,8 +16247,8 @@ export class OpsLog {
       server.accept(); this.socks = this.socks || new Set(); this.socks.add(server);
       const drop = () => { try { this.socks.delete(server); } catch (e) {} };
       server.addEventListener('close', drop); server.addEventListener('error', drop);
-      server.addEventListener('message', ev => { try { if (String(ev.data) === 'ping') server.send(JSON.stringify({ pong: Date.now(), on: this.onN() })); } catch (e) {} });
-      try { server.send(JSON.stringify({ hello: Date.now(), on: this.onN(), socks: this.socks.size })); } catch (e) {}
+      server.addEventListener('message', ev => { try { if (String(ev.data) === 'ping') server.send(JSON.stringify({ pong: Date.now(), on: this.onPeople() })); } catch (e) {} });
+      try { server.send(JSON.stringify({ hello: Date.now(), on: this.onPeople(), socks: this.socks.size })); } catch (e) {}
       return new Response(null, { status: 101, webSocket: client });
     }
     if (path === '/purge' && request.method === 'POST') { // ops: drop every ring row whose payload contains a substring (test-traffic cleanup, 2026-09-06: "e2e_ keeps gifting")
@@ -16144,13 +16259,35 @@ export class OpsLog {
       for (const k of keys) { try { out[k] = +(this.rows('SELECT COUNT(*) c FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%')[0] || {}).c || 0; this.state.storage.sql.exec('DELETE FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%'); } catch (e) { out[k] = -1; } }
       return this.j({ ok: 1, q, deleted: out });
     }
-    if (path === '/mark' && request.method === 'POST') { // online heartbeats: vid -> lastSeen
+    if (path === '/mark' && request.method === 'POST') { // presence: {m:{vid: ts | {ts,k,p,uid,u,cc,d,di,b,net,s,la,lats,e2,n,nv,ip,kn,via}}} — a legacy numeric mark still works
       let b = {}; try { b = await request.json(); } catch (e) {}
-      const m = (b && b.m) || {}; const now = Date.now();
-      for (const vid in m) { try { this.state.storage.sql.exec('INSERT INTO onmap(vid,ts) VALUES(?,?) ON CONFLICT(vid) DO UPDATE SET ts=excluded.ts', String(vid).slice(0, 16), +m[vid] || now); } catch (e) {} }
-      try { this.state.storage.sql.exec('DELETE FROM onmap WHERE ts<?', now - 240000); } catch (e) {}
-      { const on = this.onN(); if (on !== this._lastOn) { this._lastOn = on; this.bcast({ on }); } }
+      const m = (b && b.m) || {}; const now = Date.now(); const sql = this.state.storage.sql;
+      const S = (v, n) => (v == null || v === '') ? null : String(v).slice(0, n || 48);
+      const I = v => (v == null || v === '') ? null : (+v || 0);
+      for (const vid0 in m) {
+        try {
+          const vid = String(vid0).slice(0, 16); const x = m[vid0]; const o = (x && typeof x === 'object') ? x : { ts: +x || now }; const ts = +o.ts || now;
+          if (o.k === 'stream' && !(+o.n > 0)) { sql.exec('DELETE FROM onmap WHERE vid=?', vid); continue; } // the last bot socket closed: the stream row goes at once
+          // `first` survives while the row stays warm; a gap over 4 minutes is a new visit (new `first`, and the new source wins)
+          sql.exec('INSERT INTO onmap(vid,ts,k,p,uid,u,cc,d,di,b,net,s,first,la,lats,e2,n,nv,ip,kn,via) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(vid) DO UPDATE SET ts=MAX(onmap.ts,excluded.ts), k=COALESCE(excluded.k,onmap.k), p=COALESCE(excluded.p,onmap.p), uid=COALESCE(excluded.uid,onmap.uid), u=COALESCE(excluded.u,onmap.u), cc=COALESCE(excluded.cc,onmap.cc), d=COALESCE(excluded.d,onmap.d), di=COALESCE(excluded.di,onmap.di), b=COALESCE(excluded.b,onmap.b), net=COALESCE(excluded.net,onmap.net), s=CASE WHEN onmap.ts < excluded.ts - 240000 THEN COALESCE(excluded.s,onmap.s) ELSE COALESCE(onmap.s,excluded.s) END, first=CASE WHEN onmap.ts < excluded.ts - 240000 THEN excluded.ts ELSE COALESCE(onmap.first,excluded.ts) END, la=COALESCE(excluded.la,onmap.la), lats=COALESCE(excluded.lats,onmap.lats), e2=MAX(COALESCE(onmap.e2,0),COALESCE(excluded.e2,0)), n=COALESCE(excluded.n,onmap.n), nv=MAX(COALESCE(onmap.nv,0),COALESCE(excluded.nv,0)), ip=COALESCE(excluded.ip,onmap.ip), kn=COALESCE(excluded.kn,onmap.kn), via=COALESCE(excluded.via,onmap.via)',
+            vid, ts, S(o.k, 8) || 'web', S(o.p, 44), S(o.uid, 32), S(o.u, 24), S(o.cc, 4), S(o.d, 12), S(o.di, 8), S(o.b, 16), S(o.net, 24), S(o.s, 40), (+o.first > 0 && +o.first <= ts) ? +o.first : ts, S(o.la, 56), I(o.lats), o.e2 ? 1 : 0, I(o.n), o.nv ? 1 : 0, S(o.ip, 45), S(o.kn, 40), S(o.via, 6));
+        } catch (e) {}
+      }
+      if (Array.isArray(b.la)) for (const x of b.la.slice(0, 64)) { try { const v = S(x.vid, 16) || '', uid = S(x.uid, 32) || ''; if (!v && !uid) continue; sql.exec("UPDATE onmap SET la=?, lats=? WHERE (vid=? AND ?<>'') OR (uid=? AND ?<>'')", S(x.la, 56), +x.ts || now, v, v, uid, uid); } catch (e) {} }
+      try { sql.exec('DELETE FROM onmap WHERE ts<?', now - ON_KEEP_MS); } catch (e) {}
+      this.sample(now);
+      this.bcast({ on: this.onPeople(), pres: 1 }); // the Here-now view refetches (throttled) on `pres`; the count alone drives the top bar
       return this.j({ ok: 1 });
+    }
+    if (path === '/online') { // People > Here now: every live row (web within 2.5 min, api/stream/tg within 5 min), the per-minute history, the measured usual, today's peak
+      const now = Date.now(); const e2e = url.searchParams.get('e2e') === '1';
+      if (request.method === 'POST' && url.searchParams.get('purge')) { let n = 0; try { n = +(this.rows('SELECT COUNT(*) c FROM onmap WHERE e2=1')[0] || {}).c || 0; this.state.storage.sql.exec('DELETE FROM onmap WHERE e2=1'); } catch (e) {} return this.j({ ok: 1, deleted: n }); }
+      this.sample(now);
+      const rows = this.rows("SELECT * FROM onmap WHERE ((COALESCE(k,'web')='web' AND ts>?) OR (COALESCE(k,'web')<>'web' AND ts>?))" + (e2e ? '' : ' AND COALESCE(e2,0)=0') + ' ORDER BY ts DESC LIMIT 3000', now - ON_WEB_MS, now - ON_API_MS);
+      const hist = this.rows('SELECT ts, n, m, a, api FROM onhist WHERE ts>? ORDER BY ts', now - 180 * 60000);
+      const day0 = now - (now % 86400000); const pk = this.rows('SELECT ts, n FROM onhist WHERE ts>=? ORDER BY n DESC, ts ASC LIMIT 1', day0)[0] || null;
+      const y = this.rows('SELECT ts, n FROM onhist WHERE ts>=? AND ts<? ORDER BY n DESC, ts ASC LIMIT 1', day0 - 86400000, day0)[0] || null;
+      return this.j({ now, rows, hist, usual: this.usual(now), peak: pk ? { n: +pk.n, ts: +pk.ts } : null, peakYday: y ? { n: +y.n, ts: +y.ts } : null, socks: (this.socks && this.socks.size) || 0, samples: +(this.rows('SELECT COUNT(*) c FROM onhist')[0] || {}).c || 0 });
     }
     if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
       const keys = String(url.searchParams.get('k') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
@@ -16162,10 +16299,10 @@ export class OpsLog {
           .map(r => { try { return JSON.parse(r.j); } catch (e) { return null; } }).filter(Boolean);
       }
       const out = { rings };
-      if (url.searchParams.get('on')) out.on = this.rows('SELECT vid FROM onmap WHERE ts>?', Date.now() - 150000).map(r => r.vid);
- // TEMP (2026-08-20): presence map WITH timestamps. onmap is stamped by the pageview and again by every
- // 60s heartbeat, so lastSeen - pageviewTs shows whether the tab actually stayed open after landing.
- if (url.searchParams.get('onts')) out.onts = this.rows('SELECT vid, ts FROM onmap');
+      if (url.searchParams.get('on')) { out.on = this.rows("SELECT vid FROM onmap WHERE ts>? AND COALESCE(k,'web')='web' AND COALESCE(e2,0)=0", Date.now() - ON_WEB_MS).map(r => r.vid); out.onPeople = this.onPeople(); } // vids = devices; onPeople = people (one per account) — the number every ops surface shows
+      // presence rows WITH what the heartbeat knows (page, account, country, device) — the Activity endpoint's "here now" list reads these
+      // directly instead of joining a pageview that may have left the ring (2026-09-08)
+      if (url.searchParams.get('onts')) out.onts = this.rows("SELECT vid, ts, p, uid, u, cc, d, nv, first, la, lats, e2 FROM onmap WHERE COALESCE(k,'web')='web' AND ts>?", Date.now() - ON_WEB_MS);
       return this.j(out);
     }
     return this.j({ error: 'not_found' }, 404);
@@ -16626,6 +16763,8 @@ export class BotStream {
     if (openSyms.length) this.broadcast({ type: 'prices', data: prices, ts: now }, 'prices');
     return positions.filter((p) => p.status === 'open').length;
   }
+  // presence (2026-09-08): ops Here now lists connected bot streams per account; marked on connect, every 45 s while sockets live, and on the last close (n=0 deletes the row)
+  async _mark() { try { const n = this.sessions.length; if (n && Date.now() - (this._lastMark || 0) < 45000) return; this._lastMark = Date.now(); if (!this.uid) return; await onlogFlush(this.env, { ['s:' + String(this.uid).slice(0, 13)]: { ts: Date.now(), k: 'stream', uid: this.uid, n, kn: ((this.sessions[0] || {}).key || null), lats: Date.now(), e2: 0 } }); } catch (e) {} }
   async _tick() {
     // A DO restart wipes sessions/uid but a scheduled alarm can still fire. Without this guard the first tick after
     // a restart would poll UserStore with an empty uid — pointless load on the hot instance, forever, per account.
@@ -16634,6 +16773,7 @@ export class BotStream {
     let openN = 0;
     try { openN = await this._poll(); } catch (e) { /* transient — keep the loop alive, the next tick retries */ }
     this.ticking = false;
+    try { this.state.waitUntil(this._mark()); } catch (e) {}
     this.sessions = this.sessions.filter((s) => { if (Date.now() - s.opened > BS_MAX_AGE_MS) { try { s.ws.close(1000, 'reconnect'); } catch (e) {} return false; } return true; });
     if (this.sessions.length) { try { await this.state.storage.setAlarm(Date.now() + (openN > 0 ? BS_TICK_ACTIVE : BS_TICK_IDLE)); } catch (e) {} }
   }
@@ -16657,9 +16797,10 @@ export class BotStream {
       if (op === 'subscribe' && Array.isArray(m.channels)) { sess.channels = m.channels.filter((c) => c === 'positions' || c === 'prices'); self._send(sess, { type: 'subscribed', data: { channels: sess.channels }, ts: Date.now() }); return; }
       self._send(sess, { type: 'error', error: { code: 'unknown_op', message: 'Send {"op":"ping"} or {"op":"subscribe","channels":["positions","prices"]}.' }, ts: Date.now() });
     });
-    const drop = () => { self.sessions = self.sessions.filter((x) => x !== sess); };
+    const drop = () => { self.sessions = self.sessions.filter((x) => x !== sess); self._lastMark = 0; try { self.state.waitUntil(self._mark()); } catch (e) {} };
     server.addEventListener('close', drop);
     server.addEventListener('error', drop);
+    this._lastMark = 0; try { this.state.waitUntil(this._mark()); } catch (e) {}
     this._send(sess, { type: 'welcome', data: { channels: sess.channels, tick_ms: BS_TICK_ACTIVE, note: 'Positions are pushed on change. Prices are pushed each tick while a position is open. Send {"op":"ping"} to keep the connection warm.' }, ts: Date.now() });
     // first snapshot + start the loop; do not block the 101 on it
     this.state.waitUntil((async () => {
@@ -16691,6 +16832,7 @@ export class ChatRoom {
     if (cp.endsWith('/reset')) { await this.state.storage.put('hist', []); this.broadcast({ type: 'history', messages: [] }); return new Response('cleared'); }
     if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
     if (cp.endsWith('/last')) { const h = (await this.state.storage.get('hist')) || []; const l = h.length ? h[h.length - 1] : null; return cj({ ts: l ? +l.ts || 0 : 0, n: h.length }); } // public: latest message ts + count → drives the "new messages" glow (no content)
+    if (cp.endsWith('/online')) return cj({ online: this.online(), ips: new Set(this.sessions.map(x => x.ip || '')).size }); // ops Here now: open chat sockets in this room (2026-09-08)
     if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/poll')) { // ops-launched chat poll: POST {q,opts[]} starts, {close:1} closes (results stay pinned)
       let b = {}; try { b = await request.json(); } catch (e) {}
@@ -17784,6 +17926,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS botkeys2(k TEXT PRIMARY KEY, uid TEXT, name TEXT, created INTEGER, last INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0, rpm INTEGER DEFAULT 0, revoked INTEGER DEFAULT 0)');
     try { s.exec('CREATE INDEX IF NOT EXISTS botkeys2_uid ON botkeys2(uid)'); } catch (e) {}
     try { s.exec('ALTER TABLE botkeys2 ADD COLUMN tier INTEGER DEFAULT 0'); } catch (e) {} // 0 = free, 1 = premium. Denormalised onto the key so the hot auth path never reads KV.
+    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN via TEXT'); } catch (e) {} // how the key last called: rest | mcp (2026-09-08, ops Here now)
     s.exec('CREATE TABLE IF NOT EXISTS botuse2(k TEXT, day TEXT, ep TEXT, n INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(k,day,ep))');
     try { s.exec('CREATE INDEX IF NOT EXISTS botuse2_day ON botuse2(day)'); } catch (e) {} // the ops API tab scans by day
     s.exec('CREATE TABLE IF NOT EXISTS botmig(m TEXT PRIMARY KEY, ts INTEGER)');
@@ -17978,11 +18121,12 @@ export class UserStore {
   // Resolve key -> uid, meter PER KEY and enforce the per-key rate limit. Extracted so an operation can do it
   // INLINE instead of costing its own round trip: the store is region-pinned, so a hop is ~29ms of service time
   // but ~198ms of distance from Singapore, where our busiest keys connect. /botauth is now just this, called alone.
-  _botAuth(key, ep, now) {
+  _botAuth(key, ep, now, kvia) {
     const sql = this.state.storage.sql;
     const k = String(key || ''); const row = this.rows('SELECT * FROM botkeys2 WHERE k=?', k)[0];
     if (!row) return { error: 'bad_key' };
     if (+row.revoked) return { error: 'revoked_key' };
+    let un = ''; try { const C = this._unCache = this._unCache || new Map(); un = C.get(row.uid); if (un === undefined) { const ur = this.rows('SELECT username, email FROM users WHERE id=?', row.uid)[0]; un = ur ? String(ur.username || String(ur.email || '').split('@')[0] || '').slice(0, 24) : ''; C.set(row.uid, un); if (C.size > 300) C.clear(); } } catch (e) { un = ''; } // the account's name rides on the auth answer so presence never needs a second hop
     // rpm is a per-key override the owner can set by hand; otherwise the tier decides. Tier lives on the row so
     // the hot path never reads KV — it is refreshed whenever the user touches /api/bot/key and by the daily cron.
     const lim = (+row.rpm > 0) ? +row.rpm : BOT_TIER_LIMITS(+row.tier || 0).rpm;
@@ -17990,11 +18134,11 @@ export class UserStore {
     const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
     const reset = Math.floor(now / 60000) * 60 + 60; // epoch SECONDS at which the current minute window rolls
     if (cnt > lim) return { error: 'rate_limit', limit: lim, remaining: 0, reset };
-    sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=? WHERE k=?', mn, cnt, now, k);
+    sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=?, via=COALESCE(?, via) WHERE k=?', mn, cnt, now, (kvia === 'mcp' || kvia === 'rest') ? kvia : null, k);
     const e2 = String(ep || 'other').replace(/[^a-z_]/g, '').slice(0, 20) || 'other';
     const day = new Date().toISOString().slice(0, 10);
     sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, e2, now, now);
-    return { uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
+    return { uid: row.uid, k, name: row.name || '', un, tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
@@ -18388,7 +18532,14 @@ export class UserStore {
       if (!row) { const k = mint('default'); return this.j({ key: k, created: now, keys: list(), plan }); }
       return this.j({ key: row.k, keys: list(), plan });
     }
-    if (path === '/botauth') return this.j(this._botAuth(b.key, b.ep, now));
+    if (path === '/botauth') return this.j(this._botAuth(b.key, b.ep, now, b.kvia));
+    if (path === '/presence/names') { // ops Here now: uid -> username and Telegram chat -> linked account, in one hop (chunked IN: a large IN silently returns 0 rows at scale)
+      const out = { users: {}, chats: {} };
+      const uids = (Array.isArray(b.uids) ? b.uids : []).map(String).slice(0, 200), chats = (Array.isArray(b.chats) ? b.chats : []).map(String).slice(0, 200);
+      for (let i = 0; i < uids.length; i += 20) { const part = uids.slice(i, i + 20); try { this.rows('SELECT id, username, email FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { out.users[u.id] = String(u.username || String(u.email || '').split('@')[0] || '').slice(0, 24); }); } catch (e) {} }
+      for (let i = 0; i < chats.length; i += 20) { const part = chats.slice(i, i + 20); try { this.rows('SELECT id, username, email, tg_chat FROM users WHERE tg_chat IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { out.chats[String(u.tg_chat)] = { uid: u.id, u: String(u.username || String(u.email || '').split('@')[0] || '').slice(0, 24) }; }); } catch (e) {} }
+      return this.j(out);
+    }
     if (path === '/statsrepair') { // repair the counters the 2026-08-14 scope bug left frozen.
       // SEASON is rebuilt EXACTLY: tradeev keeps 30 days of close events and the season is younger than that, so
       // every close that belongs to the current period is still on record. LIFETIME cannot be made exact (history
@@ -18723,7 +18874,7 @@ export class UserStore {
       // ONE round trip to this store rather than two. Same helper, same limits, same per-key metering — the only
       // thing that changes is that the caller stopped paying the distance twice.
       let _ia = null;
-      if (b.key) { _ia = this._botAuth(b.key, b.ep || 'close', now); if (_ia.error) return this.j(_ia); }
+      if (b.key) { _ia = this._botAuth(b.key, b.ep || 'close', now, b.kvia); if (_ia.error) return this.j(_ia); }
       const uid = _ia ? _ia.uid : String(b.uid || ''), PR = b.prices || {};
       const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
       // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
