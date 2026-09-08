@@ -10431,7 +10431,7 @@ async function rewardCfg(env) {
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
-const MAIL_FROMS = { support: { addr: 'support@marginpad.io', name: 'MarginPad Support' }, hello: { addr: 'hello@marginpad.io', name: 'MarginPad' }, alerts: { addr: 'alerts@marginpad.io', name: 'MarginPad Alerts' }, login: { addr: 'login@marginpad.io', name: 'MarginPad' } }; // the ONLY sendable identities (whitelist — a free-form from would be spoofing on a public repo)
+const MAIL_FROMS = { support: { addr: 'support@marginpad.io', name: 'MarginPad Support' }, hello: { addr: 'hello@marginpad.io', name: 'MarginPad' }, alerts: { addr: 'alerts@marginpad.io', name: 'MarginPad Alerts' }, login: { addr: 'login@marginpad.io', name: 'MarginPad' }, milan: { addr: 'milan@marginpad.io', name: 'Milan, MarginPad' } }; // milan@ = the owner's personal address (2026-09-08): replies from the private inbox go out under it // the ONLY sendable identities (whitelist — a free-form from would be spoofing on a public repo)
 function mailFrom(key9) { return MAIL_FROMS[String(key9 || '').replace(/@.*$/, '').toLowerCase()] || MAIL_FROMS.support; }
 async function sendSupportEmail(env, to, subject, message, fromKey) {
   try {
@@ -14895,6 +14895,12 @@ export default {
       return adminDoLogin(request, env, 'cfg:pmailpass', 'mp_pmail', '/api/admin/pmail', '/api/admin/pmail');
     }
     if (url.pathname === '/api/admin/pmail/logout' && request.method === 'POST') return adminLogout(request, env, 'mp_pmail', '/api/admin/pmail');
+    if (url.pathname === '/api/admin/pmail/status' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops Inbox > milan@ (2026-09-08): is the private inbox set up / unlocked in THIS browser, how many messages — always 200 (the view walk must never meet a 4xx)
+      const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
+      const open = !!stored && await adminSessionOk(request, env, 'mp_pmail');
+      let n = 0, newest = 0; try { const ring = JSON.parse((await env.STATS.get('pmail')) || '[]'); n = ring.length; newest = ring[0] ? (+ring[0].ts || 0) : 0; } catch (e) {}
+      return new Response(JSON.stringify({ set: !!stored, locked: !open, n, newest, forward: !!env.EMAIL_FORWARD }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/pmail/data') {
       const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
       if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(JSON.stringify({ error: 'locked' }), { status: 401, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });

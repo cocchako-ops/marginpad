@@ -48,7 +48,7 @@
   // 8 sections instead of 24 flat tabs. Every view is native since 2026-09-03 evening (the old server-rendered dashboard is no longer embedded).
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
-    { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
+    { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
@@ -1091,6 +1091,37 @@
 
   // ---------- INBOX / EMAIL ----------
   // GET /api/admin/sendmail = {addresses:[{key,name,addr}], log:[...]}; POST one recipient at a time {from,fromName,replyTo,subject,text,to}.
+  // ---------- Inbox > milan@ (2026-09-08, owner: "ne vidim taj email nigde na mp-ops, ne znam gde stiže pošta") ----------
+  // Mail to milan@marginpad.io arrives through Cloudflare Email Routing -> the worker's email() handler -> KV ring `pmail` (200 kept, 4,000
+  // chars each), and is NOT forwarded anywhere. It stays behind its OWN password (the admin session alone must not read it - that was the
+  // point of the private inbox), the cookie lives 30 days on this browser. Reply = the Email view prefilled with From milan@.
+  VIEWS['inbox/pmail'] = { render: function (el) {
+    var M = [], cur = 0;
+    function addrOf(s) { var m = String(s || '').match(/<([^>]+)>/); return m ? m[1] : String(s || '').trim(); }
+    function lockForm(st) {
+      return card('milan@marginpad.io', '<div class="line">Mail sent to <b>milan@marginpad.io</b> lands here (Cloudflare Email Routing to the worker) and nowhere else: nothing is forwarded to Gmail, the last 200 messages are kept with up to 4,000 characters of text each. The inbox has its own password, so an admin session alone cannot open it; once unlocked, this browser stays unlocked for 30 days.</div>'
+        + '<div class="bar" style="margin-top:10px"><input class="in" type="password" id="pmPass" placeholder="' + (st.set ? 'inbox password' : 'choose the inbox password (first run)') + '" autocomplete="current-password" style="flex:0 1 260px"><button class="btn lime" id="pmGo">Unlock</button><span class="stat" id="pmSt"></span></div>', st.set ? N(st.n) + ' message' + (st.n === 1 ? '' : 's') + ' stored' + (st.newest ? ' · newest ' + ago(st.newest) + ' ago' : '') + ' · locked' : 'no password yet');
+    }
+    function wire() { var go = function () { var p = $('pmPass').value || ''; if (p.length < 4) { setStat('pmSt', 'at least 4 characters', false); return; } $('pmGo').disabled = true; post('/api/admin/pmail/login', { password: p }).then(function (r) { $('pmGo').disabled = false; if (r && r.ok) { toast(r.firstRun ? 'inbox password set' : 'unlocked'); load(); } else setStat('pmSt', r && r.error === 'rate_limited' ? 'locked out for 15 min after 5 wrong passwords' : r && r.error === 'admin_required_for_first_setup' ? 'the first setup needs the admin session' : 'wrong password', false); }).catch(function () { $('pmGo').disabled = false; setStat('pmSt', 'network error', false); }); }; $('pmGo').onclick = go; $('pmPass').onkeydown = function (e) { if (e.key === 'Enter') go(); }; $('pmPass').focus(); }
+    function paintList() {
+      if (cur >= M.length) cur = 0;
+      var list = M.map(function (m, i) { return '<div class="sup-row' + (i === cur ? ' on' : '') + '" data-i="' + i + '"><div class="sup-b"><b>' + esc(addrOf(m.from) || '?') + '</b><span>' + esc(m.subject || '(no subject)') + '</span></div><div class="sup-m" title="' + esc(dtFull(m.ts)) + '">' + ago(m.ts) + '</div></div>'; }).join('') || '<div class="empty">nothing here yet</div>';
+      var m = M[cur];
+      var reader = m ? '<div class="sup-h"><b>' + esc(m.subject || '(no subject)') + '</b><span class="meta">from ' + esc(m.from) + ' · to ' + esc(m.to || '') + ' · ' + esc(dtFull(m.ts)) + '</span><a class="btn sm lime" href="#inbox/mail/' + encodeURIComponent(addrOf(m.from)) + '/' + encodeURIComponent(/^re:/i.test(m.subject || '') ? m.subject : 'Re: ' + (m.subject || '')) + '/milan" style="margin-left:auto">Reply from milan@</a></div><div class="sup-msgs"><pre class="pm-body">' + esc(m.body || '(empty)') + '</pre></div>' : '<div class="empty">pick a message</div>';
+      el.innerHTML = '<div class="bar"><span class="meta">' + N(M.length) + ' message' + (M.length === 1 ? '' : 's') + ' · newest first · the last 200 are kept · nothing is forwarded</span><button class="btn sm" id="pmLock" style="margin-left:auto" title="forget this browser\'s unlock">Lock</button></div><div class="sup pm"><div class="sup-l"><div class="sup-list">' + list + '</div></div><div class="sup-t">' + reader + '</div></div>';
+      el.querySelectorAll('.sup-row').forEach(function (r) { r.onclick = function () { cur = +r.getAttribute('data-i'); paintList(); }; });
+      $('pmLock').onclick = function () { post('/api/admin/pmail/logout').then(function () { load(); }); };
+      stamp();
+    }
+    function load() {
+      J('/api/admin/pmail/status').then(function (st) { if (!st || st.error) throw new Error('status'); if (!document.body.contains(el)) return;
+        if (st.locked) { if ($('pmPass') && document.activeElement === $('pmPass')) return; el.innerHTML = lockForm(st); wire(); stamp(); return; } // never repaint under the cursor
+        return J('/api/admin/pmail/data').then(function (d) { if (!document.body.contains(el)) return; M = (d && d.mail) || []; paintList(); });
+      }).catch(function () { if (!document.body.contains(el)) return; el.innerHTML = failHtml('could not load the inbox'); });
+    }
+    el.innerHTML = SKEL; load(); every(60000, load);
+  } };
+
   VIEWS['inbox/mail'] = { render: function (el, arg) {
     var addrs = [];
     function paint(keepForm) {
@@ -1109,7 +1140,7 @@
             + '<textarea class="in" id="mlBody" rows="9" style="margin-top:10px" placeholder="Plain text. A matching HTML part is generated automatically. Plain, personal mail is what builds domain reputation."></textarea>'
             + '<div class="bar" style="margin-top:8px"><button class="btn lime" id="mlSend">Send</button><span class="stat" id="mlSt"></span></div>', 'manual sends through Resend · replies land in Support')
           + card('Sent', '<div id="mlLog">' + logHtml + '</div>', 'last 100 manual sends and support replies');
-        if (arg) { $('mlTo').value = decodeURIComponent(arg); $('mlBody').focus(); arg = ''; } // #inbox/mail/<email> from a user card or ticket
+        if (arg) { var pp = arg.split('/'); $('mlTo').value = decodeURIComponent(pp[0]); if (pp[1]) $('mlSubj').value = decodeURIComponent(pp[1]); if (pp[2] && addrs.some(function (a) { return a.key === pp[2]; })) { $('mlFrom').value = pp[2]; $('mlReply').value = pp[2]; } $('mlBody').focus(); arg = ''; } // #inbox/mail/<email>[/<subject>[/<from key>]] from a user card, a ticket or the private inbox (Reply from milan@)
         $('mlSend').onclick = function () {
           var to = ($('mlTo').value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean); var body = $('mlBody').value || '';
           if (!to.length) { setStat('mlSt', 'enter at least one recipient', false); return; } if (!body.trim()) { setStat('mlSt', 'write a message first', false); return; }
