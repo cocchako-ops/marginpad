@@ -89,6 +89,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,p=+document.getElementById('pos').value,ru=+document.getElementById('riskusd').value;var r=document.getElementById('res');if(!(en>0&&p>0&&ru>0)){r.innerHTML='';return;}var dist=ru/p,sl=en*(1-s*dist),t1=en*(1+s*dist),t2=en*(1+s*dist*2),t3=en*(1+s*dist*3);var fx=function(v){return v.toLocaleString(undefined,{maximumFractionDigits:2});};
 r.innerHTML='<div class="rrow"><span class="k">Stop distance</span><span class="v">'+(dist*100).toFixed(2)+'%</span></div><div class="rrow big"><span class="k">Stop-loss price</span><span class="v dn">'+fx(sl)+'</span></div><div class="rrow"><span class="k">Take-profit 1R (risk = reward)</span><span class="v up">'+fx(t1)+'</span></div><div class="rrow"><span class="k">Take-profit 2R</span><span class="v up">'+fx(t2)+'</span></div><div class="rrow"><span class="k">Take-profit 3R</span><span class="v up">'+fx(t3)+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=9544b750"></script>
+<script defer src="/assets/mp-nav.js?v=178852fc"></script>
 </body>
 </html>
