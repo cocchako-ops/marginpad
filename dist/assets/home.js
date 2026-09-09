@@ -505,6 +505,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function _tkCls(m){return (m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));}
   function _tkPnl(m){return (m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));}
   function _tkMeta(e,m){return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin <b>'+money((+e.margin||+e.riskAmt||0))+'</b>';}
+  /* SL/TP ON THE TICKET THE TRADER ACTUALLY WATCHES (owner 2026-09-09: "I set a TP on the open ticket, press save,
+     and nothing on the ticket says it is set"). Measured: the take-profit WAS saved (journal + server + the drawer
+     card + the chart line all carried it) — this ticket, the one under the form, simply never printed SL/TP and
+     offered no way to set them, so the only feedback lived inside the My Trades drawer. The row doubles as the
+     opener: same window.mpSltpSheet, same levels. MIRROR in the mobile terminal's updPnl(). */
+  function _tkRisk(e){var has=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length));
+    var sl=window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'),tp=window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—');
+    return 'SL <b>'+sl+'</b> · TP <b>'+tp+'</b><button type="button" class="ptl-sltp" data-ptl-sltp="'+e.id+'">'+(has?'Edit':'Set')+'</button>';}
   function renderLast(){var el=document.getElementById('ptLastTrade');if(!el)return;var open=load().filter(function(e){return e.status==='open';});
     if(!open.length){el.hidden=true;el.className='pt-tickets';el.innerHTML='';_lastSig='';return;}
     el.className='pt-tickets';el.hidden=false;
@@ -517,6 +525,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-cut"></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
+        +'<div class="ptl-risk">'+_tkRisk(e)+'</div>'
         +'</div>';
     }).join('');
     // only the NEW ticket animates in — re-running panelIn on every existing card was the "shake" on spawn
@@ -534,7 +543,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var big=row.querySelector('.big');if(big){var bv=_tkPnl(m);if(big.textContent!==bv)big.textContent=bv;}
       var roe=row.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var meta=row.querySelector('.ptl-meta');if(meta){var mv=_tkMeta(e,m);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
+      var rsk=row.querySelector('.ptl-risk');if(rsk){var rkv=_tkRisk(e);if(rsk.innerHTML!==rkv)rsk.innerHTML=rkv;} /* an SL/TP saved from anywhere (this row, the drawer, the server sync) lands here within a tick */
     });}
+  // Set / Edit SL-TP straight from the ticket under the form — the same sheet the drawer uses, so there is one editor, not two.
+  document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-sltp]');if(!b)return;
+    ev.preventDefault();ev.stopPropagation();
+    var id=b.getAttribute('data-ptl-sltp');
+    if(!window.mpSltpSheet)return;
+    window.mpSltpSheet(id,function(){renderLast();try{drawLines();}catch(_){}try{if(window.mpJournalRender)window.mpJournalRender();}catch(_){}});});
   document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-close]');if(!b)return;
     var id=b.getAttribute('data-ptl-close'),d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;
     var e=d[i];
@@ -1120,6 +1136,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){if(!o.contains(ev.target))o.classList.remove('on');});}catch(_){}
     },true);}
 
+  var _glIdx=-1; // index (within the visible list) of the newest winning close — set by render(), read by closedCard
   function closedCard(e,_i){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
@@ -1137,7 +1154,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div>'
-      +((_i===0&&window.mpGoLive)?window.mpGoLive(e):'') /* newest winning close only: one dismissible line to the same pair on a venue that fits this reader (mp-auth.js owns it; MIRROR in mp-trade.js) */
+      +((_i===_glIdx&&window.mpGoLive)?window.mpGoLive(e):'') /* newest winning close only: one dismissible line to the same pair on a venue that fits this reader (mp-auth.js owns it; MIRROR in mp-trade.js) */
       +'</div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildTicket(e){
@@ -1264,6 +1281,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var ords=ordersNow();
     var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
     var _ord=rows.slice().reverse(),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
+    /* The partner line belongs on the newest WINNING close. It was pinned to index 0, so one losing trade after a
+       winning one hid it entirely — the card is only ever rendered when the very newest close happened to be green
+       (owner 2026-09-09: "put the ads back on the winning tickets"). MIRROR in mp-trade.js. */
+    _glIdx=-1;
+    if(jrTab!=='orders'&&jrTab!=='open')for(var _gi=0;_gi<_vis.length;_gi++){if(_vis[_gi]&&(+_vis[_gi].pnl)>0){_glIdx=_gi;break;}}
     var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting — place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
     if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server — they fill even when you are away.')+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore','Show more')+' ('+_rest+')</button>';
@@ -2810,7 +2832,10 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var _T=function(k,d){return (window.mpT&&window.mpT(k))||d;};
     pnlEl.innerHTML='<div class="ptl-top"><span class="ptl-tag">'+_T('mtLast','OPEN POSITION')+'</span><span class="ptl-sym">'+String(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?_T('long','LONG'):_T('short','SHORT'))+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b>'+fmt(m.lp)+'</b></span></div>'
       +'<div class="ptl-pnl"><span class="big">'+pl(m.pnl)+'</span><span class="roe">ROE '+pc(m.roe)+'</span><button type="button" class="ptl-close ptl-mt" data-mytrades>'+_T('mtMyTrades','My Trades')+'</button></div>'
-      +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
+      +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>'
+      /* MIRROR of _tkRisk() on the Paper Trade ticket: this card never said whether a stop or a target was set either. */
+      +'<div class="ptl-risk">SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fmt):(e.stop!=null?fmt(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fmt):(e.tp!=null?fmt(e.tp):'—'))+'</b><button type="button" class="ptl-sltp" data-ptl-sltp="'+e.id+'">'+((e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length))?'Edit':'Set')+'</button></div>';}
+  document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-sltp]'))setTimeout(updPnl,60);}); // the sheet stores; this card just re-reads the journal
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
   function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
     if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));return;} // stocks: no fills while the exchange is shut (consistent with the plan form)

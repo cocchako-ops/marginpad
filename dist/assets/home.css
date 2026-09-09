@@ -389,8 +389,9 @@
   .pp-bal{font-size:8px;padding:2px 5px;border-radius:4px;font-weight:800;letter-spacing:.06em;color:#c2f64a;background:rgba(194,246,74,.14);border:1px solid rgba(194,246,74,.4);flex-shrink:0;}
 .pp.pp-gold,.pt-last.pt-gold{border:1px solid rgba(240,195,90,.5);border-left:3px solid #f0c35a;background:radial-gradient(150px 130px at 91% 26%,rgba(240,195,90,.14),transparent 72%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M12 82V26L34 54L50 33L66 54L88 26V82' fill='none' stroke='%23e8b84a' stroke-opacity='0.15' stroke-width='11' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 93% 40% / 148px auto,#0a0a0b;box-shadow:0 0 0 1px rgba(240,195,90,.22),0 0 26px -5px rgba(240,195,90,.32),0 10px 26px -16px rgba(0,0,0,.88);}
 .pp.pp-gold .pp-sym,.pt-last.pt-gold .ptl-sym{color:#f5cf6a;}.pp.pp-gold .pp-pnl .big,.pt-last.pt-gold .ptl-pnl .big{color:#f5cf6a;}
-.pp.pp-gold .pp-meta,.pt-last.pt-gold .ptl-meta{color:#8a7a52;}
-.pp.pp-gold .pp-meta b,.pt-last.pt-gold .ptl-meta b{color:#f0c35a;}
+.pp.pp-gold .pp-meta,.pt-last.pt-gold .ptl-meta,.pt-last.pt-gold .ptl-risk{color:#8a7a52;}
+.pp.pp-gold .pp-meta b,.pt-last.pt-gold .ptl-meta b,.pt-last.pt-gold .ptl-risk b{color:#f0c35a;}
+.pt-last.pt-gold .ptl-sltp{color:#e0b85a;border-color:rgba(240,195,90,.45);}.pt-last.pt-gold .ptl-sltp:hover{color:#ffd97a;border-color:#f0c35a;background:rgba(240,195,90,.1);}
 .pp.pp-gold .pp-live:not(.pp-res),.pt-last.pt-gold .ptl-live{color:#d9b15a;}
 .pp.pp-gold .pp-foot{color:#c2a860;}.pp.pp-gold .pp-btns .ch{color:#f0c35a;border-color:rgba(240,195,90,.5);}.pp.pp-gold .pp-btns .ch:hover{color:#ffd97a;border-color:#f0c35a;background:rgba(240,195,90,.1);}.pp.pp-gold .pp-btns .pt{color:#1a1400;background:linear-gradient(180deg,#ffe08a,#efb63a);border:1px solid #f0c35a;font-weight:800;}.pp.pp-gold .pp-btns .pt:hover{background:linear-gradient(180deg,#ffe89a,#f5c74c);border-color:#ffd97a;color:#1a1400;}.pp.pp-gold .pp-btns .ed{color:#e0b85a;border-color:rgba(240,195,90,.4);}
 .pp.pp-gold::before{display:none;}
@@ -549,6 +550,12 @@
   .ptl-cut::before{left:-8px;}.ptl-cut::after{right:-8px;}
   .ptl-meta{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.7;letter-spacing:.01em;}
   .ptl-meta b{color:var(--ink);}
+  /* the stop / target the position is actually carrying, on the card the trader watches (owner 2026-09-09) */
+  .ptl-risk{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:4px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.7;letter-spacing:.01em;min-width:0;}
+  .ptl-risk b{color:var(--ink);}
+  .ptl-sltp{margin-left:auto;flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#c2f64a;background:none;border:1px solid var(--line-bright);border-radius:8px;padding:5px 11px;cursor:pointer;transition:color .13s,border-color .13s,background .13s,transform .13s;}
+  .ptl-sltp:hover{border-color:#c2f64a;background:rgba(194,246,74,.09);}
+  .ptl-sltp:active{transform:translateY(1px);}
   .ptl-close{margin-left:auto;align-self:center;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-dim);background:var(--bg);border:1px solid var(--line-bright);border-radius:8px;padding:6px 12px;cursor:pointer;transition:color .13s,border-color .13s,transform .13s;}
   .ptl-close:hover{color:#ff6258;border-color:#ff6258;}
   .ptl-close:active{transform:translateY(1px);}

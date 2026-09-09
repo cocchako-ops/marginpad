@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var a=+document.getElementById('acct').value,d=+document.getElementById('dd').value/100,e=+document.getElementById('edge').value/100;var r=document.getElementById('res');if(!(a>0&&d>0&&d<1)){r.innerHTML='';return;}var left=a*(1-d),need=(1/(1-d)-1)*100,months=e>0?Math.log(1/(1-d))/Math.log(1+e):null;r.innerHTML='<div class="rrow"><span class="k">Account after drawdown</span><span class="v dn">'+left.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Gain needed to recover</span><span class="v">+'+need.toFixed(1)+'%</span></div>'+(months!=null?'<div class="rrow"><span class="k">Months to highs at '+(e*100).toFixed(1)+'%/mo</span><span class="v">'+months.toFixed(1)+'</span></div>':'');}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=178852fc"></script>
+<script defer src="/assets/mp-nav.js?v=5049f584"></script>
 </body>
 </html>
