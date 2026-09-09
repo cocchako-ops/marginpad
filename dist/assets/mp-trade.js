@@ -228,7 +228,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     },'image/png');
   }
   var toastT=null;
-  function toast(msg){var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
+  function toast(msg){if(window.mpToast){window.mpToast({msg:msg,ms:2600,key:msg});return;} /* MIRROR of home.js: the one channel in mp-auth */
+    var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
   function copyTicket(e){
     var url='https://marginpad.io/paper-trade';
     if(!navigator.clipboard){toast(MT('jCopyFail','Copy not supported'));return;}

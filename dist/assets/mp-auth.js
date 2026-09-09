@@ -88,7 +88,8 @@
         + '<div class="mpco-g"><div><b style="color:' + (net >= 0 ? '#34d99a' : '#ff6c5c') + '">' + money(net) + '</b><span>net</span></div><div><b>' + wins + ' / ' + closed.length + '</b><span>wins</span></div><div><b' + (best != null && best > 0 ? ' style="color:#34d99a"' : '') + '>' + (best == null ? '-' : (best > 0 ? '+' : '') + Math.round(best) + '%') + '</b><span>best ROE</span></div></div>'
         + '<div class="mpco-b">They are in your journal now and they count: XP, records and the season boards start from here.</div>'
         + '<div class="mpco-a"><button type="button" class="mpco-go">See My Trades</button><button type="button" class="mpco-no">Got it</button></div>';
-      document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
+      try { box.style.bottom = (window.mpBottomInset ? window.mpBottomInset() : 18) + 'px'; } catch (e) {} // clear the phone tab bar (it was pinned at 18px, i.e. on top of it)
+    document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
       var close = function () { box.classList.remove('on'); setTimeout(function () { try { box.remove(); } catch (e) {} }, 300); };
       box.querySelector('.mpco-no').addEventListener('click', close);
       box.querySelector('.mpco-go').addEventListener('click', function () { close(); try { if (window.mpOpenTrades) window.mpOpenTrades(); else location.href = '/paper-trade'; } catch (e) {} });
@@ -950,6 +951,7 @@
   }
   function duelNudge() { /* post-win momentum nudge -> duels (max 1/day) */
     try {
+      if (window.mpToast) { window.mpToast({ mark: '⚔', msg: 'On form. Put that streak on the line — challenge someone to a duel.', kind: 'record', ms: 9000, dismissible: true, key: 'duelnudge', action: { label: 'Duel', onClick: function () { try { open(); renderDuels(); } catch (e) {} } } }); return; }
       var n = document.createElement('div');
       n.style.cssText = 'position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(8px);z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#151a12,#0d1014);border:1px solid rgba(245,166,35,.5);border-radius:14px;padding:11px 14px;box-shadow:0 18px 50px -18px rgba(0,0,0,.85),0 0 30px -14px rgba(245,166,35,.5);opacity:0;transition:opacity .3s,transform .3s;max-width:92vw';
       n.innerHTML = '<span style="font:700 12.5px Familjen Grotesk,sans-serif;color:#e9e7df">On form. Put that streak on the line — challenge someone to a duel.</span><button type="button" style="flex:0 0 auto;background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:8px 13px;font:800 12px Familjen Grotesk,sans-serif;cursor:pointer">Duels</button><button type="button" aria-label="Dismiss" style="flex:0 0 auto;background:none;border:none;color:#5c656f;font-size:15px;cursor:pointer;padding:2px 4px">&#215;</button>';
@@ -1722,6 +1724,7 @@
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
       + '.mpxp.on{transform:none;opacity:1}'
+      + '.mpxp.mpxp-live{pointer-events:auto}' /* only a card with a button is clickable */
       + '.mpxp b{color:var(--xc,#c2f64a);font-size:15px;font-weight:800}.mpxp span{font-size:11.5px;color:#9aa3ad;line-height:1.2}'
       + '#mpxpLv{position:fixed;inset:0;z-index:2147483001;display:flex;align-items:center;justify-content:center;background:rgba(4,6,10,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .4s;pointer-events:none}'
       + '#mpxpLv.on{opacity:1;pointer-events:auto}'
@@ -1741,6 +1744,7 @@
     var seenKey = null, lastXp = null, lastIdx = null, watching = false;
     function key(uid) { return 'mp_xp_seen_' + uid; }
     function toast(amt, src, col) {
+      if (window.mpToast) return window.mpToast({ mark: (amt < 0 ? '−' : '+') + Math.abs(amt), html: 'XP<br>' + (SRCN[src] || src), col: col || '#c2f64a', ms: 3600, key: 'xp' + amt + src });
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', col || '#c2f64a');
       el.innerHTML = '<b>' + (amt < 0 ? '−' : '+') + Math.abs(amt) + '</b><span>XP<br>' + (SRCN[src] || src) + '</span>'; // sign-aware: a negative entry toasts as a red minus so a drop is EXPLAINED, not mysterious
@@ -1752,6 +1756,7 @@
     var PBN = { roe: 'Best ROE', pnl: 'Biggest win', streak: 'Win streak', day: 'Closes in a day' };
     function pbFmt(k, v) { return k === 'roe' ? ('+' + v + '%') : k === 'pnl' ? ('+$' + Number(v).toFixed(2)) : k === 'streak' ? (v + ' in a row') : (v + ' trades'); }
     function pbToast(it) {
+      if (window.mpToast) return window.mpToast({ mark: 'REC', html: (PBN[it.k] || it.k) + ' <b style="color:#e9e7df">' + pbFmt(it.k, it.v) + '</b>' + (it.prev != null && it.prev !== 0 ? '<br>was ' + pbFmt(it.k, it.prev) : ''), kind: 'record', ms: 4800, key: 'pb' + it.k + it.v });
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#ffd75a');
       el.innerHTML = '<b style="font-size:12px;letter-spacing:.08em">RECORD</b><span>' + (PBN[it.k] || it.k) + ' <b style="color:#e9e7df">' + pbFmt(it.k, it.v) + '</b>' + (it.prev != null && it.prev !== 0 ? '<br>was ' + pbFmt(it.k, it.prev) : '') + '</span>';
@@ -1759,6 +1764,7 @@
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4800);
     }
     function followToast(name) {
+      if (window.mpToast) { window.mpToast({ mark: '★', html: 'New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone is watching your trades'), kind: 'follow', ms: 4600, key: 'fol' + (name || '') }); try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {} return; }
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#38bdf8');
       el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone’s watching your trades') + '</span>';
@@ -1821,6 +1827,7 @@
         // DM unread + duel pending badges — run on EVERY poll incl. the first (before the seed early-return below)
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
+        try { window.mpLvlNow = d.level; if (window.mpToastHost) window.mpToastHost(); } catch (e) {} // the toast frame wears the trader's level colour (Bronze -> Legendary)
         if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         try { window.mpBronzeBar(d); } catch (e) {}
         try { if (d.pbNew && d.pbNew.ts && (d.pbNew.items || []).length) { var pk9 = 'mp_pb_seen_' + ((ME && ME.id) || ''), ps9 = +(localStorage.getItem(pk9) || 0);
@@ -2054,6 +2061,7 @@
     try { if (window.mpBuzz) window.mpBuzz([15, 40, 15]); } catch (e) {}
   }
   function toastFill(f) {
+    if (window.mpToast) { try { var m9 = T('otFilled', 'Limit order filled') + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 }); window.mpToast({ mark: '✓', msg: m9, kind: 'good', ms: 5000, key: 'fill' + f.sym + f.px }); } catch (e) {} return; }
     try {
       var m = T('otFilled', 'Limit order filled') + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 });
       var t = document.createElement('div'); t.textContent = m;
@@ -2305,4 +2313,106 @@
       if (a) mpEx.track(a.getAttribute('data-mpex'));
     } catch (e3) {}
   }, true);
+})();
+
+/* ══════════ ONE notification channel (2026-09-10, owner: "there are two versions of the popups and one crosses
+   the other — move everything to the side ones, and let their frame carry the user's level colour") ══════════
+   Measured before: two independent systems ran at once. The side stack (#mpxpT: XP, records, follows) sat at
+   bottom:16px, i.e. UNDER the phone tab bar (.mpbn) — a +15 XP card covered TRADES and CHAT; and every other
+   notice (mpLimitToast, the copy toast, chartToast, the leverage warning, the duel nudge, a limit fill, the
+   Telegram-import line) was a separate bottom-CENTRE card that landed on top of the trade form.
+
+   Now: window.mpToast(opts) is the only renderer, everything routes into the side stack, the stack clears the
+   bottom bar by measuring it, and the card FRAME is the signed-in trader's level colour (Bronze -> Legendary).
+   The state of a message lives in its small leading mark, so an error still reads as an error inside a gold frame.
+
+   This lives in mp-auth.js for the same reason window.mpOrders and window.mpEx do: it is the ONE bundle on every
+   page. mp-auth is DEFERRED, so every caller looks it up at CALL time and keeps its own inline fallback. */
+(function () {
+  var HOST = 'mpxpT'; // the id the XP/record/follow toasts already use — one stack, not a second one
+  var LVL = { unranked: '#5c6b7a', bronze: '#c97f4a', silver: '#b7c2d0', gold: '#ffcf3f', platinum: '#7ee0ff', diamond: '#8b5cff', legendary: '#ff7a1a' };
+  var KIND = { info: '#c2f64a', warn: '#ff6258', good: '#2ebd85', xp: '#c2f64a', record: '#ffd75a', follow: '#38bdf8' };
+  var GUEST = '#c2f64a'; // signed out there is no level — the site accent stands in
+  function hex2rgb(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); var n = parseInt(h, 16); return isFinite(n) ? [(n >> 16) & 255, (n >> 8) & 255, n & 255] : [194, 246, 74]; }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  // The trader's level colour, cached from the /api/auth/xp poll (window.mpLvlNow). Guests get the site accent.
+  window.mpLvlCol = function () { try { var l = window.mpLvlNow; if (l && l.k === 'unranked') return GUEST; if (l && l.col) return l.col; if (l && l.k && LVL[l.k]) return LVL[l.k]; } catch (e) {} return GUEST; };
+  var cssDone = false;
+  function css() {
+    if (cssDone) return; cssDone = true;
+    var s = document.createElement('style'); s.id = 'mptoast-css';
+    s.textContent = '#' + HOST + '{position:fixed;right:14px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none;max-width:min(320px,calc(100vw - 28px))}'
+      // the frame is the level; --xc is only the small mark that says what kind of message this is
+      + '.mpxp{position:relative;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;background:linear-gradient(180deg,#141821,#0e1117);border:1px solid var(--lc-line,#2a3550);border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:10px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5),0 0 0 1px var(--lc-glow,transparent);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;pointer-events:none}'
+      + '.mpxp.on{transform:none;opacity:1}'
+      + '.mpxp.out{transform:translateX(120%);opacity:0}'
+      + '.mpxp::after{content:"";position:absolute;inset:0;border-radius:11px;background:linear-gradient(100deg,var(--lc-tint,transparent),transparent 68%);pointer-events:none}'
+      + '.mpxp b{color:var(--xc,#c2f64a);font-size:15px;font-weight:800;flex:none}'
+      + '.mpxp span{font-size:11.5px;color:#9aa3ad;line-height:1.25;min-width:0;overflow-wrap:anywhere}'
+      + '.mpxp .mpxp-msg{font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:12.5px;color:#dfe4ec;line-height:1.35}'
+      + '.mpxp .mpxp-msg i{font-style:normal;color:var(--xc,#c2f64a);font-weight:700}'
+      + '.mpxp .mpxp-act{position:relative;z-index:1;flex:none;margin-left:2px;background:var(--lc-btn,#c2f64a);color:#0a0b0d;border:0;border-radius:8px;padding:6px 10px;font:800 11px "Familjen Grotesk",system-ui,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}'
+      + '.mpxp .mpxp-x{position:relative;z-index:1;flex:none;background:none;border:0;color:#6d7986;font-size:14px;line-height:1;cursor:pointer;padding:2px 0 2px 4px}'
+      + '.mpxp .mpxp-x:hover{color:#c9d2dc}'
+      + '@media(max-width:560px){#' + HOST + '{right:10px;max-width:calc(100vw - 20px)}.mpxp{padding:9px 11px}}';
+    (document.head || document.documentElement).appendChild(s);
+  }
+  // Clear whatever sits at the bottom of the screen (the phone tab bar) by MEASURING it — a hardcoded offset was
+  // exactly how the old side stack ended up printing on top of TRADES and CHAT.
+  window.mpBottomInset = function () { try { var bar = document.querySelector('.mpbn'); if (bar) { var r = bar.getBoundingClientRect(); if (r.height > 0 && r.bottom > innerHeight - 60) return Math.round(innerHeight - r.top) + 10; } } catch (e) {} return 16; };
+  function baseBottom() {
+    try {
+      var b = 16, bar = document.querySelector('.mpbn');
+      // within 60px of the bottom edge counts as "anchored down there": the tab bar floats a few px above the
+      // edge (margin + safe area), and a stricter test is exactly why the stack was still printing on it.
+      if (bar) { var r = bar.getBoundingClientRect(); if (r.height > 0 && r.bottom > innerHeight - 60) b = Math.round(innerHeight - r.top) + 10; }
+      var gn = document.getElementById('mpGn'); if (gn) { var g = gn.getBoundingClientRect(); if (g.height > 0) b = Math.max(b, Math.round(innerHeight - g.top) + 10); } // the guest activation card sits in this corner too
+      return b;
+    } catch (e) { return 16; }
+  }
+  function host() {
+    css();
+    var h = document.getElementById(HOST);
+    if (!h) { h = document.createElement('div'); h.id = HOST; document.body.appendChild(h); }
+    var col = window.mpLvlCol();
+    h.style.setProperty('--lc', col);
+    h.style.setProperty('--lc-line', rgba(col, 0.55));
+    h.style.setProperty('--lc-glow', rgba(col, 0.16));
+    h.style.setProperty('--lc-tint', rgba(col, 0.09));
+    h.style.setProperty('--lc-btn', col);
+    h.style.bottom = baseBottom() + 'px';
+    return h;
+  }
+  window.mpToastHost = host; // the XP module re-themes the stack the moment the level is known
+  var last = {};
+  var MAXN = 4; // more than four at once is noise; the oldest leaves early
+  /* opts: {msg | html, mark, kind, col, ms, action:{label,href,onClick}, key, dismissible} */
+  window.mpToast = function (opts) {
+    try {
+      opts = (typeof opts === 'string') ? { msg: opts } : (opts || {});
+      var key = opts.key || opts.msg || '';
+      var now = Date.now(); if (key && now - (last[key] || 0) < 600) return null; if (key) last[key] = now;
+      var h = host();
+      while (h.children.length >= MAXN) { var old = h.firstChild; h.removeChild(old); }
+      var el = document.createElement('div'); el.className = 'mpxp';
+      el.style.setProperty('--xc', opts.col || KIND[opts.kind] || KIND.info);
+      var inner = '';
+      if (opts.mark) inner += '<b>' + opts.mark + '</b>';
+      inner += opts.html ? ('<span>' + opts.html + '</span>') : ('<span class="mpxp-msg">' + String(opts.msg == null ? '' : opts.msg).replace(/[<>&]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]; }) + '</span>');
+      if (opts.action && opts.action.label) inner += (opts.action.href ? '<a class="mpxp-act" href="' + opts.action.href + '">' : '<button type="button" class="mpxp-act">') + opts.action.label + (opts.action.href ? '</a>' : '</button>');
+      if (opts.dismissible) inner += '<button type="button" class="mpxp-x" aria-label="Dismiss">&#10005;</button>';
+      el.innerHTML = inner;
+      if (/mpxp-act|mpxp-x/.test(inner)) el.classList.add('mpxp-live');
+      h.appendChild(el);
+      requestAnimationFrame(function () { el.classList.add('on'); });
+      var kill = function () { el.classList.remove('on'); el.classList.add('out'); setTimeout(function () { try { el.remove(); } catch (e) {} }, 420); };
+      var x = el.querySelector('.mpxp-x'); if (x) x.addEventListener('click', kill);
+      var act = el.querySelector('button.mpxp-act');
+      if (act && opts.action && typeof opts.action.onClick === 'function') act.addEventListener('click', function () { try { opts.action.onClick(); } catch (e) {} kill(); });
+      setTimeout(kill, Math.max(1200, +opts.ms || 4200));
+      return el;
+    } catch (e) { return null; }
+  };
+  // keep the stack off the bar when the viewport changes (rotation, keyboard, a bar that appears late)
+  try { addEventListener('resize', function () { var h = document.getElementById(HOST); if (h) h.style.bottom = baseBottom() + 'px'; }); } catch (e) {}
 })();

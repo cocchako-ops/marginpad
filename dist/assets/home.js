@@ -108,6 +108,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
    teaches that the position liquidates ~0.1% from entry (why skyfall/whyme lost big wins instantly). */
 window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.now(),last=+(localStorage.getItem('mp_lev_warned')||0);if(now-last<216e5)return;localStorage.setItem('mp_lev_warned',String(now));
   var move=(100/lev).toFixed(lev>=500?2:1),T=function(k,d){return (window.mpT&&window.mpT(k))||d;};
+  if(window.mpToast){window.mpToast({mark:'⚠',kind:'warn',ms:6000,dismissible:true,key:'levwarn',html:'<b style="color:#ff6258;font-family:Familjen Grotesk,sans-serif;font-size:12.5px">'+T('levWarnT','Extreme leverage')+'</b><br>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2','a move of only ~')+move+'% '+T('levWarnB3','against you wipes the whole position. Trade smaller.')});return;} /* was a bottom-centre card over the form */
   var d=document.createElement('div');d.className='mp-levwarn';
   d.style.cssText='position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:400;max-width:340px;width:calc(100% - 32px);background:rgba(22,7,7,.97);border:1px solid #ff5a4d;border-radius:14px;padding:12px 14px;color:#ffd9d4;font:500 12.5px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:3px';
   d.innerHTML='<b style="color:#ff6258;font-size:13px">⚠ '+T('levWarnT','Extreme leverage')+'</b><span>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2','a move of only ~')+move+'% '+T('levWarnB3','against you wipes the whole position. Trade small.')+'</span>';
@@ -1234,7 +1235,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     },'image/png');
   }
   var toastT=null;
-  function toast(msg){var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
+  function toast(msg){if(window.mpToast){window.mpToast({msg:msg,ms:2600,key:msg});return;} /* one channel (mp-auth); this stays as the fallback for the tick before the deferred bundle parses */
+    var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
   function copyTicket(e){
     var url='https://marginpad.io/paper-trade';
     if(!navigator.clipboard){toast(MT('jCopyFail','Copy not supported'));return;}
@@ -2825,7 +2827,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=84ae3b29'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=6ac66a3c'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3325,6 +3327,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   else if(n>=3)line='Day '+n+'. Habits beat hunches — keep stacking.';
   else line='Back-to-back days. The chart noticed.';
   var sub=n>=2?(line+' Set a price alert so you never miss a move.'):'Welcome back. Show up tomorrow and this becomes a streak.';
+  if(window.mpToast){window.mpToast({mark:String(n),kind:'record',ms:8500,dismissible:true,key:'streak',html:'<b style="color:#e9e7df">'+n+'-day streak</b><br>'+sub,action:(n>=2?{label:'Alerts',href:'/alerts/'}:null)});return;} /* the last card that lived in its own corner (bottom-LEFT) — one stack now */
   el.innerHTML='<div style="flex:1"><b>'+n+'-day streak</b><small>'+sub+'</small>'+(n>=2?'<a class="mps-cta" href="/alerts/">Set a price alert →</a>':'')+'</div><span class="mps-x">×</span>';
   function hide(){el.classList.remove('show');setTimeout(function(){el.hidden=true;},400);}
   // Only the explicit CTA link navigates. Tapping anywhere else on the toast just dismisses it — it must NEVER hijack a tap meant for the page underneath (e.g. the trade button) and send it to /alerts.
@@ -3339,7 +3342,9 @@ window.mpSrvOpen=function(payload,ok,fail){
   try{
     var u=new URL(location.href);var tok=u.searchParams.get('claim');if(!tok||!/^[a-z0-9]{6,48}$/i.test(tok))return;
     function cleanUrl(){try{u.searchParams.delete('claim');history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);}catch(e){}}
-    function toast(){var t=document.createElement('div');t.innerHTML='Imported your Telegram trade — open in <b>My Trades</b>.';t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
+    function toast(){var go0=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};
+      if(window.mpToast){window.mpToast({mark:'✓',kind:'good',ms:6000,key:'tgclaim',msg:'Imported your Telegram trade.',action:{label:'My Trades',onClick:go0}});setTimeout(go0,700);return;}
+      var t=document.createElement('div');t.innerHTML='Imported your Telegram trade — open in <b>My Trades</b>.';t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
     fetch('/api/tgclaim?token='+encodeURIComponent(tok)).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!j||!j.ok||!j.pos)return;var p=j.pos;
       var arr;try{arr=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){arr=[];}
@@ -3365,6 +3370,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   var _lt=0;
   window.mpLimitToast=function(msg){
     var now=Date.now();if(now-_lt<600)return;_lt=now; // de-dupe rapid double-fires
+    if(window.mpToast){window.mpToast({msg:msg,kind:'warn',mark:'!',ms:4500,key:msg});return;} /* side stack, level-framed — this used to land on top of the trade form */
     var t=document.createElement('div');t.textContent=msg;
     t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:130;background:#1a0f0f;color:#ffd2cc;border:1px solid #ff6258;border-left:3px solid #ff6258;border-radius:12px;padding:13px 17px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;font-family:inherit;text-align:center;';
     document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
