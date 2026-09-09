@@ -486,7 +486,10 @@
     body.paper-page .wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;padding-bottom:0;max-width:none;}
     body.paper-page footer{display:none!important;}
     body.paper-page .card{width:auto!important;margin:6px 0 0!important;flex:1 1 auto;min-height:0;display:flex!important;flex-direction:column!important;border-radius:14px;padding:12px!important;}
-    body.paper-page #plan{flex:1 1 auto;min-height:0;display:flex!important;flex-direction:column!important;}
+    /* .active, NOT #plan on its own: this !important used to pin the trade panel open even after the panel
+       logic had correctly deactivated it, so switching product on /paper-trade rendered the calculator ON TOP
+       of the terminal. Measured 2026-09-09: the class is removed exactly as it should be, only the rule ignored it. */
+    body.paper-page #plan.active{flex:1 1 auto;min-height:0;display:flex!important;flex-direction:column!important;}
     body.paper-page .ptt{flex:1 1 auto;min-height:0;grid-template-columns:minmax(0,1fr) 356px!important;grid-template-rows:minmax(0,1fr)!important;gap:12px;align-items:stretch!important;}
     body.paper-page .ptt-chart{height:auto!important;min-height:0!important;}
     body.paper-page .ptt-side{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;padding-right:2px;}
