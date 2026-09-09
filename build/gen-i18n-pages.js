@@ -13,7 +13,7 @@ objText = objText.replace(/;\s*$/, '');
 const T = eval('(' + objText + ')'); // trusted local file
 // also merge every EXTRA dictionary so generated pages translate the newer keys
 // (single loop covering all suffixes — keep in sync with build/gen-i18n-assets.js)
-for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']) {
+for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']) {
   const startMark = 'var EXTRA' + suffix + ' = {';
   const endMark = 'for (var _L' + suffix + ' in EXTRA' + suffix + ')';
   const s2 = i18nSrc.indexOf(startMark);

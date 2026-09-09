@@ -264,13 +264,22 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // a liq computed from the live price would be wrong by exactly the distance the trader is waiting for.
   function effPx(){var p=window.mpPlanLimit;return (window.mpPlanType==='limit'&&isFinite(p)&&p>0)?p:live;}
   function calc(){
-    var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional'];
+    var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional','planFee'];
     var px=effPx();
     if(!isFinite(px)||px<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();try{limHint();}catch(_){}return;}
     var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-_mmr)/lev):px*(1+(1-_mmr)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
-    var _ld=(liq-px)/px*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); setBtn(); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
+    var _ld=(liq-px)/px*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
+    /* Round-trip cost BEFORE the click (owner 2026-09-09: "I paid $18 of fees on a $100 position just because I
+       raised the leverage"). The fee is charged on the POSITION, not on the margin — 0.055% a side of $16,300 is
+       $8.96 — so at high leverage it is a real share of the stake and nothing said so until the trade was closed.
+       Same rate the fill will use (window.mpFeeRate mirrors the worker's feeRateFor). */
+    try{var _fr=(window.mpFeeRate?window.mpFeeRate(lev,sym):0.00055),_rt=notional*_fr*2;
+      set('planFee', money(_rt)+'  ('+(_rt/amt*100).toFixed(_rt/amt>=0.1?1:2)+'% '+((window.mpT&&window.mpT('rFeeOfMargin'))||'of margin')+')');
+      var _fe=document.getElementById('planFee');if(_fe)_fe.classList.toggle('hot',_rt/amt>=0.05); // 5%+ of the stake in fees is worth a colour, not a warning box
+    }catch(_){}
+    setBtn();
     try{limHint();}catch(_){}
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let

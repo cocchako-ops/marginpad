@@ -275,7 +275,7 @@ function handleOpenApi() {
           },
         },
         Balance: { type: 'object', properties: { starting_balance_usd: { type: 'number' }, balance_usd: { type: 'number' }, equity_usd: { type: 'number' }, margin_in_use_usd: { type: 'number' }, free_margin_usd: { type: 'number' }, unrealized_pnl_usd: { type: 'number' }, margin_enforced: { type: 'boolean' } } },
-        Market: { type: 'object', properties: { symbol: { type: 'string' }, asset_class: { type: 'string', enum: ['crypto', 'stock', 'forex', 'metal', 'index'] }, max_leverage: { type: 'number' }, taker_fee_pct: { type: 'number', description: 'Per side. The entry leg is deducted from margin at fill (position.feeOpen), the exit leg settles at close; unrealized_pnl_usd excludes fees.' } } },
+        Market: { type: 'object', properties: { symbol: { type: 'string' }, asset_class: { type: 'string', enum: ['crypto', 'stock', 'forex', 'metal', 'index'] }, max_leverage: { type: 'number' }, taker_fee_pct: { type: 'number', description: 'Per side. Charged on notional, per side. position.margin is what you committed; position.feeOpen reports the entry leg for the cost breakdown only. BOTH legs settle in realized pnl at close; unrealized_pnl_usd excludes fees.' } } },
         Markets: { type: 'object', properties: { markets: { type: 'array', items: { $ref: '#/components/schemas/Market' } }, count: { type: 'integer' }, note: { type: 'string' } } },
         Trade: { type: 'object', properties: { id: { type: ['string', 'null'] }, closed_ts: { type: 'integer' }, symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, leverage: { type: 'number' }, margin_usd: { type: 'number' }, pnl_usd: { type: ['number', 'null'] }, roe_pct: { type: ['number', 'null'] }, liquidated: { type: 'boolean' }, via: { type: ['string', 'null'], description: 'Which path executed the close: bot, site, sweep, cron, sltp.' } } },
         Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
@@ -4813,7 +4813,7 @@ function orderPosition(o, fillTs) {
     id: (isBot ? 'bot' : 'srv') + fillTs.toString(36) + Math.floor(Math.random() * 1e4).toString(36),
     ts: fillTs, sym, side: long ? 'long' : 'short', entry, stop: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp),
     lev, rr: null, qty: margin * lev / entry, notional: margin * lev,
-    margin: _mNet(margin, lev, rate), riskAmt: _mNet(margin, lev, rate), feeOpen: _feeOpen(margin, lev, rate),
+    margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, rate),
     liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
     src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs
   };
@@ -9433,10 +9433,13 @@ function marketSession(sym, pd, now) {
   if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time.' };
   return { open: true, cls };
 }
-// Open-leg taker fee, taken off the margin at fill (2026-09-02). qty*entry === margin*lev, so realized pnl at close
-// (qty*(entry+exit)*rate) still equals feeOpen + the exit leg — the ticket lists both, the balance math is unchanged.
+// Open-leg taker fee, REPORTED on the fill for the ticket's cost breakdown — never subtracted from the margin.
+// It used to be (2026-09-02 to 2026-09-09): a fill stored margin - feeOpen while realized pnl at close charges
+// BOTH legs (qty*(entry+exit)*rate), so the entry leg was counted twice by everything that reads margin. Measured
+// on a $100 / 163x fill at a flat price: margin 91.03 and pnl -17.93, i.e. 26.90 accounted for a round trip that
+// really costs 17.93, and ROE -19.7% instead of -17.93% — on the season board too. margin is now what the trader
+// committed; the fee lives in pnl alone, exactly once, the way an exchange charges it.
 function _feeOpen(margin, lev, rate) { return Math.round((+margin || 0) * (+lev || 1) * (+rate || 0) * 1e6) / 1e6; }
-function _mNet(margin, lev, rate) { return Math.max(0, Math.round(((+margin || 0) - _feeOpen(margin, lev, rate)) * 1e6) / 1e6); }
 function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055; return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
 // Pending-limit-order limits. PT_MAX_OPEN / PT_MAX_PAIR MIRROR the client gate (window.mpTradeGate in home.js:
 // MAX_TOTAL 50, MAX_PAIR 10, one-way mode) — a limit fill lands minutes or days after placement, so the same
@@ -10315,7 +10318,7 @@ async function handleTelegram(request, env) {
     if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
     const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = Math.min(maxLevFor(p.sym), Math.max(1, +o.lev || 1)), margin = o.margin; // per-coin leverage cap — this path trusted the raw /open text (x700.5 on a microcap parsed fine) while /api/trade and the bot API both clamp
     const liq = mpcLiq(entry, lev, mmr, long);
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, p.sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, p.sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
     if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' ' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
@@ -11002,7 +11005,7 @@ async function handleTrade(url, request, env, ctx) {
     // journal sync if the server had filled it after all. Measured before: the site aborted at 1.4 s and opened locally while the server
     // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
     const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
     mk('do_fill', tD);
@@ -11164,6 +11167,13 @@ async function handleTrade(url, request, env, ctx) {
 // HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
+  {
+    date: '2026-09-09', version: '2.2.1', title: 'Margin is what you committed',
+    changes: [
+      { type: 'fixed', breaking: false, text: 'A fill used to store margin MINUS the entry-leg taker fee while realized pnl at close charges both legs, so the entry leg was counted twice by everything that reads position.margin - the ROE denominator, and any equity built from margins. Measured on a 100 USD position at 163x closed at a flat price: margin 91.03 with pnl -17.93, i.e. 26.90 accounted for a round trip that really costs 17.93. position.margin is now the amount you sent; position.feeOpen still reports the entry leg for a cost breakdown, and the fee is charged exactly once, inside realized pnl. Positions opened before this keep the margin they were filled with.' },
+      { type: 'unchanged', breaking: false, text: 'The fee itself did not change: taker rate per side on NOTIONAL (crypto 0.055%), so leverage raises the fee only by raising the position - the rate is flat, and above ~181x it is lowered so a round trip can never exceed 20% of margin. Realized pnl is still qty*(exit-entry)*dir - qty*(entry+exit)*rate - funding.' },
+    ],
+  },
   {
     date: '2026-09-07', version: '2.2.0', title: 'Regional quotes',
     changes: [
@@ -11622,7 +11632,7 @@ async function handleBot(url, request, env, ctx) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
     // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
     const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
     const r = await doCall('/botopen', { uid, t, promos, via: 'bot', coid });

@@ -67,6 +67,16 @@ const journal = async () => {
       let row = null;
       for (let w = 0; w < 25; w++) { await sleep(700); row = await EV(() => { try { const j = (JSON.parse(localStorage.getItem('mp_journal') || '[]') || []).filter(t => t.status !== 'win' && t.status !== 'loss'); return j.length ? j[0] : null; } catch (e) { return null; } }); if (row) break; }
       chk('a 100x position is open', !!row && /^srv/.test(String(row.id)), row && { id: String(row.id).slice(0, 8), lev: row.lev, margin: row.margin, feeRate: row.feeRate });
+      // THE ENTRY LEG IS CHARGED ONCE (2026-09-09). A fill used to store margin - feeOpen while the close charges both
+      // legs, so margin read 94.50 on a $100 fill and everything built on margin counted the entry leg twice.
+      chk('the fill stores the margin the trader committed (the entry fee is not taken off it)', !!row && Math.abs((+row.margin) - 100) < 0.001 && (+row.feeOpen) > 0, row && { margin: row.margin, feeOpen: row.feeOpen });
+      // and the form says what the round trip costs BEFORE the click
+      const feeLine = await EV(() => { const b = document.getElementById('planFee'); const lbl = b && b.parentNode ? b.parentNode.querySelector('span').textContent : ''; return b ? { lbl, txt: b.textContent.replace(/\s+/g, ' ').trim(), hot: b.classList.contains('hot') } : null; });
+      {
+        const want = (+row.qty || 0) * ((+row.entry || 0) * 2) * (+row.feeRate || 0);
+        const shown = parseFloat(String(feeLine && feeLine.txt).replace(/[$,]/g, '').match(/[\d.]+/) || 0);
+        chk('the trade form quotes the open+close fee before opening, with its share of the stake', !!feeLine && Math.abs(shown - want) < 0.06 && /%/.test(feeLine.txt) && feeLine.hot === true, { line: feeLine, want: +want.toFixed(2) });
+      }
       const card = await EV(() => { const el = document.getElementById('ptLastTrade'); const t = el ? el.innerText.replace(/\s+/g, ' ') : ''; const m = t.match(/([+−-]\$[\d.,]+)/); return { txt: t.slice(0, 120), shown: m ? m[1] : '' }; });
       const shownAbs = Math.abs(parseFloat(String(card.shown).replace(/[^\d.]/g, '')) || 0);
       const roundTrip = (+row.qty || 0) * ((+row.entry || 0) * 2) * (+row.feeRate || 0);
@@ -116,7 +126,18 @@ const journal = async () => {
       chk('a 100% close books the same net expression', !!full && Math.abs(full.pnl - netOf(full, full.exit)) < 0.01, full && { booked: +full.pnl.toFixed(4), net: +netOf(full, full.exit).toFixed(4) });
       await sleep(16000);
       const srv = (await journal()).filter(t => String(t.id) === String(full && full.id))[0];
-      chk('the server settles the SAME trade at the same number (the ticket cannot flip Win -> Loss any more)', !!srv && (+srv.pnl) === (+full.pnl) /* both rounded to cents: the SAME number, not a near one */, { local: full && +(+full.pnl).toFixed(4), server: srv && srv.pnl, sameLabel: !!srv && srv.status === (full.pnl >= 0 ? 'win' : 'loss') });
+      // The two can still differ by a TICK — client and server each take their own live price a moment apart — but never
+      // by the fee, which is what flipped tickets from Win to Loss. Both are rounded to cents, so a match is exact when
+      // the price did not move between the two reads.
+      // The two numbers can differ by the price TICK between the client's close and the server's re-price — that is
+      // honest and unavoidable. What must not differ is the FORMULA: the server's stored pnl has to be the same net
+      // expression applied to the server's own exit, exactly as the client's is to its own. A systematic gap the size
+      // of the fee is the bug that flipped tickets from Win to Loss.
+      {
+        const srvSelf = srv ? Math.abs((+srv.pnl) - netOf(srv, +srv.exit)) : 99;
+        const feeLeg = (+full.qty || 0) * ((+full.entry || 0) + (+full.exit || 0)) * (+full.feeRate || 0);
+        chk('the server settles by the SAME formula (its own exit, fee both legs) — no systematic gap the size of the fee', !!srv && srvSelf <= 0.011, { serverPnl: srv && srv.pnl, serverFormula: srv && +netOf(srv, +srv.exit).toFixed(4), localPnl: full && full.pnl, localExit: full && full.exit, serverExit: srv && srv.exit, feeIs: +feeLeg.toFixed(2) });
+      }
 
       // ---- 5. a legacy row (feeRate 0) is not touched
       const legacy = await EV(() => {

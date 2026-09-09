@@ -447,6 +447,8 @@
   .ptt-stats>div:last-child{border-bottom:none;}
   .ptt-stats span{color:var(--ink-faint);}
   .ptt-stats b{color:#fff;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;}
+  /* the round-trip fee turns amber once it eats 5%+ of the stake — a fact about the size chosen, not a warning box */
+  .ptt-stats b#planFee.hot{color:#ffb347;}
   .ptt-pos{padding:22px;}
   .ptt-pos-h{margin-bottom:16px;}
   .pp{padding:16px;margin-bottom:14px;border-color:var(--line-bright);}
