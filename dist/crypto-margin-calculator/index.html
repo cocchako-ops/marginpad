@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,en=+document.getElementById('entry').value,l=+document.getElementById('lev').value,mm=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(p>0&&en>0&&l>0)){r.innerHTML='';return;}var im=p/l,qty=p/en,mmv=p*mm;r.innerHTML='<div class="rrow big"><span class="k">Initial margin required</span><span class="v">'+im.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Maintenance margin</span><span class="v">'+mmv.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Buffer before liquidation</span><span class="v">'+(im-mmv).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=a0c07540"></script>
+<script defer src="/assets/mp-nav.js?v=9544b750"></script>
 </body>
 </html>

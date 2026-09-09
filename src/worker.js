@@ -4813,7 +4813,7 @@ function orderPosition(o, fillTs) {
     id: (isBot ? 'bot' : 'srv') + fillTs.toString(36) + Math.floor(Math.random() * 1e4).toString(36),
     ts: fillTs, sym, side: long ? 'long' : 'short', entry, stop: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp),
     lev, rr: null, qty: margin * lev / entry, notional: margin * lev,
-    margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, rate), // margin = what the trader committed; the fee is settled in pnl (see _feeOpen)
+    margin: _mNet(margin, lev, rate), riskAmt: _mNet(margin, lev, rate), feeOpen: _feeOpen(margin, lev, rate),
     liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
     src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs
   };
@@ -5261,7 +5261,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a0c07540" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9544b750" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -9433,14 +9433,10 @@ function marketSession(sym, pd, now) {
   if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time.' };
   return { open: true, cls };
 }
-// Open-leg taker fee, recorded on the position so the ticket can itemise it (2026-09-02).
-// 2026-09-09 — THE FEE IS CHARGED ONCE, AND IT IS CHARGED IN pnl. Until today this value was ALSO subtracted from the
-// stored `margin` (`_mNet`), while the close still charged BOTH legs (`qty*(entry+exit)*rate`). The comment here used to
-// claim "the balance math is unchanged"; it is not. Realized pnl was right, but the margin a position carried was short
-// by the open leg, so the ROE denominator was too small (5.9% too small at 107x, 1.1% at 20x — it inflated every ROE on
-// the season board) and Balance Mode equity was short by that amount per trade. `margin` is now what the trader actually
-// committed. Positions opened before this keep their stored (netted) margin — a client sync cannot rewrite it.
+// Open-leg taker fee, taken off the margin at fill (2026-09-02). qty*entry === margin*lev, so realized pnl at close
+// (qty*(entry+exit)*rate) still equals feeOpen + the exit leg — the ticket lists both, the balance math is unchanged.
 function _feeOpen(margin, lev, rate) { return Math.round((+margin || 0) * (+lev || 1) * (+rate || 0) * 1e6) / 1e6; }
+function _mNet(margin, lev, rate) { return Math.max(0, Math.round(((+margin || 0) - _feeOpen(margin, lev, rate)) * 1e6) / 1e6); }
 function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055; return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
 // Pending-limit-order limits. PT_MAX_OPEN / PT_MAX_PAIR MIRROR the client gate (window.mpTradeGate in home.js:
 // MAX_TOTAL 50, MAX_PAIR 10, one-way mode) — a limit fill lands minutes or days after placement, so the same
@@ -10319,7 +10315,7 @@ async function handleTelegram(request, env) {
     if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
     const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = Math.min(maxLevFor(p.sym), Math.max(1, +o.lev || 1)), margin = o.margin; // per-coin leverage cap — this path trusted the raw /open text (x700.5 on a microcap parsed fine) while /api/trade and the bot API both clamp
     const liq = mpcLiq(entry, lev, mmr, long);
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, p.sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, p.sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
     if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' ' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
@@ -11006,7 +11002,7 @@ async function handleTrade(url, request, env, ctx) {
     // journal sync if the server had filled it after all. Measured before: the site aborted at 1.4 s and opened locally while the server
     // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
     const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
     mk('do_fill', tD);
@@ -11168,13 +11164,6 @@ async function handleTrade(url, request, env, ctx) {
 // HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
-  {
-    date: '2026-09-09', version: '2.2.1', title: 'The taker fee is charged once',
-    changes: [
-      { type: 'fixed', breaking: false, text: 'A fill stored margin_usd MINUS the entry-leg taker fee (since 2026-09-02) while the close still charged both legs, so anything measured against margin counted the entry leg twice: ROE was overstated (by 5.9% of itself at 107x, 1.1% at 20x) and simulated equity was short by that amount per position. margin_usd is now exactly the margin you asked for; position.feeOpen still reports the entry-leg fee for your own bookkeeping. Realized pnl is unchanged: qty*(exit-entry)*dir - qty*(entry+exit)*rate - funding, floored at -margin.' },
-      { type: 'changed', breaking: false, text: 'No change to unrealized_pnl_usd: it was already net of the round-trip fee and funding here. The MarginPad terminal was the side showing a gross figure, so a position could read +$0.12 on the site and settle red; the site now uses the same expression the API and the close already used. Numbers you read over the API and numbers a trader sees on the site finally agree.' },
-    ],
-  },
   {
     date: '2026-09-07', version: '2.2.0', title: 'Regional quotes',
     changes: [
@@ -11633,7 +11622,7 @@ async function handleBot(url, request, env, ctx) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: _mNet(margin, lev, feeRateFor(lev, sym)), riskAmt: _mNet(margin, lev, feeRateFor(lev, sym)), feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
     // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
     const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
     const r = await doCall('/botopen', { uid, t, promos, via: 'bot', coid });
