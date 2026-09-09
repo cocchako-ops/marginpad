@@ -412,6 +412,7 @@
 .dash-stats .dst b{font:800 22px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dash-stats .dst b small{font-size:11px;color:#5c656f;font-weight:600;margin-left:2px}
 .dash-stats .dst em{font-style:normal;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-stats .dst i{font-style:normal;font-size:11px;color:#5c656f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst.sk{opacity:.32}.dash-stats .dst.sk b,.dash-stats .dst.sk em,.dash-stats .dst.sk i{color:#5c656f}
 .dash-stats .dst.ok{border-color:rgba(194,246,74,.45)}.dash-stats .dst.ok b{color:#c2f64a}.dash-stats .dst.pro{border-color:rgba(199,146,255,.45)}.dash-stats .dst.pro b{color:#c792ff}.dash-stats .dst.gold{border-color:rgba(255,215,90,.45)}.dash-stats .dst.gold b{color:#ffd75a}.dash-stats .dst.hot{border-color:rgba(255,176,32,.55);background:rgba(255,176,32,.08)}.dash-stats .dst.hot i{color:#ffb020}
 .dash-next{display:flex;flex-direction:column;gap:8px;padding-left:18px;border-left:1px solid rgba(255,255,255,.07);min-width:0}
 .dash-todo{display:flex;flex-direction:column;gap:6px}
@@ -422,7 +423,10 @@
 .dash-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}.dash-days i{display:block;height:5px;border-radius:3px;background:#1a1f27}.dash-days i.on{background:#c792ff}.dash-days i.now{background:#fff;box-shadow:0 0 8px #c792ff}
 @media(max-width:980px){.dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dash-next{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.07);padding-top:12px}}
 @media(max-width:640px){.dash{grid-template-columns:1fr;padding:16px}.dash-stats{grid-template-columns:1fr 1fr}.dash-t{font-size:21px}}
-body.mpa-authed .hero{display:none}
+/* The hero is replaced by the member card, so it may only disappear once that card is REALLY on screen.
+   Keyed on mpa-authed it vanished at ~180 ms while the card waited for /api/pass + /api/goals until ~950 ms,
+   and the top of the page sat empty in between (owner 2026-09-10, measured). */
+body.mpa-dash .hero{display:none}
 @media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
 @media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
@@ -1660,6 +1664,31 @@ body.mpa-authed .hero{display:none}
     function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
     function ago(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
     function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;}
+    /* INSTANT MEMBER CARD (2026-09-10, owner: "it does not load right away like the paper trade card, so it"
+       "appears later out of nowhere and the user wonders what they clicked"). Measured before: mpa-authed
+       landed at ~180 ms (mp-auth restores the account from its own cache) but paint() only ran after
+       /api/pass + /api/goals + /api/predict all resolved — ~950 ms — so a 460 px block dropped in.
+       Now the card is drawn from what the browser ALREADY has (the account, and last visit's season numbers
+       kept in localStorage) the moment the account is known; the live numbers replace them in place. */
+    var SNAPK='mp_dash_snap';
+    function snapGet(){try{var v=JSON.parse(localStorage.getItem(SNAPK)||'null');return (v&&Date.now()-(+v.ts||0)<864e5)?v:null;}catch(e){return null;}}
+    function snapPut(o){try{o.ts=Date.now();localStorage.setItem(SNAPK,JSON.stringify(o));}catch(e){}}
+    var SKEL='<span class="dst sk"><b>&mdash;</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Boards</em><i>loading</i></span>';
+    function ident(m){ var L=m.level||{},col=L.col||'#c2f64a';
+      document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(m.username||'trader')+'</b>';
+      var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';
+      if(m.avatar&&/^data:image\//.test(m.avatar)){av.innerHTML='<img src="'+m.avatar+'" alt="">';}else{av.textContent=(m.username||'M').charAt(0).toUpperCase();}
+      var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;
+      return col; }
+    function quick(){ var m=me(); if(!m||!dash.hidden)return; var sn=snapGet()||{};
+      try{ ident(m); }catch(e){ return; }
+      document.getElementById('dashEye').textContent=sn.eye||'Season';
+      var dq=+sn.day||0;
+      document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<dq?'on':i+1===dq?'on now':'')+'"></i>';}).join('');
+      document.getElementById('dashChips').innerHTML=sn.chips||SKEL;
+      document.getElementById('dashTodo').innerHTML=sn.todo||'<span><i>1</i>Checking your season…</span>';
+      dash.hidden=false; document.body.classList.add('mpa-dash');
+      try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){} }
     function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
     function paint(){
       var m=me(),signed=!!m,sk=(S.pass&&S.pass.season)||(S.goals&&S.goals.season)||null;
@@ -1683,7 +1712,7 @@ body.mpa-authed .hero{display:none}
       }
       document.getElementById('ssRows').innerHTML=rows.join('');
       /* strip */
-      if(signed&&sk){dash.hidden=false;var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+      if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
         document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
         var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
         var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
@@ -1695,9 +1724,14 @@ body.mpa-authed .hero{display:none}
         if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
           ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'—')+'</b><em>Boards</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):'not ranked yet')+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' — $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
         if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
-        document.getElementById('dashChips').innerHTML=ch.join('');
-        document.getElementById('dashTodo').innerHTML=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('')||'<span class="ok"><i>1</i>All caught up — go trade</span>';}
-      else dash.hidden=true;
+        /* keep whatever quick() already drew until real data exists — a fetch that has not answered yet must
+           never blank a card the reader is looking at */
+        var todoH=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('');
+        if(ch.length){document.getElementById('dashChips').innerHTML=ch.join('');}
+        if(sk&&!todoH)todoH='<span class="ok"><i>1</i>All caught up — go trade</span>';
+        if(todoH)document.getElementById('dashTodo').innerHTML=todoH;
+        if(sk&&ch.length)snapPut({eye:eye,day:day,chips:ch.join(''),todo:todoH}); /* next visit paints this instantly */}
+      else {dash.hidden=true;document.body.classList.remove('mpa-dash');} // signed out (or a session that expired behind the cached card): the hero comes back
       /* leading board: green days, top 5 with prizes */
       if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
         board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet — 10 closes and a green season get you on.</div>';}
@@ -1709,7 +1743,9 @@ body.mpa-authed .hero{display:none}
       Promise.all(ps).then(paint);}
     if(window.mpWhenVisible&&document.getElementById('season'))mpWhenVisible(document.getElementById('season'),function(){load(true);});else setTimeout(function(){load(true);},900);
     setTimeout(function(){load(true);},1200); /* the strip sits above the fold: do not wait for the section to scroll into view */
-    window.addEventListener('mp-auth-change',function(){setTimeout(function(){load(true);},400);});
+    /* draw the card NOW from what we already hold, then let the fetches refresh it in place */
+    quick(); var _qt=setInterval(function(){ if(me()){ quick(); clearInterval(_qt); } },80); setTimeout(function(){clearInterval(_qt);},8000); // mp-auth is deferred: poll briefly instead of testing once (the mpEx gotcha)
+    window.addEventListener('mp-auth-change',function(){quick();setTimeout(function(){load(true);},400);});
     window.addEventListener('mp:xp',function(){setTimeout(function(){load(false);},1500);});
     setInterval(function(){if(!document.hidden)load(true);},300000);
   })();
