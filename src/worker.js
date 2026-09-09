@@ -4473,6 +4473,22 @@ function botPresence(env, ctx, request, key, auth, ep) {
     onlogMark(env, ctx, 'a:' + String(key).slice(4, 14), { k: 'api', uid: String(auth.uid), u: auth.un || null, kn: auth.name || null, via: request.headers.get('x-mp-via') === 'mcp' ? 'mcp' : 'rest', la: String(ep || 'other').slice(0, 24), lats: Date.now(), n: Math.max(1, (+auth.limit || 0) - (+auth.remaining || 0)), cc: (request.cf && request.cf.country) || null, ip: String(request.headers.get('cf-connecting-ip') || '').slice(0, 45) || null, e2: (e2 || /^e2e_/i.test(auth.un || '')) ? 1 : 0 });
   } catch (e) {}
 }
+// ── MONEY-CLICK WHITELIST (2026-09-09) ────────────────────────────────────────────────────────────────────────
+// A click-out beacon used to accept ANY label as a partner name, so probe traffic wrote rows like
+// "UNION ALL SELECT NULL..." straight into the Revenue view: MEASURED 126 of ~380 exchange "clicks" in 30 days
+// (33%) were injection strings from one French scanner, and they outranked Bitget and Coinbase in the byEx list.
+// A label now has to resolve to a real partner or the hit never touches a money counter. Canonical names are the
+// ones the site already puts in data-ex, so nothing downstream (ops Revenue, geo, per-page reports) has to change.
+const PARTNERS = {
+  bybit: 'Bybit', binance: 'Binance', okx: 'OKX', bitget: 'Bitget', kraken: 'Kraken', coinbase: 'Coinbase',
+  kucoin: 'KuCoin', mexc: 'MEXC', moon: 'Moon', gate: 'Gate', gateio: 'Gate', 'gate.io': 'Gate',
+  'crypto.com': 'Crypto.com', cryptocom: 'Crypto.com', bingx: 'BingX', phemex: 'Phemex', hyperliquid: 'Hyperliquid',
+  tradingview: 'TradingView', koinly: 'Koinly', '3commas': '3Commas', ledger: 'Ledger', trezor: 'Trezor',
+};
+function partnerOf(label) { // '' when the label is not a partner we actually work with
+  const k = String(label || '').toLowerCase().replace(/[^a-z0-9.]/g, '');
+  return PARTNERS[k] || PARTNERS[k.replace(/\./g, '')] || '';
+}
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
   const okHeaders = { ...CORS };
@@ -4491,7 +4507,10 @@ async function handleTrack(url, request, env, ctx) {
   }
   const p = url.searchParams;
   const type = (p.get('t') || 'event').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
-  const label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
+  let label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
+  // a click-out is a MEASUREMENT, so its label is resolved to a known partner before anything is counted (see PARTNERS)
+  let partner = '';
+  if (type === 'exchange' || type === 'tool') { partner = partnerOf(label); label = partner || 'other'; }
   const inc = (k, ttl) => { try { const B = globalThis.__incB = globalThis.__incB || { m: new Map(), t: Date.now() }; const e = B.m.get(k) || { d: 0, ttl }; e.d++; if (ttl) e.ttl = ttl; B.m.set(k, e); if (B.m.size >= 12 || Date.now() - B.t > 20000) { const batch = B.m; globalThis.__incB = { m: new Map(), t: Date.now() }; if (ctx) ctx.waitUntil(kvIncFlush(env, batch)); } } catch (e) {} }; // A5: batched — one KV RMW per key per ~12 events/20s instead of per event
   // A SIGNED-IN user is a real person (they logged in with email) → always record their per-user activity (powers the
   // admin activity trail AND daily-mission verification), even if their UA looks bot-like. In-app browsers (WhatsApp,
@@ -4624,9 +4643,10 @@ async function handleTrack(url, request, env, ctx) {
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, label, (request.cf && request.cf.country) || '', (p.get('p') || '/').slice(0, 90), _evSrc(p), getCookie(request, 'mp_un') ? 'user' : 'guest'], doubles: [1] }); } catch (e) {} // blob7 = signed in or not (2026-09-04): the guest funnel (how many trade without an account, how many convert) needs the split per day
     if (type === 'exchange' || type === 'tool') { // affiliate click-outs only (exchange = Bybit/Binance/…, tool = TradingView/Koinly/3Commas). NOT 'hotpair' — Trending now opens Paper Trade, it is not a money click.
       const d2 = new Date().toISOString().slice(0, 10);
-      await inc('aff:total'); await inc('aff:day:' + d2, 3456000);        // affiliate-click totals + daily series
+      if (partner) { await inc('aff:total'); await inc('aff:day:' + d2, 3456000); }   // affiliate-click totals + daily series — REAL partners only
+      else await inc('aff:junk');                                                     // an unknown label: counted apart so the noise stays visible without polluting revenue
     }
-    if (type === 'exchange') await inc('xpath:' + (p.get('p') || '/').slice(0, 48)); // which page/tool drove this exchange link-out (revenue path)
+    if (type === 'exchange' && partner) await inc('xpath:' + (p.get('p') || '/').slice(0, 48)); // which page/tool drove this exchange link-out (revenue path)
     // Signed-in trade beacons are DROPPED from the ring since 2026-09-06: the UserStore now writes the authoritative open/close/
     // sltp/order rows itself (every path — site, bot, MCP, sweep), so the client copy would only duplicate them. Guests keep
     // theirs: a guest's journal never reaches the server, the beacon is the only record he leaves.
@@ -4646,7 +4666,7 @@ async function handleTrack(url, request, env, ctx) {
           }
         }
         kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), di: evAct.di, ip: evAct.ip, ...(evAct.e2 ? { e2: 1 } : {}), ...(evAct.uid ? { uid: evAct.uid } : {}), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, EVLOG_CAP, EVLOG_CUT); // A5 batched (cap aligned with evPush)
-        if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
+        if (type === 'exchange' && partner) { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { await opslogPush(env, 'mclog', { ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9, src: _evSrc(p) }, 50, 0); } catch (e) {}
         }
       } catch (e) {}
@@ -5241,7 +5261,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=2eb1eb08" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9544b750" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13991,6 +14011,9 @@ export default {
     if (url.pathname === '/api/bot' || url.pathname.startsWith('/api/bot/')) return handleBot(url, request, env, ctx);
     if (url.pathname.startsWith('/api/trade/')) return perfWrap(env, ctx, url.pathname.indexOf('/open') > 0 ? 'trade-open' : 'trade-other', 1, () => handleTrade(url, request, env, ctx)); // P0 server-side trading (session auth) — every fill is timed for MarginPad Health
     if (url.pathname === '/api/tshare') return handleTshare(url, request, env, ctx); // shareable ticket snapshots (chat `trade:<id>` links)
+    if (url.pathname === '/api/geo') { // the visitor's country, nothing else (2026-09-09): the partner cards order themselves by where the reader actually is. No DO, no KV — request.cf only; private cache so the edge never shares one country with everybody.
+      return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=3600', ...CORS } });
+    }
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
@@ -14096,25 +14119,38 @@ export default {
     }
     if (url.pathname === '/api/admin/revenue' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Revenue tab: affiliate clicks by day/exchange/page (AE) + exchange sign-ups; edge-cached 120s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const ck = new Request('https://marginpad.io/__adm_revenue_v4');
+      const ck = new Request('https://marginpad.io/__adm_revenue_v5'); // v5 (2026-09-09): every panel is folded from partner-keyed rows and junk labels are dropped at read time
       // latest money clicks are read fresh on EVERY call (one KV get) and appended to the cached AE core
       let mclicks = [];
-      try { mclicks = ((await ringRead(env, ['mclog'])).rings.mclog || []).slice(0, 30); } catch (e) {}
-      if (!mclicks.length) try { const ev = (await ringRead(env, ['evlog'], { n: 800 })).rings.evlog || []; mclicks = ev.filter(x => x && x.t === 'exchange').sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: x.e || '', p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
+      // the ring still holds rows written before the whitelist (2026-09-09) — resolve every label here too, so the
+      // owner's "latest money clicks" list can never show a scanner's payload as a partner
+      try { mclicks = ((await ringRead(env, ['mclog'])).rings.mclog || []).filter(x => x && partnerOf(x.e)).map(x => Object.assign({}, x, { e: partnerOf(x.e) })).slice(0, 30); } catch (e) {}
+      if (!mclicks.length) try { const ev = (await ringRead(env, ['evlog'], { n: 800 })).rings.evlog || []; mclicks = ev.filter(x => x && x.t === 'exchange' && partnerOf(x.e)).sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: partnerOf(x.e), p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
       const withClicks = (txt) => { try { const core = JSON.parse(txt); core.clicks = mclicks; return JSON.stringify(core); } catch (e) { return txt; } };
       try { const hit = await caches.default.match(ck); if (hit) return new Response(withClicks(await hit.text()), { headers: jh2 }); } catch (e) {}
-      const [byDayEx, byPage, byEx, byCc, bySrc, pvBySrc] = await Promise.all([
+      // Every panel is grouped WITH the partner name so junk labels can be dropped here as well — the AE rows written before
+      // the whitelist (2026-09-09) are permanent, and a third of them were injection strings from one scanner. Folding by
+      // partnerOf() keeps the historical view honest without touching the data.
+      const [byDayEx, byPageEx, byEx, byCcEx, bySrcEx, pvBySrc] = await Promise.all([
         aeQuery(env, "SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS d, blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY d, ex ORDER BY d"),
-        aeQuery(env, "SELECT blob5 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY path ORDER BY n DESC LIMIT 12"),
-        aeQuery(env, "SELECT blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY ex ORDER BY n DESC LIMIT 14"),
-        aeQuery(env, "SELECT blob4 AS cc, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY cc ORDER BY n DESC LIMIT 40"),
-        aeQuery(env, "SELECT blob6 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY src ORDER BY n DESC LIMIT 20"),
+        aeQuery(env, "SELECT blob5 AS path, blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY path, ex ORDER BY n DESC LIMIT 200"),
+        aeQuery(env, "SELECT blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY ex ORDER BY n DESC LIMIT 60"),
+        aeQuery(env, "SELECT blob4 AS cc, blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY cc, ex ORDER BY n DESC LIMIT 300"),
+        aeQuery(env, "SELECT blob6 AS src, blob3 AS ex, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='exchange' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY src, ex ORDER BY n DESC LIMIT 200"),
         aeQuery(env, "SELECT blob4 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY src ORDER BY n DESC LIMIT 20"),
       ]);
+      let junk = 0;
+      const fold = (rows, key) => { const m = new Map(); (rows || []).forEach(r => { const ex = partnerOf(r.ex); const n = +r.n || 0; if (!ex) { junk += n; return; } const k = String(r[key] == null ? '' : r[key]); m.set(k, (m.get(k) || 0) + n); }); return Array.from(m.entries()).map(([k, n]) => ({ [key]: k, n })).sort((a, b2) => b2.n - a.n); };
+      const byPage = fold(byPageEx, 'path').slice(0, 12);
+      const byCc = fold(byCcEx, 'cc').slice(0, 40);
+      const bySrc = fold(bySrcEx, 'src').slice(0, 20);
+      const byExClean = (byEx || []).map(r => ({ ex: partnerOf(r.ex), n: +r.n || 0 })).filter(r => r.ex);
+      { const m = new Map(); byExClean.forEach(r => m.set(r.ex, (m.get(r.ex) || 0) + r.n)); byExClean.length = 0; m.forEach((n, ex) => byExClean.push({ ex, n })); byExClean.sort((a, b2) => b2.n - a.n); }
+      const byDayClean = (byDayEx || []).map(r => ({ d: r.d, ex: partnerOf(r.ex), n: +r.n || 0 })).filter(r => r.ex);
       const pvMap = {}; (pvBySrc || []).forEach(r => { pvMap[String(r.src || '')] = +r.n || 0; });
-      const srcRows = (bySrc || []).map(r => { const s = String(r.src || ''); const pv = pvMap[s] || 0; const n = +r.n || 0;
+      const srcRows = bySrc.map(r => { const s = String(r.src || ''); const pv = pvMap[s] || 0; const n = +r.n || 0;
         return { src: s || '(before tracking)', clicks: n, pv, ctr: pv ? Math.round(n / pv * 1000) / 10 : null }; });
-      const body = JSON.stringify({ ae: !!byDayEx, byDayEx: byDayEx || [], byPage: byPage || [], byEx: byEx || [], byCc: byCc || [], bySrc: srcRows, usdPerClick: 0.45 });
+      const body = JSON.stringify({ ae: !!byDayEx, byDayEx: byDayClean, byPage, byEx: byExClean, byCc, bySrc: srcRows, junk, usdPerClick: 0.45 });
       if (byDayEx && byEx) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } })); } catch (e) {} // never cache an AE failure — it would pin an empty tab for 2 min
       return new Response(withClicks(body), { headers: jh2 });
     }

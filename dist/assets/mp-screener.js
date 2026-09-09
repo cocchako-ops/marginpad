@@ -150,7 +150,19 @@
     {n:'Kraken',c:'#7b5cff',fg:'#ffffff',u:function(s){return 'https://invite.kraken.com/JDNW/guj2tf28';}},
     {n:'Crypto.com',c:'#0b2e7a',fg:'#ffffff',u:function(s){return 'https://crypto.com/app/sdf5hb6rkv';}}
   ];
-  function exchHtml(sym){return '<div class="scr-exch-h">Trade '+sym+'USDT</div>'+SCR_EXCH.map(function(x){return '<a class="scr-exch-a" href="'+x.u(sym)+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">Trade &rarr;</span></a>';}).join('');}
+  /* The venue list for one coin, in the order that fits the reader (2026-09-09). Ranking + referral URLs come from the
+     shared partner table (window.mpEx in mp-auth.js) so this sheet can never drift from the homepage or the terminal;
+     SCR_EXCH stays as the fallback when that bundle has not parsed yet. Deep links to the exact pair were already here —
+     that is why this sheet converts ~5x better per pageview than the terminal did. */
+  function exchHtml(sym){
+    var list=SCR_EXCH.slice(),cc='',E=window.mpEx;
+    if(E){try{cc=E.ccNow();var pos={};E.rank(cc).forEach(function(n,i){pos[n]=i;});
+      var key=function(x){return (E.blocked(x.n,cc)?1000:0)+(pos[x.n]!=null?pos[x.n]:500);};
+      list=list.map(function(x,i){return {x:x,i:i,k:key(x)};}).sort(function(a,b){return a.k-b.k||a.i-b.i;}).map(function(o){return o.x;});}catch(e){}}
+    var reg=(E&&cc)?E.region(cc):'';
+    return '<div class="scr-exch-h">Trade '+sym+'USDT</div>'+list.map(function(x){
+      var off=E?E.blocked(x.n,cc):false, href=(E&&E.url(x.n,sym))||x.u(sym);
+      return '<a class="scr-exch-a'+(off?' mp-ex-off':'')+'" href="'+href+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">'+(off?('Not in '+(reg||'your country')):'Trade &rarr;')+'</span></a>';}).join('');}
   function cgBn(x){if(x==null||!isFinite(x))return '—';var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function cgHtml(d){if(!d||d.error)return '';var fund=(d.funding!=null&&isFinite(d.funding))?((d.funding>=0?'+':'')+d.funding.toFixed(4)+'%'):'—';var oiCh=(d.oiChg24h!=null&&isFinite(d.oiChg24h))?((d.oiChg24h>=0?'+':'')+d.oiChg24h.toFixed(2)+'%'):'';var lp=(d.longPct!=null)?d.longPct:50,sp=(d.shortPct!=null)?d.shortPct:50;
  return '<div class="scr-live"><div class="scr-live-h">Live derivatives <span>· MarginPad · real-time</span></div>'
@@ -168,6 +180,8 @@
       +(_xl&&_xl.liq>0?'<a class="scr-act" style="color:#ff8a80" href="/rekt/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'+fmtBig(_xl.liq)+' liquidated in 24h — watch live →</a>':'');
     // copy-trade prefill is intentionally OFF (owner's choice): just open the coin; the full setup (recommended leverage / SL / TP) stays visible on the screener sheet to read.
     var exb=document.getElementById('scrExch');if(exb)exb.innerHTML=exchHtml(sym);
+    // the country lands within a few hundred ms on a first-ever visit; repaint the venue list once it does
+    if(window.mpEx&&!window.mpEx.ccNow())try{window.mpEx.cc(function(){var b2=document.getElementById('scrExch');if(b2&&curRow===e)b2.innerHTML=exchHtml(sym);});}catch(e2){}
     var lb=document.getElementById('scrLive');if(lb){lb.innerHTML='<div class="scr-live-load">Loading live derivatives data…</div>';fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
     // copy-trade to Paper Trade is turned off — the Paper Trade action is a disabled "Soon" item for now
     sheet.classList.add('on');}

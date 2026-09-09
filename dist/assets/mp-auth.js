@@ -2152,3 +2152,157 @@
     if (block(e.target, dy)) e.preventDefault();
   }, { passive: false });
 })();
+
+/* ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PARTNER LAYER (2026-09-09) — one table for every surface that links out to an exchange, and the only place a
+   referral URL is built. Lives here because mp-auth.js is the one bundle on EVERY page (same exception as
+   window.mpOrders); home.js, mp-trade.js, mp-screener.js, mp-calc.js and the bento homepage all consume it.
+
+   Why it exists (measured over 30 days):
+     - the cards were in the SAME order for everyone, so a visitor in the US was shown Bybit and Binance first —
+       neither onboards US retail. 17 US clicks went almost entirely to venues that cannot accept them.
+     - the terminal is where intent is highest and it had NO link at all: /paper-trade converted 6 money clicks per
+       1,000 pageviews against 64 on the homepage.
+   What it does NOT do: no popups, no timers, no interstitials. It reorders cards that are already on the page and
+   adds one dismissible line to a winning ticket.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  var U = function (s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); };
+  // ref = the plain sign-up link; deep(sym) = the exact pair, which is the whole point of linking from a chart or a
+  // ticket. usOk = the venue onboards US retail (documented restriction, not a guess) — the rest go last there.
+  var P = {
+    Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://www.bybit.com/invite?ref=LZKBERJ', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }, perk: 'fee discount' },
+    Binance: { c: '#f0b90b', no: 'US,CA', ref: 'https://www.binance.com/register?ref=MAOZM9DS', deep: function (s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }, perk: '20% off fees' },
+    Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?c=moonkickstart', deep: null, perk: '24/7 markets' },
+    Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
+    MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
+    OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: function (s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }, perk: 'pro tools' },
+    Gate: { c: '#3361ff', no: 'US', ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103', deep: function (s) { return 'https://www.gate.com/futures/USDT/' + s + '_USDT?ref=VFIWB10KUG'; }, perk: 'early listings' },
+    KuCoin: { c: '#23af91', no: 'US', ref: 'https://www.kucoin.com/r/rf/VHP8AYKY', deep: function (s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }, perk: 'altcoins' },
+    Kraken: { c: '#7b5cff', no: '', ref: 'https://invite.kraken.com/JDNW/guj2tf28', deep: null, perk: 'regulated' },
+    Coinbase: { c: '#0052ff', no: '', ref: 'https://base.app/invite/chakko/FHSFNY5H', deep: null, perk: 'US-regulated' },
+    'Crypto.com': { c: '#0b2e7a', no: '', ref: 'https://crypto.com/app/sdf5hb6rkv', deep: null, perk: 'easy fiat' }
+  };
+  var REGION = { US: 'the US', CA: 'Canada' };
+  // Display order per region. Outside the US this is OUR OWN measured click order (30 days: NG Bybit 70 / Moon 23 /
+  // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) — not an opinion about quality.
+  var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
+  var ORD = {
+    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
+    ca: ['Kraken', 'Coinbase', 'Bybit', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
+    west: ['Binance', 'Bybit', 'Kraken', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
+    def: ['Bybit', 'Binance', 'Moon', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
+  };
+  function group(cc2) { cc2 = String(cc2 || '').toUpperCase(); if (cc2 === 'US') return 'us'; if (cc2 === 'CA') return 'ca'; return WEST.indexOf(cc2) >= 0 ? 'west' : 'def'; }
+
+  var _cc = null, _waiting = null;
+  function readCc() { try { var v = JSON.parse(localStorage.getItem('mp_cc') || 'null'); if (v && v.cc && Date.now() - (+v.ts || 0) < 864e5) return v.cc; } catch (e) {} return null; }
+  // one tiny request per browser per day (no DO, no KV on the worker side); everything downstream is a no-op until it lands
+  function cc(cb) {
+    if (_cc === null) _cc = readCc();
+    if (_cc) { cb(_cc); return; }
+    if (_waiting) { _waiting.push(cb); return; }
+    _waiting = [cb];
+    var done = function (v) { _cc = v || ''; try { localStorage.setItem('mp_cc', JSON.stringify({ cc: _cc, ts: Date.now() })); } catch (e) {} var q = _waiting || []; _waiting = null; q.forEach(function (f) { try { f(_cc); } catch (e) {} }); };
+    try { fetch('/api/geo', { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (d) { done(d && d.cc); }).catch(function () { done(''); }); } catch (e) { done(''); }
+  }
+
+  var mpEx = {
+    P: P,
+    cc: cc,
+    ccNow: function () { if (_cc === null) _cc = readCc(); return _cc || ''; },
+    rank: function (country) { var g = group(country); return (ORD[g] || ORD.def).slice(); },
+    // a venue that does not onboard this country at all — a documented restriction, so the card goes last and says so
+    blocked: function (name, country) { var p = P[name], c = String(country || '').toUpperCase(); return !!(p && c && p.no && (',' + p.no + ',').indexOf(',' + c + ',') >= 0); },
+    region: function (country) { return REGION[String(country || '').toUpperCase()] || ''; },
+    url: function (name, sym) { var p = P[name]; if (!p) return ''; var s = U(sym); return (s && p.deep) ? p.deep(s) : p.ref; },
+    best: function (sym, country) { var c = country == null ? mpEx.ccNow() : country; var o = mpEx.rank(c); for (var i = 0; i < o.length; i++) { if (!mpEx.blocked(o[i], c)) return o[i]; } return 'Bybit'; },
+    track: function (name) { try { if (window.__mpTrack) window.__mpTrack('exchange', name); } catch (e) {} }
+  };
+  window.mpEx = mpEx;
+
+  function css() {
+    if (document.getElementById('mpex-css')) return;
+    var st = document.createElement('style'); st.id = 'mpex-css';
+    st.textContent = '.mp-ex-off{opacity:.5;filter:saturate(.3)}.mp-ex-na{display:block;font:700 9.5px/1.3 "Space Mono",ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:#8b97a5;margin-top:5px}'
+      + '.mp-gl{position:relative;display:flex;align-items:center;gap:9px;margin-top:10px;padding:9px 34px 9px 11px;border-radius:11px;background:linear-gradient(96deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);border-left:3px solid var(--mpgl,#f7a600);text-decoration:none;overflow:hidden}'
+      + '.mp-gl::after{content:"";position:absolute;inset:0;background:linear-gradient(96deg,var(--mpgl,#f7a600),transparent 62%);opacity:.07;pointer-events:none}'
+      + '.mp-gl:hover{border-color:rgba(255,255,255,.2)}.mp-gl:hover .mp-gl-go{transform:translateX(3px)}'
+      + '.mp-gl-d{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--mpgl,#f7a600);box-shadow:0 0 10px -1px var(--mpgl,#f7a600)}'
+      /* wraps instead of clipping: the drawer is ~360px wide and an ellipsis ate the venue name, which is the one word that matters */
+      + '.mp-gl-t{flex:1;min-width:0;font:600 12px/1.45 "Familjen Grotesk",system-ui,sans-serif;color:#c9d2dc;white-space:normal;overflow-wrap:anywhere}'
+      + '.mp-gl-t b{color:#eef3f8;font-weight:800}.mp-gl-t i{font-style:normal;color:var(--mpgl,#f7a600);font-weight:800}'
+      + '.mp-gl-go{flex:0 0 auto;color:var(--mpgl,#f7a600);font-weight:800;font-size:13px;transition:transform .18s}'
+      + '.mp-gl-x{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;line-height:1;border:0;background:none;color:#6d7986;font-size:14px;cursor:pointer;border-radius:7px}'
+      + '.mp-gl-x:hover{color:#c9d2dc;background:rgba(255,255,255,.06)}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+  window.mpExCss = css;
+
+  /* Reorder the partner cards already on the page. Only touches nodes matching `sel` inside `root`, so a hero card
+     that spans the grid (the Moon panel on the homepage) is never moved and the layout cannot break. */
+  window.mpExArrange = function (root, sel, onEach) {
+    try {
+      var box = (typeof root === 'string') ? document.querySelector(root) : root;
+      if (!box) return;
+      var items = Array.prototype.slice.call(box.querySelectorAll(sel || '[data-ex]'));
+      if (items.length < 2) return;
+      cc(function (country) {
+        if (!country || !document.body.contains(box)) return;
+        css();
+        var ord = mpEx.rank(country), pos = {};
+        ord.forEach(function (n, i) { pos[n] = i; });
+        // CSS order on a grid/flex container: nothing is detached, so a hero card that spans cells and any listener
+        // bound to a card both survive. Only a plain container falls back to moving nodes.
+        var disp = ''; try { disp = getComputedStyle(box).display || ''; } catch (e) {}
+        var useOrder = disp.indexOf('grid') >= 0 || disp.indexOf('flex') >= 0;
+        var deco = items.map(function (el, i) { var n = el.getAttribute('data-ex') || ''; var off = mpEx.blocked(n, country); return { el: el, i: i, n: n, off: off, k: (off ? 1000 : 0) + (pos[n] != null ? pos[n] : 500) }; });
+        var sorted = deco.slice().sort(function (a, b) { return a.k - b.k || a.i - b.i; });
+        // orders start at 1 so a hero card the caller did not select (the Moon panel spanning the homepage grid) keeps its place at 0
+        if (useOrder) sorted.forEach(function (x, i) { try { x.el.style.order = String(i + 1); } catch (e) {} });
+        else { var anchor = items[items.length - 1].nextSibling; sorted.forEach(function (x) { box.insertBefore(x.el, anchor); }); }
+        var reg = mpEx.region(country); // '' outside the countries where we can state a restriction as fact
+        deco.forEach(function (x) {
+          if (x.off) x.el.classList.add('mp-ex-off');
+          // the caller gets the card first and returns true when it has said "not here" in its own markup — the default
+          // note is only added when nobody else did, so the message can never appear twice on one card
+          var labelled = false;
+          if (typeof onEach === 'function') { try { labelled = onEach(x.el, x.n, x.off, country, reg, sorted.indexOf(x)) === true; } catch (e) {} }
+          if (x.off && !labelled && !x.el.querySelector('.mp-ex-na')) { var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + (reg || 'your country'); x.el.appendChild(s); }
+        });
+      });
+    } catch (e) {}
+  };
+
+  /* One line under the newest WINNING closed ticket: the same pair, on the venue that fits this reader.
+     Shown on one ticket at a time, dismissible for 7 days. Never a popup, never over the chart. */
+  var GLX = 'mp_golive_x';
+  window.mpGoLive = function (t) {
+    try {
+      if (!t || !((+t.pnl) > 0) || !((+t.margin) > 0)) return '';
+      var x = 0; try { x = +localStorage.getItem(GLX) || 0; } catch (e) {}
+      if (Date.now() - x < 6048e5) return '';
+      var sym = U(t.sym); if (!sym) return '';
+      var name = mpEx.best(sym), p = P[name]; if (!p) return '';
+      var roe = (+t.pnl) / (+t.margin) * 100;
+      var pct = (roe >= 100 ? Math.round(roe) : roe.toFixed(1)) + '%';
+      css();
+      return '<a class="mp-gl" style="--mpgl:' + p.c + '" data-mpex="' + name + '" href="' + mpEx.url(name, sym) + '" target="_blank" rel="sponsored noopener noreferrer">'
+        + '<span class="mp-gl-d"></span>'
+        + '<span class="mp-gl-t"><i>+' + pct + '</i> on paper &mdash; trade <b>' + sym + '</b> for real on <b>' + name + '</b>' + (p.perk ? ', ' + p.perk : '') + '</span>'
+        + '<span class="mp-gl-go">&rarr;</span>'
+        + '<button type="button" class="mp-gl-x" data-mpex-x="1" aria-label="Hide this">&#10005;</button></a>';
+    } catch (e) { return ''; }
+  };
+
+  // one delegated handler for everything this module renders: the dismiss button, and the click-out measurement
+  document.addEventListener('click', function (e) {
+    try {
+      var x = e.target.closest && e.target.closest('[data-mpex-x]');
+      if (x) { e.preventDefault(); e.stopPropagation(); try { localStorage.setItem(GLX, String(Date.now())); } catch (e2) {} var row = x.closest('.mp-gl'); if (row && row.parentNode) row.parentNode.removeChild(row); return; }
+      var a = e.target.closest && e.target.closest('[data-mpex]');
+      if (a) mpEx.track(a.getAttribute('data-mpex'));
+    } catch (e3) {}
+  }, true);
+})();

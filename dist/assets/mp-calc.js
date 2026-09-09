@@ -40,6 +40,7 @@
     a.className = 'excard';
     a.style.setProperty('--exc', ex.accent);
     a.setAttribute('href', ex.href);   // setAttribute keeps & params literal
+    a.setAttribute('data-ex', ex.name); // the shared partner layer (mp-auth.js) reads this to order the grid by country
     a.target = '_blank';
     a.rel = 'sponsored noopener noreferrer';
     a.innerHTML =
@@ -50,6 +51,9 @@
       + '<span class="exgo" data-i18n="exTrade">Trade →</span>';
     exgrid.appendChild(a);
   });
+  // Order the cards for the reader's country and mark the venues that cannot onboard them (shared table in mp-auth.js).
+  // This bundle is deferred AHEAD of mp-auth.js in the shell, so wait for the layer rather than testing for it once.
+  if (exgrid) { let _n = 0; const _t = setInterval(() => { if (!window.mpExArrange) { if (++_n > 80) clearInterval(_t); return; } clearInterval(_t); window.mpExArrange(exgrid, '.excard'); }, 100); }
 
   document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected','false'));

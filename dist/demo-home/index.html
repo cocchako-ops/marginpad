@@ -1964,19 +1964,22 @@ body.mpa-authed .hero{display:none}
     try{var _ms='';try{_ms=sessionStorage.getItem('mp_src')||'';if(!_ms){var _f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(_f0&&_f0.s&&(Date.now()-(+_f0.ts||0))<=7776e6)_ms=String(_f0.s);}}catch(e8){}
       navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname)+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
 
-  // ---- geo-aware exchange cards: US/CA visitors see US-legal venues first (Bybit/Binance/OKX geoblock them) ----
-  try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){
-    var cc=(g&&g.cc)||'';var RESTRICT={US:1,CA:1};if(!RESTRICT[cc])return;
-    var grid=document.querySelector('.exch-grid');if(!grid)return;
-    var LEGAL={Kraken:1,Coinbase:1};var region=cc==='CA'?'Canada':'the US';
-    Array.prototype.forEach.call(grid.querySelectorAll('a.exs'),function(a){
-      var ex=a.getAttribute('data-ex');var tag=a.querySelector('.exs-tag');
-      if(LEGAL[ex]){a.style.order='-1';a.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+region;tag.style.color='var(--exc)';}}
-      else{a.style.order='9';a.style.opacity='.5';if(tag)tag.textContent='Not in '+region;}
-    });
-    var eb=grid.querySelector('.exbig');if(eb)eb.style.order='-2';
-    var sub=document.querySelector('.band .band-s');if(sub&&sub.innerHTML.indexOf('available in')<0)sub.innerHTML='Showing exchanges available in '+region+' first. '+sub.innerHTML;
-  }).catch(function(){});}catch(e){}
+  /* Exchange cards in the order that fits the reader (2026-09-09). The ranking, the referral URLs and the
+     "not available here" rule all live in ONE place — window.mpEx / mpExArrange in mp-auth.js — so the homepage,
+     the terminal ticket, the screener sheet and the calculators grid can never drift apart. This block only adds
+     the homepage's own dressing: the halo + tag on the top card and one line in the band subtitle, and only where
+     a restriction is a documented fact (US, CA). Everywhere else the cards are simply reordered, nothing is said.
+     NOTE: this used to fetch /api/geo directly and the endpoint did not exist — it was dead code for weeks. */
+  /* mp-auth.js is DEFERRED, this block runs at parse time — so wait for the shared layer instead of testing for it once
+     (the first version tested once, found nothing, and silently did nothing at all). */
+  try{(function(){var n=0,t=setInterval(function(){if(!window.mpExArrange){if(++n>80)clearInterval(t);return;}clearInterval(t);mpArrangeHome();},100);})();}catch(e){}
+  function mpArrangeHome(){window.mpExArrange('.exch-grid','a.exs',function(el,name,off,cc,reg,idx){
+    var tag=el.querySelector('.exs-tag');
+    if(off){if(tag){tag.textContent='Not in '+(reg||'your country');tag.style.color='#8b97a5';return true;}return false;} /* true = this card is already labelled, skip the shared note */
+    if(reg&&idx===0){el.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+reg;tag.style.color='var(--exc)';}
+      var bnd=el.closest?el.closest('.band'):null,sub=bnd?bnd.querySelector('.band-s'):null; /* THIS band, not the first one on the page */
+      if(sub&&sub.innerHTML.indexOf('available in')<0)sub.innerHTML='Showing exchanges available in '+reg+' first. '+sub.innerHTML;}
+  });}
 
   // ---- real 24h liquidation total on the Rekt tile ----
   fetch('/api/cg/liquidations').then(function(r){return r.json();}).then(function(d){
@@ -2053,9 +2056,9 @@ body.mpa-authed .hero{display:none}
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=7c1114a2"></script>
-<script defer src="/assets/mp-auth.js?v=686dae84"></script>
-<script defer src="/assets/mp-nav.js?v=2eb1eb08"></script>
+<script defer src="/assets/mp-trade.js?v=1e6a6e2d"></script>
+<script defer src="/assets/mp-auth.js?v=a6ab88bb"></script>
+<script defer src="/assets/mp-nav.js?v=9544b750"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
