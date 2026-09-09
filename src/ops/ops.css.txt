@@ -29,6 +29,7 @@ a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}butto
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px;min-width:0}.card h2{margin:0 0 10px;font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}.card h2 span{font-weight:500;letter-spacing:0;text-transform:none;color:var(--faint);margin-left:8px}.card h2 .r{margin-left:auto}.card h2{display:flex;align-items:center;gap:8px}
 .line{font-size:13px;color:var(--dim);line-height:1.7}.line b{color:var(--ink);font-family:var(--mono)}.up{color:#7fe7bd}.dn{color:#ff8a80}
 .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);min-width:0}.row:last-child{border-bottom:none}.row .who{font-weight:700;color:var(--ink);white-space:nowrap}.row .meta{color:var(--faint);font-size:12px;white-space:nowrap}.row .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .mono{font-family:var(--mono);font-size:12.5px}
+.btn.wide{display:block;width:100%;text-align:center;padding:11px 12px;color:var(--ink)}
 .btn{background:#151a22;border:1px solid var(--line2);border-radius:9px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap}.btn:hover{border-color:#3a4450}.btn.sm{padding:5px 9px;font-size:11.5px}.btn.lime{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}.btn.red{background:rgba(255,90,77,.12);color:#ff9d95;border-color:rgba(255,90,77,.45)}.btn:disabled{opacity:.5;cursor:default}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chip{background:#0a0d12;border:1px solid var(--line2);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer}.chip.on{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
 .badge{display:inline-block;font:700 10px var(--mono);letter-spacing:.06em;border-radius:6px;padding:2px 6px;border:1px solid var(--line2);color:var(--dim)}.badge.ok{color:#7fe7bd;border-color:rgba(46,189,133,.4)}.badge.red{color:#ff9d95;border-color:rgba(255,90,77,.45)}.badge.amber{color:#ffcf8a;border-color:rgba(255,179,71,.45)}.badge.lime{color:var(--lime);border-color:rgba(194,246,74,.4)}
@@ -129,6 +130,31 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
   .bar .in{min-width:120px}.line{overflow-wrap:anywhere}.kvgrid .v{overflow-wrap:anywhere}
   .acfeed .row.ev{flex-wrap:wrap;row-gap:2px}
 }
+/* ── PHONE PASS 2026-09-10 (owner: "make it nicer and clearer, especially on the phone") ──────────────
+   Measured at 390px before: the Today attention strip put two alerts on one flex row so both wrapped mid-sentence
+   with the separators dangling; tile sub-labels wrapped into the number; and People > Activity - the view read
+   every day - opened with ~370px of filter chips before the first row, then rendered 800 rows for a 58,000px page. */
+@media(max-width:760px){
+  /* one alert per row: a count, then the sentence. Two per row is what made them read as broken text. */
+  .attnbar{flex-direction:column}.attnbar .al{display:block;width:100%;line-height:1.45;padding:9px 12px}
+  .attnbar .al b{flex:0 0 auto}
+  /* the tile sub-label gets its own line instead of running into the big number */
+  .tile .v small{display:block;margin-left:0;margin-top:3px;line-height:1.3}
+  /* Activity: the filter block folds behind one summary row and opens on tap (chips stay chips - a native select
+     is the one control the owner cannot use). */
+  .acfil .acsum{display:flex;align-items:center;gap:8px;width:100%;cursor:pointer;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;color:var(--ink);font:700 12.5px var(--mono);min-height:40px}
+  .acfil .acsum .meta{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .acfil .acsum i{margin-left:auto;font-style:normal;color:var(--faint)}
+  .acfil.fold>*:not(.acsum){display:none}
+  .acfil{gap:6px}
+  /* a card header is a title and a note, not three ragged columns: on a phone the note drops to its own line */
+  .card h2{flex-wrap:wrap;row-gap:2px}
+  .card h2 span{margin-left:0;flex:1 1 100%;line-height:1.35}
+  .card h2 .r{margin-left:0}
+  /* the tile sub reads as one short line under the number */
+  .tile .l{line-height:1.35}
+}
+@media(min-width:761px){.acfil .acsum{display:none}}
 @media(max-width:560px){ /* a real phone: cards one under another (two 170px columns cannot hold a row with buttons); tiles stay paired */
   .g2,.g3{grid-template-columns:minmax(0,1fr)}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g4>.card{grid-column:1 / -1}.acfeed .row.ev .grow{flex:1 1 100%;order:5;white-space:normal;overflow:visible;text-overflow:clip;padding-left:0;font-size:12.5px;line-height:1.4}.acfeed .row.ev .who{max-width:46vw;overflow:hidden;text-overflow:ellipsis}.acfeed .row.ev>.meta:last-child{margin-left:auto}
 }

@@ -359,7 +359,7 @@
         return '<div class="sup-row ' + (st.sel === c.conv ? 'on' : '') + '" data-conv="' + esc(c.conv) + '"><span class="sup-av">' + esc(nm.slice(0, 1).toUpperCase()) + '</span><span class="sup-b"><b>' + esc(nm) + (wait ? ' <i class="sup-dot" title="waiting for a reply"></i>' : '') + (isNew ? ' <span class="badge lime" title="arrived since your last visit">NEW</span>' : '') + (nth > 1 ? ' <span class="badge" title="this person has ' + nth + ' threads - click to see them all" data-em="' + esc(nm) + '">' + nth + ' threads</span>' : '') + (hasImg ? ' <span class="badge" title="has a screenshot">img</span>' : '') + '</b><span>' + esc((l.body || c.title || '').replace(/\s+/g, ' ').slice(0, 64)) + '</span></span><span class="sup-m">' + c.messages.length + ' msg<br>' + (wait ? '<span class="' + wcls + '" title="waiting since ' + esc(dtFull(c.lastInTs || c.lastTs)) + '">' + fdur(waitMs) + ' waiting</span>' : agoT(c.lastTs) + ' ago') + '</span></div>'; };
       var stale = st.tab === 'open' && !st.q ? staleAnswered() : [];
       $('supList').innerHTML = (stale.length ? '<div class="line" style="font-size:12px;margin-bottom:8px"><button class="btn sm" id="supBulk">Close ' + stale.length + ' answered, idle 14+ days</button></div>' : '') + (aff.length ? '<div class="sup-sec">Affiliate / creator inbox</div>' + aff.map(row).join('') : '') + (rest.length ? (aff.length ? '<div class="sup-sec">Support</div>' : '') + rest.map(row).join('') : '') + (!list.length ? '<div class="empty">nothing here</div>' : '');
-      el.querySelectorAll('[data-conv]').forEach(function (r) { r.onclick = function (e) { var em = e.target.closest && e.target.closest('[data-em]'); if (em) { st.q = em.getAttribute('data-em').toLowerCase(); st.tab = 'open'; frame(); $('supQ').value = st.q; paintList(); return; } st.sel = r.getAttribute('data-conv'); st.compose = false; paintList(); paintThread(); showPane('thread'); }; });
+      el.querySelectorAll('[data-conv]').forEach(function (r) { r.onclick = function (e) { var em = (innerWidth > 760) && e.target.closest && e.target.closest('[data-em]'); if (em) { st.q = em.getAttribute('data-em').toLowerCase(); st.tab = 'open'; frame(); $('supQ').value = st.q; paintList(); return; } st.sel = r.getAttribute('data-conv'); st.compose = false; paintList(); paintThread(); showPane('thread'); }; });
       var bulk = $('supBulk'); if (bulk) bulk.onclick = function () { var s = staleAnswered(); if (!confirm('Close ' + s.length + ' threads where we answered and the user has been silent for 14+ days? They can be reopened.')) return; bulk.disabled = true; var i = 0; (function next() { if (i >= s.length) { toast('closed ' + s.length); load(); loadTop(); return; } post('/api/reward/support/close', { conv: s[i++].conv }).then(next).catch(next); })(); };
     }
     function paintThread() {
@@ -863,13 +863,15 @@
     var lastPvTs = {};
     function prep(rows) { lastPvTs = {}; var asc = rows.slice().sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); }); asc.forEach(function (e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; lastPvTs[k] = e.ts; }); }
     function prepOne(e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; if (e.ts > prev) lastPvTs[k] = e.ts; }
-    var data = null, rendered = {}, MAXROWS = 800, onlineN = 0, paused = false, pending = [], lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
+    var PH = (innerWidth <= 760); // phone: fewer rows, folded filters, no hover wording
+    var data = null, rendered = {}, MAXROWS = (PH ? 150 : 800), onlineN = 0, paused = false, pending = [], lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
     function actorName(k) { if (!k) return ''; return k.indexOf('u:') === 0 ? '@' + k.slice(2) : k.indexOf('v:') === 0 ? 'guest ' + k.slice(2) : k.indexOf('d:') === 0 ? 'device ' + k.slice(2) : k.indexOf('ip:') === 0 ? 'ip ' + k.slice(3) : k; }
     function actorBtn(k, label) { return k ? '<button type="button" class="lnk" data-actor="' + esc(k) + '">' + (label || esc(actorName(k))) + '</button>' : ''; }
     function save() { remember('people/activity', st, FIELDS); }
     function head() {
       var chips = function (list, cur, attr) { return '<div class="chips" style="margin:0">' + list.map(function (f) { return '<span class="chip ' + (cur === f[0] ? 'on' : '') + '" data-' + attr + '="' + f[0] + '">' + f[1] + '</span>'; }).join('') + '</div>'; };
-      return '<div class="bar">' + chips([['all', 'All'], ['pages', 'Pages'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
+      var sum = '<span class="acsum" id="acSum"><b>Filters</b><span class="meta" id="acSumT"></span><i>open</i></span>';
+      return '<div class="bar acfil' + (PH ? ' fold' : '') + '" id="acFil">' + sum + chips([['all', 'All'], ['pages', 'Pages'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
         + chips([['all', 'Everyone'], ['users', 'Members'], ['guests', 'Guests'], ['system', 'System']], st.who, 'who')
         + '<input class="in" id="acq" placeholder="filter: @user, guest id, coin, page, country, ip, source" value="' + esc(st.q) + '" style="flex:1 1 200px"><select class="in" id="ach" style="flex:0 0 auto">' + [[1, '1h'], [3, '3h'], [6, '6h'], [12, '12h'], [24, '24h']].map(function (o) { return '<option value="' + o[0] + '"' + (st.h === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
         + chips([['stream', 'Stream'], ['visitors', 'Visitors']], st.lay, 'lay')
@@ -878,7 +880,13 @@
     }
     function setLive() { var c = $('aclive'), t = $('acLv'); if (!c) return; c.classList.toggle('on', st.live); c.classList.toggle('ok', st.live && wsOk); c.classList.toggle('warn', st.live && !wsOk); if (t) t.textContent = !st.live ? 'paused' : wsOk ? (paused ? 'live · held' : 'live') : 'connecting…'; }
     function shell() {
-      el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div id="acOnline"></div><div class="jm" style="margin-top:12px"><div>' + card('<span id="acTitle">' + (st.lay === 'visitors' ? 'Visitors' : 'Activity') + '</span> <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', st.lay === 'visitors' ? 'one card per person, latest first · the path is every page in order · click a card for the full timeline' : 'newest first · hover to hold the stream · click a guest id or @user for everything that person did') + '</div><div class="jm-rail" id="acRail"></div></div>';
+      el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div id="acOnline"></div><div class="jm" style="margin-top:12px"><div>' + card('<span id="acTitle">' + (st.lay === 'visitors' ? 'Visitors' : 'Activity') + '</span> <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', st.lay === 'visitors' ? 'one card per person, latest first · the path is every page in order · click a card for the full timeline' : (PH ? 'newest first · tap a guest id or @user for everything that person did' : 'newest first · hover to hold the stream · click a guest id or @user for everything that person did')) + '</div><div class="jm-rail" id="acRail"></div></div>';
+      var GN = { all: 'All', pages: 'Pages', trades: 'Trades', money: 'Money', social: 'Social', account: 'Account', progress: 'Progress', spot: 'Spot', problems: 'Problems', system: 'System' };
+      var WN = { all: 'Everyone', users: 'Members', guests: 'Guests', system: 'System' };
+      function sumTxt() { var e = $('acSumT'); if (!e) return; e.textContent = (GN[st.g] || st.g) + ' · ' + (WN[st.who] || st.who) + ' · ' + st.h + 'h · ' + (st.lay === 'visitors' ? 'Visitors' : 'Stream') + (st.q ? ' · "' + st.q + '"' : ''); }
+      var fil = $('acFil'), sm = $('acSum');
+      if (sm && fil) sm.onclick = function () { var open = fil.classList.toggle('fold'); var i = sm.querySelector('i'); if (i) i.textContent = open ? 'open' : 'close'; };
+      sumTxt();
       el.querySelectorAll('[data-g]').forEach(function (c) { c.onclick = function () { st.g = c.getAttribute('data-g'); save(); shell(); paintAll(true); }; });
       el.querySelectorAll('[data-who]').forEach(function (c) { c.onclick = function () { st.who = c.getAttribute('data-who'); save(); shell(); paintAll(true); }; });
       el.querySelectorAll('[data-lay]').forEach(function (c) { c.onclick = function () { st.lay = c.getAttribute('data-lay'); save(); shell(); paintAll(true); if (st.lay === 'visitors') load(false); }; });
@@ -900,6 +908,11 @@
       if (full) { rendered = {}; pending = []; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
       else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) { if (paused) { pending = pending.concat(fresh); pending.forEach(function (e) { rendered[rowKey(e)] = 1; }); paintPending(); } else insertRows(fresh); } }
       countN(list.length);
+      if (full) { var mb = $('acMore'); if (mb) mb.remove();
+        if (st.lay === 'stream' && list.length > MAXROWS) { var b = document.createElement('button'); b.type = 'button'; b.id = 'acMore'; b.className = 'btn wide'; b.style.marginTop = '8px';
+          b.textContent = 'Show ' + N(Math.min(MAXROWS, list.length - MAXROWS)) + ' more of ' + N(list.length - MAXROWS);
+          b.onclick = function () { MAXROWS += (PH ? 150 : 800); paintStream(true); };
+          box.parentNode.insertBefore(b, box.nextSibling); } }
     }
     function insertRows(fresh) { var box = $('acStream'); if (!box) return; var emp = box.querySelector('.empty'); if (emp) emp.remove();
       // a row that arrives late carries its REAL time — it is slotted where it belongs by timestamp, never pinned to the top out of order
