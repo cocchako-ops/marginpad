@@ -882,7 +882,8 @@
     var el=document.getElementById('rktPx3'),P=window.mpLivePrices||{};if(!el)return;
     el.innerHTML=['BTC','ETH','SOL'].map(function(s){var p=P[s]&&P[s].p;return p>0?(s+' <b>$'+px(p)+'</b>'):'';}).filter(Boolean).join('');});
   // ---- share ----
-  function toast(msg){var t=document.createElement('div');t.className='rk-toast';t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('on');});setTimeout(function(){t.classList.remove('on');},1900);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2200);}
+  function toast(msg){if(window.mpToast){window.mpToast({msg:msg,ms:4000,key:String(msg).slice(0,40)});return;} /* one channel, mp-auth.js */
+    var t=document.createElement('div');t.className='rk-toast';t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('on');});setTimeout(function(){t.classList.remove('on');},1900);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2200);}
   // ---- build a shareable ticket IMAGE so X/socials show the actual receipt, not a generic link card ----
   function rrx(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildLiqTicket(d){

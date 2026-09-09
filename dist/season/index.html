@@ -402,7 +402,8 @@ h1 b{color:var(--lime)}
   var ago=function(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';};
   var me=function(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;};
   var SEASON=null,LB=null,PASS=null,GOALS=null,PRED=null,HH=null;
-  var toastT=null;function toast(html){var t=$('tst');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
+  var toastT=null;function toast(html){if(window.mpToast){window.mpToast({html:html,ms:4200,key:String(html).slice(0,40)});return;} /* one channel, mp-auth.js — this page had its own bottom-centre card */
+    var t=$('tst');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
 
   /* ---- banner ---- */
   function paintBanner(){

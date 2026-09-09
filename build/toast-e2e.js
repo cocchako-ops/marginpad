@@ -142,6 +142,44 @@ const rgbOf = (hex) => { const h = hex.replace('#', ''); return 'rgb(' + parseIn
         await page.screenshot({ path: 'D:/part1/money-mission/build/pt-shots/toast-desktop.png' });
         await ctx.close();
       }
+      // ---------------- a walk of the site: every page must use the ONE channel ----------------
+      {
+        const pages = [
+          ['/season/', 'season', function () { return typeof toast === 'function'; }],
+          ['/spot/', 'Demo Spot'],
+          ['/vault/', 'vault'],
+          ['/rekt/', 'rekt'],
+          ['/rewards/', 'rewards'],
+          ['/where-to-start/', 'where to start'],
+          ['/charts', 'charts'],
+          ['/screener', 'screener'],
+          ['/calculators', 'calculators'],
+        ];
+        const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
+        await page.setViewport({ width: 390, height: 780, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+        for (const [path, name] of pages) {
+          const errs = []; const onErr = e => errs.push(String(e.message).slice(0, 120)); page.on("pageerror", onErr);
+          await page.goto(ORIGIN + path + (path.indexOf("?") > 0 ? "&" : "?") + "cb=" + Date.now(), { waitUntil: "load", timeout: 90000 });
+          let ok = false; for (let w = 0; w < 40; w++) { await sleep(400); ok = await page.evaluate(() => typeof window.mpToast === "function"); if (ok) break; }
+          const r = await page.evaluate(async () => {
+            if (typeof window.mpToast !== "function") return { no: 1 };
+            window.mpToast({ msg: "channel check", key: "walk" });
+            await new Promise(r2 => setTimeout(r2, 700));
+            const host = document.getElementById("mpxpT");
+            const r2 = host ? host.getBoundingClientRect() : null;
+            const bar = document.querySelector(".mpbn"); const b = bar ? bar.getBoundingClientRect() : null;
+            const hit = (p, q) => (p && q) ? !(p.right <= q.left || q.right <= p.left || p.bottom <= q.top || q.bottom <= p.top) : false;
+            return { cards: host ? host.children.length : 0, right: r2 ? Math.round(innerWidth - r2.right) : null, overBar: hit(r2, b), inside: r2 ? (r2.left >= 0 && r2.right <= innerWidth + 1) : false };
+          });
+          if (r.no) { // a light SEO page does not load mp-auth by design: its own renderer must still sit in the same corner
+            const own = await page.evaluate(async () => { if (typeof toast !== "function") return { none: 1 }; toast("channel check"); await new Promise(r2 => setTimeout(r2, 600)); const t = document.querySelector(".wts-toast"); if (!t) return { none: 1 }; const q = t.getBoundingClientRect(); const bar = document.querySelector(".mpbn"); const b = bar ? bar.getBoundingClientRect() : null; const hit = (p, z) => (p && z) ? !(p.right <= z.left || z.right <= p.left || p.bottom <= z.top || z.bottom <= p.top) : false; return { right: Math.round(innerWidth - q.right), overBar: hit(q, b), inside: q.left >= 0 && q.right <= innerWidth + 1 }; });
+            chk("WALK " + name + ": its own notice sits in the same corner, clear of the tab bar", own.right != null && own.right <= 20 && own.overBar === false && own.inside === true, own);
+          } else chk("WALK " + name + ": notices come out of the one side stack, clear of the tab bar", r.cards >= 1 && r.overBar === false && r.inside === true && r.right <= 20, r);
+          chk("WALK " + name + ": no page errors", errs.length === 0, errs.slice(0, 2));
+          page.off("pageerror", onErr);
+        }
+        await ctx.close();
+      }
     }, { timeoutMs: 420000 });
   } finally {
     try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}

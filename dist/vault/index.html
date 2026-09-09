@@ -836,7 +836,8 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       return '<div class="fcard" style="opacity:'+(own?'1':'.55')+'"><div class="fmeta"><span class="fname" style="font-size:14px">'+a.name+'</span><span class="tier '+(own?'legendary':'common')+'">'+(own?'EARNED':'LOCKED')+'</span></div><div class="fdesc">'+a.how+'</div></div>';
     }).join('');
   }
-  function say(t,ok){var m=document.getElementById('msg');m.textContent=t;m.className='msg show '+(ok?'ok':'err');clearTimeout(say._t);say._t=setTimeout(function(){m.className='msg '+(ok?'ok':'err');},5200);} /* fixed toast — the old inline top-of-page line was OFF-SCREEN whenever the user was down in a section, so buys/gifts looked like "nothing happened" */
+  function say(t,ok){if(window.mpToast){window.mpToast({msg:t,kind:(ok?'good':'warn'),mark:(ok?'✓':'!'),ms:4000,key:String(t).slice(0,40)});return;} /* one channel, mp-auth.js */
+    var m=document.getElementById('msg');m.textContent=t;m.className='msg show '+(ok?'ok':'err');clearTimeout(say._t);say._t=setTimeout(function(){m.className='msg '+(ok?'ok':'err');},5200);} /* fixed toast — the old inline top-of-page line was OFF-SCREEN whenever the user was down in a section, so buys/gifts looked like "nothing happened" */
   var gmState=null;
   function gmMsg(t,kind){var el=document.getElementById('gmMsg');if(el){el.textContent=t||'';el.className='gmod-m '+(kind||'');}}
   function gmOpen(id,cur,name,price){gmState={id:id,cur:cur,name:name,price:price||''};

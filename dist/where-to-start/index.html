@@ -212,8 +212,9 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
 .ww-seg{display:flex;gap:8px;margin-bottom:10px}
 .ww-seg button{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:11px 0;color:var(--dim);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
 .ww-seg button.on{border-color:var(--lime);color:var(--lime);background:rgba(194,246,74,.08)}
-.wts-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(14px);background:#11151b;border:1px solid rgba(194,246,74,.5);color:var(--ink);font-size:13.5px;font-weight:600;padding:12px 18px;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.6);z-index:200;opacity:0;transition:.3s;max-width:92vw}
-.wts-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.wts-toast{position:fixed;right:14px;left:auto;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(120%);max-width:min(320px,calc(100vw - 28px));background:#11151b;border:1px solid rgba(194,246,74,.5);color:var(--ink);font-size:13.5px;font-weight:600;padding:12px 18px;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.6);z-index:200;opacity:0;transition:.3s;max-width:92vw}
+.wts-toast.on{opacity:1;transform:none}
+@media(min-width:881px){.wts-toast{bottom:16px}}
 @media(max-width:560px){h1{font-size:27px}.wts-stats{grid-template-columns:auto 1fr;gap:11px}.wts-streak{display:none}}
 </style>
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
@@ -534,7 +535,8 @@ function misCount(){var n=0;for(var i=0;i<MIS.length;i++)if(S.miss[MIS[i].id])n+
 function misCard(m){var done=!!S.miss[m.id];
   return '<div class="wts-mis'+(done?' done':'')+'" data-mis="'+m.id+'"><span class="mi-ic">'+m.icon+'</span><span class="mi-t"><b>'+esc(m.t)+'</b><small>'+esc(m.s)+'</small></span>'+(done?'<span class="mi-done">✓ +'+m.xp+' XP</span>':'<a class="mi-go" href="'+m.href+'">'+esc(m.cta)+' →</a>')+'</div>';}
 function renderMissions(){var el=document.getElementById('wtsMis');if(el)el.innerHTML=MIS.map(misCard).join('');var n=document.getElementById('misN');if(n)n.textContent=misCount()+'/'+MIS.length;}
-function toast(t){var d=document.createElement('div');d.className='wts-toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.classList.add('on');},20);setTimeout(function(){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},3600);}
+function toast(t){if(window.mpToast){window.mpToast({msg:t,ms:3600,key:String(t).slice(0,40)});return;} /* one channel, mp-auth.js */
+  var d=document.createElement('div');d.className='wts-toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.classList.add('on');},20);setTimeout(function(){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},3600);}
 function checkMissions(){var got=[];for(var i=0;i<MIS.length;i++){var m=MIS[i];if(!S.miss[m.id]&&MD[m.det]&&MD[m.det]()){S.miss[m.id]=1;S.xp+=m.xp;got.push(m);}}
   if(got.length){bumpStreak();save(S);renderMissions();renderStats();got.forEach(function(m,gi){setTimeout(function(){toast('Mission complete: '+m.t+' (+'+m.xp+' XP)');},gi*950);});}}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)checkMissions();});

@@ -30,8 +30,8 @@ const WATCH = () => {
   const seen = {};
   const tick = () => {
     const d = document.getElementById('dash'), hero = document.querySelector('section.hero');
-    const st = (d ? (d.hidden ? 'noCard' : 'card') : 'absent') + '|' + (hero ? (getComputedStyle(hero).display === 'none' ? 'noHero' : 'hero') : 'absent');
-    if (!seen[st]) { seen[st] = 1; window.__t.marks.push({ ms: Math.round(performance.now() - window.__t.t0), st: st, h: Math.round((d && !d.hidden) ? d.getBoundingClientRect().height : 0) }); }
+    const st = (d ? (getComputedStyle(d).display === 'none' ? 'noCard' : 'card') : 'absent') + '|' + (hero ? (getComputedStyle(hero).display === 'none' ? 'noHero' : 'hero') : 'absent');
+    if (!seen[st]) { seen[st] = 1; window.__t.marks.push({ ms: Math.round(performance.now() - window.__t.t0), st: st, h: Math.round(d ? d.getBoundingClientRect().height : 0) }); }
     requestAnimationFrame(tick);
   };
   addEventListener('DOMContentLoaded', tick);
@@ -50,7 +50,8 @@ const WATCH = () => {
         await page.setCookie(
           { name: 'mp_sess', value: tok, domain: 'marginpad.io', path: '/', httpOnly: true, secure: true },
           { name: 'mp_uid', value: uidE, domain: 'marginpad.io', path: '/', secure: true },
-          { name: 'mp_un', value: 'e2e_' + uidE, domain: 'marginpad.io', path: '/', secure: true });
+          { name: 'mp_un', value: 'e2e_' + uidE, domain: 'marginpad.io', path: '/', secure: true },
+          { name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/', secure: true });
         const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 160)));
         await page.evaluateOnNewDocument(WATCH);
         // FIRST visit on this device: no cached season snapshot
@@ -59,6 +60,9 @@ const WATCH = () => {
         const first = await page.evaluate(() => ({ marks: window.__t.marks, txt: (document.getElementById('dashT') || {}).innerText || '', lvl: (document.getElementById('dashLvl') || {}).innerText || '', h: Math.round(document.getElementById('dash').getBoundingClientRect().height), snap: !!localStorage.getItem('mp_dash_snap') }));
         const shown = first.marks.filter(m => m.st.indexOf('card') === 0)[0];
         const gap = first.marks.filter(m => m.st === 'noCard|noHero');
+        // the hero must never be PAINTED for a member: the mp_li cookie decides before the first frame
+        const flash = first.marks.filter(m => m.st.indexOf('hero') > 0 && m.st.indexOf('noHero') < 0);
+        chk(label + ': the guest hero never flashes under the card on a refresh', flash.length === 0, { heroFrames: flash, marks: first.marks });
         chk(label + ': the card is up quickly, not around a second later', !!shown && shown.ms < 700, { at: shown && shown.ms, marks: first.marks });
         chk(label + ': there is never a moment with the hero gone and no card', gap.length === 0, { badStates: gap });
         chk(label + ': it carries the reader\'s own name and level from the first paint', /Welcome back/.test(first.txt) && /e2e_/.test(first.txt) && /XP/.test(first.lvl), { title: first.txt.replace(/\s+/g, ' ').slice(0, 60), level: first.lvl });

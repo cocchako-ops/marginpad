@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<!-- The member card replaces the hero. Decide WHO this is before the first paint, from the non-HttpOnly mp_li
+     marker the worker sets on sign-in - mp-auth restores the account ~110-280 ms later, and until 2026-09-10 that
+     was long enough to see the guest hero flash under the card on every refresh (owner report). If the session
+     turns out to be dead, paint() takes the class off again and the hero comes back. -->
+<script>try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.className+=' mp-li';}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -393,7 +398,8 @@
 /* The hero is replaced by the member card, so it may only disappear once that card is REALLY on screen.
    Keyed on mpa-authed it vanished at ~180 ms while the card waited for /api/pass + /api/goals until ~950 ms,
    and the top of the page sat empty in between (owner 2026-09-10, measured). */
-body.mpa-dash .hero{display:none}
+body.mpa-dash .hero,html.mp-li .hero{display:none}
+html.mp-li .dash[hidden]{display:grid} /* the static markup below already carries the skeleton, so this is the right shape from frame one */
 @media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
 @media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
@@ -913,8 +919,8 @@ body.mpa-dash .hero{display:none}
 
 <a class="dash" id="dash" href="/season/" hidden>
   <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
-  <div class="dash-stats" id="dashChips"></div>
-  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"></div><span class="dash-go">Open your season →</span></div>
+  <div class="dash-stats" id="dashChips"><span class="dst sk"><b>&mdash;</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Boards</em><i>loading</i></span></div><!-- skeleton in the MARKUP: with html.mp-li the card is the right shape on the very first frame, so nothing resizes when the numbers land -->
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"><span><i>1</i>Checking your season…</span></div><span class="dash-go">Open your season →</span></div>
 </a>
 <section class="hero">
   <div>
@@ -1654,7 +1660,7 @@ body.mpa-dash .hero{display:none}
       document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<dq?'on':i+1===dq?'on now':'')+'"></i>';}).join('');
       document.getElementById('dashChips').innerHTML=sn.chips||SKEL;
       document.getElementById('dashTodo').innerHTML=sn.todo||'<span><i>1</i>Checking your season…</span>';
-      dash.hidden=false; document.body.classList.add('mpa-dash');
+      dash.hidden=false; document.body.classList.add('mpa-dash'); document.documentElement.classList.add('mp-li');
       try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){} }
     function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
     function paint(){
@@ -1679,7 +1685,7 @@ body.mpa-dash .hero{display:none}
       }
       document.getElementById('ssRows').innerHTML=rows.join('');
       /* strip */
-      if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+      if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');document.documentElement.classList.add('mp-li');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
         document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
         var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
         var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
@@ -1698,7 +1704,7 @@ body.mpa-dash .hero{display:none}
         if(sk&&!todoH)todoH='<span class="ok"><i>1</i>All caught up — go trade</span>';
         if(todoH)document.getElementById('dashTodo').innerHTML=todoH;
         if(sk&&ch.length)snapPut({eye:eye,day:day,chips:ch.join(''),todo:todoH}); /* next visit paints this instantly */}
-      else {dash.hidden=true;document.body.classList.remove('mpa-dash');} // signed out (or a session that expired behind the cached card): the hero comes back
+      else {dash.hidden=true;document.body.classList.remove('mpa-dash');document.documentElement.classList.remove('mp-li');} // signed out (or a session that expired behind the cached card): the hero comes back
       /* leading board: green days, top 5 with prizes */
       if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
         board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet — 10 closes and a green season get you on.</div>';}
