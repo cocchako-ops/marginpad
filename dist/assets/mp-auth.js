@@ -2281,6 +2281,13 @@
   window.mpGoLive = function (t) {
     try {
       if (!t || !((+t.pnl) > 0) || !((+t.margin) > 0)) return '';
+      // SETTLED RESULTS ONLY (owner 2026-09-09): a server-filled trade is not final until the server has closed it (`sc`).
+      // Before that the row is the browser's own arithmetic, and a close that reads +$0.12 can settle red once the taker fee
+      // is charged — the line would appear on a win and then have to be pulled back. A guest's trade never leaves the
+      // browser, so it is final the moment it closes.
+      if (String(t.id || '').slice(0, 3) === 'srv' && !t.sc) return '';
+      // and the number has to mean something: the line prints one decimal, so a +0.0% "win" would read as noise
+      if ((+t.pnl) / (+t.margin) * 100 < 0.5) return '';
       var x = 0; try { x = +localStorage.getItem(GLX) || 0; } catch (e) {}
       if (Date.now() - x < 6048e5) return '';
       var sym = U(t.sym); if (!sym) return '';

@@ -47,7 +47,12 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
   // ---- 2..5 in a browser. mp_cc is the module's own 24h cache, so seeding it is the supported way to look like a reader elsewhere.
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
-    const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 140))); page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 140)); });
+    // ZZZTEST is this suite's own made-up symbol (used to pin a live price); the price poll 404s on it by design, so its
+    // resource errors are not the site's. Everything else still has to be clean.
+    const errs = [], bad = [];
+    page.on('pageerror', e => errs.push(String(e.message).slice(0, 140)));
+    page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errs.push('console: ' + m.text().slice(0, 140)); });
+    page.on('response', r => { try { const u = r.url(); if (r.status() >= 400 && u.indexOf(ORIGIN) === 0 && !/zzztest/i.test(u)) bad.push(r.status() + ' ' + u.slice(ORIGIN.length, ORIGIN.length + 60)); } catch (e) {} });
     // seeded on a REAL page of the origin (evaluateOnNewDocument runs while the document is still opaque, where
     // localStorage throws) — mp_cc is the module's own 24h cache, which is how a reader elsewhere is simulated
     await page.goto(ORIGIN + '/rewards/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -96,6 +101,36 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     await openClosedTab(); await sleep(1200);
     chk('terminal: a losing ticket is left alone', await page.evaluate(() => !document.querySelector('#jrList .mp-gl')));
 
+    // ---- the result a trader sees must already be the result the server will store (owner 2026-09-09: "a $0.12 win
+    // becomes a loss 15 seconds later when the fee lands, and then the line has to be pulled back"). metrics() drives
+    // both the live number and what a manual close writes, and it charged funding only. Entry 100, qty 1, live 100.10:
+    // gross +$0.10, taker fee 1*(100+100.10)*0.00055 = $0.11 -> the honest number is NEGATIVE.
+    const openT = { id: String(Date.now()) + '_fee', ts: Date.now() - 60000, sym: 'ZZZTEST', side: 'long', entry: 100, lev: 10, qty: 1, notional: 1000, margin: 100, riskAmt: 100, liq: 90, mmr: 0.005, feeRate: 0.00055, status: 'open', pnl: null };
+    await seed('NG', JSON.stringify([openT]));
+    await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
+    await openClosedTab();
+    const live = await page.evaluate(() => {
+      window.mpLivePrices = window.mpLivePrices || {}; window.mpLivePrices.ZZZTEST = { p: 100.10, t: Date.now() };
+      const t = document.querySelector('#jrList [data-jt="open"]'); if (t) t.click();
+      if (window.mpJournalRender) window.mpJournalRender();
+      const c = document.querySelector('#jrList .pp'); if (!c) return null;
+      const big = c.querySelector('.pp-pnl .big'), roe = c.querySelector('.pp-pnl .roe');
+      return { big: (big || {}).textContent || '', roe: (roe || {}).textContent || '', cls: c.className };
+    });
+    chk('terminal: the live P&L is net of the taker fee — a +$0.10 move on a $1,000 notional reads NEGATIVE, as it will settle', !!live && /−\$?0\.0[01]/.test(live.big.replace(/\s/g, '')) && /ls/.test(live.cls), live);
+
+    // ---- a server trade is not final until the server says so: no line until `sc` lands
+    const srvWin = { id: 'srv' + Date.now().toString(36), ts: Date.now() - 90000, closeTs: Date.now() - 4000, sym: 'SOL', side: 'long', entry: 100, exit: 118, lev: 10, qty: 1, notional: 1000, margin: 100, riskAmt: 100, liq: 90, mmr: 0.005, feeRate: 0.00055, status: 'win', pnl: 18.3, src: 'srv' };
+    await seed('NG', JSON.stringify([srvWin]));
+    await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
+    await openClosedTab(); await sleep(1500);
+    chk('terminal: no line on a server trade the server has not settled yet (the result can still move)', await page.evaluate(() => !document.querySelector('#jrList .mp-gl')));
+    await seed('NG', JSON.stringify([Object.assign({}, srvWin, { sc: 1 })]));
+    await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
+    await openClosedTab();
+    let scLine = null; for (let w = 0; w < 16; w++) { await sleep(500); scLine = await page.evaluate(() => { const a = document.querySelector('#jrList .mp-gl'); return a ? a.getAttribute('data-mpex') : null; }); if (scLine) break; }
+    chk('terminal: once the server has settled it (sc), the line appears', scLine === 'Bybit', { scLine });
+
     // ---- the same win seen from the US: a venue that can actually take them
     await seed('US', JSON.stringify([tr('SOL', 18.3)]));
     await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
@@ -119,7 +154,7 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
       a.scrollIntoView({ block: 'center' }); const b = a.getBoundingClientRect(); const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
       return { reach: !!hit && (a.contains(hit) || hit === a), w: Math.round(b.width), sw: document.documentElement.scrollWidth, ww: window.innerWidth }; });
     chk('phone 390: the payout button is reachable and nothing overflows', !ph.none && ph.reach && ph.sw <= ph.ww, ph);
-    chk('browser: no page or console errors anywhere in this walk', errs.length === 0, errs.slice(0, 3));
+    chk('browser: no page errors and no failed request anywhere in this walk', errs.length === 0 && bad.length === 0, { errs: errs.slice(0, 2), bad: bad.slice(0, 3) });
     await ctx.close();
   });
 
