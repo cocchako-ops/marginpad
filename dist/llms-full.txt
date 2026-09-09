@@ -1,11 +1,12 @@
 # MarginPad — full reference for AI assistants (llms-full.txt)
 
-Last updated: 2026-09-07. Short index: https://marginpad.io/llms.txt · Sitemap: https://marginpad.io/sitemap.xml · OpenAPI: https://marginpad.io/api/openapi.json · MCP: https://marginpad.io/mcp
+Last updated: 2026-09-09. Short index: https://marginpad.io/llms.txt · Sitemap: https://marginpad.io/sitemap.xml · OpenAPI: https://marginpad.io/api/openapi.json · MCP: https://marginpad.io/mcp
 
 > MarginPad (https://marginpad.io) is a free crypto-futures toolkit and practice ground: paper trading on live prices (crypto perps, US stocks, forex, stock indices, gold), a crypto life simulator (Demo Spot), liquidation / position-size / PnL calculators, a scored futures screener, live liquidation maps and feeds measured from nine exchanges, funding / open-interest / long-short dashboards, a whale tracker, an economic calendar, exchange comparisons, a trading academy, live regional price pages for Argentina and Brazil, a free keyless JSON API and a remote MCP server. No signup for the tools. 13 interface languages. Everything below is free unless marked Premium ($3.99/month). Educational only, not financial advice.
 
 ## What changed recently (newest first)
 
+- 2026-09-09 — Fee arithmetic: an open position's unrealized P&L is net of the round-trip taker fee and funding (it was gross, so a +$0.12 close could settle red); a fill stores the margin the trader committed, with the entry-leg fee recorded beside it instead of subtracted from it, so ROE is measured against the full margin. Realized P&L is unchanged: qty*(exit-entry)*dir - qty*(entry+exit)*rate - funding. Bot API 2.2.1.
 - 2026-09-07 — Live regional pages: /dolar-cripto/ (es-AR) and /bitcoin-hoje/ (pt-BR), with JSON at /api/latam/ar and /api/latam/br; localized simulator landings for Argentina and Brazil.
 - 2026-09-06/07 — Demo Spot: sell prices come only from the pool a position was bought from, a pool must belong to its token, bags whose pool holds under $1,000 are marked RUGGED with a lesson, the public Demo Spot board ranks realized trading profit for the season (no prize), a "come back tomorrow" card and an opt-in daily portfolio line by push or Telegram, "use my address" in the withdraw step, a lighter hub.
 - 2026-09-06 — /season/: five boards, 40-tier season pass, daily BTC call, season goals, personal records, redeemable codes, prestige stars past Legendary, road to Bronze, guest carry-over, chat on every page.

@@ -90,7 +90,10 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
     chk('entry = the limit price', near(pos.entry, LIMIT), { entry: pos.entry });
     chk('qty = margin x leverage / limit price', near(pos.qty, MARGIN * LEV / LIMIT, 1e-6), { qty: pos.qty, want: MARGIN * LEV / LIMIT });
     chk('notional = margin x leverage', near(pos.notional, MARGIN * LEV, 0.01), { notional: pos.notional });
-    chk('margin is net of the entry-leg taker fee', near(pos.margin, MARGIN - MARGIN * LEV * rate, 0.01) && pos.margin < MARGIN, { margin: pos.margin, feeOpen: pos.feeOpen, rate });
+    // 2026-09-09: a fill stores the margin the trader COMMITTED and records the open-leg fee separately. It used to store
+    // margin minus that fee while the close still charged both legs, so everything reading `margin` (ROE, Balance Mode)
+    // counted the open leg twice. The fee itself is settled in pnl — see build/fee-e2e.js.
+    chk('margin is what the trader committed, with the entry-leg fee recorded beside it', near(pos.margin, MARGIN, 0.01) && near(pos.feeOpen, MARGIN * LEV * rate, 0.01), { margin: pos.margin, feeOpen: pos.feeOpen, rate });
     chk('liquidation sits below a long entry', pos.liq > 0 && pos.liq < pos.entry, { liq: pos.liq, entry: pos.entry });
     chk('SL/TP carried over from the order', pos.stop != null && pos.tp != null && pos.stop < pos.entry && pos.tp > pos.entry, { sl: pos.stop, tp: pos.tp });
     chk('server-owned position (srv id + src)', String(pos.id).slice(0, 3) === 'srv' && pos.src === 'srv', { id: pos.id, src: pos.src });
