@@ -10515,7 +10515,9 @@ async function sessionUser(env, tok) {
   if (useKv && kvk) { try { env.STATS.put(kvk, JSON.stringify({ u: user, exp: now + (user ? 90000 : 15000) }), { expirationTtl: 120 }).catch(() => {}); } catch (e) {} } // fire-and-forget — off the response hot path
   return user;
 }
-const SESS_MAXAGE = 2592000; // 30 days
+const SESS_MAXAGE = 15552000; // 180 days, SLIDING (2026-09-09, owner: "nikog ne izlogujemo"). Was a fixed 30 days: the August cohort was being
+// signed out on schedule in September. The DO /session extends a session older than 7 days back to the full 180 and /me re-issues the
+// cookie with the same token, so anyone who comes back at least once in 180 days never sees the sign-in box again.
 async function sendAuthCode(env, to, code) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -12317,7 +12319,9 @@ async function handleAuth(url, request, env, ctx) {
     }
     if (!d) return jr({ user: null, transient: true });
     const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS });
-    if (d.user) { h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE); h.append('set-cookie', 'mp_li=1; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE); } // keep the display name + the non-HttpOnly session marker fresh for existing sessions (also migrates pre-marker logins on their first /me)
+    if (d.user) { h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE); h.append('set-cookie', 'mp_li=1; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE);
+      if (d.renew) { const o9 = '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE; h.append('set-cookie', SESS_COOKIE + '=' + tok + o9); h.append('set-cookie', 'mp_uid=' + d.user.id + o9); } // the store just slid the session: re-issue the credential itself so the browser's cookie expiry slides too (same token)
+    } // keep the display name + the non-HttpOnly session marker fresh for existing sessions (also migrates pre-marker logins on their first /me)
     else h.append('set-cookie', 'mp_li=; Secure; SameSite=Lax; Path=/; Max-Age=0'); // session invalid/expired → clear the stale marker so the client stops probing /me
     return new Response(JSON.stringify({ user: d.user || null, banned: !!d.banned }), { headers: h });
   }
@@ -18512,7 +18516,7 @@ export class UserStore {
       else sql.exec('UPDATE users SET last_login=?,logins=logins+1,last_seen=?,dev=?,br=?,org=?,asn=? WHERE id=?', now, now, dev, br, org, asn, u.id);
       if (b.did) { try { sql.exec('UPDATE users SET did=? WHERE id=?', String(b.did).slice(0, 64), u.id); } catch (e) {} } // record the device fingerprint on every login
       const token = this.rid() + this.rid();
-      sql.exec('INSERT INTO sessions(token,user_id,created,expires,ua,ip,cc,asn,org) VALUES(?,?,?,?,?,?,?,?,?)', token, u.id, now, now + 2592000000, String(b.ua || '').slice(0, 200), String(b.ip || ''), String(b.cc || ''), asn, org);
+      sql.exec('INSERT INTO sessions(token,user_id,created,expires,ua,ip,cc,asn,org) VALUES(?,?,?,?,?,?,?,?,?)', token, u.id, now, now + SESS_MAXAGE * 1000, String(b.ua || '').slice(0, 200), String(b.ip || ''), String(b.cc || ''), asn, org); // 180 d, slid by /session
       if (Math.random() < 0.02) sql.exec('DELETE FROM sessions WHERE expires<?', now); // occasional cleanup of expired sessions
       return this.j({ ok: true, token, isNew, user: { email: u.email, id: u.id, username: u.username || '', created: u.created } });
     }
@@ -19009,7 +19013,10 @@ export class UserStore {
       const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,accent,coins,premium,prem_seen,tktskin FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
-      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
+      // SLIDING expiry (2026-09-09): a session read more than 7 days after its last extension is pushed back to the full lifetime — one write a
+      // week per session at most; the worker's /me re-issues the cookie on `renew` so the browser's own expiry slides with it.
+      let renew = false; if (+s.expires - now < SESS_MAXAGE * 1000 - 7 * 86400000) { try { this.state.storage.sql.exec('UPDATE sessions SET expires=? WHERE token=?', now + SESS_MAXAGE * 1000, token); renew = true; } catch (e) {} }
+      return this.j({ renew, user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
     }
     if (path === '/premseen') { // premium-celebration-seen flag. {uid|username, seen} sets it (ack=1, mp-ops-cohort reset=0); {uid|username, read:1} reads it (persistence proof). COLLATE NOCASE so 'Chako'==='chako'.
       let u; try { if (b.uid) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE id=?', String(b.uid))[0]; else if (b.username) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE username COLLATE NOCASE=?', String(b.username).slice(0, 24))[0]; } catch (e) {}
