@@ -114,7 +114,16 @@
     .smobnav a:active{transform:scale(.9);}
     .smobnav svg{width:21px;height:21px;}
     body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
-  }
+  }  /* Step three of the page's own backtest -> paper -> live table: the exchange key the bot needs at the end.
+     Measured 2026-09-10: this page had no partner link at all on 142 pv/30d. */
+  .golive{margin:26px 0 8px;padding:20px 22px;border:1px solid var(--line2);border-left:3px solid var(--lime);border-radius:14px;background:linear-gradient(120deg,rgba(194,246,74,.05),rgba(194,246,74,.01) 60%),var(--panel);}
+  .golive .gl-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;color:var(--ink);margin:0 0 9px;}
+  .golive p{color:var(--dim);font-size:14.5px;line-height:1.7;margin:0 0 15px;}
+  .golive p b{color:var(--ink);}
+  .gl-cta{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.04em;color:#0a0b0d;background:var(--lime);border-radius:10px;padding:11px 18px;text-decoration:none;}
+  .gl-cta:hover{filter:brightness(1.08);}
+  .gl-note{display:block;margin-top:12px;font-size:11.5px;line-height:1.5;color:var(--faint);}
+  @media(max-width:640px){.golive{padding:16px}.gl-cta{width:100%;justify-content:center}}
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
@@ -329,6 +338,35 @@ if (mySignal(price)) {  // your strategy here
   <tr><td>Best for</td><td>Filtering ideas fast</td><td class="hl">Proving the bot before funding it</td><td>A strategy already proven twice</td></tr>
 </table></div>
 <p class="note">Do all three, in that order. The middle step is the one most people skip — and the one that would have saved them.</p>
+
+<div class="golive">
+  <div class="gl-h">Step three needs a real exchange key</div>
+  <p id="glTxt">Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. We point people at <b>Bybit</b>: REST and WebSocket shapes close to what you just wrote, a separate key per sub-account so the bot never holds your main credentials, and it is one of the feeds our own prices come from.</p>
+  <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
+  <span class="gl-note">Referral link — MarginPad may earn a commission if you open an account, at no cost to you. The paper API stays free either way, and nothing here needs an exchange account.</span>
+</div>
+<script>
+/* Bybit does not onboard the US or Canada. mp-auth.js is deferred, so poll for window.mpEx (documented
+   gotcha) and swap the venue for the best one that actually takes readers in that country. */
+(function () {
+  var n = 0, iv = setInterval(function () {
+    if (++n > 80) { clearInterval(iv); return; }
+    if (!window.mpEx || !window.mpEx.cc) return;
+    clearInterval(iv);
+    window.mpEx.cc(function (c) {
+      if (!c || !window.mpEx.blocked('Bybit', c)) return;
+      // this page's reader wants an API, so prefer a venue with a documented trading API over the plain country order
+      var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
+      var a = document.getElementById('glLink'), t = document.getElementById('glTxt');
+      if (!v || !a || !t) return;
+      a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v);
+      a.textContent = 'Open a ' + v + ' account →';
+      t.innerHTML = 'Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. Bybit does not onboard traders in '
+        + (window.mpEx.region(c) || 'your country') + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
+    });
+  }, 100);
+})();
+</script>
 
 <h2>How the simulator works</h2>
 <div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed — the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.</p></div>
