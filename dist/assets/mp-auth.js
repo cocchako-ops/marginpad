@@ -2420,3 +2420,38 @@
   // keep the stack off the bar when the viewport changes (rotation, keyboard, a bar that appears late)
   try { addEventListener('resize', function () { var h = document.getElementById(HOST); if (h) h.style.bottom = baseBottom() + 'px'; }); } catch (e) {}
 })();
+
+/* ══════════ "you are running an old version" (2026-09-10) ══════════════════════════════════════════════════
+   A tab left open across a deploy keeps the bundles it loaded — nothing reloads on its own. That is how three
+   rounds of fixes to the winning-ticket line stayed invisible to the owner: the code was live, his tab was not.
+   mp-auth knows the version it was loaded with (its own ?v=), /api/announce carries the version the site serves
+   now, and when they differ this says so ONCE, in the one notification channel, with a Reload button. No timers,
+   no popups, no automatic reload — a trader with an open position decides when the page reloads, not us. */
+(function () {
+  var MINE = ""; try { var sc = document.currentScript || (function () { var l = document.querySelectorAll('script[src*="mp-auth.js"]'); return l[l.length - 1]; })(); MINE = ((sc && sc.src || "").match(/[?&]v=([a-f0-9]+)/) || [])[1] || ""; } catch (e) {}
+  if (!MINE) return; // an unversioned load (dev, or a page that predates versioning): nothing to compare
+  var told = false;
+  function check(ann) {
+    try {
+      if (told || !ann || !ann.av) return;
+      if (ann.av === MINE) return;
+      told = true;
+      var say = function () {
+        if (!window.mpToast) { setTimeout(say, 1500); return; } // the channel lives further down this file / may still be parsing
+        window.mpToast({ mark: "\u21bb", kind: "info", ms: 20000, dismissible: true, key: "stalever",
+          msg: "This page is running an older version of the site.",
+          action: { label: "Reload", onClick: function () { try { location.reload(); } catch (e) {} } } });
+      };
+      say();
+    } catch (e) {}
+  }
+  function ask() {
+    try {
+      if (window.__mpAnn && window.__mpAnn.av) { check(window.__mpAnn); return; } // the page already fetched it once
+      fetch("/api/announce", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { try { window.__mpAnn = j; } catch (e) {} check(j); }).catch(function () {});
+    } catch (e) {}
+  }
+  // once on load, and again when the tab is brought back — the moment a long-open tab is most likely to be stale
+  if (document.readyState === "complete") setTimeout(ask, 2500); else addEventListener("load", function () { setTimeout(ask, 2500); });
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible" && !told) ask(); });
+})();

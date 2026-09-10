@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,st=+document.getElementById('stop').value,tg=+document.getElementById('target').value,p=+document.getElementById('pos').value;var r=document.getElementById('res');if(!(en>0&&st>0&&tg>0&&p>0)){r.innerHTML='';return;}var risk=Math.abs(en-st)/en*p,rew=Math.abs(tg-en)/en*p,rr=risk>0?rew/risk:0,be=1/(1+rr)*100;r.innerHTML='<div class="rrow big"><span class="k">Risk : Reward</span><span class="v">1 : '+rr.toFixed(2)+'</span></div><div class="rrow"><span class="k">Dollar risk at stop</span><span class="v dn">-'+risk.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Dollar reward at target</span><span class="v up">+'+rew.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+be.toFixed(1)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=6fc94174"></script>
+<script defer src="/assets/mp-nav.js?v=d4fae28d"></script>
 </body>
 </html>

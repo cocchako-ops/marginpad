@@ -66,6 +66,16 @@ for (const f of files) {
   out = stampText(out);
   if (out !== h) { fs.writeFileSync(f, out); stamped++; }
 }
+// 5) the SAME version, written into the worker, so /api/announce can tell an open tab that it is running old code.
+// A tab left open across a deploy keeps its bundles forever (nothing reloads on its own) — that is how three rounds
+// of fixes to the winning-ticket line stayed invisible to the owner on 2026-09-10.
+try {
+  const wp = fs.readFileSync(workerPath, 'utf8');
+  const RE_AV = /(const ASSET_V = ')[a-f0-9]*(')/;
+  const avNow = ver['mp-auth.js'] || vHome; // mp-auth compares against its own ?v= — stamp the same thing it will read
+  if (RE_AV.test(wp)) { const nw = wp.replace(RE_AV, (m, a1, b1) => a1 + avNow + b1); if (nw !== wp) fs.writeFileSync(workerPath, nw); }
+  else console.log('  (no ASSET_V constant in worker.js — the stale-tab notice will not update)');
+} catch (e) {}
 console.log('home assets v=' + vHome + ' — stamped ' + stamped + ' of ' + referencing + ' referencing file(s) (' + files.length + ' html scanned)'
   + (loadersStamped ? '; home.js loaders re-stamped' : '') + (workerStamped ? '; worker.js mp-nav injection re-stamped' : ''));
 console.log('bundle versions: ' + Object.keys(ver).map(b => b + '=' + ver[b]).join(' '));

@@ -136,7 +136,21 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +(b.fu?'<div class="fb-r"><span>'+MT('jFeeFund','Funding')+' <i>(8h)</i></span><b'+(b.fu<0?' class="fb-rec"':'')+'>'+(b.fu<0?'+'+feeF(b.fu)+' '+MT('jFeeRec','received'):'\u2212'+feeF(b.fu))+'</b></div>':'')
       +((b.slip!=null&&b.slip>0)?'<div class="fb-r fb-dim"><span>'+MT('jFeeSlip','Entry slippage')+'</span><b>\u2248 \u2212'+feeF(b.slip)+' <i>'+MT('jFeeSlipN','(in the fill price)')+'</i></b></div>':'')
       +'<div class="fb-t"><span>'+MT('jFeeTot','Total costs')+'</span><b'+(b.total<0?' class="fb-rec"':'')+'>'+(b.total<0?'+':'\u2212')+feeF(b.total)+'</b></div>'
-      +'<div class="fb-n">'+MT('jFeeNote','Already settled into this P&L \u2014 the same costs a real exchange charges.')+'</div></div>';}
+      +'<div class="fb-n">'+MT('jFeeNote','Already settled into this P&L \u2014 the same costs a real exchange charges.')+'</div>'
+      /* WHERE THAT MONEY WOULD NOT HAVE GONE (owner 2026-09-10). The panel already itemises what the round trip
+         cost; this says where the same trade is cheaper and links straight to the pair. Only for readers MEXC can
+         actually onboard - mpEx.blocked() keeps it away from the US, the same rule the partner cards follow. The
+         numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. */
+      +feeMexc(e)+'</div>';}
+  function feeMexc(e){ try{
+    if(!window.mpEx||!window.mpEx.url)return '';
+    var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
+    var sym=String(e&&e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!sym)return '';
+    var b=feeBrk(e),tot=feeF(b.total);
+    return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
+      +'<b>'+MT('jFeeMx','MEXC charges 0% maker, ~0.02% taker on futures.')+'</b>'
+      +'<span>'+MT('jFeeMx2','This round trip cost you')+' '+tot+' '+MT('jFeeMx3','in fees \u2014 open '+sym+' there')+' \u2192</span></a>';
+  }catch(_){return '';} }
   if(!window._mpFeeWired){window._mpFeeWired=1;
     document.addEventListener('click',function(ev){
       var x=ev.target.closest&&ev.target.closest('[data-fbx]');
