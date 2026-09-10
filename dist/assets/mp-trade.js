@@ -877,7 +877,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
     var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'—';};
   var ov=null,curId=null,after=null,MAXL=3;
-  function rowHtml(p,pct){return '<div class="mpss-row"><input type="number" step="any" inputmode="decimal" class="p" placeholder="price" value="'+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
+  function rowHtml(p,pct){return '<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="price" value="'+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
@@ -923,14 +923,25 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   }
   function hide(){if(ov)ov.classList.remove('on');}
   function warn(t){var w=ov.querySelector('.mpss-warn');w.textContent=t;w.hidden=false;}
-  function collect(isTp){var sec=ov.querySelector('.mpss-sec[data-k="'+(isTp?'tp':'sl')+'"]'),out=[];
+  /* The price field is TEXT with inputmode=decimal, not type=number, and a comma counts as a decimal point.
+     Measured 2026-09-10 on the owner's own account: three saves in a row reached the server as "SL off / TP off"
+     — the level he typed never left the form. A number input hands back an EMPTY string for content the browser
+     considers invalid, and it silently drops a comma ("105,50" became 10550, a price 100x wrong); an empty row is
+     read here as a deleted level, so the save quietly wiped instead of setting. Now the field keeps what was
+     typed and anything unparseable is reported instead of dropped. */
+  function collect(isTp,bad){var sec=ov.querySelector('.mpss-sec[data-k="'+(isTp?'tp':'sl')+'"]'),out=[];
     Array.prototype.forEach.call(sec.querySelectorAll('.mpss-row'),function(row){
-      var raw=row.querySelector('.p').value.trim();if(raw==='')return; // empty price row = removed
-      out.push({p:parseFloat(raw),pct:+row.querySelector('.pc').value||100});
+      var raw=String(row.querySelector('.p').value||'').trim();if(raw==='')return; // empty price row = removed
+      var v=parseFloat(raw.replace(/\s/g,'').replace(',','.'));
+      if(!isFinite(v)||!(v>0)){if(bad)bad.push(raw.slice(0,16));return;}
+      out.push({p:v,pct:+row.querySelector('.pc').value||100});
     });return out;}
   function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
     var long=e.side!=='short',lv=live(e);
-    var sls=collect(false),tps=collect(true);
+    var bad=[];var sls=collect(false,bad),tps=collect(true,bad);
+    if(bad.length){warn('\u201c'+bad[0]+'\u201d is not a price. Use digits, with . or , for the decimals.');return;} // never drop a level the trader cannot see was rejected
+    var had=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length));
+    if(!sls.length&&!tps.length&&!had){hide();return;} // nothing typed and nothing to clear: closing is not an instruction to wipe
     for(var i=0;i<sls.length;i++){var s=sls[i];
       if(!isFinite(s.p)||!(s.p>0)){warn('Stop-loss price is not a number.');return;}
       if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?'LONG every stop-loss must be BELOW':'SHORT every stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}}
