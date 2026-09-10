@@ -1806,13 +1806,16 @@
       try { if (navigator.vibrate) navigator.vibrate([20, 40, 20, 40, 70]); } catch (e) {}
     }
     window.mpPremiumCelebrate = premiumCelebrate;
-    function giftCelebrate(fromUn, body9) { // center-stage moment when someone gifts you a Vault item — a plain bell row undersold the most personal event on the site
+    function giftCelebrate(fromUn, body9, link9) { // center-stage moment when someone gifts you a Vault item — a plain bell row undersold the most personal event on the site
+      // A MONEY gift lands here too (chat /gift $, owner credit, giveaway prizes) and used to be sent to The Vault to "equip it".
+      // The notification's own link says which it is: /rewards/ = cash, anything else = an item.
+      var cash9 = /^\/rewards/.test(String(link9 || ''));
       var ov = document.getElementById('mpxpLv'); if (!ov) { ov = document.createElement('div'); ov.id = 'mpxpLv'; document.body.appendChild(ov); }
       var col = '#c792ff';
       var conf = ''; for (var n = 0; n < 70; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c792ff', '#c2f64a', '#ffd75a', '#38bdf8', '#e6d1ff'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       var box = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none" stroke="#c792ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M4 10h16M12 10v10M8 10c-2 0-3-1.2-3-2.6C5 6 6.3 5 7.6 5 9.6 5 12 7.5 12 10c0-2.5 2.4-5 4.4-5C17.7 5 19 6 19 7.4 19 8.8 18 10 16 10"/></svg>';
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">Gift received</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + ' sent you a gift' : 'You got a gift') + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="/vault/">Open The Vault — equip it →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">' + (cash9 ? 'You got paid' : 'Gift received') + '</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + ' sent you ' + (cash9 ? 'money' : 'a gift') : (cash9 ? 'Money landed on your balance' : 'You got a gift')) + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="' + (cash9 ? '/rewards/' : '/vault/') + '">' + (cash9 ? 'Open rewards — see your balance' : 'Open The Vault — equip it') + ' →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       var xb = ov.querySelector('.mpxp-x2'); if (xb) xb.addEventListener('click', close9);
@@ -1852,7 +1855,7 @@
             var g9 = fresh9[0];
             try { localStorage.setItem(gk, JSON.stringify(seen9.concat(fresh9.map(function (n) { return n.ts; })).slice(-20))); } catch (e) {}
             var m9 = /^@(\S+) /.exec(String(g9.body || ''));
-            setTimeout(function () { try { giftCelebrate(m9 ? m9[1] : '', g9.body); } catch (e) {} }, 600);
+            setTimeout(function () { try { giftCelebrate(m9 ? m9[1] : '', g9.body, g9.link); } catch (e) {} }, 600);
           }).catch(function () { window.__mpGiftBusy = false; });
         } catch (e) { window.__mpGiftBusy = false; } }
         window.__mpGiftPrev = nu9;

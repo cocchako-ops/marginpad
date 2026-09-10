@@ -11774,7 +11774,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '69e2b131';
+const ASSET_V = '04f6e6be';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -14879,16 +14879,21 @@ export default {
       let b = {}; try { b = await request.json(); } catch (e) {}
       const who = await usersDO(env, '/xpdiag', { username: String(b.username || ''), uid: String(b.uid || '') });
       if (!who || !who.user) return J({ error: 'not_found' }, 404);
-      const cents = Math.round((+b.usd || 0) * 100); if (!(cents > 0) || cents > 500) return J({ error: 'bad_amount' }, 400);
+      const isGift9 = b.op !== 'refund' && b.op !== 'debit';
+      const ceil9 = isGift9 ? 10000 : 500; // the owner pays prizes here (X giveaway 2026-09-10, $20 a winner) — chat /gift keeps its $5 ceiling
+      const cents = Math.round((+b.usd || 0) * 100); if (!(cents > 0) || cents > ceil9) return J({ error: 'bad_amount' }, 400);
       const acct = 'u:' + who.user.id, led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
       let out = null;
       try {
         const path9 = b.op === 'refund' ? 'https://do/shoprefund' : b.op === 'debit' ? 'https://do/shopdebit' : 'https://do/gift'; // debit = take a credit back (a duplicate bonus); logged as 'shop' with the note as item
-        const body9 = b.op === 'refund' ? { acct, cents, item: String(b.item || 'refund').slice(0, 24) } : b.op === 'debit' ? { acct, cents, item: String(b.note || b.item || 'adjust').slice(0, 24) } : { acct, cents, from: String(b.note || 'MarginPad').slice(0, 24) };
+        const body9 = b.op === 'refund' ? { acct, cents, item: String(b.item || 'refund').slice(0, 24) } : b.op === 'debit' ? { acct, cents, item: String(b.note || b.item || 'adjust').slice(0, 24) } : { acct, cents, from: String(b.note || 'MarginPad').slice(0, 24), big: true };
         const r = await led.fetch(new Request(path9, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) }));
         out = await r.json();
       } catch (e) { return J({ error: 'ledger_unavailable' }, 503); }
       if (out && !out.error) { try { await tgAdmin(env, '<b>Balance ' + (b.op === 'refund' ? 'refund' : b.op === 'debit' ? 'debit' : 'credit') + '</b> @' + who.user.username + ' ' + (b.op === 'debit' ? '-' : '+') + '$' + (cents / 100).toFixed(2) + ' — ' + String(b.note || b.item || '')); } catch (e) {} }
+      if (out && !out.error && isGift9 && b.notify) { // the same 'gift' notification the chat command sends: bell row + the full-screen celebration on the winner's next visit
+        try { await usersDO(env, '/notify', { uid: String(who.user.id), kind: 'gift', body: String(b.notifyBody || ('@MarginPad sent you $' + (cents / 100).toFixed(2) + ' — it just landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
+      }
       return J({ ...(out || {}), username: who.user.username, usd: cents / 100 });
     }
     if (url.pathname === '/api/admin/xpdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only XP-credit audit: user + xp log + trade closes + promo config in one response — every "boost didn't credit" ticket becomes checkable against the exact predicate inputs
@@ -17514,7 +17519,8 @@ export class RewardLedger {
       return this.j({ ok: true });
     }
     if (path === '/gift') { // chat /gift credit — same shape as /mission but WITHOUT its 50-cent clamp (ibrar ticket 2026-08-16: a $1 gift silently landed as $0.50); cap mirrors the /gift command max ($5), logged as 'gift' for audit
-      const gacct = String(body.acct || ''), gcents = Math.max(0, Math.min(500, Math.round(+body.cents || 0)));
+      const gcap = body.big ? 10000 : 500; // big = the owner's own /api/admin/credit route (giveaway prizes, $20 a winner 2026-09-10); the chat command stays at $5
+      const gacct = String(body.acct || ''), gcents = Math.max(0, Math.min(gcap, Math.round(+body.cents || 0)));
       if (!gacct || gacct.indexOf('u:') !== 0 || !gcents) return this.j({ error: 'bad' }, 400);
       const grow = this.rows('SELECT banned FROM accounts WHERE address=?', gacct)[0];
       if (grow && grow.banned) return this.j({ error: 'banned' }, 403);
