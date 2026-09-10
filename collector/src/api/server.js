@@ -273,6 +273,29 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { if (hitL) { res.set('x-latam-cache', 'stale'); return res.status(200).type('application/json').send(hitL.body); } return res.status(502).json({ error: 'latam_unreachable', detail: String(e).slice(0, 120) }); }
   });
 
+  // GeckoTerminal read-only proxy (2026-09-10). GT 429s Cloudflare's SHARED egress hard: measured on production,
+  // a contract lookup for a coin minted minutes earlier answered 503 busy on three tries in a row while the same
+  // address resolved instantly from here. Same reason /api/v1/latam exists for CriptoYa. Whitelisted to the two
+  // read paths the worker needs, cached 45 s in memory, no keys involved.
+  const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60})$/;
+  const gtCache = new Map();
+  setInterval(() => { const c = Date.now() - 300000; for (const [k, v] of gtCache) if (v.t < c) gtCache.delete(k); }, 120000).unref?.();
+  app.get('/api/v1/dex', async (req, res) => {
+    const p4 = String(req.query.path || '');
+    if (!GT_ALLOW.test(p4)) return res.status(400).json({ error: 'path_not_allowed' });
+    const url = 'https://api.geckoterminal.com/api/v2' + p4, ttl = 45000;
+    const hit = gtCache.get(url);
+    if (hit && Date.now() - hit.t < ttl) { res.set('Cache-Control', 'public, max-age=45'); res.set('x-dex-cache', 'hit'); return res.status(hit.status).type('application/json').send(hit.body); }
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' } });
+      const body = await r.text();
+      if (r.status === 200) gtCache.set(url, { t: Date.now(), status: r.status, body });
+      else if (hit) { res.set('x-dex-cache', 'stale'); return res.status(200).type('application/json').send(hit.body); }
+      res.set('Cache-Control', 'public, max-age=45');
+      return res.status(r.status).type('application/json').send(body);
+    } catch (e) { if (hit) { res.set('x-dex-cache', 'stale'); return res.status(200).type('application/json').send(hit.body); } return res.status(502).json({ error: 'dex_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
   // Hyperliquid whale tracker (phase D): biggest open positions + recent changes, from src/whales.js
   app.get('/api/v1/whales', (req, res) => {
     try { res.set('Cache-Control', 'public, max-age=60'); res.json(getWhales()); }
