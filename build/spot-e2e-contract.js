@@ -30,6 +30,17 @@ const BONK = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', CAKE = '0x0e09fabb7
     chk('browser: trade modal opens for the contract token, pays in SOL', modal.open && /BONK/i.test(modal.sym || '') && /SOL/.test(modal.pay || ''), modal);
     await page.evaluate(() => { document.getElementById('memeQ').value = 'hello'; document.getElementById('memeQ').dispatchEvent(new Event('input')); }); await new Promise(r => setTimeout(r, 300));
     chk('browser: non-address input clears the card', await page.evaluate(() => !document.getElementById('tokRow')));
+    // THE CHART. On 2026-09-10 every meme chart on Demo Spot was empty (BONK: zero bars) because GeckoTerminal
+    // refuses our egress and the droplet proxy did not yet cover the candle path — and a hard error skipped the
+    // fallback entirely. A meme the trader can open must have candles to look at.
+    const ch = await page.evaluate(async () => {
+      const host = document.getElementById('tmChart');
+      let bars = -1;
+      try { const j = await (await fetch('/api/spot/memechart?pool=5zpyutJu9ee6jFymDGoK7F6S5Kczqtc9FomP3ueKuyA9&net=solana&tf=1h')).json(); bars = Array.isArray(j) ? j.length : -1; } catch (e) {}
+      return { bars, canvas: host ? host.querySelectorAll('canvas').length : 0, msg: host ? (host.innerText || '').trim().slice(0, 60) : '' };
+    });
+    chk('browser: the meme chart has real candles behind it', ch.bars >= 100, ch);
+    chk('browser: and the modal drew one', ch.canvas > 0 || /minutes old/i.test(ch.msg), ch);
     chk('browser: zero page errors', errs.length === 0, errs);
     await ctx.close();
   });

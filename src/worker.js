@@ -12751,7 +12751,7 @@ async function gtFetch(env, path, ttl, ckey) {
         try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
         return j;
       }
-      if (r.status !== 429 && r.status < 500) return null; // hard error (404 bad pool etc.) — retrying won't help
+      if (r.status !== 429 && r.status < 500) return await gtViaVps(env, path, ttl, ckey); // a hard error from OUR egress is not the truth: ask the droplet (measured 2026-09-10 — POPCAT's pool gave 300 candles from a normal IP and through the droplet, while this path returned nothing and the chart was empty)
     } catch (e) {}
     if (att === 0) await new Promise(rs => setTimeout(rs, 700));
   }
@@ -12767,7 +12767,10 @@ async function gtFetchX(env, path, ttl, ckey) {
       const r = await fetch('https://api.geckoterminal.com/api/v2' + path, { headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
       last = r.status;
       if (r.ok) { const j = await r.json(); try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {} return { j, status: 200 }; }
-      if (r.status !== 429 && r.status < 500) return { j: null, status: r.status };
+      if (r.status !== 429 && r.status < 500) { // a hard error from OUR egress is not the truth — let the droplet answer before we believe it
+        const v0 = await gtViaVps(env, path, ttl, ckey);
+        return v0 ? { j: v0, status: 200 } : { j: null, status: r.status };
+      }
     } catch (e) { last = 0; }
     await new Promise(rs => setTimeout(rs, att === 0 ? 700 : 1500));
   }
@@ -12972,7 +12975,7 @@ async function handleSpot(url, request, env) {
     const pool = String(url.searchParams.get('pool') || '');
     const net = SPOT_NETS[String(url.searchParams.get('net') || '')] ? String(url.searchParams.get('net')) : 'solana';
     if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_pool' }, 400);
-    const M = { '15m': ['minute', 15], '1h': ['hour', 1], '4h': ['hour', 4], '1d': ['day', 1] };
+    const M = { '1m': ['minute', 1], '5m': ['minute', 5], '15m': ['minute', 15], '1h': ['hour', 1], '4h': ['hour', 4], '1d': ['day', 1] }; // 1m/5m (2026-09-10): a pool minutes old has ONE 15m candle, which draws as an empty chart
     const mm = M[String(url.searchParams.get('tf') || '1h')] || M['1h'];
     const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool + '/ohlcv/' + mm[0] + '?aggregate=' + mm[1] + '&limit=300', 60, 'ohlcv_' + net + '_' + pool + '_' + mm[0] + mm[1]);
     const list = (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || [];
