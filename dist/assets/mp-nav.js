@@ -117,6 +117,7 @@
     calc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="18" x2="16" y2="18"/></svg>',
     vault: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3.4"/><path d="M12 8.6v-1M12 16.4v-1M8.6 12h-1M16.4 12h-1"/></svg>',
     gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+    trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 2.6 4.9"/><path d="M17 5h2.5a2.5 2.5 0 0 1-2.6 4.9"/><path d="M12 14v3"/><path d="M8.5 21h7"/><path d="M9.5 21c0-2 1-2.6 2.5-4 1.5 1.4 2.5 2 2.5 4"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1V10"/></svg>',
     defi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>',
     tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>',
@@ -177,7 +178,7 @@
     + row('Liquidations today', 'Live 24h total &amp; all-time records', '/crypto-liquidations-today/', '#ff8c5a', 'rekt')
     + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert')
     + '<div class="mpnav-sec">'+TR('secEarn')+'</div>'
-    + row('Your season', 'Boards, pass, daily call, goals', '/season/', '#c2f64a', 'gift')
+    + row('Your season', 'Boards, pass, daily call, goals', '/season/', '#c2f64a', 'trophy') // was the same gift box as /rewards/ right below it (owner, 2026-09-10)
     + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift')
     + row('brVaultT', 'brVaultS', '/vault/', '#c792ff', 'vault')
     + '<a class="mpnav-row" href="/levels/"><span class="mpnav-ic" style="color:#8b5cff;background:#8b5cff22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.3 21 12 17.5 5.7 21 7 14 2 9.3 9 8.5 12 2"/></svg></span><span class="mpnav-rt"><b>Level System</b><small>Bronze &rarr; Diamond &middot; XP &amp; rewards</small></span>' + I.chev + '</a>'
