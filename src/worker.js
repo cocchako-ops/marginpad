@@ -13318,6 +13318,30 @@ async function handleSpot(url, request, env) {
       }
       return jr(d); } catch (e) { return jr({ tx: [] }); }
   }
+  // DAILY LIFELINE. GET tells the page whether the card belongs on screen; POST claims it. The account's worth is
+  // priced HERE, from our own /portfolio (the very read the page shows), never taken from the request — the DO only
+  // owns the once-a-day guard and the money. A blown account can practise again tomorrow instead of being over.
+  if (path === '/topup') {
+    if (!uid) return jr({ error: 'auth' }, 401);
+    let st = {}; try { const sr = await stub.fetch(new Request('https://do/topupstate?uid=' + encodeURIComponent(uid))); st = await sr.json(); } catch (e) {}
+    if (st && st.none) return jr({ none: true }); // no Demo Spot account yet — nothing to top up
+    let valueUsd = null;
+    try {
+      const pu = new URL(request.url); pu.pathname = '/api/spot/portfolio'; pu.search = '';
+      const pr = await handleSpot(pu, new Request(pu.toString(), { headers: request.headers }), env);
+      const pj = await pr.json(); if (pj && !pj.none && typeof pj.totalUsd === 'number') valueUsd = pj.totalUsd;
+    } catch (e) {}
+    if (valueUsd == null) return jr({ error: 'unavailable' }, 503);
+    const eligible = Math.round(valueUsd * 100) <= SPOT_TOPUP_MAX_C;
+    if (request.method !== 'POST') return jr({ ok: true, eligible, valueUsd, maxUsd: SPOT_TOPUP_MAX_C / 100, amountUsd: SPOT_TOPUP_C / 100, claimedToday: !!st.claimedToday, nextMs: st.nextMs || 0, topups: st.topups || 0 });
+    if (st.claimedToday) return jr({ error: 'claimed', nextMs: st.nextMs || 0 }, 429);
+    if (!eligible) return jr({ error: 'not_broke', valueUsd, maxUsd: SPOT_TOPUP_MAX_C / 100 }, 400);
+    const r = await stub.fetch(new Request('https://do/topup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, valueC: Math.round(valueUsd * 100) }) }));
+    const d = await r.json();
+    if (d && d.error) return jr(d, r.status || 400);
+    try { await evPush(env, request, 'spottopup', 'daily top-up, was ' + valueUsd.toFixed(2) + ' USD', '/spot/'); } catch (e) {}
+    return jr(d);
+  }
   if (path === '/reset' && request.method === 'POST') {
     try { const r = await stub.fetch(new Request('https://do/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'wallet reset', '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : (d && d.error === 'cooldown' ? 429 : 400)); } catch (e) { return spotFail(env, jr, path); }
   }
@@ -15091,6 +15115,11 @@ export default {
       const r = await spotDailyLine(env, new Date().toISOString().slice(0, 10), { uid, dry: !send || !uid });
       return new Response(JSON.stringify(Object.assign({ text: spotDailyText(+url.searchParams.get('prev') || 0, +url.searchParams.get('cur') || 0) }, r)), { headers: { 'content-type': 'application/json' } });
     }
+    if (url.pathname === '/api/admin/spotdrain' && isAdminKey(env, adminKeyFrom(request, url))) { // TEST HOOK for build/spot-e2e-topup.js: empty a throwaway account (e2e uids only, enforced in the DO)
+      const uid = String(url.searchParams.get('uid') || '');
+      const r = await spotStub(env).fetch(new Request('https://do/e2edrain?uid=' + encodeURIComponent(uid)));
+      return new Response(await r.text(), { status: r.status, headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname === '/api/admin/spotguard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // exposes the pure sell guard + row-freshness helpers so build/spot-e2e-price.js tests the exact code the money path runs
       const q = url.searchParams; const now = Date.now();
       const guard = spotSellGuard({ price: +q.get('price') || 0, lastPx: +q.get('lastPx') || 0, liqUsd: +q.get('liq') || 0, stale: q.get('stale') === '1' });
@@ -16473,7 +16502,7 @@ export class SpotStore {
     // on-ramp fee), memes live in a self-custody WALLET and settle in the chain's NATIVE coin (SOL/ETH/BNB).
     // card/wusdt = cents on the card / wallet-USDT; gas = JSON {SOL:qty,ETH:qty,BNB:qty}; addr = JSON {sol,evm};
     // onb = onboarding progress (1 card linked, 2 USDT bought, 3 wallet created, 4 wallet funded).
-    for (const col of ['card INTEGER DEFAULT 0', 'wusdt INTEGER DEFAULT 0', "gas TEXT DEFAULT '{}'", "addr TEXT DEFAULT ''", 'onb INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE spotacct ADD COLUMN ' + col); } catch (e) {} }
+    for (const col of ['card INTEGER DEFAULT 0', 'wusdt INTEGER DEFAULT 0', "gas TEXT DEFAULT '{}'", "addr TEXT DEFAULT ''", 'onb INTEGER DEFAULT 0', "topup_day TEXT DEFAULT ''", 'topups INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE spotacct ADD COLUMN ' + col); } catch (e) {} }
     // v6 (2026-08-02): the internal "MarginPad Chain" — every user-to-user transfer is a public on-chain-style record
     // with a tx hash and a block height. P2P sends move WALLET USDT between accounts, resolved by wallet ADDRESS
     // (users literally share their Receive addresses with each other — the real-life flow).
@@ -16702,6 +16731,37 @@ export class SpotStore {
         .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, sym: t.sym, qty: t.qty, price: t.price, usdUsd: t.usd / 100, feeUsd: (t.fee || 0) / 100, pnlUsd: (t.pnl || 0) / 100, name: m.name || '', logo: m.logo || '', xto: m.to || '', xfrom: m.from || '', hash: m.hash || '' }; });
       return this.j({ tx: list });
     }
+    if (path === '/topup') { // DAILY LIFELINE (2026-09-10) — see SPOT_TOPUP_C. Deliberately NOT a reset: holdings,
+      // history, wallet and onboarding all stay. It exists so a blown account can keep practising tomorrow instead
+      // of being finished for good. The worker prices the whole portfolio and passes what it is worth; the DO owns
+      // the once-a-day guard and the money.
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      const dnow = new Date(now), day = dnow.toISOString().slice(0, 10);
+      const nextMs = Date.UTC(dnow.getUTCFullYear(), dnow.getUTCMonth(), dnow.getUTCDate() + 1) - now;
+      if (String(a.topup_day || '') === day) return this.j({ error: 'claimed', nextMs }, 429);
+      const valueC = Math.round(+b.valueC || 0); // priced by the worker, never by the client
+      if (valueC > SPOT_TOPUP_MAX_C) return this.j({ error: 'not_broke', valueUsd: valueC / 100, maxUsd: SPOT_TOPUP_MAX_C / 100 }, 400);
+      sql.exec('UPDATE spotacct SET card=COALESCE(card,0)+?, topup_day=?, topups=COALESCE(topups,0)+1 WHERE user_id=?', SPOT_TOPUP_C, day, uid);
+      sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'topup', 'USD', SPOT_TOPUP_C, '{}');
+      const a2 = this.rows('SELECT card,topups FROM spotacct WHERE user_id=?', uid)[0] || {};
+      return this.j({ ok: true, gotUsd: SPOT_TOPUP_C / 100, cardUsd: (a2.card || 0) / 100, topups: a2.topups || 0, day, nextMs });
+    }
+    if (path === '/e2edrain') { // TEST HOOK: empty a throwaway account so the daily-lifeline path can be proven.
+      // e2e-prefixed uids only, the same rule /e2euser follows — a real account can never be wiped through here.
+      if (!/^e2e/i.test(uid)) return this.j({ error: 'not_e2e' }, 400);
+      this._acct(uid, now);
+      sql.exec('DELETE FROM spothold WHERE user_id=?', uid);
+      sql.exec("UPDATE spotacct SET card=0, usdt=0, wusdt=0, gas='{}' WHERE user_id=?", uid);
+      return this.j({ ok: true });
+    }
+    if (path === '/topupstate') { // what the page needs to decide whether the card belongs on screen
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const a = this.rows('SELECT topup_day,topups FROM spotacct WHERE user_id=?', uid)[0];
+      if (!a) return this.j({ none: true });
+      const dn = new Date(now), day = dn.toISOString().slice(0, 10);
+      return this.j({ claimedToday: String(a.topup_day || '') === day, topups: a.topups || 0, nextMs: Date.UTC(dn.getUTCFullYear(), dn.getUTCMonth(), dn.getUTCDate() + 1) - now });
+    }
     if (path === '/reset') { // back to a fresh $10,000 CARD — at most once per 7 days; wallet addresses + tx history kept
       if (!uid) return this.j({ error: 'bad' }, 400);
       const a = this._acct(uid, now);
@@ -16841,6 +16901,12 @@ export class SpotStore {
   }
 }
 const SPOT_START_C = 1000000; // $10,000.00 demo money (lands on the CARD; USDT is bought on the exchange)
+// DAILY LIFELINE (2026-09-10, owner: "let people who spent all their money claim 1k a day on Spot"). Once per UTC
+// day, and only for an account that is genuinely finished: the WHOLE portfolio — card, exchange, wallet, gas and
+// every bag at its live price — has to be worth under $100, i.e. 1% of what it started with. It is a top-up, not a
+// reset: holdings, history and onboarding all stay. Demo Spot pays nothing real, so there is no money to farm.
+const SPOT_TOPUP_C = 100000;      // $1,000.00 onto the card
+const SPOT_TOPUP_MAX_C = 10000;   // eligible under $100.00 total
 // ---------- live chat (Durable Object + WebSocket hibernation) ----------
 // Per-coin chat rooms: 'global' (All) stays on the original 'global2' instance (preserves history); a coin room
 // like BTC/ETH/SOL gets its own DO instance 'room_<COIN>'. Sanitized to a short A-Z0-9 token so a bad ?room can't
