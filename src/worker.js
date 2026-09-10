@@ -12724,6 +12724,20 @@ const SPOT_LOGO_OK = /^https:\/\/(assets\.coingecko\.com|coin-images\.coingecko\
 // GeckoTerminal (free, no key) — the Solana meme universe: trending pools, per-pool price+liquidity, OHLCV candles.
 // Rate limit ~30 req/min → EVERYTHING goes through the edge cache (trending 120s, price 30s, candles 60s) so a
 // crowd of users collapses to one upstream hit per TTL.
+// GT rate-limits Cloudflare's SHARED egress, not the droplet. When a direct call is refused we ask the collector
+// to make the same read (whitelisted to token/pool paths, cached 45 s there). Same escape hatch /api/v1/latam is
+// for CriptoYa. Measured 2026-09-10: direct 503 busy three times in a row, through here it answers first time.
+async function gtViaVps(env, path, ttl, ckey) {
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, ''); if (!base) return null;
+  try {
+    const r = await fetch(base + '/api/v1/dex?path=' + encodeURIComponent(path), { signal: AbortSignal.timeout(9000), headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (!j || j.error) return null;
+    try { await caches.default.put(new Request('https://marginpad.io/__gt_' + ckey), new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
+    return j;
+  } catch (e) { return null; }
+}
 async function gtFetch(env, path, ttl, ckey) {
   const ck = new Request('https://marginpad.io/__gt_' + ckey);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
@@ -12741,7 +12755,7 @@ async function gtFetch(env, path, ttl, ckey) {
     } catch (e) {}
     if (att === 0) await new Promise(rs => setTimeout(rs, 700));
   }
-  return null;
+  return await gtViaVps(env, path, ttl, ckey); // refused by GT from here — ask the droplet
 }
 // Same as gtFetch but the caller learns WHY it failed (GT 429 vs a real 404) — the contract lookup must not call a rate-limit "no such token". 3 attempts, 700/1500ms.
 async function gtFetchX(env, path, ttl, ckey) {
@@ -12757,7 +12771,62 @@ async function gtFetchX(env, path, ttl, ckey) {
     } catch (e) { last = 0; }
     await new Promise(rs => setTimeout(rs, att === 0 ? 700 : 1500));
   }
+  const via = await gtViaVps(env, path, ttl, ckey);
+  if (via) return { j: via, status: 200 };
   return { j: null, status: last || 429 };
+}
+// ── DEXSCREENER: the second source for a contract lookup (2026-09-10) ────────────────────────────────────────
+// Owner: "I pasted the CA of a coin that had just launched, could not find it, and got a rate-limit notice."
+// MEASURED on production before this: /api/spot/token?addr=<a pump.fun mint minted 4 minutes earlier> answered
+// 503 busy on three tries in a row, 3.7-5.9 s each (three GT attempts with backoff), because GeckoTerminal 429s
+// Cloudflare's shared egress. DexScreener answered the SAME address in one call with symbol, price, liquidity and
+// the pair address. So a lookup asks DexScreener first and keeps GT as the fallback; "busy" now means BOTH are
+// down, which is what that word should have meant all along.
+// Chain ids differ from ours by one name only.
+const DS_CHAIN = { solana: 'solana', base: 'base', eth: 'ethereum', bsc: 'bsc' };
+const DS_NET = { solana: 'solana', base: 'base', ethereum: 'eth', bsc: 'bsc' };
+async function dsFetch(env, path, ttl, ckey) { // same edge-cache + one-retry shape as gtFetch, against DexScreener
+  const ck = new Request('https://marginpad.io/__ds_' + ckey);
+  try { const hit = await caches.default.match(ck); if (hit) return { j: await hit.json(), status: 200 }; } catch (e) {}
+  let last = 0;
+  for (let att = 0; att < 2; att++) {
+    try {
+      const r = await fetch('https://api.dexscreener.com' + path, { headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
+      last = r.status;
+      if (r.ok) { const j = await r.json(); try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {} return { j, status: 200 }; }
+      if (r.status !== 429 && r.status < 500) return { j: null, status: r.status };
+    } catch (e) { last = 0; }
+    if (att === 0) await new Promise(rs => setTimeout(rs, 500));
+  }
+  return { j: null, status: last || 429 };
+}
+// One DexScreener pair -> the shape the rest of Demo Spot speaks. Only pairs on a chain we settle on, and the pair
+// must actually be headed by the token that was asked for - the same rule spotMemePrice enforces for a sell.
+function _dsPair(pr, mint) {
+  if (!pr || !pr.baseToken) return null;
+  const net = DS_NET[String(pr.chainId || '')]; if (!net || !SPOT_NETS[net]) return null;
+  const base = String(pr.baseToken.address || '');
+  if (mint && base.toLowerCase() !== String(mint).toLowerCase()) return null;
+  const price = +pr.priceUsd || 0; if (!(price > 0)) return null;
+  const pool = String(pr.pairAddress || ''); if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return null;
+  return { mint: base, pool, net, native: SPOT_NETS[net].native, sym: String(pr.baseToken.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?',
+    name: String(pr.baseToken.name || '').slice(0, 48), logo: '', price,
+    liqUsd: +((pr.liquidity || {}).usd) || 0, vol24: +((pr.volume || {}).h24) || 0, fdv: +pr.fdv || 0 };
+}
+// deepest pool for a contract, from DexScreener
+async function dsToken(env, addr) {
+  const r = await dsFetch(env, '/latest/dex/tokens/' + encodeURIComponent(addr), 45, 'tok_' + addr);
+  if (!r.j) return { row: null, busy: r.status === 429 || r.status >= 500 || r.status === 0 };
+  const rows = (r.j.pairs || []).map(pr => _dsPair(pr, addr)).filter(Boolean).sort((a, b) => b.liqUsd - a.liqUsd);
+  return { row: rows[0] || null, busy: false };
+}
+// live price for ONE pair, used when GeckoTerminal cannot read the pool (a pair minutes old is not indexed there yet)
+async function dsPool(env, net, pool) {
+  const ch = DS_CHAIN[net]; if (!ch) return null;
+  const r = await dsFetch(env, '/latest/dex/pairs/' + ch + '/' + encodeURIComponent(pool), 30, 'pool_' + net + '_' + pool);
+  const pr = r.j && ((r.j.pairs || [])[0] || r.j.pair);
+  const row = _dsPair(pr, '');
+  return row ? { price: row.price, liqUsd: row.liqUsd, mint: row.mint } : null;
 }
 const SPOT_WRAPPED = { 'So11111111111111111111111111111111111111112': 'SOL', '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'ETH', '0x4200000000000000000000000000000000000006': 'ETH', '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c': 'BNB', '0x55d398326f99059ff775485246999027b3197955': 'USDT', '0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d': 'USDC', 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 'USDC', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 'USDT' }; // wrapped natives + stables by ADDRESS — a lookup would otherwise route them through the DEX path
 // Symbols that are NOT memes even when they head a hot pool (wrapped natives, stables, majors) — filtered out of the universe
@@ -12848,7 +12917,11 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
   const a = j && j.data && j.data.attributes;
   const price = a ? +a.base_token_price_usd || 0 : 0;
   if (price > 0) { let mint = ''; try { mint = String(j.data.relationships.base_token.data.id || '').replace(/^[a-z0-9-]+_/, ''); } catch (e) {} return { price, liqUsd: +a.reserve_in_usd || 0, mint }; } // mint = the pool's OWN base token; a trade must prove the pool belongs to the token it names
-  // pool read failed (GT 429 burst) → fall back to the AGGREGATE meme list price, but ONLY a row read within the
+  // GT could not read the pool: either its 429 burst, or the pair is minutes old and not indexed there yet. Ask
+  // DexScreener for the SAME pair - it returns the pair's own base token, so the "a trade must prove the pool
+  // belongs to the token it names" rule still holds, and this is a live read, not a stale row. (2026-09-10)
+  try { const d = await dsPool(env, net, pool); if (d && d.price > 0) return d; } catch (e) {}
+  // still nothing → fall back to the AGGREGATE meme list price, but ONLY a row read within the
   // last SPOT_FALLBACK_MAX_AGE. The old "≤~3 min stale" comment was a wish: carried-over rows had no age at all.
   try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_FALLBACK_MAX_AGE)) return { price: m.price, liqUsd: m.liqUsd || 0, mint: m.mint || '', stale: true }; } catch (e) {}
   return null;
@@ -12913,6 +12986,19 @@ async function handleSpot(url, request, env) {
     const wrapped = SPOT_WRAPPED[addr] || SPOT_WRAPPED[addr.toLowerCase()];
     if (wrapped) return jr({ error: 'major', sym: wrapped }, 400);
     try { const m = (await spotMemeList(env)).find(x => x.mint === addr || x.mint === addr.toLowerCase()); if (m) return jr({ ok: true, mint: m.mint, pool: m.pool, net: m.net, native: m.native, sym: m.sym, name: m.name, logo: m.logo, price: +m.price || 0, liqUsd: +m.liqUsd || 0, vol24: +m.vol24 || 0, fdv: +m.fdv || 0, thin: (+m.liqUsd || 0) < 8000, listed: true }); } catch (e) {}
+    // DexScreener first: a pool minutes old is already there, and GT 429s our egress (measured 2026-09-10).
+    // Every guard below is the same one the GT path applies - wrapped/stable by address (above), majors by symbol,
+    // and a pool under $1k of liquidity refused, because under that the price is fiction rather than a lesson.
+    let dsBusy = false, dsRow = null;
+    try {
+      const d = await dsToken(env, addr); dsBusy = d.busy; dsRow = d.row;
+      if (d.row) {
+        if (SPOT_MEME_BLOCK.test(d.row.sym)) return jr({ error: 'major', sym: d.row.sym }, 400);
+        if (d.row.liqUsd > 0 && d.row.liqUsd < 1000) return jr({ error: 'thin_pool', liqUsd: d.row.liqUsd }, 400);
+        if (!(d.row.liqUsd > 0)) throw 0; // no pool yet (bonding curve): let GT try below, and report it honestly if it cannot either
+        return jr({ ok: true, mint: addr, pool: d.row.pool, net: d.row.net, native: d.row.native, sym: d.row.sym, name: d.row.name, logo: d.row.logo, price: d.row.price, liqUsd: d.row.liqUsd, vol24: d.row.vol24, fdv: d.row.fdv, thin: d.row.liqUsd < 8000, listed: false, src: 'ds' });
+      }
+    } catch (e) { dsBusy = true; }
     const want = String(url.searchParams.get('net') || '');
     const nets = isSol ? ['solana'] : (SPOT_NETS[want] && want !== 'solana' ? [want] : ['bsc', 'base', 'eth']);
     let found = null, net = null, busy = false;
@@ -12921,14 +13007,18 @@ async function handleSpot(url, request, env) {
       if (r.j && r.j.data && r.j.data.attributes) { found = r.j; net = n; break; }
       if (r.status === 429 || r.status >= 500 || r.status === 0) busy = true;
     }
-    if (!found) return busy ? jr({ error: 'busy' }, 503) : jr({ error: 'not_found', nets }, 404);
+    if (!found) {
+      // DexScreener knows the token but nobody can price it yet: it is still on its bonding curve, with no pool.
+      if (dsRow) return jr({ error: 'no_pool_yet', sym: dsRow.sym, name: dsRow.name, fdvUsd: dsRow.fdv || 0 }, 400);
+      return (busy && dsBusy) ? jr({ error: 'busy' }, 503) : jr({ error: 'not_found', nets }, 404); // both sources down = busy; DexScreener answering "no such token" is a real answer
+    }
     const a = found.data.attributes || {};
     const sym = String(a.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?';
     if (SPOT_MEME_BLOCK.test(sym)) return jr({ error: 'major', sym }, 400); // majors and stables trade on the exchange, not through the DEX path
     const pools = (found.included || []).filter(x => x && x.type === 'pool' && x.attributes).map(x => ({ id: String(x.id || '').replace(/^[a-z0-9_-]+_/, ''), liq: +x.attributes.reserve_in_usd || 0, vol24: +((x.attributes.volume_usd || {}).h24) || 0 })).filter(p => /^[A-Za-z0-9]{20,60}$/.test(p.id)).sort((x, y) => y.liq - x.liq);
     if (!pools.length) return jr({ error: 'no_pool' }, 404);
     const top = pools[0];
-    if (top.liq < 1000) return jr({ error: 'thin_pool', liqUsd: top.liq }, 400); // under $1k of liquidity the price is fiction, not a lesson
+    if (top.liq < 1000) return jr({ error: top.liq > 0 ? 'thin_pool' : 'no_pool_yet', liqUsd: top.liq, sym }, 400); // under $1k of liquidity the price is fiction, not a lesson; zero means there is no pool at all yet
     const logo = SPOT_LOGO_OK.test(String(a.image_url || '')) ? String(a.image_url).slice(0, 300) : '';
     return jr({ ok: true, mint: addr, pool: top.id, net, native: SPOT_NETS[net].native, sym, name: String(a.name || '').slice(0, 48), logo, price: +a.price_usd || 0, liqUsd: top.liq, vol24: top.vol24, fdv: +a.fdv_usd || 0, thin: top.liq < 8000, listed: false });
   }
