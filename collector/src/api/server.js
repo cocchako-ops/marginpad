@@ -277,7 +277,10 @@ export function createApiServer({ storage, getStatus, bus }) {
   // a contract lookup for a coin minted minutes earlier answered 503 busy on three tries in a row while the same
   // address resolved instantly from here. Same reason /api/v1/latam exists for CriptoYa. Whitelisted to the two
   // read paths the worker needs, cached 45 s in memory, no keys involved.
-  const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60})$/;
+  // tokens + pools + the pool's CANDLES. The candles were left out on the first pass and it cost every meme its
+  // chart: GT 429s the worker, the worker asked here, and here refused the path — /api/spot/memechart returned
+  // zero bars for BONK as well as for a coin minted minutes ago (measured 2026-09-10).
+  const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?)$/;
   const gtCache = new Map();
   setInterval(() => { const c = Date.now() - 300000; for (const [k, v] of gtCache) if (v.t < c) gtCache.delete(k); }, 120000).unref?.();
   app.get('/api/v1/dex', async (req, res) => {
