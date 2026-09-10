@@ -2290,7 +2290,11 @@
     try {
       if (!t || !((+t.pnl) > 0) || !((+t.margin) > 0)) return '';
       var x = 0; try { x = +localStorage.getItem(GLX) || 0; } catch (e) {}
-      if (Date.now() - x < 6048e5) return '';
+      // "Not now" means TODAY, not this week. It was 7 days: the owner pressed the X once and the line was gone
+      // from his own site for a week (2026-09-10). A day matches the rhythm of everything else here — the daily
+      // call, the daily missions, the daily top-up — and it still means one dismissal silences it completely for
+      // the rest of that day, which is the whole point of the X.
+      if (Date.now() - x < 864e5) return '';
       var sym = U(t.sym); if (!sym) return '';
       var name = mpEx.best(sym), p = P[name]; if (!p) return '';
       var roe = (+t.pnl) / (+t.margin) * 100;

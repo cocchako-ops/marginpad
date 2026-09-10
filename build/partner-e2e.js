@@ -6,7 +6,8 @@
      2 GEO ORDER    /api/geo answers the country (private cache, no store hop); the cards order themselves per reader
                     and venues that cannot onboard that country go last and say so. US: Coinbase/Kraken first.
      3 REWARDS      the payout note carries a real, TRACKED button to open the account a payout needs.
-     4 AFTER A WIN  the newest winning ticket carries ONE dismissible line to the same pair; dismiss lasts 7 days.
+     4 AFTER A WIN  the newest winning ticket carries ONE dismissible line to the same pair; dismiss lasts a DAY
+                    (it was 7 days until 2026-09-10 — one X and the owner lost the line on his own site for a week).
      5 EXACT PAIR   every link built by the shared table points at the coin, not at the exchange home page.
    The browser tests never click a partner link (that would write a real money click); they read hrefs and order.
    Run: node build/partner-e2e.js */
@@ -90,6 +91,19 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     chk('terminal: the dismiss button removes it and remembers the choice', !!dis && dis.gone && dis.stored, dis);
     await page.evaluate(() => { if (window.mpJournalRender) window.mpJournalRender(); }); await sleep(700);
     chk('terminal: it stays gone after a re-render (the list rebuilds every second)', await page.evaluate(() => !document.querySelector('#jrList .mp-gl')));
+    // "Not now" means today. A dismissal from yesterday must not still be hiding it.
+    await page.evaluate((h) => { try { localStorage.setItem('mp_golive_x', String(Date.now() - h * 3600000)); } catch (e) {} }, 25);
+    await page.reload({ waitUntil: 'load', timeout: 90000 }); await sleep(6000);
+    await page.evaluate(() => { const b = document.querySelector('[data-mytrades]'); if (b) b.click(); }); await sleep(1600);
+    await page.evaluate(() => { const t = document.querySelector('#jrDrawer [data-jt="closed"]'); if (t) t.click(); }); await sleep(1300);
+    const back = await page.evaluate(() => ({ shown: !!document.querySelector('.mp-gl') }));
+    chk('terminal: a dismissal from yesterday has expired — the line is back', back.shown === true, back);
+    await page.evaluate((h) => { try { localStorage.setItem('mp_golive_x', String(Date.now() - h * 3600000)); } catch (e) {} }, 1);
+    await page.reload({ waitUntil: 'load', timeout: 90000 }); await sleep(6000);
+    await page.evaluate(() => { const b = document.querySelector('[data-mytrades]'); if (b) b.click(); }); await sleep(1600);
+    await page.evaluate(() => { const t = document.querySelector('#jrDrawer [data-jt="closed"]'); if (t) t.click(); }); await sleep(1300);
+    const still = await page.evaluate(() => ({ shown: !!document.querySelector('.mp-gl') }));
+    chk('terminal: an X an hour ago still counts — it stays hidden for the rest of the day', still.shown === false, still);
     // a losing ticket never gets the line
     await seed('NG', JSON.stringify([Object.assign(tr('ETH', -12.5), { status: 'loss' })]));
     await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
