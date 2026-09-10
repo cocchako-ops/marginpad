@@ -253,7 +253,7 @@ ${ld}
         <a href="${okx(s)}" target="_blank" rel="noopener sponsored" data-ex="OKX"><span class="ic" style="background:#cfd3d8;color:#0a0b0d">O</span>OKX</a>
         <a href="${kucoin(s)}" target="_blank" rel="noopener sponsored" data-ex="KuCoin"><span class="ic" style="background:#23af91;color:#06231d">K</span>KuCoin</a>
       </div>
-      <a class="cdmoon" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored"><img src="/assets/moon.png" alt="Moon" width="20" height="20" loading="lazy"><span>${F(L.moonLine || EN.moonLine)}</span><b>&rarr;</b></a>
+      <a class="cdmoon" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored"><img src="/assets/moon.png" alt="Moon" width="20" height="20" loading="lazy"><span>${F(L.moonLine || EN.moonLine)}</span><b>&rarr;</b></a>
     </div>
 
     <div class="cdcta">

@@ -214,7 +214,7 @@ function coinPage(c) {
     <div class="mprl"><div class="mprl-t">TRADE ${c.sym} FOR REAL</div><div class="mprl-row">
       <a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><span class="mprl-k">Bybit</span><span class="mprl-d">${c.sym} futures · up to ${c.lev}× · deep liquidity</span><span class="mprl-a">&rarr;</span></a>
       <i class="mprl-cut"></i>
-      <a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><img src="/assets/moon.png" alt="" width="18" height="18" loading="lazy"><span class="mprl-k">Moon</span><span class="mprl-d">Call ${c.sym} up or down · 24/7</span><span class="mprl-a">&rarr;</span></a>
+      <a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer"><img src="/assets/moon.png" alt="" width="18" height="18" loading="lazy"><span class="mprl-k">Moon</span><span class="mprl-d">Call ${c.sym} up or down · 24/7</span><span class="mprl-a">&rarr;</span></a>
     </div></div>
 
     <h2>FAQ</h2>

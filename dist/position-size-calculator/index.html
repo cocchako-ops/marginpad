@@ -83,12 +83,12 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="rel"><a href="/stop-loss-calculator/">Stop-loss calculator</a><a href="/crypto-profit-calculator/">Profit calculator</a><a href="/risk-of-ruin-calculator/">Risk of ruin</a><a href="/calculators">All calculators (app)</a><a href="/paper-trade">Paper trading</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
-<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
 <p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var a=+document.getElementById('acct').value,rp=+document.getElementById('riskp').value/100,en=+document.getElementById('entry').value,st=+document.getElementById('stop').value,l=+document.getElementById('lev').value;var r=document.getElementById('res');if(!(a>0&&rp>0&&en>0&&st>0&&en!==st)){r.innerHTML='';return;}var riskUsd=a*rp,dist=Math.abs(en-st)/en,pos=riskUsd/dist,qty=pos/en,marg=l>0?pos/l:pos;
 r.innerHTML='<div class="rrow"><span class="k">Dollar risk (if the stop hits)</span><span class="v dn">-'+riskUsd.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Stop distance</span><span class="v">'+(dist*100).toFixed(2)+'%</span></div><div class="rrow big"><span class="k">Position size</span><span class="v">$'+pos.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Margin needed at '+l+'x</span><span class="v">$'+marg.toFixed(2)+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=d4fae28d"></script>
+<script defer src="/assets/mp-nav.js?v=23fd23d6"></script>
 </body>
 </html>

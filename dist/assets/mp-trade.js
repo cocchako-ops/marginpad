@@ -745,7 +745,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
       +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(&#39;exchange&#39;,&#39;Bybit&#39;)}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
       +'<i class="mprl-cut"></i>'
-      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(&#39;exchange&#39;,&#39;Moon&#39;)}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
+      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(&#39;exchange&#39;,&#39;Moon&#39;)}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
       +'</div></div>'
       +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
     shell(inner);

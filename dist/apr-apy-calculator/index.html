@@ -83,11 +83,11 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="rel"><a href="/crypto-funding-cost-calculator/">Funding cost</a><a href="/crypto-compound-calculator/">Compound calculator</a><a href="/defi">DeFi TVL</a><a href="/crypto-roi-calculator/">ROI calculator</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
-<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
 <p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var a=+document.getElementById('apr').value/100,f=+document.getElementById('freq').value,amt=+document.getElementById('amt').value;var r=document.getElementById('res');if(!(a>=0)){r.innerHTML='';return;}var apy=Math.pow(1+a/f,f)-1;r.innerHTML='<div class="rrow big"><span class="k">APY (effective annual yield)</span><span class="v up">'+(apy*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">On '+amt.toLocaleString()+' USD / year</span><span class="v up">+'+(amt*apy).toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Compounding adds</span><span class="v">+'+((apy-a)*100).toFixed(2)+'% vs simple APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=d4fae28d"></script>
+<script defer src="/assets/mp-nav.js?v=23fd23d6"></script>
 </body>
 </html>

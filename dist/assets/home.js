@@ -2009,7 +2009,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
       +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Bybit\')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
       +'<i class="mprl-cut"></i>'
-      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Moon\')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
+      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Moon\')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
       +'</div></div>'
       +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
     shell(inner);
@@ -3077,7 +3077,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
   /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here — the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
   var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
-          {n:'Moon',h:'https://moon.com/?c=moonkickstart',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
+          {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
     elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
@@ -3921,7 +3921,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       +'#mpMoonNudge .a{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .15s,color .15s}'
       +'#mpMoonNudge:hover .a{transform:translateX(3px);color:#e9e7df}';
       (document.head||document.documentElement).appendChild(s);}
-    var a=document.createElement('a');a.id='mpMoonNudge';a.href='https://moon.com/?c=moonkickstart';a.target='_blank';a.rel='sponsored noopener noreferrer';a.setAttribute('data-ex','Moon');
+    var a=document.createElement('a');a.id='mpMoonNudge';a.href='https://moon.com/?offer=marginpad';a.target='_blank';a.rel='sponsored noopener noreferrer';a.setAttribute('data-ex','Moon');
     a.addEventListener('click',function(){try{window.__mpTrack&&window.__mpTrack('exchange','Moon');}catch(e){}});
     b.parentNode.insertBefore(a,b.nextSibling);
     return a;

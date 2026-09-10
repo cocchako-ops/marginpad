@@ -2182,7 +2182,7 @@
   var P = {
     Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://www.bybit.com/invite?ref=LZKBERJ', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }, perk: 'fee discount' },
     Binance: { c: '#f0b90b', no: 'US,CA', ref: 'https://www.binance.com/register?ref=MAOZM9DS', deep: function (s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }, perk: '20% off fees' },
-    Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?c=moonkickstart', deep: null, perk: '24/7 markets' },
+    Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?offer=marginpad', deep: null, perk: '24/7 markets' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: function (s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }, perk: 'pro tools' },

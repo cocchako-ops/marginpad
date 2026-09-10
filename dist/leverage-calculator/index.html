@@ -83,12 +83,12 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="rel"><a href="/btc-liquidation-calculator/">Liquidation calculator</a><a href="/crypto-profit-calculator/">Profit calculator</a><a href="/position-size-calculator/">Position size</a><a href="/calculators">All calculators (app)</a><a href="/blog/crypto-leverage-explained/">Leverage explained (guide)</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
-<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
 <p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var m=+document.getElementById('margin').value,p=+document.getElementById('pos').value,mmr=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(m>0&&p>0)){r.innerHTML='';return;}var lev=p/m,liq=(1-mmr)/lev*100;
 r.innerHTML='<div class="rrow big"><span class="k">Implied leverage</span><span class="v">'+lev.toFixed(2)+'x</span></div><div class="rrow"><span class="k">Liquidation distance (approx, long)</span><span class="v dn">-'+liq.toFixed(2)+'%</span></div><div class="rrow"><span class="k">A 1% price move changes your margin by</span><span class="v">'+lev.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Move that wipes 50% of margin</span><span class="v">'+(50/lev).toFixed(2)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=d4fae28d"></script>
+<script defer src="/assets/mp-nav.js?v=23fd23d6"></script>
 </body>
 </html>
