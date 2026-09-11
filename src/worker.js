@@ -142,10 +142,25 @@ async function handleV1(url, request, env, ctx) {
   if (request.method === 'OPTIONS') return new Response(null, { headers: V1CORS });
   const sub = url.pathname.slice('/api/v1/'.length).replace(/\/+$/, '');
   const ip = request.headers.get('cf-connecting-ip') || (request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
-  const rl = v1Rate(ip);
-  const rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset) };
-  if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset.', 429, rlh);
-  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '1.0', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
+  // Bot API 2.3: an OPTIONAL key. Keyless stays exactly as it was (60/min per IP). Send X-API-Key and the call is
+  // metered against the KEY's own budget instead — 120/min free, 600/min Premium — and the per-IP limit no longer
+  // applies. That is the whole "data API tier": one header, no new endpoint, and a bot behind a shared NAT stops
+  // sharing its 60 with strangers.
+  const vkey = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
+  let rl, rlh;
+  if (vkey && env.USERS) {
+    const a = await usersDO(env, '/botauth', { key: vkey, ep: 'data' });
+    if (!a || a.error === 'bad_key') return v1err('invalid_api_key', 'This key does not exist. Drop the X-API-Key header to use the keyless limit, or mint one at https://marginpad.io/trading-api/', 401);
+    if (a.error === 'revoked_key') return v1err('revoked_key', 'This key was revoked.', 401);
+    rlh = { 'x-ratelimit-limit': String(a.limit || 0), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || ''), 'x-ratelimit-scope': 'key' };
+    if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 600 ? ' Premium raises every key to 600/minute: https://marginpad.io/premium/' : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
+    rl = { limited: false };
+  } else {
+    rl = v1Rate(ip);
+    rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
+    if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
+  }
+  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.3', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key, 600/min on Premium, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
@@ -182,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '1.0.0',
+      version: '2.3.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. 60 requests/minute per IP. Every response uses the envelope { ok, data, error, ts }.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -236,10 +251,21 @@ function handleOpenApi() {
       '/api/bot/v1/close_all': { post: { tags: ['Paper trading'], summary: 'Close every open paper position', description: 'Closes all open bot positions at the live price. Fees and funding settle exactly as in /close.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { type: 'integer' }, positions: { type: 'array', items: { $ref: '#/components/schemas/Position' } } } } } } } } } },
       '/api/bot/v1/balance': { get: { tags: ['Paper trading'], summary: 'Paper balance', description: 'Starting balance, balance, equity, margin in use, free margin, unrealized P&L. The balance is a scorecard: margin_enforced is false, so opens are never rejected for lack of funds.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Balance' } } } } } } },
       '/api/bot/v1/markets': { get: { tags: ['Paper trading'], summary: 'Tradable markets', description: 'Every tradable symbol with asset_class, max_leverage and taker_fee_pct (per side, charged as a round trip at close). Call once at startup instead of discovering limits by trial and error.', security: [{ ApiKeyAuth: [] }], parameters: [q('class', 'Filter by asset class', false, 'crypto')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Markets' } } } } } } },
+      '/api/bot/v1/modify_order': { post: { tags: ['Paper trading'], summary: 'Modify a resting order', description: 'Change a resting limit or stop order in place: limit_price, sl, tp, margin_usd, leverage, trail_pct. The direction is re-derived from the market now and the candle watermark restarts, so a moved level never fills on a bar printed before the change.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ModifyOrderRequest' } } } }, responses: { '200': { description: 'ok' }, '404': { description: 'no such order' }, '409': { description: 'already filled, cancelled or expired' } } } },
+      '/api/bot/v1/webhooks': {
+        get: { tags: ['Paper trading'], summary: 'List webhooks (Premium)', description: 'Your registered webhooks with delivery counts, consecutive failures, the last error and whether each is active. Also lists the event names and the signature scheme.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Webhooks' } } } }, '402': { description: 'Premium required' } } },
+        post: { tags: ['Paper trading'], summary: 'Add / delete / test a webhook (Premium)', description: 'act:"add" {url, events?} registers an https URL (max 3 per account) and returns its secret once. act:"delete" {id}. act:"test" {id} delivers a ping right now and returns the HTTP status your server answered. Deliveries: POST JSON {event, ts, hook_id, data} with headers X-MP-Event, X-MP-Delivery, X-MP-Timestamp and X-MP-Signature = sha256=HMAC_SHA256(secret, raw body). Retried 5 times with backoff; paused after 25 consecutive failures.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/WebhookRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'bad_url / bad_event' }, '402': { description: 'Premium required' }, '409': { description: 'too_many_webhooks' } } },
+      },
+      '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
+      '/api/bot/v1/ai': { post: { tags: ['Paper trading'], summary: 'AI market read (Premium)', description: 'The chart panel’s AI read, from the API: {symbol, interval (minutes: 1,5,15,60,240,1440), question?, lang?}. Same model, prompt and 50-a-day quota as Ask-AI on the site. Returns the answer, a parsed plan when the model gives one, and the brief it reasoned over. Educational, not financial advice.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, interval: { type: 'string', example: '60' }, question: { type: 'string', maxLength: 280 }, lang: { type: 'string', example: 'en' } }, required: ['symbol'] } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/AiRead' } } } }, '402': { description: 'Premium required' }, '429': { description: 'daily AI quota used' } } } },
+      '/api/whsink/{token}': {
+        post: { tags: ['Paper trading'], summary: 'Webhook test sink (write)', description: 'POST anything here and read it back with GET — the last 20 bodies for 15 minutes. Register https://marginpad.io/api/whsink/<token> as a webhook to see exactly what a delivery looks like before pointing it at your own server. No auth: the token is the secret (12-48 letters, digits, - or _).', parameters: [{ name: 'token', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'ok' } } },
+        get: { tags: ['Paper trading'], summary: 'Webhook test sink (read)', parameters: [{ name: 'token', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'ok' } } },
+      },
       '/api/bot/v2/{endpoint}': { get: { tags: ['Paper trading'], summary: 'Same API, standard envelope', description: 'Every /api/bot/v1/* path has a /v2 twin: identical parameters and identical data, wrapped as {ok:true,data,ts} or {ok:false,error:{code,message},ts}. v1 response bodies are frozen and will not change; new work happens on v2. Swap v1 for v2 in the URL. There is also a WebSocket that OpenAPI cannot describe: wss://marginpad.io/api/bot/v2/stream?api_key=... pushes position opened/updated/closed events and mark prices, which replaces polling /positions entirely.', security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'endpoint', in: 'path', required: true, description: 'account | balance | positions | trades | markets | open | close | close_all | sltp | price | klines | time', schema: { type: 'string' }, example: 'account' }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Envelope' } } } } } } },
     },
     components: {
-      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Only for paper-trading endpoints. Mint a key at POST /api/bot/key while signed in. Data endpoints need no auth.' } },
+      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Required for paper-trading endpoints; OPTIONAL on /api/v1/* data endpoints, where sending it moves the call from the 60/minute per-IP limit to the key’s own budget (120/minute free, 600/minute Premium). Mint a key at POST /api/bot/key while signed in, or on https://marginpad.io/trading-api/.' } },
       schemas: {
         Envelope: { type: 'object', properties: { ok: { type: 'boolean' }, data: {}, error: { $ref: '#/components/schemas/ApiError' }, ts: { type: 'integer', description: 'Server unix ms' } }, required: ['ok', 'ts'] },
         ApiError: { type: 'object', description: 'code is a stable identifier you can branch on; message is prose and may be reworded.', properties: { code: { type: 'string', example: 'unknown_symbol' }, message: { type: 'string' }, symbol: { type: 'string' }, live: { type: 'number', description: 'On sl_wrong_side / tp_wrong_side: the live price, so a caller can correct and retry.' }, limit: {}, max: { type: 'integer' } }, required: ['code', 'message'] },
@@ -281,7 +307,13 @@ function handleOpenApi() {
         Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
         OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". The level may sit on EITHER side of the market: below it the order behaves as a classic limit, above it as a breakout entry. Either way it waits until the market reaches the level and fills AT the level.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
         CloseRequest: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', minimum: 1, maximum: 100, description: 'Percent to close. Omit for the whole position.' }, symbol: { type: 'string', description: 'The position symbol, copied from /positions. Optional but strongly recommended: it lets the server price exactly one feed and skip a lookup round trip, which is worth several hundred milliseconds from Asia. A wrong value costs nothing — the server falls back automatically.' } }, required: ['id'] },
-        SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] } }, required: ['id'] },
+        SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] }, trail_pct: { type: ['number', 'null'], description: 'Trailing stop distance in percent (0.05-50), ratcheted server-side from the best price seen. null switches it off.' } }, required: ['id'] },
+        ModifyOrderRequest: { type: 'object', properties: { order_id: { type: 'string' }, limit_price: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, margin_usd: { type: 'number' }, leverage: { type: 'number' }, trail_pct: { type: ['number', 'null'] } }, required: ['order_id'] },
+        WebhookRequest: { type: 'object', properties: { act: { type: 'string', enum: ['add', 'delete', 'test'] }, url: { type: 'string', description: 'add: https URL on a public host' }, events: { type: 'array', items: { type: 'string', enum: ['position.opened', 'position.updated', 'position.closed', 'position.liquidated', 'order.filled', 'order.expired', 'order.cancelled'] }, description: 'add: subset to receive; omit for all' }, id: { type: 'string', description: 'delete / test: the webhook id' } }, required: ['act'] },
+        Webhook: { type: 'object', properties: { id: { type: 'string' }, url: { type: 'string' }, secret: { type: 'string', description: 'HMAC key for X-MP-Signature' }, events: { type: 'array', items: { type: 'string' } }, created: { type: 'integer' }, last_delivery_ts: { type: ['integer', 'null'] }, deliveries: { type: 'integer' }, consecutive_failures: { type: 'integer' }, active: { type: 'boolean' }, last_error: { type: ['string', 'null'] } } },
+        Webhooks: { type: 'object', properties: { webhooks: { type: 'array', items: { $ref: '#/components/schemas/Webhook' } }, pending_deliveries: { type: 'integer' }, max: { type: 'integer' }, events: { type: 'array', items: { type: 'string' } }, signature: { type: 'string' } } },
+        WebhookDelivery: { type: 'object', description: 'The body we POST to your URL.', properties: { event: { type: 'string', example: 'position.closed' }, ts: { type: 'integer' }, hook_id: { type: 'string' }, data: { description: 'A Position (position.*) or an order (order.*, with the Position it created on order.filled).' } } },
+        AiRead: { type: 'object', properties: { symbol: { type: 'string' }, interval: { type: 'integer' }, answer: { type: 'string' }, plan: { type: ['object', 'null'], description: 'bias / reason / entry / stop / targets / levels when the model saw a setup' }, brief: { type: 'object' }, used: { type: 'integer' }, limit: { type: 'integer' } } },
         ServerTime: { type: 'object', properties: { server_time_ms: { type: 'integer' }, server_time_iso: { type: 'string' }, client_time_ms: { type: 'integer' }, drift_ms: { type: 'integer', description: 'client_ts minus server time, when you pass ?client_ts=' } } },
       },
     },
@@ -4815,8 +4847,21 @@ function orderPosition(o, fillTs) {
     lev, rr: null, qty: margin * lev / entry, notional: margin * lev,
     margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, rate),
     liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
-    src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs
+    src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs,
+    ...(+o.trail > 0 ? { trail: +o.trail, hwm: entry } : {}) // a trailing stop set on the order rides onto the position, ratcheting from the fill
   };
+}
+// ─── Trailing stop (Bot API 2.3, server-side) ─────────────────────────────────────────────────────────────────
+// Ratchet the stop of a position that carries `trail` (percent) from its high-water mark. `hi`/`lo` are the extremes
+// the market has PRINTED since the last check (a candle's range, or just the live price twice). Returns true when the
+// stop moved. Never loosens: a stop only ever moves in the trade's favour. Mirrors the client's checkClose ratchet.
+function trailStop(t, hi, lo) {
+  const tr = +t.trail; if (!(tr > 0)) return false;
+  const long = t.side !== 'short'; let hwm = +t.hwm > 0 ? +t.hwm : +t.entry || 0; let moved = false;
+  if (long) { if (hi > hwm) hwm = hi; const ns = hwm * (1 - tr / 100); if (t.stop == null || ns > +t.stop) { t.stop = Number(ns.toPrecision(10)); moved = true; } }
+  else { if (lo > 0 && lo < hwm) hwm = lo; const ns = hwm * (1 + tr / 100); if (t.stop == null || ns < +t.stop) { t.stop = Number(ns.toPrecision(10)); moved = true; } }
+  if (hwm !== +t.hwm) { t.hwm = hwm; moved = true; }
+  return moved;
 }
 // Fill every crossed order in `orders` using the prices/candles the caller already gathered. Returns what happened
 // so both callers (cron, user-triggered sweep) can report it. Expired orders are closed here too.
@@ -4866,6 +4911,58 @@ async function pushOrderFills(env, fills) {
       for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, payload); } catch (e) {} }
     }
   } catch (e) {}
+}
+// ─── WEBHOOK DELIVERY (Bot API 2.3, 2026-09-11) ──────────────────────────────────────────────────────────────
+// The trading store only queues events; THIS drains the queue. Runs right after every call that can produce an
+// event (Bot API and site mutations, the minute sweep) and from the minute cron as the backstop, so a delivery is
+// seconds behind the event and never depends on the bot being connected. Each body is signed with the hook's own
+// secret (HMAC-SHA256 over the raw body, header X-MP-Signature: sha256=<hex>) so a receiver can prove it is us.
+async function whSign(secret, body) {
+  try { const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(body)); return 'sha256=' + Array.from(new Uint8Array(sig)).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; }
+}
+function whUrlOk(u) { // https only, a real host, never our own zone except the test sink, never a private address
+  try { const x = new URL(String(u || '')); if (x.protocol !== 'https:') return false; const h = x.hostname.toLowerCase(); if (!h || h === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(h) || h.endsWith('.local') || h.endsWith('.internal')) return false; if (/(^|\.)marginpad\.io$/.test(h) && x.pathname.indexOf('/api/whsink/') !== 0) return false; return true; } catch (e) { return false; }
+}
+async function webhookDrain(env, opts) {
+  if (!env.USERS) return { delivered: 0 };
+  const d = await usersDO(env, '/webhook/drain', { take: 50, hook: opts && opts.hook });
+  const jobs = (d && d.jobs) || []; if (!jobs.length) return { delivered: 0, jobs: 0 };
+  const results = [];
+  const one = async (j) => {
+    const t0 = Date.now();
+    try {
+      const sig = await whSign(j.secret, j.body);
+      const hdr = { 'content-type': 'application/json; charset=utf-8', 'user-agent': 'MarginPad-Webhooks/1.0 (+https://marginpad.io/trading-api/#webhooks)', 'x-mp-event': j.ev, 'x-mp-delivery': String(j.qid), 'x-mp-timestamp': String(t0), 'x-mp-signature': sig };
+      let st = 0;
+      const u = new URL(j.url);
+      if (/(^|\.)marginpad\.io$/.test(u.hostname) && u.pathname.indexOf('/api/whsink/') === 0) { const r = await handleWhSink(u, new Request(j.url, { method: 'POST', headers: hdr, body: j.body }), env); st = r.status; } // loopback: a Worker cannot fetch its own zone (523), so the test sink is dispatched in-process
+      else { const r = await fetch(j.url, { method: 'POST', headers: hdr, body: j.body, redirect: 'manual', signal: AbortSignal.timeout(6000) }); st = r.status; try { await r.body && r.body.cancel(); } catch (e) {} }
+      results.push({ qid: j.qid, hook: j.hook, ok: st >= 200 && st < 300, status: st, ms: Date.now() - t0 });
+    } catch (e) { results.push({ qid: j.qid, hook: j.hook, ok: false, status: 0, err: String(e && e.name === 'TimeoutError' ? 'timeout after 6 s' : (e && e.message || e)).slice(0, 100), ms: Date.now() - t0 }); }
+  };
+  for (let i = 0; i < jobs.length; i += 8) await Promise.all(jobs.slice(i, i + 8).map(one)); // 8 in flight, receivers are strangers
+  await usersDO(env, '/webhook/ack', { results });
+  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['webhook'], blobs: ['webhook', 'deliver'], doubles: [results.filter(r => r.ok).length, results.filter(r => !r.ok).length] }); } catch (e) {}
+  return { delivered: results.filter(r => r.ok).length, failed: results.filter(r => !r.ok).length, results };
+}
+// Test sink: POST anything to /api/whsink/<token> and read it back with GET — the last 20 bodies, 15 minutes. Lets a
+// developer (and our E2E) see exactly what a webhook delivers before pointing it at their own server. No auth: the
+// token is the secret, bodies are capped at 8 KB, and nothing here is ever executed or forwarded.
+async function handleWhSink(url, request, env) {
+  const J2 = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+  const tok = String(url.pathname.slice('/api/whsink/'.length) || '').replace(/\/+$/, '');
+  if (!/^[A-Za-z0-9_-]{12,48}$/.test(tok)) return J2({ error: 'bad_token', hint: 'Use 12-48 letters, digits, - or _ : /api/whsink/<token>' }, 400);
+  const key = 'whsink:' + tok;
+  if (request.method === 'POST') {
+    let body = ''; try { body = (await request.text()).slice(0, 8192); } catch (e) {}
+    let list = []; try { list = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {}
+    const h = {}; for (const n of ['x-mp-event', 'x-mp-delivery', 'x-mp-signature', 'x-mp-timestamp', 'content-type']) { const v = request.headers.get(n); if (v) h[n] = v; }
+    list.unshift({ ts: Date.now(), headers: h, body }); list = list.slice(0, 20);
+    try { await env.STATS.put(key, JSON.stringify(list), { expirationTtl: 900 }); } catch (e) {}
+    return J2({ ok: true, received: list.length });
+  }
+  let list = []; try { list = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {}
+  return J2({ ok: true, token: tok, deliveries: list.map(x => { let b = null; try { b = JSON.parse(x.body); } catch (e) { b = x.body; } return { ts: x.ts, headers: x.headers, body: b }; }) });
 }
 // ─── POSITION ALERTS (Premium, 2026-09-05) ────────────────────────────────────────────────────────────────────
 // A price alert tells you a coin reached a number. This tells you something only WE can know, because we hold the
@@ -5085,6 +5182,7 @@ async function sweepServerPositions(env) {
       try { await env.STATS.put('sweep:last', JSON.stringify({ swept: res && res.swept, checked: res && res.checked, staleN: res && res.staleN, funded: res && res.funded, syms: syms.length, klSyms: Object.keys(klines).length, srvCandle, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} // observability: read via /api/admin/sweepstat
     }
     await drainXpBoostEvents(env); // boost/HH hits (from ANY close path) -> live activity feed with the username
+    try { await webhookDrain(env); } catch (e) {} // fills + SL/TP/liq settled by this pass reach the account's webhooks in the same minute
   } catch (e) {}
 }
 // XP boost hits land in the DO (any close path: site/cron/bot/client). This drains them into the evlog ring
@@ -9383,7 +9481,7 @@ async function handleNowpayIpn(request, env) {
         try { await premMarkName(env, uid); } catch (e) {}
         try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
         try { await revokeUserSessions(env, uid); } catch (e) {} // the session user object carries a stale premium=false — drop it so the buyer sees Premium immediately, not after ~2 min (worst-possible moment for a paying user)
-        try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '99' : '3.99')) + ')', ''); } catch (e) {}
+        try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
     } else {
@@ -9445,6 +9543,10 @@ function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 
 // MAX_TOTAL 50, MAX_PAIR 10, one-way mode) — a limit fill lands minutes or days after placement, so the same
 // product rules are re-checked server-side at fill time. Change one copy, change the other.
 const PORDER_MAX = 20;                  // resting orders per account
+// Webhooks (Bot API 2.3): registrations per account, the events a hook may subscribe to, retry budget per delivery
+// (30 s, 60 s, 120 s, 240 s between attempts) and the consecutive-failure count that pauses a hook.
+const WH_MAX = 3, WH_MAX_TRIES = 5, WH_PAUSE_AFTER = 25;
+const WH_EVENTS = ['position.opened', 'position.updated', 'position.closed', 'position.liquidated', 'order.filled', 'order.expired', 'order.cancelled'];
 const PORDER_TTL = 30 * 86400000;       // GTC with a 30-day expiry — an order nobody remembers placing is not a feature
 const PT_MAX_OPEN = 50, PT_MAX_PAIR = 10;
 // Resolve the current session user's premium standing: owner grant (premium:allow) OR active paid sub (prem:sub:<uid>).
@@ -10831,6 +10933,29 @@ async function handleAiAdmin(url, request, env) {
   return J({ error: 'bad' }, 400);
 }
 // "Ask AI about this chart" — signed-in only, daily limit per user (admin-tunable). POST {context, question} → Claude (Haiku) → {answer,used,limit}. GET = status {signedIn,used,limit}.
+// ONE prompt for both AI surfaces: the chart panel (handleAiChart) and the Bot API (/v1/ai, Bot API 2.3). The API builds
+// the same JSON brief server-side from candles, so a bot gets the reading the panel would give for that chart.
+const AI_COACH_SYS = "You are a friendly trading coach built into a chart. The person reading you may know NOTHING about trading — talk to them like a smart beginner. Each message includes a JSON BRIEF of the EXACT chart they are looking at: symbol, timeframe, price, recent move, swing high/low, moving averages, RSI, MACD, ATR volatility, Bollinger, a recentCloses path, and — ONLY if it is present — a position they have drawn on the chart. Talk ONLY about THIS chart and what its numbers show. Do NOT assume or ask whether they hold any position unless 'openPosition' appears in the brief.\n\nHOW TO WRITE (this matters most):\n- Plain English. Keep it SHORT — about 70-120 words. No walls of text, no long lists, no dumping every indicator.\n- If you use any trading term (RSI, support, EMA, etc.), explain it in 3-4 words right there in brackets.\n- Be direct and concrete. Name the timeframe and give a clear verdict: right now does this chart lean UP (better for a long), DOWN (better for a short), or SIDEWAYS / unclear (better to wait)? Give the ONE main reason in simple words. It is fine to commit to a direction and it is fine to be wrong — this is learning, not advice.\n- Teach ONE small useful idea so they leave a little smarter.\n- Use light markdown: a bold first line for the verdict, then 1-3 short bullets at most.\n\nReason from the ACTUAL numbers — never invent levels. Answer follow-ups about this same chart.\n\nEnd the written part with exactly this line: 'Not financial advice — learn and decide for yourself.'\n\nTHEN, only if the chart shows a reasonably clear setup, add a fenced block on a new line (and nothing after it):\n```plan\n{\"bias\":\"long\" or \"short\",\"reason\":\"one short sentence\",\"entry\":<number>,\"stop\":<number>,\"targets\":[<number>],\"levels\":[{\"price\":<number>,\"label\":\"<short>\"}]}\n```\nUse real prices from the brief (entry near current price, stop beyond the invalidation level, target toward the next swing). If there is no clear setup, omit the block entirely — never output the word plan in a fence without a real setup.";
+// The chart brief for /v1/ai, built server-side from candles — the same fields the chart panel sends, computed the
+// same way (RSI via _rsi, simple MAs, ATR14, Bollinger 20/2). null = symbol unknown to every price source.
+async function aiBrief(sym, iv, env) {
+  const bars = await leanKlines(sym, iv, 120, env);
+  if (!bars || bars.length < 30) return null;
+  const c = bars.map(b => +b.close), h = bars.map(b => +b.high), l = bars.map(b => +b.low), n = c.length;
+  const last = c[n - 1], r4 = (v) => (v == null || !isFinite(v)) ? null : Number(v.toPrecision(6));
+  const sma = (k) => n >= k ? c.slice(-k).reduce((a, b) => a + b, 0) / k : null;
+  let atr = null; if (n > 15) { let s = 0; for (let i = n - 14; i < n; i++) s += Math.max(h[i] - l[i], Math.abs(h[i] - c[i - 1]), Math.abs(l[i] - c[i - 1])); atr = s / 14; }
+  let bb = null; if (n >= 20) { const m = sma(20); const sd = Math.sqrt(c.slice(-20).reduce((a, b) => a + (b - m) * (b - m), 0) / 20); bb = { upper: r4(m + 2 * sd), middle: r4(m), lower: r4(m - 2 * sd) }; }
+  const win = Math.min(50, n), swingHigh = Math.max(...h.slice(-win)), swingLow = Math.min(...l.slice(-win));
+  const tfName = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d' }[String(iv)] || (iv + 'm');
+  return {
+    symbol: sym + 'USDT', timeframe: tfName, price: r4(last),
+    changePct: { last10: r4((last / c[n - 11] - 1) * 100), window: r4((last / c[0] - 1) * 100), windowBars: n },
+    swingHigh: r4(swingHigh), swingLow: r4(swingLow), distToSwingHighPct: r4((swingHigh / last - 1) * 100), distToSwingLowPct: r4((1 - swingLow / last) * 100),
+    sma20: r4(sma(20)), sma50: r4(sma(50)), sma100: r4(sma(100)), rsi14: r4(_rsi(c, 14)), atr14: r4(atr), atrPct: r4(atr != null ? atr / last * 100 : null), bollinger: bb,
+    recentCloses: c.slice(-12).map(r4), asOf: new Date((+bars[n - 1].time || 0) * 1000).toISOString(),
+  };
+}
 async function handleAiChart(url, request, env) {
   const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -10865,7 +10990,7 @@ async function handleAiChart(url, request, env) {
   let body = {}; try { body = await request.json(); } catch (e) {}
   const ctx = (body && body.context && typeof body.context === 'object') ? body.context : {};
   const question = String((body && body.question) || '').slice(0, 280);
-  const sys = "You are a friendly trading coach built into a chart. The person reading you may know NOTHING about trading — talk to them like a smart beginner. Each message includes a JSON BRIEF of the EXACT chart they are looking at: symbol, timeframe, price, recent move, swing high/low, moving averages, RSI, MACD, ATR volatility, Bollinger, a recentCloses path, and — ONLY if it is present — a position they have drawn on the chart. Talk ONLY about THIS chart and what its numbers show. Do NOT assume or ask whether they hold any position unless 'openPosition' appears in the brief.\n\nHOW TO WRITE (this matters most):\n- Plain English. Keep it SHORT — about 70-120 words. No walls of text, no long lists, no dumping every indicator.\n- If you use any trading term (RSI, support, EMA, etc.), explain it in 3-4 words right there in brackets.\n- Be direct and concrete. Name the timeframe and give a clear verdict: right now does this chart lean UP (better for a long), DOWN (better for a short), or SIDEWAYS / unclear (better to wait)? Give the ONE main reason in simple words. It is fine to commit to a direction and it is fine to be wrong — this is learning, not advice.\n- Teach ONE small useful idea so they leave a little smarter.\n- Use light markdown: a bold first line for the verdict, then 1-3 short bullets at most.\n\nReason from the ACTUAL numbers — never invent levels. Answer follow-ups about this same chart.\n\nEnd the written part with exactly this line: 'Not financial advice — learn and decide for yourself.'\n\nTHEN, only if the chart shows a reasonably clear setup, add a fenced block on a new line (and nothing after it):\n```plan\n{\"bias\":\"long\" or \"short\",\"reason\":\"one short sentence\",\"entry\":<number>,\"stop\":<number>,\"targets\":[<number>],\"levels\":[{\"price\":<number>,\"label\":\"<short>\"}]}\n```\nUse real prices from the brief (entry near current price, stop beyond the invalidation level, target toward the next swing). If there is no clear setup, omit the block entirely — never output the word plan in a fence without a real setup.";
+  const sys = AI_COACH_SYS;
   const um = 'CHART BRIEF (JSON): ' + JSON.stringify(ctx).slice(0, 3600) + '\n\nQUESTION: ' + (question || 'Read this chart for me in simple words — is it leaning long or short right now, and why?');
   // multi-turn: prior turns (text only) + the new user turn (which carries the live snapshot). Sanitize to strict user/assistant alternation starting with user.
   let msgs = [];
@@ -10956,7 +11081,8 @@ async function handleTrade(url, request, env, ctx) {
   const T0 = Date.now(), marks = [];
   const mk = (n, t) => marks.push(n + ';dur=' + (Date.now() - t));
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
-  const jt = (o, st) => { const h = { ...jh }; if (marks.length) h['server-timing'] = marks.join(', ') + ', total;dur=' + (Date.now() - T0); return new Response(JSON.stringify(o), { status: st || 200, headers: h }); };
+  let wantDrain = false; // Bot API 2.3: site-side opens/closes/SL-TP edits are events for the account's webhooks too — drained right after the store has written
+  const jt = (o, st) => { if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} } const h = { ...jh }; if (marks.length) h['server-timing'] = marks.join(', ') + ', total;dur=' + (Date.now() - T0); return new Response(JSON.stringify(o), { status: st || 200, headers: h }); };
   let uid = '';
   const tok = getCookie(request, SESS_COOKIE);
   const tS = Date.now();
@@ -10966,6 +11092,7 @@ async function handleTrade(url, request, env, ctx) {
   if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = adminUid;
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
+  wantDrain = request.method === 'POST' && ['/open', '/close', '/sltp', '/order', '/ordersweep', '/tradesweep', '/trades'].indexOf(path) >= 0;
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
   // XP promos ride ALONG every call that can close a trade — the DO can't read KV, so a missing promos field
   // silently disqualifies server-side closes from owner-defined boosts (papisdiakite600 ticket 2026-08-12:
@@ -11168,6 +11295,22 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-11', version: '2.3.0', title: 'Webhooks, trailing stops, stop entries, modify order, dry run, report, AI, keyed data tier',
+    changes: [
+      { type: 'added', breaking: false, text: 'Webhooks (Premium). GET|POST /v1/webhooks registers up to 3 https URLs per account; we POST position.opened / position.updated / position.closed / position.liquidated / order.filled / order.expired / order.cancelled to them, seconds after the event, whether or not your bot is connected. Every delivery is signed (X-MP-Signature: sha256=HMAC_SHA256(secret, raw body)) with the hook’s own secret; failures retry 5 times with backoff; a hook is paused after 25 consecutive failures and the list says why. POST {act:"test"} sends a ping and returns the HTTP status your server answered. Measured before: 89.5% of all Bot API traffic was polling /positions and /account for events that this now pushes.' },
+      { type: 'added', breaking: false, text: 'Trailing stops, server-side. trail_pct on POST /v1/open (market and resting orders) and on POST /v1/sltp sets a stop that follows the best price seen since entry at that percent distance. It ratchets on the minute sweep and on every /positions read, from 1-minute candle extremes when candles are available, and never loosens. Positions carry trail_pct and trail_hwm.' },
+      { type: 'added', breaking: false, text: 'Stop entries. POST /v1/open with type:"stop" rests a breakout entry: a long above the market or a short below it, filled AT the level from 1m candles like a limit order. The wrong side is refused (stop_wrong_side) so a stop and a limit can never be confused. GET /v1/orders now returns type: "limit"|"stop" on every order.' },
+      { type: 'added', breaking: false, text: 'POST /v1/modify_order changes a resting order in place: limit_price, sl, tp, margin_usd, leverage, trail_pct. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change.' },
+      { type: 'added', breaking: false, text: 'dry_run:true on POST /v1/open validates and prices the request and writes nothing: entry, quantity, notional, liquidation price and distance, the open fee and the full round trip, the taker rate and the leverage cap. For a resting order it also says whether the level would fill immediately.' },
+      { type: 'added', breaking: false, text: 'GET /v1/report?days=30 — the trading report the site shows at /trading-report/, for the account behind the key: totals and the skill score on every plan, breakdowns by coin / leverage band / side / hour / day and the written findings on Premium. Every finding carries the n it rests on.' },
+      { type: 'added', breaking: false, text: 'POST /v1/ai {symbol, interval, question} (Premium) — the chart panel’s AI read from the API: the same model, the same prompt and the same 50-a-day quota as Ask-AI on the site. The brief it reasons over (price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes) is returned with the answer, and a ```plan block, when the model gives one, comes back parsed as plan.' },
+      { type: 'added', breaking: false, text: 'Keyed data tier. Send X-API-Key on any /api/v1/* market-data call and it is metered against that key (120/minute free, 600/minute Premium) instead of the 60/minute per-IP limit — no new endpoint, and a bot behind a shared address stops sharing its budget with strangers. Keyless calls are unchanged. X-RateLimit-Scope says which limit applied.' },
+      { type: 'added', breaking: false, text: 'GET /v1/positions?status=open|closed. GET /v1/usage now lists the features the key is entitled to (webhooks, report breakdowns, AI) and the data-API budget. Official single-file clients: /assets/sdk/marginpad.py and /assets/sdk/marginpad.js (REST + WebSocket, zero dependencies).' },
+      { type: 'added', breaking: false, text: 'MCP: paper_modify_order and paper_report; paper_open takes trail_pct and dry_run, paper_sltp takes trail_pct, paper_limit_order takes type "limit"|"stop". 22 tools.' },
+      { type: 'unchanged', breaking: false, text: '/api/bot/v1/* response shapes stay frozen. Every field above is additive; nothing was renamed or removed.' },
+    ],
+  },
+  {
     date: '2026-09-09', version: '2.2.1', title: 'Margin is what you committed',
     changes: [
       { type: 'fixed', breaking: false, text: 'A fill used to store margin MINUS the entry-leg taker fee while realized pnl at close charges both legs, so the entry leg was counted twice by everything that reads position.margin - the ROE denominator, and any equity built from margins. Measured on a 100 USD position at 163x closed at a flat price: margin 91.03 with pnl -17.93, i.e. 26.90 accounted for a round trip that really costs 17.93. position.margin is now the amount you sent; position.feeOpen still reports the entry leg for a cost breakdown, and the fee is charged exactly once, inside realized pnl. Positions opened before this keep the margin they were filled with.' },
@@ -11303,16 +11446,21 @@ const MCP_TOOLS = [
   { name: 'paper_trades', description: 'Closed-trade ledger with paging — the full record for measuring a strategy. Requires an API key.', path: (a) => '/api/bot/v2/trades?limit=' + Math.min(500, Math.max(1, +a.limit || 100)) + (a.before ? '&before=' + (+a.before) : ''), auth: true,
     inputSchema: { type: 'object', properties: { limit: { type: 'number', default: 100 }, before: { type: 'number', description: 'Epoch ms cursor from next_before' } } } },
   { name: 'paper_open', description: 'Open a simulated position at the live price. Simulated money only — no real funds are ever at risk. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
-    body: (a) => ({ symbol: a.symbol, side: a.side, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, client_order_id: a.client_order_id }),
-    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', description: '1 to 100000' }, leverage: { type: 'number', description: '1 to the symbol cap from get_markets' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', description: 'Your own id — retrying with the same one returns the first position instead of opening a second' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] } },
+    body: (a) => ({ symbol: a.symbol, side: a.side, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, trail_pct: a.trail_pct, dry_run: !!a.dry_run, client_order_id: a.client_order_id }),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', description: '1 to 100000' }, leverage: { type: 'number', description: '1 to the symbol cap from get_markets' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, trail_pct: { type: ['number', 'null'], description: 'Trailing stop distance in percent (0.05-50): the stop follows the best price seen, server-side, even while the bot is offline' }, dry_run: { type: 'boolean', description: 'true = validate and price the trade (entry, liquidation, quantity, fees) and write NOTHING' }, client_order_id: { type: 'string', description: 'Your own id — retrying with the same one returns the first position instead of opening a second' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] } },
   { name: 'paper_close', description: 'Close a simulated position, fully or partially. Requires an API key.', path: () => '/api/bot/v2/close', method: 'POST', auth: true,
     body: (a) => ({ id: a.id, pct: a.pct }),
     inputSchema: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', description: 'Percent to close, 1-100. Omit for the whole position.' } }, required: ['id'] } },
-  { name: 'paper_sltp', description: 'Move the stop-loss or take-profit on an open simulated position. Requires an API key.', path: () => '/api/bot/v2/sltp', method: 'POST', auth: true,
-    body: (a) => ({ id: a.id, sl: a.sl, tp: a.tp }),
-    inputSchema: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] } }, required: ['id'] } },
-  { name: 'paper_limit_order', description: 'Place a resting limit order: it fills only if the market reaches your price, and it fills AT that price. A limit long must be below the current price and a limit short above it — to open right now use paper_open instead. Simulated money only. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
-    body: (a) => ({ type: 'limit', symbol: a.symbol, side: a.side, limit_price: a.limit_price, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, client_order_id: a.client_order_id }),
+  { name: 'paper_sltp', description: 'Move the stop-loss, take-profit or trailing stop on an open simulated position. Requires an API key.', path: () => '/api/bot/v2/sltp', method: 'POST', auth: true,
+    body: (a) => ({ id: a.id, sl: a.sl, tp: a.tp, trail_pct: a.trail_pct }),
+    inputSchema: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, trail_pct: { type: ['number', 'null'], description: 'Trailing stop distance in percent (0.05-50); null switches trailing off' } }, required: ['id'] } },
+  { name: 'paper_modify_order', description: 'Change a resting limit or stop order in place: its price, stop-loss, take-profit, margin, leverage or trailing stop. Requires an API key.', path: () => '/api/bot/v2/modify_order', method: 'POST', auth: true,
+    body: (a) => ({ order_id: a.order_id, limit_price: a.limit_price, sl: a.sl, tp: a.tp, margin_usd: a.margin_usd, leverage: a.leverage, trail_pct: a.trail_pct }),
+    inputSchema: { type: 'object', properties: { order_id: { type: 'string' }, limit_price: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, margin_usd: { type: 'number' }, leverage: { type: 'number' }, trail_pct: { type: ['number', 'null'] } }, required: ['order_id'] } },
+  { name: 'paper_report', description: 'The 30-day trading report for this account, measured from its own closed trades: totals and a skill score (free), win rate and return by coin, leverage band, side, hour and day plus written findings (Premium). Requires an API key.', path: (a) => '/api/bot/v2/report?days=' + Math.min(30, Math.max(1, +a.days || 30)), auth: true,
+    inputSchema: { type: 'object', properties: { days: { type: 'number', description: '1-30, default 30' } } } },
+  { name: 'paper_limit_order', description: 'Place a resting order that fills only when the market reaches your price, and fills AT that price. type "limit" = a pullback entry (long below the market, short above); type "stop" = a breakout entry (long above the market, short below). To open right now use paper_open instead. Simulated money only. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
+    body: (a) => ({ type: a.type === 'stop' ? 'stop' : 'limit', symbol: a.symbol, side: a.side, limit_price: a.limit_price, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, trail_pct: a.trail_pct, client_order_id: a.client_order_id }),
     inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, limit_price: { type: 'number', description: 'Below the market for a long, above it for a short' }, margin_usd: { type: 'number', description: '1 to 100000' }, leverage: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string' } }, required: ['symbol', 'side', 'limit_price', 'margin_usd', 'leverage'] } },
   { name: 'paper_orders', description: 'Your resting limit orders, plus the last 20 that filled, expired or were cancelled. Requires an API key.', path: () => '/api/bot/v2/orders', auth: true,
     inputSchema: { type: 'object', properties: {} } },
@@ -11340,7 +11488,7 @@ async function handleMcp(url, request, env, ctx) {
       const method = m && m.method;
       if (method === 'initialize') {
         const want = (m.params && m.params.protocolVersion) || MCP_PROTO;
-        out.push(rep({ protocolVersion: want, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'marginpad', title: 'MarginPad', version: '2.0.0' }, instructions: 'Free crypto market data and a paper-trading account. Market-data tools need no key. Paper-trading tools trade SIMULATED money on a MarginPad account and need a free API key sent as the X-API-Key header (get one at ' + url.origin + '/trading-api/). Fees and funding are simulated realistically, so P&L here reflects what the same strategy would cost on a real exchange. Call get_markets before sizing a trade — leverage caps and fees differ per asset class.' }));
+        out.push(rep({ protocolVersion: want, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'marginpad', title: 'MarginPad', version: '2.3.0' }, instructions: 'Free crypto market data and a paper-trading account. Market-data tools need no key. Paper-trading tools trade SIMULATED money on a MarginPad account and need a free API key sent as the X-API-Key header (get one at ' + url.origin + '/trading-api/). Fees and funding are simulated realistically, so P&L here reflects what the same strategy would cost on a real exchange. Call get_markets before sizing a trade — leverage caps and fees differ per asset class.' }));
       } else if (method === 'notifications/initialized' || method === 'notifications/cancelled') {
         continue; // notifications carry no id and expect no reply
       } else if (method === 'ping') {
@@ -11441,6 +11589,16 @@ const BOT_ERR = {
   margin_usd_max_100000: 'margin_usd cannot exceed 100000.',
   sl_wrong_side: 'Stop-loss is on the wrong side of the entry price.',
   tp_wrong_side: 'Take-profit is on the wrong side of the entry price.',
+  stop_wrong_side: 'A stop entry waits on the breakout side of the market (a long above it, a short below it).',
+  trail_pct_invalid: 'trail_pct is a percent distance between 0.05 and 50.',
+  premium_required: 'This is a Premium feature: https://marginpad.io/premium/',
+  too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
+  bad_url: 'Webhook URLs must be https:// on a public host.',
+  bad_event: 'Unknown webhook event name.',
+  nothing_to_modify: 'Send at least one field to change.',
+  already_done: 'That order is no longer resting (filled, cancelled or expired).',
+  ai_quota: 'Daily AI quota used. It resets at 00:00 UTC.',
+  ai_error: 'The AI upstream failed. Your quota slot was refunded; retry shortly.',
   id_required: 'id is required.',
   not_found: 'No such endpoint.',
   no_price: 'No live price for that symbol right now — the position stays open.',
@@ -11456,7 +11614,9 @@ async function handleBot(url, request, env, ctx) {
   let rl = null; // X-RateLimit-* headers, filled in as soon as the key resolves — emitted on EVERY later response incl. the 429
   const RLX = 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After';
   const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(extra || {}) });
+  let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
+    if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
       if (o.error) {
@@ -11544,6 +11704,7 @@ async function handleBot(url, request, env, ctx) {
   // `symbol` (every /positions row carries it); without it we still need a lookup first and take the normal path.
   if (path === '/v1/close' && request.method === 'POST' && b && b.symbol) {
     if (!b.id) return jb({ error: 'id_required' }, 400);
+    wantDrain = true;
     const hint = String(b.symbol).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const [pd, _pr] = await Promise.all([fetchPriceFill(hint).catch(() => null), xpPromos(env).catch(() => [])]);
     const prices = {}; if (pd && +pd.price > 0) prices[hint] = +pd.price;
@@ -11609,22 +11770,33 @@ async function handleBot(url, request, env, ctx) {
     const pd = await fetchPrice(sym);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
+    // Bot API 2.3: trail_pct = trailing stop distance (%), ratcheted server-side from the high-water mark; dry_run = validate
+    // and price the request, return exactly what WOULD be written, write nothing (the call is still metered).
+    if (b.trail_pct != null && b.trail_pct !== '' && !(+b.trail_pct === 0 || (+b.trail_pct >= 0.05 && +b.trail_pct <= 50))) return jb({ error: 'trail_pct_invalid', hint: 'trail_pct is a percent distance between 0.05 and 50.' }, 400); // refused, never silently clamped
+    const trailQ = (b.trail_pct != null && b.trail_pct !== '' && +b.trail_pct > 0) ? +b.trail_pct : null;
+    const dryRun = b.dry_run === true || b.dry_run === 1 || b.dry_run === 'true';
+    const typeQ = String(b.type || 'market').toLowerCase();
     // LIMIT ORDERS (2026-09-05): type:'limit' + limit_price rests the order server-side. It fills at ITS OWN price
     // — never at "the price when the sweep noticed" — and it fills whether or not the bot is running.
-    if (String(b.type || 'market').toLowerCase() === 'limit') {
-      const lpx = +b.limit_price;
+    // STOP ENTRIES (2.3): type:'stop' is the same resting order with the level on the BREAKOUT side (a long above the
+    // market, a short below it) — the engine was already direction-aware; this names it and refuses the wrong side.
+    if (typeQ === 'limit' || typeQ === 'stop') {
+      const lpx = +(b.limit_price != null ? b.limit_price : b.stop_price);
       const long0 = side === 'long', live0 = +pd.price;
-      if (!(lpx > 0) || !isFinite(lpx)) return jb({ error: 'limit_price_required', hint: 'type:"limit" needs limit_price.' }, 400);
+      if (!(lpx > 0) || !isFinite(lpx)) return jb({ error: 'limit_price_required', hint: 'type:"' + typeQ + '" needs limit_price (stop_price is accepted as an alias).' }, 400);
       if (lpx > live0 * 20 || lpx < live0 / 20) return jb({ error: 'limit_price_far', live: live0 }, 400);
       const dir0 = lpx > live0 ? 'up' : 'down'; // the level may sit either side of the market: below = classic limit, above = breakout entry
+      if (typeQ === 'stop' && (long0 ? dir0 !== 'up' : dir0 !== 'down')) return jb({ error: 'stop_wrong_side', live: live0, hint: 'A stop entry waits on the breakout side: a long above the market, a short below it. Use type:"limit" for a pullback entry.' }, 400);
       const sl0 = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp0 = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
       if (sl0 != null && (long0 ? sl0 >= lpx : sl0 <= lpx)) return jb({ error: 'sl_wrong_side', limit: lpx }, 400);
       if (tp0 != null && (long0 ? tp0 <= lpx : tp0 >= lpx)) return jb({ error: 'tp_wrong_side', limit: lpx }, 400);
       const coid0 = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0 } });
+      if (dryRun) return jb({ ok: true, dry_run: true, order: { type: typeQ, symbol: sym, side, limit_price: lpx, leverage: lev, margin_usd: margin, sl: sl0, tp: tp0, trail_pct: trailQ, direction: dir0, live_price: live0, distance_pct: Math.round(Math.abs(lpx - live0) / live0 * 10000) / 100, expires_in_days: 30, would_fill_now: (dir0 === 'up' ? live0 >= lpx : live0 <= lpx) }, position_if_filled: (() => { const p = orderPosition({ sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', id: 'dry', trail: trailQ }, Date.now()); return { entry_price: p.entry, qty: p.qty, notional_usd: p.notional, liq_price: p.liq, fee_open_usd: Math.round(p.feeOpen * 100) / 100, fee_round_trip_usd: Math.round(2 * p.feeOpen * 100) / 100, taker_fee_pct: +(p.feeRate * 100).toFixed(4) }; })() }, 200);
+      wantDrain = true;
+      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0, trail: trailQ } });
       if (!ro || ro.error) return jb(ro || { error: 'unavailable' }, ro && ro.error === 'too_many_orders' ? 409 : 400);
       try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'bot'], doubles: [margin, Math.abs(lpx - live0) / live0 * 100] }); } catch (e) {}
-      return jb({ ok: true, order: ro.order, ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
+      return jb({ ok: true, order: Object.assign({}, ro.order, { type: typeQ }), ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
     }
     const entry = +pd.price, mmr = 0.005, long = side === 'long';
     const liq = mpcLiq(entry, lev, mmr, long);
@@ -11633,8 +11805,11 @@ async function handleBot(url, request, env, ctx) {
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
     const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
+    if (trailQ) { t.trail = trailQ; t.hwm = entry; if (t.stop == null) t.stop = Number((long ? entry * (1 - trailQ / 100) : entry * (1 + trailQ / 100)).toPrecision(10)); } // an initial stop at trail distance, so the position is protected from the first tick
+    if (dryRun) { const fee1 = t.feeOpen; return jb({ ok: true, dry_run: true, position: { symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: t.qty, notional_usd: t.notional, liq_price: t.liq, sl: t.stop, tp: t.tp, trail_pct: trailQ, liq_distance_pct: Math.round(Math.abs(t.liq - entry) / entry * 10000) / 100, fee_open_usd: Math.round(fee1 * 100) / 100, fee_round_trip_usd: Math.round(2 * fee1 * 100) / 100, taker_fee_pct: +(t.feeRate * 100).toFixed(4), max_leverage: maxLevFor(sym), asset_class: assetClassOf(sym) } }, 200); }
     // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
     const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
+    wantDrain = true;
     const r = await doCall('/botopen', { uid, t, promos, via: 'bot', coid });
     if (r && r.error) return jb(r, r.error === 'too_many_open' ? 409 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
@@ -11643,27 +11818,54 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/orders') { // resting limit orders + the last 20 that filled/cancelled/expired
     const r = await doCall('/order/list', { uid });
     if (!r) return jb({ error: 'unavailable' }, 503);
-    return jb({ orders: (r.orders || []).map(o => ({ order_id: o.id, symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, placed_ts: o.ts, expires_ts: o.expTs, status: o.status })), recent: (r.done || []).map(o => ({ order_id: o.id, symbol: o.sym, side: o.side, limit_price: o.px, status: o.status, position_id: o.tid, note: o.note, done_ts: o.doneTs })) }, 200);
+    const typeOf = (o) => ((o.side === 'long') ? o.dir === 'up' : o.dir === 'down') ? 'stop' : 'limit'; // a level on the breakout side is a stop entry
+    return jb({ orders: (r.orders || []).map(o => ({ order_id: o.id, type: typeOf(o), symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, trail_pct: o.trail || null, placed_ts: o.ts, expires_ts: o.expTs, status: o.status })), recent: (r.done || []).map(o => ({ order_id: o.id, type: typeOf(o), symbol: o.sym, side: o.side, limit_price: o.px, status: o.status, position_id: o.tid, note: o.note, done_ts: o.doneTs })) }, 200);
   }
   if (path === '/v1/cancel_order' && request.method === 'POST') {
     const oid = String(b.order_id || b.id || ''); if (!oid) return jb({ error: 'order_id_required' }, 400);
+    wantDrain = true;
     const r = await doCall('/order/cancel', { uid, id: oid });
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'not_found' ? 404 : 409);
     return jb({ ok: true, order_id: oid, status: 'cancelled' }, 200);
   }
+  if (path === '/v1/modify_order' && request.method === 'POST') { // Bot API 2.3: change a resting order in place — price, sl, tp, margin_usd, leverage, trail_pct
+    const oid = String(b.order_id || b.id || ''); if (!oid) return jb({ error: 'order_id_required' }, 400);
+    if (b.limit_price === undefined && b.stop_price === undefined && b.sl === undefined && b.tp === undefined && b.margin_usd === undefined && b.leverage === undefined && b.trail_pct === undefined) return jb({ error: 'nothing_to_modify', hint: 'Send at least one of limit_price, sl, tp, margin_usd, leverage, trail_pct.' }, 400);
+    let live = 0; try { const cur = await doCall('/order/list', { uid }); const o = ((cur && cur.orders) || []).filter(x => x.id === oid)[0]; if (o) { const pd = await fetchPrice(o.sym); if (pd && +pd.price > 0) live = +pd.price; } } catch (e) {}
+    const px = (b.limit_price != null ? b.limit_price : b.stop_price);
+    const body2 = { uid, id: oid, live };
+    if (px !== undefined) body2.px = +px;
+    if (b.sl !== undefined) body2.sl = b.sl;
+    if (b.tp !== undefined) body2.tp = b.tp;
+    if (b.margin_usd !== undefined) body2.margin = +b.margin_usd;
+    if (b.leverage !== undefined) body2.lev = +b.leverage;
+    if (b.trail_pct !== undefined) body2.trail = b.trail_pct;
+    wantDrain = true;
+    const r = await doCall('/order/modify', body2);
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    if (r.error) return jb(r, r.error === 'not_found' ? 404 : (r.error === 'already_done' ? 409 : 400));
+    const o = r.order || {};
+    return jb({ ok: true, order: { order_id: o.id, type: ((o.side === 'long') ? o.dir === 'up' : o.dir === 'down') ? 'stop' : 'limit', symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, trail_pct: o.trail || null, placed_ts: o.ts, expires_ts: o.expTs, status: o.status } }, 200);
+  }
   if (path === '/v1/sltp' && request.method === 'POST') {
     // Move the stop / target on an OPEN position. Without this a bot had to close and reopen to trail a stop —
     // which changes the entry price and pays a full round trip, i.e. risk management was priced out of the API.
     if (!b.id) return jb({ error: 'id_required' }, 400);
-    if (b.sl === undefined && b.tp === undefined) return jb({ error: 'sl_or_tp_required', hint: 'Send sl and/or tp. Pass null to clear one.' }, 400);
-    const r = await doCall('/tradesltp', { uid, id: String(b.id), sl: b.sl, tp: b.tp });
+    if (b.sl === undefined && b.tp === undefined && b.trail_pct === undefined) return jb({ error: 'sl_or_tp_required', hint: 'Send sl, tp and/or trail_pct. Pass null to clear one.' }, 400);
+    if (b.trail_pct != null && b.trail_pct !== '' && !(+b.trail_pct >= 0.05 && +b.trail_pct <= 50) && +b.trail_pct !== 0) return jb({ error: 'trail_pct_invalid', hint: 'trail_pct is a percent distance between 0.05 and 50; null or 0 switches trailing off.' }, 400);
+    wantDrain = true;
+    // sl/tp omitted = keep the current ones (the store needs explicit values, so read them first when only trail_pct changes)
+    let sl9 = b.sl, tp9 = b.tp;
+    if (sl9 === undefined || tp9 === undefined) { try { const cur = await doCall('/botpositions', { uid, prices: {} }); const p = ((cur && cur.positions) || []).filter(x => String(x.id) === String(b.id))[0]; if (p) { if (sl9 === undefined) sl9 = p.sl; if (tp9 === undefined) tp9 = p.tp; } } catch (e) {} }
+    const r = await doCall('/tradesltp', { uid, id: String(b.id), sl: sl9, tp: tp9, ...(b.trail_pct !== undefined ? { trail: b.trail_pct } : {}) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, 400);
-    return jb(r, 200);
+    return jb(r, 200); // v1 shape is frozen: {ok, position: <journal row>} — the row now also carries trail/hwm when trailing is on
   }
   if (path === '/v1/close' && request.method === 'POST') {
     if (!b.id) return jb({ error: 'id_required' }, 400);
+    wantDrain = true;
     // LATENCY: pass `symbol` (every /positions row carries it) and we skip the extra Durable Object round trip that
     // existed only to learn which symbol to price, and we price exactly ONE feed instead of up to twelve.
     // Measured 2026-08-19: a DO round trip is ~20ms p50 from Europe but ~198ms p50 / 368ms p95 from Singapore, and a
@@ -11692,6 +11894,8 @@ async function handleBot(url, request, env, ctx) {
     let out = isV2 ? r : v1;
     const since = +url.searchParams.get('since') || 0;
     if (since > 0 && Array.isArray(out.positions)) out = { ...out, positions: out.positions.filter(p => (+p.closed_ts || +p.opened_ts || 0) >= since) };
+    const stQ = String(url.searchParams.get('status') || '').toLowerCase(); // 2.3: ?status=open|closed trims the body a poller has to parse
+    if ((stQ === 'open' || stQ === 'closed') && Array.isArray(out.positions)) out = { ...out, positions: out.positions.filter(p => stQ === 'open' ? p.status === 'open' : p.status !== 'open') };
     // ETag over STRUCTURAL state only — id/status/qty/sl/tp/exit. mark_price moves every tick, so folding it in
     // would make the ETag never match and the whole thing pointless. This is what a bot actually polls for ("did
     // my stop fire, did anything close"); live prices come from the keyless /v1/price, which costs no rate budget.
@@ -11701,6 +11905,7 @@ async function handleBot(url, request, env, ctx) {
     return jb(out, 200, { etag });
   }
   if (path === '/v1/close_all' && request.method === 'POST') {
+    wantDrain = true;
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
     const r = await doCall('/botcloseall', { uid, prices, promos, via: 'bot' });
@@ -11745,9 +11950,11 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/usage') { // "what plan am I on and how much of it have I used" — without this the only signal
     // a developer had was watching a header count down, which tells you nothing about what you are entitled to.
     const L = BOT_TIER_LIMITS(+auth.tier || 0);
+    const prem = +auth.tier === 1;
     return jb({
       key_name: auth.name || '', plan: L.name,
-      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, websocket: true, market_data: 'free, no key required' },
+      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
+      features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
       upgrade: L.name === 'free' ? 'https://marginpad.io/premium/' : null,
     });
@@ -11768,7 +11975,72 @@ async function handleBot(url, request, env, ctx) {
     out.sort((a, x) => (a.asset_class === x.asset_class ? a.symbol.localeCompare(x.symbol) : a.asset_class.localeCompare(x.asset_class)));
     return jb({ markets: out, count: out.length, note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close.' });
   }
-  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/orders', 'POST /api/bot/v1/cancel_order', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'WS /api/bot/v2/stream'];
+  // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
+  if (path === '/v1/webhooks') { // Premium: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
+    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'Webhooks are a Premium feature: https://marginpad.io/premium/ — the WebSocket stream (wss://marginpad.io/api/bot/v2/stream) is free on every plan.', upgrade: 'https://marginpad.io/premium/' }, 402);
+    const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
+    if (act === 'add') {
+      const u = String(b.url || '').trim();
+      if (!whUrlOk(u)) return jb({ error: 'bad_url', hint: 'An https:// URL on a public host. For a quick look at the payloads, POST to https://marginpad.io/api/whsink/<your-token> and GET the same URL to read them back.' }, 400);
+      const evs = Array.isArray(b.events) ? b.events.map(String) : null;
+      if (evs && evs.some(e => WH_EVENTS.indexOf(e) < 0)) return jb({ error: 'bad_event', events: WH_EVENTS }, 400);
+      const r = await doCall('/webhook', { uid, act: 'add', url: u, events: evs });
+      if (!r) return jb({ error: 'unavailable' }, 503);
+      if (r.error) return jb(r, r.error === 'too_many_webhooks' ? 409 : 400);
+      return jb({ ok: true, webhook: r.webhook, note: 'Every delivery is signed: X-MP-Signature = sha256=HMAC_SHA256(secret, raw body). Verify it before trusting a payload. A hook is paused after ' + WH_PAUSE_AFTER + ' consecutive failures.' }, 200);
+    }
+    if (act === 'delete') { const r = await doCall('/webhook', { uid, act: 'delete', id: String(b.id || b.webhook_id || '') }); if (!r) return jb({ error: 'unavailable' }, 503); if (r.error) return jb(r, 404); return jb(r, 200); }
+    if (act === 'test') {
+      const id = String(b.id || b.webhook_id || ''); const r = await doCall('/webhook', { uid, act: 'test', id });
+      if (!r) return jb({ error: 'unavailable' }, 503); if (r.error) return jb(r, 404);
+      const d = await webhookDrain(env, { hook: id }); const res = ((d && d.results) || []).filter(x => x.hook === id)[0] || null;
+      return jb({ ok: true, delivered: !!(res && res.ok), status: res ? res.status : null, ms: res ? res.ms : null, error: res && !res.ok ? (res.err || ('HTTP ' + res.status)) : null }, 200);
+    }
+    const r = await doCall('/webhook', { uid, act: 'list' });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    return jb({ webhooks: r.webhooks || [], pending_deliveries: r.pending || 0, max: r.max || WH_MAX, events: WH_EVENTS, signature: 'X-MP-Signature: sha256=HMAC_SHA256(secret, raw body); X-MP-Event, X-MP-Delivery, X-MP-Timestamp headers on every delivery' }, 200);
+  }
+  if (path === '/v1/report') { // the 30-day trading report the site shows at /trading-report/, for the account behind this key: totals + skill score free, breakdowns + findings on Premium (same rule as the site)
+    const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
+    const rep = await doCall('/tradereport', { uid, days });
+    if (!rep || rep.error) return jb(rep || { error: 'unavailable' }, 503);
+    const prem = +auth.tier === 1;
+    if (!prem) return jb({ days: rep.days, total: rep.total, skill: rep.skill, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'], upgrade: 'https://marginpad.io/premium/' }, 200);
+    const { ok: _ok9, ...rest } = rep;
+    return jb(Object.assign({ premium: true, findings: reportFindings(rep) }, rest), 200);
+  }
+  if (path === '/v1/ai' && request.method === 'POST') { // Premium: the chart panel's AI read, from the API. Same model, same prompt, same 50/day quota as the site.
+    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'AI market reads are a Premium feature: https://marginpad.io/premium/', upgrade: 'https://marginpad.io/premium/' }, 402);
+    if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
+    const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    if (!sym) return jb({ error: 'symbol_required' }, 400);
+    const iv = String(b.interval || '60'); if (['1', '5', '15', '60', '240', '1440'].indexOf(iv) < 0) return jb({ error: 'interval_invalid', hint: 'interval is minutes: 1, 5, 15, 60, 240 or 1440.' }, 400);
+    const question = String(b.question || '').slice(0, 280);
+    const brief = await aiBrief(sym, iv, env);
+    if (!brief) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
+    const day = new Date().toISOString().slice(0, 10);
+    let LIMIT = 50; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = Math.max(LIMIT, c.limit); } catch (e) {}
+    try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {}
+    const resv = await doCall('/ailimit', { uid, limit: LIMIT, day });
+    if (!resv) return jb({ error: 'unavailable' }, 503);
+    if (!resv.ok) return jb({ error: 'ai_quota', used: resv.used || 0, limit: LIMIT, hint: 'Daily AI quota used (shared with Ask-AI on the site). Resets at 00:00 UTC.' }, 429);
+    const langCode = String(b.lang || 'en').toLowerCase().replace(/[^a-z-]/g, '').slice(0, 8) || 'en';
+    const sysFull = AI_COACH_SYS + '\n\nLANGUAGE: Write your ENTIRE reply in ' + (langCode === 'sr' ? 'Serbian written in the LATIN alphabet' : (langCode === 'en' ? 'English' : langCode)) + '. Keep the ```plan block JSON keys and the \"bias\" value in English.';
+    const um = 'CHART BRIEF (JSON): ' + JSON.stringify(brief).slice(0, 3600) + '\n\nQUESTION: ' + (question || 'Read this chart for me in simple words — is it leaning long or short right now, and why?');
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+    let ar;
+    try { ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal, headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 900, system: sysFull, messages: [{ role: 'user', content: um }] }) }); }
+    catch (e) { clearTimeout(to); aiFail(env, 'api', 0); try { await doCall('/ailimit', { uid, day, refund: true }); } catch (e2) {} return jb({ error: 'ai_error' }, 502); }
+    clearTimeout(to);
+    if (!ar.ok) { aiFail(env, 'api', ar.status); try { await doCall('/ailimit', { uid, day, refund: true }); } catch (e2) {} return jb({ error: 'ai_error', status: ar.status }, 502); }
+    let answer = ''; try { const d = await ar.json(); answer = (d && d.content && d.content[0] && d.content[0].text) || ''; } catch (e) {}
+    if (!answer) return jb({ error: 'ai_empty' }, 502);
+    let plan = null; const pm = answer.match(/```plan\s*([\s\S]*?)```/); if (pm) { try { plan = JSON.parse(pm[1]); } catch (e) { plan = null; } answer = answer.replace(pm[0], '').trim(); }
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: ['ai'], blobs: ['ai', 'api', sym], doubles: [1] }); } catch (e) {}
+    try { await stub.fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type: 'ai', label: sym + ' ' + iv + 'm (api)', path: '/trading-api/', cc: (request.cf && request.cf.country) || '', dev: 'api' }) })); } catch (e) {} // the same daily-mission credit + activity row the panel gets
+    return jb({ symbol: sym, interval: +iv, answer, plan, brief, used: resv.used || 1, limit: LIMIT, disclaimer: 'Educational, not financial advice.' }, 200);
+  }
+  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/orders', 'POST /api/bot/v1/cancel_order', 'POST /api/bot/v1/modify_order', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'GET /api/bot/v1/report', 'GET|POST /api/bot/v1/webhooks', 'POST /api/bot/v1/ai', 'WS /api/bot/v2/stream'];
   return jb({ error: 'not_found', endpoints: isV2 ? EPS.map((e) => e.replace('/v1/', '/v2/')) : EPS }, 404);
 }
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
@@ -13945,9 +14217,9 @@ export default {
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
       const founder = url.searchParams.get('plan') === 'founder';
       const body = founder
-        ? { price_amount: 35, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
+        ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
         : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
-      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $35' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     if (url.pathname === '/api/admin/setrole' && request.method === 'POST' && (await adminCookieOk(request, env))) { // background role mark: {username, role} — 'gm' enables chat admin commands, '' clears. Cookie-only (grants power).
@@ -14146,6 +14418,7 @@ export default {
       return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=3600', ...CORS } });
     }
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
+    if (url.pathname.startsWith('/api/whsink/')) return handleWhSink(url, request, env); // Bot API 2.3 webhook test sink
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
     if (url.pathname === '/unsubscribe') return handleUnsubscribe(url, env);
@@ -14853,6 +15126,14 @@ export default {
       const fpd = await fetchPrice(fsym); if (!fpd || !(+fpd.price > 0)) return J({ error: 'no_price' }, 503);
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
+    }
+    if (url.pathname === '/api/admin/sweeptest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Bot API 2.3 E2E: run the server sweep for ONE e2e account with an INJECTED price (proves trailing stops / SL / liq deterministically; e2e-prefixed uids only so a real account can never be settled on a fake price)
+      const su = url.searchParams.get('uid') || ''; if (!/^e2e/.test(su)) return J({ error: 'e2e_uid_only' }, 400);
+      const prices = {}; for (const kv of String(url.searchParams.get('px') || '').split(',')) { const m = kv.split(':'); const s2 = String(m[0] || '').toUpperCase().replace(/USDT$/, ''); if (s2 && +m[1] > 0) { prices[s2] = +m[1]; prices[s2 + 'USDT'] = +m[1]; } }
+      if (!Object.keys(prices).length) return J({ error: 'px_required', hint: '?px=BTC:60000' }, 400);
+      const res = await usersDO(env, '/tradesweepall', { prices, onlyUid: su, graceMin: 0, srvCandle: false });
+      try { await webhookDrain(env); } catch (e) {}
+      return J(res || { error: 'unavailable' });
     }
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
@@ -16232,6 +16513,7 @@ export default {
     bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
+    bg(webhookDrain, 'webhooks'); // Bot API 2.3 — backstop drain of the webhook outbox (the hot paths drain right after their own writes)
     bg(screenerKvWarm, 'scrwarm'); // keep the screener KV floor fresh — no visitor ever pays the full compute
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
     bg(checkAlerts, 'alerts');
@@ -18180,6 +18462,16 @@ export class UserStore {
     try { s.exec("ALTER TABLE porders ADD COLUMN dir TEXT"); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_uid ON porders(uid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_st ON porders(status, ts)'); } catch (e) {} // the cron reads open orders across every account
+    try { s.exec('ALTER TABLE porders ADD COLUMN trail REAL'); } catch (e) {} // Bot API 2.3: trailing-stop distance (%) the filled position inherits
+    // ── Bot API 2.3 (2026-09-11): WEBHOOKS. A hook is a URL the account wants trading events pushed to (Premium).
+    // botwh = the registrations; botwhq = the outbox. The DO only ENQUEUES (inside _syncJournal, /tradesltp,
+    // /order/fill, /order/done); the worker drains the outbox (`webhookDrain`) because delivery is an outbound
+    // fetch with retries and must never sit on the single-threaded trading store. `ok=0` = paused after repeated
+    // failures; the owner of the hook sees why in GET /v1/webhooks and re-adds it.
+    s.exec('CREATE TABLE IF NOT EXISTS botwh(id TEXT PRIMARY KEY, uid TEXT, url TEXT, secret TEXT, events TEXT, created INTEGER, last INTEGER, ok INTEGER DEFAULT 1, fails INTEGER DEFAULT 0, sent INTEGER DEFAULT 0, lastErr TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS botwh_uid ON botwh(uid)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS botwhq(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, hook TEXT, ev TEXT, body TEXT, ts INTEGER, tries INTEGER DEFAULT 0, next INTEGER)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS botwhq_next ON botwhq(next)'); } catch (e) {}
     try {
       if (!this.rows('SELECT 1 FROM botmig WHERE m=?', 'keys_v2')[0]) {
         const _mnow = Date.now();
@@ -18373,7 +18665,10 @@ export class UserStore {
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
-  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down') }; }
+  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down'), trail: (+r.trail > 0 ? +r.trail : null) }; }
+  // The Bot API's public order shape (what GET /v1/orders returns and what order.* webhooks carry). `type` is derived:
+  // a level the market must RISE to for a long (or fall to for a short) is a stop / breakout entry, otherwise a limit.
+  _ordApi(r) { const o = this._ordJson(r); if (!o) return null; const stop = (o.side === 'long') ? o.dir === 'up' : o.dir === 'down'; return { order_id: o.id, type: stop ? 'stop' : 'limit', symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, trail_pct: o.trail, placed_ts: o.ts, expires_ts: o.expTs, status: o.status, position_id: o.tid, note: o.note || undefined, done_ts: o.doneTs || undefined }; }
   // can `a` DM `b`? Yes if either follows the other, OR a conversation already exists (so a reply is always allowed). Keeps DMs to your social circle → no spam-to-strangers.
   _canDm(a, b) { if (this.rows('SELECT 1 FROM ufollows WHERE k=?', a + '|' + b)[0]) return true; if (this.rows('SELECT 1 FROM ufollows WHERE k=?', b + '|' + a)[0]) return true; if (this.rows('SELECT 1 FROM dms WHERE pair=? LIMIT 1', [a, b].sort().join('|'))[0]) return true; return false; }
   _applyConsumable(uid, itemId, check) { // Vault consumables — check=1 verifies applicability without side effects (worker pre-checks BEFORE debiting the ledger)
@@ -18462,6 +18757,7 @@ export class UserStore {
   _j2bot(t, live) { // journal trade -> Bot API response shape
     const long = t.side !== 'short', open = t.status !== 'win' && t.status !== 'loss';
     const o = { id: t.id, symbol: t.sym, side: long ? 'long' : 'short', entry_price: +t.entry || 0, margin_usd: +t.margin || 0, leverage: +t.lev || 1, qty: +t.qty || 0, liq_price: +t.liq || 0, sl: (t.stop != null ? +t.stop : null), tp: (t.tp != null ? +t.tp : null), status: open ? 'open' : (t.liquidated ? 'liquidated' : 'closed'), opened_ts: +t.ts || 0, source: t.src === 'bot' ? 'bot' : 'app' };
+    if (+t.trail > 0) { o.trail_pct = +t.trail; o.trail_hwm = (+t.hwm > 0 ? +t.hwm : null); } // Bot API 2.3: a trailing stop and the extreme it is ratcheting from
     // unrealized P&L is NET of the round trip (fee both sides + funding accrued), exactly like the close math in
     // /botclose and like the site's own metrics(). It used to be gross, so every open position looked better than
     // it could ever settle and a strategy tuned on it was tuned on a number that does not exist at exit.
@@ -18516,6 +18812,31 @@ export class UserStore {
   // and every resting order through /order/*, so this is the one place the ops feed can be told the truth about trades;
   // the client beacons it replaces never arrived from bots, blocked trackers or closed tabs. Fire-and-forget: the DO must
   // never wait on the ops ring (a slow OpsLog must not slow a fill). Username is looked up once per call and cached briefly.
+  // ── Webhooks (Bot API 2.3) ────────────────────────────────────────────────────────────────────────────────
+  // Cheap gate for the hot paths: the set of accounts with at least one live hook, rebuilt lazily and dropped on
+  // every add / delete / pause. Nearly every account has none, so _syncJournal pays one Set lookup, not a query.
+  _whUidSet() {
+    if (!this._whUids) { const S = new Set(); try { for (const r of this.rows('SELECT DISTINCT uid FROM botwh WHERE ok=1')) S.add(String(r.uid)); } catch (e) {} this._whUids = S; }
+    return this._whUids;
+  }
+  // Queue one event for every live hook of the account that subscribed to it. `data` is the public shape the REST
+  // API already returns for the same thing (a Position from _j2bot, an order from _ordJson mapped to API names),
+  // so a webhook consumer parses exactly what a poll would have returned.
+  _whEnqueue(uid, ev, data) {
+    try {
+      if (!this._whUidSet().has(String(uid))) return 0;
+      const hooks = this.rows('SELECT id, events FROM botwh WHERE uid=? AND ok=1', uid);
+      if (!hooks.length) return 0;
+      const now = Date.now(); let n = 0;
+      for (const h of hooks) {
+        const want = String(h.events || '*'); if (want !== '*' && want.split(',').indexOf(ev) < 0) continue;
+        const body = JSON.stringify({ event: ev, ts: now, hook_id: h.id, data });
+        this.state.storage.sql.exec('INSERT INTO botwhq(uid,hook,ev,body,ts,tries,next) VALUES(?,?,?,?,?,0,?)', uid, h.id, ev, body, now, now); n++;
+      }
+      try { this.state.storage.sql.exec('DELETE FROM botwhq WHERE ts < ?', now - 6 * 3600000); } catch (e) {} // an event nobody could take for 6 h is history, not a backlog
+      return n;
+    } catch (e) { return 0; }
+  }
   _opsEv(uid, type, label, page, x) {
     try {
       const C = this._unCache = this._unCache || new Map();
@@ -18612,12 +18933,15 @@ export class UserStore {
         const fmt$ = (v) => (v < 0 ? '-$' : '+$') + Math.abs(v).toFixed(Math.abs(v) >= 100 ? 0 : 2);
         const ops = [];
         for (const ev9 of evs) { const kind = ev9[0], e = ev9[1]; const sym = String(e.sym || '').toUpperCase().slice(0, 12), sideU = e.side === 'short' ? 'SHORT' : 'LONG', lev = +e.lev || 1, m = +e.margin || 0;
-          if (kind === 'open') ops.push(['open', sideU + ' ' + sym + ' ' + lev + 'x $' + Math.round(m) + (e.stop != null || e.sl != null ? ' +SL' : '') + (e.tp != null ? ' +TP' : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }]);
+          if (kind === 'open') ops.push(['open', sideU + ' ' + sym + ' ' + lev + 'x $' + Math.round(m) + (e.stop != null || e.sl != null ? ' +SL' : '') + (e.tp != null ? ' +TP' : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }, e]);
           else if (kind === 'close') { const pv = +e.pnl; const roe = (isFinite(pv) && m > 0) ? pv / m * 100 : null; const liq = !!e.liquidated || (isFinite(pv) && pv <= -m * 0.985); const ex = +e.exit; const auto = viaS === 'sweep' || viaS === 'cron' || viaS === 'nudge'; const how = liq ? 'liquidated' : (auto && e.stop != null && ex === +e.stop) ? 'SL hit' : (auto && e.tp != null && ex === +e.tp) ? 'TP hit' : (e.partial ? 'partial ' + e.partial + '%' : 'closed');
-            ops.push([liq ? 'liq' : 'close', sideU + ' ' + sym + ' ' + lev + 'x ' + (liq ? '' : how + ' ') + (isFinite(pv) ? fmt$(pv) + (roe != null ? ' (' + (roe >= 0 ? '+' : '') + roe.toFixed(1) + '%)' : '') : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, pnl: isFinite(pv) ? Math.round(pv * 100) / 100 : null, roe: roe == null ? null : Math.round(roe * 10) / 10, liq: liq ? 1 : 0, how, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }]); }
-          else if (kind === 'trim') ops.push(['trim', sideU + ' ' + sym + ' size reduced via ' + viaS, { sym, via: viaS }]); }
+            ops.push([liq ? 'liq' : 'close', sideU + ' ' + sym + ' ' + lev + 'x ' + (liq ? '' : how + ' ') + (isFinite(pv) ? fmt$(pv) + (roe != null ? ' (' + (roe >= 0 ? '+' : '') + roe.toFixed(1) + '%)' : '') : '') + ' via ' + viaS, { sym, side: e.side === 'short' ? 'short' : 'long', lev, margin: m, pnl: isFinite(pv) ? Math.round(pv * 100) / 100 : null, roe: roe == null ? null : Math.round(roe * 10) / 10, liq: liq ? 1 : 0, how, via: viaS, src: String(e.src || ''), id: String(e.id || '').slice(0, 24) }, e]); }
+          else if (kind === 'trim') ops.push(['trim', sideU + ' ' + sym + ' size reduced via ' + viaS, { sym, via: viaS }, e]); }
         if (ops.length > 8) { const nO = ops.filter(o => o[0] === 'open').length, nC = ops.length - nO; this._opsEv(uid, 'sync', ops.length + ' trades arrived at once via ' + viaS + ' (' + nO + ' open, ' + nC + ' closed)', '/paper-trade', { n: ops.length, via: viaS }); }
-        else for (const o of ops) this._opsEv(uid, o[0], o[1], '/paper-trade', o[2]);
+        else for (const o of ops) { this._opsEv(uid, o[0], o[1], '/paper-trade', o[2]);
+          // Webhooks (Bot API 2.3): the same three events the ops feed sees, in the Bot API's own Position shape. A bulk
+          // sync (>8 rows, a guest journal arriving at sign-in) is deliberately NOT fanned out — that is history, not news.
+          try { if (o[0] !== 'trim' && o[3]) { const _wx = this._j2bot(o[3], null); if (o[2] && o[2].how) _wx.close_reason = o[2].how; _wx.via = viaS; this._whEnqueue(uid, o[0] === 'open' ? 'position.opened' : (o[0] === 'liq' ? 'position.liquidated' : 'position.closed'), _wx); } } catch (e7) {} }
       } catch (eo) {}
       const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try — see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
@@ -18779,6 +19103,58 @@ export class UserStore {
       return this.j({ key: row.k, keys: list(), plan });
     }
     if (path === '/botauth') return this.j(this._botAuth(b.key, b.ep, now, b.kvia));
+    // ── Webhooks (Bot API 2.3) — registrations + the outbox the worker drains ──────────────────────────────────
+    if (path === '/webhook') {
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'bad_request' });
+      const act = String(b.act || 'list');
+      const view = (h) => ({ id: h.id, url: h.url, secret: h.secret, events: String(h.events || '*') === '*' ? ['*'] : String(h.events).split(','), created: +h.created || 0, last_delivery_ts: +h.last || null, deliveries: +h.sent || 0, consecutive_failures: +h.fails || 0, active: !!(+h.ok), last_error: h.lastErr || null });
+      if (act === 'add') {
+        const n = (this.rows('SELECT COUNT(*) n FROM botwh WHERE uid=?', uid)[0] || {}).n || 0;
+        if (n >= WH_MAX) return this.j({ error: 'too_many_webhooks', max: WH_MAX });
+        const id = 'wh' + this.rid().slice(0, 14), secret = 'whs_' + this.rid();
+        const evs = Array.isArray(b.events) && b.events.length ? b.events.map(String).filter(x => WH_EVENTS.indexOf(x) >= 0) : null;
+        sql.exec('INSERT INTO botwh(id,uid,url,secret,events,created,last,ok,fails,sent,lastErr) VALUES(?,?,?,?,?,?,NULL,1,0,0,NULL)', id, uid, String(b.url || '').slice(0, 512), secret, (evs && evs.length) ? evs.join(',') : '*', now);
+        this._whUids = null;
+        this._opsEv(uid, 'admin', 'webhook added ' + String(b.url || '').slice(0, 60), '/trading-api/', { by: 'user', webhook: 1 });
+        return this.j({ ok: true, webhook: view(this.rows('SELECT * FROM botwh WHERE id=?', id)[0]) });
+      }
+      if (act === 'delete') {
+        const id = String(b.id || ''); const row = this.rows('SELECT * FROM botwh WHERE id=? AND uid=?', id, uid)[0];
+        if (!row) return this.j({ error: 'not_found' });
+        sql.exec('DELETE FROM botwh WHERE id=?', id); sql.exec('DELETE FROM botwhq WHERE hook=?', id); this._whUids = null;
+        return this.j({ ok: true, deleted: id });
+      }
+      if (act === 'test') { // one `ping` delivery to this hook, queued now and delivered by the worker right after this call
+        const id = String(b.id || ''); const row = this.rows('SELECT * FROM botwh WHERE id=? AND uid=?', id, uid)[0];
+        if (!row) return this.j({ error: 'not_found' });
+        sql.exec('INSERT INTO botwhq(uid,hook,ev,body,ts,tries,next) VALUES(?,?,?,?,?,0,?)', uid, id, 'ping', JSON.stringify({ event: 'ping', ts: now, hook_id: id, data: { message: 'MarginPad webhook test' } }), now, now);
+        return this.j({ ok: true, queued: 1 });
+      }
+      const hooks = this.rows('SELECT * FROM botwh WHERE uid=? ORDER BY created', uid).map(view);
+      const pending = (this.rows('SELECT COUNT(*) n FROM botwhq WHERE uid=?', uid)[0] || {}).n || 0;
+      return this.j({ ok: true, webhooks: hooks, pending, max: WH_MAX, events: WH_EVENTS });
+    }
+    if (path === '/webhook/drain') { // worker: take a batch of due deliveries; each is leased for 2 minutes so two drains never double-send
+      const take = Math.min(100, Math.max(1, +b.take || 50)), hookOnly = b.hook ? String(b.hook) : null;
+      const rows = hookOnly ? this.rows('SELECT q.*, h.url, h.secret FROM botwhq q JOIN botwh h ON h.id=q.hook WHERE q.hook=? AND q.next<=? AND h.ok=1 ORDER BY q.id LIMIT ?', hookOnly, now, take)
+        : this.rows('SELECT q.*, h.url, h.secret FROM botwhq q JOIN botwh h ON h.id=q.hook WHERE q.next<=? AND h.ok=1 ORDER BY q.id LIMIT ?', now, take);
+      for (const r of rows) { try { sql.exec('UPDATE botwhq SET next=? WHERE id=?', now + 120000, r.id); } catch (e) {} }
+      return this.j({ ok: true, jobs: rows.map(r => ({ qid: +r.id, hook: r.hook, uid: r.uid, ev: r.ev, body: r.body, tries: +r.tries || 0, url: r.url, secret: r.secret })) });
+    }
+    if (path === '/webhook/ack') { // worker: the outcome of each delivery attempt
+      const results = Array.isArray(b.results) ? b.results.slice(0, 200) : []; let paused = 0;
+      for (const r of results) {
+        const qid = +r.qid || 0, hook = String(r.hook || ''); if (!qid || !hook) continue;
+        if (r.ok) { sql.exec('DELETE FROM botwhq WHERE id=?', qid); sql.exec('UPDATE botwh SET sent=sent+1, fails=0, last=?, lastErr=NULL WHERE id=?', now, hook); continue; }
+        const q = this.rows('SELECT tries FROM botwhq WHERE id=?', qid)[0]; const tries = ((q && +q.tries) || 0) + 1;
+        if (tries >= WH_MAX_TRIES) sql.exec('DELETE FROM botwhq WHERE id=?', qid); else sql.exec('UPDATE botwhq SET tries=?, next=? WHERE id=?', tries, now + 30000 * Math.pow(2, tries - 1), qid);
+        const err = String(r.err || ('HTTP ' + (r.status || 0))).slice(0, 120);
+        sql.exec('UPDATE botwh SET fails=fails+1, lastErr=? WHERE id=?', err, hook);
+        const h = this.rows('SELECT fails, uid FROM botwh WHERE id=?', hook)[0];
+        if (h && +h.fails >= WH_PAUSE_AFTER) { sql.exec('UPDATE botwh SET ok=0 WHERE id=?', hook); sql.exec('DELETE FROM botwhq WHERE hook=?', hook); this._whUids = null; paused++; this._opsEv(h.uid, 'admin', 'webhook paused after ' + h.fails + ' failures: ' + err, '/trading-api/', { by: 'system', webhook: 1 }); }
+      }
+      return this.j({ ok: true, paused });
+    }
     if (path === '/presence/names') { // ops Here now: uid -> username and Telegram chat -> linked account, in one hop (chunked IN: a large IN silently returns 0 rows at scale)
       const out = { users: {}, chats: {} };
       const uids = (Array.isArray(b.uids) ? b.uids : []).map(String).slice(0, 200), chats = (Array.isArray(b.chats) ? b.chats : []).map(String).slice(0, 200);
@@ -19017,10 +19393,10 @@ export class UserStore {
       if (openN >= PORDER_MAX) return this.j({ error: 'too_many_orders', max: PORDER_MAX });
       const id = String(o.id || ('lo' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)));
       const now9 = Date.now();
-      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT,dir) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT,dir,trail) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         id, uid, now9, String(o.sym).toUpperCase().slice(0, 12), o.side === 'short' ? 'short' : 'long', +o.px || 0, +o.lev || 1, +o.margin || 0,
         (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9,
-        (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'));
+        (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'), (+o.trail > 0 ? Math.min(50, Math.max(0.05, +o.trail)) : null));
       try { sql.exec("DELETE FROM porders WHERE status<>'open' AND doneTs < ?", now9 - 30 * 86400000); } catch (e) {} // done rows are history for the user's Orders list, kept 30 days
       this._opsEv(uid, 'order', 'placed ' + (o.side === 'short' ? 'SHORT ' : 'LONG ') + String(o.sym).toUpperCase().slice(0, 12) + ' @ ' + (+o.px || 0) + ' ' + (+o.lev || 1) + 'x $' + Math.round(+o.margin || 0) + ' via ' + String(o.src || 'site'), '/paper-trade', { sym: String(o.sym).toUpperCase().slice(0, 12), side: o.side === 'short' ? 'short' : 'long', px: +o.px || 0, lev: +o.lev || 1, margin: +o.margin || 0, via: String(o.src || 'site'), id: id.slice(0, 24) });
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
@@ -19032,6 +19408,31 @@ export class UserStore {
       if (row.status !== 'open') return this.j({ error: 'already_done', order: this._ordJson(row) });
       sql.exec("UPDATE porders SET status='cancelled', doneTs=?, note=? WHERE id=?", Date.now(), 'cancelled by you', id);
       this._opsEv(uid, 'order', 'cancelled ' + (row.side === 'short' ? 'SHORT ' : 'LONG ') + String(row.sym || '').toUpperCase() + ' @ ' + (+row.px || 0), '/paper-trade', { sym: String(row.sym || '').toUpperCase(), side: row.side, px: +row.px || 0, cancel: 1, id: id.slice(0, 24) });
+      return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
+    }
+    if (path === '/order/modify') { // Bot API 2.3: change a RESTING order in place (price / SL / TP / margin / leverage / trail) — before this the only way was cancel + re-place, which lost the queue position and the client_order_id
+      const uid = String(b.uid || ''), id = String(b.id || ''), live = +b.live || 0;
+      const row = this.rows('SELECT * FROM porders WHERE id=? AND uid=?', id, uid)[0];
+      if (!row) return this.j({ error: 'not_found' });
+      if (row.status !== 'open') return this.j({ error: 'already_done', order: this._ordJson(row) });
+      const long = row.side !== 'short';
+      const px = (b.px != null && isFinite(+b.px) && +b.px > 0) ? +b.px : +row.px;
+      if (live > 0 && (px > live * 20 || px < live / 20)) return this.j({ error: 'price_far', live });
+      const sl = (b.sl === undefined) ? (row.sl == null ? null : +row.sl) : ((b.sl == null || b.sl === '' || !isFinite(+b.sl)) ? null : +b.sl);
+      const tp = (b.tp === undefined) ? (row.tp == null ? null : +row.tp) : ((b.tp == null || b.tp === '' || !isFinite(+b.tp)) ? null : +b.tp);
+      if (sl != null && (long ? sl >= px : sl <= px)) return this.j({ error: 'sl_wrong_side', limit: px });
+      if (tp != null && (long ? tp <= px : tp >= px)) return this.j({ error: 'tp_wrong_side', limit: px });
+      const margin = (b.margin != null && isFinite(+b.margin)) ? +b.margin : +row.margin;
+      if (!(margin >= 1)) return this.j({ error: 'margin_min_1' });
+      if (margin > 100000) return this.j({ error: 'margin_max_100000' });
+      const lev = (b.lev != null && isFinite(+b.lev) && +b.lev >= 1) ? Math.min(maxLevFor(String(row.sym || '')), +b.lev) : +row.lev;
+      const trail = (b.trail === undefined) ? (row.trail == null ? null : +row.trail) : ((b.trail == null || !(+b.trail > 0)) ? null : Math.min(50, Math.max(0.05, +b.trail)));
+      // A moved level is a new order for fill purposes: the direction is re-derived from the market NOW and the candle
+      // watermark restarts, so it can never fill on a bar that was printed before the change.
+      const dir = live > 0 ? (px > live ? 'up' : 'down') : (row.dir || (long ? 'down' : 'up'));
+      const now9 = Date.now();
+      sql.exec('UPDATE porders SET px=?, sl=?, tp=?, margin=?, lev=?, trail=?, dir=?, swT=? WHERE id=?', px, sl, tp, margin, lev, trail, dir, now9, id);
+      this._opsEv(uid, 'order', 'modified ' + (long ? 'LONG ' : 'SHORT ') + String(row.sym || '').toUpperCase() + ' @ ' + px + ' ' + lev + 'x $' + Math.round(margin), '/paper-trade', { sym: String(row.sym || '').toUpperCase(), side: row.side, px, lev, margin, modify: 1, id: id.slice(0, 24) });
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
     }
     if (path === '/order/list') {
@@ -19056,6 +19457,7 @@ export class UserStore {
       if (!row || row.status !== 'open') return this.j({ ok: false });
       sql.exec('UPDATE porders SET status=?, doneTs=?, note=? WHERE id=?', st, Date.now(), String(b.note || '').slice(0, 120), id);
       this._opsEv(row.uid, 'order', st + ' ' + (row.side === 'short' ? 'SHORT ' : 'LONG ') + String(row.sym || '').toUpperCase() + ' @ ' + (+row.px || 0) + (b.note ? ' - ' + String(b.note).slice(0, 40) : ''), '/paper-trade', { sym: String(row.sym || '').toUpperCase(), side: row.side, px: +row.px || 0, status: st, id: id.slice(0, 24) });
+      try { this._whEnqueue(row.uid, st === 'expired' ? 'order.expired' : 'order.cancelled', this._ordApi(this.rows('SELECT * FROM porders WHERE id=?', id)[0])); } catch (e7) {}
       return this.j({ ok: true });
     }
     if (path === '/order/fill') {
@@ -19084,6 +19486,7 @@ export class UserStore {
       }
       this._syncJournal(uid, [t], b.promos, true, 'limit'); // server-authoritative write, same as /botopen
       sql.exec('UPDATE porders SET status=?, doneTs=?, tid=?, note=? WHERE id=?', 'filled', Date.now(), String(t.id || ''), String(b.note || '').slice(0, 120), id);
+      try { this._whEnqueue(uid, 'order.filled', Object.assign(this._ordApi(this.rows('SELECT * FROM porders WHERE id=?', id)[0]), { position: this._j2bot(t, null) })); } catch (e7) {}
       return this.j({ ok: true, position: this._j2bot(t, null), uid });
     }
     if (path === '/botopen') { // Bot API open → written straight into the account's journal (My Trades), same as a manual open
@@ -19124,14 +19527,17 @@ export class UserStore {
       const uid = _ia ? _ia.uid : String(b.uid || ''), PR = b.prices || {};
       const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
       // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
+      const trailed = []; // Bot API 2.3: open positions whose trailing stop the live price just ratcheted (persisted below, no event)
       const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv')) return null; const live = PR[t.sym]; if (!(live > 0)) return null;
         const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
+        if (+t.trail > 0 && trailStop(t, live, live)) trailed.push(t);
         if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) return Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true });
         const close = (px) => { let pnl = qty * (px - entry) * dir - qty * (entry + px) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
         if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) return close(+t.stop);
         if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) return close(+t.tp);
         return null; };
       const autoClosed = this._loadJournal(uid).map(sweep).filter(Boolean);
+      { const closedIds = new Set(autoClosed.map(x => String(x.id))); const moved = trailed.filter(t => !closedIds.has(String(t.id))); if (moved.length) this._syncJournal(uid, moved, null, true, 'sweep'); } // a ratcheted stop on a still-open position is persisted (an open row updating an open row raises no event)
       if (autoClosed.length) { autoClosed.forEach(x => { x.sc = 1; }); this._syncJournal(uid, autoClosed, b.promos, true, 'sweep'); } // sc = server-executed close (prize-eligible)
       const cur = this._loadJournal(uid);
       if (path === '/botcloseall') {
@@ -19635,7 +20041,11 @@ export class UserStore {
       if (sl != null && (long ? sl >= entry : sl <= entry)) return this.j({ error: 'sl_wrong_side' });
       if (tp != null && (long ? tp <= entry : tp >= entry)) return this.j({ error: 'tp_wrong_side' });
       const upd = Object.assign({}, t, { stop: sl, tp: tp });
+      // Bot API 2.3: trail = trailing-stop distance in percent, moved by the server sweep (see /tradesweepall). Omitted =
+      // untouched; null / 0 = off. The high-water mark starts at the entry so the first ratchet needs real progress.
+      if (b.trail !== undefined) { const tr = (b.trail == null || b.trail === '' || !(+b.trail > 0)) ? 0 : Math.min(50, Math.max(0.05, +b.trail)); if (tr > 0) { upd.trail = tr; if (!(+upd.hwm > 0)) upd.hwm = entry; } else { delete upd.trail; delete upd.hwm; } }
       this._syncJournal(uid, [upd], null, true, 'sltp');
+      try { this._whEnqueue(uid, 'position.updated', Object.assign(this._j2bot(upd, null), { via: 'sltp' })); } catch (e7) {}
       this._opsEv(uid, 'sltp', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase().slice(0, 12) + ' SL ' + (sl == null ? 'off' : sl) + ' / TP ' + (tp == null ? 'off' : tp), '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), sl, tp, id: String(t.id || '').slice(0, 24) });
       try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff
       return this.j({ ok: true, position: upd });
@@ -19683,7 +20093,8 @@ export class UserStore {
             const bars = (KL && KL[SYM]) || null;
             if (!(live > 0) && !(bars && bars.length)) continue; // no price AND no candles this run → nothing to check
             const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
-            const liqP = +t.liq || 0, stopP = (t.stop != null) ? +t.stop : null, tpP = (t.tp != null) ? +t.tp : null;
+            const liqP = +t.liq || 0, tpP = (t.tp != null) ? +t.tp : null; let stopP = (t.stop != null) ? +t.stop : null;
+            const trailing = +t.trail > 0; // Bot API 2.3: the stop ratchets from the high-water mark as candles print (never loosens)
             // FUNDING (P1 realism): once per 8h UTC slot, fund += notional × rate × dir — needs a live mark.
             if (RT && live > 0) {
               const rate = +RT[SYM];
@@ -19717,6 +20128,9 @@ export class UserStore {
                 if (liqHit) { settled = closeAt(liqP, true); break; }
                 if (slHit) { settled = closeAt(stopP, false); break; }
                 if (tpHit) { settled = closeAt(tpP, false); break; }
+                // TRAILING: the stop that was checked against this candle is the one in force when it opened; the candle's
+                // own extreme then ratchets it for the NEXT candle (a bar cannot be stopped out at a level it created).
+                if (trailing && trailStop(t, hi, lo)) { stopP = +t.stop; if (upds.indexOf(t) < 0) upds.push(t); }
               }
               if (settled) { closes.push(settled); continue; }
               if (inspect.length) { t.swT = inspect[inspect.length - 1].time * 1000; if (upds.indexOf(t) < 0) upds.push(t); } // advance swT ONLY across candles actually inspected
@@ -19742,6 +20156,7 @@ export class UserStore {
               continue; // candles present → candle-check is authoritative; skip the current-price floor
             }
             // FLOOR: no candles for this symbol this run → current-price check (sustained moves only)
+            if (trailing && trailStop(t, live, live)) { stopP = +t.stop; if (upds.indexOf(t) < 0) upds.push(t); } // live price first raises the mark, then the ratcheted stop is checked
             if (long ? live <= liqP : live >= liqP) { closes.push(closeAt(liqP, true)); continue; }
             if (stopP != null && (long ? live <= stopP : live >= stopP)) { closes.push(closeAt(stopP, false)); continue; }
             if (tpP != null && (long ? live >= tpP : live <= tpP)) { closes.push(closeAt(tpP, false)); }

@@ -120,7 +120,7 @@ footer.site a{color:var(--dim)}
 <h1 class="sr">Free Crypto API — live prices, funding, a scored screener, liquidations and a paper-trading REST API. No key, CORS enabled.</h1>
 
 <div class="hero"><div class="wrap">
-<div class="chips"><span class="chip">No API key</span><span class="chip">CORS enabled</span><span class="chip">60 req / min free</span><span class="chip">OpenAPI 3.1</span></div>
+<div class="chips"><span class="chip">No API key</span><span class="chip">CORS enabled</span><span class="chip">60 req / min free</span><span class="chip">120–600 / min with a key</span><span class="chip">OpenAPI 3.1</span></div>
 <h1 aria-hidden="true">Free Crypto API — <span>no key, no sign-up, CORS on.</span></h1>
 <p class="lead">The one free API that gives you live prices, OHLC candles, a technically scored futures screener, funding &amp; open interest, liquidations, an economic calendar, Fear &amp; Greed, top coins, DeFi TVL, trading calculators — and a free paper-trading REST API to test bots. Every response is plain JSON. Nothing to sign up for.</p>
 <div class="copybox"><code id="c0">curl https://marginpad.io/api/v1/price?symbol=BTC</code><button data-copy="c0" type="button">Copy</button></div>
@@ -240,11 +240,12 @@ print(r.json()[<span class="tok-s">'data'</span>][<span class="tok-s">'price'</s
 <section id="limits">
 <h2>Rate limits &amp; errors<span class="sub">Generous and keyless. Read the headers — don't guess.</span></h2>
 <div class="kpis">
-<div class="kpi"><b>60</b><span>req / min / IP (data)</span></div>
-<div class="kpi"><b>120</b><span>req / min / key (paper)</span></div>
-<div class="kpi"><b>0</b><span>keys required</span></div>
+<div class="kpi"><b>60</b><span>req / min / IP (keyless)</span></div>
+<div class="kpi"><b>120</b><span>req / min with a free key</span></div>
+<div class="kpi"><b>600</b><span>req / min on Premium</span></div>
 <div class="kpi"><b>*</b><span>CORS origin</span></div>
 </div>
+<p style="margin-top:16px"><b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href="/trading-api/">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP — 120 a minute free, 600 a minute on <a href="/premium/">Premium</a>. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.</p>
 <p style="margin-top:16px">Every data response includes rate-limit headers so your client can pace itself:</p>
 <pre><code>X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59

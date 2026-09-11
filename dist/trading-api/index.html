@@ -143,7 +143,7 @@
   <span class="free">● 100% free · no deposit · real live prices</span>
   <h1>Test your trading bot — for free.</h1>
   <p class="lead">Point your bot at our paper-trading REST API. Real live crypto prices, leveraged positions up to 1000×, stop-loss/take-profit, partial closes and liquidation simulation — without risking a cent. Your bot's whole strategy, proven before it ever touches real money.</p>
-  <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span></div>
+  <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span><span>market, limit &amp; stop orders</span><span>trailing stops</span><span>WebSocket + webhooks</span></div>
   <p class="lead" style="margin-top:10px;font-size:14px">Just want market data? See the <a href="/free-crypto-api/" style="color:var(--lime);font-weight:700">free crypto data API</a> — keyless live prices, OHLC, a scored screener, funding, open interest, liquidations, an economic calendar and calculators, all CORS-enabled with an <a href="/api/openapi.json" style="color:var(--lime)">OpenAPI spec</a>.</p>
 </div>
 
@@ -165,20 +165,42 @@ while len(all_bars) &lt; wanted:
     bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1&amp;end={end_ms}")
     if not bars: break
     all_bars = bars + all_bars</code></pre>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>. Add <code>"trail_pct":1.5</code> for a <b>trailing stop</b> (see below) and <code>"dry_run":true</code> to get the priced trade back &mdash; entry, quantity, liquidation price and distance, the open fee and the full round trip &mdash; <b>without writing anything</b>. Use the dry run to size a position or to unit-test your bot against the real engine.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>&mdash; trailing stop</b><p><code>trail_pct</code> sets a stop that <b>follows the best price seen since entry</b> at that percent distance, ratcheted <b>on the server</b>: from 1-minute candle extremes on the minute sweep and from the live price on every <code>/positions</code> read, so it keeps moving while your bot is offline and never loosens. A long opened at 60,000 with <code>trail_pct: 1</code> starts with its stop at 59,400; when price prints 63,000 the stop is 62,370. Positions carry <code>trail_pct</code> and <code>trail_hwm</code> (the extreme it is ratcheting from). Set or clear it later through <code>/sltp</code>.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>&mdash; limit order</b><p>Add <code>"type":"limit"</code> and <code>"limit_price"</code> and the order <b>rests on the server</b> instead of filling now: <code>{"symbol":"BTC","side":"long","type":"limit","limit_price":58000,"margin_usd":100,"leverage":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross &mdash; the fill is found from the 1m high/low, so a wick that retraced between two checks still counts, and the position is stamped with the minute the market actually reached the level. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill. <code>sl</code>/<code>tp</code> are side-checked against the limit price. Returns <code>{"ok":true,"order":{...}}</code>.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/orders</code><p>Your resting limit orders, plus the last 20 that filled, expired or were cancelled &mdash; a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>&mdash; stop entry (breakout)</b><p><code>"type":"stop"</code> rests a <b>breakout entry</b>: a long <b>above</b> the market or a short <b>below</b> it, e.g. <code>{"symbol":"BTC","side":"long","type":"stop","limit_price":66000,"margin_usd":100,"leverage":10}</code>. Same engine as a limit order &mdash; it fills <b>at the level</b> from 1m candles, with the browser closed &mdash; but the wrong side is refused (<code>stop_wrong_side</code>) so a stop and a limit can never be confused. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> and <code>dry_run</code> all apply.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/orders</code><p>Your resting orders, each with <code>type: "limit" | "stop"</code>, plus the last 20 that filled, expired or were cancelled &mdash; a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/modify_order</code><p>Change a resting order <b>in place</b>: <code>{"order_id":"lo...","limit_price":58500,"sl":57000,"tp":62000,"margin_usd":150,"leverage":10,"trail_pct":1}</code> &mdash; send only what changes. Before this the only way was cancel and re-place, which lost the order's <code>client_order_id</code>. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change. A filled, cancelled or expired order answers <code>409</code>.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/cancel_order</code><p>Cancel one resting order. Body: <code>{"order_id":"lo..."}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> — <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button — closes every open position at the live price in one call.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions?status=open</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically. <code>?status=open|closed</code> trims the body to what your loop actually reads; <code>?since=&lt;unix ms&gt;</code> and <code>If-None-Match</code> (304 when nothing changed) are supported too.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/balance</code><p>Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/markets</code><p>Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/sltp</code><p>Move the stop-loss or take-profit on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000}</code> — send <code>null</code> to clear one. Both are checked against the entry side. This is how you trail a stop; before it existed you had to close and reopen, which changed your entry and paid a full round trip.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/sltp</code><p>Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000,"trail_pct":1.5}</code> — send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/report?days=30</code><p>The <a href="/trading-report/">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on Premium (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/ai</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span><p>The chart panel's AI read, from the API: <code>{"symbol":"BTC","interval":"60","question":"Is this leaning long or short?"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over &mdash; price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes &mdash; so you can log exactly what it looked at. Educational, not financial advice.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/webhooks</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span><p>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected &mdash; see <a href="#webhooks">Webhooks</a> below. <code>POST {"act":"add","url":"https://…"}</code> registers one (max 3), <code>{"act":"test","id":…}</code> sends a ping and returns the status your server answered, <code>{"act":"delete","id":…}</code> removes it.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/trades?limit=100&amp;before=…</code><p>The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window — follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/time</code><p>Server clock. <b>No key needed.</b> Pass <code>?client_ts=&lt;your unix ms&gt;</code> and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</p></div>
-<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code>, <code class="k">/klines</code> and <code class="k">/time</code>.</p>
+<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code>, <code class="k">/klines</code> and <code class="k">/time</code>. <b>Official clients</b> (one file each, zero dependencies): <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> &mdash; REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
+
+<h2 id="webhooks">Webhooks — events pushed to your server <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span></h2>
+<p>Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around &mdash; we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.</p>
+<pre><code>POST /api/bot/v2/webhooks
+{"act":"add","url":"https://bot.example.com/marginpad","events":["position.closed","position.liquidated","order.filled"]}
+
+-&gt; {"ok":true,"data":{"webhook":{"id":"wh…","secret":"whs_…","events":[…],"active":true}}}
+
+# what arrives at your URL, seconds after the event:
+POST https://bot.example.com/marginpad
+X-MP-Event: position.closed        X-MP-Delivery: 1841
+X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
+{"event":"position.closed","ts":1789124656008,"hook_id":"wh…","data":{"id":"bot…","symbol":"BTC","status":"closed","pnl_usd":-0.08,"close_reason":"SL hit",…}}</code></pre>
+<p><b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.</p>
+<p><b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds &mdash; anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Up to 3 hooks per account; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.</p>
+<p><b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address &mdash; it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.</p>
 
 <h2 id="v2">Response format — v1 and v2</h2>
 <p><code class="k">/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.</p>
@@ -190,8 +212,9 @@ while len(all_bars) &lt; wanted:
 <h2 id="tiers">Free and Premium limits</h2>
 <p>Every account starts on the free tier, which is enough to build and run a real bot. A <a href="/premium/">Premium</a> account lifts the ceilings on every key it owns automatically &mdash; there is nothing to configure, and they drop back when Premium ends.</p>
 <div class="vswrap"><table class="vs">
-  <tr><th>Limit</th><th>Free</th><th class="hl">Premium</th></tr><tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td></tr><tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td></tr><tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td></tr><tr><td>Market data, WebSocket, MCP</td><td>included</td><td class="hl">included</td></tr><tr><td>Margin per trade / leverage</td><td colspan="2">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (same on both)</td></tr></table></div>
-<p class="note">Your current ceilings are always in <code>GET /api/bot/v1/account</code> under <code>limits</code>, so a bot can read them instead of guessing.</p>
+  <tr><th>Limit</th><th>Free</th><th class="hl">Premium</th></tr><tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td></tr><tr><td>Market-data API (<code>/api/v1/*</code>) with your key</td><td>120 / min per key<br><span style="color:var(--faint)">(60 / min per IP without a key)</span></td><td class="hl"><b>600 / min per key</b></td></tr><tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td></tr><tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td></tr><tr><td><b>Webhooks</b> (signed, retried)</td><td class="n">&mdash;</td><td class="hl"><b>3 per account</b></td></tr><tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="n">&mdash;</td><td class="hl"><b>50 a day</b></td></tr><tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td class="hl"><b>+ breakdowns &amp; findings</b></td></tr><tr><td>Market, limit &amp; stop orders, trailing stops, modify, dry run, WebSocket, MCP</td><td>included</td><td class="hl">included</td></tr><tr><td>Margin per trade / leverage</td><td colspan="2">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (same on both)</td></tr></table></div>
+<p class="note">Your current ceilings and entitlements are always in <code>GET /api/bot/v1/usage</code> (<code>limits</code> and <code>features</code>), so a bot can read them instead of guessing. Premium is <a href="/premium/">$3.99 a month</a>, or earned with rewards balance on the site.</p>
+<p><b>The market-data tier in one sentence:</b> every <code>/api/v1/*</code> endpoint stays keyless at 60 requests a minute per IP; send your <code>X-API-Key</code> on those same calls and they are metered against <b>your key</b> instead &mdash; 120 a minute free, 600 on Premium &mdash; so a bot behind a shared address stops sharing its budget with strangers. <code>X-RateLimit-Scope</code> on the response says which limit applied.</p>
 <h2 id="keys">Managing your keys</h2>
 <p>You can hold several keys on one account — keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:</p>
 <pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
@@ -247,7 +270,7 @@ curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
 <h2 id="mcp">Use it from Claude, ChatGPT or Cursor</h2>
 <p>MarginPad runs a remote <b>MCP</b> server, so an AI assistant can read markets and trade your paper account directly — no glue code:</p>
 <pre><code>https://marginpad.io/mcp</code></pre>
-<p>Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. Seventeen tools are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open/close/sltp/positions/balance/trades. <code>GET /mcp</code> in a browser returns the server descriptor.</p>
+<p>Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. <b>Twenty-two tools</b> are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open (with trailing stops and dry run) / limit and stop orders / modify / cancel / close / sltp / positions / orders / balance / trades / report. <code>GET /mcp</code> in a browser returns the server descriptor.</p>
 
 <h2 id="errors">Error codes</h2>
 <p>On <code>/v2</code>, failures are always <code>{"ok":false,"error":{"code","message"},"ts"}</code>. The <code>code</code> is a stable identifier you can branch on; the <code>message</code> is prose and may be reworded. Some errors carry the value you need to correct the call — <code>sl_wrong_side</code> and <code>tp_wrong_side</code> include the live price.</p>
@@ -259,6 +282,13 @@ curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
   <tr><td><code>unknown_symbol</code></td><td class="hl">404</td><td>Check <code>/v1/markets</code>.</td></tr>
   <tr><td><code>symbol_required</code>, <code>margin_usd_min_1</code>, <code>margin_usd_max_100000</code>, <code>id_required</code></td><td class="hl">400</td><td>Fix the request body.</td></tr>
   <tr><td><code>sl_wrong_side</code> / <code>tp_wrong_side</code></td><td class="hl">400</td><td>The response carries <code>live</code> — put the level on the correct side of it.</td></tr>
+  <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>A stop entry waits on the breakout side (long above, short below). Use <code>type:"limit"</code> for a pullback entry.</td></tr>
+  <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> is a percent between 0.05 and 50; it is refused, never silently clamped.</td></tr>
+  <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> needs at least one field.</td></tr>
+  <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> are Premium. Everything else on this page is free.</td></tr>
+  <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Three hooks per account. Delete one first.</td></tr>
+  <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
+  <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The 50-a-day AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
   <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You hold 50 open positions. Close something.</td></tr>
   <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Harmless on a retry — the position is already settled.</td></tr>
   <tr><td><code>no_price</code></td><td class="hl">400</td><td>No live price this instant; the position stays open. Retry.</td></tr>
@@ -296,29 +326,40 @@ curl -X POST "https://marginpad.io/api/bot/v1/close" \
   -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
   -d '{"id":"POSITION_ID","pct":50}'</pre>
 
-<pre><b># python bot skeleton</b>
-import requests, time
-API = "https://marginpad.io/api/bot"
-H = {"X-API-Key": "YOUR_KEY"}
+<pre><b># python — with the official one-file client (no dependencies)</b>
+# curl -O https://marginpad.io/assets/sdk/marginpad.py
+from marginpad import MarginPad
+mp = MarginPad("YOUR_KEY")
 
-price = requests.get(f"{API}/v1/price", params={"symbol": "BTC"}).json()["price"]
+price = mp.price("BTC")["price"]
 if my_signal(price):  # your strategy here
-    r = requests.post(f"{API}/v1/open", headers=H, json={
-        "symbol": "BTC", "side": "long", "margin_usd": 50, "leverage": 10,
-        "sl": price * 0.97, "tp": price * 1.06,
-    }).json()
-    print("opened", r["position"]["id"], "liq @", r["position"]["liq_price"])</pre>
+    r = mp.open("BTC", "long", margin_usd=50, leverage=10,
+                sl=price * 0.97, trail_pct=1.5,          # trailing stop, ratcheted server-side
+                client_order_id=f"sig-{int(time.time())}")  # a retry can never open twice
+    print("opened", r["position"]["id"], "liq @", r["position"]["liq_price"])
 
-<pre><b># node.js bot skeleton</b>
-const API = "https://marginpad.io/api/bot";
-const H = { "X-API-Key": "YOUR_KEY", "content-type": "application/json" };
+changed = mp.positions(status="open")   # None when nothing changed (ETag / 304)
+print(mp.report()["skill"])</pre>
 
-const { price } = await (await fetch(`${API}/v1/price?symbol=ETH`)).json();
+<pre><b># node.js — with the official one-file client</b>
+// curl -O https://marginpad.io/assets/sdk/marginpad.js
+const { MarginPad } = require("./marginpad.js");
+const mp = new MarginPad("YOUR_KEY");
+
+const { price } = await mp.price("ETH");
 if (mySignal(price)) {  // your strategy here
-  const r = await (await fetch(`${API}/v1/open`, { method: "POST", headers: H,
-    body: JSON.stringify({ symbol: "ETH", side: "short", margin_usd: 50, leverage: 10 }) })).json();
-  console.log("opened", r.position.id, "liq @", r.position.liq_price);
-}</pre>
+  const { position } = await mp.open({ symbol: "ETH", side: "short", margin_usd: 50, leverage: 10,
+    trail_pct: 2, client_order_id: "sig-" + Date.now() });
+  console.log("opened", position.id, "liq @", position.liq_price);
+}
+mp.stream(ev =&gt; { if (ev.type === "position") console.log(ev.data.event, ev.data.position.id); });</pre>
+
+<pre><b># plain HTTP, any language</b>
+import requests
+API = "https://marginpad.io/api/bot"; H = {"X-API-Key": "YOUR_KEY"}
+r = requests.post(f"{API}/v2/open", headers=H, json={"symbol": "BTC", "side": "long",
+      "margin_usd": 50, "leverage": 10, "dry_run": True}).json()   # priced, nothing written
+print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_price"])</pre>
 
 <h2>Why test a trading bot on paper first</h2>
 <div class="why">
@@ -379,7 +420,7 @@ if (mySignal(price)) {  // your strategy here
   <tr><td>Forex majors</td><td class="hl">0.008%</td><td>$1.60</td></tr>
 </table></div>
 <p>Above roughly 180× leverage the rate tapers so the round trip can never exceed ~10% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> — a scalp that clears less than the round trip is a loser no matter how often it is right.</p></div>
-<div class="faq"><b>Margin, liquidation, SL/TP</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> — when the live price crosses your <code>sl</code> or <code>tp</code>, the position settles at that level (status <code>closed_sl</code> / <code>closed_tp</code>).</p></div>
+<div class="faq"><b>Margin, liquidation, SL/TP, trailing</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> — when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.</p></div>
 <div class="faq"><b>Limits &amp; rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>GET /v1/usage</code> tells you your plan and what is left in the current window.</p>
 <div class="vswrap"><table class="vs">
   <tr><th></th><th class="hl">Free</th><th>Premium</th></tr>
@@ -387,13 +428,15 @@ if (mySignal(price)) {  // your strategy here
   <tr><td>Paper trading</td><td class="y hl">Full</td><td class="y">Full</td></tr>
   <tr><td><b>WebSocket stream</b></td><td class="y hl">Yes</td><td class="y">Yes</td></tr>
   <tr><td>Requests per minute, per key</td><td class="hl">120</td><td>600</td></tr>
+  <tr><td>Market-data calls with your key</td><td class="hl">120 / min</td><td>600 / min</td></tr>
   <tr><td>API keys</td><td class="hl">3</td><td>10</td></tr>
   <tr><td>Open positions</td><td class="hl">50</td><td>200</td></tr>
+  <tr><td>Webhooks · AI market read · report breakdowns</td><td class="n hl">—</td><td class="y">3 hooks · 50 reads/day · full report</td></tr>
   <tr><td>Margin per trade / leverage</td><td class="hl">$1–$100,000 · per-symbol caps</td><td>Same</td></tr>
 </table></div>
-<p><b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does — so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently and is not part of any plan.</p></div>
+<p><b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does — so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.</p></div>
 <div class="faq"><b>Balance &amp; equity</b><p>Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.</p></div>
-<div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
+<div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side, so they show in <a href="/paper-trade">My Trades</a>, count for the season boards and XP, and feed your <a href="/trading-report/">trading report</a> — the same report <code>GET /v1/report</code> returns to the bot.</p></div>
 
 <h2>FAQ</h2>
 <details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes — MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See the "Free Liquidation Data API" section above.</p></details>
