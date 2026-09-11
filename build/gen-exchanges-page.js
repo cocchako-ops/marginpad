@@ -15,7 +15,7 @@ const url = 'https://marginpad.io/exchanges/';
 const title = 'Crypto Exchange Comparison 2026 — Fees, Leverage, Liquidity & Trust';
 const desc = 'A trader-first comparison of every major crypto exchange — Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken and more. Real futures fees, max leverage, liquidity, KYC, US access and a hard look at trust and safety (including the KuCoin controversy). No fluff.';
 const kw = 'crypto exchange comparison, best crypto futures exchange, bybit vs binance, lowest fee crypto exchange, best leverage exchange, kucoin safe, crypto exchange fees, best exchange for trading, moon trading platform, trade stocks and crypto in one account';
-const lg = id => 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png';
+const lg = id => id == null ? 'data:,' : 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png'; // null = no CMC logo (Hyperliquid): the empty data URL fails to decode, so the onerror letter mark renders with no network request
 
 // Editorial ratings are our take (0-100), meant for at-a-glance comparison — not financial advice. Fees are the
 // standard/base VIP-0 tier (VIP levels + the referral fee discount lower them). Pair counts & leverage are approximate.
@@ -26,6 +26,12 @@ const EX = [
     feel: 'The default home base for derivatives traders. Deep books on majors so your market orders fill near the mid-price, a fast matching engine that rarely lags in volatility, and a clean pro UI. Liquidations use a fair-price mark, so you’re less likely to get wicked out by a single bad print.',
     pro: ['Very deep liquidity → low slippage on majors', 'Clean, fast pro interface + great mobile app', 'Fair mark-price liquidations', 'Basic use without full KYC (withdrawal limits apply)'],
     con: ['Not available to US residents', 'Base taker fee slightly above Binance/OKX'] },
+  { key: 'hyperliquid', name: 'Hyperliquid', logo: null, mark: 'HL', color: '#5ee6c8', href: 'https://app.hyperliquid.xyz/join/MARGINPAD',
+    lev: '50×', tk: '0.045%', mk: '0.015%', pairs: '150+', kyc: 'None (wallet)', us: 'No', bonus: '4% off fees with code MARGINPAD',
+    r: { fees: 90, liq: 84, mkts: 74, lev: 62, trust: 82, easy: 66 }, badge: 'The on-chain perps exchange',
+    feel: 'Perps on a purpose-built chain instead of a company’s database. You connect a wallet, deposit USDC and trade an order book that anyone can read on-chain — positions, liquidations, funding, all public. Execution on majors is close to the big centralised books, funding settles hourly, and every account can hold sub-accounts with their own API keys, which is why bot builders like it. Fees drop with volume and a referred account pays 4% less from day one.',
+    pro: ['Non-custodial: your wallet, your keys, no withdrawal queue', 'Public on-chain order book, positions and liquidations', 'Hourly funding, sub-accounts with separate API keys', 'No KYC — a wallet is the account'],
+    con: ['Not available to US persons under its terms (the app geoblocks the US)', 'Thinner books on small alts than Binance/Bybit', 'You manage your own wallet security and gas'] },
   { key: 'binance', name: 'Binance', logo: 270, color: '#f0b90b', href: 'https://www.binance.com/register?ref=MAOZM9DS',
     lev: '125×', tk: '0.05%', mk: '0.02%', pairs: '400+', kyc: 'Required', us: 'Binance.US', bonus: '20% off fees for life + welcome voucher',
     r: { fees: 88, liq: 100, mkts: 85, lev: 88, trust: 86, easy: 55 }, badge: 'Deepest liquidity on earth',

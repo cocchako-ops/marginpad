@@ -380,12 +380,38 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
 </table></div>
 <p class="note">Do all three, in that order. The middle step is the one most people skip — and the one that would have saved them.</p>
 
-<div class="golive">
-  <div class="gl-h">Step three needs a real exchange key</div>
-  <p id="glTxt">Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. We point people at <b>Bybit</b>: REST and WebSocket shapes close to what you just wrote, a separate key per sub-account so the bot never holds your main credentials, and it is one of the feeds our own prices come from.</p>
-  <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
-  <span class="gl-note">Referral link — MarginPad may earn a commission if you open an account, at no cost to you. The paper API stays free either way, and nothing here needs an exchange account.</span>
+<div class="golive" id="golive">
+  <div class="gl-h">Step three: where to run the bot for real</div>
+  <p>Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. Two venues we point bot builders at, for different reasons:</p>
+  <div class="gl-grid">
+    <div class="gl-card gl-hl" data-ex="Hyperliquid" id="glHl">
+      <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; API-first</span></div>
+      <p>Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b> (the bot never holds your main key), hourly funding and a book anyone can audit on-chain. The closest thing to running against this API with real money.</p>
+      <div class="gl-offer"><b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span></div>
+      <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a>
+    </div>
+    <div class="gl-card" data-ex="Bybit" id="glBy">
+      <div class="gl-ch"><span class="gl-mark" style="background:#f7a600;color:#1a1200">B</span><b id="glName">Bybit</b><span class="gl-pill">centralised &middot; deepest books</span></div>
+      <p id="glTxt">REST and WebSocket shapes close to what you just wrote, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.</p>
+      <a class="gl-cta gl-cta2" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
+    </div>
+  </div>
+  <span class="gl-note">Referral links — MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. The paper API stays free either way, and nothing here needs an exchange account. Hyperliquid is not available to US persons under its terms.</span>
 </div>
+<style>
+  .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+  .gl-card{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:14px;border:1px solid var(--line2);background:#0d1015;overflow:hidden}
+  .gl-card p{margin:0;font-size:13.5px;line-height:1.6;color:var(--dim)}
+  .gl-hl{border-color:rgba(94,230,200,.35);background:radial-gradient(110% 130% at 100% 0%,rgba(94,230,200,.13),transparent 55%),#0d1412}
+  .gl-hl::after{content:'HL';position:absolute;right:-6px;bottom:-30px;font:800 100px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-7px;color:rgba(94,230,200,.07);pointer-events:none}
+  .gl-ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.gl-ch b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;color:var(--ink)}
+  .gl-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#0f1f1b;color:#5ee6c8;font:800 12px/1 'Bricolage Grotesque',sans-serif}
+  .gl-pill{font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:5px 9px}
+  .gl-offer{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28);position:relative;z-index:1}.gl-offer b{font:800 30px/1 'Bricolage Grotesque',sans-serif;color:#5ee6c8;letter-spacing:-.02em}.gl-offer span{font-size:12.5px;line-height:1.3;color:#cfe3dd}.gl-offer i{font-style:normal;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.1em;color:#f2fbf8}
+  .gl-hl .gl-cta{background:#5ee6c8;color:#062a24;position:relative;z-index:1;margin-top:auto}.gl-cta2{margin-top:auto}
+  .gl-card.mp-ex-off{opacity:.55;filter:saturate(.35)}
+  @media(max-width:640px){.gl-grid{grid-template-columns:1fr}}
+</style>
 <script>
 /* Bybit does not onboard the US or Canada. mp-auth.js is deferred, so poll for window.mpEx (documented
    gotcha) and swap the venue for the best one that actually takes readers in that country. */
@@ -395,15 +421,17 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     if (!window.mpEx || !window.mpEx.cc) return;
     clearInterval(iv);
     window.mpEx.cc(function (c) {
-      if (!c || !window.mpEx.blocked('Bybit', c)) return;
+      if (!c) return;
+      // Hyperliquid: dim + label where its terms exclude the reader (the same rule every partner card follows)
+      if (window.mpEx.blocked('Hyperliquid', c)) { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + (window.mpEx.region(c) || 'your country'); h.appendChild(s); } }
+      if (!window.mpEx.blocked('Bybit', c)) return;
       // this page's reader wants an API, so prefer a venue with a documented trading API over the plain country order
       var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
-      var a = document.getElementById('glLink'), t = document.getElementById('glTxt');
+      var a = document.getElementById('glLink'), t = document.getElementById('glTxt'), nm = document.getElementById('glName'), by = document.getElementById('glBy');
       if (!v || !a || !t) return;
       a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v);
-      a.textContent = 'Open a ' + v + ' account →';
-      t.innerHTML = 'Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. Bybit does not onboard traders in '
-        + (window.mpEx.region(c) || 'your country') + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
+      a.textContent = 'Open a ' + v + ' account →'; if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
+      t.innerHTML = 'Bybit does not onboard traders in ' + (window.mpEx.region(c) || 'your country') + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
     });
   }, 100);
 })();
@@ -477,7 +505,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
   if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=04f6e6be"></script>
+<script defer src="/assets/mp-auth.js?v=b232fd62"></script>
 <script defer src="/assets/mp-nav.js?v=1b59abd6"></script>
 </body>
 </html>

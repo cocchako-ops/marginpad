@@ -2186,6 +2186,10 @@
     Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://www.bybit.com/invite?ref=LZKBERJ', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }, perk: 'fee discount' },
     Binance: { c: '#f0b90b', no: 'US,CA', ref: 'https://www.binance.com/register?ref=MAOZM9DS', deep: function (s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }, perk: '20% off fees' },
     Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?offer=marginpad', deep: null, perk: '24/7 markets' },
+    // Hyperliquid (2026-09-11): on-chain perps DEX, API-first. The join link carries the referral; a /trade deep link would
+    // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US — a US
+    // click is a dead click, so it goes last there like Bybit does. Users get 4% off fees with code MARGINPAD.
+    Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: '4% off fees with code MARGINPAD', code: 'MARGINPAD' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: function (s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }, perk: 'pro tools' },
@@ -2200,10 +2204,10 @@
   // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) — not an opinion about quality.
   var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
   var ORD = {
-    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
-    ca: ['Kraken', 'Coinbase', 'Bybit', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
-    west: ['Binance', 'Bybit', 'Kraken', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
-    def: ['Bybit', 'Binance', 'Moon', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
+    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
+    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
+    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
+    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
   };
   function group(cc2) { cc2 = String(cc2 || '').toUpperCase(); if (cc2 === 'US') return 'us'; if (cc2 === 'CA') return 'ca'; return WEST.indexOf(cc2) >= 0 ? 'west' : 'def'; }
 

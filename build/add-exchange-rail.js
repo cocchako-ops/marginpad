@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');
 
-const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad/i;
+const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad|hyperliquid\.xyz\/join\/MARGINPAD/i;
 
 // Partner links. `d` is a deliberately language-neutral descriptor (numbers + proper nouns) so the card
 // needs no translation; only Moon's needs words, and that one is in the string table below.
@@ -31,11 +31,12 @@ const EX = {
   kraken:   { name: 'Kraken',   href: 'https://invite.kraken.com/JDNW/guj2tf28',             accent: '#7b6cf6', d: 'US &middot; 50x' },
   coinbase: { name: 'Coinbase', href: 'https://base.app/invite/chakko/FHSFNY5H',             accent: '#3b7bff', d: 'US &middot; spot' },
   moon:     { name: 'Moon',     href: 'https://moon.com/?offer=marginpad',                   accent: '#8a5cff', d: '' },
+  hyperliquid: { name: 'Hyperliquid', href: 'https://app.hyperliquid.xyz/join/MARGINPAD',   accent: '#5ee6c8', d: 'on-chain perps &middot; 4% off &middot; code MARGINPAD' },
 };
 
 // Contexts: eyebrow label, the reason line, and which two venues fit the page.
 const CTX = {
-  liq:   { ex: ['bybit', 'binance'], label: 'WHERE THESE LIQUIDATIONS HAPPEN',
+  liq:   { ex: ['bybit', 'hyperliquid'], label: 'WHERE THESE LIQUIDATIONS HAPPEN',
            why: 'Nothing on this page is theoretical &mdash; it is real positions being force-closed on real order books. These are the venues those books belong to.' },
   deriv: { ex: ['bybit', 'binance'], label: 'TRADE THIS DATA',
            why: 'Funding, open interest and basis are only worth something if you are positioned on the venue that pays them.' },

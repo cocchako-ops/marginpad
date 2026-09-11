@@ -3188,7 +3188,7 @@ async function checkCPaper(env) {
 // on a FREE channel is gone. Kill-switch KV fsig:on='0'. Pacing: fsig:daily/day + fsig:gap min between, 6h/symbol.
 // Partner footer for tier signal messages (owner 2026-08-13: Bybit + Moon everywhere money-intent lives).
 // The free channel carries the same pair as inline BUTTONS instead (see its reply_markup below).
-const TG_AFF_LINE = '\n<a href="https://www.bybit.com/invite?ref=LZKBERJ">Trade it on Bybit</a> · <a href="https://moon.com/?offer=marginpad">or call it up/down on Moon</a>';
+const TG_AFF_LINE = '\n<a href="https://www.bybit.com/invite?ref=LZKBERJ">Trade it on Bybit</a> · <a href="https://app.hyperliquid.xyz/join/MARGINPAD">on-chain on Hyperliquid (4% off fees, code MARGINPAD)</a> · <a href="https://moon.com/?offer=marginpad">or call it up/down on Moon</a>';
 async function checkFreeSignals(env, force) {
   try {
     if (!env || !env.STATS || !env.TELEGRAM_TOKEN) return { err: 'no-env' };
@@ -10719,8 +10719,10 @@ const MAIL_AFF_HTML = '<table role="presentation" width="100%" cellpadding="0" c
   + '<td style="border:1px solid #e6e2d6;border-left:3px solid #f7a600;border-radius:10px;padding:10px 12px"><a href="https://www.bybit.com/invite?ref=LZKBERJ" style="text-decoration:none;color:#111"><b style="color:#b97b00">Bybit</b> <span style="color:#666;font-size:12.5px">&mdash; futures for real &middot; 100&times;</span></a></td>'
   + '<td style="width:8px;font-size:0">&nbsp;</td>'
   + '<td style="border:1px solid #e6e2d6;border-left:3px solid #8a5cff;border-radius:10px;padding:10px 12px"><a href="https://moon.com/?offer=marginpad" style="text-decoration:none;color:#111"><b style="color:#6a3fd8">Moon</b> <span style="color:#666;font-size:12.5px">&mdash; up or down &middot; stocks &amp; forex &middot; 24/7</span></a></td>'
+  + '<td style="width:8px;font-size:0">&nbsp;</td>'
+  + '<td style="border:1px solid #e6e2d6;border-left:3px solid #2fbfa4;border-radius:10px;padding:10px 12px"><a href="https://app.hyperliquid.xyz/join/MARGINPAD" style="text-decoration:none;color:#111"><b style="color:#1f8f7a">Hyperliquid</b> <span style="color:#666;font-size:12.5px">&mdash; on-chain perps &middot; 4% off fees, code MARGINPAD</span></a></td>'
   + '</tr></table>';
-const MAIL_AFF_TEXT = 'Trade for real: Bybit (futures, 100x) https://www.bybit.com/invite?ref=LZKBERJ · Moon (up or down, stocks & forex, 24/7) https://moon.com/?offer=marginpad';
+const MAIL_AFF_TEXT = 'Trade for real: Bybit (futures, 100x) https://www.bybit.com/invite?ref=LZKBERJ · Hyperliquid (on-chain perps, 4% off fees with code MARGINPAD) https://app.hyperliquid.xyz/join/MARGINPAD · Moon (up or down, stocks & forex, 24/7) https://moon.com/?offer=marginpad';
 async function sendLeaderboardEmail(env, to, info) {
   if (!env.RESEND_API_KEY || !to) return { ok: false };
   const ord = n => n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
@@ -11713,7 +11715,7 @@ async function handleBot(url, request, env, ctx) {
     const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; botPresence(env, ctx, request, key, a, 'close'); }
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
     if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
     if (r.error === 'no_price') { // stale or wrong hint — fall through to the normal path rather than fail the close
       const a2 = await doCall('/botauth', { key, ep: 'close' });
       if (a2 && a2.limit) rl = { 'x-ratelimit-limit': String(a2.limit), 'x-ratelimit-remaining': String(a2.remaining != null ? a2.remaining : 0), 'x-ratelimit-reset': String(a2.reset || '') };
@@ -11731,7 +11733,7 @@ async function handleBot(url, request, env, ctx) {
   // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
   if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
+  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   const uid = auth.uid;
   botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
 
@@ -11957,6 +11959,7 @@ async function handleBot(url, request, env, ctx) {
       features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
       upgrade: L.name === 'free' ? 'https://marginpad.io/premium/' : null,
+      earn: L.name === 'free' ? 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' : null,
     });
   }
   if (path === '/v1/trades') { // the full closed-trade ledger — /positions is capped at 100, this pages through 30 days
@@ -11977,7 +11980,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // Premium: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'Webhooks are a Premium feature: https://marginpad.io/premium/ — the WebSocket stream (wss://marginpad.io/api/bot/v2/stream) is free on every plan.', upgrade: 'https://marginpad.io/premium/' }, 402);
+    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'Webhooks are a Premium feature: https://marginpad.io/premium/ — the WebSocket stream (wss://marginpad.io/api/bot/v2/stream) is free on every plan.', upgrade: 'https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -12010,7 +12013,7 @@ async function handleBot(url, request, env, ctx) {
     return jb(Object.assign({ premium: true, findings: reportFindings(rep) }, rest), 200);
   }
   if (path === '/v1/ai' && request.method === 'POST') { // Premium: the chart panel's AI read, from the API. Same model, same prompt, same 50/day quota as the site.
-    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'AI market reads are a Premium feature: https://marginpad.io/premium/', upgrade: 'https://marginpad.io/premium/' }, 402);
+    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'AI market reads are a Premium feature: https://marginpad.io/premium/', upgrade: 'https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' }, 402);
     if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     if (!sym) return jb({ error: 'symbol_required' }, 400);
@@ -12046,7 +12049,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '04f6e6be';
+const ASSET_V = 'b232fd62';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18276,6 +18279,7 @@ function handleExchangeGo(url) {
     mexc: { name: 'MEXC', web: 'https://www.mexc.com/futures/' + sym + '_USDT', scheme: 'mexc', host: 'futures/' + sym + '_USDT', pkg: 'com.mexc.mexctrade' },
   };
   if (ex === 'moon') return new Response('', { status: 302, headers: { location: 'https://moon.com/?offer=marginpad', 'cache-control': 'no-store' } }); // no public app scheme — straight to the ref link
+  if (ex === 'hyperliquid') return new Response('', { status: 302, headers: { location: 'https://app.hyperliquid.xyz/join/MARGINPAD', 'cache-control': 'no-store' } }); // the referral rides on /join only — a /trade deep link would lose it
   const c = CFG[ex];
   if (!c) return new Response('', { status: 302, headers: { location: 'https://marginpad.io/charts?coin=' + sym } });
   const web = c.web;

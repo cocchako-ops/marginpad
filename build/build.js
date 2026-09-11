@@ -109,6 +109,7 @@ run('Stamp updated dates (changed pages only)', 'node build/stamp-updated.js');
 // on purpose: the rail is monetisation, not editorial, so it must not bump dateModified/lastmod on 582
 // pages at once (that reads as refresh-spam). Stamping therefore always hashes rail-free content.
 run('Exchange rail on unmonetised pages', 'node build/add-exchange-rail.js');
+run('Hyperliquid partner card on its pages', 'node build/add-hyperliquid-card.js');
 // 11f) hub links for pages nothing linked to (per-coin maps/calculators, comparisons, translated hubs/posts) + og:image fallback — both idempotent, both before the charset pass.
 run('Hub links for orphan pages', 'node build/add-hub-links.js');
 run('og:image fallback', 'node build/add-og-image.js');

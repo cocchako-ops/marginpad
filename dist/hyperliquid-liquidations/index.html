@@ -90,7 +90,20 @@
 .mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
 @media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
 </style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Liquidations — Live Liquidation Levels &amp; How They Work","url":"https://marginpad.io/hyperliquid-liquidations/","dateModified":"2026-08-20T01:29:15.537Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Liquidations — Live Liquidation Levels &amp; How They Work","url":"https://marginpad.io/hyperliquid-liquidations/","dateModified":"2026-08-20T01:29:15.537Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
+.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
+.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
+.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
+.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
+.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
+.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
+.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
+.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
+.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
+.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
+@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
+</head>
 <body>
 <div class="wrap">
   <header>
@@ -177,6 +190,20 @@
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Position data is read live from public on-chain sources and may lag by up to a minute; always confirm against Hyperliquid itself before acting.</p>
   
+<div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
+<div class="mp-hl-e"><i></i>WHERE THESE LIQUIDATIONS HAPPEN</div>
+<div class="mp-hl-row">
+<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid &mdash; perps <b>on-chain</b>, with a fee discount from us.</div><p class="mp-hl-w">Every event on this page is a real position force-closed on Hyperliquid&rsquo;s on-chain book. Trade the same book, 4% cheaper.</p></div>
+<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>off trading fees<br>for referred accounts</span></div><div class="mp-hl-code"><span>use code</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a></div>
+</div>
+<p class="mp-hl-d">Referral link &mdash; MarginPad may earn a commission if you open an account. The 4% fee discount is Hyperliquid&rsquo;s referral discount; you never pay more than you would going direct. Not available to US persons under Hyperliquid&rsquo;s terms.</p>
+</div>
+<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
+/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) — Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
+function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
+var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
+if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
+var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
 <div class="mp-xr"><div class="mp-xr-t">WHERE THESE LIQUIDATIONS HAPPEN</div><p class="mp-xr-w">Nothing on this page is theoretical &mdash; it is real positions being force-closed on real order books. These are the venues those books belong to.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
 </article>
   <footer>
