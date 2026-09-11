@@ -89,6 +89,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,l=+document.getElementById('lev').value,f=+document.getElementById('fee').value/100,fr=+document.getElementById('frate').value/100,h=+document.getElementById('hours').value;var r=document.getElementById('res');if(!(en>0&&l>0)){r.innerHTML='';return;}var feeMove=2*f,fundMove=fr*(h/8),total=feeMove+fundMove,be=en*(1+s*total),roeCost=total*l*100;
 r.innerHTML='<div class="rrow"><span class="k">Round-trip taker fees</span><span class="v">'+(feeMove*100).toFixed(3)+'% of position</span></div><div class="rrow"><span class="k">Funding over '+h+'h ('+(h/8).toFixed(1)+' intervals)</span><span class="v">'+(fundMove*100).toFixed(3)+'% of position</span></div><div class="rrow big"><span class="k">Break-even price</span><span class="v">'+be.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div><div class="rrow"><span class="k">Price must move</span><span class="v">'+(total*100).toFixed(3)+'% in your favor</span></div><div class="rrow"><span class="k">Cost as ROE at '+l+'x</span><span class="v dn">-'+roeCost.toFixed(2)+'% of margin</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=1b59abd6"></script>
+<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
 </body>
 </html>

@@ -1835,6 +1835,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     menu.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-room]');if(b){switchRoom(b.getAttribute('data-room'));menu.hidden=true;btn.classList.remove('open');}});
     document.addEventListener('click',function(){if(menu&&!menu.hidden){menu.hidden=true;btn.classList.remove('open');}});
   }
+  /* The Premium lounge entry depends on window._mpPrem, which mp-auth fills from the /api/auth/xp poll — often AFTER the chat was
+     opened, so buildRoomBar() saw one room, skipped the selector and nothing ever rebuilt it (owner 2026-09-12: "sometimes the
+     dropdown shows, sometimes I must close and reopen the chat"). Ask once while unknown, rebuild on every poll until it exists. MIRROR in mp-trade.js. */
+  function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
+  window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
   function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
@@ -1899,9 +1904,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
  window.addEventListener('pagehide',function(){if(ws){try{ws.onclose=null;ws.close(1000);}catch(e){}ws=null;}});
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&joined&&!ws)connect();});
  window.addEventListener('pageshow',function(){if(joined&&!ws)connect();});
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
+  window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing — on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
   if(/[?&]chat=1/.test(location.search)){try{openBox();}catch(e){}}
@@ -3335,7 +3341,10 @@ window.mpSrvOpen=function(payload,ok,fail){
       .then(function(d){clearTimeout(to);
         if(d&&d.ok&&d.position&&d.position.id)ok(d.position);
         else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}
-        else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (rate limit, bad symbol): the classic local open, as before
+        else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open — that let the 20/min and open-cap rules through the back door */
+          var _lm=d.error==='rate_limited'?'Slow down — '+(d.max||20)+' opens per minute is the limit. Try again in a moment.':'You already hold the maximum number of open positions'+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
+          try{if(window.mpLimitToast)window.mpLimitToast(_lm);}catch(e){}fail({blocked:true,message:_lm,error:d.error});}
+        else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
         else retry();})
       .catch(function(){clearTimeout(to);retry();});
   }

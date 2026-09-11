@@ -11,8 +11,10 @@ const PAGES = [
     slug: 'coinglass-alternative',
     title: 'Free Coinglass Alternative — Liquidation Maps, Funding & OI | MarginPad',
     h1: 'Free Coinglass Alternative',
-    desc: 'MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo).',
-    intro: 'If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) — plus a real-time liquidation feed aggregated from 9 exchanges and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.',
+    // desc is a META attribute: plain text only. A link pasted in here on 2026-09-11 closed the content="" attribute early, the browser
+    // opened <body> right there and the rest of <head> (three copies of the text) rendered ABOVE the header ("broken header", owner 2026-09-12).
+    desc: 'MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free per-venue breakdown, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo).',
+    intro: 'If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) — plus a real-time liquidation feed aggregated from 9 exchanges (with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>) and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.',
     tableHead: ['Feature', 'MarginPad (free)', 'Coinglass'],
     rows: [
       ['Liquidation map / heatmap', 'Free 5-minute preview, unlimited with Premium ($3.99/mo) — real events from exchange websockets + estimated clusters, all coins', 'Free tier limited; advanced heatmaps on paid plans'],
@@ -105,8 +107,11 @@ const PAGES = [
   },
 ];
 
+// meta/og/twitter descriptions are attribute values: no tags, no raw quotes (a stray one ends the attribute and breaks <head>)
+const attr = (s) => String(s || '').replace(/<[^>]*>/g, '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 function page(P) {
   const url = `https://marginpad.io/${P.slug}/`;
+  const desc = attr(P.desc);
   const faqLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[${P.faq.map(f => `{"@type":"Question","name":${JSON.stringify(f.q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(f.a)}}}`).join(',')}]}</script>`;
   const crumbLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":${JSON.stringify(P.h1)},"item":"${url}"}]}</script>`;
   return `<!DOCTYPE html>
@@ -115,16 +120,16 @@ function page(P) {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${P.title}</title>
-<meta name="description" content="${P.desc}" />
+<meta name="description" content="${desc}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:title" content="${P.h1}" />
-<meta property="og:description" content="${P.desc}" />
+<meta property="og:description" content="${desc}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${P.h1}" />
-<meta name="twitter:description" content="${P.desc}" />
+<meta name="twitter:description" content="${desc}" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />

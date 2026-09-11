@@ -89,6 +89,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,ex=+document.getElementById('exit').value,m=+document.getElementById('margin').value,l=+document.getElementById('lev').value,f=+document.getElementById('fee').value/100;var r=document.getElementById('res');if(!(en>0&&ex>0&&m>0&&l>0)){r.innerHTML='';return;}var pos=m*l,qty=pos/en,gross=qty*(ex-en)*s,fees=pos*f+qty*ex*f,net=gross-fees,roe=net/m*100;
 r.innerHTML='<div class="rrow"><span class="k">Position size</span><span class="v">$'+pos.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div><div class="rrow"><span class="k">Gross P&L</span><span class="v '+(gross>=0?'up':'dn')+'">'+(gross>=0?'+':'')+gross.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Fees (entry + exit, taker)</span><span class="v dn">-'+fees.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Net P&L</span><span class="v '+(net>=0?'up':'dn')+'">'+(net>=0?'+':'')+net.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">ROE (return on margin)</span><span class="v '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(2)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=1b59abd6"></script>
+<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
 </body>
 </html>
