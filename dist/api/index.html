@@ -1,50 +1,21 @@
-/* /api/ (developer JSON API docs) + /widgets/ (embeddable calculator) — multilingual.
-   English at /api/ & /widgets/ plus 12 translated variants at /<lang>/api/ & /<lang>/widgets/ (hreflang).
-   Prose comes from build/data/aw-i18n.js (BUNDLES, via subagent translation); code/endpoints/JSON stay literal.
-   Run: node build/gen-api-widgets-pages.js */
-const fs = require('fs');
-const path = require('path');
-const { BUNDLES } = require('./data/aw-i18n');
-const DIST = path.join(__dirname, '..', 'dist');
-const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
-// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
-// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
-// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
-// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
-// was: const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
-const LANG_CODES = [];
-const RTL = { ar: 1 };
-const escAttr = s => String(s).replace(/&(?!amp;|lt;|gt;|quot;)/g, '&amp;').replace(/"/g, '&quot;');
-
-function hreflang(page) {
-  let s = `<link rel="alternate" hreflang="en" href="https://marginpad.io/${page}/" />\n`;
-  for (const lc of LANG_CODES) s += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/${page}/" />\n`;
-  s += `<link rel="alternate" hreflang="x-default" href="https://marginpad.io/${page}/" />`;
-  return s;
-}
-
-function apiPage(lang) {
-  // /api/ is THE API hub (rewritten 2026-09-11, owner: "here everything about our API must be written, and the partner
-  // cards"). Only English is generated (LANG_CODES is empty); the calculator section still reads the i18n bundle so a
-  // restored language keeps its prose, every other section is English prose + literal endpoints.
-  const t = BUNDLES[lang || 'en'].api, code = lang || 'en';
-  const home = lang ? `/${lang}/` : '/', url = `https://marginpad.io/${lang ? lang + '/' : ''}api/`;
-  const HL = 'https://app.hyperliquid.xyz/join/MARGINPAD';
-  const row = (m, p, d) => `<tr><td><span class="m ${m.toLowerCase()}">${m}</span></td><td><code>${p}</code></td><td>${d}</td></tr>`;
-  return `<!DOCTYPE html>
-<html lang="${code}"${RTL[lang] ? ' dir="rtl"' : ''}>
-<head>${GTAG}
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad API — free crypto data, paper-trading Bot API, MCP | MarginPad</title>
 <meta name="description" content="Every MarginPad API on one page: a free keyless crypto market-data API (prices, candles, screener, funding, open interest, liquidations, calendar), a paper-trading Bot API with REST, WebSocket, webhooks, trailing stops and limit/stop orders, a remote MCP server with 22 tools, OpenAPI 3.1 and one-file Python and JS clients." />
 <meta name="keywords" content="marginpad api, free crypto api, crypto price api no key, paper trading api, trading bot api, crypto liquidation api, funding rate api, mcp server crypto, openapi crypto, crypto calculator api" />
-<link rel="canonical" href="${url}" />
-${hreflang('api')}
+<link rel="canonical" href="https://marginpad.io/api/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/api/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/api/" />
 <meta property="og:title" content="MarginPad API — free crypto data, paper-trading Bot API, MCP" />
 <meta property="og:description" content="Keyless market data at 60 req/min (120–600 with a free key), a full paper-trading Bot API with webhooks and trailing stops, MCP with 22 tools, OpenAPI 3.1, Python and JS clients." />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="${url}" />
+<meta property="og:url" content="https://marginpad.io/api/" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -98,15 +69,17 @@ ${hreflang('api')}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebAPI","name":"MarginPad API","description":"Free keyless crypto market-data API (prices, OHLC, screener, funding, open interest, liquidations, calendar, calculators), a paper-trading Bot API (REST, WebSocket, webhooks, limit/stop orders, trailing stops) and a remote MCP server with 22 tools. OpenAPI 3.1.","url":"https://marginpad.io/api/","documentation":"https://marginpad.io/api/openapi.json","termsOfService":"https://marginpad.io/terms/","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <a class="brand" href="${home}">MARGIN<b>PAD</b></a>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
     <nav class="nav"><a href="/free-crypto-api/">Data API</a><a href="/trading-api/">Bot API</a><a href="/api/changelog">Changelog</a></nav>
   </header>
 
-  <div class="crumb"><a href="${home}">${t.crumbHome}</a> / API</div>
+  <div class="crumb"><a href="/">Home</a> / API</div>
   <article>
     <h1>MarginPad API</h1>
     <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar &mdash; keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
@@ -123,28 +96,28 @@ ${hreflang('api')}
     <p>Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href="/trading-api/">/trading-api/</a>) on the same calls and they are metered against your key instead &mdash; 120 a minute, 600 on <a href="/premium/">Premium</a>. Full manual with examples: <a href="/free-crypto-api/">/free-crypto-api/</a>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>What you get</th></tr>
-      ${row('GET', '/api/v1/price?symbol=BTC', 'Live price for one coin, aggregated across Binance / Bybit / OKX / Gate.')}
-      ${row('GET', '/api/v1/prices', 'Batch snapshot of the top coins in one call.')}
-      ${row('GET', '/api/v1/klines?symbol=BTC&amp;interval=60', 'OHLC candles: 1, 5, 15, 60, 240, 1440 minutes; up to 1000 per call, <code>&amp;end=</code> to page back.')}
-      ${row('GET', '/api/v1/symbols', '~500 liquid USDT-perp symbols by volume.')}
-      ${row('GET', '/api/v1/screener', 'Scored futures screener: 0-100 score, verdict, RSI, MACD, trend, ATR setup.')}
-      ${row('GET', '/api/v1/funding', 'Funding rates across ~160 pairs, measured from exchange public endpoints.')}
-      ${row('GET', '/api/v1/open-interest', 'Open interest (USD) across ~160 pairs.')}
-      ${row('GET', '/api/v1/long-short', 'Long/short account ratio for majors (Binance + OKX + Bybit).')}
-      ${row('GET', '/api/v1/liquidations', '24h liquidation totals per coin, longs vs shorts, from our own nine-exchange collector.')}
-      ${row('GET', '/api/v1/venues', 'Liquidations by exchange: 24h total, share, long/short split.')}
-      ${row('GET', '/api/v1/feed', 'The newest liquidation events across all symbols (seconds behind the exchanges).')}
-      ${row('GET', '/api/v1/liquidations/live?symbol=BTC', 'Raw recent liquidation events for one symbol.')}
-      ${row('GET', '/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440', 'Time-bucketed long/short histogram, up to 30 days.')}
-      ${row('GET', '/api/v1/clusters?symbol=BTC', 'Modelled liquidation clusters: price levels where forced selling sits right now.')}
-      ${row('GET', '/api/v1/calendar', 'FOMC, CPI, NFP, options expiry and crypto milestones with UTC timestamps.')}
-      ${row('GET', '/api/v1/fear-greed', 'Fear &amp; Greed index, value and classification.')}
-      ${row('GET', '/api/v1/coins', 'Top ~250 coins: price, market cap, 1h/24h/7d change, sparkline.')}
-      ${row('GET', '/api/v1/global', 'Total market cap, volume, BTC dominance.')}
-      ${row('GET', '/api/v1/trending', 'Trending coins.')}
-      ${row('GET', '/api/v1/defi', 'DeFi TVL: chains, protocols, stablecoins.')}
-      ${row('GET', '/api/latam/ar · /api/latam/br', 'Regional quotes: USDT in Argentine pesos across 35 exchanges; Bitcoin and USDT in reais with the premium over the commercial dollar.')}
-      ${row('GET', '/api/v1/calc/liquidation · position-size · pnl · risk-reward · take-profit', 'The five calculators below, in the same envelope.')}
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/price?symbol=BTC</code></td><td>Live price for one coin, aggregated across Binance / Bybit / OKX / Gate.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/prices</code></td><td>Batch snapshot of the top coins in one call.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/klines?symbol=BTC&amp;interval=60</code></td><td>OHLC candles: 1, 5, 15, 60, 240, 1440 minutes; up to 1000 per call, <code>&amp;end=</code> to page back.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/symbols</code></td><td>~500 liquid USDT-perp symbols by volume.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/screener</code></td><td>Scored futures screener: 0-100 score, verdict, RSI, MACD, trend, ATR setup.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/funding</code></td><td>Funding rates across ~160 pairs, measured from exchange public endpoints.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/open-interest</code></td><td>Open interest (USD) across ~160 pairs.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/long-short</code></td><td>Long/short account ratio for majors (Binance + OKX + Bybit).</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations</code></td><td>24h liquidation totals per coin, longs vs shorts, from our own nine-exchange collector.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/venues</code></td><td>Liquidations by exchange: 24h total, share, long/short split.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/feed</code></td><td>The newest liquidation events across all symbols (seconds behind the exchanges).</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations/live?symbol=BTC</code></td><td>Raw recent liquidation events for one symbol.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code></td><td>Time-bucketed long/short histogram, up to 30 days.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/clusters?symbol=BTC</code></td><td>Modelled liquidation clusters: price levels where forced selling sits right now.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/calendar</code></td><td>FOMC, CPI, NFP, options expiry and crypto milestones with UTC timestamps.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/fear-greed</code></td><td>Fear &amp; Greed index, value and classification.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/coins</code></td><td>Top ~250 coins: price, market cap, 1h/24h/7d change, sparkline.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/global</code></td><td>Total market cap, volume, BTC dominance.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/trending</code></td><td>Trending coins.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/defi</code></td><td>DeFi TVL: chains, protocols, stablecoins.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/latam/ar · /api/latam/br</code></td><td>Regional quotes: USDT in Argentine pesos across 35 exchanges; Bitcoin and USDT in reais with the premium over the commercial dollar.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/calc/liquidation · position-size · pnl · risk-reward · take-profit</code></td><td>The five calculators below, in the same envelope.</td></tr>
     </table></div>
     <pre>curl "https://marginpad.io/api/v1/price?symbol=BTC"
 curl "https://marginpad.io/api/v1/screener"
@@ -154,20 +127,20 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
     <p>Point a trading bot at real live prices and settle every trade in simulated dollars: isolated margin, leverage up to 1000&times;, liquidations confirmed on 1-minute candles, taker fees and funding charged like an exchange. Sign in with an email and mint a key on <a href="/trading-api/">/trading-api/</a>; positions live on your account and count for the season boards. <code>v1</code> response shapes are frozen; <code>v2</code> is the same API in the <code>{ ok, data, ts }</code> envelope. Auth: <code>X-API-Key</code>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>What it does</th></tr>
-      ${row('GET', '/api/bot/v1/price · /klines · /time · /markets', 'Fill price, candles, server clock (with <code>drift_ms</code>) and every tradable symbol with its leverage cap and fee — the first three need no key.')}
-      ${row('POST', '/api/bot/v1/open', 'Market open at the live price with optional <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class="tag n">2.3</span>, <code>client_order_id</code> (idempotent retries) and <code>dry_run</code> <span class="tag n">2.3</span> (price it, write nothing).')}
-      ${row('POST', '/api/bot/v1/open <i>type: limit | stop</i>', 'Resting orders that fill AT your level from 1m candles while the bot is offline: a limit below the market or a stop entry above it <span class="tag n">2.3</span>.')}
-      ${row('GET', '/api/bot/v1/orders', 'Resting orders (with <code>type</code>) plus the last 20 that filled, expired or were cancelled.')}
-      ${row('POST', '/api/bot/v1/modify_order', 'Change a resting order in place: price, sl, tp, margin, leverage, trailing stop <span class="tag n">2.3</span>.')}
-      ${row('POST', '/api/bot/v1/cancel_order', 'Cancel a resting order (a filled one answers 409, so a retry can never undo a fill).')}
-      ${row('POST', '/api/bot/v1/close · /close_all', 'Close one position, partially with <code>pct</code>, or everything; P&amp;L settles net of the round-trip fee and funding.')}
-      ${row('POST', '/api/bot/v1/sltp', 'Move the stop-loss, take-profit or trailing stop on an open position without closing it.')}
-      ${row('GET', '/api/bot/v1/positions?status=open', 'Positions with live mark price and P&amp;L; ETag / 304 when nothing changed; <code>?since=</code>.')}
-      ${row('GET', '/api/bot/v1/trades · /account · /balance · /usage', 'Paged closed-trade ledger, lifetime account stats, balance and equity, your plan with limits and entitlements.')}
-      ${row('GET', '/api/bot/v1/report?days=30', 'Your 30-day trading report: totals and skill score free; by coin / leverage / side / hour / day and written findings on Premium <span class="tag n">2.3</span>.')}
-      ${row('WS', 'wss://marginpad.io/api/bot/v2/stream?api_key=…', 'Position opened / updated / closed events and mark prices pushed every ~2 s. Free on every plan.')}
-      ${row('GET', '/api/bot/v1/webhooks <span class="tag p">Premium</span>', 'Trading events POSTed to your own URL, HMAC-SHA256 signed and retried, whether or not the bot is connected <span class="tag n">2.3</span>.')}
-      ${row('POST', '/api/bot/v1/ai <span class="tag p">Premium</span>', 'The chart panel&rsquo;s AI read from the API: an answer, a parsed plan and the brief it reasoned over, 50 a day <span class="tag n">2.3</span>.')}
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/price · /klines · /time · /markets</code></td><td>Fill price, candles, server clock (with <code>drift_ms</code>) and every tradable symbol with its leverage cap and fee — the first three need no key.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open</code></td><td>Market open at the live price with optional <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class="tag n">2.3</span>, <code>client_order_id</code> (idempotent retries) and <code>dry_run</code> <span class="tag n">2.3</span> (price it, write nothing).</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open <i>type: limit | stop</i></code></td><td>Resting orders that fill AT your level from 1m candles while the bot is offline: a limit below the market or a stop entry above it <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/orders</code></td><td>Resting orders (with <code>type</code>) plus the last 20 that filled, expired or were cancelled.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/modify_order</code></td><td>Change a resting order in place: price, sl, tp, margin, leverage, trailing stop <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/cancel_order</code></td><td>Cancel a resting order (a filled one answers 409, so a retry can never undo a fill).</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/close · /close_all</code></td><td>Close one position, partially with <code>pct</code>, or everything; P&amp;L settles net of the round-trip fee and funding.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/sltp</code></td><td>Move the stop-loss, take-profit or trailing stop on an open position without closing it.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/positions?status=open</code></td><td>Positions with live mark price and P&amp;L; ETag / 304 when nothing changed; <code>?since=</code>.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/trades · /account · /balance · /usage</code></td><td>Paged closed-trade ledger, lifetime account stats, balance and equity, your plan with limits and entitlements.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/report?days=30</code></td><td>Your 30-day trading report: totals and skill score free; by coin / leverage / side / hour / day and written findings on Premium <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m ws">WS</span></td><td><code>wss://marginpad.io/api/bot/v2/stream?api_key=…</code></td><td>Position opened / updated / closed events and mark prices pushed every ~2 s. Free on every plan.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/webhooks <span class="tag p">Premium</span></code></td><td>Trading events POSTed to your own URL, HMAC-SHA256 signed and retried, whether or not the bot is connected <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/ai <span class="tag p">Premium</span></code></td><td>The chart panel&rsquo;s AI read from the API: an answer, a parsed plan and the brief it reasoned over, 50 a day <span class="tag n">2.3</span>.</td></tr>
     </table></div>
     <div class="tw"><table class="plans">
       <tr><th>Plan</th><th>Free</th><th class="hl">Premium ($3.99/mo)</th></tr>
@@ -186,7 +159,7 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
           <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; API-first</span></div>
           <p>Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b>, hourly funding and an order book anyone can audit on-chain.</p>
           <div class="gl-offer"><b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span></div>
-          <a class="gl-cta" href="${HL}" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a>
+          <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a>
         </div>
         <div class="gl-card" data-ex="Bybit" id="glBy">
           <div class="gl-ch"><span class="gl-mark" style="background:#f7a600;color:#1a1200">B</span><b id="glName">Bybit</b><span class="gl-pill">centralised &middot; deepest books</span></div>
@@ -210,20 +183,20 @@ r = mp.open("BTC", "long", margin_usd=100, leverage=10, trail_pct=1.5,
 print(r["position"]["liq_price"], mp.report()["skill"])</pre>
 
     <h2 id="calc">Calculators — <code>/api/*</code>, plain JSON</h2>
-    <p>${t.lead}</p>
+    <p>A free, public JSON API for the most common crypto futures calculations. No API key, no signup, CORS-enabled — call it from anywhere.</p>
     <pre>Base URL   https://marginpad.io/api
 Method     GET
 Auth       none
 CORS       enabled (Access-Control-Allow-Origin: *)
 Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</pre>
 
-    <h3>${t.h2liq}</h3>
+    <h3>Liquidation price</h3>
     <div class="ep"><b>GET</b> /api/liquidation?entry=60000&amp;leverage=10&amp;side=long&amp;mmr=0.5</div>
     <table class="params">
-      <tr><td>entry</td><td>${t.p_entry_req}</td></tr>
-      <tr><td>leverage</td><td>${t.p_lev_req}</td></tr>
-      <tr><td>side</td><td>${t.p_side_opt}</td></tr>
-      <tr><td>mmr</td><td>${t.p_mmr_opt}</td></tr>
+      <tr><td>entry</td><td>required — entry price</td></tr>
+      <tr><td>leverage</td><td>required — leverage multiple (>0)</td></tr>
+      <tr><td>side</td><td>optional — long (default) or short</td></tr>
+      <tr><td>mmr</td><td>optional — maintenance margin rate %, default 0.5</td></tr>
     </table>
     <pre>{
   "side": "long",
@@ -231,31 +204,31 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
   "distancePct": -9.5
 }</pre>
 
-    <h3>${t.h2size}</h3>
+    <h3>Position size (by risk)</h3>
     <div class="ep"><b>GET</b> /api/position-size?balance=5000&amp;risk=1&amp;entry=60000&amp;stop=58800&amp;leverage=10</div>
     <table class="params">
-      <tr><td>balance</td><td>${t.p_balance_req}</td></tr>
-      <tr><td>risk</td><td>${t.p_risk_req}</td></tr>
-      <tr><td>entry</td><td>${t.p_entry_req}</td></tr>
-      <tr><td>stop</td><td>${t.p_stop_req}</td></tr>
-      <tr><td>leverage</td><td>${t.p_lev_margin_opt}</td></tr>
+      <tr><td>balance</td><td>required — account balance</td></tr>
+      <tr><td>risk</td><td>required — risk per trade %</td></tr>
+      <tr><td>entry</td><td>required — entry price</td></tr>
+      <tr><td>stop</td><td>required — stop-loss price</td></tr>
+      <tr><td>leverage</td><td>optional — for margin required</td></tr>
     </table>
     <pre>{ "positionSize": 0.041667, "notional": 2500, "riskAmount": 50, "marginRequired": 250 }</pre>
 
-    <h3>${t.h2pnl}</h3>
+    <h3>PnL / ROI / ROE</h3>
     <div class="ep"><b>GET</b> /api/pnl?entry=60000&amp;exit=66000&amp;size=0.5&amp;leverage=10&amp;side=long</div>
     <pre>{ "pnl": 3000, "roiPct": 10, "roePct": 100 }</pre>
 
-    <h3>${t.h2rr}</h3>
+    <h3>Risk / reward</h3>
     <div class="ep"><b>GET</b> /api/risk-reward?entry=60000&amp;stop=58000&amp;tp=66000</div>
     <pre>{ "riskRewardRatio": 3, "riskPerUnit": 2000, "rewardPerUnit": 6000, "breakevenWinRatePct": 25 }</pre>
 
-    <h3>${t.h2tp}</h3>
+    <h3>Take-profit target</h3>
     <div class="ep"><b>GET</b> /api/take-profit?entry=60000&amp;leverage=10&amp;roe=75&amp;side=long</div>
     <pre>{ "targetExitPrice": 64500, "priceMovePct": 7.5 }</pre>
 
-    <h2>${t.h2notes}</h2>
-    <p>${t.notes} Market data is free for public use, attribution appreciated; the Bot API is a simulator and never touches real funds. Educational only, not financial advice.</p>
+    <h2>Notes</h2>
+    <p>Calculations use the isolated-margin estimate and are for educational use, not financial advice. Figures exclude exchange fees and funding. The API is provided free and as-is. If you build something with it, a link back to <a href="https://marginpad.io">marginpad.io</a> is appreciated. Market data is free for public use, attribution appreciated; the Bot API is a simulator and never touches real funds. Educational only, not financial advice.</p>
 
     <div class="endcta">
       <h3>Build something with it</h3>
@@ -294,124 +267,6 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
   }, 100);
 })();
 </script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-nav.js?v=1b59abd6"></script>
 </body>
 </html>
-`;
-}
-
-function widgetsPage(lang) {
-  const t = BUNDLES[lang || 'en'].widgets, code = lang || 'en';
-  const home = lang ? `/${lang}/` : '/', url = `https://marginpad.io/${lang ? lang + '/' : ''}widgets/`;
-  return `<!DOCTYPE html>
-<html lang="${code}"${RTL[lang] ? ' dir="rtl"' : ''}>
-<head>${GTAG}
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>${escAttr(t.metaTitle)} | MarginPad</title>
-<meta name="description" content="${escAttr(t.metaDesc)}" />
-<meta name="keywords" content="${escAttr(t.keywords)}" />
-<link rel="canonical" href="${url}" />
-${hreflang('widgets')}
-<meta name="robots" content="index, follow, max-image-preview:large" />
-<meta name="theme-color" content="#0a0b0d" />
-<meta property="og:title" content="${escAttr(t.metaTitle)}" />
-<meta property="og:description" content="${escAttr(t.ogDesc)}" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="${url}" />
-<meta property="og:image" content="https://marginpad.io/assets/og.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
-<link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-<link rel="stylesheet" href="/assets/fonts.css">
-<link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MarginPad Liquidation Calculator Widget","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/widgets/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free embeddable crypto liquidation calculator widget with live prices."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":${JSON.stringify(t.crumbHome)},"item":"https://marginpad.io${home}"},{"@type":"ListItem","position":2,"name":${JSON.stringify(t.crumbWidgets)},"item":"${url}"}]}</script>
-<style>
-  .embed-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start;margin:24px 0 8px}
-  @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
-  .embed-prev{background:#0c0f13;border:1px solid var(--line-bright);border-radius:16px;padding:8px}
-  .embed-prev iframe{display:block;width:100%;border:0;border-radius:11px}
-  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
-  .copy{position:absolute;top:10px;right:10px;background:#1a1f27;border:1px solid var(--line-bright);color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer}
-  .copy:hover{color:#c2f64a;border-color:#c2f64a}
-  .coins{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 18px}
-  .coins a{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-decoration:none;border:1px solid var(--line-bright);border-radius:8px;padding:6px 11px}
-  .coins a:hover{color:#c2f64a;border-color:#c2f64a}
-  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 8px}
-  @media(max-width:620px){.feat{grid-template-columns:1fr}}
-  .feat div{background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:14px 15px;font-size:14px}
-  .feat b{display:block;color:#c2f64a;font-family:'Space Mono',monospace;font-size:12px;margin-bottom:5px}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header>
-    <a class="brand" href="${home}">MARGIN<b>PAD</b></a>
-    <nav class="nav"><a href="${home}">${t.navCalc}</a><a href="/blog/">${t.navBlog}</a><a href="/glossary/">${t.navGloss}</a></nav>
-  </header>
-  <div class="crumb"><a href="${home}">${t.crumbHome}</a> / ${t.crumbWidgets}</div>
-  <article>
-    <h1>${t.h1}</h1>
-    <p class="lead">${t.lead}</p>
-
-    <div class="embed-grid">
-      <div class="embed-prev">
-        <iframe src="/widget/liquidation-calculator/?coin=BTC" height="430" title="Liquidation Calculator by MarginPad" loading="lazy"></iframe>
-      </div>
-      <div>
-        <h2 style="margin-top:0">${t.copyH}</h2>
-        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='${t.copiedBtn}';setTimeout(function(){b.textContent='${t.copyBtn}';},1400);})(this)">${t.copyBtn}</button><code>&lt;iframe src="https://marginpad.io/widget/liquidation-calculator/?coin=BTC"
-  width="360" height="440" loading="lazy"
-  style="border:0;border-radius:14px;max-width:100%"
-  title="Liquidation Calculator by MarginPad"&gt;&lt;/iframe&gt;</code></div>
-        <h2>${t.pickH}</h2>
-        <p>${t.pickP}</p>
-        <div class="coins">
-          <a href="/widget/liquidation-calculator/?coin=BTC" target="_blank">BTC</a>
-          <a href="/widget/liquidation-calculator/?coin=ETH" target="_blank">ETH</a>
-          <a href="/widget/liquidation-calculator/?coin=SOL" target="_blank">SOL</a>
-          <a href="/widget/liquidation-calculator/?coin=XRP" target="_blank">XRP</a>
-          <a href="/widget/liquidation-calculator/?coin=BNB" target="_blank">BNB</a>
-          <a href="/widget/liquidation-calculator/?coin=DOGE" target="_blank">DOGE</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="feat">
-      <div><b>${t.featLiveB}</b>${t.featLiveP}</div>
-      <div><b>${t.featLsB}</b>${t.featLsP}</div>
-      <div><b>${t.featCostB}</b>${t.featCostP}</div>
-    </div>
-
-    <h2>${t.whyH}</h2>
-    <p>${t.whyP}</p>
-
-    <h2>${t.moreH}</h2>
-    <div class="related">
-      <a href="${home}#liq">${t.relLiq}</a>
-      <a href="/heatmap">${t.relHeat}</a>
-      <a href="/paper-trade">${t.relPaper}</a>
-      <a href="/funding-fee-calculator/">${t.relFunding}</a>
-      <a href="/blog/">${t.relGuides}</a>
-    </div>
-    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">${t.disclaimer}</p>
-  </article>
-  <footer>
-    <span>© 2026 MarginPad</span>
-    <span><a href="${home}">${t.navCalc}</a> · <a href="/blog/">${t.navBlog}</a> · <a href="/glossary/">${t.navGloss}</a></span>
-  </footer>
-</div>
-<script defer src="/assets/mp-nav.js"></script>
-</body>
-</html>
-`;
-}
-
-let n = 0;
-function write(rel, html) { const d = path.join(DIST, rel); fs.mkdirSync(d, { recursive: true }); fs.writeFileSync(path.join(d, 'index.html'), html); n++; }
-write('api', apiPage(''));
-write('widgets', widgetsPage(''));
-for (const lc of LANG_CODES) { write(path.join(lc, 'api'), apiPage(lc)); write(path.join(lc, 'widgets'), widgetsPage(lc)); }
-console.log('wrote', n, 'api + widgets pages (en + 12 langs)');
