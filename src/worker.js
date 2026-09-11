@@ -4664,6 +4664,32 @@ async function handleTrack(url, request, env, ctx) {
     if (type === 'pageview') { await inc('botf:total'); await inc('botf:day:' + new Date().toISOString().slice(0, 10), 3456000); }
     return ok;
   }
+  // PROBE GATE (2026-09-12). An SQL-injection scanner (sqlmap: UNION ALL SELECT / EXTRACTVALUE / CONCAT(0x7e…), rotating
+  // user agents, one FR DSL address) put 135 "landed on ' UNION ALL SELECT…" rows into the owner's daily feed in two
+  // minutes and 135 fake pageviews into the counters. Nothing on this path is SQL (KV, Analytics Engine, parameterised
+  // DO SQLite), so the only damage is the noise — and the noise is the owner's daily read. A payload-looking p / l / r
+  // is counted as a probe, never as a visit or a click; an address that sends 3 probes inside a minute is muted for
+  // 24 h (every beacon answered 204 and dropped) and the radar shows one line for it instead of a row per payload.
+  // An E2E run (admin key) is counted but never muted, so a test cannot lock its own address out.
+  {
+    const _ipP = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
+    const _e2e = !!adminKeyFrom(request, url) && isAdminKey(env, adminKeyFrom(request, url));
+    if (_ipP && env.STATS && !_e2e) { try { if (await env.STATS.get('probe:ip:' + _ipP)) return new Response('', { status: 204, headers: okHeaders }); } catch (e) {} }
+    const _pp = p.get('p') || '', _pl = p.get('l') || '', _pr = p.get('r') || '';
+    const _probeRe = /union[\s+]+(all[\s+]+)?select|extractvalue\s*\(|concat\s*\(|0x7e|sleep\s*\(|waitfor[\s+]+delay|benchmark\s*\(|information_schema|\/\*|--\s|'\)+|"\)+|%27|<script|javascript:/i;
+    const _isProbe = _probeRe.test(_pp + ' ' + _pl + ' ' + _pr) || (_pp && !/^\/[^\s'"<>`]{0,600}$/.test(_pp));
+    if (_isProbe && env.STATS) {
+      const _day = new Date().toISOString().slice(0, 10), _min = Math.floor(Date.now() / 60000);
+      try {
+        await inc('probe:day:' + _day, 3456000);
+        if (_ipP && !_e2e) {
+          const mk = 'probe:m:' + _ipP + ':' + _min; const n = (+(await env.STATS.get(mk)) || 0) + 1; await env.STATS.put(mk, String(n), { expirationTtl: 180 });
+          if (n >= 3) { await env.STATS.put('probe:ip:' + _ipP, JSON.stringify({ ts: Date.now(), n, cc: (request.cf && request.cf.country) || '', ua: String(request.headers.get('user-agent') || '').slice(0, 80) }), { expirationTtl: 86400 }); try { await evPush(env, request, 'probe', 'injection scanner muted 24 h after ' + n + ' probes in a minute (' + ((request.cf && request.cf.country) || '?') + ')', '/'); } catch (e) {} }
+        }
+      } catch (e) {}
+      return new Response('', { status: 204, headers: okHeaders });
+    }
+  }
   if (type === 'pageview') {
     const day = new Date().toISOString().slice(0, 10);
     await inc('pv:total'); // raw page views (every load)
@@ -15841,6 +15867,11 @@ export default {
       { const su = new Map(); ev.forEach(x => { if (x.t === 'signup') { const nm = nameOf(x); if (nm) su.set(nm, x.ts); } });
         ev.forEach(x => { const nm = nameOf(x); if ((x.t === 'claim' || x.t === 'withdraw') && nm && su.has(nm) && x.ts - su.get(nm) < 3600000) push9('fast_money', 'amber', 'Money within an hour of signing up', '@' + nm + ' ' + x.t + ' ' + (x.e || ''), 'u:' + nm, 1, x.ts); }); }
       ev.forEach(x => { if (x.t === 'withdraw') push9('withdraw', 'info', 'Withdrawal requested ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + nameOf(x) : '', 1, x.ts); if (x.t === 'wdreject') push9('wdreject', 'amber', 'Withdrawal rejected ' + (x.e || ''), '@' + (x.u || '?'), x.u ? 'u:' + nameOf(x) : '', 1, x.ts); if (x.t === 'admin') push9('admin', 'info', 'Owner action: ' + (x.e || ''), '', '', 1, x.ts); });
+      try { // injection probes (2026-09-12): counted at the beacon, never shown as rows — one radar line says how many and who is muted
+        const _pd = +(await env.STATS.get('probe:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
+        if (_pd) { let muted = []; try { muted = (await env.STATS.list({ prefix: 'probe:ip:', limit: 50 })).keys.map(k => k.name.slice(9)); } catch (e) {}
+          push9('probe', 'info', 'Injection scanner: ' + _pd + ' probe' + (_pd === 1 ? '' : 's') + ' today, counted and dropped (not SQL here)', muted.length ? muted.length + ' address' + (muted.length === 1 ? '' : 'es') + ' muted 24 h: ' + muted.map(ip => ip.replace(/\.\d+$/, '.x')).join(', ') : 'no address reached the mute threshold', '', _pd, now); }
+      } catch (e) {}
       const sevN = { red: 0, amber: 1, info: 2 }; radar.sort((a, b) => (sevN[a.sev] - sevN[b.sev]) || (b.n - a.n));
       // ---- rows: events (+ pageviews when asked or when one actor is traced), newest first; every row carries its resolved actor key ----
       let rows = ev.map(x => x);
