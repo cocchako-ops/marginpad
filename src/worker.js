@@ -4681,7 +4681,7 @@ async function handleTrack(url, request, env, ctx) {
     if (_isProbe && env.STATS) {
       const _day = new Date().toISOString().slice(0, 10), _min = Math.floor(Date.now() / 60000);
       try {
-        await inc('probe:day:' + _day, 3456000);
+        { const pk = 'probe:day:' + _day; await env.STATS.put(pk, String((+(await env.STATS.get(pk)) || 0) + 1), { expirationTtl: 3456000 }); } // direct, not the batched inc(): a probe is rare and the radar must see it without waiting for a later beacon to flush the batch
         if (_ipP && !_e2e) {
           const mk = 'probe:m:' + _ipP + ':' + _min; const n = (+(await env.STATS.get(mk)) || 0) + 1; await env.STATS.put(mk, String(n), { expirationTtl: 180 });
           if (n >= 3) { await env.STATS.put('probe:ip:' + _ipP, JSON.stringify({ ts: Date.now(), n, cc: (request.cf && request.cf.country) || '', ua: String(request.headers.get('user-agent') || '').slice(0, 80) }), { expirationTtl: 86400 }); try { await evPush(env, request, 'probe', 'injection scanner muted 24 h after ' + n + ' probes in a minute (' + ((request.cf && request.cf.country) || '?') + ')', '/'); } catch (e) {} }
