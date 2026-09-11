@@ -127,7 +127,7 @@
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API — Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-08-20T01:29:15.704Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API — Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-09-11T12:10:24.375Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -149,11 +149,33 @@
 
 <div class="api-key-box" id="akb">
   <h3>1 · Get your free API key</h3>
-  <p>Sign in with just an email (no password, no KYC), then generate your key. Your bot's positions persist on your account.</p>
+  <p>Sign in with just an email (no password, no KYC), then create a key. Your bot's positions persist on your account. Several keys per account &mdash; one per bot &mdash; each with its own name, usage counter and rate budget.</p>
   <button class="akb-btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
   <div class="akb-key" id="akbKey"></div>
+  <div id="akbMgr" hidden>
+    <div class="akb-plan" id="akbPlan"></div>
+    <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
+    <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><button class="akb-btn akb-sm" type="submit">Create key</button></form>
+    <div class="akb-rev" id="akbRev" hidden></div>
+  </div>
   <div class="akb-msg" id="akbMsg"></div>
 </div>
+<style>
+  .akb-plan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 10px;font-size:13px;color:var(--dim)}
+  .akb-plan b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:5px 10px;border:1px solid var(--line2);color:var(--ink)}.akb-plan b.prem{color:#ffd75a;border-color:rgba(255,215,90,.5)}
+  .akb-plan a{color:var(--lime);font-weight:700}
+  .akb-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0 10px}
+  table.akb-t{width:100%;min-width:520px;border-collapse:collapse;font-size:13px}
+  table.akb-t th{text-align:left;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:6px 8px;border-bottom:1px solid var(--line)}
+  table.akb-t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--dim)}
+  table.akb-t td:first-child{color:var(--ink);font-weight:700}table.akb-t td:nth-child(2){font-family:'Space Mono',monospace;font-size:12px;color:var(--lime);white-space:nowrap}
+  .akb-lnk{background:none;border:0;color:var(--dim);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;text-decoration:underline}.akb-lnk:hover{color:var(--ink)}.akb-lnk.red:hover{color:#ff6258}
+  .akb-new{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px}.akb-new input{flex:1 1 200px;min-width:0;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:inherit;font-size:16px;padding:10px 12px}
+  .akb-sm{padding:10px 16px;font-size:13px}
+  .akb-rev{font-size:12px;color:var(--faint);margin-top:4px}
+  .akb-show{margin-top:12px;background:#0a0c0f;border:1px solid rgba(194,246,74,.45);border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);word-break:break-all}
+  .akb-show small{display:block;font-family:'Familjen Grotesk',sans-serif;font-size:12px;color:#ffb347;margin-top:6px}
+</style>
 
 <h2>2 · Endpoints</h2>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/price?symbol=BTC</code><p>Live price for any USDT pair. <b>No key needed</b> — try it right now in your browser.</p></div>
@@ -494,15 +516,39 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p=/trading-api/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
-  var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg');
-  function showKey(k){out.textContent=k;out.classList.add('on');btn.textContent='Rotate key (invalidates the old one)';btn.dataset.rot='1';msg.textContent='Keep it secret — anyone with the key can trade on your paper account.';}
-  function getKey(rotate){fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rotate:!!rotate}),credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
-    if(d&&d.key){showKey(d.key);return;}
-    if(d&&d.error==='login_required'){if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first — the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';return;}
-    msg.textContent='Could not create a key — try again shortly.';}).catch(function(){msg.textContent='Network error — try again.';});}
-  btn.addEventListener('click',function(){var rot=btn.dataset.rot==='1';if(rot&&!confirm('Rotate the key? Your bot must switch to the new one.'))return;getKey(rot);});
-  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())getKey(false);});
-  if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
+  /* Key manager (2026-09-11). The API has had named keys, per-key metering and revoke since 2.0 — this box only ever
+     showed ONE key with a Rotate button, so nobody used them. Now: plan + limits, every key with its usage, create with
+     a name, rename, revoke. The full key is shown ONCE at creation (the list masks it); no confirm() on create. */
+  var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg'),mgr=document.getElementById('akbMgr'),tb=document.querySelector('#akbTable tbody'),plan=document.getElementById('akbPlan'),rev=document.getElementById('akbRev'),frm=document.getElementById('akbNew'),nameIn=document.getElementById('akbName');
+  var FULL={}; // k -> full key, only for keys created in this page session (the server never re-shows a key in the list)
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function ago(t){if(!t)return 'never';var s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' d ago';}
+  function mask(k){return k.slice(0,8)+'…'+k.slice(-4);}
+  function api(body){return fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),credentials:'same-origin'}).then(function(r){return r.json();});}
+  function render(d){
+    var keys=(d&&d.keys)||[],p=(d&&d.plan)||{};var live=keys.filter(function(k){return !k.revoked;}),dead=keys.filter(function(k){return k.revoked;});
+    mgr.hidden=false;btn.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
+    var prem=p.tier==='premium';
+    plan.innerHTML='<b class="'+(prem?'prem':'')+'">'+esc(p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+(prem?'':' · <a href="/premium/">Premium: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>')+'</span>';
+    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="5" style="color:var(--faint)">No keys yet — create one below.</td></tr>';
+    rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+' (usage history kept, they no longer authenticate)':'';
+    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(prem?'.':' — revoke one, or Premium raises it to 10.');}else{frm.hidden=false;}
+  }
+  function load(){api({act:'list'}).then(function(d){
+    if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;return;}
+    if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used — show it in full once */ render(d);return;}
+    msg.textContent='Could not load your keys — try again shortly.';}).catch(function(){msg.textContent='Network error — try again.';});}
+  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret — anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';}
+  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';api({act:'create',name:nm}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key — try again.');}).catch(function(){msg.textContent='Network error — try again.';});});
+  tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
+    if(act==='copy'){try{navigator.clipboard.writeText(k);b.textContent='copied';setTimeout(function(){b.textContent='copy';},1400);}catch(x){}return;}
+    if(act==='show'){var kv=tr.querySelector('.akb-kv');if(FULL[k]){delete FULL[k];kv.textContent=mask(k);b.textContent='show';}else{FULL[k]=1;kv.textContent=k;b.textContent='hide';}return;}
+    if(act==='rename'){var nm=prompt('New name for this key:');if(nm==null)return;api({act:'rename',key:k,name:nm}).then(function(d){if(d&&d.keys)render(d);});return;}
+    if(act==='revoke'){if(!confirm('Revoke this key? Any bot using it stops working immediately.'))return;api({act:'revoke',key:k}).then(function(d){if(d&&d.keys)render(d);});}
+  });
+  btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first — the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';});
+  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';FULL={};}});
+  var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=b232fd62"></script>

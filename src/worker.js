@@ -160,7 +160,7 @@ async function handleV1(url, request, env, ctx) {
     rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
     if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
   }
-  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.3', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key, 600/min on Premium, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
+  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.3', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key, 600/min on Premium, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
@@ -225,6 +225,11 @@ function handleOpenApi() {
       '/api/v1/open-interest': { get: { tags: ['Derivatives'], summary: 'Open interest', description: 'Open interest (USD) across ~160 pairs. Rising OI + rising price = new money entering.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/long-short': { get: { tags: ['Derivatives'], summary: 'Long/short ratio', description: 'Aggregated long vs short account ratio for major coins. Crowd positioning.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/liquidations': { get: { tags: ['Derivatives'], summary: 'Liquidations', description: 'Aggregated 24h liquidation totals per coin (longs vs shorts) across all exchanges.', responses: { '200': { description: 'ok' } } } },
+      '/api/v1/venues': { get: { tags: ['Derivatives'], summary: 'Liquidations by exchange', description: '24h liquidation total, market share and long/short split per venue (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), measured from their public feeds by our own collector.', responses: { '200': { description: 'ok' } } } },
+      '/api/v1/feed': { get: { tags: ['Derivatives'], summary: 'Newest liquidation events', description: 'The latest liquidation events across all tracked symbols: {events:[{ts, exchange, symbol, side, price, qty, notional}]}. Seconds behind the exchanges (3 s edge cache). Poll every 3-5 s.', responses: { '200': { description: 'ok' } } } },
+      '/api/v1/liquidations/live': { get: { tags: ['Derivatives'], summary: 'Recent liquidations for one symbol', description: 'Raw recent liquidation events for one symbol; side is long_liquidated or short_liquidated, notional is USD.', parameters: [q('symbol', 'Coin ticker, e.g. BTC.', true, 'BTC'), q('limit', 'Max events, up to 1000.', false, '400')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/liquidations/recent': { get: { tags: ['Derivatives'], summary: 'Liquidation histogram', description: 'Time-bucketed long vs short liquidation dollars for one symbol — the source of the heatmap statistics.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC'), q('minutes', 'Window, up to 43200 (30 days).', false, '1440')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/clusters': { get: { tags: ['Derivatives'], summary: 'Liquidation clusters', description: 'Modelled price levels where liquidation liquidity is estimated to sit right now: {clusters:[{price, side, est_notional}]}.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/calendar': { get: { tags: ['Macro'], summary: 'Crypto economic calendar', description: 'FOMC, CPI, NFP, options expiry and crypto milestones with exact UTC timestamps. Omit params for the upcoming window; pass year for a full year incl. history.', parameters: [q('year', 'Full year 2023-2027 for the whole year incl. past events. Omit for the upcoming window.', false, '2026')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/fear-greed': { get: { tags: ['Macro'], summary: 'Fear & Greed index', description: 'Current crypto Fear & Greed value (0-100) and classification.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/coins': { get: { tags: ['Macro'], summary: 'Top coins by market cap', description: 'Top ~250 coins: price, market cap, 1h/24h/7d change, sparkline. Optional category filter.', parameters: [q('cat', 'CoinGecko category id, e.g. layer-1, decentralized-finance-defi, meme-token, artificial-intelligence.', false, 'layer-1')], responses: { '200': { description: 'ok' } } } },
@@ -4855,13 +4860,18 @@ function orderPosition(o, fillTs) {
 // Ratchet the stop of a position that carries `trail` (percent) from its high-water mark. `hi`/`lo` are the extremes
 // the market has PRINTED since the last check (a candle's range, or just the live price twice). Returns true when the
 // stop moved. Never loosens: a stop only ever moves in the trade's favour. Mirrors the client's checkClose ratchet.
-function trailStop(t, hi, lo) {
+function trailStop(t, hi, lo, minStep) {
   const tr = +t.trail; if (!(tr > 0)) return false;
-  const long = t.side !== 'short'; let hwm = +t.hwm > 0 ? +t.hwm : +t.entry || 0; let moved = false;
-  if (long) { if (hi > hwm) hwm = hi; const ns = hwm * (1 - tr / 100); if (t.stop == null || ns > +t.stop) { t.stop = Number(ns.toPrecision(10)); moved = true; } }
-  else { if (lo > 0 && lo < hwm) hwm = lo; const ns = hwm * (1 + tr / 100); if (t.stop == null || ns < +t.stop) { t.stop = Number(ns.toPrecision(10)); moved = true; } }
-  if (hwm !== +t.hwm) { t.hwm = hwm; moved = true; }
-  return moved;
+  const long = t.side !== 'short'; let hwm = +t.hwm > 0 ? +t.hwm : +t.entry || 0; const hwm0 = hwm;
+  if (long) { if (hi > hwm) hwm = hi; } else { if (lo > 0 && lo < hwm) hwm = lo; }
+  if (hwm === hwm0 && t.stop != null) return false;
+  const ns = long ? hwm * (1 - tr / 100) : hwm * (1 + tr / 100);
+  const cur = t.stop == null ? null : +t.stop;
+  const better = cur == null || (long ? ns > cur : ns < cur);
+  if (!better) return false;
+  if (cur != null && minStep > 0 && Math.abs(ns - cur) / cur < minStep) return false; // too small a step to be worth a write; the next tick will carry it
+  t.stop = Number(ns.toPrecision(10)); t.hwm = hwm;
+  return true;
 }
 // Fill every crossed order in `orders` using the prices/candles the caller already gathered. Returns what happened
 // so both callers (cron, user-triggered sweep) can report it. Expired orders are closed here too.
@@ -11443,8 +11453,8 @@ const MCP_TOOLS = [
     inputSchema: { type: 'object', properties: { balance: { type: 'number' }, risk_pct: { type: 'number' }, entry: { type: 'number' }, stop: { type: 'number' } }, required: ['balance', 'risk_pct', 'entry', 'stop'] } },
   { name: 'paper_balance', description: 'Your paper account: balance, equity, free margin, unrealized P&L. Requires an API key.', path: () => '/api/bot/v2/balance', auth: true,
     inputSchema: { type: 'object', properties: {} } },
-  { name: 'paper_positions', description: 'All your paper positions with live mark price and P&L net of fees. Requires an API key.', path: () => '/api/bot/v2/positions', auth: true,
-    inputSchema: { type: 'object', properties: {} } },
+  { name: 'paper_positions', description: 'Your paper positions with live mark price and P&L net of fees; status "open" for just the open ones. Requires an API key.', path: (a) => '/api/bot/v2/positions' + (a.status === 'open' || a.status === 'closed' ? '?status=' + a.status : ''), auth: true,
+    inputSchema: { type: 'object', properties: { status: { type: 'string', enum: ['open', 'closed'], description: 'Omit for both' } } } },
   { name: 'paper_trades', description: 'Closed-trade ledger with paging — the full record for measuring a strategy. Requires an API key.', path: (a) => '/api/bot/v2/trades?limit=' + Math.min(500, Math.max(1, +a.limit || 100)) + (a.before ? '&before=' + (+a.before) : ''), auth: true,
     inputSchema: { type: 'object', properties: { limit: { type: 'number', default: 100 }, before: { type: 'number', description: 'Epoch ms cursor from next_before' } } } },
   { name: 'paper_open', description: 'Open a simulated position at the live price. Simulated money only — no real funds are ever at risk. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
@@ -11798,7 +11808,8 @@ async function handleBot(url, request, env, ctx) {
       const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0, trail: trailQ } });
       if (!ro || ro.error) return jb(ro || { error: 'unavailable' }, ro && ro.error === 'too_many_orders' ? 409 : 400);
       try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'bot'], doubles: [margin, Math.abs(lpx - live0) / live0 * 100] }); } catch (e) {}
-      return jb({ ok: true, order: Object.assign({}, ro.order, { type: typeQ }), ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
+      const _o = ro.order || {};
+      return jb({ ok: true, order: Object.assign({}, _o, { type: typeQ, order_id: _o.id, symbol: _o.sym, limit_price: _o.px, leverage: _o.lev, margin_usd: _o.margin, trail_pct: _o.trail || null, placed_ts: _o.ts, expires_ts: _o.expTs }), ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
     }
     const entry = +pd.price, mmr = 0.005, long = side === 'long';
     const liq = mpcLiq(entry, lev, mmr, long);
@@ -19377,7 +19388,8 @@ export class UserStore {
       const byEp = this.rows('SELECT ep, COALESCE(SUM(n),0) n FROM botuse2 WHERE day>=? GROUP BY ep ORDER BY n DESC', cutoff);
       const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse2 WHERE day=?', today)[0] || {}).t || 0;
       const activeToday = (this.rows('SELECT COUNT(DISTINCT k) c FROM botuse2 WHERE day=?', today)[0] || {}).c || 0;
-      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key' });
+      let webhooks = null; try { const w = this.rows('SELECT COUNT(*) n, SUM(ok) active, SUM(sent) sent, COUNT(DISTINCT uid) accounts FROM botwh')[0] || {}; const qn = (this.rows('SELECT COUNT(*) n FROM botwhq')[0] || {}).n || 0; webhooks = { hooks: +w.n || 0, active: +w.active || 0, paused: (+w.n || 0) - (+w.active || 0), accounts: +w.accounts || 0, delivered: +w.sent || 0, pending: qn }; } catch (e) {} // Bot API 2.3
+      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key', webhooks });
     }
     // ── PENDING LIMIT ORDERS ──────────────────────────────────────────────────────────────────────────────────
     // The DO owns the order's STATE (single-threaded => a fill can never happen twice); the worker owns the price
@@ -19534,7 +19546,7 @@ export class UserStore {
       const trailed = []; // Bot API 2.3: open positions whose trailing stop the live price just ratcheted (persisted below, no event)
       const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv')) return null; const live = PR[t.sym]; if (!(live > 0)) return null;
         const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
-        if (+t.trail > 0 && trailStop(t, live, live)) trailed.push(t);
+        if (+t.trail > 0 && trailStop(t, live, live, 5e-4)) trailed.push(t);
         if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) return Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true });
         const close = (px) => { let pnl = qty * (px - entry) * dir - qty * (entry + px) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
         if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) return close(+t.stop);
