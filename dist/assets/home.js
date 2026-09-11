@@ -207,7 +207,24 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // Per-MARKET fee (not the crypto taker fee for everything). Real-world cost by class: crypto perp taker ~0.055%/side;
       // stocks = tight CFD spread/commission ~0.02%; forex majors = fraction of a pip ~0.008%; metals/indices ~0.015%.
       // Applied once at close (round-trip), capped so it can never exceed ~10% of margin at extreme leverage.
-      window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var base=cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055;return Math.min(base,0.1/Math.max(1,+lev||1));};
+      /* FEE VENUES (2026-09-11) — MIRROR of FEE_VENUES in src/worker.js (taker % and referral discount %). The trader can have
+         fills charged at a real exchange's taker rate less the discount a MarginPad sign-up gets there (crypto only; the
+         MarginPad class rate for everything else). The choice is the ACCOUNT default (uprefs 'feevenue', shared with the
+         Bot API's GET|POST /v1/fees); guests keep it in localStorage. add() below stamps t.feeRate from THIS table and the
+         server stamps the same rate from its own — they must agree, so change both. */
+      window.mpFeeVenues={bybit:{n:'Bybit',t:0.055,d:20},binance:{n:'Binance',t:0.050,d:20},okx:{n:'OKX',t:0.050,d:0},bitget:{n:'Bitget',t:0.060,d:20},mexc:{n:'MEXC',t:0.020,d:0},gate:{n:'Gate',t:0.050,d:20},kucoin:{n:'KuCoin',t:0.060,d:0},kraken:{n:'Kraken',t:0.050,d:0},hyperliquid:{n:'Hyperliquid',t:0.045,d:4}};
+      try{window.mpFeeVenue=String(localStorage.getItem('mp_feevenue')||'');if(!window.mpFeeVenues[window.mpFeeVenue])window.mpFeeVenue='';}catch(e){window.mpFeeVenue='';}
+      window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
+      /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
+         member also as the account default on the server (so the Bot API and every other opener charge the same) */
+      (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad default (0.055%)</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' (with our '+v.d+'% off)':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
+        function apply(k,push){window.mpFeeVenue=V[k]?k:'';try{localStorage.setItem('mp_feevenue',window.mpFeeVenue);}catch(e){}sel.value=window.mpFeeVenue;try{if(typeof calc==='function')calc();}catch(e){}
+          if(push){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(me&&window.fetch)fetch('/api/trade/fees',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({venue:window.mpFeeVenue||null})}).catch(function(){});}}
+        sel.addEventListener('change',function(){apply(sel.value,true);});
+        /* a member's saved default wins over the device value (set from the API, or from another device) */
+        var pull=function(){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(!me||!window.fetch)return;fetch('/api/trade/fees',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.venue!==undefined){var k=d.venue||'';if(k!==window.mpFeeVenue)apply(k,false);}}).catch(function(){});};
+        window.addEventListener('mp-auth-change',pull);var n0=0,iv0=setInterval(function(){if(++n0>80){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);pull();},100);
+      })();
       window.mpMaxLev=(function(){/* MIRROR of MAXLEV/maxLevFor in src/worker.js — the SERVER clamps every open, so any value here the server does not honour is a lie: the ticket showed a liq price for leverage the fill never used. */var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
@@ -1418,7 +1435,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||'This market is closed right now.');return;} _finishOpen(_tLocal);});
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||'This market is closed right now.');return;} _finishOpen(_tLocal);});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }

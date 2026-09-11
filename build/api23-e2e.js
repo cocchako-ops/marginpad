@@ -171,14 +171,39 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
   chk('keyed data API on premium: limit 600', dr.headers.get('x-ratelimit-limit') === '600', { limit: dr.headers.get('x-ratelimit-limit') });
 
+  // ── fee venues (Bot API 2.4) ─────────────────────────────────────────────────────────────────────────────
+  r = await bot('/fees');
+  chk('GET /fees lists 9 venues with effective rates and no default yet', r.status === 200 && r.body.data.fee_venue === null && (r.body.data.venues || []).length === 9 && r.body.data.venues.some(v => v.venue === 'hyperliquid' && v.referral_discount_pct === 4 && near(v.effective_taker_pct, 0.0432, 1e-6) && v.code === 'MARGINPAD'), r.body.data && r.body.data.venues && r.body.data.venues.map(v => v.venue + ':' + v.effective_taker_pct));
+  r = await bot('/open', { symbol: 'BTC', side: 'long', margin_usd: 100, leverage: 10, fee_venue: 'nope' });
+  chk('unknown fee_venue refused (400 unknown_fee_venue)', r.status === 400 && r.body.error && r.body.error.code === 'unknown_fee_venue', r.body.error);
+  r = await bot('/open', { symbol: 'BTC', side: 'long', margin_usd: 100, leverage: 10, fee_venue: 'hyperliquid', dry_run: true });
+  chk('dry_run with fee_venue quotes the venue rate and the dollar difference', r.status === 200 && r.body.data.position.fee_venue === 'hyperliquid' && near(r.body.data.position.taker_fee_pct, 0.0432, 1e-5) && r.body.data.position.fee_vs_marginpad_default_usd < 0, r.body.data && { rate: r.body.data.position.taker_fee_pct, diff: r.body.data.position.fee_vs_marginpad_default_usd });
+  r = await bot('/open', { symbol: 'BTC', side: 'long', margin_usd: 100, leverage: 10, fee_venue: 'bybit', client_order_id: 'e2e-fee-' + UID });
+  const fp = r.body.data && r.body.data.position;
+  chk('open with fee_venue bybit: position stamped 0.044% (0.055% less 20%)', r.status === 200 && fp && fp.fee_venue === 'bybit' && near(fp.fee_rate_pct, 0.044, 1e-5), fp && { venue: fp.fee_venue, rate: fp.fee_rate_pct });
+  r = await bot('/fees', { venue: 'hyperliquid' });
+  chk('POST /fees sets the account default', r.status === 200 && r.body.data.fee_venue === 'hyperliquid', r.body.data);
+  r = await bot('/open', { symbol: 'ETH', side: 'short', margin_usd: 50, leverage: 5, client_order_id: 'e2e-feedef-' + UID });
+  const fp2 = r.body.data && r.body.data.position;
+  chk('an open with no fee_venue inherits the account default (hyperliquid 0.0432%)', r.status === 200 && fp2 && fp2.fee_venue === 'hyperliquid' && near(fp2.fee_rate_pct, 0.0432, 1e-5), fp2 && { venue: fp2.fee_venue, rate: fp2.fee_rate_pct });
+  r = await bot('/open', { symbol: 'ETH', side: 'short', margin_usd: 50, leverage: 5, fee_venue: null, dry_run: true });
+  chk('fee_venue null overrides the default back to 0.055% for one call', r.status === 200 && r.body.data.position.fee_venue === null && near(r.body.data.position.taker_fee_pct, 0.055, 1e-5), r.body.data && r.body.data.position.taker_fee_pct);
+  r = await bot('/open', { symbol: 'SOL', side: 'long', type: 'limit', limit_price: Math.round((await (await fetch(ORIGIN + '/api/price?symbol=SOL')).json()).price * 0.9 * 100) / 100, margin_usd: 30, leverage: 3, fee_venue: 'mexc' });
+  chk('a resting order carries its fee venue', r.status === 200 && r.body.data.order && r.body.data.order.fv === 'mexc', r.body.data && r.body.data.order && { fv: r.body.data.order.fv });
+  await bot('/cancel_order', { order_id: r.body.data && r.body.data.order && r.body.data.order.id });
+  r = await bot('/fees', { venue: null });
+  chk('POST /fees null resets the default', r.status === 200 && r.body.data.fee_venue === null, r.body.data);
+  r = await bot('/usage');
+  chk('usage lists fee_venues', r.status === 200 && Array.isArray(r.body.data.features.fee_venues) && r.body.data.features.fee_venues.length === 9, r.body.data && r.body.data.features.fee_venues);
+
   // ── meta surfaces ────────────────────────────────────────────────────────────────────────────────────────
   const mcp = await (await fetch(ORIGIN + '/mcp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }) })).json();
   const names = ((mcp.result && mcp.result.tools) || []).map(t => t.name);
-  chk('MCP lists 22 tools incl. paper_modify_order + paper_report', names.length === 22 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0, { n: names.length });
+  chk('MCP lists 23 tools incl. paper_modify_order + paper_report + paper_fees', names.length === 23 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0 && names.indexOf('paper_fees') >= 0, { n: names.length });
   const oa = await (await fetch(ORIGIN + '/api/openapi.json')).json();
-  chk('OpenAPI 2.3.0 carries the new paths + schemas', oa.info.version === '2.3.0' && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
+  chk('OpenAPI 2.3.0 carries the new paths + schemas', oa.info.version === '2.4.0' && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
   const cl = await (await fetch(ORIGIN + '/api/changelog?format=json')).json();
-  chk('changelog current_version 2.3.0', cl.data && cl.data.current_version === '2.3.0', { v: cl.data && cl.data.current_version });
+  chk('changelog current_version 2.4.0', cl.data && cl.data.current_version === '2.4.0', { v: cl.data && cl.data.current_version });
   const sdkPy = await fetch(ORIGIN + '/assets/sdk/marginpad.py'), sdkJs = await fetch(ORIGIN + '/assets/sdk/marginpad.js');
   chk('SDK files served (python + js)', sdkPy.status === 200 && sdkJs.status === 200, { py: sdkPy.status, js: sdkJs.status });
 

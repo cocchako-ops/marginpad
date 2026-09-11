@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.3.0',
+      version: '2.4.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. 60 requests/minute per IP. Every response uses the envelope { ok, data, error, ts }.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -261,6 +261,10 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'List webhooks (Premium)', description: 'Your registered webhooks with delivery counts, consecutive failures, the last error and whether each is active. Also lists the event names and the signature scheme.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Webhooks' } } } }, '402': { description: 'Premium required' } } },
         post: { tags: ['Paper trading'], summary: 'Add / delete / test a webhook (Premium)', description: 'act:"add" {url, events?} registers an https URL (max 3 per account) and returns its secret once. act:"delete" {id}. act:"test" {id} delivers a ping right now and returns the HTTP status your server answered. Deliveries: POST JSON {event, ts, hook_id, data} with headers X-MP-Event, X-MP-Delivery, X-MP-Timestamp and X-MP-Signature = sha256=HMAC_SHA256(secret, raw body). Retried 5 times with backoff; paused after 25 consecutive failures.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/WebhookRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'bad_url / bad_event' }, '402': { description: 'Premium required' }, '409': { description: 'too_many_webhooks' } } },
       },
+      '/api/bot/v1/fees': {
+        get: { tags: ['Paper trading'], summary: 'Fee schedules (venues) and your default', description: 'The exchanges whose taker schedule your paper fills can be charged at — Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid — each with taker_pct, maker_pct, the referral discount a MarginPad sign-up gets there, the effective rate, its code and link; plus the MarginPad default rates and your current fee_venue. Both legs pay the venue TAKER rate less the discount (the engine fills at market). Crypto perps only; other asset classes keep the MarginPad rate.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } },
+        post: { tags: ['Paper trading'], summary: 'Set your default fee venue', description: 'Body {"venue":"hyperliquid"} makes every open from now on (site and API) pay that schedule unless a call names its own fee_venue; {"venue":null} or "marginpad" returns to the default rate. Open positions keep the rate they were filled with.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { venue: { type: ['string', 'null'], example: 'hyperliquid' } } } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'unknown_fee_venue' } } },
+      },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/ai': { post: { tags: ['Paper trading'], summary: 'AI market read (Premium)', description: 'The chart panel’s AI read, from the API: {symbol, interval (minutes: 1,5,15,60,240,1440), question?, lang?}. Same model, prompt and 50-a-day quota as Ask-AI on the site. Returns the answer, a parsed plan when the model gives one, and the brief it reasoned over. Educational, not financial advice.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, interval: { type: 'string', example: '60' }, question: { type: 'string', maxLength: 280 }, lang: { type: 'string', example: 'en' } }, required: ['symbol'] } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/AiRead' } } } }, '402': { description: 'Premium required' }, '429': { description: 'daily AI quota used' } } } },
       '/api/whsink/{token}': {
@@ -310,7 +314,7 @@ function handleOpenApi() {
         Markets: { type: 'object', properties: { markets: { type: 'array', items: { $ref: '#/components/schemas/Market' } }, count: { type: 'integer' }, note: { type: 'string' } } },
         Trade: { type: 'object', properties: { id: { type: ['string', 'null'] }, closed_ts: { type: 'integer' }, symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, leverage: { type: 'number' }, margin_usd: { type: 'number' }, pnl_usd: { type: ['number', 'null'] }, roe_pct: { type: ['number', 'null'] }, liquidated: { type: 'boolean' }, via: { type: ['string', 'null'], description: 'Which path executed the close: bot, site, sweep, cron, sltp.' } } },
         Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
-        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". The level may sit on EITHER side of the market: below it the order behaves as a classic limit, above it as a breakout entry. Either way it waits until the market reaches the level and fills AT the level.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
+        OpenRequest: { type: 'object', properties: { fee_venue: { type: ['string', 'null'], description: 'Charge this open at a real venue’s taker schedule less our referral discount (GET /v1/fees). Omit for your account default; null or "marginpad" for the default rate.' }, symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, type: { type: 'string', enum: ['market', 'limit'], default: 'market', description: 'market fills now at the live price; limit rests until the market reaches limit_price and fills AT that price.' }, limit_price: { type: 'number', description: 'Required for type:"limit". The level may sit on EITHER side of the market: below it the order behaves as a classic limit, above it as a breakout entry. Either way it waits until the market reaches the level and fills AT the level.' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
         CloseRequest: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', minimum: 1, maximum: 100, description: 'Percent to close. Omit for the whole position.' }, symbol: { type: 'string', description: 'The position symbol, copied from /positions. Optional but strongly recommended: it lets the server price exactly one feed and skip a lookup round trip, which is worth several hundred milliseconds from Asia. A wrong value costs nothing — the server falls back automatically.' } }, required: ['id'] },
         SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] }, trail_pct: { type: ['number', 'null'], description: 'Trailing stop distance in percent (0.05-50), ratcheted server-side from the best price seen. null switches it off.' } }, required: ['id'] },
         ModifyOrderRequest: { type: 'object', properties: { order_id: { type: 'string' }, limit_price: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, margin_usd: { type: 'number' }, leverage: { type: 'number' }, trail_pct: { type: ['number', 'null'] } }, required: ['order_id'] },
@@ -4844,7 +4848,7 @@ function orderCross(o, live, bars) {
 function orderPosition(o, fillTs) {
   const sym = String(o.sym || '').toUpperCase(), long = o.side !== 'short';
   const lev = Math.min(maxLevFor(sym), Math.max(1, +o.lev || 1));
-  const entry = +o.px, margin = +o.margin || 0, mmr = 0.005, rate = feeRateFor(lev, sym);
+  const entry = +o.px, margin = +o.margin || 0, mmr = 0.005, rate = feeRateFor(lev, sym, o.fv || '');
   const isBot = o.src === 'bot';
   return {
     id: (isBot ? 'bot' : 'srv') + fillTs.toString(36) + Math.floor(Math.random() * 1e4).toString(36),
@@ -4853,6 +4857,7 @@ function orderPosition(o, fillTs) {
     margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, rate),
     liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
     src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs,
+    ...(o.fv && FEE_VENUES[o.fv] ? { feeVenue: o.fv } : {}), // Bot API 2.4: the venue whose taker rate this fill was stamped with
     ...(+o.trail > 0 ? { trail: +o.trail, hwm: entry } : {}) // a trailing stop set on the order rides onto the position, ratcheting from the fill
   };
 }
@@ -9548,7 +9553,29 @@ function marketSession(sym, pd, now) {
 // really costs 17.93, and ROE -19.7% instead of -17.93% — on the season board too. margin is now what the trader
 // committed; the fee lives in pnl alone, exactly once, the way an exchange charges it.
 function _feeOpen(margin, lev, rate) { return Math.round((+margin || 0) * (+lev || 1) * (+rate || 0) * 1e6) / 1e6; }
-function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055; return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
+// ─── FEE VENUES (Bot API 2.4, 2026-09-11; owner: "let them pick the exchange's fee, with our promo discount") ─────
+// Optional per-account (or per-open) fee model: the taker rate of a real venue that has a trading API, less the
+// referral discount a MarginPad sign-up gets there. Numbers are the base VIP-0 taker/maker rates we publish on
+// /exchanges/ and the discounts we state there; they are what the venue advertises, not a measurement, so the
+// API says so (`source`). Both legs are charged at the venue TAKER rate — the paper engine fills at market,
+// like a market-order bot; a maker rebate on a resting entry is not modelled (documented). Crypto perps only:
+// stocks / forex / metals keep the MarginPad class rates whatever the venue. Applied through feeRateFor(); the
+// PnL formula is untouched — a venue only changes which per-side rate the position is stamped with at open.
+const FEE_VENUES = {
+  bybit:       { name: 'Bybit',       taker: 0.055, maker: 0.020, disc: 20, code: null,        url: 'https://www.bybit.com/invite?ref=LZKBERJ' },
+  binance:     { name: 'Binance',     taker: 0.050, maker: 0.020, disc: 20, code: 'MAOZM9DS',  url: 'https://www.binance.com/register?ref=MAOZM9DS' },
+  okx:         { name: 'OKX',         taker: 0.050, maker: 0.020, disc: 0,  code: null,        url: 'https://okx.com/join/96160298' },
+  bitget:      { name: 'Bitget',      taker: 0.060, maker: 0.020, disc: 20, code: 'DSSSQKGK',  url: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter' },
+  mexc:        { name: 'MEXC',        taker: 0.020, maker: 0.000, disc: 0,  code: null,        url: 'https://promote.mexc.com/r/GND4jI97o0' },
+  gate:        { name: 'Gate',        taker: 0.050, maker: 0.020, disc: 20, code: 'VFIWB10KUG', url: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103' },
+  kucoin:      { name: 'KuCoin',      taker: 0.060, maker: 0.020, disc: 0,  code: 'VHP8AYKY',  url: 'https://www.kucoin.com/r/rf/VHP8AYKY' },
+  kraken:      { name: 'Kraken',      taker: 0.050, maker: 0.020, disc: 0,  code: null,        url: 'https://invite.kraken.com/JDNW/guj2tf28' },
+  hyperliquid: { name: 'Hyperliquid', taker: 0.045, maker: 0.015, disc: 4,  code: 'MARGINPAD', url: 'https://app.hyperliquid.xyz/join/MARGINPAD' },
+};
+function feeVenueNorm(v) { const k = String(v == null ? '' : v).toLowerCase().replace(/[^a-z]/g, ''); if (!k || k === 'default' || k === 'marginpad' || k === 'none') return ''; return FEE_VENUES[k] ? k : null; } // '' = MarginPad default, null = unknown
+function feeVenueRate(key) { const v = FEE_VENUES[key]; return v ? v.taker * (1 - v.disc / 100) / 100 : null; } // effective per-side rate as a fraction
+function feeVenueList() { return Object.keys(FEE_VENUES).map(k => { const v = FEE_VENUES[k]; return { venue: k, name: v.name, taker_pct: v.taker, maker_pct: v.maker, referral_discount_pct: v.disc, effective_taker_pct: +(v.taker * (1 - v.disc / 100)).toFixed(4), code: v.code, signup_url: v.url, trading_api: true, applies_to: 'crypto', source: 'the venue’s published base tier and referral discount, as on marginpad.io/exchanges/' }; }); }
+function feeRateFor(lev, sym, venue) { const c = assetClassOf(sym); const vk = venue ? feeVenueNorm(venue) : ''; const base = (vk && c === 'crypto') ? feeVenueRate(vk) : (c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055); return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
 // Pending-limit-order limits. PT_MAX_OPEN / PT_MAX_PAIR MIRROR the client gate (window.mpTradeGate in home.js:
 // MAX_TOTAL 50, MAX_PAIR 10, one-way mode) — a limit fill lands minutes or days after placement, so the same
 // product rules are re-checked server-side at fill time. Change one copy, change the other.
@@ -11144,7 +11171,8 @@ async function handleTrade(url, request, env, ctx) {
     // journal sync if the server had filled it after all. Measured before: the site aborted at 1.4 s and opened locally while the server
     // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
     const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const _fvS = (b.feeVenue !== undefined) ? (feeVenueNorm(b.feeVenue) || '') : undefined;
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, _fvS || '')), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym, _fvS || ''), ...(_fvS !== undefined ? { feeVenue: _fvS } : {}) /* Bot API 2.4: the terminal's fee venue; undefined = the store applies the account default */, status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
     mk('do_fill', tD);
@@ -11204,6 +11232,11 @@ async function handleTrade(url, request, env, ctx) {
   // ── TRADING REPORT ──────────────────────────────────────────────────────────────────────────────────────────
   // The headline totals are free — everyone should be able to see how they did. The BREAKDOWNS (which coin, which
   // leverage, which hour) and the findings are Premium, because that is the part that changes how someone trades.
+  if (path === '/fees') { // Bot API 2.4 from the site: the terminal's "fees as on" selector reads and writes the same account default the Bot API uses
+    if (request.method === 'POST') { const fvN = feeVenueNorm(b.venue); if (fvN === null) return jt({ error: 'unknown_fee_venue' }, 400); const r = await usersDO(env, '/prefsput', { uid, k: 'feevenue', v: fvN }); return jt(r && r.ok ? { ok: true, venue: fvN || null } : { error: 'unavailable' }, r && r.ok ? 200 : 503); }
+    let mine = ''; try { const pg = await usersDO(env, '/prefsget', { uid, keys: ['feevenue'] }); mine = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) {}
+    return jt({ venue: mine || null, venues: feeVenueList() });
+  }
   if (path === '/report' && request.method === 'GET') {
     const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
     const rep = await usersDO(env, '/tradereport', { uid, days });
@@ -11256,7 +11289,7 @@ async function handleTrade(url, request, env, ctx) {
       const opp = ((seed && seed.positions) || []).filter(p => p.status === 'open' && String(p.symbol || p.sym || '').toUpperCase().replace(/USDT$/, '') === sym && (p.side === 'short' ? 'short' : 'long') !== side);
       if (opp.length) return jt({ error: 'opposite_open', message: 'You already have an opposite ' + sym + ' position open — close it first (one-way mode).' }, 409);
     } catch (e) {}
-    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site', dir }, e2: !!adminUid });
+    const r = await usersDO(env, '/order/add', { uid, o: { sym, side, px, lev, margin, sl, tp, src: 'site', dir, ...(b.feeVenue !== undefined ? { fv: feeVenueNorm(b.feeVenue) || '' } : {}) }, e2: !!adminUid });
     if (!r || r.error) return jt(r || { error: 'unavailable' }, r && r.error === 'too_many_orders' ? 409 : r && r.error === 'rate_limited' ? 429 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'site'], doubles: [margin, Math.abs(px - live) / live * 100] }); } catch (e) {}
     return jt(r);
@@ -11306,6 +11339,14 @@ async function handleTrade(url, request, env, ctx) {
 // HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
+  {
+    date: '2026-09-11', version: '2.4.0', title: 'Fees as on the exchange you will actually use',
+    changes: [
+      { type: 'added', breaking: false, text: 'GET|POST /v1/fees — pick whose fee schedule your paper fills are charged at: Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken or Hyperliquid (every one has a trading API), at the venue’s published taker rate LESS the referral discount a MarginPad sign-up gets there (Bybit, Binance, Bitget, Gate 20%; Hyperliquid 4% with code MARGINPAD). GET lists the table with the effective rate, code and link; POST {venue} sets the account default, {venue:null} restores the MarginPad class rate. The same default drives the "Fees as on" selector in the Paper Trade terminal, so a bot and its owner’s manual trades pay identical fees.' },
+      { type: 'added', breaking: false, text: 'fee_venue on POST /v1/open (market, limit and stop) overrides the default for that one position. Positions carry fee_rate_pct and fee_venue; dry_run:true reports fee_venue and fee_vs_marginpad_default_usd, the round-trip difference in dollars.' },
+      { type: 'unchanged', breaking: false, text: 'Nothing changes unless you opt in. The PnL formula is untouched — a venue only changes the per-side rate a position is stamped with at open; both legs pay that taker rate (the engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only; stocks, forex, metals and indices keep the MarginPad class rates. Above ~181x the rate is still lowered so a round trip never exceeds 20% of margin. Open positions keep the rate they were filled with. MCP: paper_fees (23 tools).' },
+    ],
+  },
   {
     date: '2026-09-11', version: '2.3.0', title: 'Webhooks, trailing stops, stop entries, modify order, dry run, report, AI, keyed data tier',
     changes: [
@@ -11469,6 +11510,9 @@ const MCP_TOOLS = [
   { name: 'paper_modify_order', description: 'Change a resting limit or stop order in place: its price, stop-loss, take-profit, margin, leverage or trailing stop. Requires an API key.', path: () => '/api/bot/v2/modify_order', method: 'POST', auth: true,
     body: (a) => ({ order_id: a.order_id, limit_price: a.limit_price, sl: a.sl, tp: a.tp, margin_usd: a.margin_usd, leverage: a.leverage, trail_pct: a.trail_pct }),
     inputSchema: { type: 'object', properties: { order_id: { type: 'string' }, limit_price: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, margin_usd: { type: 'number' }, leverage: { type: 'number' }, trail_pct: { type: ['number', 'null'] } }, required: ['order_id'] } },
+  { name: 'paper_fees', description: 'Which exchange fee schedule your paper fills are charged at: lists the venues we model (Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid) with their taker rate and the referral discount a MarginPad sign-up gets, and your current default. Pass set to change the default (a venue key, or "marginpad" for the default rate). Requires an API key.', path: () => '/api/bot/v2/fees', method: 'POST', auth: true, getWhenEmpty: true,
+    body: (a) => ({ venue: a.set }),
+    inputSchema: { type: 'object', properties: { set: { type: 'string', description: 'Omit to read. A venue key from the list, or "marginpad" to reset.' } } } },
   { name: 'paper_report', description: 'The 30-day trading report for this account, measured from its own closed trades: totals and a skill score (free), win rate and return by coin, leverage band, side, hour and day plus written findings (Premium). Requires an API key.', path: (a) => '/api/bot/v2/report?days=' + Math.min(30, Math.max(1, +a.days || 30)), auth: true,
     inputSchema: { type: 'object', properties: { days: { type: 'number', description: '1-30, default 30' } } } },
   { name: 'paper_limit_order', description: 'Place a resting order that fills only when the market reaches your price, and fills AT that price. type "limit" = a pullback entry (long below the market, short above); type "stop" = a breakout entry (long above the market, short below). To open right now use paper_open instead. Simulated money only. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
@@ -11500,7 +11544,7 @@ async function handleMcp(url, request, env, ctx) {
       const method = m && m.method;
       if (method === 'initialize') {
         const want = (m.params && m.params.protocolVersion) || MCP_PROTO;
-        out.push(rep({ protocolVersion: want, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'marginpad', title: 'MarginPad', version: '2.3.0' }, instructions: 'Free crypto market data and a paper-trading account. Market-data tools need no key. Paper-trading tools trade SIMULATED money on a MarginPad account and need a free API key sent as the X-API-Key header (get one at ' + url.origin + '/trading-api/). Fees and funding are simulated realistically, so P&L here reflects what the same strategy would cost on a real exchange. Call get_markets before sizing a trade — leverage caps and fees differ per asset class.' }));
+        out.push(rep({ protocolVersion: want, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'marginpad', title: 'MarginPad', version: '2.4.0' }, instructions: 'Free crypto market data and a paper-trading account. Market-data tools need no key. Paper-trading tools trade SIMULATED money on a MarginPad account and need a free API key sent as the X-API-Key header (get one at ' + url.origin + '/trading-api/). Fees and funding are simulated realistically, so P&L here reflects what the same strategy would cost on a real exchange. Call get_markets before sizing a trade — leverage caps and fees differ per asset class.' }));
       } else if (method === 'notifications/initialized' || method === 'notifications/cancelled') {
         continue; // notifications carry no id and expect no reply
       } else if (method === 'ping') {
@@ -11524,9 +11568,10 @@ async function handleMcp(url, request, env, ctx) {
         const hdr = { ...(tool.auth && key ? { 'x-api-key': key } : {}), ...(tool.method === 'POST' ? { 'content-type': 'application/json' } : {}), 'x-mp-via': 'mcp' }; // presence/metering tell an MCP call from a REST one
         { const ak = request.headers.get('x-admin-key'); if (ak) hdr['x-admin-key'] = ak; } // an E2E run stays test traffic (e2) through the MCP hop too
         const cip = request.headers.get('cf-connecting-ip'); if (cip) hdr['cf-connecting-ip'] = cip; // keep per-IP limits attributed to the caller
+        const useGet = tool.getWhenEmpty && !(args && args.set); // paper_fees: no argument = read the table (GET), an argument = set the default (POST)
         const req = new Request(target.toString(), {
-          method: tool.method || 'GET', headers: hdr,
-          ...(tool.method === 'POST' ? { body: JSON.stringify(tool.body ? tool.body(args) : args) } : {}),
+          method: useGet ? 'GET' : (tool.method || 'GET'), headers: hdr,
+          ...(tool.method === 'POST' && !useGet ? { body: JSON.stringify(tool.body ? tool.body(args) : args) } : {}),
         });
         const r = target.pathname.indexOf('/api/bot/') === 0 ? await handleBot(target, req, env, ctx) : await handleV1(target, req, env, ctx);
         const text = await r.text();
@@ -11597,6 +11642,7 @@ const BOT_ERR = {
   login_required: 'Sign in on marginpad.io first.',
   symbol_required: 'symbol is required.',
   unknown_symbol: 'No price feed for that symbol. GET /v1/markets lists everything tradable.',
+  unknown_fee_venue: 'Not a venue we model. GET /v1/fees lists them; null or "marginpad" selects the default rate.',
   margin_usd_min_1: 'margin_usd must be at least 1.',
   margin_usd_max_100000: 'margin_usd cannot exceed 100000.',
   sl_wrong_side: 'Stop-loss is on the wrong side of the entry price.',
@@ -11788,6 +11834,10 @@ async function handleBot(url, request, env, ctx) {
     const trailQ = (b.trail_pct != null && b.trail_pct !== '' && +b.trail_pct > 0) ? +b.trail_pct : null;
     const dryRun = b.dry_run === true || b.dry_run === 1 || b.dry_run === 'true';
     const typeQ = String(b.type || 'market').toLowerCase();
+    // Bot API 2.4: fee_venue = whose taker schedule this position is charged at (see GET /v1/fees). Omitted = the account
+    // default (set with POST /v1/fees), which the store applies; "marginpad" / null = the MarginPad class rate explicitly.
+    let feeVenue; if (b.fee_venue !== undefined) { const fvN = feeVenueNorm(b.fee_venue); if (fvN === null) return jb({ error: 'unknown_fee_venue', venues: Object.keys(FEE_VENUES), hint: 'GET /v1/fees lists the venues; null or "marginpad" for the default rate.' }, 400); feeVenue = fvN; }
+    if (feeVenue === undefined && dryRun) { try { const pg = await doCall('/prefsget', { uid, keys: ['feevenue'] }); feeVenue = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) { feeVenue = ''; } } // the dry run must quote the rate the real open would get
     // LIMIT ORDERS (2026-09-05): type:'limit' + limit_price rests the order server-side. It fills at ITS OWN price
     // — never at "the price when the sweep noticed" — and it fills whether or not the bot is running.
     // STOP ENTRIES (2.3): type:'stop' is the same resting order with the level on the BREAKOUT side (a long above the
@@ -11803,9 +11853,9 @@ async function handleBot(url, request, env, ctx) {
       if (sl0 != null && (long0 ? sl0 >= lpx : sl0 <= lpx)) return jb({ error: 'sl_wrong_side', limit: lpx }, 400);
       if (tp0 != null && (long0 ? tp0 <= lpx : tp0 >= lpx)) return jb({ error: 'tp_wrong_side', limit: lpx }, 400);
       const coid0 = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-      if (dryRun) return jb({ ok: true, dry_run: true, order: { type: typeQ, symbol: sym, side, limit_price: lpx, leverage: lev, margin_usd: margin, sl: sl0, tp: tp0, trail_pct: trailQ, direction: dir0, live_price: live0, distance_pct: Math.round(Math.abs(lpx - live0) / live0 * 10000) / 100, expires_in_days: 30, would_fill_now: (dir0 === 'up' ? live0 >= lpx : live0 <= lpx) }, position_if_filled: (() => { const p = orderPosition({ sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', id: 'dry', trail: trailQ }, Date.now()); return { entry_price: p.entry, qty: p.qty, notional_usd: p.notional, liq_price: p.liq, fee_open_usd: Math.round(p.feeOpen * 100) / 100, fee_round_trip_usd: Math.round(2 * p.feeOpen * 100) / 100, taker_fee_pct: +(p.feeRate * 100).toFixed(4) }; })() }, 200);
+      if (dryRun) return jb({ ok: true, dry_run: true, order: { type: typeQ, symbol: sym, side, limit_price: lpx, leverage: lev, margin_usd: margin, sl: sl0, tp: tp0, trail_pct: trailQ, direction: dir0, live_price: live0, distance_pct: Math.round(Math.abs(lpx - live0) / live0 * 10000) / 100, expires_in_days: 30, would_fill_now: (dir0 === 'up' ? live0 >= lpx : live0 <= lpx), fee_venue: feeVenue || null }, position_if_filled: (() => { const p = orderPosition({ sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', id: 'dry', trail: trailQ, fv: feeVenue || '' }, Date.now()); const d0 = feeRateFor(lev, sym); return { entry_price: p.entry, qty: p.qty, notional_usd: p.notional, liq_price: p.liq, fee_open_usd: Math.round(p.feeOpen * 100) / 100, fee_round_trip_usd: Math.round(2 * p.feeOpen * 100) / 100, taker_fee_pct: +(p.feeRate * 100).toFixed(5), fee_venue: feeVenue || null, fee_vs_marginpad_default_usd: Math.round((2 * p.feeOpen - 2 * _feeOpen(margin, lev, d0)) * 100) / 100 }; })() }, 200);
       wantDrain = true;
-      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0, trail: trailQ } });
+      const ro = await doCall('/order/add', { uid, coid: coid0, o: { sym, side, px: lpx, lev, margin, sl: sl0, tp: tp0, src: 'bot', dir: dir0, trail: trailQ, ...(feeVenue !== undefined ? { fv: feeVenue } : {}) } });
       if (!ro || ro.error) return jb(ro || { error: 'unavailable' }, ro && ro.error === 'too_many_orders' ? 409 : 400);
       try { if (env.AE) env.AE.writeDataPoint({ indexes: ['limitorder'], blobs: ['limitorder', sym, side, 'bot'], doubles: [margin, Math.abs(lpx - live0) / live0 * 100] }); } catch (e) {}
       const _o = ro.order || {};
@@ -11817,9 +11867,10 @@ async function handleBot(url, request, env, ctx) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, feeVenue || '')), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym, feeVenue || ''), status: 'open', pnl: null, src: 'bot' };
+    if (feeVenue !== undefined) t.feeVenue = feeVenue; // explicit (incl. '' = MarginPad default); undefined lets the store apply the account default
     if (trailQ) { t.trail = trailQ; t.hwm = entry; if (t.stop == null) t.stop = Number((long ? entry * (1 - trailQ / 100) : entry * (1 + trailQ / 100)).toPrecision(10)); } // an initial stop at trail distance, so the position is protected from the first tick
-    if (dryRun) { const fee1 = t.feeOpen; return jb({ ok: true, dry_run: true, position: { symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: t.qty, notional_usd: t.notional, liq_price: t.liq, sl: t.stop, tp: t.tp, trail_pct: trailQ, liq_distance_pct: Math.round(Math.abs(t.liq - entry) / entry * 10000) / 100, fee_open_usd: Math.round(fee1 * 100) / 100, fee_round_trip_usd: Math.round(2 * fee1 * 100) / 100, taker_fee_pct: +(t.feeRate * 100).toFixed(4), max_leverage: maxLevFor(sym), asset_class: assetClassOf(sym) } }, 200); }
+    if (dryRun) { const fee1 = t.feeOpen, d0 = _feeOpen(margin, lev, feeRateFor(lev, sym)); return jb({ ok: true, dry_run: true, position: { symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: t.qty, notional_usd: t.notional, liq_price: t.liq, sl: t.stop, tp: t.tp, trail_pct: trailQ, liq_distance_pct: Math.round(Math.abs(t.liq - entry) / entry * 10000) / 100, fee_open_usd: Math.round(fee1 * 100) / 100, fee_round_trip_usd: Math.round(2 * fee1 * 100) / 100, taker_fee_pct: +(t.feeRate * 100).toFixed(5), fee_venue: feeVenue || null, fee_vs_marginpad_default_usd: Math.round((2 * fee1 - 2 * d0) * 100) / 100, max_leverage: maxLevFor(sym), asset_class: assetClassOf(sym) } }, 200); }
     // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
     const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
     wantDrain = true;
@@ -11967,7 +12018,7 @@ async function handleBot(url, request, env, ctx) {
     return jb({
       key_name: auth.name || '', plan: L.name,
       limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
-      features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false },
+      features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
       upgrade: L.name === 'free' ? 'https://marginpad.io/premium/' : null,
       earn: L.name === 'free' ? 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' : null,
@@ -12014,6 +12065,17 @@ async function handleBot(url, request, env, ctx) {
     if (!r) return jb({ error: 'unavailable' }, 503);
     return jb({ webhooks: r.webhooks || [], pending_deliveries: r.pending || 0, max: r.max || WH_MAX, events: WH_EVENTS, signature: 'X-MP-Signature: sha256=HMAC_SHA256(secret, raw body); X-MP-Event, X-MP-Delivery, X-MP-Timestamp headers on every delivery' }, 200);
   }
+  if (path === '/v1/fees') { // Bot API 2.4: which exchange's fee schedule your paper fills are charged at. GET = the table + your default; POST {venue} sets the account default (null / "marginpad" = back to the class rate)
+    if (request.method === 'POST') {
+      const fvN = feeVenueNorm(b.venue !== undefined ? b.venue : b.fee_venue);
+      if (fvN === null) return jb({ error: 'unknown_fee_venue', venues: Object.keys(FEE_VENUES) }, 400);
+      const r = await doCall('/prefsput', { uid, k: 'feevenue', v: fvN });
+      if (!r || r.error) return jb({ error: 'unavailable' }, 503);
+      return jb({ ok: true, fee_venue: fvN || null, effective_taker_pct: fvN ? +(FEE_VENUES[fvN].taker * (1 - FEE_VENUES[fvN].disc / 100)).toFixed(4) : 0.055, note: 'Applies to every open from now on (site and API) unless a call names its own fee_venue. Open positions keep the rate they were filled with.' }, 200);
+    }
+    let mine = ''; try { const pg = await doCall('/prefsget', { uid, keys: ['feevenue'] }); mine = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) {}
+    return jb({ fee_venue: mine || null, venues: feeVenueList(), marginpad_default: { crypto_pct: 0.055, forex_pct: 0.008, stock_pct: 0.02, metal_index_pct: 0.015, note: 'per side, charged as a round trip at close; above ~181x the rate is lowered so a round trip never exceeds 20% of margin' }, how: 'Both legs pay the venue TAKER rate less its referral discount (the paper engine fills at market). Crypto perps only — other asset classes keep the MarginPad rate. Set a default here or pass fee_venue on POST /v1/open; dry_run:true shows the difference in dollars.' }, 200);
+  }
   if (path === '/v1/report') { // the 30-day trading report the site shows at /trading-report/, for the account behind this key: totals + skill score free, breakdowns + findings on Premium (same rule as the site)
     const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
     const rep = await doCall('/tradereport', { uid, days });
@@ -12054,7 +12116,7 @@ async function handleBot(url, request, env, ctx) {
     try { await stub.fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type: 'ai', label: sym + ' ' + iv + 'm (api)', path: '/trading-api/', cc: (request.cf && request.cf.country) || '', dev: 'api' }) })); } catch (e) {} // the same daily-mission credit + activity row the panel gets
     return jb({ symbol: sym, interval: +iv, answer, plan, brief, used: resv.used || 1, limit: LIMIT, disclaimer: 'Educational, not financial advice.' }, 200);
   }
-  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/orders', 'POST /api/bot/v1/cancel_order', 'POST /api/bot/v1/modify_order', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'GET /api/bot/v1/report', 'GET|POST /api/bot/v1/webhooks', 'POST /api/bot/v1/ai', 'WS /api/bot/v2/stream'];
+  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/orders', 'POST /api/bot/v1/cancel_order', 'POST /api/bot/v1/modify_order', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'GET /api/bot/v1/report', 'GET|POST /api/bot/v1/fees', 'GET|POST /api/bot/v1/webhooks', 'POST /api/bot/v1/ai', 'WS /api/bot/v2/stream'];
   return jb({ error: 'not_found', endpoints: isV2 ? EPS.map((e) => e.replace('/v1/', '/v2/')) : EPS }, 404);
 }
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
@@ -18478,6 +18540,7 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_uid ON porders(uid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS porders_st ON porders(status, ts)'); } catch (e) {} // the cron reads open orders across every account
     try { s.exec('ALTER TABLE porders ADD COLUMN trail REAL'); } catch (e) {} // Bot API 2.3: trailing-stop distance (%) the filled position inherits
+    try { s.exec('ALTER TABLE porders ADD COLUMN fv TEXT'); } catch (e) {} // Bot API 2.4: fee venue the filled position is stamped with
     // ── Bot API 2.3 (2026-09-11): WEBHOOKS. A hook is a URL the account wants trading events pushed to (Premium).
     // botwh = the registrations; botwhq = the outbox. The DO only ENQUEUES (inside _syncJournal, /tradesltp,
     // /order/fill, /order/done); the worker drains the outbox (`webhookDrain`) because delivery is an outbound
@@ -18680,7 +18743,9 @@ export class UserStore {
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
-  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down'), trail: (+r.trail > 0 ? +r.trail : null) }; }
+  _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down'), trail: (+r.trail > 0 ? +r.trail : null), fv: r.fv || null }; }
+  // The account's default fee venue (uprefs k='feevenue'), '' when none. Read on open / order placement only.
+  _feeVenueOf(uid) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='feevenue'", uid)[0]; return r ? (feeVenueNorm(r.v) || '') : ''; } catch (e) { return ''; } }
   // The Bot API's public order shape (what GET /v1/orders returns and what order.* webhooks carry). `type` is derived:
   // a level the market must RISE to for a long (or fall to for a short) is a stop / breakout entry, otherwise a limit.
   _ordApi(r) { const o = this._ordJson(r); if (!o) return null; const stop = (o.side === 'long') ? o.dir === 'up' : o.dir === 'down'; return { order_id: o.id, type: stop ? 'stop' : 'limit', symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, trail_pct: o.trail, placed_ts: o.ts, expires_ts: o.expTs, status: o.status, position_id: o.tid, note: o.note || undefined, done_ts: o.doneTs || undefined }; }
@@ -18773,6 +18838,7 @@ export class UserStore {
     const long = t.side !== 'short', open = t.status !== 'win' && t.status !== 'loss';
     const o = { id: t.id, symbol: t.sym, side: long ? 'long' : 'short', entry_price: +t.entry || 0, margin_usd: +t.margin || 0, leverage: +t.lev || 1, qty: +t.qty || 0, liq_price: +t.liq || 0, sl: (t.stop != null ? +t.stop : null), tp: (t.tp != null ? +t.tp : null), status: open ? 'open' : (t.liquidated ? 'liquidated' : 'closed'), opened_ts: +t.ts || 0, source: t.src === 'bot' ? 'bot' : 'app' };
     if (+t.trail > 0) { o.trail_pct = +t.trail; o.trail_hwm = (+t.hwm > 0 ? +t.hwm : null); } // Bot API 2.3: a trailing stop and the extreme it is ratcheting from
+    o.fee_rate_pct = +((+t.feeRate || 0) * 100).toFixed(5); o.fee_venue = (t.feeVenue && FEE_VENUES[t.feeVenue]) ? t.feeVenue : null; // Bot API 2.4: the per-side taker rate this position pays and whose schedule it came from
     // unrealized P&L is NET of the round trip (fee both sides + funding accrued), exactly like the close math in
     // /botclose and like the site's own metrics(). It used to be gross, so every open position looked better than
     // it could ever settle and a strategy tuned on it was tuned on a number that does not exist at exit.
@@ -19409,10 +19475,11 @@ export class UserStore {
       if (openN >= PORDER_MAX) return this.j({ error: 'too_many_orders', max: PORDER_MAX });
       const id = String(o.id || ('lo' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)));
       const now9 = Date.now();
-      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT,dir,trail) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      let fv9 = feeVenueNorm(o.fv) || ''; if (!fv9 && o.fv === undefined) fv9 = this._feeVenueOf(uid); // an explicit venue wins; otherwise the account default (Bot API 2.4)
+      sql.exec('INSERT INTO porders(id,uid,ts,sym,side,px,lev,margin,sl,tp,expTs,status,tid,note,doneTs,src,coid,swT,dir,trail,fv) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         id, uid, now9, String(o.sym).toUpperCase().slice(0, 12), o.side === 'short' ? 'short' : 'long', +o.px || 0, +o.lev || 1, +o.margin || 0,
         (o.sl == null ? null : +o.sl), (o.tp == null ? null : +o.tp), +o.expTs || (now9 + PORDER_TTL), 'open', null, null, null, String(o.src || 'site').slice(0, 8), coid || null, now9,
-        (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'), (+o.trail > 0 ? Math.min(50, Math.max(0.05, +o.trail)) : null));
+        (o.dir === 'up' || o.dir === 'down') ? o.dir : ((o.side === 'short') ? 'up' : 'down'), (+o.trail > 0 ? Math.min(50, Math.max(0.05, +o.trail)) : null), fv9 || null);
       try { sql.exec("DELETE FROM porders WHERE status<>'open' AND doneTs < ?", now9 - 30 * 86400000); } catch (e) {} // done rows are history for the user's Orders list, kept 30 days
       this._opsEv(uid, 'order', 'placed ' + (o.side === 'short' ? 'SHORT ' : 'LONG ') + String(o.sym).toUpperCase().slice(0, 12) + ' @ ' + (+o.px || 0) + ' ' + (+o.lev || 1) + 'x $' + Math.round(+o.margin || 0) + ' via ' + String(o.src || 'site'), '/paper-trade', { sym: String(o.sym).toUpperCase().slice(0, 12), side: o.side === 'short' ? 'short' : 'long', px: +o.px || 0, lev: +o.lev || 1, margin: +o.margin || 0, via: String(o.src || 'site'), id: id.slice(0, 24) });
       return this.j({ ok: true, order: this._ordJson(this.rows('SELECT * FROM porders WHERE id=?', id)[0]) });
@@ -19507,6 +19574,7 @@ export class UserStore {
     }
     if (path === '/botopen') { // Bot API open → written straight into the account's journal (My Trades), same as a manual open
       const uid = String(b.uid || ''), t = b.t || {};
+      if (t && t.feeVenue === undefined && t.sym) { const fv = this._feeVenueOf(uid); if (fv) { t.feeVenue = fv; t.feeRate = feeRateFor(+t.lev || 1, t.sym, fv); t.feeOpen = _feeOpen(+t.margin || 0, +t.lev || 1, t.feeRate); } } // Bot API 2.4: account default fee venue; an explicit feeVenue (even '') from the caller wins
       const jn = this._loadJournal(uid);
       // IDEMPOTENCY: same client_order_id -> the position the FIRST call created, never a second one. The DO is
       // single-threaded, so even two simultaneous retries serialize here and the loser gets the winner's position.
