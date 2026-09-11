@@ -3001,52 +3001,133 @@ async function checkDailyWrap(env) {
     try { await evPush(env, null, 'wrap', day, ''); } catch (e) {}
   } catch (e) { try { await env.STATS.delete('wrap:' + day); } catch (e2) {} throw e; }
 }
-async function buildWrapText(env) {
+// ═══ DAILY WRAP v2 (2026-09-11, owner: "a complete picture of the market today; let people personalise it") ═══
+// ONE data pass (wrapData) feeds TWO renders: the free-channel post (every section) and the personal DM (the
+// sections the reader switched on with /wrap in @MarginPadBot, plus their own open positions when the chat is
+// linked to an account). Every number is our own measurement or our own feed; nothing here is advice, no
+// direction is ever suggested, and a source that fails simply drops its section instead of blocking the wrap.
+const WRAP_SECTIONS = [
+  ['majors', 'Majors', 'BTC / ETH / SOL / BNB / XRP with 24h range and RSI'],
+  ['market', 'Market', 'total cap, 24h change, BTC dominance, Fear & Greed'],
+  ['deriv', 'Derivatives', 'funding, open interest, long/short on BTC and ETH'],
+  ['liq', 'Liquidations', '24h total, long share, the coin hit hardest'],
+  ['movers', 'Movers', 'the three strongest and weakest liquid names'],
+  ['screener', 'Screener', 'the highest- and lowest-scored setups'],
+  ['whales', 'Whales', 'Hyperliquid whale book: long vs short, the largest position'],
+  ['calendar', 'Calendar', 'the next market-moving events'],
+  ['cycle', 'Cycle', 'BTC against its 110-day average (Pi Cycle)'],
+  ['mine', 'My positions', 'your open paper positions with live P&L (linked account)'],
+];
+const WRAP_DEFAULT = { majors: 1, market: 1, deriv: 1, liq: 1, movers: 1, screener: 0, whales: 1, calendar: 1, cycle: 0, mine: 1 };
+async function wrapData(env) {
+  const d = { ts: Date.now(), px: {}, rows: [] };
   let px = null; try { px = JSON.parse(await env.STATS.get('prices:last') || 'null'); } catch (e) {}
-  const pmap = {};
-  const fill = (o) => { for (const p of (o && o.pairs) || []) pmap[p.symbol.replace(/USDT$/, '')] = { p: +p.price, c: +p.changePct }; };
+  const fill = (o) => { for (const p of (o && o.pairs) || []) d.px[p.symbol.replace(/USDT$/, '')] = { p: +p.price, c: +p.changePct }; };
   fill(px);
-  if (!pmap.BTC || !pmap.ETH) { // KV floor absent (pricesKvWarm can silently fail) — same internal compute any /api/prices visitor triggers, edge-cached
-    try { const r = await handlePrices(env, null, 0); if (r && r.ok) fill(JSON.parse(await r.text())); } catch (e) {}
-  }
-  if (!pmap.BTC || !pmap.ETH) return null; // core of the wrap — without it the message is not worth sending
-  // Readable, scannable format (owner req 2026-08-04): bold section headers, one datum per line,
-  // blank line between sections — no dense "·"-packed one-liners, no emojis. Telegram HTML mode.
-  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dt = new Date();
-  const sign = c => (c >= 0 ? '+' : '') + c.toFixed(1) + '%';
-  const lines = ['<b>MarginPad — Daily Wrap</b>', '<i>' + MON[dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ' · UTC</i>', '', '<b>Prices</b>'];
-  ['BTC', 'ETH', 'SOL'].forEach(s => { if (pmap[s]) lines.push('<b>' + s + '</b> ' + fmtPx(pmap[s].p) + ' (' + sign(pmap[s].c) + ')'); });
-  try { // movers from the screener floor (liquid names only)
-    const sc = JSON.parse(await env.STATS.get('scr:cache7') || 'null');
-    const rows = ((sc && sc.body) ? JSON.parse(sc.body).rows : []) || [];
-    const liq = rows.filter(r => r && isFinite(r.chg) && (+r.vol || 0) > 2e7);
-    if (liq.length >= 6) {
-      const up = [...liq].sort((a, b) => b.chg - a.chg)[0], dn = [...liq].sort((a, b) => a.chg - b.chg)[0];
-      lines.push('', '<b>24h movers</b>', 'Top: <b>' + up.s + '</b> ' + sign(up.chg), 'Weakest: <b>' + dn.s + '</b> ' + sign(dn.chg));
-    }
-  } catch (e) {}
-  try { // 24h liquidation totals from OUR collector
-    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
-    if (base) {
-      const r = await fetch(base + '/api/v1/pulse', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 300 } });
-      const j = await r.json();
-      const t = j && j.h24 && j.h24.tot;
-      if (t && t.v > 0) lines.push('', '<b>Liquidations · 24h</b>', fmtUsdShort(t.v) + ' · ' + Math.round(t.l / t.v * 100) + '% longs', (+t.n).toLocaleString('en-US') + ' orders across 9 exchanges');
-    }
-  } catch (e) {}
-  try { // next high-impact event from our own calendar (pure compute)
-    const r = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env);
-    const j = await r.json();
-    const ev = ((j && j.events) || []).filter(e => e.ts > Date.now() && (+e.impact || 0) >= 3).sort((a, b) => a.ts - b.ts)[0];
-    if (ev) {
-      const dd = Math.round((ev.ts - Date.now()) / 86400e3);
-      lines.push('', '<b>Next market mover</b>', ev.title + ' — ' + (dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : 'in ' + dd + ' days'));
-    }
-  } catch (e) {}
-  lines.push('', '<a href="https://marginpad.io/charts">Charts</a> · <a href="https://marginpad.io/liquidations/">Liq map</a> · <a href="https://marginpad.io/paper-trade">Practice</a>');
-  return lines.join('\n');
+  if (!d.px.BTC || !d.px.ETH) { try { const r = await handlePrices(env, null, 0); if (r && r.ok) fill(JSON.parse(await r.text())); } catch (e) {} }
+  if (!d.px.BTC || !d.px.ETH) return null;
+  try { const sc = JSON.parse(await env.STATS.get('scr:cache7') || 'null'); d.rows = ((sc && sc.body) ? JSON.parse(sc.body).rows : []) || []; } catch (e) {}
+  d.row = {}; d.rows.forEach(r => { if (r && r.s) d.row[r.s] = r; });
+  try { const j = await (await handleFng(env)).json(); const a = (j && j.data) || []; if (a[0]) d.fng = { v: +a[0].v, c: a[0].c, prev: a[1] ? +a[1].v : null }; } catch (e) {}
+  try { const j = await (await handleGeckoGlobal(env)).json(); const g = j && j.data; if (g && g.total_market_cap) d.global = { cap: +g.total_market_cap.usd, chg: +g.market_cap_change_percentage_24h_usd, btcDom: +(g.market_cap_percentage || {}).btc, vol: +(g.total_volume || {}).usd }; } catch (e) {}
+  try { const j = await (await handleCgLongShort(new URL('https://marginpad.io/api/cg/longshort'), env)).json(); d.ls = {}; ((j && j.coins) || []).forEach(c => { if (c && c.s) d.ls[c.s] = +c.longPct; }); } catch (e) {}
+  try { const j = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); if (j && j.market && +j.market.total > 0) { const top = ((j.coins || []).slice().sort((a, b) => b.liq - a.liq))[0]; d.liq = { total: +j.market.total, long: +j.market.long, short: +j.market.short, n: +j.market.count || 0, top: top ? { s: top.s, v: +top.liq, longPct: top.liq > 0 ? Math.round(top.long / top.liq * 100) : null } : null, ex: (j.exchanges || []).length }; } } catch (e) {}
+  try { const j = await (await handleCgOpenInterest(new URL('https://marginpad.io/api/cg/openinterest'), env)).json(); d.oi = {}; ((j && j.coins) || []).forEach(c => { if (c && c.s && +c.oiUsd > 0) d.oi[c.s] = { v: +c.oiUsd, chg: (c.oiChg24h == null ? null : +c.oiChg24h) }; }); } catch (e) {}
+  try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const r = await fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 120 } }); const j = await r.json(); const ps = (j && j.positions) || []; if (ps.length) { let L = 0, S = 0; ps.forEach(p => { if (p.long) L += +p.val || 0; else S += +p.val || 0; }); const big = ps.slice().sort((a, b) => (+b.val || 0) - (+a.val || 0))[0]; d.whales = { n: ps.length, tracked: +j.tracked || ps.length, long: L, short: S, big: big ? { s: big.sym, long: !!big.long, val: +big.val, lev: +big.lev, pnl: +big.pnl } : null }; } } } catch (e) {}
+  try { const r = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const j = await r.json(); d.events = ((j && j.events) || []).filter(e => e.ts > Date.now() && (+e.impact || 0) >= 2).sort((a, b) => a.ts - b.ts).slice(0, 3); } catch (e) {}
+  try { const j = await (await handleCgCycle(new URL('https://marginpad.io/api/cg/cycle'), env)).json(); const pi = j && j.ind && j.ind.pi && j.ind.pi.last; if (pi && +pi.ma_110 > 0) d.cycle = { px: +pi.price, ma110: +pi.ma_110, ma350x2: +pi.ma_350_mu_2 || null }; } catch (e) {}
+  d.trend = {}; // 4H supertrend on the majors — the same read the Premium brief makes, for the one-line bias
+  for (const sym of ['BTC', 'ETH', 'SOL', 'BNB', 'XRP']) { try { const kd = await sigKlines(sym, 240); if (kd && kd.closed && kd.closed.length >= 30) { const st = _supertrend(kd.closed, 10, 3); const dir = st ? st.dir[kd.closed.length - 1] : null; d.trend[sym] = dir === 1 ? 'up' : dir === -1 ? 'down' : null; } } catch (e) {} }
+  return d;
 }
+function wrapRender(d, prefs, opts) {
+  opts = opts || {}; const P = prefs || WRAP_DEFAULT;
+  const on = (k) => opts.channel ? k !== 'mine' : !!(P[k] == null ? WRAP_DEFAULT[k] : P[k]); // the channel edition carries every section; 'mine' is personal by nature
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dt = new Date(d.ts || Date.now());
+  const sign = (c, dp) => (c >= 0 ? '+' : '') + (+c).toFixed(dp == null ? 1 : dp) + '%';
+  const pct = (v, dp) => (+v).toFixed(dp == null ? 1 : dp) + '%';
+  const big = (v) => v >= 1e12 ? '$' + (v / 1e12).toFixed(2) + 'T' : fmtUsdShort(v);
+  const esc = (s) => String(s == null ? '' : s).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  const L = [];
+  L.push('<b>MarginPad — Daily Wrap</b>', '<i>' + MON[dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ' · ' + String(dt.getUTCHours()).padStart(2, '0') + ':00 UTC</i>');
+  // MOOD — always: the one paragraph that gives the picture before any number
+  { const m = [];
+    if (d.fng) m.push('Fear &amp; Greed <b>' + d.fng.v + '</b> ' + esc(d.fng.c) + (d.fng.prev != null ? ' (yesterday ' + d.fng.prev + ')' : ''));
+    const tr = Object.keys(d.trend || {}).filter(k => d.trend[k]); const up = tr.filter(k => d.trend[k] === 'up').length;
+    if (tr.length >= 3) { const bias = up > tr.length - up + 1 ? 'leaning up' : (tr.length - up) > up + 1 ? 'leaning down' : 'mixed'; m.push('4H trend: ' + up + ' of ' + tr.length + ' majors up — <b>' + bias + '</b>'); }
+    if (d.liq && d.liq.total > 0) m.push(big(d.liq.total) + ' liquidated in 24h, ' + Math.round(d.liq.long / d.liq.total * 100) + '% of it longs');
+    if (m.length) L.push('', '<b>Mood</b>', ...m); }
+  if (on('majors')) { const rows = []; ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'].forEach(s => { const p = d.px[s]; if (!p) return; const r = d.row[s]; let line = '<b>' + s + '</b> ' + fmtPx(p.p) + ' (' + sign(p.c) + ')'; if (r && r.hi > 0 && r.lo > 0 && (s === 'BTC' || s === 'ETH')) line += ' · range ' + fmtPx(Math.min(r.lo, p.p)) + '–' + fmtPx(Math.max(r.hi, p.p)); /* the screener snapshot is minutes old: the live print always sits inside the printed range */ if (r && isFinite(+r.rsi)) line += ' · RSI ' + Math.round(+r.rsi); rows.push(line); }); if (rows.length) L.push('', '<b>Majors</b>', ...rows); }
+  if (on('market') && d.global && d.global.cap > 0) { const g = d.global; L.push('', '<b>Market</b>', 'Total cap ' + big(g.cap) + (isFinite(g.chg) ? ' (' + sign(g.chg) + ' 24h)' : ''), 'BTC dominance ' + pct(g.btcDom) + (g.vol > 0 ? ' · 24h volume ' + big(g.vol) : '')); }
+  if (on('deriv')) { const m = []; const rb = d.row.BTC, re = d.row.ETH;
+    const fnd = (r) => (r && isFinite(+r.f)) ? sign(+r.f, 4) : null; const fb = fnd(rb), fe = fnd(re);
+    if (fb || fe) m.push('Funding ' + [fb ? 'BTC ' + fb : null, fe ? 'ETH ' + fe : null].filter(Boolean).join(' · ') + ' (8h)');
+    const ob = d.oi && d.oi.BTC, oe = d.oi && d.oi.ETH;
+    if (ob || oe) m.push('Open interest ' + [ob ? 'BTC ' + big(ob.v) + (ob.chg != null ? ' (' + sign(ob.chg) + ')' : '') : null, oe ? 'ETH ' + big(oe.v) + (oe.chg != null ? ' (' + sign(oe.chg) + ')' : '') : null].filter(Boolean).join(' · '));
+    const lb = d.ls && d.ls.BTC, le = d.ls && d.ls.ETH;
+    if (lb || le) m.push('Long accounts ' + [lb ? 'BTC ' + pct(lb, 0) : null, le ? 'ETH ' + pct(le, 0) : null].filter(Boolean).join(' · ') + ' (Binance + OKX + Bybit)');
+    if (m.length) L.push('', '<b>Derivatives</b>', ...m); }
+  if (on('liq') && d.liq) { const q = d.liq; L.push('', '<b>Liquidations · 24h</b>', big(q.total) + ' · ' + Math.round(q.long / q.total * 100) + '% longs · ' + (+q.n).toLocaleString('en-US') + ' orders' + (q.ex ? ' across ' + q.ex + ' exchanges' : '')); if (q.top) L.push('Hardest hit: <b>' + esc(q.top.s) + '</b> ' + big(q.top.v) + (q.top.longPct != null ? ' (' + q.top.longPct + '% longs)' : '')); }
+  if (on('movers') && d.rows.length) { const liq = d.rows.filter(r => r && isFinite(+r.chg) && (+r.vol || 0) > 2e7); if (liq.length >= 6) { const up = liq.slice().sort((a, b) => b.chg - a.chg).slice(0, 3), dn = liq.slice().sort((a, b) => a.chg - b.chg).slice(0, 3); L.push('', '<b>Movers</b> <i>(liquid names)</i>', 'Up: ' + up.map(r => '<b>' + esc(r.s) + '</b> ' + sign(r.chg)).join(', '), 'Down: ' + dn.map(r => '<b>' + esc(r.s) + '</b> ' + sign(r.chg)).join(', ')); } }
+  if (on('screener') && d.rows.length) { const sc = d.rows.filter(r => r && isFinite(+r.score) && (+r.vol || 0) > 2e7); if (sc.length >= 6) { const hi = sc.slice().sort((a, b) => b.score - a.score)[0], lo = sc.slice().sort((a, b) => a.score - b.score)[0]; L.push('', '<b>Screener</b>', 'Strongest: <b>' + esc(hi.s) + '</b> ' + hi.score + '/100 ' + esc(hi.verdict || ''), 'Weakest: <b>' + esc(lo.s) + '</b> ' + lo.score + '/100 ' + esc(lo.verdict || '')); } }
+  if (on('whales') && d.whales) { const w = d.whales; L.push('', '<b>Hyperliquid whales</b> <i>(' + w.tracked + ' tracked)</i>', big(w.long) + ' long vs ' + big(w.short) + ' short'); if (w.big) L.push('Largest: <b>' + esc(w.big.s) + '</b> ' + (w.big.long ? 'long' : 'short') + ' ' + big(w.big.val) + ' at ' + w.big.lev + 'x, ' + (w.big.pnl >= 0 ? '+' : '-') + fmtUsdShort(Math.abs(w.big.pnl)) + ' unrealized'); }
+  if (on('calendar') && d.events && d.events.length) { const now = Date.now(); L.push('', '<b>Next up</b>'); d.events.slice(0, 3).forEach(e => { const h = (e.ts - now) / 3600e3; const when = h < 1 ? 'within the hour' : h < 24 ? 'in ' + Math.round(h) + ' h' : h < 48 ? 'tomorrow' : 'in ' + Math.round(h / 24) + ' days'; L.push(esc(e.title) + ' — ' + when); }); }
+  if (on('cycle') && d.cycle && d.cycle.ma110 > 0) { const c = d.cycle; const pc = (c.px / c.ma110 - 1) * 100; L.push('', '<b>Cycle</b>', 'BTC ' + Math.abs(pc).toFixed(1) + '% ' + (pc >= 0 ? 'above' : 'below') + ' its 110-day average' + (c.ma350x2 > 0 ? ' · Pi Cycle top line ' + fmtPx(c.ma350x2) : '')); }
+  if (on('mine') && opts.positions && opts.positions.length) { L.push('', '<b>Your open positions</b>'); opts.positions.slice(0, 6).forEach(p => { const u = p.unrealized_pnl_usd; L.push('<b>' + esc(p.symbol) + '</b> ' + p.side + ' ' + p.leverage + 'x · $' + Math.round(p.margin_usd) + (u != null ? ' · ' + (u >= 0 ? '+' : '-') + '$' + Math.abs(u).toFixed(2) + ' (' + sign(u / (p.margin_usd || 1) * 100) + ')' : '')); }); if (opts.positions.length > 6) L.push('… and ' + (opts.positions.length - 6) + ' more'); }
+  L.push('', '<a href="https://marginpad.io/charts">Charts</a> · <a href="https://marginpad.io/liquidations/">Liq map</a> · <a href="https://marginpad.io/screener">Screener</a> · <a href="https://marginpad.io/paper-trade">Practice</a>');
+  L.push(opts.channel ? '<i>Personalise this: send /wrap to @MarginPadBot</i>' : '<i>Change what you get with /wrap · /wrap off to stop</i>');
+  return L.join('\n');
+}
+async function buildWrapText(env) { const d = await wrapData(env); return d ? wrapRender(d, null, { channel: true }) : null; }
+// ── personal wraps: KV wrap:sub:<chat> = {on, h, s:{section:0|1}, ts}; one DM per chat per day, at the hour it chose ──
+function wrapPrefsOf(raw) { let o = null; try { o = JSON.parse(raw || 'null'); } catch (e) {} if (!o || typeof o !== 'object') o = {}; return { on: !!o.on, h: (o.h === 8 ? 8 : 16), s: Object.assign({}, WRAP_DEFAULT, o.s || {}), ts: +o.ts || 0 }; }
+function wrapKeyboard(p) {
+  const rows = []; let cur = [];
+  WRAP_SECTIONS.forEach(([k, name]) => { cur.push({ text: (p.s[k] ? '[x] ' : '[ ] ') + name, callback_data: 'wr:' + k }); if (cur.length === 2) { rows.push(cur); cur = []; } });
+  if (cur.length) rows.push(cur);
+  rows.push([{ text: p.h === 8 ? '[x] 08:00 UTC' : '[ ] 08:00 UTC', callback_data: 'wr:h8' }, { text: p.h === 16 ? '[x] 16:00 UTC' : '[ ] 16:00 UTC', callback_data: 'wr:h16' }]);
+  rows.push([{ text: p.on ? 'Daily delivery: ON — tap to stop' : 'Daily delivery: OFF — tap to start', callback_data: p.on ? 'wr:off' : 'wr:on' }, { text: 'Send it now', callback_data: 'wr:now' }]);
+  return { inline_keyboard: rows };
+}
+function wrapSettingsText(p) {
+  const onN = WRAP_SECTIONS.filter(([k]) => p.s[k]).length;
+  return '<b>Your Daily Wrap</b>\n' + (p.on ? 'Delivered every day at <b>' + String(p.h).padStart(2, '0') + ':00 UTC</b>, here in this chat.' : 'Not scheduled yet — tap <b>Daily delivery</b> below to get it every day.') + '\n\n' +
+    'Pick the sections you want (' + onN + ' of ' + WRAP_SECTIONS.length + ' on). Nobody else sees your choice; the free channel keeps the full wrap at 16:00 UTC.\n\n' +
+    WRAP_SECTIONS.map(([k, name, what]) => (p.s[k] ? '[x] ' : '[ ] ') + '<b>' + name + '</b> — ' + what).join('\n') +
+    '\n\n<i>My positions needs a connected account (/connect). Everything else works right away.</i>';
+}
+async function wrapSendPersonal(env, chat, p, d, chatBase) {
+  let positions = null;
+  if (p.s.mine) { try { const lu = await tgLinkedUser(env, chat); if (lu && lu.uid) { const syms = []; const seed = await usersDO(env, '/botpositions', { uid: lu.uid, prices: {} }); ((seed && seed.positions) || []).forEach(x => { if (x.status === 'open' && syms.indexOf(x.symbol) < 0) syms.push(x.symbol); }); const prices = {}; for (const s of syms.slice(0, 12)) { const pd = d.px[s] ? { price: d.px[s].p } : await fetchPriceCached(s).catch(() => null); if (pd && +pd.price > 0) prices[s] = +pd.price; } const r = await usersDO(env, '/botpositions', { uid: lu.uid, prices }); positions = ((r && r.positions) || []).filter(x => x.status === 'open'); } } catch (e) {} }
+  const text = wrapRender(d, p.s, { positions });
+  const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', Object.assign({ chat_id: chat, text, parse_mode: 'HTML', disable_web_page_preview: true }, chatBase || {}));
+  return !!(r && r.result && r.result.message_id);
+}
+async function checkPersonalWraps(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  if ((await env.STATS.get('wrap:on')) === '0') return;
+  const now = new Date(), day = now.toISOString().slice(0, 10), hour = now.getUTCHours();
+  let keys = []; try { const l = await env.STATS.list({ prefix: 'wrap:sub:', limit: 1000 }); keys = l.keys.map(k => k.name); } catch (e) { return; }
+  if (!keys.length) return;
+  let data = null, sent = 0, due = 0;
+  for (const k of keys) {
+    const chat = k.slice('wrap:sub:'.length);
+    let p; try { p = wrapPrefsOf(await env.STATS.get(k)); } catch (e) { continue; }
+    if (!p.on || hour < p.h) continue;
+    const stamp = 'wrap:dm:' + chat + ':' + day;
+    if (await env.STATS.get(stamp)) continue;
+    due++; if (due > 300) break; // one run's budget; the next */10 pass takes the rest
+    await env.STATS.put(stamp, '1', { expirationTtl: 172800 }); // stamp first — never two a day
+    if (!data) { try { data = await wrapData(env); } catch (e) {} if (!data) { await env.STATS.delete(stamp); return; } }
+    try { if (await wrapSendPersonal(env, chat, p, data)) sent++; else await env.STATS.delete(stamp); } catch (e) { try { await env.STATS.delete(stamp); } catch (e2) {} }
+  }
+  if (sent) { try { await env.STATS.put('wrap:dmlast', JSON.stringify({ day, sent, subs: keys.length, ts: Date.now() }), { expirationTtl: 7 * 86400 }); } catch (e) {} }
+}
+const WRAP_ANNOUNCE = '<b>The Daily Wrap just got a lot bigger.</b>\n\n' +
+  'From today the 16:00 UTC wrap in this channel is the whole picture in one message: mood (Fear &amp; Greed, 4H trend across the majors), BTC / ETH / SOL / BNB / XRP with ranges and RSI, total cap and dominance, funding, open interest and long/short, 24h liquidations with the coin hit hardest, the strongest and weakest movers, the Hyperliquid whale book, the next market-moving events and where BTC sits in the cycle. Every number measured by us.\n\n' +
+  '<b>Make it yours.</b> Send <code>/wrap</code> to @MarginPadBot and tick only the sections you care about, pick 08:00 or 16:00 UTC, and it lands in your own chat every day. Connect your account and it adds <b>your open paper positions with live P&amp;L</b>. Nobody else sees your choices.\n\n' +
+  '<a href="https://t.me/MarginPadBot?start=wrap">Open the bot and send /wrap</a>';
 
 // A) Liquidation cascade alert — free channel, threshold + cooldown from ops:cfg (liqAlertUsd/liqAlertCoolMin,
 // tunable without deploy). Default OFF (KV liqalert:on='1' arms it — owner flips after watching the wrap rhythm).
@@ -9194,7 +9275,8 @@ const TG_HELP =
   '<code>/price</code> BTC — live price\n' +
   '<code>/alert</code> BTC 70000 — ping me at a price\n' +
   '<code>/whale</code> BTC short 200 — whale alert (whales load shorts &gt; $200M)\n' +
-  '<code>/alerts</code> — your alerts · <code>/clearalerts</code>\n\n' +
+  '<code>/alerts</code> — your alerts · <code>/clearalerts</code>\n' +
+  '<code>/wrap</code> — your personal Daily Wrap: pick the sections, 08:00 or 16:00 UTC, every day in this chat\n\n' +
   '<b> Live market data</b>\n' +
   '<code>/rekt</code> — 24h liquidations · <code>/funding</code> — funding extremes · <code>/sentiment</code> — Fear &amp; Greed\n' +
   '<code>/fundalert</code> BTC 0.1 — ping me on extreme funding\n\n' +
@@ -10190,6 +10272,16 @@ async function handleTelegram(request, env) {
       }
       return new Response('ok');
     }
+    if (/^wr:[a-z0-9]{1,12}$/.test(String(cq.data || '')) && cbChat && env.STATS) { // Daily Wrap v2 settings keyboard
+      const op = String(cq.data).slice(3), key = 'wrap:sub:' + cbChat; const p = wrapPrefsOf(await env.STATS.get(key));
+      let toast = '';
+      if (op === 'now') { const d = await wrapData(env); if (d) await wrapSendPersonal(env, cbChat, p, d, base); else toast = 'Data not ready — try again in a minute'; }
+      else { if (op === 'on') { p.on = true; p.ts = Date.now(); toast = 'Scheduled daily at ' + String(p.h).padStart(2, '0') + ':00 UTC'; } else if (op === 'off') { p.on = false; toast = 'Stopped'; } else if (op === 'h8') { p.h = 8; } else if (op === 'h16') { p.h = 16; } else if (WRAP_DEFAULT[op] !== undefined) { p.s[op] = p.s[op] ? 0 : 1; }
+        await env.STATS.put(key, JSON.stringify(p));
+        try { if (cq.message && cq.message.message_id) await tgApi(token, 'editMessageText', { chat_id: cbChat, message_id: cq.message.message_id, text: wrapSettingsText(p), reply_markup: wrapKeyboard(p), ...base }); } catch (e) {} }
+      try { await tgApi(token, 'answerCallbackQuery', Object.assign({ callback_query_id: cq.id }, toast ? { text: toast } : {})); } catch (e) {}
+      return new Response('ok');
+    }
     let cbText;
     if (cq.data === 'lb') cbText = await leaderboard(env);
     else if (cq.data === 'signals') cbText = await premiumInfo(env);
@@ -10427,6 +10519,15 @@ async function handleTelegram(request, env) {
     const id = Date.now() + '' + Math.floor(Math.random() * 1e4);
     try { await env.STATS.put('al:' + msg.chat.id + ':' + id, JSON.stringify({ sym: p.sym, target, dir, chat: msg.chat.id })); await env.STATS.put('al:on', '1', { expirationTtl: 7776000 }); } catch (e) {}
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: `Alert set! I'll ping you when <b>${p.sym}</b> goes ${dir === 'up' ? '≥' : '≤'} <b>$${tgfmt(target)}</b>.\n<i>(now $${tgfmt(p.price)})</i>`, ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/wrap' || (cmd === '/start' && (msg.text.trim().split(/\s+/)[1] || '') === 'wrap')) { // Daily Wrap v2: personal settings, on/off, preview
+    const arg = cmd === '/wrap' ? (msg.text.trim().split(/\s+/)[1] || '').toLowerCase() : '';
+    const key = 'wrap:sub:' + msg.chat.id; const p = wrapPrefsOf(await env.STATS.get(key));
+    if (arg === 'off') { p.on = false; await env.STATS.put(key, JSON.stringify(p)); await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Daily Wrap delivery is off. Send /wrap any time to switch it back on or to read one now.', ...base }); return new Response('ok'); }
+    if (arg === 'on') { p.on = true; p.ts = Date.now(); await env.STATS.put(key, JSON.stringify(p)); }
+    if (arg === 'now') { const d = await wrapData(env); if (!d) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'The market data is not ready right now — try again in a minute.', ...base }); return new Response('ok'); } await wrapSendPersonal(env, msg.chat.id, p, d, base); return new Response('ok'); }
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: wrapSettingsText(p), reply_markup: wrapKeyboard(p), ...base });
     return new Response('ok');
   }
   if (cmd === '/alerts') {
@@ -15119,7 +15220,7 @@ export default {
       try { cCfg = JSON.parse(await env.STATS.get('cpap:cfg') || '{}'); } catch (e) {}
       const n = cRes.length, wins = cRes.filter(x => x.R > 0).length;
       const out = {
-        wrap: { on: (await env.STATS.get('wrap:on')) !== '0', hour: +(await env.STATS.get('wrap:hour')) || 16, last: JSON.parse(await env.STATS.get('wrap:last') || 'null'), err: JSON.parse(await env.STATS.get('wrap:err') || 'null'), dayStamp: !!(await env.STATS.get('wrap:' + new Date().toISOString().slice(0, 10))) },
+        wrap: { on: (await env.STATS.get('wrap:on')) !== '0', hour: +(await env.STATS.get('wrap:hour')) || 16, last: JSON.parse(await env.STATS.get('wrap:last') || 'null'), err: JSON.parse(await env.STATS.get('wrap:err') || 'null'), dm: JSON.parse(await env.STATS.get('wrap:dmlast') || 'null'), dayStamp: !!(await env.STATS.get('wrap:' + new Date().toISOString().slice(0, 10))) },
         liqAlert: { on: (await env.STATS.get('liqalert:on')) === '1', thresholdUsd: cfg.liqAlertUsd, coolMin: cfg.liqAlertCoolMin },
         cpaper: { on: (await env.STATS.get('cpap:on')) !== '0', cfg: cCfg, openN: cOpen.length, open: cOpen,
           summary: n ? { n, wins, winRate: +(wins / n * 100).toFixed(1), avgR: +(cRes.reduce((a, x) => a + x.R, 0) / n).toFixed(3), avgGrossPct: +(cRes.reduce((a, x) => a + x.grossPct, 0) / n).toFixed(3) } : { n: 0 },
@@ -15210,6 +15311,25 @@ export default {
       const res = await usersDO(env, '/tradesweepall', { prices, onlyUid: su, graceMin: 0, srvCandle: false });
       try { await webhookDrain(env); } catch (e) {}
       return J(res || { error: 'unavailable' });
+    }
+    if (url.pathname === '/api/admin/wrappreview' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Daily Wrap v2: render today's wrap now (no channel post); ?send=admin DMs it to the owner chat; ?chat=<id>&sections=majors,liq renders a personal edition
+      const d = await wrapData(env); if (!d) return J({ error: 'no_data' }, 503);
+      const secs = String(url.searchParams.get('sections') || ''); let prefs = null; if (secs) { prefs = {}; WRAP_SECTIONS.forEach(([k]) => { prefs[k] = secs.split(',').indexOf(k) >= 0 ? 1 : 0; }); }
+      const text = wrapRender(d, prefs, prefs ? {} : { channel: true });
+      const to = url.searchParams.get('send');
+      let sent = false; if (to === 'admin' && env.TG_ADMIN_CHAT && env.TELEGRAM_TOKEN) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text, parse_mode: 'HTML', disable_web_page_preview: true }); sent = !!(r && r.result); } catch (e) {} }
+      let dm = null; try { dm = JSON.parse(await env.STATS.get('wrap:dmlast') || 'null'); } catch (e) {}
+      let subs = 0; try { subs = (await env.STATS.list({ prefix: 'wrap:sub:', limit: 1000 })).keys.length; } catch (e) {}
+      return J({ ok: true, chars: text.length, sent, sources: { fng: !!d.fng, global: !!d.global, ls: !!(d.ls && Object.keys(d.ls).length), liq: !!d.liq, oi: !!(d.oi && Object.keys(d.oi).length), whales: !!d.whales, events: (d.events || []).length, cycle: !!d.cycle, trend: Object.keys(d.trend || {}).length, screener: d.rows.length }, subscribers: subs, dmLast: dm, text });
+    }
+    if (url.pathname === '/api/admin/wrapannounce' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one-time free-channel post about Daily Wrap v2 (+ /wrap). ?send=1 posts once (KV wrap:announced); no param = preview
+      const chans = await sigChannels(env);
+      if (url.searchParams.get('send') !== '1') return J({ preview: WRAP_ANNOUNCE, free: !!chans.free, announced: await env.STATS.get('wrap:announced') });
+      if (!chans.free) return J({ error: 'no_free_channel' }, 503);
+      if (await env.STATS.get('wrap:announced')) return J({ ok: false, already: true });
+      const mid = await sigSend(env, 'free', chans.free, WRAP_ANNOUNCE);
+      if (mid) await env.STATS.put('wrap:announced', String(Date.now()));
+      return J({ ok: !!mid, mid });
     }
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
@@ -16586,6 +16706,7 @@ export default {
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
+    bg(checkPersonalWraps, 'wrapdm'); // Daily Wrap v2: the personal DM edition, per chat, at the hour each chat chose
     bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
