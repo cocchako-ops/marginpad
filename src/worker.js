@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.4.0',
+      version: '2.5.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -265,6 +265,10 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'Fee schedules (venues) and your default', description: 'The exchanges whose taker schedule your paper fills can be charged at — Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid — each with taker_pct, maker_pct, the referral discount a MarginPad sign-up gets there, the effective rate, its code and link; plus the MarginPad default rates and your current fee_venue. Both legs pay the venue TAKER rate less the discount (the engine fills at market). Crypto perps only; other asset classes keep the MarginPad rate.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } },
         post: { tags: ['Paper trading'], summary: 'Set your default fee venue', description: 'Body {"venue":"hyperliquid"} makes every open from now on (site and API) pay that schedule unless a call names its own fee_venue; {"venue":null} or "marginpad" returns to the default rate. Open positions keep the rate they were filled with.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { venue: { type: ['string', 'null'], example: 'hyperliquid' } } } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'unknown_fee_venue' } } },
       },
+      '/api/bot/v1/accounts': { get: { tags: ['Paper trading'], summary: 'Books (sub-accounts) of this account', description: 'Every book of the account behind the key with lifetime numbers and the keys bound to it. A book is a separate journal, balance, report and equity curve: mint a key with {"act":"create","name":"…","book":"strat-a"} on POST /api/bot/key (site session) and every call made with that key trades that book. Free: 1 book besides the main account; Premium: 5.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
+      '/api/bot/v1/reset': { post: { tags: ['Paper trading'], summary: 'Reset this book to $10,000', description: 'Body {"confirm":true}. Closed trades are archived (never deleted), resting orders cancelled, the report / ledger / equity curve restart from the reset. Refused (409 open_positions_exist) while positions are open — close them first.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { confirm: { type: 'boolean', example: true } }, required: ['confirm'] } } } }, responses: { '200': { description: '{ ok, reset_ts, archived_trades, cancelled_orders, starting_balance_usd }' }, '400': { description: 'confirm_required' }, '409': { description: 'open_positions_exist' } } } },
+      '/api/bot/v1/equity': { get: { tags: ['Paper trading'], summary: 'Equity curve', description: 'starting_balance_usd + realized P&L per bucket from the ledger (fees and funding settled), the live unrealized point at the end, and max_drawdown_pct. Buckets before the first close carry the realized total up to that time.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-90, default 30.', false, '30'), q('step_min', 'Bucket size in minutes, 5-1440 (default 60 up to 14 days, 240 beyond).', false, '60')], responses: { '200': { description: '{ ok, points:[{t, realized_pnl_usd, equity_usd, closes}], now:{…}, max_drawdown_pct }' } } } },
+      '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations}] }' } } } },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/ai': { post: { tags: ['Paper trading'], summary: 'AI market read (Premium)', description: 'The chart panel’s AI read, from the API: {symbol, interval (minutes: 1,5,15,60,240,1440), question?, lang?}. Same model, prompt and 50-a-day quota as Ask-AI on the site. Returns the answer, a parsed plan when the model gives one, and the brief it reasoned over. Educational, not financial advice.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, interval: { type: 'string', example: '60' }, question: { type: 'string', maxLength: 280 }, lang: { type: 'string', example: 'en' } }, required: ['symbol'] } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/AiRead' } } } }, '402': { description: 'Premium required' }, '429': { description: 'daily AI quota used' } } } },
       '/api/whsink/{token}': {
@@ -4605,7 +4609,7 @@ function botPresence(env, ctx, request, key, auth, ep) {
   try {
     if (!auth || !auth.uid || !key) return;
     let e2 = false; try { e2 = !!(request.headers.get('x-admin-key') && isAdminKey(env, request.headers.get('x-admin-key'))); } catch (e) {}
-    onlogMark(env, ctx, 'a:' + String(key).slice(4, 14), { k: 'api', uid: String(auth.uid), u: auth.un || null, kn: auth.name || null, via: request.headers.get('x-mp-via') === 'mcp' ? 'mcp' : 'rest', la: String(ep || 'other').slice(0, 24), lats: Date.now(), n: Math.max(1, (+auth.limit || 0) - (+auth.remaining || 0)), cc: (request.cf && request.cf.country) || null, ip: String(request.headers.get('cf-connecting-ip') || '').slice(0, 45) || null, e2: (e2 || /^e2e_/i.test(auth.un || '')) ? 1 : 0 });
+    onlogMark(env, ctx, 'a:' + String(key).slice(4, 14), { k: 'api', uid: String(auth.owner || auth.uid), u: auth.un || null, kn: (auth.name || null) && (auth.book ? auth.name + ' [' + auth.book + ']' : auth.name), via: request.headers.get('x-mp-via') === 'mcp' ? 'mcp' : 'rest', la: String(ep || 'other').slice(0, 24), lats: Date.now(), n: Math.max(1, (+auth.limit || 0) - (+auth.remaining || 0)), cc: (request.cf && request.cf.country) || null, ip: String(request.headers.get('cf-connecting-ip') || '').slice(0, 45) || null, e2: (e2 || /^e2e_/i.test(auth.un || '')) ? 1 : 0 });
   } catch (e) {}
 }
 // ── MONEY-CLICK WHITELIST (2026-09-09) ────────────────────────────────────────────────────────────────────────
@@ -11548,6 +11552,18 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-12', version: '2.5.0', title: 'Books (sub-accounts), reset, equity curve, Bot arena, usage, named errors',
+    changes: [
+      { type: 'added', breaking: false, text: 'Books: mint a key with {"act":"create","book":"strat-a"} on POST /api/bot/key and every call made with that key trades a SEPARATE journal, balance, report and equity curve (<account>:<book>). One strategy = one key = one clean result. Free accounts get one book besides the main account, Premium five. GET /v1/accounts lists them; /v1/account carries `account`. Webhooks fire on the owner’s hooks with `account` in the payload.' },
+      { type: 'added', breaking: false, text: 'POST /v1/reset {"confirm":true} restarts the book from $10,000: closed trades are archived (never deleted), resting orders cancelled, the report, ledger and equity curve start from the reset. Refused with open_positions_exist while anything is open.' },
+      { type: 'added', breaking: false, text: 'GET /v1/equity?days=30&step_min=60 — starting balance + realized P&L per bucket from the ledger, the live unrealized point at the end, max_drawdown_pct.' },
+      { type: 'added', breaking: false, text: 'GET /api/arena — public Bot arena: bot-opened closes in the current 14-day season per account or book (5 closes to enter), ranked by realized P&L. Page: /arena/. A scoreboard, no prizes.' },
+      { type: 'added', breaking: false, text: 'GET /v1/usage carries usage_30d: this key’s calls per day by endpoint and the calls refused with 429. Refused calls are counted from now on.' },
+      { type: 'changed', breaking: false, text: 'POST /v1/open refuses out-of-range input with named errors (leverage_max with max and requested, leverage_min, margin_usd_min_1, margin_usd_max_100000) instead of clamping. A bot that asked for 5000x used to get 1000x with ok:true.' },
+      { type: 'added', breaking: false, text: 'Reference site /api-docs/, public status /status/ (+ GET /api/status), changelog feed /api/changelog.xml and .json, SDK packages `marginpad` for npm and PyPI. The stream accepts ?api_key= (aliases key=, token=) and explains a missing key.' },
+    ],
+  },
+  {
     date: '2026-09-11', version: '2.4.0', title: 'Fees as on the exchange you will actually use',
     changes: [
       { type: 'added', breaking: false, text: 'GET|POST /v1/fees — pick whose fee schedule your paper fills are charged at: Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken or Hyperliquid (every one has a trading API), at the venue’s published taker rate LESS the referral discount a MarginPad sign-up gets there (Bybit, Binance, Bitget, Gate 20%; Hyperliquid 4% with code MARGINPAD). GET lists the table with the effective rate, code and link; POST {venue} sets the account default, {venue:null} restores the MarginPad class rate. The same default drives the "Fees as on" selector in the Paper Trade terminal, so a bot and its owner’s manual trades pay identical fees.' },
@@ -11925,7 +11941,7 @@ async function handleBot(url, request, env, ctx) {
     // row — no KV lookup per call. Refreshed every time the user opens this endpoint, plus nightly by cron.
     let tier = 0;
     try { const st = await premiumFor(env, request); tier = st && st.premium ? 1 : 0; } catch (e) {}
-    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, tier, rotate: request.method === 'POST' && !!b.rotate });
+    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
     return jb(r, 200);
@@ -12204,6 +12220,7 @@ async function handleBot(url, request, env, ctx) {
     const winsLife = (L && L.exact) ? L.wins : wins, lossesLife = (L && L.exact) ? L.losses : losses;
     const equity = BOT_START_BAL + realizedLife + upnl;
     return jb({
+      account: auth.book || 'main', // 2.5: which book this key trades (see GET /v1/accounts)
       open_positions: openN, margin_in_use_usd: rr2(marginUse), unrealized_pnl_usd: rr2(upnl), realized_pnl_usd: rr2(realizedLife),
       closed_trades: closesLife, wins: winsLife, losses: lossesLife, win_rate_pct: closesLife ? Math.round(winsLife / closesLife * 1000) / 10 : null,
       // Scorecard, NOT a constraint: margin is not debited from this balance and opens are never rejected for
@@ -12224,12 +12241,38 @@ async function handleBot(url, request, env, ctx) {
     const equity = BOT_START_BAL + realizedLife + upnl;
     return jb({ starting_balance_usd: BOT_START_BAL, balance_usd: Math.round((BOT_START_BAL + realizedLife) * 100) / 100, equity_usd: Math.round(equity * 100) / 100, margin_in_use_usd: Math.round(marginUse * 100) / 100, free_margin_usd: Math.round((equity - marginUse) * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, margin_enforced: false });
   }
+  // ── Bot API 2.5 (2026-09-12): books (sub-accounts), reset, equity curve ─────────────────────────────────────────
+  if (path === '/v1/accounts') { // every book of the account behind this key, with lifetime numbers; the key's own book is `account` on /v1/account
+    const r = await doCall('/botbooks', { owner: auth.owner || uid });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    return jb(Object.assign({}, r, { this_key_account: auth.book || 'main', how: 'A book is a separate journal, balance and report. Create one by minting a key with {"act":"create","name":"…","book":"strat-a"} on POST /api/bot/key (site session); every call made with that key trades that book.' }), 200);
+  }
+  if (path === '/v1/reset' && request.method === 'POST') { // start this key's book from zero (positions must be closed first; resting orders are cancelled; the closed history is archived, not deleted)
+    if (b.confirm !== true && b.confirm !== 'yes') return jb({ error: 'confirm_required', hint: 'Send {"confirm":true}. This archives every closed trade of this book and restarts the report, the equity curve and the balance at $' + BOT_START_BAL + '. Open positions block it: close them first.' }, 400);
+    wantDrain = true;
+    const r = await doCall('/botreset', { uid });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    if (r.error) return jb(r, r.error === 'open_positions_exist' ? 409 : 400);
+    return jb(r, 200);
+  }
+  if (path === '/v1/equity') { // equity curve: starting balance + realized P&L from the ledger per bucket, plus the live unrealized point at the end
+    const days = Math.min(90, Math.max(1, +url.searchParams.get('days') || 30));
+    const stepMin = Math.min(1440, Math.max(5, +url.searchParams.get('step_min') || (days > 14 ? 240 : 60)));
+    const [r, pos] = await Promise.all([doCall('/botequity', { uid, days, stepMin }), (async () => { try { const syms = await openSymsOf(); const prices = await priceMapCached(syms); return await doCall('/botpositions', { uid, prices }); } catch (e) { return null; } })()]);
+    if (!r || !r.ok) return jb({ error: 'unavailable' }, 503);
+    let upnl = 0, openN = 0; ((pos && pos.positions) || []).forEach(p => { if (p.status === 'open') { openN++; upnl += +p.unrealized_pnl_usd || 0; } });
+    const pts = (r.points || []).map(p => ({ t: p.t, realized_pnl_usd: p.realized, equity_usd: Math.round((BOT_START_BAL + p.realized) * 100) / 100, closes: p.closes }));
+    const last = pts.length ? pts[pts.length - 1].realized_pnl_usd : (r.base_realized_usd || 0);
+    let peak = BOT_START_BAL, maxDd = 0; pts.forEach(p => { if (p.equity_usd > peak) peak = p.equity_usd; const dd = (peak - p.equity_usd) / peak * 100; if (dd > maxDd) maxDd = dd; });
+    return jb({ ok: true, days, step_min: stepMin, since: r.since, reset_ts: r.reset_ts, starting_balance_usd: BOT_START_BAL, points: pts, now: { t: Date.now(), realized_pnl_usd: last, unrealized_pnl_usd: Math.round(upnl * 100) / 100, equity_usd: Math.round((BOT_START_BAL + last + upnl) * 100) / 100, open_positions: openN }, max_drawdown_pct: Math.round(maxDd * 100) / 100, note: 'Realized P&L only inside the buckets (fees and funding settled); the last point adds live unrealized P&L. Buckets before the first close of the window carry the realized total up to that time.' });
+  }
   if (path === '/v1/usage') { // "what plan am I on and how much of it have I used" — without this the only signal
     // a developer had was watching a header count down, which tells you nothing about what you are entitled to.
     const L = BOT_TIER_LIMITS(+auth.tier || 0);
     const prem = +auth.tier === 1;
+    let days30 = null; try { const ur = await doCall('/botusage', { k: auth.k || key }); if (ur && ur.days) days30 = ur.days; } catch (e) {} // 2.5: this key's calls per day, with refused (429) counts
     return jb({
-      key_name: auth.name || '', plan: L.name,
+      key_name: auth.name || '', plan: L.name, account: auth.book || 'main', usage_30d: days30,
       limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
       features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
@@ -14627,6 +14670,16 @@ export default {
       return new Response(xml, { headers: { 'content-type': 'application/rss+xml; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
     }
     if (url.pathname === '/api/status') return handleStatusApi(env); // public status: live checks + 90 days of sampled uptime (Phase 0)
+    if (url.pathname === '/api/arena') { // Bot arena (2.5): public season board of bot-opened closes, per account or book, 5 closes to enter; no prizes, a scoreboard
+      const ck = new Request('https://marginpad.io/__arena_v1');
+      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+      const s = predSeason(Date.now()); const from = Date.parse(s.from + 'T00:00:00Z'), to = s.endMs;
+      let r = null; try { r = await usersDO(env, '/arena', { from, to }); } catch (e) {}
+      const body = JSON.stringify({ ok: !!r, ts: Date.now(), season: { idx: s.idx + 1, from: s.from, to: s.to, ends_ms: s.endMs }, min_closes: 5, starting_balance_usd: BOT_START_BAL, rows: (r && r.rows) || [] });
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+      if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
     if (url.pathname.startsWith('/api/v1/')) return handleV1(url, request, env, ctx);
     if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
       const did = getCookie(request, 'mp_did') || '';
@@ -19011,6 +19064,9 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS botkeys2_uid ON botkeys2(uid)'); } catch (e) {}
     try { s.exec('ALTER TABLE botkeys2 ADD COLUMN tier INTEGER DEFAULT 0'); } catch (e) {} // 0 = free, 1 = premium. Denormalised onto the key so the hot auth path never reads KV.
     try { s.exec('ALTER TABLE botkeys2 ADD COLUMN via TEXT'); } catch (e) {} // how the key last called: rest | mcp (2026-09-08, ops Here now)
+    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN book TEXT'); } catch (e) {} // Bot API 2.5 (2026-09-12): the BOOK a key trades — '' = the main account, 'strat-a' = the separate journal <uid>:strat-a. One strategy = one key = one clean result.
+    s.exec('CREATE TABLE IF NOT EXISTS utrades_archive(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, json TEXT, n INTEGER, pnl REAL)'); // POST /v1/reset parks the closed journal here (never deleted): the owner can still read what a strategy did before the reset
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // 2.5: where the position was opened (bot | srv | client) — the Bot arena counts bot-opened closes whoever closed them (a stop the sweep fired is still the bot's trade)
     s.exec('CREATE TABLE IF NOT EXISTS botuse2(k TEXT, day TEXT, ep TEXT, n INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(k,day,ep))');
     try { s.exec('CREATE INDEX IF NOT EXISTS botuse2_day ON botuse2(day)'); } catch (e) {} // the ops API tab scans by day
     s.exec('CREATE TABLE IF NOT EXISTS botmig(m TEXT PRIMARY KEY, ts INTEGER)');
@@ -19228,18 +19284,22 @@ export class UserStore {
     const mn = new Date().toISOString().slice(0, 16);
     const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
     const reset = Math.floor(now / 60000) * 60 + 60; // epoch SECONDS at which the current minute window rolls
-    if (cnt > lim) return { error: 'rate_limit', limit: lim, remaining: 0, reset };
+    const day = new Date().toISOString().slice(0, 10);
+    if (cnt > lim) { try { sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, '_429', now, now); } catch (e) {} return { error: 'rate_limit', limit: lim, remaining: 0, reset }; } // refused calls are counted too (2.5): the usage page shows a bot how often it hits the ceiling
     sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=?, via=COALESCE(?, via) WHERE k=?', mn, cnt, now, (kvia === 'mcp' || kvia === 'rest') ? kvia : null, k);
     const e2 = String(ep || 'other').replace(/[^a-z_]/g, '').slice(0, 20) || 'other';
-    const day = new Date().toISOString().slice(0, 10);
     sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, e2, now, now);
-    return { uid: row.uid, k, name: row.name || '', un, tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
+    // Bot API 2.5: a key bound to a BOOK trades the journal <owner>:<book> — every caller that uses the returned uid lands in that book
+    // without knowing books exist. `owner` is the real account (presence, webhooks, XP, boards all key on it).
+    const book = String(row.book || '').replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+    return { uid: book ? row.uid + ':' + book : row.uid, owner: row.uid, book, k, name: row.name || '', un, tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a.filter(x => !(x && x.status === 'planned')) : []; } } catch (e) {} return []; } // 'planned' rows (a June 2026 plan-form feature no bundle writes any more) are not positions: every reader treated "not win/loss" as open, so three XRP plans from 2026-06-11 surfaced as open positions on the owner's own account (2026-09-12). Filtered at the ONE read point; the next journal write drops them for good.
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
   _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down'), trail: (+r.trail > 0 ? +r.trail : null), fv: r.fv || null }; }
   // The account's default fee venue (uprefs k='feevenue'), '' when none. Read on open / order placement only.
   _feeVenueOf(uid) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='feevenue'", uid)[0]; return r ? (feeVenueNorm(r.v) || '') : ''; } catch (e) { return ''; } }
+  _resetTsOf(uid) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='reset_ts'", uid)[0]; return r ? (+r.v || 0) : 0; } catch (e) { return 0; } } // POST /v1/reset stamp: readers of the ledger start from it (0 = never reset)
   // The Bot API's public order shape (what GET /v1/orders returns and what order.* webhooks carry). `type` is derived:
   // a level the market must RISE to for a long (or fall to for a short) is a stop / breakout entry, otherwise a limit.
   _ordApi(r) { const o = this._ordJson(r); if (!o) return null; const stop = (o.side === 'long') ? o.dir === 'up' : o.dir === 'down'; return { order_id: o.id, type: stop ? 'stop' : 'limit', symbol: o.sym, side: o.side, limit_price: o.px, leverage: o.lev, margin_usd: o.margin, sl: o.sl, tp: o.tp, trail_pct: o.trail, placed_ts: o.ts, expires_ts: o.expTs, status: o.status, position_id: o.tid, note: o.note || undefined, done_ts: o.doneTs || undefined }; }
@@ -19416,16 +19476,18 @@ export class UserStore {
   // Queue one event for every live hook of the account that subscribed to it. `data` is the public shape the REST
   // API already returns for the same thing (a Position from _j2bot, an order from _ordJson mapped to API names),
   // so a webhook consumer parses exactly what a poll would have returned.
-  _whEnqueue(uid, ev, data) {
+  _whEnqueue(uid0, ev, data) {
     try {
-      if (!this._whUidSet().has(String(uid))) return 0;
-      const hooks = this.rows('SELECT id, events FROM botwh WHERE uid=? AND ok=1', uid);
+      // 2.5: events from a BOOK (<owner>:<book>) go to the OWNER's hooks, tagged with the book — the webhook registration is per account
+      const uid = String(uid0 || ''), ci = uid.indexOf(':'), owner = ci > 0 ? uid.slice(0, ci) : uid, book = ci > 0 ? uid.slice(ci + 1) : '';
+      if (!this._whUidSet().has(owner)) return 0;
+      const hooks = this.rows('SELECT id, events FROM botwh WHERE uid=? AND ok=1', owner);
       if (!hooks.length) return 0;
       const now = Date.now(); let n = 0;
       for (const h of hooks) {
         const want = String(h.events || '*'); if (want !== '*' && want.split(',').indexOf(ev) < 0) continue;
-        const body = JSON.stringify({ event: ev, ts: now, hook_id: h.id, data });
-        this.state.storage.sql.exec('INSERT INTO botwhq(uid,hook,ev,body,ts,tries,next) VALUES(?,?,?,?,?,0,?)', uid, h.id, ev, body, now, now); n++;
+        const body = JSON.stringify({ event: ev, ts: now, hook_id: h.id, account: book || 'main', data });
+        this.state.storage.sql.exec('INSERT INTO botwhq(uid,hook,ev,body,ts,tries,next) VALUES(?,?,?,?,?,0,?)', owner, h.id, ev, body, now, now); n++;
       }
       try { this.state.storage.sql.exec('DELETE FROM botwhq WHERE ts < ?', now - 6 * 3600000); } catch (e) {} // an event nobody could take for 6 h is history, not a backlog
       return n;
@@ -19449,6 +19511,8 @@ export class UserStore {
     // fill fields of an open one, or claim an arbitrary pnl on a close (pnl is recomputed from server-held
     // qty/entry/margin against the client's exit). Risk-management fields (stop/tp/trail/be/hwm) stay editable.
     if (!srvAuth) {
+      // 2.5: after POST /v1/reset a browser's local journal must not push the archived history back — rows from before the reset are dropped
+      const rts = this._resetTsOf(uid); if (rts) incoming = incoming.filter(t => { if (!t) return false; const closed = t.status === 'win' || t.status === 'loss'; const when = closed ? (+t.closeTs || +t.ts || 0) : (+t.ts || 0); return !(when && when < rts); });
       const curById = new Map();
       stored.forEach(e => { if (e && e.id != null) curById.set(String(e.id), e); });
       incoming = incoming.filter(t => t && typeof t === 'object').map(t => { const c = Object.assign({}, t); delete c.sc; return c; }).filter(t => {
@@ -19674,15 +19738,26 @@ export class UserStore {
       const tier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
       const LIM = BOT_TIER_LIMITS(tier);
       const MAX_KEYS = LIM.maxKeys;
-      const list = () => this.rows('SELECT k, name, created, last, calls, rpm, revoked, tier FROM botkeys2 WHERE uid=? ORDER BY created', uid);
+      const list = () => this.rows('SELECT k, name, created, last, calls, rpm, revoked, tier, book FROM botkeys2 WHERE uid=? ORDER BY created', uid).map(r => Object.assign(r, { book: r.book || '' }));
       const nameOf = (v, fb) => { const s2 = String(v == null ? '' : v).replace(/[^\w .-]/g, '').trim().slice(0, 40); return s2 || fb; };
-      const mint = (nm) => { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys2(k,uid,name,created,calls,mint,rpm,revoked,tier) VALUES(?,?,?,?,0,0,0,0,?)', k, uid, nm, now, tier); return k; };
-      const plan = { tier: LIM.name, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, websocket: true };
+      const bookOf = (v) => String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+      const books = () => Array.from(new Set(list().filter(r => !r.revoked && r.book).map(r => r.book)));
+      const MAX_BOOKS = tier === 1 ? 5 : 1; // separate books besides the main account: free 1, Premium 5
+      const mint = (nm, bk) => { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys2(k,uid,name,created,calls,mint,rpm,revoked,tier,book) VALUES(?,?,?,?,0,0,0,0,?,?)', k, uid, nm, now, tier, bk || ''); return k; };
+      const plan = { tier: LIM.name, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, max_books: MAX_BOOKS, websocket: true };
       const act = String(b.act || '');
       if (act === 'create') {
         if (list().filter(r => !r.revoked).length >= MAX_KEYS) return this.j({ error: 'max_keys', max: MAX_KEYS });
-        const k = mint(nameOf(b.name, 'key ' + (list().length + 1)));
-        return this.j({ key: k, created: now, keys: list(), plan });
+        const bk = bookOf(b.book); if (bk === 'main') return this.j({ error: 'bad_book', hint: 'main is the account itself; leave book empty for it.' });
+        if (bk && books().indexOf(bk) < 0 && books().length >= MAX_BOOKS) return this.j({ error: 'max_books', max: MAX_BOOKS, books: books(), hint: MAX_BOOKS === 1 ? 'Free accounts get one separate book besides the main account; Premium gets five.' : 'Revoke the keys of a book you no longer use to free its slot.' });
+        const k = mint(nameOf(b.name, (bk || 'key') + ' ' + (list().length + 1)), bk);
+        return this.j({ key: k, created: now, book: bk, keys: list(), plan });
+      }
+      if (act === 'usage') { // per key per day, last 30 days: calls by endpoint and refused (_429) — the "Your usage" panel on /trading-api/
+        const cutoff = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+        const ks = list().map(r => r.k); const out = [];
+        for (let i = 0; i < ks.length; i += 40) { const part = ks.slice(i, i + 40); try { this.rows('SELECT k, day, ep, n, last FROM botuse2 WHERE day>=? AND k IN (' + part.map(() => '?').join(',') + ') ORDER BY day', cutoff, ...part).forEach(r => out.push({ k: r.k, day: r.day, ep: r.ep, n: +r.n || 0, last: +r.last || 0 })); } catch (e) {} }
+        return this.j({ usage: out, keys: list().map(r => ({ k: r.k, name: r.name, book: r.book, revoked: !!r.revoked, calls: +r.calls || 0, last: +r.last || 0 })), plan, since: cutoff });
       }
       if (act === 'rename') { sql.exec('UPDATE botkeys2 SET name=? WHERE k=? AND uid=?', nameOf(b.name, 'key'), String(b.key || ''), uid); return this.j({ ok: true, keys: list(), plan }); }
       if (act === 'revoke') { // soft-revoke: the row stays so its usage history and attribution survive
@@ -19697,6 +19772,12 @@ export class UserStore {
       return this.j({ key: row.k, keys: list(), plan });
     }
     if (path === '/botauth') return this.j(this._botAuth(b.key, b.ep, now, b.kvia));
+    if (path === '/botusage') { // one key's last 30 days: calls per day by endpoint + refused
+      const k = String(b.k || ''); if (!k) return this.j({ days: [] });
+      const cutoff = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10); const by = {};
+      try { this.rows('SELECT day, ep, n FROM botuse2 WHERE k=? AND day>=? ORDER BY day', k, cutoff).forEach(r => { const d = by[r.day] = by[r.day] || { day: r.day, calls: 0, refused: 0, by_endpoint: {} }; if (r.ep === '_429') d.refused += +r.n || 0; else { d.calls += +r.n || 0; d.by_endpoint[r.ep] = (d.by_endpoint[r.ep] || 0) + (+r.n || 0); } }); } catch (e) {}
+      return this.j({ days: Object.values(by) });
+    }
     // ── Webhooks (Bot API 2.3) — registrations + the outbox the worker drains ──────────────────────────────────
     if (path === '/webhook') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'bad_request' });
@@ -19830,7 +19911,7 @@ export class UserStore {
     if (path === '/tradereport') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       const days = Math.min(30, Math.max(1, +b.days || 30));
-      const since = Date.now() - days * 86400000;
+      const since = Math.max(Date.now() - days * 86400000, this._resetTsOf(uid)); // a reset book starts its report from the reset (2.5)
       let rows = [];
       try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); } catch (e) { return this.j({ error: 'unavailable' }); }
       const opens = {};
@@ -19957,13 +20038,56 @@ export class UserStore {
       for (const x of set) { if (!x || !x.uid) continue; try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', (+x.tier === 1 ? 1 : 0), String(x.uid), (+x.tier === 1 ? 1 : 0)); n++; } catch (e) {} }
       return this.j({ ok: true, checked: n });
     }
+    // ── Bot API 2.5 (2026-09-12): books, reset, equity, arena ────────────────────────────────────────────────────────
+    if (path === '/botbooks') { // every book of an owner with its lifetime numbers (no prices: one SQL read per book)
+      const owner = String(b.owner || '').replace(/:.*$/, ''); if (!owner) return this.j({ error: 'no_uid' });
+      const keys = this.rows('SELECT k, name, book, revoked, last, calls FROM botkeys2 WHERE uid=?', owner);
+      const names = ['']; keys.forEach(r => { const bk = String(r.book || ''); if (bk && !r.revoked && names.indexOf(bk) < 0) names.push(bk); });
+      const out = names.map(bk => { const bu = bk ? owner + ':' + bk : owner; const t = this.rows('SELECT n, wins, losses, opens, pnl, life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed FROM utrades WHERE user_id=?', bu)[0] || {}; const rts = this._resetTsOf(bu);
+        const exact = !!+t.life_seed; const closes = exact ? +t.life_closes || 0 : (+t.wins || 0) + (+t.losses || 0), pnl = exact ? +t.life_pnl || 0 : +t.pnl || 0;
+        return { account: bk || 'main', open_positions: +t.opens || 0, closed_trades: closes, wins: exact ? +t.life_wins || 0 : +t.wins || 0, realized_pnl_usd: Math.round(pnl * 100) / 100, best_trade_usd: t.best_pnl == null ? null : +t.best_pnl, reset_ts: rts || null, keys: keys.filter(r => !r.revoked && String(r.book || '') === bk).map(r => ({ name: r.name, key_prefix: String(r.k).slice(0, 10) + '…', last_call_ts: +r.last || 0, calls: +r.calls || 0 })) }; });
+      return this.j({ accounts: out, count: out.length });
+    }
+    if (path === '/botreset') { // start the book from zero: refuses while positions are open; resting orders are cancelled; the closed journal is archived
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
+      const jn = this._loadJournal(uid); const open = jn.filter(x => x && x.status !== 'win' && x.status !== 'loss');
+      if (open.length) return this.j({ error: 'open_positions_exist', open: open.length, hint: 'Close every position first (POST /v1/close_all), then reset.' });
+      let cancelled = 0; try { const r = sql.exec("UPDATE porders SET status='cancelled', doneTs=?, note='reset' WHERE uid=? AND status='open'", now, uid); cancelled = (r && r.rowsWritten) || 0; } catch (e) {}
+      const closed = jn.filter(x => x && (x.status === 'win' || x.status === 'loss'));
+      let archived = 0;
+      if (closed.length) { try { const pnlA = closed.reduce((a, x) => a + (+x.pnl || 0), 0); sql.exec('INSERT INTO utrades_archive(user_id,ts,json,n,pnl) VALUES(?,?,?,?,?)', uid, now, JSON.stringify(closed), closed.length, pnlA); archived = closed.length; } catch (e) {} }
+      try { sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,0,0,0,0,0,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=0,wins=0,losses=0,opens=0,pnl=0,updated=excluded.updated,life_closes=0,life_wins=0,life_losses=0,life_pnl=0,best_pnl=NULL,life_seed=1,s_closes=0,s_wins=0,s_losses=0,s_pnl=0,s_best=NULL', uid, '[]', now); } catch (e) { try { sql.exec('UPDATE utrades SET json=?, n=0, wins=0, losses=0, opens=0, pnl=0, updated=?, life_closes=0, life_wins=0, life_losses=0, life_pnl=0, best_pnl=NULL, life_seed=1 WHERE user_id=?', '[]', now, uid); } catch (e2) {} }
+      try { sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, 'reset_ts', String(now), now); } catch (e) {}
+      try { sql.exec('DELETE FROM active_srv WHERE user_id=?', uid); } catch (e) {}
+      this._opsEv(uid, 'reset', 'book reset: ' + archived + ' closed trade' + (archived === 1 ? '' : 's') + ' archived, ' + cancelled + ' order' + (cancelled === 1 ? '' : 's') + ' cancelled', '/trading-api/', { archived, cancelled });
+      return this.j({ ok: true, reset_ts: now, archived_trades: archived, cancelled_orders: cancelled, starting_balance_usd: BOT_START_BAL });
+    }
+    if (path === '/botequity') { // realized P&L curve from the ledger, bucketed; the worker appends the live unrealized point
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
+      const days = Math.min(90, Math.max(1, +b.days || 30)), stepMin = Math.min(1440, Math.max(5, +b.stepMin || 60));
+      const rts = this._resetTsOf(uid); const since = Math.max(now - days * 86400000, rts || 0);
+      let base = 0; try { base = +(this.rows("SELECT COALESCE(SUM(pnl),0) v FROM tradeev WHERE user_id=? AND kind='close' AND ts<? AND ts>=?", uid, since, rts || 0)[0] || {}).v || 0; } catch (e) {}
+      let rowsE = []; try { rowsE = this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 20000", uid, since); } catch (e) {}
+      const step = stepMin * 60000, points = []; let acc = base, i = 0, closes = 0;
+      for (let t = Math.floor(since / step) * step + step; t <= now + step; t += step) { while (i < rowsE.length && +rowsE[i].ts < t) { acc += +rowsE[i].pnl || 0; closes++; i++; } points.push({ t: Math.min(t, now), realized: Math.round(acc * 100) / 100, closes }); if (points.length > 3000) break; }
+      return this.j({ ok: true, since, reset_ts: rts || null, step_min: stepMin, base_realized_usd: Math.round(base * 100) / 100, points });
+    }
+    if (path === '/arena') { // public Bot arena: bot-opened closes in a window, per account (main or book), at least 5 closes
+      const from = +b.from || 0, to = +b.to || now;
+      let rowsA = []; try { rowsA = this.rows("SELECT user_id, COUNT(*) n, SUM(pnl) pnl, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) wins, SUM(liq) liq, AVG(roe) roe, SUM(margin) margin, MAX(ts) last FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND (src='bot' OR via='bot') GROUP BY user_id HAVING COUNT(*)>=5 ORDER BY pnl DESC LIMIT 200", from, to); } catch (e) { return this.j({ rows: [] }); }
+      const owners = Array.from(new Set(rowsA.map(r => String(r.user_id).split(':')[0]))); const nameOf = {};
+      for (let i = 0; i < owners.length; i += 60) { const part = owners.slice(i, i + 60); try { this.rows('SELECT id, username FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { nameOf[u.id] = u.username || ''; }); } catch (e) {} }
+      const out = rowsA.map(r => { const [own, bk] = String(r.user_id).split(':'); const un = nameOf[own] || ''; if (!un || /^e2e_/i.test(un)) return null; return { who: un + (bk ? '/' + bk : ''), account: bk || 'main', closes: +r.n, wins: +r.wins, win_rate_pct: Math.round(+r.wins / +r.n * 1000) / 10, pnl_usd: Math.round(+r.pnl * 100) / 100, return_pct: Math.round(+r.pnl / BOT_START_BAL * 10000) / 100, avg_roe_pct: r.roe == null ? null : Math.round(+r.roe * 10) / 10, liquidations: +r.liq || 0, last_close_ts: +r.last || 0 }; }).filter(Boolean);
+      out.forEach((r, i) => { r.rank = i + 1; });
+      return this.j({ rows: out, from, to });
+    }
     if (path === '/bottrades') { // full closed-trade ledger with paging — the journal is capped at 100, tradeev keeps 30 days
       const uid = String(b.uid || '');
       const limit = Math.min(500, Math.max(1, +b.limit || 100));
-      const before = +b.before || 0;
+      const before = +b.before || 0, rts0 = this._resetTsOf(uid);
       const rowsQ = before
-        ? this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts<? ORDER BY ts DESC LIMIT ?", uid, before, limit)
-        : this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' ORDER BY ts DESC LIMIT ?", uid, limit);
+        ? this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts<? AND ts>=? ORDER BY ts DESC LIMIT ?", uid, before, rts0, limit)
+        : this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts DESC LIMIT ?", uid, rts0, limit);
       const trades = rowsQ.map(r => ({ id: r.tid || null, closed_ts: +r.ts || 0, symbol: r.sym, side: r.side, leverage: +r.lev || 1, margin_usd: Math.round((+r.margin || 0) * 100) / 100, pnl_usd: (r.pnl == null ? null : Math.round(+r.pnl * 100) / 100), roe_pct: (r.roe == null ? null : Math.round(+r.roe * 100) / 100), liquidated: !!+r.liq, via: r.via || null }));
       const oldest = trades.length ? trades[trades.length - 1].closed_ts : 0;
       return this.j({ trades, count: trades.length, next_before: (trades.length === limit && oldest) ? oldest : null, retention_days: 30 });
@@ -21457,7 +21581,7 @@ export class UserStore {
         for (const id of olds) { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', id); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', id); } catch (e) {} }
         return this.j({ ok: true, removed: olds.length, ids: olds });
       }
-      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); }
+      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} } try { sql.exec('DELETE FROM porders WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} try { sql.exec('DELETE FROM botkeys2 WHERE uid=?', uid); } catch (e) {} try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       if (b.op === 'sess') { // a real 2-hour member session for browser E2E (the site walked as a signed-in member, 2026-09-07) — e2e uids only, admin-gated upstream
         const tok = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x => x.toString(16).padStart(2, '0')).join('');

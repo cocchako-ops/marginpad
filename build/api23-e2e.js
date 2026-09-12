@@ -201,9 +201,9 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   const names = ((mcp.result && mcp.result.tools) || []).map(t => t.name);
   chk('MCP lists 23 tools incl. paper_modify_order + paper_report + paper_fees', names.length === 23 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0 && names.indexOf('paper_fees') >= 0, { n: names.length });
   const oa = await (await fetch(ORIGIN + '/api/openapi.json')).json();
-  chk('OpenAPI 2.3.0 carries the new paths + schemas', oa.info.version === '2.4.0' && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
+  chk('OpenAPI carries the 2.3+ paths + schemas', /^2\.[5-9]\.|^[3-9]\./.test(String(oa.info.version)) && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
   const cl = await (await fetch(ORIGIN + '/api/changelog?format=json')).json();
-  chk('changelog current_version 2.4.0', cl.data && cl.data.current_version === '2.4.0', { v: cl.data && cl.data.current_version });
+  chk('changelog current_version is 2.5 or newer', cl.data && /^2\.[5-9]\.|^[3-9]\./.test(String(cl.data.current_version)), { v: cl.data && cl.data.current_version });
   const sdkPy = await fetch(ORIGIN + '/assets/sdk/marginpad.py'), sdkJs = await fetch(ORIGIN + '/assets/sdk/marginpad.js');
   chk('SDK files served (python + js)', sdkPy.status === 200 && sdkJs.status === 200, { py: sdkPy.status, js: sdkJs.status });
 

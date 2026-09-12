@@ -154,9 +154,10 @@
   <div class="akb-key" id="akbKey"></div>
   <div id="akbMgr" hidden>
     <div class="akb-plan" id="akbPlan"></div>
-    <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
-    <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><button class="akb-btn akb-sm" type="submit">Create key</button></form>
+    <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Book</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
+    <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (optional, e.g. rsi)" autocomplete="off" title="A book is a separate journal, balance and report. Leave empty for the main account." style="max-width:190px"><button class="akb-btn akb-sm" type="submit">Create key</button></form>
     <div class="akb-rev" id="akbRev" hidden></div>
+    <div class="akb-use" id="akbUse" hidden></div>
   </div>
   <div class="akb-msg" id="akbMsg"></div>
 </div>
@@ -173,6 +174,7 @@
   .akb-new{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px}.akb-new input{flex:1 1 200px;min-width:0;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:inherit;font-size:16px;padding:10px 12px}
   .akb-sm{padding:10px 16px;font-size:13px}
   .akb-rev{font-size:12px;color:var(--faint);margin-top:4px}
+.akb-use{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.akb-use h4{margin:0 0 6px;font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.akb-use .u{display:grid;grid-template-columns:minmax(90px,1.2fr) repeat(7,minmax(0,1fr));gap:4px;align-items:end;font:11px 'Space Mono',monospace;color:var(--dim)}.akb-use .u b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.akb-use .u i{display:block;font-style:normal;text-align:center}.akb-use .u i em{display:block;height:26px;border-radius:3px 3px 0 0;background:rgba(194,246,74,.35);position:relative}.akb-use .u i em s{position:absolute;left:0;right:0;bottom:0;background:#ff6258;border-radius:0;text-decoration:none}.akb-use .u i small{display:block;color:var(--faint);font-size:9.5px;margin-top:2px}.akb-use .n{font-size:11.5px;color:var(--faint);margin-top:6px}
   .akb-show{margin-top:12px;background:#0a0c0f;border:1px solid rgba(194,246,74,.45);border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);word-break:break-all}
   .akb-show small{display:block;font-family:'Familjen Grotesk',sans-serif;font-size:12px;color:#ffb347;margin-top:6px}
 </style>
@@ -265,6 +267,19 @@ POST /api/bot/key  {"act":"create","name":"backtest-bot"}   // new key (max 10)
 POST /api/bot/key  {"act":"rename","key":"mpb_...","name":"live-bot"}
 POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is kept</code></pre>
 <p>A revoked key returns <code>401 revoked_key</code>. Keys are secrets — anyone holding one can trade your paper account.</p>
+
+<h2 id="books">Books — one strategy, one clean result <span style="background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a">2.5</span></h2>
+<p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, Premium five.</p>
+<pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
+GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
+GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
+POST /api/bot/v1/reset  {"confirm":true}   // this book back to $10,000: closes archived, orders cancelled
+GET  /api/bot/v1/equity?days=30&amp;step_min=60   // equity curve + max_drawdown_pct</code></pre>
+<p><b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account’s hooks with <code>"account":"rsi"</code> in the payload, so one receiver serves every book.</p>
+<p><b>Usage per key:</b> <code>GET /api/bot/v1/usage</code> carries <code>usage_30d</code>, calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.</p>
+
+<h2 id="arena">Bot arena — a public scoreboard for bots</h2>
+<p>Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href="/arena/">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.</p>
 
 <h2 id="reliable">Writing a bot that does not break</h2>
 <p><b>Always send <code>client_order_id</code> on open.</b> This is the single most important line in these docs. Without it, a request that times out on the network leaves you guessing: did the position open or not? Retry and you may have two. With it, the retry returns the position the first call created, flagged <code>idempotent: true</code>:</p>
@@ -551,16 +566,30 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     mgr.hidden=false;btn.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
     var prem=p.tier==='premium';
     plan.innerHTML='<b class="'+(prem?'prem':'')+'">'+esc(p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+(prem?'':' · <a href="/premium/">Premium: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>')+'</span>';
-    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="5" style="color:var(--faint)">No keys yet — create one below.</td></tr>';
+    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td>'+(k.book?'<b style="color:#c2f64a">'+esc(k.book)+'</b>':'<span style="color:var(--faint)">main</span>')+'</td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="6" style="color:var(--faint)">No keys yet — create one below.</td></tr>';
+    usage(live); /* 2.5: calls per key for the last 7 days, refused (429) in red */
     rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+' (usage history kept, they no longer authenticate)':'';
     if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(prem?'.':' — revoke one, or Premium raises it to 10.');}else{frm.hidden=false;}
+  }
+  var useEl=document.getElementById('akbUse');
+  function usage(live){ if(!useEl||!live.length){if(useEl)useEl.hidden=true;return;}
+    api({act:'usage'}).then(function(d){ if(!d||!Array.isArray(d.usage)){useEl.hidden=true;return;}
+      var days=[];for(var i=6;i>=0;i--)days.push(new Date(Date.now()-i*864e5).toISOString().slice(0,10));
+      var by={};d.usage.forEach(function(r){var kk=by[r.k]=by[r.k]||{};var dd=kk[r.day]=kk[r.day]||{c:0,r:0};if(r.ep==='_429')dd.r+=r.n;else dd.c+=r.n;});
+      var max=1;live.forEach(function(k){days.forEach(function(dy){var v=(by[k.k]||{})[dy];if(v&&v.c+v.r>max)max=v.c+v.r;});});
+      var tot=0,ref=0;
+      var rows=live.map(function(k){var cells=days.map(function(dy,ix){var v=(by[k.k]||{})[dy]||{c:0,r:0};tot+=v.c;ref+=v.r;var h=Math.round((v.c+v.r)/max*26),hr=v.r?Math.max(2,Math.round(v.r/max*26)):0;return '<i title="'+dy+': '+v.c+' calls'+(v.r?', '+v.r+' refused':'')+'"><em style="height:'+h+'px;'+(h?'':'background:transparent')+'">'+(hr?'<s style="height:'+hr+'px"></s>':'')+'</em><small>'+(ix===6?'today':dy.slice(8))+'</small></i>';}).join('');return '<div class="u"><b title="'+esc(k.name)+(k.book?' · book '+esc(k.book):'')+'">'+esc(k.name||'key')+(k.book?' <span style="color:#c2f64a">/'+esc(k.book)+'</span>':'')+'</b>'+cells+'</div>';}).join('');
+      useEl.innerHTML='<h4>Your usage · last 7 days</h4>'+rows+'<div class="n">'+tot.toLocaleString('en-US')+' calls'+(ref?', <span style="color:#ff6258">'+ref.toLocaleString('en-US')+' refused (429)</span> — a bot that hits the ceiling should use the WebSocket stream instead of polling':'')+'. Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>';
+      useEl.hidden=false;
+    }).catch(function(){useEl.hidden=true;});
   }
   function load(){api({act:'list'}).then(function(d){
     if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;return;}
     if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used — show it in full once */ render(d);return;}
     msg.textContent='Could not load your keys — try again shortly.';}).catch(function(){msg.textContent='Network error — try again.';});}
   function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret — anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';}
-  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';api({act:'create',name:nm}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key — try again.');}).catch(function(){msg.textContent='Network error — try again.';});});
+  var bookIn=document.getElementById('akbBook');
+  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';var bk=(bookIn&&bookIn.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);api({act:'create',name:nm,book:bk}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';if(bookIn)bookIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':d&&d.error==='max_books'?('Book limit reached: '+(d.max===1?'free accounts get one book besides the main account, Premium five.':'revoke the keys of a book you no longer use.')):d&&d.error==='bad_book'?'"main" is the account itself — leave the book empty for it.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key — try again.');}).catch(function(){msg.textContent='Network error — try again.';});});
   tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
     if(act==='copy'){try{navigator.clipboard.writeText(k);b.textContent='copied';setTimeout(function(){b.textContent='copy';},1400);}catch(x){}return;}
     if(act==='show'){var kv=tr.querySelector('.akb-kv');if(FULL[k]){delete FULL[k];kv.textContent=mask(k);b.textContent='show';}else{FULL[k]=1;kv.textContent=k;b.textContent='hide';}return;}
