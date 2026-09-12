@@ -217,6 +217,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */
+      /* the "?" circles next to the two exchange pickers (and the calculators' margin picker) toggle a plain-words hint under the
+         field (owner 2026-09-12: "I did not know what the margin-rate picker does and I doubt others do") — a button, not a title
+         tooltip, because a title never shows on a phone */
+      document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('.ptt-q[data-hint]'):null;if(!b)return;e.preventDefault();var h=document.getElementById(b.getAttribute('data-hint'));if(!h)return;h.hidden=!h.hidden;b.setAttribute('aria-expanded',h.hidden?'false':'true');b.classList.toggle('on',!h.hidden);});
       /* option text is "Name — rate" on purpose: the same exDeco renderer that draws the "Exchange (sets margin rate)" picker
          (coloured initial tile + name + rate on the right) reads that shape, so the two dropdowns in Advanced look identical (owner 2026-09-12) */
       (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad — 0.055%</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' — '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' · '+v.d+'% off':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
@@ -2715,7 +2719,7 @@ window.addEventListener('load', function () {
       } catch(e) {}
     })();
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
-    var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d']};
+    var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d'],'Coinbase':['#0052ff','#ffffff']};
     function exDeco(o){var t=o.textContent||'',m=t.split('—'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
       if(!rate&&/custom/i.test(name))return '<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>';
       var c=EXCOL[name]||['#3a4450','#e9e7df'];
