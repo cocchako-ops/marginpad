@@ -3033,7 +3033,11 @@ async function wrapData(env) {
   try { const j = await (await handleCgLongShort(new URL('https://marginpad.io/api/cg/longshort'), env)).json(); d.ls = {}; ((j && j.coins) || []).forEach(c => { if (c && c.s) d.ls[c.s] = +c.longPct; }); } catch (e) {}
   try { const j = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); if (j && j.market && +j.market.total > 0) { const top = ((j.coins || []).slice().sort((a, b) => b.liq - a.liq))[0]; d.liq = { total: +j.market.total, long: +j.market.long, short: +j.market.short, n: +j.market.count || 0, top: top ? { s: top.s, v: +top.liq, longPct: top.liq > 0 ? Math.round(top.long / top.liq * 100) : null } : null, ex: (j.exchanges || []).length }; } } catch (e) {}
   try { const j = await (await handleCgOpenInterest(new URL('https://marginpad.io/api/cg/openinterest'), env)).json(); d.oi = {}; ((j && j.coins) || []).forEach(c => { if (c && c.s && +c.oiUsd > 0) d.oi[c.s] = { v: +c.oiUsd, chg: (c.oiChg24h == null ? null : +c.oiChg24h) }; }); } catch (e) {}
-  try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const r = await fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 120 } }); const j = await r.json(); const ps = (j && j.positions) || []; if (ps.length) { let L = 0, S = 0; ps.forEach(p => { if (p.long) L += +p.val || 0; else S += +p.val || 0; }); const big = ps.slice().sort((a, b) => (+b.val || 0) - (+a.val || 0))[0]; d.whales = { n: ps.length, tracked: +j.tracked || ps.length, long: L, short: S, big: big ? { s: big.sym, long: !!big.long, val: +big.val, lev: +big.lev, pnl: +big.pnl } : null }; } } } catch (e) {}
+  try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const r = await fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 120 } }); const j = await r.json(); const ps = (j && j.positions) || []; if (ps.length) { let L = 0, S = 0; ps.forEach(p => { if (p.long) L += +p.val || 0; else S += +p.val || 0; }); const sorted = ps.slice().sort((a, b) => (+b.val || 0) - (+a.val || 0)); const big = sorted[0];
+      // top positions with the price the whale got in at (Daily Brief v2, 2026-09-12): the collector carries mark, notional, pnl, liq per
+      // position; the entry is exact algebra on those three (pnl = qty*(mark-entry)*dir, qty = val/mark), the same identity Hyperliquid uses
+      const wpos = (p) => { const mark = +p.mark || 0, val = +p.val || 0, pnl = +p.pnl || 0, dir = p.long ? 1 : -1; const entry = (mark > 0 && val > 0) ? mark - dir * pnl * mark / val : null; const liq = +p.liq || 0; return { s: p.sym, long: !!p.long, val, lev: +p.lev || 0, pnl, mark, entry: entry > 0 ? entry : null, move: (entry > 0) ? (mark / entry - 1) * 100 * dir : null, liq: liq > 0 ? liq : null, liqDist: (liq > 0 && mark > 0) ? Math.abs(mark - liq) / mark * 100 : null, user: String(p.user || '') }; };
+      d.whales = { n: ps.length, tracked: +j.tracked || ps.length, long: L, short: S, big: big ? { s: big.sym, long: !!big.long, val: +big.val, lev: +big.lev, pnl: +big.pnl } : null, top: sorted.slice(0, 3).map(wpos) }; } } } catch (e) {}
   try { const r = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const j = await r.json(); d.events = ((j && j.events) || []).filter(e => e.ts > Date.now() && (+e.impact || 0) >= 2).sort((a, b) => a.ts - b.ts).slice(0, 3); } catch (e) {}
   try { const j = await (await handleCgCycle(new URL('https://marginpad.io/api/cg/cycle'), env)).json(); const pi = j && j.ind && j.ind.pi && j.ind.pi.last; if (pi && +pi.ma_110 > 0) d.cycle = { px: +pi.price, ma110: +pi.ma_110, ma350x2: +pi.ma_350_mu_2 || null }; } catch (e) {}
   d.trend = {}; // 4H supertrend on the majors — the same read the Premium brief makes, for the one-line bias
@@ -12284,7 +12288,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'a2ca07b6';
+const ASSET_V = '034bd270';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18678,7 +18682,7 @@ async function briefSetups(env) { // majors 1H/4H supertrend + RSI -> "where the
   return out;
 }
 async function briefMarket(env) { // the compact market picture for the hour (KV brief:mkt:<hour>); null only when both sources are down
-  const ck = 'brief:mkt:' + new Date().toISOString().slice(0, 13);
+  const ck = 'brief:mkt:v2:' + new Date().toISOString().slice(0, 13); // v2: whales.top (entry / liq per position) — bump whenever the shape grows, else the modal reads an hour-old shape
   try { const c = await env.STATS.get(ck); if (c) return JSON.parse(c); } catch (e) {}
   let d = null; try { d = await wrapData(env); } catch (e) {}
   let s = null; try { s = await briefSetups(env); } catch (e) {}
