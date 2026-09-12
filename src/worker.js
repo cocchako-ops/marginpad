@@ -12284,7 +12284,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'a7392a2a';
+const ASSET_V = 'a2ca07b6';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -14422,6 +14422,7 @@ export default {
       return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 3.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
     if (url.pathname === '/api/premium/brief') return handlePremiumBrief(env, request);
+    if (url.pathname === '/api/brief') return handleBrief(env, request, url); // Daily Brief v2: ?teaser=1 public one-liner; GET full (Premium); POST delivery prefs
     if (url.pathname === '/api/premium/badges') { // usernames that get the PRO cosmetic badge (founders + granted + paid)
       const set = await premiumSet(env);
       return new Response(JSON.stringify({ names: [...set] }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
@@ -16466,7 +16467,7 @@ export default {
         const resp = await call('/dm/send', { from: su.id, toName: bd.to, txt: bd.text });
         try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'dm', rn, '')); } } catch (e) {}
         return resp; }
-      if (sub === 'thread') return call('/dm/thread', { uid: su.id, withName: url.searchParams.get('with') || '' });
+      if (sub === 'thread') { const r = await call('/dm/thread', { uid: su.id, withName: url.searchParams.get('with') || '' }); try { const xc = globalThis.__xpC; if (xc) xc.delete(tok); } catch (e) {} return r; } // the thread read just marked the dm notification seen: drop this token's 45 s /xp cache so the next badge poll does not resurrect it
       if (sub === 'inbox') return call('/dm/inbox', { uid: su.id });
       if (sub === 'unread') return call('/dm/unread', { uid: su.id });
       return new Response('{"error":"not_found"}', { status: 404, headers: jh });
@@ -16806,6 +16807,7 @@ export default {
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
     bg(checkPersonalWraps, 'wrapdm'); // Daily Wrap v2: the personal DM edition, per chat, at the hour each chat chose
+    bg(checkBriefDelivery, 'briefdm'); // Daily Brief v2 (2026-09-12): one push / Telegram line a day to Premium members who asked for it, deep-linking to the brief
     bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
@@ -18627,13 +18629,22 @@ function handleExchangeGo(url) {
     + '})();</script></body></html>';
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
 }
-async function handlePremiumBrief(env, request) { // Premium daily brief: majors 1h/4h trend + RSI + next macro events (cached hourly, deterministic)
+async function handlePremiumBrief(env, request) { // legacy route (the old modal): the setups read only — the card now uses /api/brief
   const st = await premiumFor(env, request);
   if (!st.uid) return J({ error: 'login_required' }, 401);
   if (!st.premium) { try { await evPush(env, request, 'premgate', 'Daily Brief', '/charts'); } catch (e) {} return J({ error: 'premium_required' }, 402); }
   try { await evPush(env, request, 'brief', '', '/charts'); } catch (e) {} // ops feed: a premium member opened the daily brief
+  const s = await briefSetups(env);
+  return new Response(JSON.stringify(s || { at: Date.now(), bias: 'mixed', biasNote: '', opps: [], coins: [], events: [] }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=300', ...CORS } });
+}
+/* ===== Daily Brief v2 (2026-09-12, owner: "pack the proposals into the card, tidy and good-looking") =====
+   One hourly market picture (briefMarket = the Daily Wrap's wrapData + the setups read), shared by three readers:
+   the public one-line TEASER on the profile card (/api/brief?teaser=1), the Premium modal (/api/brief: market +
+   your open positions with liq distance and funding direction + your week from the tradeev ledger + delivery prefs),
+   and the morning delivery cron (checkBriefDelivery: push / Telegram, uprefs k='brief', one per account per day). */
+async function briefSetups(env) { // majors 1H/4H supertrend + RSI -> "where the setups are" (cached hourly under the original key)
   const ck = 'prem:brief:' + new Date().toISOString().slice(0, 13);
-  try { const c = await env.STATS.get(ck); if (c) return new Response(c, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=300', ...CORS } }); } catch (e) {}
+  try { const c = await env.STATS.get(ck); if (c) return JSON.parse(c); } catch (e) {}
   const coins = [];
   for (const sym of ['BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'DOGE', 'ADA', 'LINK']) {
     try {
@@ -18662,9 +18673,124 @@ async function handlePremiumBrief(env, request) { // Premium daily brief: majors
   const biasNote = bull + ' of ' + coins.length + ' majors trending up on the 4H';
   let events = [];
   try { const cr = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const cj = await cr.json(); const now = Date.now(); events = (cj.events || []).filter(e => e && e.impact >= 3 && e.ts > now && e.type !== 'crypto').sort((a, b) => a.ts - b.ts).slice(0, 2).map(e => ({ title: e.title || e.type, ts: e.ts, type: e.type })); } catch (e) {}
-  const body = JSON.stringify({ at: Date.now(), bias, biasNote, opps: opps.slice(0, 4), coins, events });
-  try { await env.STATS.put(ck, body, { expirationTtl: 3900 }); } catch (e) {}
-  return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=300', ...CORS } });
+  const out = { at: Date.now(), bias, biasNote, opps: opps.slice(0, 4), coins, events };
+  try { await env.STATS.put(ck, JSON.stringify(out), { expirationTtl: 3900 }); } catch (e) {}
+  return out;
+}
+async function briefMarket(env) { // the compact market picture for the hour (KV brief:mkt:<hour>); null only when both sources are down
+  const ck = 'brief:mkt:' + new Date().toISOString().slice(0, 13);
+  try { const c = await env.STATS.get(ck); if (c) return JSON.parse(c); } catch (e) {}
+  let d = null; try { d = await wrapData(env); } catch (e) {}
+  let s = null; try { s = await briefSetups(env); } catch (e) {}
+  if (!d && !s) return null;
+  d = d || { px: {}, row: {}, rows: [], trend: {} };
+  const M = { at: Date.now() };
+  const tr = Object.keys(d.trend || {}).filter(k => d.trend[k]); const up = tr.filter(k => d.trend[k] === 'up').length;
+  M.bias = s ? s.bias : (tr.length >= 3 ? (up > tr.length - up + 1 ? 'bullish' : (tr.length - up) > up + 1 ? 'bearish' : 'mixed') : 'mixed');
+  M.biasNote = s ? s.biasNote : (tr.length ? up + ' of ' + tr.length + ' majors trending up on the 4H' : '');
+  M.fng = d.fng || null;
+  M.majors = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'].map(sym => { const p = d.px[sym]; if (!p) return null; const r = d.row[sym] || {}; return { s: sym, p: +p.p, c: +p.c, rsi: isFinite(+r.rsi) ? Math.round(+r.rsi) : null, f: isFinite(+r.f) ? +r.f : null, trend: d.trend[sym] || null, hi: +r.hi > 0 ? +r.hi : null, lo: +r.lo > 0 ? +r.lo : null }; }).filter(Boolean);
+  M.global = d.global || null;
+  M.deriv = { oi: d.oi ? { BTC: d.oi.BTC || null, ETH: d.oi.ETH || null } : null, ls: d.ls ? { BTC: d.ls.BTC || null, ETH: d.ls.ETH || null } : null };
+  M.liq = d.liq || null;
+  { const liq = (d.rows || []).filter(r => r && isFinite(+r.chg) && (+r.vol || 0) > 2e7); M.movers = liq.length >= 6 ? { up: liq.slice().sort((a, b) => b.chg - a.chg).slice(0, 3).map(r => ({ s: r.s, c: +r.chg })), down: liq.slice().sort((a, b) => a.chg - b.chg).slice(0, 3).map(r => ({ s: r.s, c: +r.chg })) } : null; }
+  { const sc = (d.rows || []).filter(r => r && isFinite(+r.score) && (+r.vol || 0) > 2e7); const pk = (x) => ({ s: x.s, score: +x.score, verdict: x.verdict || '' }); M.screener = sc.length >= 6 ? { hi: pk(sc.slice().sort((a, b) => b.score - a.score)[0]), lo: pk(sc.slice().sort((a, b) => a.score - b.score)[0]) } : null; }
+  M.whales = d.whales || null;
+  M.events = (d.events || []).map(e => ({ title: e.title || e.type, ts: +e.ts, impact: +e.impact || 0 }));
+  M.cycle = d.cycle || null;
+  M.setups = s ? (s.opps || []) : [];
+  M.funding = {}; Object.keys(d.row || {}).forEach(k => { const f = +(d.row[k] || {}).f; if (isFinite(f)) M.funding[k] = f; }); // 8h funding per screener symbol: "funding against your position"
+  try { await env.STATS.put(ck, JSON.stringify(M), { expirationTtl: 3900 }); } catch (e) {}
+  return M;
+}
+function briefTeaser(M) { // the one line the profile card prints; market-only, no account data
+  if (!M) return null;
+  const now = Date.now(); const ev = (M.events || []).filter(e => e.ts > now)[0];
+  return { at: M.at, bias: M.bias || 'mixed', setups: (M.setups || []).length, next: ev ? { title: ev.title, inH: Math.round((ev.ts - now) / 360e3) / 10 } : null, fng: M.fng ? +M.fng.v : null, liq: M.liq ? +M.liq.total : null };
+}
+async function briefMine(env, uid, M) { // the reader's open paper positions, priced live, with liq distance and whether funding runs against them
+  try {
+    const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
+    const syms = []; ((seed && seed.positions) || []).forEach(x => { if (x && x.status === 'open' && syms.indexOf(x.symbol) < 0) syms.push(x.symbol); });
+    if (!syms.length) return [];
+    const prices = {}, pxOf = {}; ((M && M.majors) || []).forEach(m => { pxOf[m.s] = m.p; });
+    for (const s of syms.slice(0, 12)) { let p = pxOf[s] > 0 ? pxOf[s] : 0; if (!(p > 0)) { try { const pd = await fetchPriceCached(s); p = pd && +pd.price; } catch (e) {} } if (+p > 0) prices[s] = +p; }
+    const r = await usersDO(env, '/botpositions', { uid, prices });
+    return ((r && r.positions) || []).filter(x => x && x.status === 'open').slice(0, 8).map(p => {
+      const mark = +p.mark_price || prices[p.symbol] || 0, liq = +p.liq_price || 0;
+      const f = (M && M.funding && isFinite(+M.funding[p.symbol])) ? +M.funding[p.symbol] : null;
+      const pnl = p.unrealized_pnl_usd == null ? null : +p.unrealized_pnl_usd;
+      return { id: p.id, symbol: p.symbol, side: p.side, lev: +p.leverage || 1, margin: +p.margin_usd || 0, entry: +p.entry_price || 0, mark, liq, sl: p.sl == null ? null : +p.sl, tp: p.tp == null ? null : +p.tp, pnl, roe: (pnl != null && +p.margin_usd > 0) ? Math.round(pnl / +p.margin_usd * 1000) / 10 : null, liqDist: (mark > 0 && liq > 0) ? Math.round(Math.abs(mark - liq) / mark * 1000) / 10 : null, funding: f, fundingAgainst: f == null ? null : (p.side === 'long' ? f > 0 : f < 0) };
+    });
+  } catch (e) { return []; }
+}
+async function briefYou(env, uid) { // the reader's own week from the tradeev ledger (the same source as /trading-report/), never the client journal
+  let rep = null; try { rep = await usersDO(env, '/tradereport', { uid, days: 7 }); } catch (e) {}
+  if (!rep || !rep.ok) return null;
+  const dk = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const yd = dk(Date.now() - 86400000), td = dk(Date.now());
+  const by = rep.byDay || [];
+  let findings = []; try { findings = reportFindings(rep).filter(f => f.k !== 'thin').slice(0, 2).map(f => ({ k: f.k, text: f.text })); } catch (e) {}
+  return { week: rep.total || null, yesterday: by.filter(r => r.k === yd)[0] || null, today: by.filter(r => r.k === td)[0] || null, findings, skill: (rep.skill && rep.skill.week) || null, minN: REPORT_MIN_N, thin: !!(rep.total && rep.total.n < REPORT_MIN_N) };
+}
+async function briefPrefs(env, uid) { let cur = null; try { const d = await usersDO(env, '/prefsget', { uid, keys: ['brief'] }); cur = d && d.prefs && d.prefs.brief ? JSON.parse(d.prefs.brief.v || '{}') : null; } catch (e) {} return { push: !!(cur && cur.push), tg: !!(cur && cur.tg), h: (cur && +cur.h === 16) ? 16 : 8 }; }
+async function handleBrief(env, request, url) {
+  const J2 = (o, s) => new Response(JSON.stringify(o), { status: s || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+  if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
+  if (url.searchParams.get('teaser') === '1') { // public: bias, setup count, the next event — what the profile card shows to everyone, member or not
+    const M = await briefMarket(env); const t = briefTeaser(M);
+    return new Response(JSON.stringify(t || { at: Date.now(), bias: null, setups: 0, next: null, fng: null, liq: null, down: true }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+  }
+  const st = await premiumFor(env, request);
+  if (!st.uid) return J2({ error: 'login_required' }, 401);
+  const uid = st.uid;
+  if (request.method === 'POST') { // delivery prefs: {push, tg, h: 8|16}
+    if (!st.premium) return J2({ error: 'premium_required' }, 402);
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    let tgLinked = false; try { const pr = await resolveProfiles(env, ['u:' + uid]); tgLinked = !!(pr[uid] && pr[uid].tg); } catch (e) {}
+    const cfg = { push: !!b.push, tg: !!b.tg && tgLinked, h: (+b.h === 16 ? 16 : 8), ts: Date.now() };
+    try { await usersDO(env, '/prefsput', { uid, k: 'brief', v: JSON.stringify(cfg) }); } catch (e) { return J2({ error: 'transient' }, 503); }
+    return J2({ ok: true, prefs: { push: cfg.push, tg: cfg.tg, h: cfg.h }, tgLinked });
+  }
+  const M = await briefMarket(env);
+  if (!st.premium) { try { await evPush(env, request, 'premgate', 'Daily Brief', '/paper-trade'); } catch (e) {} return J2({ error: 'premium_required', teaser: briefTeaser(M) }, 402); }
+  try { await evPush(env, request, 'brief', '', '/paper-trade'); } catch (e) {} // ops feed: a premium member opened the daily brief
+  const [mine, you, prefs, tgLinked] = await Promise.all([briefMine(env, uid, M), briefYou(env, uid), briefPrefs(env, uid), resolveProfiles(env, ['u:' + uid]).then(pr => !!(pr[uid] && pr[uid].tg)).catch(() => false)]);
+  return J2({ ok: true, at: Date.now(), market: M, teaser: briefTeaser(M), mine, you, prefs, tgLinked, streak: +(st.user && st.user.streak) || 0 });
+}
+function briefDeliveryText(M, mine) { // the morning line: market bias, setups, the next event, the reader's open book
+  const bias = M.bias === 'bullish' ? 'leans bullish' : M.bias === 'bearish' ? 'leans bearish' : 'is mixed';
+  const parts = ['Market ' + bias + (M.biasNote ? ' (' + M.biasNote + ')' : '')];
+  const ops = M.setups || []; if (ops.length) parts.push(ops.length + ' setup' + (ops.length === 1 ? '' : 's') + ': ' + ops.slice(0, 3).map(o => o.sym + ' ' + o.dir).join(', '));
+  const now = Date.now(); const ev = (M.events || []).filter(e => e.ts > now)[0];
+  if (ev) { const h = (ev.ts - now) / 3600e3; parts.push(ev.title + ' ' + (h < 1 ? 'within the hour' : h < 24 ? 'in ' + Math.round(h) + ' h' : 'in ' + Math.round(h / 24) + ' d')); }
+  if (mine && mine.length) { const s = mine.reduce((a, p) => a + (+p.pnl || 0), 0); const ag = mine.filter(p => p.fundingAgainst).length; parts.push(mine.length + ' open position' + (mine.length === 1 ? '' : 's') + ' ' + (s >= 0 ? '+' : '-') + '$' + Math.abs(s).toFixed(2) + (ag ? ', funding against ' + ag + ' of them' : '')); }
+  const esc = (x) => String(x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  return { title: 'Your Daily Brief', body: parts.join(' · '), tg: '<b>Your Daily Brief</b>\n' + parts.map(esc).join('\n') + '\n\n<a href="https://marginpad.io/paper-trade?brief=1">Open the full brief</a>' };
+}
+async function checkBriefDelivery(env) { // once per opted-in account per UTC day, at 08:00 or 16:00 (the hour it chose); the stamp is released when nothing went out
+  if (!env.STATS || !env.USERS) return;
+  const now = new Date(), day = now.toISOString().slice(0, 10), hour = now.getUTCHours();
+  let watch = []; try { const r = await usersDO(env, '/briefwatch', {}); watch = ((r && r.watch) || []).filter(w => hour >= w.h); } catch (e) { return; }
+  if (!watch.length) return;
+  let M = null, sent = 0, due = 0, subsBy = null;
+  for (const w of watch) {
+    const stamp = 'brief:sent:' + w.uid + ':' + day;
+    if (await env.STATS.get(stamp)) continue;
+    due++; if (due > 200) break; // one run's budget; the next */10 pass takes the rest
+    await env.STATS.put(stamp, '1', { expirationTtl: 172800 });
+    if (!M) { try { M = await briefMarket(env); } catch (e) {} if (!M) { await env.STATS.delete(stamp); return; } }
+    let mine = []; try { mine = await briefMine(env, w.uid, M); } catch (e) {}
+    const t = briefDeliveryText(M, mine);
+    let ok = false;
+    if (w.tg && env.TELEGRAM_TOKEN) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: t.tg }); if (r && r.result) { ok = true; sent++; } } catch (e) {} }
+    if (w.push && env.VAPID_JWK) {
+      try { if (!subsBy) { subsBy = {}; const r = await usersDO(env, '/push/byuid', { uids: watch.filter(x => x.push).map(x => x.uid) }); ((r && r.subs) || []).forEach(s => { (subsBy[s.uid] = subsBy[s.uid] || []).push(s); }); } } catch (e) { subsBy = subsBy || {}; }
+      for (const s of (subsBy[w.uid] || [])) { try { await sendWebPush(env, s, { title: t.title, body: t.body, url: 'https://marginpad.io/paper-trade?brief=1' }); ok = true; sent++; } catch (e) {} }
+    }
+    if (!ok) { try { await env.STATS.delete(stamp); } catch (e) {} }
+  }
+  if (sent) { try { await env.STATS.put('brief:dmlast', JSON.stringify({ day, sent, subs: watch.length, ts: Date.now() }), { expirationTtl: 7 * 86400 }); } catch (e) {} }
 }
 async function handleHappyHour(env) {
   const now = Date.now(), d = new Date(now);
@@ -19631,6 +19757,17 @@ export class UserStore {
         if (!cfg || (!cfg.push && !cfg.tg)) continue;
         const u = this.rows("SELECT tg_chat, username FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
         out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, username: u.username || '' });
+      }
+      return this.j({ watch: out });
+    }
+    if (path === '/briefwatch') { // Daily Brief v2 morning delivery: accounts that opted in (uprefs k='brief' = {push,tg,h}), with their Telegram chat
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='brief' LIMIT 3000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || (!cfg.push && !cfg.tg)) continue;
+        const u = this.rows("SELECT tg_chat, username FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
+        out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, h: (+cfg.h === 16 ? 16 : 8), username: u.username || '' });
       }
       return this.j({ watch: out });
     }
@@ -22030,8 +22167,12 @@ export class UserStore {
       const pair = [uid, other].sort().join('|');
       const rows = this.rows('SELECT from_uid, txt, ts FROM dms WHERE pair=? ORDER BY ts ASC LIMIT 200', pair);
       sql.exec('UPDATE dms SET seen=1 WHERE pair=? AND to_uid=? AND seen=0', pair, uid);
+      // Opening the thread IS reading the "@x sent you a message" notification (owner 2026-09-12): it used to stay lit until the bell
+      // itself was opened, so a reader who went straight to Messages kept an unread mark for something they had already seen.
+      try { sql.exec("UPDATE unotifs SET seen=1 WHERE uid=? AND kind='dm' AND seen=0 AND link=? COLLATE NOCASE", uid, 'dm:' + ou.username); } catch (e) {}
+      const nun = (this.rows('SELECT COUNT(*) c FROM unotifs WHERE uid=? AND seen=0', uid)[0] || { c: 0 }).c;
       const L = xpLevelOf(ou.xp || 0);
-      return this.j({ ok: true, other: { name: ou.username, level: { k: L.k, name: L.name, col: L.col } }, canDm: this._canDm(uid, other), messages: rows.map(r => ({ me: String(r.from_uid) === uid, txt: r.txt, ts: r.ts })) });
+      return this.j({ ok: true, notifUnread: nun, other: { name: ou.username, level: { k: L.k, name: L.name, col: L.col } }, canDm: this._canDm(uid, other), messages: rows.map(r => ({ me: String(r.from_uid) === uid, txt: r.txt, ts: r.ts })) });
     }
     if (path === '/dm/inbox') { // the user's conversation list: other party, last message, unread count
       const uid = String((b && b.uid) || '').replace(/^u:/, '');

@@ -243,6 +243,14 @@
     + '.mpa-mi .mpa-svg{width:17px;height:17px;color:#7f8a97;flex:none}.mpa-mi>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-mi>em{flex:none;font:700 8.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;font-style:normal;color:#c2f64a;background:rgba(194,246,74,.13);border-radius:5px;padding:3px 5px}.mpa-mi .mpa-svg:last-child{width:14px;height:14px;color:#556170}'
     + '.mpa-foot3{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 0}'
     + '.mpa-fl{display:inline-flex;align-items:center;gap:6px;background:none;border:none;padding:8px 4px;color:#7f8893;font:600 12.5px system-ui,-apple-system,Segoe UI,sans-serif;cursor:pointer;transition:color .15s;-webkit-appearance:none;appearance:none}.mpa-fl:hover{color:#e9e7df}.mpa-fl .mpa-svg{width:14px;height:14px}.mpa-fl.out:hover{color:#ff8a80}'
+    /* the Daily Brief "Today" card inside the profile (2026-09-12): a live one-line teaser, not a menu label */
+    + '.mpa-tdy{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0 0;background:linear-gradient(135deg,rgba(194,246,74,.1),rgba(194,246,74,.02) 55%,#0f131a);border:1px solid rgba(194,246,74,.3);border-radius:12px;padding:9px 11px;cursor:pointer;color:#cfd5dc;text-align:left;font:inherit;transition:border-color .15s;-webkit-appearance:none;appearance:none}.mpa-tdy:hover{border-color:rgba(194,246,74,.6)}'
+    + '.mpa-tdy-ic{flex:none;width:32px;height:32px;border-radius:9px;background:rgba(194,246,74,.12);display:flex;align-items:center;justify-content:center}.mpa-tdy-ic .mpa-svg{width:17px;height:17px;color:#c2f64a}'
+    + '.mpa-tdy-b{flex:1;min-width:0}.mpa-tdy-t{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:#f2f0e9}'
+    + '.mpa-tdy-t>em{font:700 8.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;font-style:normal;color:#c2f64a;background:rgba(194,246,74,.13);border-radius:5px;padding:3px 5px}'
+    + '.mpa-tdy-new{font:800 8px/1 ui-monospace,Consolas,monospace;letter-spacing:.08em;font-style:normal;color:#0a0b0d;background:#c2f64a;border-radius:5px;padding:3px 5px}.mpa-tdy-new[hidden]{display:none}'
+    + '.mpa-tdy-l{display:block;margin-top:3px;font-size:12px;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpa-tdy-l b{font-weight:700}'
+    + '.mpa-tdy>.mpa-svg:last-child{width:14px;height:14px;color:#556170;flex:none}'
     /* open = a transition, never @keyframes (the owner runs Windows with animation effects off); phone = bottom sheet */
     + '.mpa-panel{transform:translateY(10px);opacity:0;transition:transform .2s ease,opacity .16s ease}.mpa-panel.in{transform:none;opacity:1}'
     + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:14px}}'
@@ -831,7 +839,7 @@
       var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length; if (key === lastKey) return; lastKey = key;
       var atBottom = (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight) < 40 || !scroll.children.length || !!scroll.querySelector('.mpa-dm-empty');
       scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
-    function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); }).catch(function () {}); }
+    function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () {}); }
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
@@ -1301,6 +1309,22 @@
       fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
     }).catch(function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = '<div class="mpa-xp-empty">Could not load notifications.</div>'; });
   }
+  // Daily Brief teaser for the profile card: public market-only line, cached 5 min per browser so opening the card costs no request most of the time
+  function briefTeaserLine(t) {
+    if (!t || !t.bias) return 'Today’s market, your positions and your week in one card';
+    var b = t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a';
+    var parts = ['<b style="color:' + col + '">' + (b === 'bullish' ? 'Leans bullish' : b === 'bearish' ? 'Leans bearish' : 'Mixed market') + '</b>'];
+    if (t.setups) parts.push(t.setups + ' setup' + (t.setups === 1 ? '' : 's'));
+    if (t.next && t.next.title) { var h = +t.next.inH; parts.push(esc(String(t.next.title).slice(0, 28)) + (h < 1 ? ' within the hour' : h < 24 ? ' in ' + Math.round(h) + ' h' : ' in ' + Math.round(h / 24) + ' d')); }
+    else if (t.fng != null) parts.push('Fear &amp; Greed ' + t.fng);
+    return parts.join(' · ');
+  }
+  function briefTeaserCached() { try { var c = JSON.parse(localStorage.getItem('mp_brief_tz') || 'null'); return c && c.d ? c.d : null; } catch (e) { return null; } }
+  function briefTeaserGet(cb) {
+    var c = null; try { c = JSON.parse(localStorage.getItem('mp_brief_tz') || 'null'); } catch (e) {}
+    if (c && c.d && c.t && Date.now() - c.t < 300000) { cb(c.d); return; }
+    fetch('/api/brief?teaser=1').then(function (r) { return r.json(); }).then(function (d) { if (!d || d.down || !d.bias) return; try { localStorage.setItem('mp_brief_tz', JSON.stringify({ t: Date.now(), d: d })); } catch (e) {} cb(d); }).catch(function () {});
+  }
   function render() {
     if (BANNED) {
       bodyEl.innerHTML = '<h3 class="mpa-h">Account suspended</h3><p class="mpa-sub">Your MarginPad account has been suspended. If you believe this is a mistake, contact <b>support@marginpad.io</b>.</p>';
@@ -1340,7 +1364,9 @@
             + kpi('mpaKWr', '…', 'Win rate', 'mute')
             + kpi('mpaKPnl', '…', 'Season P&amp;L', 'mute')
             + kpi('mpaFollowers', (xpLast && typeof xpLast.followers === 'number') ? String(xpLast.followers) : '…', 'Followers', '')
-          + '</div>' : '')
+          + '</div>'
+          /* Daily Brief as a TODAY card with a live teaser (2026-09-12) — it was a bare "Daily Brief PREMIUM" row: 327 card opens, 5 brief opens in a day */
+          + '<button class="mpa-tdy" id="mpaBrief" type="button"><span class="mpa-tdy-ic">' + svgDoc + '</span><span class="mpa-tdy-b"><span class="mpa-tdy-t">Daily Brief<i class="mpa-tdy-new" id="mpaTdyNew"' + ((window.mpBriefSeen && window.mpBriefSeen()) ? ' hidden' : '') + '>NEW</i><em>PREMIUM</em></span><span class="mpa-tdy-l" id="mpaTdyL">' + briefTeaserLine(briefTeaserCached()) + '</span></span>' + ic('chev') + '</button>' : '')
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:12px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347;margin-top:8px">You are muted in chat.</p>' : '')
         + (hasU ? '<div class="mpa-quick">'
@@ -1351,7 +1377,6 @@
         + '</div>'
         + '<div class="mpa-menu">'
           + mi('mpaBal', svgWallet, 'Balance Mode', 'PREMIUM')
-          + mi('mpaBrief', svgDoc, 'Daily Brief', 'PREMIUM')
           + mi('mpaEdit', ic('edit'), 'Edit profile', '')
           + mi('mpaFrames', svgFrame, 'Customize card', '')
           + mi('mpaXp', ic('spark'), 'XP history', '')
@@ -1369,6 +1394,7 @@
         setK('mpaFollowers', typeof d.followers === 'number' ? String(d.followers) : '0', '');
         var ch = bodyEl.querySelector('#mpaIdChips'); if (ch) { if (d.otag) ch.innerHTML = '<i class="mpa-chip fnd">' + esc(String(d.otag).slice(0, 12)) + '</i>'; else if (d.premium || window._mpPrem === true) ch.innerHTML = '<i class="mpa-chip">PREMIUM</i>'; }
       }).catch(function () { var setK = function (id, v) { var el = bodyEl.querySelector('#' + id); if (el) { el.textContent = v; el.className = 'mute'; } }; setK('mpaKTr', String(tradeCount())); setK('mpaKWr', '—'); setK('mpaKPnl', '—'); setK('mpaFollowers', '0'); }); } catch (e) {} }
+      if (hasU) briefTeaserGet(function (t) { var l = bodyEl.querySelector('#mpaTdyL'); if (l) l.innerHTML = briefTeaserLine(t); });
       if (!hasU) {
         var sv = bodyEl.querySelector('#mpaSaveU'), ui = bodyEl.querySelector('#mpaUname');
         var saveU = function () {
@@ -1742,44 +1768,149 @@
       '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}';
     document.head.appendChild(st);
   }
-  /* ===== Daily Brief (Premium): majors trend + RSI + next macro events, in a modal ===== */
+  /* ===== Daily Brief v2 (2026-09-12, owner: "pack the proposals into the card, tidy and good-looking") =====
+     One card, in reading order: what the market is doing (bias, F&G, 24h liquidations), YOUR open positions
+     (P&L, how far the liquidation sits, whether funding runs against you), YOUR week from the trade ledger
+     (four numbers + up to two findings), what to do next (pass claims, the daily call, goals), where the
+     setups are, majors, derivatives + liquidations, movers, the calendar, and a "deliver every morning" switch
+     (browser push and/or Telegram, 08:00 or 16:00 UTC). Free members see the market line and a lock. */
+  var BRIEF_CSS = '.mpb-ov{align-items:flex-start;padding:24px 14px;overflow-y:auto}'
+    + '.mpb{position:relative;width:min(540px,100%);margin:auto 0;background:linear-gradient(180deg,#10141b,#0b0e13);border:1px solid #283039;border-radius:18px;padding:18px 18px 16px;color:#dbe4f5;font-family:system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);transition:transform .2s ease,opacity .16s ease;transform:translateY(10px);opacity:0}.mpb.in{transform:none;opacity:1}'
+    + '@media(max-width:560px){.mpb-ov{padding:0;align-items:flex-end}.mpb{border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overflow-y:auto;padding:10px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpb::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 12px}}'
+    + '.mpb-head{display:flex;align-items:center;gap:10px;padding-right:30px}.mpb-head .mpprem-tag{margin:0}.mpb-when{font:11px ui-monospace,Consolas,monospace;color:#7f8893}'
+    + '.mpb-load{padding:28px 0;text-align:center;color:#7f8893;font-size:13px}'
+    + '.mpb-bias{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0 4px}.mpb-bias>i{width:10px;height:10px;border-radius:50%;background:var(--bc);box-shadow:0 0 10px var(--bc)}.mpb-bias>b{color:var(--bc);font-size:16px;font-weight:800;letter-spacing:-.01em}.mpb-bias>span{width:100%;font-size:12px;color:#8fa3c4}'
+    + '.mpb-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}.mpb-chip{font:600 11.5px ui-monospace,Consolas,monospace;color:#c7cdd4;background:#0a0d11;border:1px solid #222a35;border-radius:20px;padding:4px 10px}.mpb-chip b{color:#f2f0e9}'
+    + '.mpb-s{margin-top:12px;background:#0a0d11;border:1px solid #1f2732;border-radius:12px;padding:10px 12px}.mpb-s h4{margin:0 0 8px;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#c2f64a;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:8px}.mpb-s h4 small{font:600 10.5px system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:0;text-transform:none;color:#5c656f}'
+    + '.mpb-s.mine h4{color:#38bdf8}.mpb-s.you h4{color:#c9a5ff}.mpb-s.next h4{color:#ffd75a}'
+    + '.mpb-r{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #151b23;font-size:12.5px}.mpb-r.first{border-top:none;padding-top:2px}.mpb-r b.sym{color:#f2f0e9;min-width:48px}.mpb-r .fill{flex:1;min-width:0;color:#9aa3ad;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpb-r .num{font-family:ui-monospace,Consolas,monospace;font-weight:700;white-space:nowrap;text-align:right;color:#c7cdd4}.mpb-r .num small{display:block;font-weight:400;color:#7f8893;font-size:10px}'
+    + '.mpb .up{color:#2ebd85}.mpb .dn{color:#ff5a4d}.mpb .mid{color:#ffd75a}'
+    + '.mpb-tag{display:inline-block;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.05em;border-radius:5px;padding:2px 6px;white-space:nowrap;vertical-align:middle}.mpb-tag.l{color:#2ebd85;background:rgba(46,189,133,.12)}.mpb-tag.s{color:#ff6258;background:rgba(255,98,88,.12)}.mpb-tag.w{color:#ffb347;background:rgba(255,179,71,.12)}.mpb-tag.d{color:#ff5a4d;background:rgba(255,90,77,.14)}.mpb-tag.g{color:#8b97a5;background:#141a22}'
+    + '.mpb-k4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.mpb-k{text-align:center;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:7px 4px;min-width:0}.mpb-k b{display:block;font:700 14px ui-monospace,Consolas,monospace;color:#f2f0e9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpb-k span{display:block;margin-top:2px;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:#7f8893}'
+    + '.mpb-find{margin-top:8px;font-size:12px;color:#c7cdd4;line-height:1.45;padding-left:10px;border-left:2px solid #8b5cff}.mpb-note{font-size:12px;color:#7f8893;line-height:1.45}.mpb-note a{color:#c2f64a;text-decoration:none;font-weight:700}'
+    + '.mpb-todo{display:flex;flex-direction:column;gap:5px}.mpb-todo a{display:flex;align-items:center;gap:9px;text-decoration:none;color:#e9e7df;font-size:12.5px;font-weight:600;padding:7px 9px;background:#0f131a;border:1px solid #1e2530;border-radius:9px}.mpb-todo a:hover{border-color:#38506a}.mpb-todo a i{font:700 10px ui-monospace,Consolas,monospace;font-style:normal;color:#0a0b0d;background:#ffd75a;border-radius:50%;width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;flex:none}.mpb-todo a.ok i{background:#c2f64a}.mpb-todo a span{flex:1;min-width:0}'
+    + '.mpb-mv{display:flex;flex-wrap:wrap;gap:5px}.mpb-mv span{font:600 11.5px ui-monospace,Consolas,monospace;border-radius:7px;padding:4px 8px;background:#0f131a;border:1px solid #1e2530;color:#e9e7df}.mpb-mv span b{margin-left:5px}'
+    + '.mpb-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mpb-two>.mpb-s{margin-top:0;min-width:0}@media(max-width:560px){.mpb-two{grid-template-columns:1fr}}'
+    + '.mpb-dl-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}.mpb-tg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#cfd5dc;cursor:pointer}.mpb-tg input{accent-color:#c2f64a;width:15px;height:15px;margin:0}.mpb-tg small{color:#5c656f}.mpb-tg.off{opacity:.55}'
+    + '.mpb-seg{display:inline-flex;gap:3px;background:#0f131a;border:1px solid #222a35;border-radius:9px;padding:3px;margin-left:auto}.mpb-seg b{font:700 11px ui-monospace,Consolas,monospace;color:#8b97a5;padding:5px 9px;border-radius:7px;cursor:pointer}.mpb-seg b.on{background:#c2f64a;color:#0a0b0d}'
+    + '.mpb-dl-note{margin-top:8px;font-size:11.5px;color:#7f8893;line-height:1.45}.mpb-dl-note.ok{color:#2ebd85}.mpb-dl-note.err{color:#ff8a80}'
+    + '.mpb-lock{margin-top:14px;background:linear-gradient(158deg,rgba(194,246,74,.1),rgba(194,246,74,.015));border:1px solid rgba(194,246,74,.3);border-radius:12px;padding:14px}.mpb-lock b{color:#f2f0e9;font-size:14px}.mpb-lock ul{margin:8px 0 12px;padding-left:18px;font-size:12.5px;color:#c7cdd4;line-height:1.55}.mpb-lock button{background:#c2f64a;color:#0a0b0d;border:none;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:800;cursor:pointer;width:100%}'
+    + '.mpb-foot{margin-top:12px;font-size:10.5px;color:#5c6b84;line-height:1.5}';
+  function briefCss() { if (document.getElementById('mpBriefCss')) return; var st = document.createElement('style'); st.id = 'mpBriefCss'; st.textContent = BRIEF_CSS; document.head.appendChild(st); }
+  function briefDay() { return new Date().toISOString().slice(0, 10); }
+  window.mpBriefSeen = function () { try { return localStorage.getItem('mp_brief_seen') === briefDay(); } catch (e) { return true; } };
   window.mpBrief = { show: function () {
-    ensurePremCss();
-    var ov = document.createElement('div'); ov.className = 'mpprem-ov';
-    ov.innerHTML = '<div class="mpprem" style="max-width:460px"><button class="mpprem-x" type="button" aria-label="Close">×</button><span class="mpprem-tag">DAILY BRIEF</span><h3>Where the opportunities are</h3><div class="mpbrief-body" style="margin-top:14px;color:#8fa3c4;font-size:13px;max-height:64vh;overflow-y:auto">Loading…</div></div>';
+    ensurePremCss(); briefCss();
+    try { localStorage.setItem('mp_brief_seen', briefDay()); } catch (e) {}
+    try { var nd0 = document.getElementById('mpaTdyNew'); if (nd0) nd0.hidden = true; } catch (e) {}
+    var ov = document.createElement('div'); ov.className = 'mpprem-ov mpb-ov';
+    ov.innerHTML = '<div class="mpb" role="dialog" aria-modal="true" aria-label="Daily Brief"><button class="mpprem-x" type="button" aria-label="Close">×</button><div class="mpb-head"><span class="mpprem-tag">DAILY BRIEF</span><span class="mpb-when" id="mpbWhen"></span></div><div id="mpbBody"><div class="mpb-load">Reading the market…</div></div></div>';
     document.body.appendChild(ov);
-    ov.querySelector('.mpprem-x').addEventListener('click', function () { ov.remove(); });
-    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
-    var body = ov.querySelector('.mpbrief-body');
-    fetch('/api/premium/brief', { cache: 'no-store' }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (o) {
-      if (o.s === 401) { ov.remove(); open(); return; }
-      if (o.s === 402) { ov.remove(); if (window.mpPremium) window.mpPremium.show('Unlock the Daily Brief'); return; }
+    var panel = ov.querySelector('.mpb'); requestAnimationFrame(function () { panel.classList.add('in'); });
+    function kill() { ov.remove(); }
+    ov.querySelector('.mpprem-x').addEventListener('click', kill);
+    ov.addEventListener('click', function (e) { if (e.target === ov) kill(); });
+    var body = ov.querySelector('#mpbBody'), when = ov.querySelector('#mpbWhen');
+    var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function whenTxt(ts) { var d = new Date(ts || Date.now()); return MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + ' · ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ' UTC'; }
+    function pxf(v) { v = +v; if (!isFinite(v)) return '—'; return v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v >= 1 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v.toPrecision(3); }
+    function sg(c, dp) { c = +c; return (c >= 0 ? '+' : '') + c.toFixed(dp == null ? 1 : dp) + '%'; }
+    function usd(v) { v = +v; var a = Math.abs(v); var s = a >= 1e12 ? (a / 1e12).toFixed(2) + 'T' : a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'k' : a.toFixed(0); return (v < 0 ? '-' : '') + '$' + s; }
+    function money(v) { v = +v; return (v < 0 ? '−' : '+') + '$' + Math.abs(v).toFixed(2); }
+    function ud(v) { return v > 0 ? 'up' : v < 0 ? 'dn' : ''; }
+    function inTxt(ts) { var h = (ts - Date.now()) / 3600e3; return h < 1 ? 'within the hour' : h < 24 ? 'in ' + Math.round(h) + ' h' : h < 48 ? 'tomorrow' : 'in ' + Math.round(h / 24) + ' days'; }
+    function sec(title, inner, cls, note) { return '<section class="mpb-s' + (cls ? ' ' + cls : '') + '"><h4>' + title + (note ? '<small>' + note + '</small>' : '') + '</h4>' + inner + '</section>'; }
+    function biasHtml(t) { var b = t && t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a'; var txt = b === 'bullish' ? 'Market leans BULLISH' : b === 'bearish' ? 'Market leans BEARISH' : 'Market is MIXED'; return '<div class="mpb-bias" style="--bc:' + col + '"><i></i><b>' + txt + '</b>' + (t && t.biasNote ? '<span>' + esc(t.biasNote) + '</span>' : '') + '</div>'; }
+    function chipsHtml(M, t) { var c = []; var fng = M && M.fng ? M.fng : (t && t.fng != null ? { v: t.fng } : null); if (fng) c.push('<span class="mpb-chip">Fear &amp; Greed <b>' + fng.v + '</b>' + (fng.c ? ' ' + esc(fng.c) : '') + '</span>'); var liq = M && M.liq ? M.liq.total : (t ? t.liq : null); if (liq > 0) c.push('<span class="mpb-chip">Liquidated 24h <b>' + usd(liq) + '</b>' + (M && M.liq ? ' · ' + Math.round(M.liq.long / M.liq.total * 100) + '% longs' : '') + '</span>'); var ev = M ? (M.events || []).filter(function (e) { return e.ts > Date.now(); })[0] : (t && t.next ? { title: t.next.title, ts: Date.now() + t.next.inH * 3600e3 } : null); if (ev) c.push('<span class="mpb-chip">' + esc(ev.title) + ' <b>' + inTxt(ev.ts) + '</b></span>'); return c.length ? '<div class="mpb-chips">' + c.join('') + '</div>' : ''; }
+    var todoP = Promise.all([fetch('/api/pass', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }), fetch('/api/goals', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }), fetch('/api/predict', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })]);
+    fetch('/api/brief', { cache: 'no-store' }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (o) {
+      if (o.s === 401) { kill(); open(); return; }
       var j = o.j || {};
-      var biasCol = j.bias === 'bullish' ? '#2ebd85' : j.bias === 'bearish' ? '#ff6258' : '#ffd75a';
-      var biasTxt = j.bias === 'bullish' ? 'Market leans BULLISH' : j.bias === 'bearish' ? 'Market leans BEARISH' : 'Market is MIXED today';
-      var h = '<div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:' + biasCol + ';box-shadow:0 0 9px ' + biasCol + '"></span><b style="color:' + biasCol + ';font-size:14.5px">' + biasTxt + '</b></div>';
-      h += '<div style="font-size:11.5px;color:#8fa3c4;margin:3px 0 15px">' + esc(j.biasNote || '') + '</div>';
-      h += '<div style="font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a;margin-bottom:2px">WHERE THE SETUPS ARE</div>';
-      var opps = j.opps || [];
-      if (!opps.length) {
-        h += '<div style="font-size:13px;color:#9aa3ad;padding:9px 0 2px;line-height:1.5">No clean setups right now — the majors are choppy. Best trade is patience.</div>';
-      } else {
-        opps.forEach(function (op) {
-          var lng = op.dir === 'long', dcol = lng ? '#2ebd85' : '#ff6258';
-          var pr = op.price >= 1 ? (+op.price).toLocaleString('en-US', { maximumFractionDigits: 2 }) : op.price;
-          var rcol = op.rsi >= 70 ? '#ff6258' : op.rsi <= 30 ? '#2ebd85' : '#8fa3c4';
-          h += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #161c26">'
-            + '<div style="min-width:60px"><b style="color:#fff;font-size:14px">' + op.sym + '</b><div style="font:10px \'Space Mono\',monospace;color:#8fa3c4">$' + pr + '</div></div>'
-            + '<div style="flex:1;min-width:0"><span style="display:inline-block;font:700 9.5px \'Space Mono\',monospace;letter-spacing:.04em;color:' + dcol + ';background:' + (lng ? 'rgba(46,189,133,.12)' : 'rgba(255,98,88,.12)') + ';border:1px solid ' + dcol + '55;border-radius:6px;padding:2px 8px">' + op.kind + ' ' + (lng ? 'LONG' : 'SHORT') + '</span>'
-            + '<div style="font-size:11.5px;color:#9aa3ad;margin-top:4px;line-height:1.35">' + esc(op.note) + '</div></div>'
-            + (op.rsi == null ? '' : '<div style="text-align:right;min-width:38px;font:700 10px \'Space Mono\',monospace;color:' + rcol + ';line-height:1.3">RSI<br>' + op.rsi + '</div>')
-            + '</div>';
-        });
+      if (o.s === 402) { // free member: the market line is theirs, the rest is what Premium adds
+        var t = j.teaser || null; when.textContent = whenTxt(t && t.at);
+        body.innerHTML = biasHtml(t) + chipsHtml(null, t)
+          + '<div class="mpb-lock"><b>The full brief is a Premium benefit</b><ul><li>Your open positions: live P&amp;L, how far liquidation sits, whether funding runs against you</li><li>Your week from the trade ledger, with the pattern that costs you most</li><li>Where the setups are on the majors, derivatives, liquidations, movers, the calendar</li><li>Delivered every morning by push or Telegram, if you want it</li></ul><button type="button" id="mpbGo">Go Premium — $3.99 / month</button></div>'
+          + '<div class="mpb-foot">Market data measured by MarginPad. Educational only — not financial advice.</div>';
+        var gb = body.querySelector('#mpbGo'); if (gb) gb.addEventListener('click', function () { kill(); if (window.mpPremium) window.mpPremium.show('Daily Brief'); });
+        return;
       }
-      if (j.events && j.events.length) { h += '<div style="margin-top:16px;font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a">NEXT HIGH-IMPACT EVENT</div>'; j.events.forEach(function (e) { var d = new Date(e.ts); h += '<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid #161c26;font-size:12px"><span style="color:#dbe4f5">' + esc(e.title) + '</span><span style="color:#8fa3c4;white-space:nowrap">' + d.toISOString().slice(5, 16).replace('T', ' ') + ' UTC</span></div>'; }); }
-      h += '<div style="margin-top:14px;font-size:10.5px;color:#5c6b84;line-height:1.5">Setups from Supertrend(10,3) trend alignment + RSI(14) extremes on 1H/4H. Educational only — not financial advice.</div>';
+      if (!j.ok) { body.innerHTML = '<div class="mpb-load">Could not load the brief — please try again.</div>'; return; }
+      var M = j.market || {}, mine = j.mine || [], you = j.you, prefs = j.prefs || { push: false, tg: false, h: 8 };
+      when.textContent = whenTxt(M.at || j.at);
+      var h = biasHtml(M) + chipsHtml(M, j.teaser);
+      // 1. your positions
+      if (mine.length) {
+        var open9 = mine.reduce(function (a, p) { return a + (+p.pnl || 0); }, 0);
+        h += sec('Your positions', mine.map(function (p, i) {
+          var lng = p.side === 'long'; var warn = p.liqDist != null && p.liqDist < 5;
+          return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(p.symbol) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">'
+            + (p.liqDist != null ? '<span class="' + (p.liqDist < 2 ? 'dn' : warn ? 'mid' : '') + '">liq ' + p.liqDist + '% away</span>' : 'liq —')
+            + (p.fundingAgainst === true ? ' · <span class="mid">funding against you</span>' : p.fundingAgainst === false ? ' · funding with you' : '')
+            + (p.sl == null && p.tp == null ? ' · <span class="mpb-tag g">no SL/TP</span>' : '')
+            + '</span><span class="num ' + ud(p.pnl) + '">' + (p.pnl == null ? '—' : money(p.pnl)) + (p.roe != null ? '<small>' + sg(p.roe) + ' · $' + Math.round(p.margin) + '</small>' : '') + '</span></div>';
+        }).join(''), 'mine', mine.length + ' open · ' + money(open9));
+      } else h += sec('Your positions', '<div class="mpb-note">No open positions. <a href="/paper-trade">Open the terminal</a> when a setup below fits.</div>', 'mine');
+      // 2. your week
+      if (you && you.week) {
+        var W = you.week, Y = you.yesterday;
+        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '—') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '—') + '</b><span>7d P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '—') + '</b><span>Yesterday</span></div></div>';
+        var fnd = (you.findings || []).map(function (f) { return '<div class="mpb-find">' + esc(f.text) + '</div>'; }).join('');
+        if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + ' closes this week — too few to name a pattern. Trade, and the brief starts reading you.' : 'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.') + '</div>';
+        h += sec('Your week', k4 + fnd, 'you', (j.streak ? j.streak + '-day streak' : ''));
+      }
+      // 3. next up (filled once the season endpoints answer)
+      h += sec('Next up', '<div class="mpb-todo" id="mpbTodo"><div class="mpb-note">Checking your season…</div></div>', 'next');
+      // 4. setups
+      var ops = M.setups || [];
+      h += sec('Where the setups are', ops.length ? ops.map(function (op, i) { var lng = op.dir === 'long'; return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(op.sym) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + esc(op.kind) + ' ' + (lng ? 'LONG' : 'SHORT') + '</span><span class="fill">' + esc(op.note) + '</span><span class="num' + (op.rsi >= 70 ? ' dn' : op.rsi <= 30 ? ' up' : '') + '">' + (op.rsi == null ? '' : 'RSI ' + op.rsi) + '<small>$' + pxf(op.price) + '</small></span></div>'; }).join('') : '<div class="mpb-note">No clean setup on the majors right now — the best trade is patience.</div>', '', 'Supertrend 1H + 4H · RSI 14');
+      // 5. majors (paired with derivatives on a desktop: the card was 1,637 px tall in one column)
+      var sMaj = '', sDv = '', sMv = '', sCal = '';
+      var pair = function (a, b) { return (a && b) ? '<div class="mpb-two">' + a + b + '</div>' : (a || b); };
+      if ((M.majors || []).length) sMaj = sec('Majors', M.majors.map(function (m, i) { return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(m.s) + '</b><span class="fill">' + (m.trend ? '<span class="mpb-tag ' + (m.trend === 'up' ? 'l' : 's') + '">4H ' + m.trend + '</span>' : '') + (m.rsi != null ? ' RSI ' + m.rsi : '') + (m.f != null ? ' · funding ' + sg(m.f, 4) : '') + '</span><span class="num">$' + pxf(m.p) + '<small class="' + ud(m.c) + '">' + sg(m.c) + ' 24h</small></span></div>'; }).join(''));
+      // 6. derivatives + liquidations
+      { var dv = [], D = M.deriv || {}, ob = D.oi && D.oi.BTC, oe = D.oi && D.oi.ETH, lb = D.ls && D.ls.BTC, le = D.ls && D.ls.ETH;
+        if (ob || oe) dv.push('<div class="mpb-r first"><span class="fill">Open interest</span><span class="num">' + [ob ? 'BTC ' + usd(ob.v) + (ob.chg != null ? ' (' + sg(ob.chg) + ')' : '') : '', oe ? 'ETH ' + usd(oe.v) + (oe.chg != null ? ' (' + sg(oe.chg) + ')' : '') : ''].filter(Boolean).join('<br>') + '</span></div>');
+        if (lb || le) dv.push('<div class="mpb-r' + (dv.length ? '' : ' first') + '"><span class="fill">Long accounts</span><span class="num">' + [lb ? 'BTC ' + Math.round(lb) + '%' : '', le ? 'ETH ' + Math.round(le) + '%' : ''].filter(Boolean).join(' · ') + '</span></div>');
+        var q = M.liq; if (q && q.total > 0) dv.push('<div class="mpb-r' + (dv.length ? '' : ' first') + '"><span class="fill">Liq 24h' + (q.top ? ' · worst <b style="color:#f2f0e9">' + esc(q.top.s) + '</b> ' + usd(q.top.v) : '') + '</span><span class="num">' + usd(q.total) + '<small>' + Math.round(q.long / q.total * 100) + '% longs · ' + (+q.n || 0).toLocaleString('en-US') + ' orders</small></span></div>');
+        if (M.global && M.global.cap > 0) dv.push('<div class="mpb-r' + (dv.length ? '' : ' first') + '"><span class="fill">Total cap</span><span class="num">' + usd(M.global.cap) + (isFinite(M.global.chg) ? ' <span class="' + ud(M.global.chg) + '">' + sg(M.global.chg) + '</span>' : '') + '<small>' + (+M.global.btcDom).toFixed(1) + '% BTC</small></span></div>');
+        if (dv.length) sDv = sec('Derivatives &amp; liquidations', dv.join('')); }
+      h += pair(sMaj, sDv);
+      // 7. movers + screener
+      if (M.movers || M.screener) { var mv = ''; if (M.movers) mv += '<div class="mpb-mv">' + M.movers.up.map(function (r) { return '<span>' + esc(r.s) + '<b class="up">' + sg(r.c) + '</b></span>'; }).join('') + M.movers.down.map(function (r) { return '<span>' + esc(r.s) + '<b class="dn">' + sg(r.c) + '</b></span>'; }).join('') + '</div>'; if (M.screener) mv += '<div class="mpb-note" style="margin-top:8px">Screener: strongest <b style="color:#2ebd85">' + esc(M.screener.hi.s) + '</b> ' + M.screener.hi.score + '/100 · weakest <b style="color:#ff5a4d">' + esc(M.screener.lo.s) + '</b> ' + M.screener.lo.score + '/100 · <a href="/screener">open</a></div>'; sMv = sec('Movers', mv, '', 'liquid names'); }
+      // 8. calendar + whales + cycle
+      { var cal = (M.events || []).filter(function (e) { return e.ts > Date.now(); }).slice(0, 3).map(function (e, i) { return '<div class="mpb-r' + (i ? '' : ' first') + '"><span class="fill" style="color:#e9e7df">' + esc(e.title) + '</span><span class="num">' + inTxt(e.ts) + '</span></div>'; }).join('');
+        var extra = ''; if (M.whales) extra += '<div class="mpb-note" style="margin-top:' + (cal ? 8 : 0) + 'px">Hyperliquid whales: ' + usd(M.whales.long) + ' long vs ' + usd(M.whales.short) + ' short' + (M.whales.big ? ' · largest ' + esc(M.whales.big.s) + ' ' + (M.whales.big.long ? 'long' : 'short') + ' ' + usd(M.whales.big.val) + ' at ' + M.whales.big.lev + 'x' : '') + '</div>';
+        if (M.cycle && M.cycle.ma110 > 0) { var pc = (M.cycle.px / M.cycle.ma110 - 1) * 100; extra += '<div class="mpb-note" style="margin-top:6px">Cycle: BTC ' + Math.abs(pc).toFixed(1) + '% ' + (pc >= 0 ? 'above' : 'below') + ' its 110-day average</div>'; }
+        if (cal || extra) sCal = sec('On the calendar', (cal || '') + extra); }
+      h += pair(sMv, sCal);
+      // 9. delivery
+      h += '<section class="mpb-s"><h4>Every morning<small>one line · push or Telegram</small></h4><div class="mpb-dl-row"><label class="mpb-tg"><input type="checkbox" id="mpbPush"' + (prefs.push ? ' checked' : '') + '> Browser push</label><label class="mpb-tg' + (j.tgLinked ? '' : ' off') + '"><input type="checkbox" id="mpbTg"' + (prefs.tg ? ' checked' : '') + (j.tgLinked ? '' : ' disabled') + '> Telegram' + (j.tgLinked ? '' : ' <small>connect in @MarginPadBot</small>') + '</label><span class="mpb-seg" id="mpbSeg"><b data-h="8"' + (prefs.h !== 16 ? ' class="on"' : '') + '>08:00 UTC</b><b data-h="16"' + (prefs.h === 16 ? ' class="on"' : '') + '>16:00 UTC</b></span></div><div class="mpb-dl-note" id="mpbDlNote"></div></section>';
+      h += '<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only — not financial advice.</div>';
       body.innerHTML = h;
-    }).catch(function () { body.textContent = 'Could not load the brief — please try again.'; });
+      // next up: same rules as the homepage member card
+      todoP.then(function (arr) {
+        var P = arr[0], G = arr[1], D = arr[2], todo = [], el = body.querySelector('#mpbTodo'); if (!el) return;
+        if (P && P.claimable) todo.push(['ok', 'Claim ' + P.claimable + ' pass reward' + (P.claimable > 1 ? 's' : ''), '/season/#pass']);
+        if (D && D.day) { var td = D.me && D.me.today; if (!td && D.open) todo.push(['hot', 'Make today’s BTC call', '/season/#today']); }
+        if (G && G.catalogue) { var pk = G.picks || []; pk.filter(function (x) { return x.done && !x.paid; }).forEach(function (x) { todo.push(['ok', 'Claim goal: ' + x.name, '/season/#today']); }); if (pk.length < 2) todo.push(['', 'Pick your season goal' + (pk.length ? '' : 's'), '/season/#today']); }
+        if (!todo.length) todo.push(['ok', 'All caught up — go trade', '/paper-trade']);
+        el.innerHTML = todo.slice(0, 3).map(function (t, i) { return '<a class="' + t[0] + '" href="' + t[2] + '"><i>' + (i + 1) + '</i><span>' + esc(t[1]) + '</span>' + ic('chev') + '</a>'; }).join('');
+      });
+      // delivery switches
+      var cur = { push: !!prefs.push, tg: !!prefs.tg, h: prefs.h === 16 ? 16 : 8 }, note = body.querySelector('#mpbDlNote');
+      function say() { if (!note) return; note.className = 'mpb-dl-note'; note.textContent = (cur.push || cur.tg) ? 'On · ' + pad(cur.h) + ':00 UTC · ' + [cur.push ? 'push' : '', cur.tg ? 'Telegram' : ''].filter(Boolean).join(' + ') + ' · market bias, setups, the next event and your open book, with a link back here.' : 'Off. Turn on push or Telegram to get one line a day with a link back here.'; }
+      function save() { fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cur) }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { cur.push = !!d.prefs.push; cur.tg = !!d.prefs.tg; cur.h = d.prefs.h; say(); if (note) { note.className = 'mpb-dl-note ok'; note.textContent = 'Saved. ' + note.textContent; } } else if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Could not save — try again.'; } }).catch(function () { if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Network error — try again.'; } }); }
+      say();
+      var pushCb = body.querySelector('#mpbPush'), tgCb = body.querySelector('#mpbTg'), seg = body.querySelector('#mpbSeg');
+      if (pushCb) pushCb.addEventListener('change', function () {
+        if (pushCb.checked) { if (!(window.mpPush && window.mpPush.supported && window.mpPush.supported())) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'This browser cannot receive push — use Telegram instead.'; } return; } if (note) { note.className = 'mpb-dl-note'; note.textContent = 'Asking the browser for permission…'; }
+          window.mpPush.enable().then(function () { cur.push = true; save(); }).catch(function (e2) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = e2 === 'denied' ? 'Push is blocked for this site in the browser settings.' : 'Could not enable push here — try Telegram.'; } }); }
+        else { cur.push = false; save(); }
+      });
+      if (tgCb) tgCb.addEventListener('change', function () { cur.tg = !!tgCb.checked; save(); });
+      if (seg) seg.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-h]'); if (!b) return; cur.h = +b.getAttribute('data-h') === 16 ? 16 : 8; Array.prototype.forEach.call(seg.querySelectorAll('[data-h]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-h') === cur.h); }); if (cur.push || cur.tg) save(); else say(); });
+    }).catch(function () { body.innerHTML = '<div class="mpb-load">Could not load the brief — please try again.</div>'; });
   } };
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
@@ -1966,7 +2097,7 @@
 
   var _liChk; try { _liChk = localStorage.getItem('mp_li_chk') === '1'; } catch (e) { _liChk = false; }
   if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely — that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
-    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades();
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); try { if (/[?&]brief=1(&|$)/.test(location.search)) setTimeout(function () { if (window.mpBrief) window.mpBrief.show(); }, 700); } catch (e) {} /* ?brief=1 = the morning push / Telegram deep link straight into the brief */
       if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout — celebrate now (the 60s poll would otherwise lag)
         setTimeout(function () { if (window.mpPremiumCelebrate) window.mpPremiumCelebrate(); }, 1000);
         try { var u = new URL(location.href); u.searchParams.delete('premium'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
