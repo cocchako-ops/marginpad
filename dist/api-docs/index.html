@@ -27,7 +27,6 @@
   .intro h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;margin:0}
   .intro p{color:var(--dim);margin:0;font-size:13px;line-height:1.4;flex:1 1 320px;min-width:0}
   .chips{display:flex;flex-wrap:wrap;gap:6px}.chips a{font:600 11px 'Space Mono',monospace;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:4px 10px;text-decoration:none}.chips a:hover{border-color:var(--lime)}
-  #ref{min-height:60vh}
   .fallback{max-width:980px;margin:0 auto;padding:10px 18px 40px;color:var(--dim);font-size:14px}
   .fallback pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font:12.5px 'Space Mono',monospace;color:var(--ink)}
 </style>
@@ -39,12 +38,11 @@
   <p>Every route of the free market-data API and the paper-trading Bot API, from the OpenAPI document the servers ship. Market data needs no key; paper trading needs a free key from the <a href="/trading-api/#keys" style="color:var(--lime)">guide</a>, pasted into the Authorization box to try calls here.</p>
   <div class="chips"><a href="/trading-api/#stream">WebSocket</a><a href="/trading-api/#webhooks">Webhooks</a><a href="/assets/sdk/marginpad.py" download>Python SDK</a><a href="/assets/sdk/marginpad.js" download>JS SDK</a></div>
 </div>
-<div id="ref"></div>
 <noscript><div class="fallback">This reference needs JavaScript. The raw specification is at <a href="/api/openapi.json">/api/openapi.json</a>.</div></noscript>
 <div class="fallback" id="fb" hidden><p>The interactive viewer did not load. The specification itself is here:</p><pre>GET https://marginpad.io/api/openapi.json</pre><p>Import that URL into Postman, Insomnia or any OpenAPI tool.</p></div>
 <script id="api-reference" type="application/json" data-url="/api/openapi.json" data-configuration='{"theme":"kepler","layout":"classic","darkMode":true,"hideDarkModeToggle":true,"defaultHttpClient":{"targetKey":"python","clientKey":"requests"},"metaData":{"title":"MarginPad API Reference"},"searchHotKey":"k","showSidebar":true,"authentication":{"preferredSecurityScheme":"ApiKeyAuth"}}'></script>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.130/dist/browser/standalone.min.js" onerror="document.getElementById('fb').hidden=false"></script>
-<script>setTimeout(function(){ if(!document.querySelector('#ref .scalar-app, .scalar-app, .references-layout')) { var f=document.getElementById('fb'); if(f) f.hidden=false; } }, 9000);</script>
+<script>setTimeout(function(){ if(!document.querySelector('.scalar-app, .references-layout, .scalar-api-reference')) { var f=document.getElementById('fb'); if(f) f.hidden=false; } }, 9000);</script>
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
 <script defer src="/assets/mp-auth.js?v=034bd270"></script>
 <script defer src="/assets/mp-nav.js?v=ff97ec86"></script>

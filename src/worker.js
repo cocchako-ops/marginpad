@@ -18858,7 +18858,8 @@ async function sampleUptime(env) {
   try { const px = JSON.parse(await env.STATS.get('prices:last') || 'null'); const ts = px && (+px.ts || +px.t || 0); const pairs = px && px.pairs; if (pairs && pairs.length && ts) { c.pxAge = Math.round((t0 - ts) / 1000); if (c.pxAge <= 180) c.px = 1; } else if (pairs && pairs.length) c.px = 1; } catch (e) {}
   try {
     const k = 'up:day:' + day; let d = null; try { d = JSON.parse(await env.STATS.get(k) || 'null'); } catch (e) {}
-    d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [] };
+    d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [], first: t0 }; // first = when sampling of this day began: the day sampling STARTED is pro-rated from there, not from midnight (2026-09-12 showed red at 2 of 93 samples on its first hour)
+    if (!d.first) d.first = t0;
     d.n += 1; d.store += c.store; d.coll += c.coll; d.px += c.px;
     if (c.storeMs) { d.storeMs.push(c.storeMs); if (d.storeMs.length > 200) d.storeMs = d.storeMs.slice(-200); }
     if (c.collMs) { d.collMs.push(c.collMs); if (d.collMs.length > 200) d.collMs = d.collMs.slice(-200); }
@@ -18878,7 +18879,7 @@ async function handleStatusApi(env) {
   const days = []; const p95 = (a) => { if (!a || !a.length) return null; const s = a.slice().sort((x, y) => x - y); return s[Math.max(0, Math.ceil(s.length * 0.95) - 1)]; };
   const dayKeys = []; for (let i = UP_KEEP_D - 1; i >= 0; i--) dayKeys.push(new Date(now - i * 86400000).toISOString().slice(0, 10));
   const rows = await Promise.all(dayKeys.map(d => env.STATS.get('up:day:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); // 90 reads in parallel: sequential they took 2-4 s and the page sat on "Checking…"
-  dayKeys.forEach((d, i) => { const r = rows[i]; if (!r) days.push({ d, n: 0 }); else days.push({ d, n: r.n, store: r.store, coll: r.coll, px: r.px, storeP95: p95(r.storeMs), collP95: p95(r.collMs) }); });
+  dayKeys.forEach((d, i) => { const r = rows[i]; if (!r) days.push({ d, n: 0 }); else days.push({ d, n: r.n, first: r.first || null, store: r.store, coll: r.coll, px: r.px, storeP95: p95(r.storeMs), collP95: p95(r.collMs) }); });
   const expected = 144; // */10 = 144 samples a day; today's expectation is pro-rated by the page
   const cronOk = hb > 0 && now - hb <= 25 * 60000;
   const out = { ok: true, ts: now, now: { cron: { ok: cronOk, ageMin: hb ? Math.round((now - hb) / 60000) : null }, store: last ? { ok: !!last.store, ms: last.storeMs, sampledAgoMin: Math.round((now - last.ts) / 60000) } : null, collector: coll, prices: px }, days, expectedPerDay: expected, keepDays: UP_KEEP_D };

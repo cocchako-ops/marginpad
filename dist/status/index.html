@@ -88,7 +88,7 @@
   function bars(el,days,field,pctEl,upEl){
     var html='',okDays=0,seen=0,sumOk=0,sumN=0,today=new Date().toISOString().slice(0,10);
     days.forEach(function(d){var cls='none',t=d.d+': no samples';
-      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var exp=d.d===today?Math.max(1,Math.round(144*((Date.now()-Date.parse(d.d+'T00:00:00Z'))/86400000))):144;var cov=Math.min(1,d.n/exp);var eff=r*cov;cls=eff>=0.995?'ok':eff>=0.9?'part':'bad';if(cls==='ok')okDays++;t=d.d+': '+Math.round(eff*100)+'% ('+d[field]+'/'+d.n+' ok'+(d.n<exp*0.9?', '+d.n+' of '+exp+' samples':'')+')';}
+      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var start=Date.parse(d.d+'T00:00:00Z'),end=Math.min(Date.now(),start+86400000),from=Math.max(start,d.first||start);var exp=Math.max(1,Math.floor((end-from)/600000)+1);var cov=Math.min(1,d.n/exp);var eff=r*cov;cls=eff>=0.995?'ok':eff>=0.9?'part':'bad';if(cls==='ok')okDays++;t=d.d+': '+Math.round(eff*100)+'% ('+d[field]+'/'+d.n+' ok'+(d.n<exp*0.9?', '+d.n+' of '+exp+' samples':'')+')';}
       html+='<i class="'+cls+'" data-t="'+t+'"></i>';});
     el.innerHTML=html;
     if(sumN){pctEl.textContent=(sumOk/sumN*100).toFixed(2)+'% of samples passed';upEl.textContent=seen+' day'+(seen===1?'':'s')+' measured';}else{pctEl.textContent='no samples yet';upEl.textContent='';}
