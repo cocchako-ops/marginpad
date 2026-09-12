@@ -7,6 +7,8 @@ const EXTRAS = [
   ['https://marginpad.io/free-crypto-api/', '0.9'],
   ['https://marginpad.io/premium/', '0.9'],
   ['https://marginpad.io/trading-report/', '0.8'],
+  ['https://marginpad.io/status/', '0.6'],
+  ['https://marginpad.io/api-docs/', '0.8'],
   ['https://marginpad.io/season/', '0.9'],
   ['https://marginpad.io/vault/', '0.8'],
   ['https://marginpad.io/crypto-profit-calculator/', '0.8'],

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "marginpad"
+version = "2.4.0"
+description = "MarginPad Bot API client: free crypto-futures paper trading for bots (REST + WebSocket + webhooks) and free market data. No dependencies."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [{ name = "MarginPad", email = "support@marginpad.io" }]
+keywords = ["crypto", "futures", "paper-trading", "trading-bot", "backtest", "liquidations", "api", "mcp", "ai-agent"]
+classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Topic :: Office/Business :: Financial :: Investment", "Intended Audience :: Developers"]
+
+[project.optional-dependencies]
+stream = ["websockets>=11"]
+
+[project.urls]
+Homepage = "https://marginpad.io/trading-api/"
+Documentation = "https://marginpad.io/api-docs/"
+Repository = "https://github.com/marginpad/sdk"
+Changelog = "https://marginpad.io/api/changelog.xml"
+
+[tool.setuptools.packages.find]
+where = ["."]

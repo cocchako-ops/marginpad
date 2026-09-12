@@ -1,0 +1,56 @@
+# MarginPad SDK
+
+Free crypto-futures **paper trading for bots** and free market data. One key, no KYC, no deposit.
+Test a strategy or an AI agent against live prices with real fee schedules, funding, liquidations, limit and stop orders, trailing stops, webhooks and a WebSocket stream, then take the same code to a real exchange.
+
+- Guide: https://marginpad.io/trading-api/
+- Reference (OpenAPI, try it live): https://marginpad.io/api-docs/
+- Status: https://marginpad.io/status/ - Changelog: https://marginpad.io/api/changelog.xml
+- MCP server for Claude, ChatGPT and Cursor: https://marginpad.io/trading-api/#mcp
+
+## Install
+
+```bash
+pip install marginpad            # Python 3.8+, no dependencies (pip install "marginpad[stream]" for the WebSocket)
+npm install marginpad            # Node 18+, zero dependencies
+```
+
+## Python
+
+```python
+from marginpad import MarginPad
+
+mp = MarginPad("mpb_...")                                   # key from https://marginpad.io/trading-api/
+print(mp.price("BTC"))                                      # keyless market data
+pos = mp.open("BTC", "long", margin_usd=100, leverage=10, sl=58000, tp=66000,
+              client_order_id="sig-2026-09-12-1403")        # idempotent: a retry returns the same position
+mp.sltp(pos["id"], trail_pct=1.5)                           # trailing stop, ratcheted server-side
+print(mp.account())
+```
+
+## JavaScript
+
+```js
+const { MarginPad } = require('marginpad');
+const mp = new MarginPad('mpb_...');
+const { position } = await mp.open({ symbol: 'BTC', side: 'long', margin_usd: 100, leverage: 10, client_order_id: 'sig-1' });
+mp.stream(ev => console.log(ev.type, ev.data));             // positions pushed on change, prices each tick
+```
+
+## Examples
+
+- `examples/agent_loop.py`: a signal loop that opens, manages and closes positions once a minute without polling storms.
+- `examples/webhook_server.js`: receive `position.closed` / `order.filled` events with signature verification.
+- `examples/mcp.md`: let Claude Desktop or Cursor trade on your paper account through the MCP server.
+
+## Limits
+
+Free: 120 requests/minute per key, 3 keys, 50 open positions. Premium: 600/minute, 10 keys, 200 open positions.
+Every response carries `X-RateLimit-Limit / Remaining / Reset`; on 429 both clients wait `Retry-After` and retry once.
+Out-of-range input is refused with a named error (`leverage_max` carries the market's cap), never silently clamped.
+
+## Honesty note
+
+This is a simulator. Fees, funding and liquidation math mirror real exchanges; there is no order book, so slippage is modelled, not measured on depth. A bot that passes here still needs a small live test. Educational use, not financial advice.
+
+MIT licensed.

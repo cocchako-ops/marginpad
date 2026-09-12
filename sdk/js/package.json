@@ -1,0 +1,14 @@
+{
+  "name": "marginpad",
+  "version": "2.4.0",
+  "description": "MarginPad Bot API client: free crypto-futures paper trading for bots (REST + WebSocket + webhooks) and free market data. Zero dependencies.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/marginpad/sdk" },
+  "homepage": "https://marginpad.io/trading-api/",
+  "bugs": { "url": "https://github.com/marginpad/sdk/issues" },
+  "keywords": ["crypto", "futures", "paper-trading", "trading-bot", "backtest", "liquidations", "bybit", "binance", "api", "mcp", "ai-agent"],
+  "engines": { "node": ">=18" },
+  "files": ["index.js", "index.d.ts", "README.md"]
+}

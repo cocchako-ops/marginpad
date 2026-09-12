@@ -11961,8 +11961,8 @@ async function handleBot(url, request, env, ctx) {
   try { const _oc = await opsCfg(env); if (_oc && _oc.botApi === false) return jb({ error: 'unavailable', hint: 'Paper trading is paused for maintenance. Market data (price, klines, time) is unaffected.' }, 503, { 'retry-after': '120' }); } catch (e) {}
 
   // --- authenticated bot endpoints ---
-  const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
-  if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
+  const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || (path === '/v1/stream' ? (url.searchParams.get('key') || url.searchParams.get('token') || '') : '') || ''; // the stream accepts key= / token= too (Phase 0: a wrong parameter name used to be a bare 401 on the upgrade)
+  if (!key) return jb({ error: 'missing_api_key', hint: path === '/v1/stream' ? 'Open wss://marginpad.io/api/bot/v2/stream?api_key=mpb_... (browsers cannot send headers on a WebSocket upgrade). Get a key free at https://marginpad.io/trading-api/' : 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
 
   // FAST CLOSE — one round trip to the trading store instead of two. The store is region-pinned: a hop is ~29ms of
   // service time but ~198ms p50 / 368ms p95 of distance from Singapore, where our two busiest keys connect. Auth and
@@ -12029,10 +12029,15 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/open' && request.method === 'POST') {
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const side = b.side === 'short' ? 'short' : 'long';
-    const margin = +b.margin_usd || 0, lev = Math.min(maxLevFor(sym), Math.max(1, +b.leverage || 1)); // per-coin leverage cap
     if (!sym) return jb({ error: 'symbol_required' }, 400);
-    if (!(margin >= 1)) return jb({ error: 'margin_usd_min_1' }, 400);
-    if (margin > 100000) return jb({ error: 'margin_usd_max_100000' }, 400);
+    const margin = +b.margin_usd || 0, levReq = b.leverage == null || b.leverage === '' ? 1 : +b.leverage, levMax = maxLevFor(sym);
+    // Phase 0 (2026-09-12): out-of-range input is REFUSED, never silently clamped — a bot that asked for 5000x used to get ok:true with 1000x
+    // and no way to know. Same rule trail_pct already had. leverage may be omitted (= 1x).
+    if (!isFinite(levReq) || levReq < 1) return jb({ error: 'leverage_min', min: 1, hint: 'leverage is a number from 1 up to the per-market maximum (GET /v1/markets).' }, 400);
+    if (levReq > levMax) return jb({ error: 'leverage_max', symbol: sym, max: levMax, requested: levReq, hint: 'This market allows up to ' + levMax + 'x. Pass leverage <= ' + levMax + ' (GET /v1/markets lists every cap).' }, 400);
+    const lev = levReq;
+    if (!(margin >= 1)) return jb({ error: 'margin_usd_min_1', min: 1, hint: 'margin_usd is the stake in dollars, at least 1.' }, 400);
+    if (margin > 100000) return jb({ error: 'margin_usd_max_100000', max: 100000 }, 400);
     const pd = await fetchPrice(sym);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
@@ -14612,6 +14617,16 @@ export default {
     }
     if (url.pathname === '/api/klines') return perfWrap(env, ctx, 'klines', 10, () => handleKlines(url, env, 'pub', ctx));
     if (url.pathname === '/api/openapi.json') return handleOpenApi();
+    if (url.pathname === '/api/changelog.xml' || url.pathname === '/api/changelog.json') { // Bot API changelog as a feed (Phase 0, 2026-09-12): a builder subscribes once and learns about every change
+      const items = API_CHANGELOG.slice(0, 30);
+      if (url.pathname.endsWith('.json')) return new Response(JSON.stringify({ ok: true, data: { changelog: items }, ts: Date.now() }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+      const esc = (s) => String(s == null ? '' : s).replace(/[<>&"]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]));
+      const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>MarginPad Bot API changelog</title><link>https://marginpad.io/trading-api/</link><description>Every change to the MarginPad paper-trading and market-data API, newest first.</description><language>en</language>'
+        + items.map(c => '<item><title>' + esc(c.version + ' — ' + c.title) + '</title><link>https://marginpad.io/trading-api/#changelog</link><guid isPermaLink="false">' + esc('mp-api-' + c.version) + '</guid><pubDate>' + new Date(c.date + 'T12:00:00Z').toUTCString() + '</pubDate><description>' + esc((c.changes || []).map(x => (x.breaking ? '[BREAKING] ' : '') + (x.type ? x.type + ': ' : '') + x.text).join('\n')) + '</description></item>').join('')
+        + '</channel></rss>';
+      return new Response(xml, { headers: { 'content-type': 'application/rss+xml; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+    }
+    if (url.pathname === '/api/status') return handleStatusApi(env); // public status: live checks + 90 days of sampled uptime (Phase 0)
     if (url.pathname.startsWith('/api/v1/')) return handleV1(url, request, env, ctx);
     if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
       const did = getCookie(request, 'mp_did') || '';
@@ -15528,6 +15543,12 @@ export default {
       try { xpDay = +(await env.STATS.get('shop:xp:' + day)) || 0; } catch (e) {}
       try { usdDay = +(await env.STATS.get('shop:usd:' + day)) || 0; } catch (e) {}
       return J({ ...ds, day, xpSinkToday: xpDay, usdSinkTodayCents: usdDay });
+    }
+    if (url.pathname === '/api/admin/uptime' && isAdminKey(env, adminKeyFrom(request, url))) { // key only: ?run=1 takes one uptime sample now (E2E / debugging of /status/), then returns the last sample + today's counters
+      let err = null; if (url.searchParams.get('run') === '1') { try { await sampleUptime(env); } catch (e) { err = String(e && e.message || e).slice(0, 200); } }
+      let last = null, today = null; const day = new Date().toISOString().slice(0, 10);
+      try { last = JSON.parse(await env.STATS.get('up:last') || 'null'); } catch (e) {} try { today = JSON.parse(await env.STATS.get('up:day:' + day) || 'null'); } catch (e) {}
+      return J({ ok: !err, err, last, today: today ? { n: today.n, store: today.store, coll: today.coll, px: today.px } : null });
     }
     if (url.pathname === '/api/admin/delist' && isAdminKey(env, adminKeyFrom(request, url))) { // key only: ?sym=X (dry run: who holds it) · &run=1 settles at entry NOW (the sweep does it by itself after 7 dead days)
       const symA = String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16); if (!symA) return J({ error: 'no_sym' }, 400);
@@ -16861,6 +16882,7 @@ export default {
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
     bg(checkPersonalWraps, 'wrapdm'); // Daily Wrap v2: the personal DM edition, per chat, at the hour each chat chose
     bg(checkBriefDelivery, 'briefdm'); // Daily Brief v2 (2026-09-12): one push / Telegram line a day to Premium members who asked for it, deep-linking to the brief
+    bg(sampleUptime, 'uptime'); // public /status/: one sample per */10 pass of the trading store, the collector and the price feed, kept 90 days per day
     bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
@@ -18820,6 +18842,49 @@ function briefDeliveryText(M, mine) { // the morning line: market bias, setups, 
   if (mine && mine.length) { const s = mine.reduce((a, p) => a + (+p.pnl || 0), 0); const ag = mine.filter(p => p.fundingAgainst).length; parts.push(mine.length + ' open position' + (mine.length === 1 ? '' : 's') + ' ' + (s >= 0 ? '+' : '-') + '$' + Math.abs(s).toFixed(2) + (ag ? ', funding against ' + ag + ' of them' : '')); }
   const esc = (x) => String(x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   return { title: 'Your Daily Brief', body: parts.join(' · '), tg: '<b>Your Daily Brief</b>\n' + parts.map(esc).join('\n') + '\n\n<a href="https://marginpad.io/paper-trade?brief=1">Open the full brief</a>' };
+}
+/* ===== Public status (Phase 0 of the API plan, 2026-09-12): the page a builder opens before deciding to build on us. =====
+   Every ten-minute cron pass samples three things a bot depends on — the trading store (one Durable Object round trip), the liquidation
+   collector (/api/v1/status) and the price feed (age of the prices:last floor) — and writes ok/fail counts per UTC day to KV
+   up:day:<day> (90-day TTL). A day with fewer than the expected samples means the cron itself was not running, which is the
+   worker's own downtime: it shows as missing samples rather than being hidden. /api/status = live checks now + the day series. */
+const UP_KEEP_D = 90;
+async function sampleUptime(env) {
+  if (!env.STATS) return;
+  const t0 = Date.now(), day = new Date(t0).toISOString().slice(0, 10);
+  const c = { n: 1, store: 0, storeMs: 0, coll: 0, collMs: 0, px: 0, pxAge: 0 };
+  try { const a = Date.now(); const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=uptime-probe')); const j = await r.json(); c.storeMs = Date.now() - a; if (j && ('user' in j)) c.store = 1; } catch (e) {}
+  try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const a = Date.now(); const r = await fetch(base + '/api/v1/status', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 0 } }); const j = await r.json(); c.collMs = Date.now() - a; const ex = (j && j.exchanges) || []; if (r.ok && ex.length && ex.filter(x => x.connected).length >= Math.ceil(ex.length / 2)) c.coll = 1; } } catch (e) {}
+  try { const px = JSON.parse(await env.STATS.get('prices:last') || 'null'); const ts = px && (+px.ts || +px.t || 0); const pairs = px && px.pairs; if (pairs && pairs.length && ts) { c.pxAge = Math.round((t0 - ts) / 1000); if (c.pxAge <= 180) c.px = 1; } else if (pairs && pairs.length) c.px = 1; } catch (e) {}
+  try {
+    const k = 'up:day:' + day; let d = null; try { d = JSON.parse(await env.STATS.get(k) || 'null'); } catch (e) {}
+    d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [] };
+    d.n += 1; d.store += c.store; d.coll += c.coll; d.px += c.px;
+    if (c.storeMs) { d.storeMs.push(c.storeMs); if (d.storeMs.length > 200) d.storeMs = d.storeMs.slice(-200); }
+    if (c.collMs) { d.collMs.push(c.collMs); if (d.collMs.length > 200) d.collMs = d.collMs.slice(-200); }
+    await env.STATS.put(k, JSON.stringify(d), { expirationTtl: UP_KEEP_D * 86400 });
+    await env.STATS.put('up:last', JSON.stringify(Object.assign({ ts: t0 }, c)), { expirationTtl: 86400 });
+  } catch (e) {}
+}
+async function handleStatusApi(env) {
+  const hdr = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS };
+  const ck = new Request('https://marginpad.io/__status_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const now = Date.now();
+  let hb = 0; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {}
+  let last = null; try { last = JSON.parse(await env.STATS.get('up:last') || 'null'); } catch (e) {}
+  let coll = null; try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const r = await fetch(base + '/api/v1/status', { signal: AbortSignal.timeout(6000), cf: { cacheTtl: 30 } }); const j = await r.json(); const ex = (j && j.exchanges) || []; coll = { ok: r.ok && ex.length > 0, connected: ex.filter(x => x.connected).length, total: ex.length, uptimeSec: +j.uptimeSec || 0, venues: ex.map(x => ({ name: x.name, connected: !!x.connected, lastEventAgeMin: x.lastEventAt ? Math.round((now - x.lastEventAt) / 60000) : null })) }; } } catch (e) { coll = { ok: false, connected: 0, total: 0, venues: [] }; }
+  let px = null; try { const p = JSON.parse(await env.STATS.get('prices:last') || 'null'); const ts = p && (+p.ts || +p.t || 0); px = { ok: !!(p && p.pairs && p.pairs.length) && (!ts || now - ts <= 180000), ageSec: ts ? Math.round((now - ts) / 1000) : null, pairs: p && p.pairs ? p.pairs.length : 0 }; } catch (e) { px = { ok: false }; }
+  const days = []; const p95 = (a) => { if (!a || !a.length) return null; const s = a.slice().sort((x, y) => x - y); return s[Math.max(0, Math.ceil(s.length * 0.95) - 1)]; };
+  const dayKeys = []; for (let i = UP_KEEP_D - 1; i >= 0; i--) dayKeys.push(new Date(now - i * 86400000).toISOString().slice(0, 10));
+  const rows = await Promise.all(dayKeys.map(d => env.STATS.get('up:day:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); // 90 reads in parallel: sequential they took 2-4 s and the page sat on "Checking…"
+  dayKeys.forEach((d, i) => { const r = rows[i]; if (!r) days.push({ d, n: 0 }); else days.push({ d, n: r.n, store: r.store, coll: r.coll, px: r.px, storeP95: p95(r.storeMs), collP95: p95(r.collMs) }); });
+  const expected = 144; // */10 = 144 samples a day; today's expectation is pro-rated by the page
+  const cronOk = hb > 0 && now - hb <= 25 * 60000;
+  const out = { ok: true, ts: now, now: { cron: { ok: cronOk, ageMin: hb ? Math.round((now - hb) / 60000) : null }, store: last ? { ok: !!last.store, ms: last.storeMs, sampledAgoMin: Math.round((now - last.ts) / 60000) } : null, collector: coll, prices: px }, days, expectedPerDay: expected, keepDays: UP_KEEP_D };
+  const resp = new Response(JSON.stringify(out), { headers: hdr });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
 }
 async function checkBriefDelivery(env) { // once per opted-in account per UTC day, at 08:00 or 16:00 (the hour it chose); the stamp is released when nothing went out
   if (!env.STATS || !env.USERS) return;
