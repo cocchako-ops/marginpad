@@ -552,12 +552,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       }
       // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
       // already past its 100× liq distance → the trade "instantly liquidates" the moment the real price loads. Fetch at click.
+      if(window._mcOpenBusy)return; /* a second tap while the price fetch + server open were in flight opened a SECOND real position (2026-09-12) */
+      window._mcOpenBusy=true;var _mcDone=function(){window._mcOpenBusy=false;};setTimeout(_mcDone,12000);
       msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');
       fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         var px=j&&+(j.price||j.p||0);if(!(px>0))px=livePx();
-        if(!(px>0)){msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
+        if(!(px>0)){_mcDone();msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
         try{if(j&&j.state!=null&&window.mpMktState)window.mpMktState[String(tSym).toUpperCase()]=String(j.state);}catch(_){}
-        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){msg.style.color='#ff6258';msg.textContent=tSym+' market is closed — you can trade it when it reopens.';return;} // stocks: block while the exchange is shut (consistent with the plan form)
+        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){_mcDone();msg.style.color='#ff6258';msg.textContent=tSym+' market is closed — you can trade it when it reopens.';return;} // stocks: block while the exchange is shut (consistent with the plan form)
         var long=side==='long';
         var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
         if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side — drop so it can't self-trigger
@@ -580,8 +582,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
-        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen','Open demo trade');}catch(e){}return;}_locT.cid=_locT.id;_finMc(_locT);});} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
-        else{_finMc(_locT);}
+        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen','Open demo trade');}catch(e){}return;}_locT.cid=_locT.id;_finMc(_locT);});} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
+        else{_mcDone();_finMc(_locT);}
         panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
       });
     });

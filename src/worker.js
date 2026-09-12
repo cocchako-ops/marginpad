@@ -198,7 +198,7 @@ function handleOpenApi() {
     info: {
       title: 'MarginPad Free Crypto API',
       version: '2.4.0',
-      description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. 60 requests/minute per IP. Every response uses the envelope { ok, data, error, ts }.',
+      description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
     },
@@ -14399,8 +14399,8 @@ export default {
       if (await env.STATS.get(lock)) return J({ error: 'in_progress' }, 429); // a double tap must never charge twice
       await env.STATS.put(lock, '1', { expirationTtl: 60 });
       let deb = null;
-      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents, item: 'premium1m' }) })); deb = await r.json(); } catch (e) { deb = null; }
-      if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {} return J({ error: (deb && deb.error) || 'ledger_unavailable', balance: deb && deb.balance != null ? +deb.balance / 100 : undefined }, deb && deb.error === 'insufficient' ? 402 : 503); }
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents, item: 'premium1m', once: 120 }) })); deb = await r.json(); } catch (e) { deb = null; } // once: the ledger DO itself refuses a second premium1m debit inside 120 s (the KV lock above is not atomic)
+      if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {} return J({ error: deb && deb.error === 'dup' ? 'in_progress' : (deb && deb.error) || 'ledger_unavailable', balance: deb && deb.balance != null ? +deb.balance / 100 : undefined }, deb && deb.error === 'insufficient' ? 402 : deb && deb.error === 'dup' ? 429 : 503); }
       // grant exactly like the NOWPayments IPN does for a monthly order
       let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {}
       const expiry = base + 30 * 86400000;
@@ -15389,7 +15389,7 @@ export default {
       let out = null;
       try {
         const path9 = b.op === 'refund' ? 'https://do/shoprefund' : b.op === 'debit' ? 'https://do/shopdebit' : 'https://do/gift'; // debit = take a credit back (a duplicate bonus); logged as 'shop' with the note as item
-        const body9 = b.op === 'refund' ? { acct, cents, item: String(b.item || 'refund').slice(0, 24) } : b.op === 'debit' ? { acct, cents, item: String(b.note || b.item || 'adjust').slice(0, 24) } : { acct, cents, from: String(b.note || 'MarginPad').slice(0, 24), big: true };
+        const body9 = b.op === 'refund' ? { acct, cents, item: String(b.item || 'refund').slice(0, 24) } : b.op === 'debit' ? { acct, cents, item: String(b.note || b.item || 'adjust').slice(0, 24) } : { acct, cents, once: b.force ? 0 : 60, from: String(b.note || 'MarginPad').slice(0, 24), big: true };
         const r = await led.fetch(new Request(path9, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) }));
         out = await r.json();
       } catch (e) { return J({ error: 'ledger_unavailable' }, 503); }
@@ -16269,7 +16269,7 @@ export default {
           if (src === 'usd') { // debit the ledger first, mark second, refund if the mark fails (same shape as a Vault cash buy)
             const lock = 'pass:lock:' + uS.id; if (await env.STATS.get(lock)) return new Response('{"error":"in_progress"}', { status: 429, headers: jh7 }); await env.STATS.put(lock, '1', { expirationTtl: 60 });
             const led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
-            let deb = null; try { deb = await (await led.fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uS.id, cents: PASS_PRICE_CENTS, item: 'pass' }) }))).json(); } catch (e) {}
+            let deb = null; try { deb = await (await led.fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uS.id, cents: PASS_PRICE_CENTS, item: 'pass', once: 120 }) }))).json(); } catch (e) {} // once: a double tap inside 120 s is refused by the ledger DO itself (dup), never debited twice
             if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {} return new Response(JSON.stringify(deb || { error: 'ledger_unavailable' }), { status: deb && deb.error === 'insufficient' ? 402 : 503, headers: jh7 }); }
             const mr = await stubS.fetch(new Request('https://do/pass/buy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uS.id, src: 'usd' }) }));
             const mj = await mr.json();
@@ -18014,6 +18014,10 @@ export class RewardLedger {
       if (!srow) return this.j({ error: 'no_account' }, 404);
       if (srow.banned) return this.j({ error: 'banned' }, 403);
       if ((+srow.balance || 0) < scents) return this.j({ error: 'insufficient', balance: +srow.balance || 0 });
+      // once = an idempotency window in seconds (2026-09-12): the same account buying the same item again inside it is a retry / double tap,
+      // not a second purchase — the worker's KV get-then-put "lock" was not atomic, so two taps could both debit. The DO is single-threaded, so this is.
+      const sonce = Math.min(3600, Math.max(0, +body.once || 0));
+      if (sonce) { const sdup = this.rows('SELECT ts FROM shoplog WHERE acct=? AND item=? AND kind=? AND ts>? LIMIT 1', sacct, sitem, 'buy', Date.now() - sonce * 1000)[0]; if (sdup) return this.j({ error: 'dup', balance: +srow.balance || 0, ts: sdup.ts }); }
       sql.exec('UPDATE accounts SET balance=balance-? WHERE address=?', scents, sacct);
       this.log('shop', sacct, sitem, '', -scents);
       try { sql.exec('INSERT INTO shoplog(ts,acct,item,cents,kind) VALUES(?,?,?,?,?)', Date.now(), sacct, sitem, scents, 'buy'); } catch (e) {}
@@ -18034,9 +18038,12 @@ export class RewardLedger {
       if (!gacct || gacct.indexOf('u:') !== 0 || !gcents) return this.j({ error: 'bad' }, 400);
       const grow = this.rows('SELECT banned FROM accounts WHERE address=?', gacct)[0];
       if (grow && grow.banned) return this.j({ error: 'banned' }, 403);
+      // once = seconds inside which the SAME gift (account, amount, sender) is a retry, never a second credit (2026-09-12; the 2026-09-02 double $5 was exactly this)
+      const gonce = Math.min(86400, Math.max(0, +body.once || 0)), gfrom = String(body.from || '').slice(0, 24);
+      if (gonce) { const gdup = this.rows('SELECT ts FROM acctlog WHERE acct=? AND type=? AND detail=? AND amount=? AND ts>? LIMIT 1', gacct, 'gift', gfrom, gcents, Date.now() - gonce * 1000)[0]; if (gdup) { const gb0 = this.rows('SELECT balance FROM accounts WHERE address=?', gacct)[0]; return this.j({ error: 'dup', ts: gdup.ts, balanceUsd: (gb0 ? gb0.balance : 0) / 100 }); } }
       if (!grow) sql.exec('INSERT INTO accounts(address,balance,earned,created) VALUES(?,0,0,?)', gacct, now);
       sql.exec('UPDATE accounts SET balance=balance+?, earned=earned+? WHERE address=?', gcents, gcents, gacct);
-      this.log('gift', gacct, String(body.from || '').slice(0, 24), '', gcents);
+      this.log('gift', gacct, gfrom, '', gcents);
       const gbal = this.rows('SELECT balance FROM accounts WHERE address=?', gacct)[0];
       return this.j({ ok: true, balanceUsd: (gbal ? gbal.balance : 0) / 100 });
     }

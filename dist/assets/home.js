@@ -2865,7 +2865,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=6ac66a3c'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=377e83a3'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -2904,7 +2904,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       +'<div class="ptl-risk">SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fmt):(e.stop!=null?fmt(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fmt):(e.tp!=null?fmt(e.tp):'—'))+'</b><button type="button" class="ptl-sltp" data-ptl-sltp="'+e.id+'">'+((e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length))?'Edit':'Set')+'</button></div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-sltp]'))setTimeout(updPnl,60);}); // the sheet stores; this card just re-reads the journal
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
-  function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
+  function openPos(){if(openPos._busy)return; /* a second tap while the server open is in flight opened a SECOND real position (two cids) — 2026-09-12 */ if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
     if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));return;} // stocks: no fills while the exchange is shut (consistent with the plan form)
     // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
     // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
@@ -2920,7 +2920,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+side+' '+lev+'x');}catch(e){} /* every open shows in ops Live activity (this quick-tap path was silent) */
     if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
     try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */};
-    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,cid:pos.id},function(t){_finMt(t);},function(err){if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}pos.cid=pos.id;_finMt(pos);});}else{_finMt(pos);}} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
+    if(window.mpSrvOpen){openPos._busy=true;var _mtd=function(){openPos._busy=false;};setTimeout(_mtd,12000);if(goEl)goEl.textContent=(window.mpT&&window.mpT('jOpening'))||'Opening…';window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,cid:pos.id},function(t){_mtd();_finMt(t);},function(err){_mtd();if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}pos.cid=pos.id;_finMt(pos);});}else{_finMt(pos);}} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
   var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,_mtq=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
@@ -3447,7 +3447,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=fb537dd5'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=8c90daf1'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }
