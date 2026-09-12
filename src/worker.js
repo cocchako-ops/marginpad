@@ -1748,7 +1748,7 @@ async function handleCgLiquidations(url, env) {
  const coins = h.bySym.map(x => ({ s: x.s, liq: (+x.l || 0) + (+x.sh || 0), long: +x.l || 0, short: +x.sh || 0 })).filter(c => c.liq > 0);
       coins.sort((a, b) => b.liq - a.liq);
  const L = coins.reduce((a, c) => a + c.long, 0), S = coins.reduce((a, c) => a + c.short, 0);
-      out.market = { long: L, short: S, total: L + S, count: coins.length };
+      out.market = { long: L, short: S, total: L + S, count: (+h.tot.n > 0 ? +h.tot.n : coins.length), coinsN: coins.length }; // count = liquidation ORDERS in 24h (h24.tot.n); it was the coin list length, capped at 300, and printed as "300 positions" on /rekt, in the wrap and in the brief (owner audit 2026-09-12)
       out.coins = coins.slice(0, 30);
  out.exchanges = Array.isArray(h.byEx) ? h.byEx.length : null;
  if (h.big && h.big.notional) out.big = { ex: h.big.exchange, s: h.big.symbol, side: h.big.side, usd: +h.big.notional };
@@ -4344,6 +4344,7 @@ async function checkXPost(env, force, gen) {
   if (env && env.ENVIRONMENT === 'staging') return;
   let cfg = {}; try { cfg = await opsCfg(env); } catch (e) {}
   if (cfg.xPost === false) return; // kill switch: ops:cfg xPost:false
+  try { const pu = +(await env.STATS.get('xpost:pause')) || 0; if (pu > Date.now()) return; } catch (e) {} // self-paused after a spend-cap answer, until the 1st of next month
   const X_SLOTS = [13, 19, 0]; // 3 peak UTC hours (US morning/EU pm · US midday · Asia morning/US evening)
   const NEWS_SLOT = 1; // the 19:00 UTC slot is the daily news-story post (own words + adaptive hashtags)
   const now = new Date(), hour = now.getUTCHours(), day = now.toISOString().slice(0, 10);
@@ -4378,6 +4379,14 @@ async function checkXPost(env, force, gen) {
   } catch (e) {}
   // Post FAILED on a scheduled slot → almost always X credits depleted (402). Ping the owner once/day so they know to top up.
   if (!force && !res.ok) {
+    const capHit = (res.status === 402 || res.status === 403) && /cap|credit|spend|billing|quota/i.test(String(res.error || ''));
+    if (capHit) { // 2026-09-12: the monthly spend cap paged the owner every day and the poster kept burning a slot; it now pauses itself until the cap resets on the 1st
+      const d0 = new Date(); const until = Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth() + 1, 1);
+      try { await env.STATS.put('xpost:pause', String(until), { expirationTtl: Math.max(3600, Math.round((until - Date.now()) / 1000) + 3600) }); } catch (e) {}
+      const ak2 = 'alrt:xpostpause:' + d0.toISOString().slice(0, 7);
+      if (!(await env.STATS.get(ak2))) { await env.STATS.put(ak2, '1', { expirationTtl: 40 * 86400 }); await tgAdmin(env, '<b>X auto-post paused</b> until ' + new Date(until).toISOString().slice(0, 10) + ' — X answered ' + res.status + ': ' + String(res.error || '').slice(0, 120) + '\nTop up in the X Developer Portal to resume earlier (the pause lifts itself on the 1st, or delete KV xpost:pause).', { kind: 'x-post-paused', sev: 'warn' }); }
+      return res;
+    }
     const ak = 'alrt:xpost:' + day;
     if (!(await env.STATS.get(ak))) {
       await env.STATS.put(ak, '1', { expirationTtl: 172800 });
@@ -4909,6 +4918,10 @@ function alertSevOf(text) { const t = String(text || ''); if (/recovered|login O
 async function tgAdmin(env, text, opts) { // tgApi never throws (null on network error, {ok:false} on API error) — the old version returned true unconditionally, so nothing could ever learn that admin alerts were dead. opts {kind, sev} override the derived alert identity (digests whose text starts with a username need it).
   if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false;
   const kind = (opts && opts.kind) || alertKindOf(text), sev = (opts && opts.sev) || alertSevOf(text), plain = String(text || '').replace(/<[^>]+>/g, '').slice(0, 220);
+  // QUIET lines (2026-09-12 alert audit: 395 messages a week, ~40 of them signal): a caller can ask for record-only (opts.quiet), and any
+  // non-red line about an e2e test account (e2e_<uid> usernames are reserved for the E2E harness) is recorded in the alert log but never
+  // sent — the owner's phone carried 60+ lines a week of the site testing itself.
+  if ((opts && opts.quiet) || (sev !== 'red' && /(^|[^a-z0-9])e2e[_a-z0-9]{3,}/i.test(plain))) { try { await opslogPush(env, 'alertlog', { ts: Date.now(), k: kind, s: sev, t: plain, ok: false, sup: true, quiet: true }, 400, 30 * 86400000); } catch (e) {} return true; }
   try { const sz = +(await env.STATS.get('alrt:snooze:' + kind)) || 0; if (sz > Date.now()) { try { await opslogPush(env, 'alertlog', { ts: Date.now(), k: kind, s: sev, t: plain, ok: false, sup: true }, 400, 30 * 86400000); } catch (e) {} return true; } } catch (e) {} // snoozed from Telegram/mp-ops: swallowed but recorded; "true" so callers keep their own dedupe bookkeeping
   const kb = sev === 'info' ? undefined : { inline_keyboard: [[{ text: 'Ack', callback_data: 'ak:' + kind }, { text: 'Snooze 6h', callback_data: 'sz6:' + kind }, { text: 'Snooze 24h', callback_data: 'sz24:' + kind }], [{ text: 'Open pocket view', url: 'https://marginpad.io/api/stats/pocket' }]] };
   let r = null; try { r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text, ...(kb ? { reply_markup: kb } : {}) }); } catch (e) { r = null; }
@@ -5260,12 +5273,14 @@ async function sweepServerPositions(env) {
       if (syms.length < CAP) syms = syms.concat(allSyms.slice(0, CAP - syms.length)); // wrap so a partial tail run still fills to CAP
       try { await env.STATS.put('sweep:cursor', String((cur + CAP) % allSyms.length), { expirationTtl: 3600 }); } catch (e) {}
     }
-    // stale-orphan watchdog: a server trade open >7 days is almost certainly stuck (never priced, or a bug) — alert once/day
+    // stale-orphan watchdog: the oldest open server trade. An old position that still gets priced is a swing trader, not a bug (2026-09-12 audit:
+    // the daily "50 days old" line paged for weeks while every symbol was quoted); a position nobody can price is the DEAD FEED path above.
+    // So this is a once-a-WEEK info line, not a daily warning.
     try {
       if (os.oldestMs && Date.now() - os.oldestMs > 7 * 86400000) {
-        const day = new Date().toISOString().slice(0, 10);
-        if (!(await env.STATS.get('alrt:orphan:' + day))) { await env.STATS.put('alrt:orphan:' + day, '1', { expirationTtl: 172800 });
-          await tgAdmin(env, 'Server-trade reconcile: an open position is ' + Math.floor((Date.now() - os.oldestMs) / 86400000) + ' days old (' + (os.n || 0) + ' open symbols across ' + (os.owners || 0) + ' traders). Check for a stuck/orphaned trade.'); }
+        const wk = Math.floor(Date.now() / (7 * 86400000));
+        if (!(await env.STATS.get('alrt:orphan:w' + wk))) { await env.STATS.put('alrt:orphan:w' + wk, '1', { expirationTtl: 8 * 86400 });
+          await tgAdmin(env, 'Server trades: the oldest open position is ' + Math.floor((Date.now() - os.oldestMs) / 86400000) + ' days old (' + (os.n || 0) + ' open symbols across ' + (os.owners || 0) + ' traders). Priced positions are fine at any age; an unpriced one shows up as DEAD FEED.', { kind: 'server-trades-oldest', sev: 'info' }); }
       }
     } catch (e) {}
     const prices = {}, klines = {}, states = {};
@@ -5279,11 +5294,21 @@ async function sweepServerPositions(env) {
       // transient upstream outage looks identical to a delisting; the decision is the owner's.
       try { if (prices[k] == null && !(klines[k] && klines[k].length)) {
         const dfk = 'deadfeed:' + k, dfn = (+(await env.STATS.get(dfk)) || 0) + 1;
-        await env.STATS.put(dfk, String(dfn), { expirationTtl: 1800 });
-        if (dfn >= 3) { const dfday = new Date().toISOString().slice(0, 10);
-          if (!(await env.STATS.get('alrt:deadfeed:' + k + ':' + dfday))) { await env.STATS.put('alrt:deadfeed:' + k + ':' + dfday, '1', { expirationTtl: 172800 });
-            await tgAdmin(env, '<b>DEAD FEED: ' + k + '</b> — open positions exist but no source returns a price or klines (' + dfn + ' consecutive sweeps). Likely a DELISTING (HMM class): those positions cannot settle server-side. Decide manually (ops) — do not assume outage = delist.'); } }
-      } } catch (e) {}
+        await env.STATS.put(dfk, String(dfn), { expirationTtl: 7200 });
+        if (dfn >= 6) { const dfday = new Date().toISOString().slice(0, 10); // 6 misses (~1 h of sweeps), not 3: on 2026-09-12 four fresh Bybit listings paged "dead" during a short upstream gap and were quoted again within the hour
+          // DELISTING SETTLEMENT (owner 2026-09-12; HAJIMI / NIULAI / RAYDIUM / PUMPFUN had held open positions for 50 days with a daily
+          // alert and no way out): the first dead day is stamped; once a symbol has had NO price from any source for 7 days its open
+          // server positions are settled at their ENTRY price (P&L 0, fees waived, no ledger/board/XP effect — no exchange mark exists
+          // for a coin nobody quotes) and the ticket says so. A feed that comes back inside the week clears the stamp.
+          const ffk = 'deadfeed:first:' + k; let first = +(await env.STATS.get(ffk)) || 0;
+          if (!first) { first = Date.now(); await env.STATS.put(ffk, String(first), { expirationTtl: 45 * 86400 }); }
+          if (Date.now() - first >= 7 * 86400000) {
+            try { const dr = await usersDO(env, '/delist', { sym: k, reason: 'no price from any source for ' + Math.floor((Date.now() - first) / 86400000) + ' days' });
+              if (dr && dr.ok) { await env.STATS.delete(ffk); await tgAdmin(env, '<b>DELISTED: ' + k + '</b> — no source has quoted it for ' + Math.floor((Date.now() - first) / 86400000) + ' days; ' + (dr.positions || 0) + ' open position' + (dr.positions === 1 ? '' : 's') + ' of ' + (dr.users || 0) + ' trader' + (dr.users === 1 ? '' : 's') + ' settled at entry (P&amp;L 0, no board or XP effect). Undo is not possible; the tickets carry the note.', { kind: 'delisted-settled', sev: 'warn' }); }
+            } catch (e) {}
+          } else if (!(await env.STATS.get('alrt:deadfeed:' + k + ':' + dfday))) { await env.STATS.put('alrt:deadfeed:' + k + ':' + dfday, '1', { expirationTtl: 172800 });
+            await tgAdmin(env, '<b>DEAD FEED: ' + k + '</b> — open positions exist but no source returns a price or klines (' + dfn + ' consecutive sweeps, dead since ' + new Date(first).toISOString().slice(0, 10) + '). If it stays dead for 7 days the positions settle at entry automatically; to settle now: /api/admin/delist?sym=' + k + '&run=1'); } }
+      } else { try { await env.STATS.delete('deadfeed:first:' + k); } catch (e) {} } } catch (e) {}
       await new Promise(r => setTimeout(r, 50));
     }
     let rates = null;
@@ -5616,6 +5641,7 @@ async function checkMorningBrief(env) {
       'Registracije 24h: <b>' + (us.signups24 || 0) + '</b>' + arrow(us.signups24 || 0, us.signupsPrev || 0) + ' · aktivnih 24h: ' + (us.active24 || 0) + ' · ukupno: ' + (us.total || 0),
       'Faucet danas: $' + (+rw.dispensedTodayUsd || 0).toFixed(2) + ' / $' + (+rw.dailyCapUsd || 0).toFixed(0) + (pend ? ' · <b>' + pend + ' isplata na čekanju ($' + pendUsd.toFixed(2) + ')</b>' : ' · nema isplata na čekanju'),
       'Community: ' + posts24 + ' post' + (posts24 === 1 ? '' : 'a') + ' u 24h',
+      'Likvidacije članova juče: <b>' + (await g('alrt:liqn:' + yd)) + '</b> (u Telegram odmah idu samo one sa ulogom od $500 naviše)',
       (errY || srvY) ? ('Juče: ' + errY + ' broken pages · ' + srvY + ' server errors') : 'Juče bez grešaka',
       await (async () => { // signal-engine daily proof-of-life for the owner (heartbeat + how many went out yesterday)
         try { const sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); const yd = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
@@ -5836,11 +5862,17 @@ async function checkOpsAlerts(env) {
       const cutP = Date.now() - 8 * 3600000, dayP = new Date().toISOString().slice(0, 10); // 8h = full ring retention → ~30+ samples even for the sparse UX beacons
       const byG = {}; for (const it of ring) { if (!it || (it.t || 0) < cutP) continue; (byG[it.g] = byG[it.g] || []).push(+it.ms || 0); }
       const breaches = [];
+      // 2026-09-12 audit: every perf page of the week (trade-other 3x, klines 3x, ws 2x, fps 2x) came from an 8h ring of 31-46 samples while the
+      // day-level p95 in AE (n = 2,800-4,000) sat inside the budget all week. A ring breach is now a CANDIDATE: it pages only when the SAME
+      // group's p95 for today in AE (>= 300 samples) is also over budget — drift, not a one-off. AE unreachable = page as before.
+      const dayP95 = async (g) => { try { const r = await aeQuery(env, "SELECT count() AS n, quantileWeighted(0.95)(double1, _sample_interval) AS p95 FROM marginpad_events WHERE index1 = 'perf' AND blob2 = '" + g + "' AND timestamp > now() - INTERVAL '1' DAY FORMAT JSON"); const row = r && r[0]; return row && +row.n >= 300 ? { n: +row.n, p95: Math.round(+row.p95) } : null; } catch (e) { return null; } };
       for (const g in BUDGET) { const a = byG[g]; if (!a || a.length < 30) continue; a.sort((x, y) => x - y); const p95 = a[Math.max(0, Math.ceil(a.length * 0.95) - 1)]; // nearest-rank (floor() returns the MAX at the low-n boundary)
-        if (p95 > BUDGET[g] && !(await env.STATS.get('alrt:perf:' + g + ':' + dayP))) { await env.STATS.put('alrt:perf:' + g + ':' + dayP, '1', { expirationTtl: 100000 }); breaches.push(g + ' p95=' + p95 + 'ms (budget ' + BUDGET[g] + ', n=' + a.length + ') -> suggest ' + Math.max(Math.round(p95 * 1.5), p95 + 150)); } }
-      try { // fps: frames per second, so the alert is a FLOOR (janky client), not a ceiling
+        if (p95 > BUDGET[g] && !(await env.STATS.get('alrt:perf:' + g + ':' + dayP))) { await env.STATS.put('alrt:perf:' + g + ':' + dayP, '1', { expirationTtl: 100000 });
+          const dp = await dayP95(g); if (dp && dp.p95 <= BUDGET[g]) continue; // the day says fine: a spike in a small window, not a regression
+          breaches.push(g + ' p95=' + p95 + 'ms (budget ' + BUDGET[g] + ', n=' + a.length + (dp ? '; today in AE p95=' + dp.p95 + 'ms n=' + dp.n : '') + ') -> suggest ' + Math.max(Math.round(p95 * 1.5), p95 + 150)); } }
+      try { // fps: frames per second, so the alert is a FLOOR (janky client), not a ceiling. p05 of 32 samples is the 2nd-slowest client: it needs 100+ to mean anything.
         const fa = byG['fps'];
-        if (fa && fa.length >= 30) { const s = fa.slice().sort((x, y) => x - y); const p05 = s[Math.max(0, Math.ceil(s.length * 0.05) - 1)];
+        if (fa && fa.length >= 100) { const s = fa.slice().sort((x, y) => x - y); const p05 = s[Math.max(0, Math.ceil(s.length * 0.05) - 1)];
           if (p05 < 30 && !(await env.STATS.get('alrt:perf:fps:' + dayP))) { await env.STATS.put('alrt:perf:fps:' + dayP, '1', { expirationTtl: 100000 }); breaches.push('fps p05=' + p05 + 'fps (floor 30, n=' + fa.length + ') — the slowest 5% of clients are janky'); } }
       } catch (e) {}
       if (breaches.length) await tgAdmin(env, '<b>PERFORMANCE BUDGET BREACH</b>\n' + breaches.map(x => '· ' + x).join('\n') + '\nRegression thresholds (calibrated 2026-07-26 = p95 x1.5). A breach = ~50% slower than baseline; set to the -> suggest value only after confirming it is real drift, not a one-off.\nDetail: ops -> Performance tab.');
@@ -5874,7 +5906,12 @@ async function checkOpsAlerts(env) {
       if (evT.length) {
         const maxTs = Math.max(...evT.map(e2 => +e2.ts || 0));
         const big = +cfg.bigTrade || 0;
-        const hot = evT.filter(e2 => (e2.kind === 'open' && big > 0 && +e2.margin >= big) || (e2.kind === 'close' && e2.liq));
+        // Liquidations: only a member losing a real stake (margin >= $500) pages at once; the rest are counted per day and printed in the
+        // morning brief. Measured 2026-09-12: 269 of 395 admin lines in a week were "@x LIKVIDIRAN … −$100", one for every $100 paper liquidation.
+        const LIQ_PAGE_USD = 500;
+        const allLiq = evT.filter(e2 => e2.kind === 'close' && e2.liq);
+        const hot = evT.filter(e2 => (e2.kind === 'open' && big > 0 && +e2.margin >= big) || (e2.kind === 'close' && e2.liq && Math.max(+e2.margin || 0, Math.abs(+e2.pnl || 0)) >= LIQ_PAGE_USD));
+        if (allLiq.length) { try { const dk = 'alrt:liqn:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + allLiq.length), { expirationTtl: 3 * 86400 }); } catch (e) {} }
         if (hot.length) {
           const fmtU = (e2) => '@' + (e2.username || String(e2.email || '').split('@')[0] || '?');
           const lines = hot.slice(0, 6).map(e2 => e2.kind === 'open'
@@ -5928,12 +5965,17 @@ async function collectorStatusInfo(env) {
  // longer than its own liquidation cadence allows: the busy venues liquidate something every few minutes,
  // the thin ones (BitMEX, Bitfinex, COIN-M, dYdX, HTX) can legitimately go hours. A disconnected socket
  // that has not spoken for 15 minutes is silent regardless of volume. Not evaluated while booting.
- const BUSY_H = { binance: 2, bybit: 2, okx: 2, hyperliquid: 2, gate: 3 };
+ // 2026-09-12 audit: BitMEX (6 liquidations in 53 h), dYdX and Bitfinex paged "silent" 11 times in a week while connected and healthy —
+ // their silence carries no information, so a THIN venue alarms only when its socket is gone; Hyperliquid has no public liquidation
+ // feed (counterparty harvest) and legitimately goes 2-4 h without a catch in a quiet market, so its threshold is 6 h.
+ const BUSY_H = { binance: 2, bybit: 2, okx: 2, hyperliquid: 6, gate: 3 };
+ const THIN = { bitmex: 1, bitfinex: 1, dydx: 1, 'binance-coin': 1 };
  const since0 = st.startedAt || (now - (st.uptimeSec || 0) * 1000); // a venue with no event yet is measured from process start, so a fresh restart does not page for every thin venue at once
  const silent = booting ? [] : exs.filter((e) => {
  const lim = (BUSY_H[e.name] || 12) * 3600000;
  const noEvent = now - (e.lastEventAt || since0) > lim;
  const noMsg = now - (e.lastMsgAt || since0) > 900000;
+ if (THIN[e.name]) return !e.connected && noMsg;
  return (!e.connected && noMsg) || (e.connected && noEvent);
  }).map((e) => ({ name: e.name, connected: !!e.connected, sinceH: Math.round((now - (e.connected ? (e.lastEventAt || since0) : (e.lastMsgAt || since0))) / 360000) / 10 }));
  return { state, reason: '', anyRecent, conn, total, uptimeSec: st.uptimeSec || 0, silent };
@@ -14633,7 +14675,7 @@ export default {
       const ip = request.headers.get('cf-connecting-ip') || '', cc = (request.cf && request.cf.country) || '?';
       const tok = _rndHex(32);
       await env.STATS.put('adm:sess:mp_sadm:' + tok, JSON.stringify({ ts: Date.now(), ip, ua: 'ops-e2e', e2e: true }), { expirationTtl: 2 * 3600 });
-      try { await tgAdmin(env, 'Ops E2E session minted from ' + ip + ' (' + cc + ') - expires in 2h.'); } catch (e) {}
+      try { const k6 = 'alrt:e2esess:' + ip + ':' + Math.floor(Date.now() / 21600000); if (!(await env.STATS.get(k6))) { await env.STATS.put(k6, '1', { expirationTtl: 21600 }); await tgAdmin(env, 'Ops E2E session minted from ' + ip + ' (' + cc + ') - expires in 2h. Further mints from this address in the next 6 h are not repeated.'); } } catch (e) {} // security signal (someone holds the ADMIN_KEY) kept; the E2E runs that mint 30 a week from one address are batched (2026-09-12)
       return new Response(JSON.stringify({ ok: true, token: tok, ttl: 7200 }), { headers: jh });
     }
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
@@ -15487,6 +15529,13 @@ export default {
       try { usdDay = +(await env.STATS.get('shop:usd:' + day)) || 0; } catch (e) {}
       return J({ ...ds, day, xpSinkToday: xpDay, usdSinkTodayCents: usdDay });
     }
+    if (url.pathname === '/api/admin/delist' && isAdminKey(env, adminKeyFrom(request, url))) { // key only: ?sym=X (dry run: who holds it) · &run=1 settles at entry NOW (the sweep does it by itself after 7 dead days)
+      const symA = String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16); if (!symA) return J({ error: 'no_sym' }, 400);
+      const run = url.searchParams.get('run') === '1';
+      const dr = await usersDO(env, '/delist', { sym: symA, dry: !run, reason: run ? 'settled by the owner from mp-ops' : '' });
+      if (run && dr && dr.ok && dr.positions) { try { await env.STATS.delete('deadfeed:first:' + symA); await tgAdmin(env, '<b>DELISTED: ' + symA + '</b> — settled by hand: ' + dr.positions + ' position' + (dr.positions === 1 ? '' : 's') + ' of ' + dr.users + ' trader' + (dr.users === 1 ? '' : 's') + ' at entry (P&amp;L 0).', { kind: 'delisted-settled', sev: 'warn' }); } catch (e) {} }
+      return J(dr || { error: 'unavailable' });
+    }
     if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // last srv-sweep summary (swept/checked/staleN) — observability for the candle-check rollout
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
       return J({ last });
@@ -15862,7 +15911,7 @@ export default {
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'POST' && url.searchParams.get('purge')) { // POST ?purge=<substring>: delete matching rows from the 24h rings (owner cleanup of test traffic)
         const q = String(url.searchParams.get('purge') || '').slice(0, 64);
-        try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, keys: ['evlog', 'pvlog', 'authlog'] }) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info' }); } catch (e) {} return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); }
+        try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, keys: ['evlog', 'pvlog', 'authlog'] }) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info', quiet: true }); } catch (e) {} /* quiet = record-only: the E2E cleanup ran this 26 times a week into the owner's phone (2026-09-12); mp-ops Alerts keeps the trail */ return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); }
       }
       if (request.method === 'POST' && url.searchParams.get('inject') && isAdminKey(env, adminKeyFrom(request, url))) { // E2E hook (key only): store rows as if the site had written them — every row is forced e2 so the daily read never shows them
         let b = {}; try { b = await request.json(); } catch (e) {}
@@ -19120,7 +19169,7 @@ export class UserStore {
     sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, e2, now, now);
     return { uid: row.uid, k, name: row.name || '', un, tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
   }
-  _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
+  _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a.filter(x => !(x && x.status === 'planned')) : []; } } catch (e) {} return []; } // 'planned' rows (a June 2026 plan-form feature no bundle writes any more) are not positions: every reader treated "not win/loss" as open, so three XRP plans from 2026-06-11 surfaced as open positions on the owner's own account (2026-09-12). Filtered at the ONE read point; the next journal write drops them for good.
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) — the SQL row is never leaked raw.
   _ordJson(r) { if (!r) return null; return { id: r.id, uid: r.uid, ts: +r.ts || 0, sym: String(r.sym || ''), side: r.side === 'short' ? 'short' : 'long', px: +r.px || 0, lev: +r.lev || 1, margin: +r.margin || 0, sl: (r.sl == null ? null : +r.sl), tp: (r.tp == null ? null : +r.tp), expTs: +r.expTs || 0, status: String(r.status || ''), tid: r.tid || null, note: r.note || '', doneTs: +r.doneTs || 0, src: String(r.src || 'site'), swT: +r.swT || 0, dir: (r.dir === 'up' || r.dir === 'down') ? r.dir : ((r.side === 'short') ? 'up' : 'down'), trail: (+r.trail > 0 ? +r.trail : null), fv: r.fv || null }; }
   // The account's default fee venue (uprefs k='feevenue'), '' when none. Read on open / order placement only.
@@ -20542,6 +20591,35 @@ export class UserStore {
       this._opsEv(uid, 'sltp', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase().slice(0, 12) + ' SL ' + (sl == null ? 'off' : sl) + ' / TP ' + (tp == null ? 'off' : tp), '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), sl, tp, id: String(t.id || '').slice(0, 24) });
       try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff
       return this.j({ ok: true, position: upd });
+    }
+    if (path === '/delist') { // DELISTING SETTLEMENT (2026-09-12): close every open server/bot position on `sym` at its ENTRY price. P&L 0, fees waived, sc:1 final,
+      // note on the ticket, NO tradeev row (boards / report / records untouched), no XP, webhook position.closed with reason 'delisted'. {sym, dry, reason}
+      const symQ = String(b.sym || '').toUpperCase().replace(/USDT$/, '').slice(0, 16); if (!symQ) return this.j({ error: 'no_sym' }, 400);
+      const dry = !!b.dry, reason = String(b.reason || 'delisted').slice(0, 120), nowD = Date.now();
+      let users = 0, positions = 0; const sample = [];
+      try {
+        for (const r of this.rows('SELECT user_id FROM active_srv LIMIT 5000')) {
+          const uid = r.user_id; const jn = this._loadJournal(uid); let hit = 0;
+          for (const t of jn) {
+            if (!t || (t.status === 'win' || t.status === 'loss')) continue;
+            if (String(t.sym || '').toUpperCase().replace(/USDT$/, '') !== symQ) continue;
+            if (!(t.src === 'srv' || t.src === 'bot' || String(t.id || '').slice(0, 3) === 'srv')) continue;
+            hit++; positions++; if (sample.length < 5) sample.push({ uid, id: t.id, side: t.side, lev: t.lev, margin: t.margin, entry: t.entry, ts: t.ts });
+            if (dry) continue;
+            t.exit = +t.entry || 0; t.pnl = 0; t.status = 'loss'; t.closeTs = nowD; t.sc = 1; t.delisted = 1; t.via = 'delist'; t.fund = 0;
+            t.note = 'Delisted — no exchange has quoted ' + symQ + ' for a week; settled at entry (P&L 0, fees waived). ' + reason;
+            try { this._whEnqueue(uid, 'position.closed', Object.assign(this._j2bot(t, null), { reason: 'delisted' })); } catch (e2) {}
+          }
+          if (hit) { users++; if (!dry) {
+            let w2 = 0, l2 = 0, o2 = 0, p2 = 0;
+            for (const e of jn) { const st = e && e.status; if (st === 'win') w2++; else if (st === 'loss') l2++; else o2++; const pv2 = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(pv2)) p2 += pv2; }
+            sql.exec('UPDATE utrades SET json=?, n=?, wins=?, losses=?, opens=?, pnl=?, updated=? WHERE user_id=?', JSON.stringify(jn), jn.length, w2, l2, o2, p2, nowD, uid);
+            if (!jn.some(x => x && (x.src === 'srv' || x.src === 'bot') && x.status !== 'win' && x.status !== 'loss')) { try { sql.exec('DELETE FROM active_srv WHERE user_id=?', uid); } catch (e3) {} }
+            this._opsEv(uid, 'delist', symQ + ': ' + hit + ' position' + (hit === 1 ? '' : 's') + ' settled at entry (delisted)', '/paper-trade', { sym: symQ, n: hit });
+          } }
+        }
+      } catch (e) { return this.j({ error: 'failed', detail: String(e && e.message || e).slice(0, 120) }, 500); }
+      return this.j({ ok: true, sym: symQ, dry, users, positions, sample });
     }
     if (path === '/tradeopensyms') { // cron sweep support: distinct symbols of ALL open server/bot-filled trades across every journal
       const syms = new Set(); let owners = 0;
