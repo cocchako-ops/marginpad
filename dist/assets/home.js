@@ -1171,10 +1171,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
     var sym=String(e&&e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!sym)return '';
+    if(String(e.feeVenue||'').toLowerCase()==='mexc')return ''; /* already charged at MEXC's rate \u2014 nothing to compare */
     var b=feeBrk(e),tot=feeF(b.total);
+    /* 2026-09-12 (owner: "the card says the fee would be the same on MEXC, which is false"): compute what THIS round trip costs at
+       MEXC's taker rate (0.02%, from the shared venue table) \u2014 the fee legs scale with the rate, so mexc = (open+close) x 0.0002/rate. */
+    var _rt=(+e.feeRate>0?+e.feeRate:0.00055),_mxT=(window.mpFeeVenues&&window.mpFeeVenues.mexc&&+window.mpFeeVenues.mexc.t>0)?+window.mpFeeVenues.mexc.t/100:0.0002;
+    var _legs=(+b.fo||0)+(+b.fc||0),_mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0.005))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
-      +'<b>'+MT('jFeeMx','MEXC charges 0% maker, ~0.02% taker on futures.')+'</b>'
-      +'<span>'+MT('jFeeMx2','This round trip cost you')+' '+tot+' '+MT('jFeeMx3','in fees \u2014 open '+sym+' there')+' \u2192</span></a>';
+      +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','instead of')+' '+feeF(_legs)+' \u2014 '+MT('jFeeMxC','you keep')+' '+feeF(_save)+'</b>'
+      +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
   }catch(_){return '';} }
   if(!window._mpFeeWired){window._mpFeeWired=1;
     document.addEventListener('click',function(ev){

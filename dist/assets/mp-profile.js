@@ -28,7 +28,7 @@
     + '.lbm-rech span{font-weight:700;letter-spacing:.04em;text-transform:none;color:#6c7681}'
     + '.lbm-rec{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:7px;margin-bottom:12px}'
     + '.lbm-r{padding:8px 9px;border-radius:10px;background:linear-gradient(180deg,rgba(255,215,90,.07),rgba(255,215,90,.02));border:1px solid rgba(255,215,90,.18);min-width:0}'
-    + '.lbm-r b{display:block;font:800 14px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em;color:#ffe08a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.lbm-r b{display:block;font:800 13.5px "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;color:#ffe08a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}'
     + '.lbm-r span{display:block;margin-top:2px;font:600 10px "Space Mono",monospace;color:#8a93a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.lbm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:15px}'
     + '.lbm-s{min-width:0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 6px;text-align:center;overflow:hidden}'
@@ -101,12 +101,16 @@
           + stat(moneyC(s2.realized || 0), 'Realized P&L', (s2.realized >= 0 ? '#34d99a' : '#ff6c5c'))
           + stat(moneyC(s2.weekPnl || 0), (s2.weekTrades || 0) + ' trades · wk', (s2.weekPnl >= 0 ? '#34d99a' : '#ff6c5c'))
         + '</div>'
-        // Personal records (2026-09-06): all-time, kept forever. Shown only once there is something to show.
+        // Personal records. SEASON records since 2026-09-12 (owner: the "all time" table was fed only by closes after 2026-09-06, so a
+        // veteran's real bests were missing) — the server computes them from the close ledger of the current 14-day season (records.scope).
+        // Values are compacted (k/M, whole-number ROE past 100%) because a 96px tile with nowrap+ellipsis cut "+$12,345.67" in half.
         + (function () { var R = d.records; if (!R || (R.roe == null && R.pnl == null && !R.streak && !R.day)) return '';
             var rec = function (v, l, t) { return '<div class="lbm-r"' + (t ? ' title="' + new Date(t).toISOString().slice(0, 10) + '"' : '') + '><b>' + v + '</b><span>' + l + '</span></div>'; };
-            return '<div class="lbm-rech">Records <span>all time</span></div><div class="lbm-rec">'
-              + (R.roe != null ? rec('+' + R.roe + '%', 'best ROE', R.roeTs) : '')
-              + (R.pnl != null ? rec('+$' + Number(R.pnl).toFixed(2), 'biggest win', R.pnlTs) : '')
+            var cm = function (x) { x = +x || 0; var a = Math.abs(x); return (x < 0 ? '-' : '') + '$' + (a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e4 ? (a / 1e3).toFixed(1) + 'k' : a.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); };
+            var cr = function (r) { r = +r || 0; return (r >= 0 ? '+' : '') + (Math.abs(r) >= 100 ? Math.round(r).toLocaleString('en-US') : r.toFixed(1)) + '%'; };
+            return '<div class="lbm-rech">Records <span>' + (R.scope === 'season' ? 'this season' : 'since Sep 6, 2026') + '</span></div><div class="lbm-rec">'
+              + (R.roe != null ? rec(cr(R.roe), 'best ROE', R.roeTs) : '')
+              + (R.pnl != null ? rec(cm(R.pnl), 'biggest win', R.pnlTs) : '')
               + (R.streak >= 2 ? rec(R.streak + ' in a row', 'win streak', R.streakTs) : '')
               + (R.day >= 3 ? rec(R.day, 'closes in a day', R.dayTs) : '')
               + '</div>'; })()

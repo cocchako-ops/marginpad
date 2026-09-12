@@ -788,7 +788,15 @@
       + '<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @' + esc(name) + '…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>';
     var bk = bodyEl.querySelector('#mpaDmBack'); if (bk) bk.addEventListener('click', renderDmInbox);
     var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), send = bodyEl.querySelector('#mpaDmSend'), warn = bodyEl.querySelector('#mpaDmWarn');
-    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi </div>'; return; } scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); scroll.scrollTop = scroll.scrollHeight; }
+    var lastKey = '';
+    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi</div>'; lastKey = ''; return; }
+      // re-render only when the thread changed; keep the reader's place unless they were already at the bottom (2026-09-12: the thread loaded ONCE and a reply never appeared until the chat was closed and reopened)
+      var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length; if (key === lastKey) return; lastKey = key;
+      var atBottom = (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight) < 40 || !scroll.children.length || !!scroll.querySelector('.mpa-dm-empty');
+      scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
+    function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); }).catch(function () {}); }
+    var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
+    var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? 'User not found.' : 'Could not load this chat.') + '</div>'; return; }
       if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); var av = bodyEl.querySelector('#mpaDmAv'); if (av) av.style.background = dmCol(d.other.name); }

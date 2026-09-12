@@ -926,7 +926,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations","url":"https://marginpad.io//","dateModified":"2026-09-11T11:28:06.136Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
@@ -2133,9 +2133,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=b4800068"></script>
-<script defer src="/assets/mp-auth.js?v=b668dd3a"></script>
-<script defer src="/assets/mp-nav.js?v=a275e128"></script>
+<script defer src="/assets/mp-trade.js?v=647e9f88"></script>
+<script defer src="/assets/mp-auth.js?v=2c5fa0e6"></script>
+<script defer src="/assets/mp-nav.js?v=ff97ec86"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
@@ -2184,13 +2184,19 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   } else { /* mobile: terminal price tape under the header — live via the same WS map mp-trade.js feeds */
     var hd=document.querySelector('header'); if(!hd)return;
     var m=document.createElement('div');m.className='mpqm';
-    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT"></span></span>';
-    hd.parentNode.insertBefore(m,hd.nextSibling);
+    /* 2026-09-12 (owner: "the tape sometimes slides under the header or vanishes and comes back"): (1) the track was rebuilt with innerHTML
+       every 1.5 s and only for coins that already had a price, so its width — and the -50% loop point of the CSS animation — jumped
+       whenever a coin appeared or a price changed digits, which read as the tape blinking out; now every coin has a fixed slot from the
+       start and only the text nodes change. (2) the tape is sticky right under the sticky header, so it never scrolls beneath it. */
     var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE'],chg={};
+    var slot=function(sy){return '<span data-tp="'+sy+'"><span class="sym">'+sy+'</span> <b data-p>—</b> <span data-c></span></span>';};
+    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT">'+COINS.map(slot).join('')+'<span class="sym">· marginpad.io ·</span>'+COINS.map(slot).join('')+'</span></span>';
+    hd.parentNode.insertBefore(m,hd.nextSibling);
+    var place=function(){try{m.style.position='sticky';m.style.top=Math.round(hd.getBoundingClientRect().height)+'px';m.style.zIndex='49';}catch(e){}};place();window.addEventListener('resize',place);window.addEventListener('load',place);setTimeout(place,1500);setTimeout(place,4000); /* the header settles after fonts + the cookie line; re-measure so the tape never floats a few px below it */
     function seed(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){(d&&d.pairs||[]).forEach(function(x){var sy=String(x.symbol||'').replace('USDT','');chg[sy]=+x.changePct;window.mpLivePrices=window.mpLivePrices||{};if(!window.mpLivePrices[sy]&&+x.price>0)window.mpLivePrices[sy]={p:+x.price,t:Date.now()};});draw();}).catch(function(){});}
-    function draw(){var px=window.mpLivePrices||{},h='';
-      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy];h+='<span><span class="sym">'+sy+'</span> <b>'+fpx(o.p)+'</b>'+(c!=null&&isFinite(c)?' <span class="'+(c>=0?'up':'dn')+'">'+(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%</span>':'')+'</span>';});
-      if(!h)return; var t=document.getElementById('mpqMT'); if(t)t.innerHTML=h+'<span class="sym">· marginpad.io ·</span>'+h;
+    function draw(){var px=window.mpLivePrices||{};
+      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy],pt=fpx(o.p),ct=(c!=null&&isFinite(c))?(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%':'',cc=(c!=null&&isFinite(c))?(c>=0?'up':'dn'):'';
+        var els=m.querySelectorAll('[data-tp="'+sy+'"]');for(var i=0;i<els.length;i++){var p=els[i].querySelector('[data-p]'),k=els[i].querySelector('[data-c]');if(p&&p.textContent!==pt)p.textContent=pt;if(k&&(k.textContent!==ct||k.className!==cc)){k.textContent=ct;k.className=cc;}}});
     }
     seed(); setInterval(draw,1500); setInterval(seed,90000);
   }
