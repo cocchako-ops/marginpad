@@ -9589,6 +9589,7 @@ async function handleNowpayIpn(request, env) {
         let invite = (await env.STATS.get('tg:prem:' + (NOWPAY_TIER_LINK[tier] || 'free'))) || '';
         if (chanId) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'createChatInviteLink', { chat_id: chanId, member_limit: 1, name: 'sub ' + chat }); if (r && r.ok && r.result && r.result.invite_link) invite = r.result.invite_link; } catch (e) {} } // one-time link → can't be shared
         await env.STATS.put('tgsub:' + chat + ':' + tier, JSON.stringify({ tier, chan: chanId || '', expiry, ts: Date.now(), reminded: 0 }), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 5 * 86400 });
+        try { await premPayLog(env, { id: 'np:' + (payId || chat + ':' + tier + ':' + Date.now()), ts: Date.now(), acct: 'tg:' + chat, kind: 'signals:' + tier, cents: Math.round((+data.price_amount || NOWPAY_TIERS[tier] || 0) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {} // payment book
         try { await evPush(env, null, 'sale', tier + ' ($' + data.price_amount + ')', ''); } catch (e) {} // premium purchase → Live activity
         await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>Payment confirmed!</b> Welcome to <b>' + tier + '</b> signals' + (invite ? '\n\n <b>Join now:</b> ' + invite : '\n\nWe’ll add you shortly.') + '\n\n Access runs <b>30 days</b> (until ' + new Date(expiry).toISOString().slice(0, 10) + '). I’ll remind you before it ends. Status: /mysub' });
         await tgAdmin(env, '<b>NOWPayments — paid</b>\nTier: <b>' + tier + '</b> ($' + data.price_amount + ')\nUser chat: <code>' + chat + '</code> · until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
@@ -9603,6 +9604,7 @@ async function handleNowpayIpn(request, env) {
         else { let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
         try { await premMarkName(env, uid); } catch (e) {}
         try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
+        try { await premPayLog(env, { id: 'np:' + (payId || uid + ':' + Date.now()), ts: Date.now(), acct: 'u:' + uid, kind: life ? 'founder' : 'monthly', cents: Math.round((+data.price_amount || (life ? 39.99 : 3.99)) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {} // payment book
         try { await revokeUserSessions(env, uid); } catch (e) {} // the session user object carries a stale premium=false — drop it so the buyer sees Premium immediately, not after ~2 min (worst-possible moment for a paying user)
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
@@ -9717,6 +9719,39 @@ async function premMarkName(env, uid) {
     let set = ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean);
     if (set.indexOf(un) < 0) { set.push(un); if (set.length > 500) set = set.slice(-500); await env.STATS.put('premium:names', set.join(' ')); }
   } catch (e) {}
+}
+// Premium payment book (2026-09-12, owner: "who paid Premium, when and how much"): every dollar paid for Premium lands as ONE row in
+// the RewardLedger `prempay` table (durable, in the 6h backup), keyed by the payment id so an IPN retry or a backfill can never
+// double-count. Written by the NOWPayments IPN (monthly / Founder / Telegram signal tiers) and the pay-from-balance route; read by
+// GET /api/admin/prempay (mp-ops Money > Premium desk). Owner grants and pass / code days are NOT payments and never land here.
+async function premPayLog(env, row) {
+  if (!env.REWARDS) return null;
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/prempay/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(row) })); return await r.json(); } catch (e) { return null; }
+}
+// One-time import of what the site already knew before the book existed: KV nowpay:* (finished IPNs, 90-day TTL), the ledger's
+// shoplog premium1m debits (balance payments), and — for a live prem:sub with no record at all — a row DERIVED from the expiry
+// (monthly = 30 days back, Founder = 100 years back; the IPN sets exactly that), labelled src:'derived' so the desk can say so.
+async function premPayBackfill(env) {
+  const out = { nowpay: 0, balance: 0, derived: 0 };
+  const led = async (p, b) => { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do' + p, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) } : undefined)); return await r.json(); };
+  const have = ((await led('/prempay/list?n=2000')) || {}).rows || [];
+  const has = new Set(have.map(r => r.id)); const byAcct = {}; have.forEach(r => { (byAcct[r.acct] = byAcct[r.acct] || []).push(r); });
+  const add = async row => { const old = row.replace && have.find(r => r.id === row.id); if (has.has(row.id) && !(old && old.src === 'derived' && (old.cents !== row.cents || old.ts !== row.ts))) return false; const r = await led('/prempay/add', row); if (r && r.added) { has.add(row.id); (byAcct[row.acct] = byAcct[row.acct] || []).push(row); return true; } return false; }; // replace: a DERIVED row may be re-derived when the rule improves; a real payment row is never touched
+  try { const l = await env.STATS.list({ prefix: 'nowpay:', limit: 1000 }); for (const k of l.keys || []) { let d = null; try { d = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {} if (!d || (d.status !== 'finished' && d.status !== 'confirmed')) continue; const pid = k.name.slice(7), o = String(d.orderId || ''); let row = null, m;
+    if ((m = /^premlife_([a-z0-9]{4,40})$/i.exec(o))) row = { kind: 'founder', acct: 'u:' + m[1], cents: Math.round((+d.usd || 39.99) * 100) };
+    else if ((m = /^prem_([a-z0-9]{4,40})$/i.exec(o))) row = { kind: 'monthly', acct: 'u:' + m[1], cents: Math.round((+d.usd || 3.99) * 100) };
+    else if ((m = /^tg_(-?\d+)_(fast|balanced|premium|free)$/.exec(o))) row = { kind: 'signals:' + m[2], acct: 'tg:' + m[1], cents: Math.round((+d.usd || NOWPAY_TIERS[m[2]] || 0) * 100) };
+    if (!row) continue;
+    if (await add(Object.assign({ id: 'np:' + pid, ts: +d.ts || 0, via: 'nowpayments', cur: String(d.cur || '').toUpperCase(), until: 0, src: 'kv' }, row))) out.nowpay++; } } catch (e) {}
+  try { const s = await led('/shopspend?n=500'); for (const r of (s.rows || [])) { if (r.item !== 'premium1m' || r.kind !== 'buy') continue; const acct = String(r.acct || ''); if (!/^u:/.test(acct) || /^u:e2e/.test(acct)) continue; // E2E accounts buy Premium in tests; they are purged, never imported
+    if ((byAcct[acct] || []).some(x => x.via === 'balance' && Math.abs(x.ts - r.ts) < 120000)) continue; // the live route wrote this one already (its ts is the worker's, the shoplog's is the DO's)
+    if (await add({ id: 'bal:' + acct.slice(2) + ':' + r.ts, ts: +r.ts || 0, acct, kind: 'monthly', cents: +r.cents || 399, via: 'balance', cur: 'USD', until: 0, src: 'shoplog' })) out.balance++; } } catch (e) {}
+  try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { const uid = k.name.slice(9), until = +(await env.STATS.get(k.name)) || 0; if (!until || /^e2e/.test(uid)) continue; const acct = 'u:' + uid; if ((byAcct[acct] || []).some(r => r.src !== 'derived')) continue; // a real payment row wins; an existing DERIVED row is re-derived (replace)
+    let founder = false; try { founder = !!(await env.STATS.get('prem:founder:' + uid)); } catch (e) {}
+    const ts = founder ? until - 100 * 365 * 86400000 : until - 30 * 86400000; if (ts <= 0 || ts > Date.now()) continue;
+    const cents = founder ? (ts < Date.parse('2026-09-11T11:14:00Z') ? 3500 : 3999) : 399; // Founder was $35 until the 39.99 deploy (commit 611d039e, 2026-09-11 11:14 UTC); the one buyer before it paid 35
+    if (await add({ id: 'derived:' + uid, replace: true, ts, acct, kind: founder ? 'founder' : 'monthly', cents, via: '', cur: '', until, src: 'derived', note: 'date derived from the expiry (' + (founder ? '100 years' : '30 days') + ' back): the payment predates the book' + (founder ? '; amount = the Founder price on that date' : '') })) out.derived++; } } catch (e) {}
+  return out;
 }
 const PREM_FARFUTURE = 4102444800000;
 // Profile-card frame cosmetics: what a user owns (level tiers unlock as you rank up; neon/aurora = premium; founder = founder)
@@ -14407,6 +14442,7 @@ export default {
       await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 });
       try { await premMarkName(env, uid); } catch (e) {}
       try { await setPremiumDO(env, { uid }, expiry); } catch (e) {}
+      try { await premPayLog(env, { id: 'bal:' + uid + ':' + Date.now(), ts: Date.now(), acct: 'u:' + uid, kind: 'monthly', cents, via: 'balance', cur: 'USD', until: expiry, src: 'balance' }); } catch (e) {} // payment book
       try { await revokeUserSessions(env, uid); } catch (e) {}
       try { await evPush(env, request, 'sale', 'premium-balance ($3.99)', '/premium/'); } catch (e) {}
       try { await tgAdmin(env, '<b>Premium paid from balance</b>\nUser <code>' + uid + '</code> · $3.99 · until ' + new Date(expiry).toISOString().slice(0, 10)); } catch (e) {}
@@ -14852,6 +14888,38 @@ export default {
         return new Response(JSON.stringify({ error: 'bad_kind' }), { status: 400, headers: jh });
       } catch (e) { return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh }); }
     }
+    if (url.pathname === '/api/admin/prempay' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Premium payment book (2026-09-12): who paid, when, how much — every row from the ledger's prempay table, names resolved, totals by month and per payer. ?e2e=1 shows test rows; ?backfill=1 re-runs the import (idempotent).
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const keyed = isAdminKey(env, adminKeyFrom(request, url));
+      const led = async (p, b) => { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do' + p, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) } : undefined)); return await r.json(); };
+      if (request.method === 'POST' && keyed && url.searchParams.get('inject') === '1') { // E2E hook: e2e-prefixed accounts only
+        let b = {}; try { b = JSON.parse(await request.text() || '{}'); } catch (e) {}
+        if (!/^u:e2e[a-z0-9]{2,30}$/.test(String(b.acct || ''))) return J({ error: 'e2e_only' }, 400);
+        const r = await led('/prempay/add', Object.assign({}, b, { src: 'e2e' })); return new Response(JSON.stringify(r), { headers: jh2 });
+      }
+      if (request.method === 'POST' && keyed && url.searchParams.get('purge') === 'e2e') { const r = await led('/prempay/del', { prefix: 'u:e2e' }); return new Response(JSON.stringify(r), { headers: jh2 }); }
+      let backfill = null;
+      try { if (url.searchParams.get('backfill') === '1' || !(await env.STATS.get('prempay:bf:v1'))) { backfill = await premPayBackfill(env); await env.STATS.put('prempay:bf:v1', String(Date.now())); } } catch (e) {}
+      const showE2e = url.searchParams.get('e2e') === '1';
+      let rows = []; try { rows = ((await led('/prempay/list?n=2000')) || {}).rows || []; } catch (e) {}
+      rows = rows.filter(r => showE2e || !/^u:e2e/.test(r.acct));
+      const uids = [...new Set(rows.filter(r => /^u:/.test(r.acct)).map(r => r.acct.slice(2)))], chats = [...new Set(rows.filter(r => /^tg:/.test(r.acct)).map(r => r.acct.slice(3)))];
+      const prof = {}; try { if (uids.length) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: uids }) })); const d = await r.json(); Object.assign(prof, (d && d.profiles) || {}); } } catch (e) {}
+      const tgn = {}; try { if (chats.length) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/presence/names', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chats }) })); const d = await r.json(); Object.assign(tgn, (d && d.chats) || {}); } } catch (e) {}
+      const now = Date.now(), d30 = now - 30 * 86400000, d60 = now - 60 * 86400000, mon = new Date(now).toISOString().slice(0, 7);
+      const perAcct = {}; rows.slice().sort((a, b) => a.ts - b.ts).forEach(r => { const p = perAcct[r.acct] = perAcct[r.acct] || { acct: r.acct, cents: 0, n: 0, first: r.ts, last: 0 }; p.cents += r.cents; p.n++; r.nth = p.n; p.last = Math.max(p.last, r.ts); });
+      rows.forEach(r => { if (/^u:/.test(r.acct)) { const p = prof[r.acct.slice(2)] || {}; r.uid = r.acct.slice(2); r.un = p.username || ''; r.cc = p.cc || ''; } else if (/^tg:/.test(r.acct)) { const t = tgn[r.acct.slice(3)] || {}; r.chat = r.acct.slice(3); r.uid = t.uid ? String(t.uid) : ''; r.un = t.u || ''; } r.founder = r.kind === 'founder'; });
+      const byPayer = Object.values(perAcct).map(p => { const r0 = rows.find(r => r.acct === p.acct) || {}; return Object.assign(p, { uid: r0.uid || '', un: r0.un || '', cc: r0.cc || '', chat: r0.chat || '' }); }).sort((a, b) => b.cents - a.cents);
+      const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth() - i, 1)); months.push({ m: d.toISOString().slice(0, 7), cents: 0, n: 0 }); }
+      rows.forEach(r => { const m = new Date(r.ts).toISOString().slice(0, 7); const mm = months.find(x => x.m === m); if (mm) { mm.cents += r.cents; mm.n++; } });
+      months.forEach(m => { m.usd = m.cents / 100; });
+      const sum = f => rows.filter(f).reduce((s, r) => s + r.cents, 0), cnt = f => rows.filter(f).length;
+      const totals = { lifetimeUsd: sum(() => true) / 100, count: rows.length, payers: byPayer.length, renewals: rows.filter(r => r.nth > 1).length, d30Usd: sum(r => r.ts > d30) / 100, d30N: cnt(r => r.ts > d30), prev30Usd: sum(r => r.ts > d60 && r.ts <= d30) / 100, monthUsd: sum(r => new Date(r.ts).toISOString().slice(0, 7) === mon) / 100, monthN: cnt(r => new Date(r.ts).toISOString().slice(0, 7) === mon), derived: cnt(r => r.src === 'derived'), balanceUsd: sum(r => r.via === 'balance') / 100, nowpayUsd: sum(r => r.via === 'nowpayments') / 100 };
+      let subs = 0; const subUntil = {}; try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { const uid = k.name.slice(9); if (/^e2e/.test(uid) && !showE2e) continue; const u = +(await env.STATS.get(k.name)) || 0; subUntil[uid] = u; if (u > now) subs++; } } catch (e) {}
+      const newest = {}; rows.forEach(r => { if (!newest[r.acct] || r.ts > newest[r.acct].ts) newest[r.acct] = r; }); // a backfilled balance row carries no expiry: the account's NEWEST payment is what the live prem:sub expiry belongs to
+      Object.values(newest).forEach(r => { if (!r.until && r.uid && subUntil[r.uid]) { r.until = subUntil[r.uid]; r.untilLive = true; } });
+      return new Response(JSON.stringify({ rows, byPayer, months, totals, activeSubs: subs, backfill, ts: now }), { headers: jh2 });
+    }
     if (url.pathname === '/api/admin/premdesk' && (await adminCookieOk(request, env))) { // Premium desk: premium members + trading P&L (UserStore) enriched with reward balance / earned / claims (RewardLedger)
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let desk = { users: [], open: [], closed: [] };
@@ -14894,7 +14962,7 @@ export default {
         const days = [1, 2, 3, 4, 5, 6, 7].map(i => new Date(now - i * 86400000).toISOString().slice(0, 10));
         const clicks = (await Promise.all(days.map(dk => gc('aff:day:' + dk)))).reduce((s, n) => s + n, 0);
         out.clicks7d = clicks; out.affEst7dUsd = Math.round(clicks * 0.45 * 100) / 100;
-        let subs = 0; try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { if ((+(await env.STATS.get(k.name)) || 0) > now) subs++; } } catch (e) {}
+        let subs = 0; try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { if (/^e2e/.test(k.name.slice(9))) continue; if ((+(await env.STATS.get(k.name)) || 0) > now) subs++; } } catch (e) {} // e2e accounts buy Premium in tests (spot/premium E2Es) and are not revenue (2026-09-12)
         out.premiumSubs = subs; out.premiumMrrUsd = Math.round(subs * 3.99 * 100) / 100; out.premium7dUsd = Math.round(subs * 3.99 / 30 * 7 * 100) / 100;
         out.income7dUsd = Math.round((out.affEst7dUsd + out.premium7dUsd) * 100) / 100;
         out.net7dUsd = Math.round((out.income7dUsd - (out.dispensed7dUsd || 0)) * 100) / 100;
@@ -17691,6 +17759,8 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS shoplog(ts INTEGER, acct TEXT, item TEXT, cents INTEGER, kind TEXT)'); // DURABLE Vault cash ledger (2026-09-04): the 200-row live log above lost every shop purchase within hours, so the Shop tab showed $0 while people paid
     s.exec('CREATE TABLE IF NOT EXISTS acctlog(ts INTEGER, acct TEXT, type TEXT, detail TEXT, amount INTEGER)'); // DURABLE per-account money history (2026-09-06, owner: "kad udjem u neciji profil... istoriju kako i odakle je dobijao novac i kad se oduzima"): every this.log() with an amount lands here too and is never trimmed
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_acctlog_acct ON acctlog(acct, ts)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS prempay(id TEXT PRIMARY KEY, ts INTEGER, acct TEXT, kind TEXT, cents INTEGER, via TEXT, cur TEXT, until INTEGER, src TEXT, note TEXT)'); // DURABLE Premium payment book (2026-09-12, owner: "who paid Premium, when and how much"): before it a payment lived only in KV nowpay:* (90-day TTL) / shoplog / the current prem:sub expiry. id = payment id, so an IPN retry or a backfill can never double-count. In the 6h backup.
+    try { s.exec('CREATE INDEX IF NOT EXISTS idx_prempay_acct ON prempay(acct, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS vidlock(vid TEXT PRIMARY KEY, address TEXT, ts INTEGER)'); // one address per device; admin can unlock
     s.exec('CREATE TABLE IF NOT EXISTS support(ts INTEGER, email TEXT, address TEXT, message TEXT)'); // contact-us submissions from the rewards page
     try { s.exec('ALTER TABLE support ADD COLUMN closed INTEGER NOT NULL DEFAULT 0'); } catch (e) {} // open vs closed ticket state for the admin Support tab
@@ -17809,6 +17879,26 @@ export class RewardLedger {
       let durableFrom = 0; try { durableFrom = +((this.rows('SELECT MIN(ts) t FROM shoplog')[0] || {}).t) || 0; } catch (e) {}
       return this.j({ rows, totalCents: tot, count: cnt, refunds: rows.filter(r => r.kind === 'refund'), durableFrom });
     }
+    // ---- Premium payment book (2026-09-12) ----
+    if (path === '/prempay/add') { // one payment; idempotent on id (IPN retries, backfills and the E2E all hit this)
+      const id = String(body.id || '').slice(0, 80), pacct = String(body.acct || '').slice(0, 60);
+      if (!id || !pacct) return this.j({ error: 'bad' }, 400);
+      const old = this.rows('SELECT src FROM prempay WHERE id=?', id)[0];
+      if (old && !(body.replace && old.src === 'derived')) return this.j({ ok: true, added: false }); // only a DERIVED row may be replaced (re-derived); a real payment is never overwritten
+      if (old) sql.exec('DELETE FROM prempay WHERE id=?', id);
+      sql.exec('INSERT INTO prempay(id,ts,acct,kind,cents,via,cur,until,src,note) VALUES(?,?,?,?,?,?,?,?,?,?)', id, Math.round(+body.ts || Date.now()), pacct, String(body.kind || 'monthly').slice(0, 24), Math.max(0, Math.round(+body.cents || 0)), String(body.via || '').slice(0, 24), String(body.cur || '').slice(0, 12), Math.round(+body.until || 0), String(body.src || '').slice(0, 16), String(body.note || '').slice(0, 200));
+      return this.j({ ok: true, added: true });
+    }
+    if (path === '/prempay/list') {
+      const n = Math.min(2000, Math.max(10, +url.searchParams.get('n') || 500));
+      let rows = []; try { rows = this.rows('SELECT id, ts, acct, kind, cents, via, cur, until, src, note FROM prempay ORDER BY ts DESC LIMIT ?', n).map(r => ({ id: r.id, ts: +r.ts || 0, acct: r.acct || '', kind: r.kind || '', cents: +r.cents || 0, via: r.via || '', cur: r.cur || '', until: +r.until || 0, src: r.src || '', note: r.note || '' })); } catch (e) {}
+      return this.j({ rows });
+    }
+    if (path === '/prempay/del') { // E2E cleanup only (the worker allows an e2e prefix and nothing else)
+      const pre = String(body.prefix || ''); if (!/^u:e2e/.test(pre)) return this.j({ error: 'bad' }, 400);
+      sql.exec('DELETE FROM prempay WHERE acct LIKE ?', pre + '%');
+      return this.j({ ok: true });
+    }
     if (path === '/uidall') { // every sign-up UID on record, newest first
       let rows = [];
       try { rows = this.rows("SELECT acct, exchange, uid, status, ts, cc FROM exsign WHERE uid<>'' ORDER BY ts DESC LIMIT 400"); } catch (e) {}
@@ -17869,7 +17959,7 @@ export class RewardLedger {
     }
     if (path === '/export') { // nightly backup dump — every balance-bearing table (accounts = user money!)
       const out = { at: Date.now(), tables: {} };
-      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply']) {
+      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply', 'prempay', 'shoplog']) {
         try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
       }
       return this.j(out);
