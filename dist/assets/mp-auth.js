@@ -136,9 +136,9 @@
 
   var css = '.mpa-modal{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.7);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}'
     + '.mpa-modal[hidden]{display:none}'
-    + '.mpa-panel{position:relative;width:100%;max-width:344px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:11px 15px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
+    + '.mpa-panel{position:relative;width:100%;max-width:376px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:11px 15px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
     + '.mpa-panel::-webkit-scrollbar{width:8px}.mpa-panel::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px}'
-    + '.mpa-x{position:absolute;top:12px;right:14px;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}'
+    + '.mpa-x{position:absolute;top:12px;right:14px;z-index:3;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}' /* z-index: the identity header is a positioned box that spans the same row and would otherwise sit on top of the close button (measured: elementFromPoint returned the header) */
     + '.mpa-x:hover{color:#e9e7df}'
     + '.mpa-h{font-size:15px;font-weight:800;color:#f2f0e9;margin:0 0 5px;letter-spacing:-.01em}'
     + '.mpa-sub{font-size:13.5px;color:#9aa3ad;margin:0 0 16px;line-height:1.5}'
@@ -210,6 +210,42 @@
     + '.mpa-lvl-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--lc),#ffffff88);transition:width .6s ease}'
     + '.mpa-lvl-link{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:11px;font-weight:700;color:#c2f64a;text-decoration:none}.mpa-lvl-link:hover{text-decoration:underline}'
     + '.mpa-lvl-link:hover{background:rgba(194,246,74,.08)}'
+    /* ===== header profile card v2 (2026-09-12, owner: "cooler, and solve the space better") — ONE identity header
+       (avatar in the level ring, name + chips, email, level line, XP bar) instead of four stacked boxes; four measured
+       season numbers as a divided strip; the four social actions in ONE row; the five settings rows as ONE grouped list;
+       Support / Sign out as quiet text. Desktop: centred card 376 px. Phone: a bottom sheet with a grab handle. ===== */
+    + '.mpa-id{position:relative;display:flex;align-items:center;gap:13px;padding:6px 34px 2px 2px;isolation:isolate}'
+    + '.mpa-id::before{content:"";position:absolute;left:-16px;right:-16px;top:-12px;height:160px;pointer-events:none;z-index:-1;background:radial-gradient(62% 95% at 12% 0%,var(--glow,rgba(194,246,74,.16)),transparent 70%)}'
+    + '.mpa-id-av{position:relative;flex:none;width:58px;height:58px;border-radius:50%;background:#0f131a;box-shadow:0 0 0 2px #0c0f13,0 0 0 4px var(--lc),0 12px 30px -10px var(--lc);display:flex;align-items:center;justify-content:center}'
+    + '.mpa-id-av .mpa-av-img{width:58px;height:58px;border-radius:50%}.mpa-id-av .mpa-av-emoji{font-size:30px;line-height:1}'
+    + '.mpa-id-ini{font:800 24px/1 "Bricolage Grotesque",system-ui,-apple-system,Segoe UI,sans-serif;color:var(--lc);letter-spacing:-.02em}'
+    + '.mpa-id-gem{position:absolute;right:-6px;bottom:-6px;width:25px;height:25px;border-radius:50%;background:#0c0f13;box-shadow:0 0 0 1px #283039;padding:4px;box-sizing:border-box;display:block}'
+    + '.mpa-id-b{flex:1;min-width:0}'
+    + '.mpa-id-nm{display:flex;align-items:center;gap:6px;min-width:0;font-size:17px;font-weight:800;color:#f5f3ec;letter-spacing:-.01em;line-height:1.15}.mpa-id-nm>b{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}'
+    + '.mpa-id-chips{display:inline-flex;gap:4px;flex:none}.mpa-id-chips:empty{display:none}'
+    + '.mpa-chip{flex:none;font:700 8.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;border-radius:5px;padding:3px 5px;color:#c2f64a;background:rgba(194,246,74,.13)}.mpa-chip.fnd{color:#ffd75a;background:rgba(255,215,90,.14)}'
+    + '.mpa-id-em{display:flex;align-items:baseline;gap:6px;min-width:0;margin-top:2px;font-size:11.5px;color:#7f8893}.mpa-id-em>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-id-em>span+span{flex:none;color:#5c656f;white-space:nowrap}'
+    + '.mpa-id-lv{display:flex;align-items:center;flex-wrap:wrap;gap:3px 8px;margin-top:5px;font-size:12px;color:#9aa3ad;font-family:ui-monospace,Consolas,monospace}.mpa-id-lv>b{color:var(--lc);font-weight:800;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:12.5px}.mpa-id-stk{display:inline-flex;align-items:center;gap:3px;color:#ffb27a}'
+    + '.mpa-id-prog{display:flex;align-items:center;gap:10px;margin:8px 0 0;text-decoration:none;color:#7f8893;font-size:11px;font-family:ui-monospace,Consolas,monospace;padding:2px 0}.mpa-id-prog:hover{color:#c2f64a}'
+    + '.mpa-id-bar{flex:1;height:5px;border-radius:5px;background:#1a2027;overflow:hidden;display:block}.mpa-id-bar>b{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--lc),#ffffff99);transition:width .6s ease}'
+    + '.mpa-id-prog>span{flex:none;white-space:nowrap}.mpa-id-prog .mpa-svg{width:13px;height:13px;color:#556170;flex:none}'
+    + '.mpa-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:10px 0 0;background:#0a0d11;border:1px solid #1f2732;border-radius:12px;overflow:hidden}'
+    + '.mpa-k{padding:8px 4px 7px;text-align:center;min-width:0;border-left:1px solid #1a2027}.mpa-k:first-child{border-left:none}'
+    + '.mpa-k>b{display:block;font:700 14px/1.15 ui-monospace,Consolas,monospace;color:#f2f0e9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-k>b.up{color:#2ebd85}.mpa-k>b.dn{color:#ff5a4d}.mpa-k>b.mute{color:#5c656f}'
+    + '.mpa-k>span{display:block;margin-top:3px;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:#7f8893;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.mpa-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 0}'
+    + '.mpa-q{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;background:#0f131a;border:1px solid #222a35;border-radius:12px;padding:9px 2px 7px;cursor:pointer;color:#cfd5dc;transition:border-color .15s,background .15s,transform .05s;-webkit-appearance:none;appearance:none;font:inherit;min-width:0}'
+    + '.mpa-q .mpa-svg{width:19px;height:19px;color:#8b97a5;transition:color .15s}.mpa-q:hover{border-color:#38506a;background:#131923}.mpa-q:hover .mpa-svg{color:#7fd6ff}.mpa-q:active{transform:translateY(1px)}'
+    + '.mpa-q-l{font-size:10.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}'
+    + '.mpa-q .mpa-tile-dot{top:5px;right:6px}'
+    + '.mpa-menu{margin:8px 0 0;background:#0f131a;border:1px solid #1e2530;border-radius:12px;overflow:hidden}'
+    + '.mpa-mi{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-top:1px solid #171d25;padding:10px 12px;cursor:pointer;color:#cfd5dc;font:600 13.5px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left;transition:background .15s;-webkit-appearance:none;appearance:none}.mpa-mi:first-child{border-top:none}.mpa-mi:hover{background:#141a24}'
+    + '.mpa-mi .mpa-svg{width:17px;height:17px;color:#7f8a97;flex:none}.mpa-mi>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-mi>em{flex:none;font:700 8.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;font-style:normal;color:#c2f64a;background:rgba(194,246,74,.13);border-radius:5px;padding:3px 5px}.mpa-mi .mpa-svg:last-child{width:14px;height:14px;color:#556170}'
+    + '.mpa-foot3{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 0}'
+    + '.mpa-fl{display:inline-flex;align-items:center;gap:6px;background:none;border:none;padding:8px 4px;color:#7f8893;font:600 12.5px system-ui,-apple-system,Segoe UI,sans-serif;cursor:pointer;transition:color .15s;-webkit-appearance:none;appearance:none}.mpa-fl:hover{color:#e9e7df}.mpa-fl .mpa-svg{width:14px;height:14px}.mpa-fl.out:hover{color:#ff8a80}'
+    /* open = a transition, never @keyframes (the owner runs Windows with animation effects off); phone = bottom sheet */
+    + '.mpa-panel{transform:translateY(10px);opacity:0;transition:transform .2s ease,opacity .16s ease}.mpa-panel.in{transform:none;opacity:1}'
+    + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:14px}}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
     + '.mpa-dm{display:flex;flex-direction:column;height:min(60vh,440px)}'
@@ -672,8 +708,9 @@
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
 
-  function open() { modal.hidden = false; render(); if (!ME) { try { window.__mpTrack && window.__mpTrack('signin', 'opened'); } catch (e) {} } else { try { window.__mpTrack && window.__mpTrack('myprofile', (ME.level && ME.level.k) || ''); } catch (e) {} } } // ops feed: signed-in user opened their own profile from the header
-  function close() { modal.hidden = true; }
+  function reveal() { var p = modal.querySelector('.mpa-panel'); if (!p) return; p.classList.remove('in'); void p.offsetHeight; requestAnimationFrame(function () { p.classList.add('in'); }); } // slide/fade in via CSS transition (not @keyframes: invisible with animation effects off)
+  function open() { var was = modal.hidden; modal.hidden = false; if (was) reveal(); render(); if (!ME) { try { window.__mpTrack && window.__mpTrack('signin', 'opened'); } catch (e) {} } else { try { window.__mpTrack && window.__mpTrack('myprofile', (ME.level && ME.level.k) || ''); } catch (e) {} } } // ops feed: signed-in user opened their own profile from the header
+  function close() { modal.hidden = true; try { modal.querySelector('.mpa-panel').classList.remove('in'); } catch (e) {} }
   function setMsg(t, kind) { var m = bodyEl.querySelector('.mpa-msg'); if (m) { m.textContent = t; m.className = 'mpa-msg ' + (kind || ''); } }
 
   // ---- support: the user's conversations with the team (each conv = a separate thread; reply in-thread or start a new one) ----
@@ -1274,44 +1311,64 @@
       var fmtDate = function (ts) { if (!ts) return '—'; try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return '—'; } };
       var tradeCount = function () { try { var j = JSON.parse(localStorage.getItem('mp_journal') || '[]'); return Array.isArray(j) ? j.length : 0; } catch (e) { return 0; } };
  var lv = ME.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a', xp: ME.xp || 0, pct: 0, next: 'Silver', toNext: 2500 };
-      var lvlHtml = '<div class="mpa-lvl" style="--lc:' + (lv.col || '#c97f4a') + '">'
-        + '<div class="mpa-lvl-top"><div class="mpa-lvl-badge" style="background:transparent;padding:4px">' + window.mpLvlSvg(lv.k, lv.col || '#c97f4a') + '</div>'
-        + '<div><div class="mpa-lvl-nm">' + esc(lv.name || 'Bronze') + '</div><div class="mpa-lvl-xp">' + (lv.xp || 0).toLocaleString() + ' XP' + (ME.streak ? ' · ' + window.mpFlameSvg() + ' ' + ME.streak + '-day streak' : '') + '</div></div>'
-        + (lv.next ? '<div class="mpa-lvl-next">' + (lv.toNext || 0).toLocaleString() + ' XP<br>to ' + esc(lv.next) + '</div>' : '<div class="mpa-lvl-next" style="color:' + (lv.col || '#8b5cff') + '">MAX<br>tier</div>') + '</div>'
-        + '<div class="mpa-lvl-bar"><i style="width:' + (lv.pct != null ? lv.pct : 100) + '%"></i></div>'
-        + '<a class="mpa-lvl-link" href="/levels/">Level System — how it works &amp; rewards →</a>'
+      var col = lv.col || '#c97f4a';
+      var rgbaOf = function (h, a) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); var n = parseInt(h, 16); if (!isFinite(n) || h.length !== 6) return 'rgba(194,246,74,' + a + ')'; return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; };
+      var glowCol = (/^#[0-9a-fA-F]{6}$/.test(ME.accent || '') ? ME.accent : (lv.k === 'unranked' ? '#c2f64a' : col)); // the reader's own accent when they picked one, else the level colour; Unranked grey would read as broken
+      var dispName = hasU ? ME.username : (ME.email || '').split('@')[0];
+      var avIn = ME.avatar ? avatarHtml(ME.avatar) : '<span class="mpa-id-ini">' + esc(String(dispName || '?').charAt(0).toUpperCase()) + '</span>';
+      var chip0 = (window._mpPrem === true) ? '<i class="mpa-chip">PREMIUM</i>' : ''; // instant from the last XP poll; /api/lb/user refines (Founder / owner tag)
+      var money = function (v) { var a = Math.abs(v); var s = a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : a >= 1e4 ? (a / 1e3).toFixed(1) + 'k' : a >= 1000 ? a.toFixed(0) : a.toFixed(2); return (v < 0 ? '−' : '+') + '$' + s; };
+      var xpLast = window._mpXpLast || null;
+      var head = '<div class="mpa-id" style="--lc:' + col + ';--glow:' + rgbaOf(glowCol, .2) + '">'
+          + '<div class="mpa-id-av">' + avIn + '<span class="mpa-id-gem" title="' + esc(lv.name || '') + '">' + window.mpLvlSvg(lv.k, col) + '</span></div>'
+          + '<div class="mpa-id-b">'
+            + '<div class="mpa-id-nm"><b' + ((hasU && window.mpIsPro && window.mpIsPro(ME.username)) ? ' class="mp-progold"' : '') + '>' + esc(dispName) + '</b><span class="mpa-id-chips" id="mpaIdChips">' + chip0 + '</span></div>'
+            + '<div class="mpa-id-em"><span title="' + esc(ME.email) + '">' + esc(ME.email) + '</span><span>since ' + fmtDate(ME.created) + '</span></div>'
+            + '<div class="mpa-id-lv"><b>' + esc(lv.name || 'Bronze') + '</b><span>' + (lv.xp || 0).toLocaleString() + ' XP</span>' + (ME.streak ? '<span class="mpa-id-stk">' + window.mpFlameSvg() + ME.streak + '-day streak</span>' : '') + (ME.status && ME.status !== 'active' ? '<span style="color:#ffb347;text-transform:capitalize">' + esc(ME.status) + '</span>' : '') + '</div>'
+          + '</div>'
+        + '</div>'
+        + '<a class="mpa-id-prog" href="/levels/" title="How levels and rewards work"><i class="mpa-id-bar" style="--lc:' + col + '"><b style="width:' + (lv.pct != null ? lv.pct : 100) + '%"></b></i><span>' + (lv.next ? (lv.toNext || 0).toLocaleString() + ' XP to ' + esc(lv.next) : 'Max tier') + '</span>' + ic('chev') + '</a>';
+      var kpi = function (id, v, lbl, cls) { return '<div class="mpa-k"><b id="' + id + '"' + (cls ? ' class="' + cls + '"' : '') + '>' + v + '</b><span>' + lbl + '</span></div>'; };
+      var quick = function (id, icon, label, badgeId) { return '<button class="mpa-q" id="' + id + '" type="button">' + ic(icon) + '<span class="mpa-q-l">' + label + '</span>' + (badgeId ? '<span class="mpa-tile-dot" id="' + badgeId + '" hidden></span>' : '') + '</button>'; };
+      var mi = function (id, svg, label, tag) { return '<button class="mpa-mi" id="' + id + '" type="button">' + svg + '<span>' + label + '</span>' + (tag ? '<em>' + tag + '</em>' : '') + ic('chev') + '</button>'; };
+      var svgWallet = '<svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg>';
+      var svgDoc = '<svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>';
+      var svgFrame = '<svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>';
+      bodyEl.innerHTML = head
+        + (hasU ? '<div class="mpa-kpi" title="This season">'
+            + kpi('mpaKTr', '…', 'Trades', 'mute')
+            + kpi('mpaKWr', '…', 'Win rate', 'mute')
+            + kpi('mpaKPnl', '…', 'Season P&amp;L', 'mute')
+            + kpi('mpaFollowers', (xpLast && typeof xpLast.followers === 'number') ? String(xpLast.followers) : '…', 'Followers', '')
+          + '</div>' : '')
+        + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:12px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
+        + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347;margin-top:8px">You are muted in chat.</p>' : '')
+        + (hasU ? '<div class="mpa-quick">'
+          + quick('mpaNotif', 'bell', 'Alerts', 'mpaNotifBadge')
+          + quick('mpaMsg', 'chat', 'Messages', 'mpaMsgBadge')
+          + quick('mpaFeed', 'feed', 'Following', '')
+          + quick('mpaDuel', 'swords', 'Duels', 'mpaDuelBadge')
+        + '</div>'
+        + '<div class="mpa-menu">'
+          + mi('mpaBal', svgWallet, 'Balance Mode', 'PREMIUM')
+          + mi('mpaBrief', svgDoc, 'Daily Brief', 'PREMIUM')
+          + mi('mpaEdit', ic('edit'), 'Edit profile', '')
+          + mi('mpaFrames', svgFrame, 'Customize card', '')
+          + mi('mpaXp', ic('spark'), 'XP history', '')
+        + '</div>' : '')
+        + '<div class="mpa-foot3">'
+          + '<button class="mpa-fl" id="mpaSup" type="button">' + ic('help') + 'Support</button>'
+          + '<button class="mpa-fl out" id="mpaLogout" type="button">' + ic('out') + 'Sign out</button>'
         + '</div>';
-      bodyEl.innerHTML = '<h3 class="mpa-h">Your profile</h3>'
-        + lvlHtml
-        + '<div class="mpa-prof">'
-          + (hasU ? '<div class="mpa-prow mpa-prow--wide"><span>Username</span><b' + ((window.mpIsPro && window.mpIsPro(ME.username)) ? ' class="mp-progold"' : '') + '>' + esc(ME.username) + '</b></div>' : '')
-          + '<div class="mpa-prow mpa-prow--wide"><span>Email</span><b>' + esc(ME.email) + '</b></div>'
-          + (ME.status && ME.status !== 'active' ? '<div class="mpa-prow mpa-prow--wide"><span>Status</span><b style="color:#ffb347;text-transform:capitalize">' + esc(ME.status) + '</b></div>' : '')
-        + '</div>'
-        + '<div class="mpa-stat3">'
-          + '<div class="mpa-st"><b>' + fmtDate(ME.created) + '</b><span>Member since</span></div>'
-          + '<div class="mpa-st"><b>' + tradeCount() + '</b><span>Paper trades</span></div>'
-          + (hasU ? '<div class="mpa-st"><b id="mpaFollowers">…</b><span>Followers</span></div>' : '')
-        + '</div>'
-        + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
-        + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347">You are muted in chat.</p>' : '')
-        + (hasU ? '<div class="mpa-tiles">'
-          + tileBtn('mpaNotif', 'bell', 'Notifications', 'mpaNotifBadge')
-          + tileBtn('mpaMsg', 'chat', 'Messages', 'mpaMsgBadge')
-          + tileBtn('mpaFeed', 'feed', 'Following', '')
-          + tileBtn('mpaDuel', 'swords', 'Duels', 'mpaDuelBadge')
-        + '</div>'
-          + '<button class="mpa-row2" id="mpaBal" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg><span>Balance Mode</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
-          + '<button class="mpa-row2" id="mpaBrief" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg><span>Daily Brief</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
-          + '<button class="mpa-row2" id="mpaEdit" type="button">' + ic('edit') + '<span>Edit profile</span>' + ic('chev') + '</button>'
-          + '<button class="mpa-row2" id="mpaFrames" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg><span>Customize card</span>' + ic('chev') + '</button>'
-          + '<button class="mpa-row2" id="mpaXp" type="button">' + ic('spark') + '<span>XP history</span>' + ic('chev') + '</button>' : '')
-        + '<div class="mpa-foot2">'
-          + '<button class="mpa-flink" id="mpaSup" type="button">' + ic('help') + 'Support</button>'
-          + '<button class="mpa-flink" id="mpaLogout" type="button">' + ic('out') + 'Sign out</button>'
-        + '</div>'
-        + '<button class="mpa-link" id="mpaDone" type="button">Close</button>';
-      if (hasU) { try { fetch('/api/lb/user?name=' + encodeURIComponent(ME.username)).then(function (r) { return r.json(); }).then(function (d) { var fe = bodyEl.querySelector('#mpaFollowers'); if (fe) fe.textContent = (d && typeof d.followers === 'number') ? d.followers : '0'; }).catch(function () { var fe = bodyEl.querySelector('#mpaFollowers'); if (fe) fe.textContent = '0'; }); } catch (e) {} }
+      if (hasU) { try { fetch('/api/lb/user?name=' + encodeURIComponent(ME.username)).then(function (r) { return r.json(); }).then(function (d) {
+        d = d || {}; var st = d.stats || {}, n = +st.closed || 0, tr = +st.trades || 0;
+        var setK = function (id, v, cls) { var el = bodyEl.querySelector('#' + id); if (!el) return; el.textContent = v; el.className = cls || ''; };
+        setK('mpaKTr', tr ? String(tr) : String(tradeCount()), tr ? '' : 'mute'); // season count from the store; the local journal only when the season is empty
+        setK('mpaKWr', n >= 5 ? Math.round(+st.winRate || 0) + '%' : '—', n >= 5 ? '' : 'mute'); // a win rate on fewer than 5 closes is noise, not a number
+        var pnl = +st.realized || 0; setK('mpaKPnl', n ? money(pnl) : '—', n ? (pnl >= 0 ? 'up' : 'dn') : 'mute');
+        setK('mpaFollowers', typeof d.followers === 'number' ? String(d.followers) : '0', '');
+        var ch = bodyEl.querySelector('#mpaIdChips'); if (ch) { if (d.otag) ch.innerHTML = '<i class="mpa-chip fnd">' + esc(String(d.otag).slice(0, 12)) + '</i>'; else if (d.premium || window._mpPrem === true) ch.innerHTML = '<i class="mpa-chip">PREMIUM</i>'; }
+      }).catch(function () { var setK = function (id, v) { var el = bodyEl.querySelector('#' + id); if (el) { el.textContent = v; el.className = 'mute'; } }; setK('mpaKTr', String(tradeCount())); setK('mpaKWr', '—'); setK('mpaKPnl', '—'); setK('mpaFollowers', '0'); }); } catch (e) {} }
       if (!hasU) {
         var sv = bodyEl.querySelector('#mpaSaveU'), ui = bodyEl.querySelector('#mpaUname');
         var saveU = function () {
@@ -1839,6 +1896,7 @@
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
         try { window.mpLvlNow = d.level; if (window.mpToastHost) window.mpToastHost(); } catch (e) {} // the toast frame wears the trader's level colour (Bronze -> Legendary)
+        window._mpXpLast = d; // the header profile card reads followers / premium from the last poll before its own fetch answers
         if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         try { window.mpBronzeBar(d); } catch (e) {}
         try { if (d.pbNew && d.pbNew.ts && (d.pbNew.items || []).length) { var pk9 = 'mp_pb_seen_' + ((ME && ME.id) || ''), ps9 = +(localStorage.getItem(pk9) || 0);
