@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.json",
+  "name": "io.marginpad/marginpad",
+  "description": "Free crypto-futures paper trading for AI agents and bots plus free market data: live prices, candles, a scored screener, funding, open interest, liquidations from 10 exchanges, and a full paper-trading account (open, close, limit and stop orders, trailing stops, books, reset, equity curve, replay of any past day). 27 tools. Market data needs no key; trading needs a free key from https://marginpad.io/trading-api/.",
+  "status": "active",
+  "repository": { "url": "https://github.com/marginpad/sdk", "source": "github" },
+  "version": "2.6.0",
+  "websiteUrl": "https://marginpad.io/trading-api/#mcp",
+  "remotes": [
+    { "type": "streamable-http", "url": "https://marginpad.io/mcp", "headers": [ { "name": "X-API-Key", "description": "MarginPad Bot API key (mpb_...). Optional: without it the market-data tools work, the paper-trading tools need it.", "isRequired": false, "isSecret": true } ] }
+  ]
+}
