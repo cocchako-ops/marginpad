@@ -217,10 +217,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */
-      (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad default (0.055%)</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' (with our '+v.d+'% off)':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
-        function apply(k,push){window.mpFeeVenue=V[k]?k:'';try{localStorage.setItem('mp_feevenue',window.mpFeeVenue);}catch(e){}sel.value=window.mpFeeVenue;try{if(typeof calc==='function')calc();}catch(e){}
+      /* option text is "Name — rate" on purpose: the same exDeco renderer that draws the "Exchange (sets margin rate)" picker
+         (coloured initial tile + name + rate on the right) reads that shape, so the two dropdowns in Advanced look identical (owner 2026-09-12) */
+      (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad — 0.055%</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' — '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' · '+v.d+'% off':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
+        var silent=false;
+        silent=true;try{sel.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}silent=false; /* the custom-select wrapper may already be attached (init order): let its label read the restored device value instead of the one option the HTML shipped with */
+        function apply(k,push){window.mpFeeVenue=V[k]?k:'';try{localStorage.setItem('mp_feevenue',window.mpFeeVenue);}catch(e){}if(sel.value!==window.mpFeeVenue){sel.value=window.mpFeeVenue;silent=true;try{sel.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}silent=false;} /* the change event lets the custom-select label follow a value set from the account (silent = no second POST) */ try{if(window.mpPlanCalc)window.mpPlanCalc();else if(typeof calc==='function')calc();}catch(e){}
           if(push){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(me&&window.fetch)fetch('/api/trade/fees',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({venue:window.mpFeeVenue||null})}).catch(function(){});}}
-        sel.addEventListener('change',function(){apply(sel.value,true);});
+        sel.addEventListener('change',function(){if(silent)return;apply(sel.value,true);});
         /* a member's saved default wins over the device value (set from the API, or from another device) */
         var pull=function(){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(!me||!window.fetch)return;fetch('/api/trade/fees',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.venue!==undefined){var k=d.venue||'';if(k!==window.mpFeeVenue)apply(k,false);}}).catch(function(){});};
         window.addEventListener('mp-auth-change',pull);var n0=0,iv0=setInterval(function(){if(++n0>80){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);pull();},100);
@@ -366,6 +370,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(seg)seg.addEventListener('click',function(){if(window.mpPlanType==='limit'){limQuick();limHint();}}); // flipping Long/Short flips which side of the market the order may rest on
   setType('market');limBadge();setTimeout(limBadge,1500);
   window.mpPlanSetType=setType; // the chart's "limit order here" affordance and the E2E both drive the form through this
+  window.mpPlanCalc=calc; // the "Fees as on" picker lives in an earlier inline block where calc() is out of scope; without this hook the quoted round-trip fee only refreshed on the next price tick (measured on the phone 2026-09-12: 3 s with no change)
   (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row — reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
@@ -2686,6 +2691,7 @@ window.addEventListener('load', function () {
       function applyClassUI(cls){
         var px=document.getElementById('planEx'), fld=px&&px.closest&&px.closest('.field');
         if(fld){ if(cls==='crypto'){ fld.style.display=''; var v=parseFloat(px.value); window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005; } else { fld.style.display='none'; window.mpPlanMmr=MMR_BY_CLASS[cls]||0.005; } }
+        var ff=document.getElementById('planFeeField'); if(ff) ff.style.display=(cls==='crypto')?'':'none'; // the fee schedules are crypto venues too; stocks/forex/metals keep their class rate (mpFeeRate ignores the venue there)
         try{calc();}catch(_){} try{updatePlanRisk();}catch(_){}
       }
       window.mpLoadTokens&&window.mpLoadTokens(function(){ try{pc.value=classOf(ps.value);applyClassUI(pc.value);}catch(e){} });
@@ -2709,12 +2715,12 @@ window.addEventListener('load', function () {
       } catch(e) {}
     })();
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
-    var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff']};
+    var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d']};
     function exDeco(o){var t=o.textContent||'',m=t.split('—'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
       if(!rate&&/custom/i.test(name))return '<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>';
       var c=EXCOL[name]||['#3a4450','#e9e7df'];
       return '<span class="csel-ex"><i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i><b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
-    ['liqEx','crEx','planEx'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}});
+    ['liqEx','crEx','planEx','planFeeVenue'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}}); // planFeeVenue = the "Fees as on" picker in Advanced, same rows as the margin-rate picker beside it
     /* langSel stays a native select — matches the homepage header (EN box, not a globe) */
     (window.requestIdleCallback||function(f){setTimeout(f,1500);})(function(){if(window.mpLoadTokens)window.mpLoadTokens(function(toks){var ps=document.getElementById('planSym');if(!ps)return;var have={};for(var i=0;i<ps.options.length;i++)have[ps.options[i].value.toUpperCase()]=1;toks.forEach(function(s){if(!have[s]){var o=document.createElement('option');o.value=s;o.textContent=s;ps.appendChild(o);}});});});
   }

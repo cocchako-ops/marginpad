@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="dark" />
-<style>html{background:#0a0b0d;color-scheme:dark}.ptt-feev{display:flex;align-items:center;gap:8px;margin:6px 0 2px;font-size:12px;color:#8b97a5}.ptt-feev label{white-space:nowrap}.ptt-feev select{flex:1;min-width:0;background:#0d1015;border:1px solid #232932;border-radius:8px;color:#e9e7df;font:inherit;font-size:16px;padding:6px 8px}.ptt-feev-q{flex:0 0 auto;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;border:1px solid #2f3742;color:#8b97a5;text-decoration:none;font-size:12px;font-weight:700}.ptt-feev-q:hover{color:#c2f64a;border-color:#c2f64a}
+<style>html{background:#0a0b0d;color-scheme:dark}.ptt-feev-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:4px;vertical-align:-3px;border-radius:50%;border:1px solid #2f3742;color:#8b97a5;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:0;text-transform:none}
+.ptt-feev-q:hover{color:#c2f64a;border-color:#c2f64a}
 </style>
 <!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
 <script>(function(){var n=0,seen={};
@@ -98,7 +99,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=86c6aae6">
+<link rel="stylesheet" href="/assets/home.css?v=f1f31e43">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -359,7 +360,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
               <div class="lev-slidewrap"><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="1000" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Position size</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Notional value</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Est. liquidation</span><b id="planLiq">—</b></div><div><span data-i18n="rFeeRound">Fee to open + close</span><b id="planFee">—</b></div></div>
-            <div class="ptt-feev"><label for="planFeeVenue">Fees as on</label><select id="planFeeVenue" aria-label="Fee schedule"><option value="">MarginPad default (0.055%)</option></select><a class="ptt-feev-q" href="/trading-api/#fees" target="_blank" rel="noopener" title="How the fee schedules work">?</a></div>
             <div class="plan-adv" id="planAdvIn" hidden>
               <div class="field"><label data-i18n="lExchangePt">Exchange (sets margin rate)</label><div class="input-line"><select id="planEx" aria-label="Exchange maintenance-margin preset">
                 <option value="0.4">Binance — 0.4%</option>
@@ -370,6 +370,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
                 <option value="0.5">Gate — 0.5%</option>
                 <option value="0.6">Kraken — 0.6%</option>
               </select></div></div>
+              <div class="field" id="planFeeField"><label for="planFeeVenue">Fees as on (sets taker fee) <a class="ptt-feev-q" href="/trading-api/#fees" target="_blank" rel="noopener" title="How the fee schedules work">?</a></label><div class="input-line"><select id="planFeeVenue" aria-label="Fee schedule"><option value="">MarginPad — 0.055%</option></select></div></div>
               <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
               <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
               <div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
@@ -820,7 +821,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=86c6aae6"></script>
+<script src="/assets/home.js?v=f1f31e43"></script>
 <script defer src="/assets/mp-nav.js?v=ff97ec86"></script>
 </body>
 </html>
