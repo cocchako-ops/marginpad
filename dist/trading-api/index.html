@@ -278,6 +278,14 @@ GET  /api/bot/v1/equity?days=30&amp;step_min=60   // equity curve + max_drawdown
 <p><b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account’s hooks with <code>"account":"rsi"</code> in the payload, so one receiver serves every book.</p>
 <p><b>Usage per key:</b> <code>GET /api/bot/v1/usage</code> carries <code>usage_30d</code>, calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.</p>
 
+<h2 id="replay">Replay — run your bot through a past day <span style="background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a">2.6</span></h2>
+<p>Backtest with the code you will run live. Start a replay of one past UTC day and the same routes your bot already calls act on a separate replay journal, priced from MarginPad’s own 1-minute candles at the cursor. Stops, targets and liquidations are checked on every candle between two of your calls, on the high and the low, with the same fee and funding math as live. Nothing from a replay reaches the boards, the arena or your report.</p>
+<pre><code>POST /api/bot/v1/replay  {"symbol":"BTC","day":"2026-09-11","speed":120}   // 120 market seconds per real second: a day in 12 minutes
+GET  /api/bot/v1/replay?interval=5&amp;bars=120       // cursor, price, progress, candles up to the cursor
+POST /api/bot/v1/open    {...}                        // acts on the replay book at the cursor price while the replay runs
+POST /api/bot/v1/replay  {"act":"stop"}               // close at the cursor, get the summary, empty the replay journal</code></pre>
+<p>Speed goes from 1 (real time) to 600 (a day in 2.4 minutes). One replay per key at a time, crypto only, market orders only for now: read the replay price and candles from <code>GET /v1/replay</code>, since the keyless <code>/v1/price</code> and <code>/v1/klines</code> keep answering live data.</p>
+
 <h2 id="arena">Bot arena — a public scoreboard for bots</h2>
 <p>Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href="/arena/">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.</p>
 

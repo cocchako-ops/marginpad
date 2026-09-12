@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.5.0',
+      version: '2.6.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -268,6 +268,10 @@ function handleOpenApi() {
       '/api/bot/v1/accounts': { get: { tags: ['Paper trading'], summary: 'Books (sub-accounts) of this account', description: 'Every book of the account behind the key with lifetime numbers and the keys bound to it. A book is a separate journal, balance, report and equity curve: mint a key with {"act":"create","name":"…","book":"strat-a"} on POST /api/bot/key (site session) and every call made with that key trades that book. Free: 1 book besides the main account; Premium: 5.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/reset': { post: { tags: ['Paper trading'], summary: 'Reset this book to $10,000', description: 'Body {"confirm":true}. Closed trades are archived (never deleted), resting orders cancelled, the report / ledger / equity curve restart from the reset. Refused (409 open_positions_exist) while positions are open — close them first.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { confirm: { type: 'boolean', example: true } }, required: ['confirm'] } } } }, responses: { '200': { description: '{ ok, reset_ts, archived_trades, cancelled_orders, starting_balance_usd }' }, '400': { description: 'confirm_required' }, '409': { description: 'open_positions_exist' } } } },
       '/api/bot/v1/equity': { get: { tags: ['Paper trading'], summary: 'Equity curve', description: 'starting_balance_usd + realized P&L per bucket from the ledger (fees and funding settled), the live unrealized point at the end, and max_drawdown_pct. Buckets before the first close carry the realized total up to that time.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-90, default 30.', false, '30'), q('step_min', 'Bucket size in minutes, 5-1440 (default 60 up to 14 days, 240 beyond).', false, '60')], responses: { '200': { description: '{ ok, points:[{t, realized_pnl_usd, equity_usd, closes}], now:{…}, max_drawdown_pct }' } } } },
+      '/api/bot/v1/replay': {
+        get: { tags: ['Paper trading'], summary: 'Replay status, price and candles', description: 'While a replay runs on this key’s book: cursor (market time), the price under it, progress, finished, and the candles up to the cursor. ?interval=1|5|15|60|240 (minutes), ?bars=1-500.', security: [{ ApiKeyAuth: [] }], parameters: [q('interval', 'Candle size in minutes (aggregated from 1m).', false, '5'), q('bars', 'How many candles up to the cursor.', false, '120')], responses: { '200': { description: '{ running, symbol, day, speed, cursor_ts, cursor_iso, progress_pct, price, finished, bars:[{time,open,high,low,close}] }' } } },
+        post: { tags: ['Paper trading'], summary: 'Start or stop a replay of a past day', description: 'Start: {symbol, day:"YYYY-MM-DD" (a complete past UTC day), speed (1-600 market seconds per real second, default 60)}. From then on the key’s trading calls act on a separate replay journal priced from MarginPad’s own 1-minute candles; stops, targets and liquidations are checked on every candle between two calls. Stop: {act:"stop"} closes everything at the cursor, returns the summary and empties the replay journal. One replay per key at a time; crypto only; limit and stop entries are not available in replay.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, day: { type: 'string', example: '2026-09-11' }, speed: { type: 'number', example: 60 }, act: { type: 'string', enum: ['start', 'stop'] } } } } } }, responses: { '200': { description: 'start: { ok, replay:{id, symbol, day, speed, start_ts, end_ts, candles, first_price} } · stop: { ok, replay:{closes, wins, losses, win_rate_pct, pnl_usd, return_pct, liquidations, trades} }' }, '400': { description: 'day_invalid / day_not_finished / speed_invalid / replay_crypto_only' }, '404': { description: 'no_data / no_replay' }, '409': { description: 'replay_running' } } },
+      },
       '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations}] }' } } } },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/ai': { post: { tags: ['Paper trading'], summary: 'AI market read (Premium)', description: 'The chart panel’s AI read, from the API: {symbol, interval (minutes: 1,5,15,60,240,1440), question?, lang?}. Same model, prompt and 50-a-day quota as Ask-AI on the site. Returns the answer, a parsed plan when the model gives one, and the brief it reasoned over. Educational, not financial advice.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, interval: { type: 'string', example: '60' }, question: { type: 'string', maxLength: 280 }, lang: { type: 'string', example: 'en' } }, required: ['symbol'] } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/AiRead' } } } }, '402': { description: 'Premium required' }, '429': { description: 'daily AI quota used' } } } },
@@ -11552,6 +11556,14 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-12', version: '2.6.0', title: 'Replay: run your bot through a past day on our own candles',
+    changes: [
+      { type: 'added', breaking: false, text: 'POST /v1/replay {symbol, day:"YYYY-MM-DD", speed} starts a replay of one past UTC day on this key’s book, on MarginPad’s 1-minute candles. speed = market seconds per real second (60 = a day in 24 minutes, max 600). From then on /v1/open, /positions, /close, /close_all, /account, /balance and /sltp made with that key act on a separate replay journal, priced at the candle under the cursor; stops, targets and liquidations are checked on every candle between two calls (high and low, never only the close), with the same fee and funding math as live.' },
+      { type: 'added', breaking: false, text: 'GET /v1/replay = cursor, price, progress and the candles up to the cursor (?interval=1|5|15|60|240&bars=). POST {act:"stop"} closes everything at the cursor and returns the summary (closes, win rate, P&L, return, liquidations, last 50 trades); the replay journal is then emptied, the summary is the record.' },
+      { type: 'unchanged', breaking: false, text: 'Replay rows carry src:"replay": the live sweep, the season boards, the Bot arena, the report and the equity curve never see them. Limit and stop entries are not available in replay yet; keyless /v1/price and /v1/klines keep answering live data — read the replay price and candles from GET /v1/replay.' },
+    ],
+  },
+  {
     date: '2026-09-12', version: '2.5.0', title: 'Books (sub-accounts), reset, equity curve, Bot arena, usage, named errors',
     changes: [
       { type: 'added', breaking: false, text: 'Books: mint a key with {"act":"create","book":"strat-a"} on POST /api/bot/key and every call made with that key trades a SEPARATE journal, balance, report and equity curve (<account>:<book>). One strategy = one key = one clean result. Free accounts get one book besides the main account, Premium five. GET /v1/accounts lists them; /v1/account carries `account`. Webhooks fire on the owner’s hooks with `account` in the payload.' },
@@ -11984,7 +11996,7 @@ async function handleBot(url, request, env, ctx) {
   // service time but ~198ms p50 / 368ms p95 of distance from Singapore, where our two busiest keys connect. Auth and
   // the close happen in the same call, and the one price we need is fetched while that call is in flight. Requires
   // `symbol` (every /positions row carries it); without it we still need a lookup first and take the normal path.
-  if (path === '/v1/close' && request.method === 'POST' && b && b.symbol) {
+  if (path === '/v1/close' && request.method === 'POST' && b && b.symbol && !/^rp/.test(String(b.id || ''))) { // replay positions (ids rp…) take the normal path, which knows the replay price
     if (!b.id) return jb({ error: 'id_required' }, 400);
     wantDrain = true;
     const hint = String(b.symbol).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
@@ -12014,8 +12026,22 @@ async function handleBot(url, request, env, ctx) {
   if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
-  const uid = auth.uid;
+  let uid = auth.uid; const uidLive = auth.uid;
   botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
+  // ── REPLAY (2.6): while a replay runs on this key's book, its trading calls are routed to the replay journal and priced from the day's candles ──
+  let rp = null, rpBars = null, rpCur = 0, rpPx = 0;
+  if (/^\/v1\/(open|close|close_all|positions|account|balance|sltp|trades|replay)$/.test(path)) {
+    rp = await replayOf(env, uidLive);
+    if (rp) {
+      rpBars = await replayBars(env, rp.symbol, rp.day);
+      if (!rpBars) { rp = null; } else {
+        rpCur = replayCursor(rp, Date.now()); rpPx = replayPxAt(rpBars, rpCur).px;
+        uid = uidLive + '#rp';
+        if (path !== '/v1/replay') { const since = rpBars.filter(x => x.time * 1000 > (rp.lastTs || rp.startMs) - 60000 && x.time * 1000 <= rpCur); try { await doCall('/replaysweep', { uid, sym: rp.symbol, bars: since.slice(-1500), cursor: rpCur }); } catch (e) {} try { if (rpCur > (rp.lastTs || 0)) { rp.lastTs = rpCur; await env.STATS.put('rp:' + uidLive, JSON.stringify(rp), { expirationTtl: RP_TTL }); } } catch (e) {} }
+      }
+    }
+  }
+  const rpPrices = () => (rp ? { [rp.symbol]: rpPx } : {});
 
   if (path === '/v1/stream') { // WebSocket push — one BotStream instance per ACCOUNT, so all your keys share one poller
     if (request.headers.get('Upgrade') !== 'websocket') return jb({ error: 'expected_websocket', hint: 'Open this with a WebSocket client: wss://marginpad.io/api/bot/v2/stream?api_key=mpb_...' }, 426);
@@ -12037,10 +12063,48 @@ async function handleBot(url, request, env, ctx) {
   // mode, one step further along. READS may use the same
   // 5s edge cache handleTrade's position sweep uses — measured 2026-08-19: a cold cascade costs ~400ms, and
   // /positions is 70% of all bot-API traffic, so paying that on every poll was the single most wasteful thing here.
-  const priceMap = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
-  const priceMapFill = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceFill(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
-  const priceMapCached = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceCached(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
-  const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {} }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
+  const priceMap = async (syms) => { if (rp) return rpPrices(); const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const priceMapFill = async (syms) => { if (rp) return rpPrices(); const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceFill(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const priceMapCached = async (syms) => { if (rp) return rpPrices(); const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceCached(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {}, replay: !!rp }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
+  // ── REPLAY control (2.6): POST {symbol, day, speed} starts; GET = status + candles up to the cursor; POST {act:"stop"} closes everything at the cursor and returns the summary ──
+  if (path === '/v1/replay') {
+    const bookUid = uidLive;
+    if (request.method === 'GET') {
+      if (!rp) return jb({ running: false, hint: 'POST {symbol, day:"YYYY-MM-DD", speed} to start a replay of one past day on this key’s book.' });
+      const ivQ = Math.max(1, Math.min(240, +url.searchParams.get('interval') || 1)), nQ = Math.max(1, Math.min(500, +url.searchParams.get('bars') || 120));
+      const upto = replayAgg(rpBars.filter(x => x.time * 1000 <= rpCur), ivQ).slice(-nQ);
+      return jb({ running: true, id: rp.id, symbol: rp.symbol, day: rp.day, speed: rp.speed, cursor_ts: rpCur, cursor_iso: new Date(rpCur).toISOString(), progress_pct: Math.round((rpCur - rp.startMs) / (rp.endMs - rp.startMs) * 1000) / 10, price: rpPx, finished: rpCur >= rp.endMs, bars: upto, interval: ivQ, note: 'Candles up to the cursor only. In replay, /v1/open, /positions, /close, /close_all, /account and /sltp act on the replay book at this price; limit and stop orders are not available in replay.' });
+    }
+    const act = String(b.act || 'start');
+    if (act === 'stop' || act === 'reset') {
+      if (!rp) return jb({ error: 'no_replay', hint: 'Nothing is running on this key.' }, 404);
+      wantDrain = true;
+      const ca = await doCall('/botcloseall', { uid, prices: rpPrices(), via: 'replay', replay: true });
+      const pos = await doCall('/botpositions', { uid, prices: rpPrices(), replay: true });
+      const closed = ((pos && pos.positions) || []).filter(p => p.status !== 'open');
+      let pnl = 0, wins = 0; closed.forEach(p => { pnl += +p.pnl_usd || 0; if ((+p.pnl_usd || 0) >= 0) wins++; });
+      const summary = { symbol: rp.symbol, day: rp.day, speed: rp.speed, stopped_at_ts: rpCur, progress_pct: Math.round((rpCur - rp.startMs) / (rp.endMs - rp.startMs) * 1000) / 10, closes: closed.length, wins, losses: closed.length - wins, win_rate_pct: closed.length ? Math.round(wins / closed.length * 1000) / 10 : null, pnl_usd: Math.round(pnl * 100) / 100, return_pct: Math.round(pnl / BOT_START_BAL * 10000) / 100, liquidations: closed.filter(p => p.status === 'liquidated').length, closed_now: (ca && ca.closed) || 0, trades: closed.slice(-50) };
+      try { await env.STATS.put('rp:' + bookUid, JSON.stringify(Object.assign({}, rp, { status: 'done', summary })), { expirationTtl: RP_TTL }); } catch (e) {}
+      try { await doCall('/botreset', { uid: uidLive + '#rp' }); } catch (e) {} // the replay journal is a scratchpad: emptied so the next replay starts clean (the summary above is the record); explicit uid so this can never touch the live book
+      return jb({ ok: true, replay: summary }, 200);
+    }
+    // start
+    if (rp) return jb({ error: 'replay_running', hint: 'Stop it first (POST {act:"stop"}) or read its status (GET).', replay: { symbol: rp.symbol, day: rp.day, cursor_ts: rpCur } }, 409);
+    const symR = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (!symR) return jb({ error: 'symbol_required' }, 400);
+    const dayR = String(b.day || ''); if (!/^\d{4}-\d{2}-\d{2}$/.test(dayR) || !(Date.parse(dayR + 'T00:00:00Z') > 0)) return jb({ error: 'day_invalid', hint: 'day is a UTC date, YYYY-MM-DD, at least one full day in the past.' }, 400);
+    const startR = Date.parse(dayR + 'T00:00:00Z'), endR = startR + 86400000; if (endR > Date.now()) return jb({ error: 'day_not_finished', hint: 'Replay needs a complete past day (UTC).' }, 400);
+    const speedR = b.speed == null ? 60 : +b.speed; if (!(speedR >= 1 && speedR <= RP_MAX_SPEED)) return jb({ error: 'speed_invalid', min: 1, max: RP_MAX_SPEED, hint: 'speed = market seconds per real second: 60 replays a day in 24 minutes, 600 in 2.4 minutes.' }, 400);
+    if (assetClassOf(symR) !== 'crypto') return jb({ error: 'replay_crypto_only', symbol: symR }, 400);
+    const barsR = await replayBars(env, symR, dayR); if (!barsR) return jb({ error: 'no_data', symbol: symR, day: dayR, hint: 'No 1-minute candles for that day from any source. Try a more recent day or a larger market.' }, 404);
+    const rpU = uidLive + '#rp'; // the replay journal — never the live book (at start `uid` is still the live one; a reset here would archive the trader's real closes)
+    const openLive = await doCall('/botpositions', { uid: rpU, prices: {}, replay: true }); if (((openLive && openLive.positions) || []).some(p => p.status === 'open')) { try { await doCall('/botcloseall', { uid: rpU, prices: { [symR]: barsR[0].open }, via: 'replay', replay: true }); } catch (e) {} } // a stale scratchpad from a crashed replay: cleared, never carried into a new day
+    try { await doCall('/botreset', { uid: rpU }); } catch (e) {}
+    const sess = { id: 'rp' + Date.now().toString(36), symbol: symR, day: dayR, startMs: startR, endMs: endR, speed: speedR, wall0: Date.now(), lastTs: startR, status: 'running', book: auth.book || 'main' };
+    try { await env.STATS.put('rp:' + bookUid, JSON.stringify(sess), { expirationTtl: RP_TTL }); } catch (e) { return jb({ error: 'unavailable' }, 503); }
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'replay ' + symR + ' ' + dayR], doubles: [speedR] }); } catch (e) {}
+    return jb({ ok: true, replay: { id: sess.id, symbol: symR, day: dayR, speed: speedR, start_ts: startR, end_ts: endR, candles: barsR.length, first_price: barsR[0].open, account: sess.book, ends_in_real_seconds: Math.round(86400 / speedR) }, note: 'From now every trading call made with this key acts on the replay book at the candle under the cursor. GET /v1/replay for the cursor, price and candles; POST {act:"stop"} to finish and read the summary.' }, 200);
+  }
 
   if (path === '/v1/open' && request.method === 'POST') {
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
@@ -12054,9 +12118,11 @@ async function handleBot(url, request, env, ctx) {
     const lev = levReq;
     if (!(margin >= 1)) return jb({ error: 'margin_usd_min_1', min: 1, hint: 'margin_usd is the stake in dollars, at least 1.' }, 400);
     if (margin > 100000) return jb({ error: 'margin_usd_max_100000', max: 100000 }, 400);
-    const pd = await fetchPrice(sym);
+    if (rp && sym !== rp.symbol) return jb({ error: 'replay_symbol_only', symbol: rp.symbol, hint: 'A replay runs on one market. Stop it (POST /v1/replay {act:"stop"}) to trade others.' }, 409);
+    if (rp && rpCur >= rp.endMs) return jb({ error: 'replay_finished', hint: 'The day is over. POST /v1/replay {act:"stop"} for the summary.' }, 409);
+    const pd = rp ? { price: rpPx, sym } : await fetchPrice(sym);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
-    { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
+    if (!rp) { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
     // Bot API 2.3: trail_pct = trailing stop distance (%), ratcheted server-side from the high-water mark; dry_run = validate
     // and price the request, return exactly what WOULD be written, write nothing (the call is still metered).
     if (b.trail_pct != null && b.trail_pct !== '' && !(+b.trail_pct === 0 || (+b.trail_pct >= 0.05 && +b.trail_pct <= 50))) return jb({ error: 'trail_pct_invalid', hint: 'trail_pct is a percent distance between 0.05 and 50.' }, 400); // refused, never silently clamped
@@ -12072,6 +12138,7 @@ async function handleBot(url, request, env, ctx) {
     // STOP ENTRIES (2.3): type:'stop' is the same resting order with the level on the BREAKOUT side (a long above the
     // market, a short below it) — the engine was already direction-aware; this names it and refuses the wrong side.
     if (typeQ === 'limit' || typeQ === 'stop') {
+      if (rp) return jb({ error: 'replay_market_only', hint: 'Limit and stop entries are not available in replay yet; open at market and manage with sl / tp.' }, 400);
       const lpx = +(b.limit_price != null ? b.limit_price : b.stop_price);
       const long0 = side === 'long', live0 = +pd.price;
       if (!(lpx > 0) || !isFinite(lpx)) return jb({ error: 'limit_price_required', hint: 'type:"' + typeQ + '" needs limit_price (stop_price is accepted as an alias).' }, 400);
@@ -12096,14 +12163,15 @@ async function handleBot(url, request, env, ctx) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, feeVenue || '')), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym, feeVenue || ''), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: (rp ? 'rp' : 'bot') + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: rp ? rpCur : Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, feeVenue || '')), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym, feeVenue || ''), status: 'open', pnl: null, src: rp ? 'replay' : 'bot' };
+    if (rp) t.swT = rpCur; // replay clock: the position's time and candle watermark are the cursor, so the replay sweep starts from the next candle
     if (feeVenue !== undefined) t.feeVenue = feeVenue; // explicit (incl. '' = MarginPad default); undefined lets the store apply the account default
     if (trailQ) { t.trail = trailQ; t.hwm = entry; if (t.stop == null) t.stop = Number((long ? entry * (1 - trailQ / 100) : entry * (1 + trailQ / 100)).toPrecision(10)); } // an initial stop at trail distance, so the position is protected from the first tick
     if (dryRun) { const fee1 = t.feeOpen, d0 = _feeOpen(margin, lev, feeRateFor(lev, sym)); return jb({ ok: true, dry_run: true, position: { symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: t.qty, notional_usd: t.notional, liq_price: t.liq, sl: t.stop, tp: t.tp, trail_pct: trailQ, liq_distance_pct: Math.round(Math.abs(t.liq - entry) / entry * 10000) / 100, fee_open_usd: Math.round(fee1 * 100) / 100, fee_round_trip_usd: Math.round(2 * fee1 * 100) / 100, taker_fee_pct: +(t.feeRate * 100).toFixed(5), fee_venue: feeVenue || null, fee_vs_marginpad_default_usd: Math.round((2 * fee1 - 2 * d0) * 100) / 100, max_leverage: maxLevFor(sym), asset_class: assetClassOf(sym) } }, 200); }
     // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
     const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
     wantDrain = true;
-    const r = await doCall('/botopen', { uid, t, promos, via: 'bot', coid });
+    const r = await doCall('/botopen', { uid, t, promos: rp ? [] : promos, via: 'bot', coid });
     if (r && r.error) return jb(r, r.error === 'too_many_open' ? 409 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
     return jb(r && r.position ? { ok: true, position: r.position, ...(r.idempotent ? { idempotent: true } : {}) } : { ok: true }, 200);
@@ -12166,11 +12234,11 @@ async function handleBot(url, request, env, ctx) {
     // cold fetch in the same wave. With it, a close is one DO hop plus one warm price.
     const hint = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const prices = hint ? await priceMapFill([hint]) : await priceMap(await openSymsOf());
-    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot', coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
+    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos: rp ? [] : promos, via: rp ? 'replay' : 'bot', replay: !!rp, coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     // a wrong/stale hint means we priced the wrong feed — fall back to the full sweep once rather than fail the close
     if (r.error === 'no_price' && hint) {
-      const r2 = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices: await priceMap(await openSymsOf()), promos, via: 'bot' });
+      const r2 = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices: await priceMap(await openSymsOf()), promos: rp ? [] : promos, via: rp ? 'replay' : 'bot', replay: !!rp });
       if (r2 && !r2.error) return jb(r2, 200);
       return jb(r2 || { error: 'unavailable' }, r2 && r2.error ? 400 : 503);
     }
@@ -12179,7 +12247,7 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/positions') {
     const syms = await openSymsOf();
     const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos });
+    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
     if (!r) return jb({ error: 'unavailable' }, 503);
     // the DO now also returns lifetime totals for /account — keep them OUT of the v1 positions body (frozen shape);
     // v2 surfaces them, because there they are a documented part of the envelope's data.
@@ -12201,13 +12269,13 @@ async function handleBot(url, request, env, ctx) {
     wantDrain = true;
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botcloseall', { uid, prices, promos, via: 'bot' });
+    const r = await doCall('/botcloseall', { uid, prices, promos: rp ? [] : promos, via: rp ? 'replay' : 'bot', replay: !!rp });
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
   if (path === '/v1/account') {
     const syms = await openSymsOf();
     const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos });
+    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let openN = 0, marginUse = 0, upnl = 0, realized = 0, wins = 0, losses = 0;
     r.positions.forEach(p => { if (p.status === 'open') { openN++; marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } else { realized += (p.pnl_usd || 0); if ((p.pnl_usd || 0) >= 0) wins++; else losses++; } });
@@ -12233,7 +12301,7 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/balance') { // developers went looking for this one by name before it existed (measured in botuse)
     const syms = await openSymsOf();
     const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos });
+    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let marginUse = 0, upnl = 0;
     r.positions.forEach(p => { if (p.status === 'open') { marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } });
@@ -18940,6 +19008,29 @@ async function handleStatusApi(env) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+/* ===== REPLAY (Bot API 2.6, 2026-09-12): run a bot through a past day on our own 1-minute candles, with the same routes it uses live. =====
+   A replay session is bound to the key's book and lives in KV rp:<book uid>. While it runs, every trading call of that key is routed to
+   the replay journal <book uid>#rp, priced at the candle under the cursor (day start + wall-clock elapsed x speed). Stops, targets and
+   liquidations are checked on every candle between two calls (high/low, never only the close), by /replaysweep in the store. Replay rows
+   carry src:'replay' so the live sweep, the boards, the arena and the report never see them. */
+const RP_MAX_SPEED = 600, RP_TTL = 2 * 86400;
+async function replayOf(env, uid) { try { const s = JSON.parse(await env.STATS.get('rp:' + uid) || 'null'); return s && s.status === 'running' ? s : null; } catch (e) { return null; } }
+function replayCursor(s, now) { return Math.min(s.endMs, s.startMs + Math.max(0, (now || Date.now()) - s.wall0) * s.speed); }
+async function replayBars(env, sym, day) { // the day's 1m candles [{time(sec), open, high, low, close}], cached 30 days in KV; two history pages of the klines route
+  const ck = 'rp:bars:' + sym + ':' + day;
+  try { const c = await env.STATS.get(ck); if (c) { const a = JSON.parse(c); if (Array.isArray(a) && a.length) return a.map(x => ({ time: x[0], open: x[1], high: x[2], low: x[3], close: x[4] })); } } catch (e) {}
+  const start = Date.parse(day + 'T00:00:00Z'), end = start + 86400000; if (!(start > 0)) return null;
+  const got = new Map();
+  for (const endMs of [end, end - 1000 * 60000]) {
+    try { const r = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=' + sym + '&interval=1&end=' + endMs), env); const a = await r.json(); (Array.isArray(a) ? a : []).forEach(k => { const t = +k.time; if (t * 1000 >= start && t * 1000 < end && +k.high > 0 && +k.low > 0) got.set(t, { time: t, open: +k.open, high: +k.high, low: +k.low, close: +k.close }); }); } catch (e) {}
+  }
+  const bars = Array.from(got.values()).sort((a, b) => a.time - b.time);
+  if (bars.length < 60) return null; // less than an hour of candles is not a day to replay
+  try { await env.STATS.put(ck, JSON.stringify(bars.map(x => [x.time, x.open, x.high, x.low, x.close])), { expirationTtl: 30 * 86400 }); } catch (e) {}
+  return bars;
+}
+function replayPxAt(bars, cursorMs) { const c = Math.floor(cursorMs / 1000); let px = bars[0].open, i = 0; for (; i < bars.length; i++) { if (bars[i].time > c) break; px = bars[i].close; } return { px, idx: i - 1 }; }
+function replayAgg(bars, ivMin) { if (ivMin <= 1) return bars; const out = []; let cur = null; bars.forEach(b => { const bucket = Math.floor(b.time / (ivMin * 60)) * ivMin * 60; if (!cur || cur.time !== bucket) { if (cur) out.push(cur); cur = { time: bucket, open: b.open, high: b.high, low: b.low, close: b.close }; } else { cur.high = Math.max(cur.high, b.high); cur.low = Math.min(cur.low, b.low); cur.close = b.close; } }); if (cur) out.push(cur); return out; }
 async function checkBriefDelivery(env) { // once per opted-in account per UTC day, at 08:00 or 16:00 (the hour it chose); the stamp is released when nothing went out
   if (!env.STATS || !env.USERS) return;
   const now = new Date(), day = now.toISOString().slice(0, 10), hour = now.getUTCHours();
@@ -20039,6 +20130,27 @@ export class UserStore {
       return this.j({ ok: true, checked: n });
     }
     // ── Bot API 2.5 (2026-09-12): books, reset, equity, arena ────────────────────────────────────────────────────────
+    if (path === '/replaysweep') { // REPLAY (2.6): check every open replay position against the candles printed since its watermark — liquidation, stop, target, in bar order, on high/low
+      const uid = String(b.uid || ''), sym = String(b.sym || '').toUpperCase(), bars = Array.isArray(b.bars) ? b.bars : [], cursor = +b.cursor || 0;
+      if (!uid || !sym) return this.j({ ok: false });
+      const jn = this._loadJournal(uid); const closes = [], marks = [];
+      for (const t of jn) {
+        if (!t || t.src !== 'replay' || t.status === 'win' || t.status === 'loss' || String(t.sym || '').toUpperCase() !== sym) continue;
+        const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0, wm = +t.swT || +t.ts || 0;
+        const closeAt = (px, liq, atTs) => { let pnl = liq ? -margin : qty * (px - entry) * dir - qty * (entry + px) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: atTs, liquidated: !!liq, sc: 1, swT: atTs }); };
+        let done = null;
+        for (const bar of bars) { const bt = (+bar.time || 0) * 1000; if (bt <= wm) continue; if (bt > cursor) break;
+          const hi = +bar.high, lo = +bar.low;
+          if (long ? lo <= (+t.liq || 0) : hi >= (+t.liq || 0)) { done = closeAt(+t.liq || 0, true, bt); break; }
+          if (t.stop != null && (long ? lo <= +t.stop : hi >= +t.stop)) { done = closeAt(+t.stop, false, bt); break; }
+          if (t.tp != null && (long ? hi >= +t.tp : lo <= +t.tp)) { done = closeAt(+t.tp, false, bt); break; }
+        }
+        if (done) closes.push(done); else if (cursor > wm) marks.push(Object.assign({}, t, { swT: cursor }));
+      }
+      if (marks.length) this._syncJournal(uid, marks, null, true, 'replay');
+      if (closes.length) this._syncJournal(uid, closes, null, true, 'replay');
+      return this.j({ ok: true, closed: closes.length, closes: closes.map(x => this._j2bot(x, null)) });
+    }
     if (path === '/botbooks') { // every book of an owner with its lifetime numbers (no prices: one SQL read per book)
       const owner = String(b.owner || '').replace(/:.*$/, ''); if (!owner) return this.j({ error: 'no_uid' });
       const keys = this.rows('SELECT k, name, book, revoked, last, calls FROM botkeys2 WHERE uid=?', owner);
@@ -20260,7 +20372,7 @@ export class UserStore {
       const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
       // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
       const trailed = []; // Bot API 2.3: open positions whose trailing stop the live price just ratcheted (persisted below, no event)
-      const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv')) return null; const live = PR[t.sym]; if (!(live > 0)) return null;
+      const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv' && !(b.replay && t.src === 'replay'))) return null; const live = PR[t.sym]; if (!(live > 0)) return null; // replay rows are priced only by a caller that says replay:true (the replay engine); the live cron never touches them
         const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
         if (+t.trail > 0 && trailStop(t, live, live, 5e-4)) trailed.push(t);
         if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) return Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true });
@@ -20276,7 +20388,7 @@ export class UserStore {
         // fee + funding settle EXACTLY as in /botclose below — this path used to skip both, so a position closed
         // through close_all was free while the same position closed through /close paid the round trip (measured
         // 2026-08-19: one user's 31 close_all exits were fee-free, up to $5.58 off on a single trade).
-        const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0; let pnl = qty * (live - entry) * dir - qty * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
+        const closes = cur.filter(t => isOpen(t) && (t.src === 'bot' || (b.replay && t.src === 'replay'))).map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0; let pnl = qty * (live - entry) * dir - qty * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
         if (closes.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, closes, b.promos, true, b.via === 'bot' ? 'bot' : 'site'); }
         return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
