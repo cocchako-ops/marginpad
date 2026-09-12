@@ -17,7 +17,7 @@
   else root.MarginPadSDK = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  var VERSION = '2.3.0';
+  var VERSION = '2.6.0';
 
   function MarginPadError(code, message, status, extra) {
     var e = new Error(code + ': ' + (message || code));
@@ -92,6 +92,13 @@
   MarginPad.prototype.balance = function () { return this._get('/api/bot/v2/balance'); };
   MarginPad.prototype.usage = function () { return this._get('/api/bot/v2/usage'); };
   MarginPad.prototype.report = function (days) { return this._get('/api/bot/v2/report', { days: days || 30 }); };
+  // 2.5 books, reset, equity · 2.6 replay
+  MarginPad.prototype.accounts = function () { return this._get('/api/bot/v2/accounts'); };
+  MarginPad.prototype.reset = function () { return this._post('/api/bot/v2/reset', { confirm: true }); };
+  MarginPad.prototype.equity = function (days, stepMin) { return this._get('/api/bot/v2/equity', { days: days || 30, step_min: stepMin }); };
+  MarginPad.prototype.replayStart = function (o) { return this._post('/api/bot/v2/replay', { symbol: o.symbol, day: o.day, speed: o.speed }); };
+  MarginPad.prototype.replay = function (o) { o = o || {}; return this._get('/api/bot/v2/replay', { interval: o.interval, bars: o.bars }); };
+  MarginPad.prototype.replayStop = function () { return this._post('/api/bot/v2/replay', { act: 'stop' }); };
   // ai({symbol, interval, question, lang}) — Premium; educational, not advice
   MarginPad.prototype.ai = function (o) { return this._post('/api/bot/v2/ai', Object.assign({}, o, { interval: String((o && o.interval) || 60) })); };
 

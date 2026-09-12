@@ -51,7 +51,7 @@ const UID = 'e2eph1' + Math.random().toString(36).slice(2, 6);
     const lm = await B('/open', { symbol: 'BTC', side: 'long', leverage: 5000, margin_usd: 10 }); chk('named errors still in force on a book (leverage_max)', lm.status === 400 && lm.body.error === 'leverage_max');
     const ar = await fetch(ORIGIN + '/api/arena?cb=' + Date.now()).then(jget);
     chk('/api/arena answers with the season and rows (e2e accounts excluded)', ar.status === 200 && ar.body.ok && ar.body.season && Array.isArray(ar.body.rows) && !ar.body.rows.some(r => /^e2e_/i.test(r.who)), { season: ar.body.season && ar.body.season.idx, rows: ar.body.rows && ar.body.rows.length, first: ar.body.rows && ar.body.rows[0] && ar.body.rows[0].who });
-    const cl = await fetch(ORIGIN + '/api/changelog.json').then(jget); chk('changelog leads with 2.5.0', cl.body.data && cl.body.data.changelog[0].version === '2.5.0');
+    const cl = await fetch(ORIGIN + '/api/changelog.json').then(jget); chk('changelog carries 2.5.0 (books, reset, equity, arena)', cl.body.data && cl.body.data.changelog.some(c => c.version === '2.5.0'));
     await withBrowser(async (browser) => {
       const page = await browser.newPage(); await page.setViewport({ width: 390, height: 780, isMobile: true, hasTouch: true });
       const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));

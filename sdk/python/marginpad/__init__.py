@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "2.3.0"
+__version__ = "2.6.0"
 __all__ = ["MarginPad", "MarginPadError", "verify_webhook"]
 
 
@@ -203,6 +203,28 @@ class MarginPad(object):
 
     def report(self, days=30):
         return self._get("/api/bot/v2/report", days=days)
+
+    # 2.5 books, reset, equity · 2.6 replay
+    def accounts(self):
+        return self._get("/api/bot/v2/accounts")
+
+    def reset(self):
+        """Restart this key's book at $10,000 (closed trades archived, orders cancelled). Refused while positions are open."""
+        return self._post("/api/bot/v2/reset", confirm=True)
+
+    def equity(self, days=30, step_min=None):
+        return self._get("/api/bot/v2/equity", days=days, step_min=step_min)
+
+    def replay_start(self, symbol, day, speed=60):
+        """Run this key through one past UTC day (YYYY-MM-DD) on MarginPad's 1-minute candles. speed = market seconds per real second (1-600)."""
+        return self._post("/api/bot/v2/replay", symbol=symbol, day=day, speed=speed)
+
+    def replay(self, interval=None, bars=None):
+        """Replay status: cursor, price, progress and the candles up to the cursor."""
+        return self._get("/api/bot/v2/replay", interval=interval, bars=bars)
+
+    def replay_stop(self):
+        return self._post("/api/bot/v2/replay", act="stop")
 
     def ai(self, symbol, interval=60, question=None, lang=None):
         """Premium: the chart panel's AI read. Educational, not advice."""

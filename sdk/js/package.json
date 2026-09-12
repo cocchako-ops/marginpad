@@ -1,6 +1,6 @@
 {
   "name": "marginpad",
-  "version": "2.4.0",
+  "version": "2.6.0",
   "description": "MarginPad Bot API client: free crypto-futures paper trading for bots (REST + WebSocket + webhooks) and free market data. Zero dependencies.",
   "main": "index.js",
   "types": "index.d.ts",

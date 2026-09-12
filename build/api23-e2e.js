@@ -199,7 +199,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   // ── meta surfaces ────────────────────────────────────────────────────────────────────────────────────────
   const mcp = await (await fetch(ORIGIN + '/mcp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }) })).json();
   const names = ((mcp.result && mcp.result.tools) || []).map(t => t.name);
-  chk('MCP lists 23 tools incl. paper_modify_order + paper_report + paper_fees', names.length === 23 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0 && names.indexOf('paper_fees') >= 0, { n: names.length });
+  chk('MCP lists 27 tools incl. paper_modify_order + paper_report + paper_fees + paper_replay', names.length >= 27 && names.indexOf('paper_replay') >= 0 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0 && names.indexOf('paper_fees') >= 0, { n: names.length });
   const oa = await (await fetch(ORIGIN + '/api/openapi.json')).json();
   chk('OpenAPI carries the 2.3+ paths + schemas', /^2\.[5-9]\.|^[3-9]\./.test(String(oa.info.version)) && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
   const cl = await (await fetch(ORIGIN + '/api/changelog?format=json')).json();

@@ -37,6 +37,19 @@ const { position } = await mp.open({ symbol: 'BTC', side: 'long', margin_usd: 10
 mp.stream(ev => console.log(ev.type, ev.data));             // positions pushed on change, prices each tick
 ```
 
+## Books, reset, equity, replay (2.5 / 2.6)
+
+```python
+mp.accounts()                                   # every book of the account with lifetime numbers
+mp.reset()                                      # this key's book back to $10,000 (archived, never deleted)
+mp.equity(days=30, step_min=60)                 # equity curve + max drawdown
+mp.replay_start("BTC", "2026-09-11", speed=120) # run the same code through a past day, 12 minutes per day
+mp.replay(interval=5, bars=120)                 # cursor, price, candles up to the cursor
+mp.replay_stop()                                # summary: closes, win rate, P&L, return, liquidations
+```
+
+A key minted with `book` (`{"act":"create","name":"rsi","book":"rsi"}` on `POST /api/bot/key`) trades a separate journal: one strategy, one key, one clean result. During a replay every trading call of that key acts on a replay journal priced from the candle under the cursor; stops, targets and liquidations are checked on every candle between two calls.
+
 ## Examples
 
 - `examples/agent_loop.py`: a signal loop that opens, manages and closes positions once a minute without polling storms.
