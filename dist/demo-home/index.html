@@ -39,7 +39,7 @@
   :root{--bg:#0b0d12;--panel:#12161d;--panel2:#171c26;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.17);--ink:#f0eee6;--dim:#a6afba;--faint:#707a86;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
   *{box-sizing:border-box;margin:0;padding:0;}
   html{touch-action:manipulation;overflow-x:hidden;scroll-behavior:smooth;}
-  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
+  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip;position:relative;} /* clip, not hidden (2026-09-12): overflow-x:hidden made <body> a scroll container, so the sticky header never stuck in Chrome/Android (it scrolled away with the page; iOS alone kept it) */
   body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
   a{color:inherit;text-decoration:none;}
   .mono{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;}
@@ -2119,7 +2119,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 @media(max-width:980px){.mpq{display:none}}
 .mpqm{display:none}
 @media(max-width:980px){
-  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px dashed #232b3a;background:#07090c;margin:0 0 2px}
+  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px solid #1c2230;background:#07090c;margin:0;box-shadow:0 10px 16px -6px rgba(7,9,12,.95)} /* 2026-09-12: sticky under the header — no 2px gap and no dashed edge for the scrolling card to peek through; the shadow fades content out under the bar instead of cutting it */
   .mpqm-cap{flex:none;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#c2f64a;padding:0 10px;border-right:1px solid #1c2230;height:100%;display:flex;align-items:center;gap:5px}
   .mpqm-cap s{display:inline-block;width:6px;height:11px;background:#c2f64a;animation:mpqB 1s infinite;text-decoration:none}
   .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
@@ -2158,8 +2158,12 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE'],chg={};
     var slot=function(sy){return '<span data-tp="'+sy+'"><span class="sym">'+sy+'</span> <b data-p>—</b> <span data-c></span></span>';};
     m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT">'+COINS.map(slot).join('')+'<span class="sym">· marginpad.io ·</span>'+COINS.map(slot).join('')+'</span></span>';
-    hd.parentNode.insertBefore(m,hd.nextSibling);
-    var place=function(){try{m.style.position='sticky';m.style.top=Math.round(hd.getBoundingClientRect().height)+'px';m.style.zIndex='49';}catch(e){}};place();window.addEventListener('resize',place);window.addEventListener('load',place);setTimeout(place,1500);setTimeout(place,4000); /* the header settles after fonts + the cookie line; re-measure so the tape never floats a few px below it */
+    /* The tape lives INSIDE the sticky header as its second row (2026-09-12, owner screenshot: a separately-stuck tape sat a few px
+       below the header once the header's height changed after load, and the member card showed through the gap). One sticky block,
+       one edge, nothing to re-measure. */
+    hd.style.flexWrap='wrap';hd.appendChild(m);
+    hd.style.setProperty('padding-bottom','0','important');hd.style.setProperty('border-bottom','none','important'); /* mp-nav.js pins header padding-bottom:12px !important site-wide; here the tape's own bottom border is the header's bottom edge */
+    m.style.cssText='flex:0 0 calc(100% + 2*var(--pad));width:calc(100% + 2*var(--pad));margin:12px calc(-1*var(--pad)) 0;position:static;';
     function seed(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){(d&&d.pairs||[]).forEach(function(x){var sy=String(x.symbol||'').replace('USDT','');chg[sy]=+x.changePct;window.mpLivePrices=window.mpLivePrices||{};if(!window.mpLivePrices[sy]&&+x.price>0)window.mpLivePrices[sy]={p:+x.price,t:Date.now()};});draw();}).catch(function(){});}
     function draw(){var px=window.mpLivePrices||{};
       COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy],pt=fpx(o.p),ct=(c!=null&&isFinite(c))?(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%':'',cc=(c!=null&&isFinite(c))?(c>=0?'up':'dn'):'';

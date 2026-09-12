@@ -62,7 +62,7 @@ const cookies = (uid, tok) => [{ name: 'mp_sess', value: tok, domain: 'marginpad
       // 4. tape on the mobile homepage (guest)
       const pg = await browser.newPage(); await pg.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
       await pg.goto(ORIGIN + '/?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 }); await sleep(2500);
-      const t1 = await pg.evaluate(() => { const m = document.querySelector('.mpqm'); if (!m) return { none: true }; const cs = getComputedStyle(m); const hd = document.querySelector('header'); const trk = document.getElementById('mpqMT'); return { pos: cs.position, top: Math.round(parseFloat(cs.top)), hdrH: hd.offsetHeight, kids: trk.children.length, btc: (trk.querySelector('[data-tp="BTC"] [data-p]') || {}).textContent, first: trk.firstElementChild }; });
+      const t1 = await pg.evaluate(() => { const m = document.querySelector('.mpqm'); if (!m) return { none: true }; const hd = document.querySelector('header'); const trk = document.getElementById('mpqMT'); const mr = m.getBoundingClientRect(), hr = hd.getBoundingClientRect(); return { pos: m.parentElement === hd ? 'sticky' : 'loose', top: Math.round(mr.bottom), hdrH: Math.round(hr.bottom), kids: trk.children.length, btc: (trk.querySelector('[data-tp="BTC"] [data-p]') || {}).textContent }; });
       await sleep(4000);
       const t2 = await pg.evaluate(() => { const trk = document.getElementById('mpqMT'); return { kids: trk.children.length, btc: (trk.querySelector('[data-tp="BTC"] [data-p]') || {}).textContent, sameFirst: trk.firstElementChild === window.__tapeFirst }; });
       await pg.evaluate(() => { window.__tapeFirst = document.getElementById('mpqMT').firstElementChild; });
@@ -70,8 +70,8 @@ const cookies = (uid, tok) => [{ name: 'mp_sess', value: tok, domain: 'marginpad
       const t3 = await pg.evaluate(() => { const trk = document.getElementById('mpqMT'); return { sameFirst: trk.firstElementChild === window.__tapeFirst, rect: Math.round(document.querySelector('.mpqm').getBoundingClientRect().top) }; });
       chk('mobile tape: sticky right under the header, 13 fixed slots, BTC filled, DOM nodes reused across ticks', t1.pos === 'sticky' && t1.top === t1.hdrH && t1.kids === 13 && t2.kids === 13 && /\d/.test(String(t2.btc)) && t3.sameFirst === true, { t1: { pos: t1.pos, top: t1.top, hdrH: t1.hdrH, kids: t1.kids }, btc: t2.btc, reused: t3.sameFirst });
       await pg.evaluate(() => window.scrollTo(0, 900)); await sleep(600);
-      const t4 = await pg.evaluate(() => { const r = document.querySelector('.mpqm').getBoundingClientRect(); const hd = document.querySelector('header').getBoundingClientRect(); return { tapeTop: Math.round(r.top), hdrBottom: Math.round(hd.bottom), visible: r.top >= hd.bottom - 1 && r.top < 200 }; });
-      chk('mobile tape: after scrolling it sits below the header, not under it', t4.visible, t4);
+      const t4 = await pg.evaluate(() => { const r = document.querySelector('.mpqm').getBoundingClientRect(); const hd = document.querySelector('header').getBoundingClientRect(); const d = document.querySelector('#dash, .hero'); return { tapeTop: Math.round(r.top), tapeBottom: Math.round(r.bottom), hdrBottom: Math.round(hd.bottom), contentTop: d ? Math.round(d.getBoundingClientRect().top) : null, visible: r.top >= 0 && Math.abs(r.bottom - hd.bottom) <= 1 && r.bottom < 200 }; });
+      chk('mobile tape: after scrolling it stays on screen as the header\'s bottom row (one sticky block, no gap for content to show through)', t4.visible, t4);
       await pg.close();
     });
   } finally { await post('/api/admin/e2euser', { uid: A, op: 'rm' }).catch(() => {}); await post('/api/admin/e2euser', { uid: B, op: 'rm' }).catch(() => {}); }
