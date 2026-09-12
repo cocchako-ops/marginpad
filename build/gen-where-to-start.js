@@ -487,7 +487,7 @@ function wireWidget(root){var w=root.querySelector('.wts-widget');if(!w)return;v
     sl3.addEventListener('input',u3);u3();}}
 function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first — one step at a time.');return;}var l=L[i],m=qs('#mcard');
   var h='<div class="wts-mh"><span class="mn">'+l.tn+'</span><h2>'+esc(l.t)+'</h2><button class="wts-x" data-close type="button">✕</button></div>';
-  if(l.warn)h+='<div class="wts-warn"><b>⚠ '+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
+  if(l.warn)h+='<div class="wts-warn"><b>'+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
   if(l.fig)h+='<div class="wts-fig">'+l.fig+'</div>';
   h+='<div class="wts-body">';
   for(var s=0;s<l.sections.length;s++){var sec=l.sections[s],txt=sec.raw?sec.p:esc(sec.p);

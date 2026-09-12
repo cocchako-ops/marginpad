@@ -80,7 +80,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <h2>FAQ</h2>
 <div class="faq"><details><summary>Why are maker fees lower?</summary><p>Resting limit orders provide the liquidity that makes the book usable, so exchanges reward them with lower fees or rebates; market orders consume liquidity and pay for immediacy.</p></details><details><summary>Do fees depend on leverage?</summary><p>Fees apply to position value (margin times leverage), so raising leverage with the same margin raises the fee bill proportionally.</p></details><details><summary>What other costs exist?</summary><p>Perpetuals exchange funding every 8 hours, and market orders pay slippage. The break-even and funding-cost calculators price the full round trip.</p></details></div>
 <h2>Related tools</h2>
-<div class="rel"><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/crypto-funding-cost-calculator/">Funding cost</a><a href="/exchanges">Compare exchanges</a><a href="/crypto-profit-calculator/">Profit calculator</a></div>
+<div class="rel"><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/crypto-funding-cost-calculator/">Funding cost</a><a href="/exchanges/">Compare exchanges</a><a href="/crypto-profit-calculator/">Profit calculator</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,t=+document.getElementById('taker').value/100,m=+document.getElementById('maker').value/100,n=+document.getElementById('trades').value;var r=document.getElementById('res');if(!(p>0)){r.innerHTML='';return;}var rtT=2*p*t,rtM=2*p*m,moT=rtT*n,moM=rtM*n;r.innerHTML='<div class="rrow"><span class="k">Round trip as taker</span><span class="v dn">-'+rtT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Round trip as maker</span><span class="v">-'+rtM.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Monthly cost ('+n+' trades, taker)</span><span class="v dn">-'+moT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Limit orders save</span><span class="v up">+'+(moT-moM).toFixed(2)+' USD / month</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
+<script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>

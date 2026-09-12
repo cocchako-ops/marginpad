@@ -80,7 +80,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <h2>FAQ</h2>
 <div class="faq"><details><summary>How many trades before win rate is trustworthy?</summary><p>Under ~100 trades the confidence interval is roughly plus or minus 10 points. Judge systems on expectancy over hundreds of journaled trades, not a hot week.</p></details><details><summary>Improve win rate or payoff first?</summary><p>They trade off. Most durable systems fix a payoff floor (say 1.5R minimum) and optimize entries, because letting winners run is easier to systematize.</p></details><details><summary>Where do I get my numbers?</summary><p>From your journal — MarginPad tracks every paper trade automatically and the profile stats give win rate and average W/L to feed this page.</p></details></div>
 <h2>Related tools</h2>
-<div class="rel"><a href="/risk-of-ruin-calculator/">Risk of ruin</a><a href="/stop-loss-calculator/">Stop-loss & R targets</a><a href="/trading-journal">Trading journal</a><a href="/paper-trade">Paper trading</a></div>
+<div class="rel"><a href="/risk-of-ruin-calculator/">Risk of ruin</a><a href="/stop-loss-calculator/">Stop-loss & R targets</a><a href="/trading-journal/">Trading journal</a><a href="/paper-trade">Paper trading</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var w=+document.getElementById('wr').value/100,aw=+document.getElementById('aw').value,al=+document.getElementById('al').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(w>=0&&w<=1&&aw>=0&&al>=0)){r.innerHTML='';return;}var ex=w*aw-(1-w)*al,mo=ex*n,beWR=al+aw>0?al/(aw+al)*100:0;r.innerHTML='<div class="rrow big"><span class="k">Expectancy per trade</span><span class="v '+(ex>=0?'up':'dn')+'">'+(ex>=0?'+':'')+ex.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Expected monthly ('+n+' trades)</span><span class="v '+(mo>=0?'up':'dn')+'">'+(mo>=0?'+':'')+mo.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+beWR.toFixed(1)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
+<script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>

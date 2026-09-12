@@ -2622,7 +2622,7 @@ async function checkCalReminders(env) {
     const when = new Date(v.ts).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
     if (k.name.startsWith('calremtg:')) {
       const title = CAL_TITLES[v.type] || 'Crypto event';
- try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: v.chat, parse_mode: 'HTML', disable_web_page_preview: true, text: ' <b>' + title + '</b> in ~30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\n <a href="https://marginpad.io/calendar/">Calendar</a> · <a href="https://marginpad.io/paper-trade">Paper Trade</a>' }); } catch (e) {}
+ try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: v.chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>' + title + '</b> in ~30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\n <a href="https://marginpad.io/calendar/">Calendar</a> · <a href="https://marginpad.io/paper-trade">Paper Trade</a>' }); } catch (e) {}
     } else if (env.RESEND_API_KEY) {
       let email = '';
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [v.uid] }) })); const j = await r.json(); email = (j.profiles && j.profiles[v.uid] && j.profiles[v.uid].email) || ''; } catch (e) {}
@@ -2630,7 +2630,7 @@ async function checkCalReminders(env) {
       const t = String(v.title || 'Crypto event');
       try { const _mr9 = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(refTagEmail({
         from: 'MarginPad Calendar <alerts@marginpad.io>', to: [email], reply_to: 'support@marginpad.io',
- subject: ' ' + t + ' — in about 30 minutes',
+ subject: t + ' — in about 30 minutes',
         text: t + ' is coming up in about 30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\nCalendar: https://marginpad.io/calendar/\nPaper Trade: https://marginpad.io/paper-trade\n\n— MarginPad',
  html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px"> ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' })) }); if (!_mr9.ok) mailFail(env, 'calrem', _mr9.status); } catch (e) { mailFail(env, 'calrem', 0); }
     }
@@ -3572,7 +3572,7 @@ async function checkChartSignals(env, force) {
     const chans = await sigChannels(env); // SINGLE source of truth for channel ids (free is served by checkFreeSignals, not here)
     if (!chans.fast && !chans.balanced && !chans.premium) return { err: 'no-chat' };
     const token = env.TELEGRAM_TOKEN;
-    const TIER_NOTE = { fast: '<i>Fast — 1h flip, confirmed ~3min (matches the chart)</i>', balanced: ' <i>Balanced — 4h trend + volume confirmed</i>', premium: '<i>Premium — 4h trend + ADX + volume confirmed</i>' };
+    const TIER_NOTE = { fast: '<i>Fast — 1h flip, confirmed ~3min (matches the chart)</i>', balanced: '<i>Balanced — 4h trend + volume confirmed</i>', premium: '<i>Premium — 4h trend + ADX + volume confirmed</i>' };
     const listRaw = (await env.STATS.get('csig:coins') || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim();
     const coins = listRaw.split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
     const adxMin = +(await env.STATS.get('csig:adx') || 20);
@@ -5481,7 +5481,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c1e0d929" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a275e128" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -9287,38 +9287,38 @@ const DIV = '━━━━━━━━━━━';
 // (TG_HELP_OLD — the pre-2026-08 /help text — was dead code and was removed 2026-09-02)
 const TG_HELP =
   '<b>MarginPad</b> — your crypto-futures cockpit in Telegram.\n' +
-  '<i>Live data, calculators, paper trading, alerts &amp; signals. All free.</i>\n\n' +
-  '<b> Calculators</b>\n' +
+  '<i>Live data, calculators, paper trading, alerts and a daily market wrap. All free.</i>\n\n' +
+  '<b>Calculators</b>\n' +
   '<code>/liq</code> entry lev [long|short] — liquidation price\n' +
   '<code>/pnl</code> entry exit size [lev] [side] — profit &amp; ROI\n' +
   '<code>/size</code> balance risk% entry stop — position size\n' +
   '<code>/rr</code> entry stop tp — risk/reward\n\n' +
-  '<b> Paper trade</b> <i>(connect your account first)</i>\n' +
+  '<b>Paper trade</b> <i>(connect your account first)</i>\n' +
   '<code>/open</code> BTC 100 x20 — open a demo position\n' +
   '<code>/positions</code> — live P&amp;L on your positions\n' +
   '<code>/close</code> BTC — close a position\n\n' +
-  '<b> Prices &amp; alerts</b>\n' +
+  '<b>Prices &amp; alerts</b>\n' +
   '<code>/price</code> BTC — live price\n' +
   '<code>/alert</code> BTC 70000 — ping me at a price\n' +
   '<code>/whale</code> BTC short 200 — whale alert (whales load shorts &gt; $200M)\n' +
   '<code>/alerts</code> — your alerts · <code>/clearalerts</code>\n' +
   '<code>/wrap</code> — your personal Daily Wrap: pick the sections, 08:00 or 16:00 UTC, every day in this chat\n\n' +
-  '<b> Live market data</b>\n' +
+  '<b>Live market data</b>\n' +
   '<code>/rekt</code> — 24h liquidations · <code>/funding</code> — funding extremes · <code>/sentiment</code> — Fear &amp; Greed\n' +
   '<code>/fundalert</code> BTC 0.1 — ping me on extreme funding\n\n' +
-  '<b> Competition</b>\n' +
- '<code>/leaderboard</code> — season boards (green days · ROE · win rate · XP)\n\n' +
-  '<b> Signals, news &amp; community</b>\n' +
-  '<code>/premium</code> — free &amp; premium signal groups\n' +
+  '<b>Competition</b>\n' +
+  '<code>/leaderboard</code> — the five 14-day season boards (green days · ROE · win rate · XP · the Gold Room)\n\n' +
+  '<b>Signals, news &amp; community</b>\n' +
+  '<code>/premium</code> — premium signal groups (the free channel carries the daily wrap)\n' +
   '<code>/community</code> — join our Telegram community\n' +
   '<b>Crypto news channel:</b> @marginpadnews — top stories + full read on our site\n\n' +
-  '<b> Account</b>\n' +
+  '<b>Account</b>\n' +
   '<code>/connect</code> — link your MarginPad account · <code>/me</code> — status\n\n' +
   '<b>Try:</b> <code>/liq 60000 10 long</code>  · <a href="https://marginpad.io">marginpad.io</a>';
 const TG_KB = {
   inline_keyboard: [
     [{ text: 'Liquidation', callback_data: 'liq' }, { text: 'PnL / ROI', callback_data: 'pnl' }],
-    [{ text: 'Position size', callback_data: 'size' }, { text: ' Risk / Reward', callback_data: 'rr' }],
+    [{ text: 'Position size', callback_data: 'size' }, { text: 'Risk / Reward', callback_data: 'rr' }],
     [{ text: 'Paper trade', callback_data: 'paper' }, { text: 'Alerts', callback_data: 'alerts' }],
     [{ text: 'Whale alerts', callback_data: 'whale' }, { text: 'Leaderboard', callback_data: 'lb' }],
     [{ text: 'Signals', callback_data: 'signals' }, { text: 'Connect', callback_data: 'connect' }],
@@ -9499,12 +9499,12 @@ async function leaderboard(env) {
   const ms = weekEnd - nowMs, endStr = ms > 0 ? ((Math.floor(ms / 86400000) > 0 ? Math.floor(ms / 86400000) + 'd ' : '') + Math.floor(ms % 86400000 / 3600000) + 'h') : '';
   const medal = ['', '', ''];
   const row = (x, i, val) => (medal[i] || (i + 1) + '.') + ' <code>' + x.who + '</code> — ' + val + '\n';
-  let out = '<b>Weekly Trade League — 4 boards</b>\n' + DIV + '\n';
+  let out = '<b>Trade League — 14-day season</b>\n' + DIV + '\n';
   out += '<b>Green days</b> <i>(days of the season closed in profit)</i>\n' + (topGreen.length ? topGreen.map((x, i) => row(x, i, '<b>' + x.days + ' day' + (x.days === 1 ? '' : 's') + '</b>')).join('') : '<i>no one has a green day yet this season</i>\n');
   out += '\n<b>Highest ROE</b>\n' + (topR.length ? topR.map((x, i) => row(x, i, '<b>' + (x.roe >= 0 ? '+' : '') + x.roe.toFixed(0) + '%</b>')).join('') : '<i>no one yet</i>\n');
-  out += '\n<b> Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
-  out += '\n<b> Season XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
- out += '\n <b>14-day season (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid in USDT when the season ends.\n';
+  out += '\n<b>Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
+  out += '\n<b>Season XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
+  out += '\n<b>14-day season (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. The top 5 on each board are paid in USDT when the season ends; the fifth board, The Gold Room, is on the site: https://marginpad.io/season/#boards\n';
   out += '<b>Members only</b> — sign up free at <a href="https://marginpad.io">marginpad.io</a> and close winning <a href="https://marginpad.io/paper-trade">Paper Trades</a> to rank.';
   return out;
 }
@@ -10206,7 +10206,7 @@ async function checkSubscriptions(env) {
     } else if (s.expiry - now <= 3 * 86400000 && !s.reminded) { // ≤3 days left → one-time renewal reminder
       s.reminded = 1; try { await env.STATS.put(k.name, JSON.stringify(s), { expirationTtl: Math.ceil((s.expiry - now) / 1000) + 5 * 86400 }); } catch (e) {}
       const d = Math.ceil((s.expiry - now) / 86400000);
- try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: ' Your <b>' + tier + '</b> signals subscription ends in <b>' + d + ' day' + (d !== 1 ? 's' : '') + '</b>. Renew now to keep your access: <code>/buy ' + tier + '</code>' }); } catch (e) {}
+ try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: 'Your <b>' + tier + '</b> signals subscription ends in <b>' + d + ' day' + (d !== 1 ? 's' : '') + '</b>. Renew now to keep your access: <code>/buy ' + tier + '</code>' }); } catch (e) {}
     }
   }
 }
@@ -10280,8 +10280,8 @@ async function handleTelegram(request, env) {
   if (update.inline_query) { // @MarginPadBot <coin> in ANY chat → live price card (viral). Enable inline in @BotFather first.
     const q = update.inline_query, query = String(q.query || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
     const results = [];
-    if (query) { const p = await fetchPrice(query); if (p) results.push({ type: 'article', id: 'p_' + query, title: p.sym + ' — $' + tgfmt(p.price), description: (p.chg >= 0 ? '+' : '') + (+p.chg).toFixed(2) + '% (24h) · tap to send', input_message_content: { message_text: '<b>' + p.sym + '/USDT</b>\nPrice <b>$' + tgfmt(p.price) + '</b>\n24h ' + (p.chg >= 0 ? '+' : '') + (+p.chg).toFixed(2) + '%\n\n Free crypto paper trading, charts &amp; signals — marginpad.io', parse_mode: 'HTML', disable_web_page_preview: true }, reply_markup: { inline_keyboard: [[{ text: 'Trade ' + p.sym + ' on MarginPad', url: 'https://marginpad.io/paper-trade?coin=' + query }]] } }); }
-    if (!results.length) results.push({ type: 'article', id: 'help', title: query ? 'No price for “' + query + '”' : 'Type a coin — e.g. BTC', description: 'Get its live price to share in any chat', input_message_content: { message_text: '<b>MarginPad</b> — free crypto paper trading, charts, calculators &amp; 1h signals: marginpad.io', parse_mode: 'HTML' } });
+    if (query) { const p = await fetchPrice(query); if (p) results.push({ type: 'article', id: 'p_' + query, title: p.sym + ' — $' + tgfmt(p.price), description: (p.chg >= 0 ? '+' : '') + (+p.chg).toFixed(2) + '% (24h) · tap to send', input_message_content: { message_text: '<b>' + p.sym + '/USDT</b>\nPrice <b>$' + tgfmt(p.price) + '</b>\n24h ' + (p.chg >= 0 ? '+' : '') + (+p.chg).toFixed(2) + '%\n\n Free crypto paper trading, charts &amp; a daily market wrap — marginpad.io', parse_mode: 'HTML', disable_web_page_preview: true }, reply_markup: { inline_keyboard: [[{ text: 'Trade ' + p.sym + ' on MarginPad', url: 'https://marginpad.io/paper-trade?coin=' + query }]] } }); }
+    if (!results.length) results.push({ type: 'article', id: 'help', title: query ? 'No price for “' + query + '”' : 'Type a coin — e.g. BTC', description: 'Get its live price to share in any chat', input_message_content: { message_text: '<b>MarginPad</b> — free crypto paper trading, charts, calculators &amp; a daily market wrap: marginpad.io', parse_mode: 'HTML' } });
     try { await tgApi(token, 'answerInlineQuery', { inline_query_id: q.id, results, cache_time: 20 }); } catch (e) {}
     return new Response('ok');
   }
@@ -10421,7 +10421,7 @@ async function handleTelegram(request, env) {
     const parts = msg.text.trim().split(/\s+/), sym = String(parts[1] || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), thr = parseFloat(parts[2]);
     if (!sym || !isFinite(thr) || thr <= 0) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>Funding alert</b>\nPing me when a coin’s funding gets extreme:\n<code>/fundalert BTC 0.1</code>\n<i>(fires when |funding| ≥ 0.1% per 8h)</i>', ...base }); return new Response('ok'); }
     let n = 0; try { const l = await env.STATS.list({ prefix: 'fal:' + msg.chat.id + ':' }); n = (l.keys || []).length; } catch (e) {}
-    if (n >= 15) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Max 15 funding alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
+    if (n >= 15) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Max 15 funding alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
     try { await env.STATS.put('fal:' + msg.chat.id + ':' + sym, JSON.stringify({ sym, thr, chat: String(msg.chat.id) })); await env.STATS.put('fal:on', '1'); } catch (e) {}
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>Funding alert set</b> \nI’ll ping you when <b>' + sym + '</b> funding crosses <b>±' + thr + '%</b> (per 8h). · /alerts', ...base });
     return new Response('ok');
@@ -10442,7 +10442,7 @@ async function handleTelegram(request, env) {
       await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>' + sym + ' whale positioning</b> <i>(Hyperliquid, live)</i>\n' + DIV + '\n Long  <b>' + fm(cur.long) + '</b>\n Short <b>' + fm(cur.short) + '</b>\n\nSet an alert: <code>/whale ' + sym + ' short 200</code>', ...base }); return new Response('ok');
     }
     let n = 0; try { const l = await env.STATS.list({ prefix: 'wal:' + msg.chat.id + ':' }); n = (l.keys || []).length; } catch (e) {}
-    if (n >= 20) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Max 20 whale alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
+    if (n >= 20) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Max 20 whale alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
     const key = 'wal:' + msg.chat.id + ':' + sym + ':' + side;
     try { await env.STATS.put(key, JSON.stringify({ sym, side, thr: Math.round(thr), chat: String(msg.chat.id) })); await env.STATS.put('wal:on', '1'); } catch (e) {}
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>Whale alert set</b> \nI’ll ping you when Hyperliquid whales hold <b>&gt; $' + Math.round(thr) + 'M ' + side.toUpperCase() + '</b> on <b>' + sym + '</b>.\n<i>Now: ' + side + ' ' + fm(cur[side]) + '.</i> · /alerts', ...base });
@@ -10460,7 +10460,7 @@ async function handleTelegram(request, env) {
     if (!NOWPAY_TIERS[tier]) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>Buy premium signals</b>\n' + DIV + '\n<code>/buy fast</code> — $14.99/mo\n<code>/buy balanced</code> — $24.99/mo\n<code>/buy premium</code> — $39.99/mo\n\nYou’ll get a secure payment link; the group invite is sent here automatically once it confirms.', ...base }); return new Response('ok'); }
     if (!env.NOWPAY_API_KEY) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Crypto checkout isn’t enabled yet — send /request instead.', ...base }); return new Response('ok'); }
     const inv = await nowpayCreate(env, msg.chat.id, tier);
-    if (!inv) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Couldn’t create the invoice right now. Try again shortly or send /request.', ...base }); return new Response('ok'); }
+    if (!inv) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Couldn’t create the invoice right now. Try again shortly or send /request.', ...base }); return new Response('ok'); }
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: 'Pay $' + NOWPAY_TIERS[tier] + ' — ' + tier + ' signals', url: inv.invoice_url }]] }, text: '<b>' + tier[0].toUpperCase() + tier.slice(1) + ' signals</b> — $' + NOWPAY_TIERS[tier] + '/mo\n' + DIV + '\nTap below to pay with any crypto. The moment payment confirms, I’ll send your group invite here automatically. \n<i>The link is unique to you.</i>' });
     return new Response('ok');
   }
@@ -10538,9 +10538,9 @@ async function handleTelegram(request, env) {
       return new Response('ok');
     }
     const p = await fetchPrice(parts[1]);
- if (!p) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Couldn\'t find that coin.', ...base }); return new Response('ok'); }
+ if (!p) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Couldn\'t find that coin.', ...base }); return new Response('ok'); }
     let cnt = 0; try { const l = await env.STATS.list({ prefix: 'al:' + msg.chat.id + ':' }); cnt = l.keys.length; } catch (e) {}
-    if (cnt >= 20) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' You already have 20 alerts. See /alerts.', ...base }); return new Response('ok'); }
+    if (cnt >= 20) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'You already have 20 alerts. See /alerts.', ...base }); return new Response('ok'); }
     const dir = target >= p.price ? 'up' : 'down';
     const id = Date.now() + '' + Math.floor(Math.random() * 1e4);
     try { await env.STATS.put('al:' + msg.chat.id + ':' + id, JSON.stringify({ sym: p.sym, target, dir, chat: msg.chat.id })); await env.STATS.put('al:on', '1', { expirationTtl: 7776000 }); } catch (e) {}
@@ -10575,10 +10575,10 @@ async function handleTelegram(request, env) {
     const o = parseOpen(msg.text);
     if (!o) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '<b>Open a paper position</b>\nSend: <code>/open BTC 100 x300</code>\n<i>coin · margin in $ · leverage</i>\n\nGoing short? <code>/open ETH 50 x20 short</code>', ...base }); return new Response('ok'); }
     const p = await fetchPrice(o.sym);
- if (!p) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Couldn\'t find that coin. Try <code>/open BTC 100 x300</code>.', ...base }); return new Response('ok'); }
+ if (!p) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Couldn\'t find that coin. Try <code>/open BTC 100 x300</code>.', ...base }); return new Response('ok'); }
     let cnt = 0, pairCnt = 0; try { const l = await env.STATS.list({ prefix: 'pos:' + msg.chat.id + ':' }); cnt = l.keys.length; if (cnt < 50) for (const k of l.keys) { try { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v && v.sym === p.sym) pairCnt++; } catch (e) {} } } catch (e) {}
-    if (cnt >= 50) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Limit reached — 50 open positions is the max. Close some first (/positions).', ...base }); return new Response('ok'); }
-    if (pairCnt >= 10) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Limit reached — max 10 open ' + p.sym + ' positions. Close one first (<code>/close ' + p.sym + '</code>).', ...base }); return new Response('ok'); }
+    if (cnt >= 50) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Limit reached — 50 open positions is the max. Close some first (/positions).', ...base }); return new Response('ok'); }
+    if (pairCnt >= 10) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Limit reached — max 10 open ' + p.sym + ' positions. Close one first (<code>/close ' + p.sym + '</code>).', ...base }); return new Response('ok'); }
     // Write the trade STRAIGHT into the linked account's journal (My Trades) — same store as the web/REST bot, so it
     // auto-syncs to the website within ~14s (pullTrades). No claim link needed; opening here = opening on the web.
     if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
@@ -10587,7 +10587,7 @@ async function handleTelegram(request, env) {
     const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
-    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' ' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
+    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (long ? '' : '') + ' <b>Opened ' + o.side.toUpperCase() + ' ' + p.sym + '</b>\n' + DIV + '\nMargin  <b>$' + tgfmt(margin) + '</b>\nLeverage  <b>' + lev + '×</b>\nSize  <b>$' + tgfmt(margin * lev) + '</b>\nEntry  <b>$' + tgfmt(entry) + '</b>\nLiq.  ~$' + tgfmt(liq) + '\n\n <b>Synced to your account</b> — it’s already in <a href="https://marginpad.io/paper-trade">My Trades</a> on the web.\n\n /positions · close with <code>/close ' + p.sym + '</code>', ...base });
     return new Response('ok');
   }
@@ -10616,11 +10616,11 @@ async function handleTelegram(request, env) {
     const seed = await usersDO(env, '/botpositions', { uid: _lu.uid, prices: {} });
     const opens = ((seed && seed.positions) || []).filter(x => x.status === 'open');
     const match = opens.filter(x => String(x.id) === arg || x.symbol === arg.toUpperCase())[0];
- if (!match) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' No matching open position. See /positions.', ...base }); return new Response('ok'); }
+ if (!match) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'No matching open position. See /positions.', ...base }); return new Response('ok'); }
     const prices = {}; try { const pp = await fetchPrice(match.symbol); if (pp) prices[match.symbol] = pp.price; } catch (e) {}
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botclose', { uid: _lu.uid, id: match.id, prices, promos }); // closes it in the account journal → also closes in My Trades on the web
-    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' ' + (r && r.error === 'no_price' ? 'Price unavailable right now — try again in a moment.' : 'Couldn’t close it — see /positions.'), ...base }); return new Response('ok'); }
+    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '' + (r && r.error === 'no_price' ? 'Price unavailable right now — try again in a moment.' : 'Couldn’t close it — see /positions.'), ...base }); return new Response('ok'); }
     const cp = r.position || {}, pnl = +cp.pnl_usd || 0, roe = cp.margin_usd ? pnl / cp.margin_usd * 100 : 0;
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (pnl >= 0 ? '' : '') + ' <b>Closed ' + String(cp.side || match.side).toUpperCase() + ' ' + (cp.symbol || match.symbol) + '</b>\n' + DIV + '\nEntry $' + tgfmt(cp.entry_price || match.entry_price) + ' → Exit $' + tgfmt(cp.exit_price) + '\nPnL  <b>' + (pnl >= 0 ? '+' : '') + '$' + tgfmt(pnl) + '</b> (' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '% ROE)\n\n Also closed in <b>My Trades</b> on the web.\n\n Open another: <code>/open BTC 100 x300</code>', ...base });
     return new Response('ok');
@@ -10652,11 +10652,11 @@ async function handleTelegram(request, env) {
   }
   if (cmd === '/announce') { // owner-only: post an announcement to the MarginPad channel
     const adminChat = String(env.TG_ADMIN_CHAT || '');
-    if (!adminChat) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' Announcements aren\'t wired yet. To enable, set the <code>TG_ADMIN_CHAT</code> secret to <code>' + msg.chat.id + '</code> (this chat).', ...base }); return new Response('ok'); }
+    if (!adminChat) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Announcements aren\'t wired yet. To enable, set the <code>TG_ADMIN_CHAT</code> secret to <code>' + msg.chat.id + '</code> (this chat).', ...base }); return new Response('ok'); }
     if (String(msg.chat.id) !== adminChat) return new Response('ok'); // silently ignore non-owners
     const channel = env.TG_CHANNEL || (env.STATS && await env.STATS.get('tg:channel'));
     const channelName = (env.STATS && await env.STATS.get('tg:channel_name')) || channel;
-    if (!channel) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' No channel detected yet. Add the bot as an admin of your channel and post one message there — I capture it automatically.', ...base }); return new Response('ok'); }
+    if (!channel) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'No channel detected yet. Add the bot as an admin of your channel and post one message there — I capture it automatically.', ...base }); return new Response('ok'); }
     const body = msg.text.replace(/^\/announce(@\S+)?\s*/i, '').trim();
     if (!body) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Send: <code>/announce your message…</code> — it posts to ' + channelName + '. HTML is supported.', ...base }); return new Response('ok'); }
     let ok = false; try { const r = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: channel, text: refTagLinks(body, 'telegram'), parse_mode: 'HTML', disable_web_page_preview: true }) }); ok = (await r.json()).ok; } catch (e) {}
@@ -11001,7 +11001,7 @@ async function payWeeklyPrizes(env) {
         const u = prof[String(p.acct).replace(/^u:/, '')]; const cx = ctx[p.acct + '|' + (p.board || 'roe')] || {};
         try { await evPush(env, null, 'lbpaid', ((u && u.username) || String(p.acct || '').replace('u:', '').slice(0, 10)) + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' ' + (p.board || 'roe') + ')', ''); } catch (e) {}
         if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr, bank: cx.bank || 0, days: cx.days || 0 }); } catch (e) {} }
-        try { const xp = p.rank === 1 ? 300 : p.rank === 2 ? 200 : p.rank === 3 ? 100 : 50; await grantXp(env, p.acct, 'lbprize', xp, { note: 'weekly ' + (p.board || 'roe') + ' leaderboard #' + p.rank }); } catch (xe) {}
+        try { const xp = p.rank === 1 ? 300 : p.rank === 2 ? 200 : p.rank === 3 ? 100 : 50; await grantXp(env, p.acct, 'lbprize', xp, { note: 'season ' + (p.board || 'roe') + ' leaderboard #' + p.rank }); } catch (xe) {}
       }
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
@@ -11713,7 +11713,7 @@ async function handleMcp(url, request, env, ctx) {
         out.push(err(-32601, 'Method not found: ' + method));
       }
     } catch (e) {
-      out.push(err(-32603, 'Internal error: ' + (e && e.message ? e.message : 'unknown')));
+      console.error('mcp', e && e.message); out.push(err(-32603, 'Internal error'));
     }
   }
   if (!out.length) return new Response('', { status: 202, headers: H }); // notifications only
@@ -12363,14 +12363,14 @@ async function sendDigestEmail(env, to, uid, content) {
   const spotH = spotDigestHtml(content.spot), spotT = spotDigestText(content.spot);
   const lb = spotH + ((content.top || []).length
  ? '<p style="margin:0 0 8px;font-weight:700">Green Days board right now:</p>' + content.top.map((x, i) => '<div style="padding:4px 0;color:#333">' + (medal[i] || (i + 1) + '.') + ' <b>' + String(x.who || 'Trader').replace(/[<>&]/g, '') + '</b> &middot; ' + (+x.days || 0) + ' green day' + ((+x.days === 1) ? '' : 's') + '</div>').join('') + '<p style="margin:10px 0 0;color:#555">A day turns green when you close at least 3 paper trades and finish it in profit. The top 5 on the Green Days board win real USDT when the 14-day season ends — so do the top 5 on ROE, win rate and XP.</p>'
- : '<p style="margin:0;color:#333">The Trade League season is on: 14 days, four boards (Green Days, ROE, win rate, XP), real USDT for the top 5 on each. Close at least 3 paper trades a day and finish the day in profit to start stacking green days.</p>');
+ : '<p style="margin:0;color:#333">The Trade League season is on: 14 days, five boards (Green Days, ROE, win rate, XP, the Gold Room), real USDT for the top 5 on each paid board. Close at least 3 paper trades a day and finish the day in profit to start stacking green days.</p>');
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
       body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: 'Your weekly MarginPad recap',
- text: 'The MarginPad Trade League season is on — 14 days, four boards, real USDT for the top 5 on each.' + spotT + '\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\n' + MAIL_AFF_TEXT + '\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
+ text: 'The MarginPad Trade League season is on — 14 days, five boards, real USDT for the top 5 on each paid board.' + spotT + '\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\n' + MAIL_AFF_TEXT + '\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:20px;font-weight:800;margin:0 0 4px">Your weekly recap </p><p style="color:#555;margin:0 0 16px">Here\'s what\'s happening on MarginPad this week.</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:14px 16px;margin:0 0 16px">' + lb + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px">Open Paper Trade &rarr;</a></p><p style="margin:14px 0 0;color:#555">Don\'t miss a move &mdash; <a href="https://marginpad.io/alerts/" style="color:#15a06a">set a free price alert</a>, or <a href="https://marginpad.io/rewards/" style="color:#15a06a">claim free USDT</a>.</p>' + MAIL_AFF_HTML + '<p style="color:#aaa;font-size:12px;margin:20px 0 0">You get this because you have a MarginPad account. <a href="' + unsub + '" style="color:#999">Unsubscribe</a> &middot; <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
       }))
     });
@@ -16573,7 +16573,7 @@ export default {
         .on('meta[property="og:url"]', { element(e) { e.setAttribute('content', m.canon); } });
       if (m.pt) { // /paper-trade SEO push (2026-08-15, owner: own the paper-trading SERP — we are the only SOCIAL simulator that pays REAL rewards):
         // route-specific structured data (WebApplication + FAQPage with the rewards/social answers no competitor can copy) + a crawlable content block at the end of the body.
- const PT_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Paper Trading', url: 'https://marginpad.io/paper-trade', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Free crypto paper trading simulator with live prices, leverage to 1000x, paid 14-day season leaderboards, daily missions and a full social layer — the only paper trading platform where practice earns real rewards.', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, featureList: ['Live-price crypto futures paper trading', 'US stocks, forex, indices and commodities in the same account', 'Leverage up to 1000x with real liquidation math', 'Paid weekly leaderboards (real USDT prizes)', 'Daily missions that pay while you practice', 'Trader-vs-trader duels, chat, follows and profiles', 'XP levels and unlockable cosmetics', 'No signup needed to try, never a deposit'] }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+ const PT_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Paper Trading', url: 'https://marginpad.io/paper-trade', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Free crypto paper trading simulator with live prices, leverage to 1000x, paid 14-day season leaderboards, daily missions and a full social layer — the only paper trading platform where practice earns real rewards.', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, featureList: ['Live-price crypto futures paper trading', 'US stocks, forex, indices and commodities in the same account', 'Leverage up to 1000x with real liquidation math', 'Paid 14-day season leaderboards (real USDT for the top 5 on each board)', 'Daily missions that pay while you practice', 'Trader-vs-trader duels, chat, follows and profiles', 'XP levels and unlockable cosmetics', 'No signup needed to try, never a deposit'] }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
           { '@type': 'Question', name: 'What is paper trading?', acceptedAnswer: { '@type': 'Answer', text: 'Paper trading is practicing trades with simulated money at real market prices. You get the full experience — entries, leverage, liquidations, P&L — without risking a cent. It is the standard way traders test strategies and build skill before going live.' } },
           { '@type': 'Question', name: 'Is paper trading on MarginPad really free?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. The simulator is free, opens without a signup, and never asks for a deposit. Creating a free account adds the social layer: leaderboards, missions, XP and rewards.' } },
  { '@type': 'Question', name: 'Can I earn real rewards while paper trading?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — MarginPad is the only paper trading platform that pays real rewards for practice. Four 14-day season leaderboards pay real USDT to the top five traders each, daily missions credit small USDT amounts for using the tools, and XP unlocks levels and cosmetics.' } },
@@ -21607,7 +21607,7 @@ export class UserStore {
       const fu = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
       const fn = (fu && fu.username) || 'A trader';
       const nowMutual = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
-      this._pushNotif(tuid, 'follow', nowMutual ? '@' + fn + ' followed you back — you’re now friends! ★' : '@' + fn + ' started following you', fu && fu.username ? 'profile:' + fu.username : '');
+      this._pushNotif(tuid, 'follow', nowMutual ? '@' + fn + ' followed you back — you’re now friends!' : '@' + fn + ' started following you', fu && fu.username ? 'profile:' + fu.username : '');
       return this.j({ ok: true, following: true });
     }
     if (path === '/lbfollowing') { // list accounts the signed-in user follows, with each target's trade stats + level
@@ -22399,7 +22399,7 @@ async function handleMissions(url, request, env) {
     try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid }) })); const d = await r.json(); fresh = !!d.fresh; bonusXp = +d.xp || 0; } catch (e) { return jr({ error: 'transient' }, 503); }
     if (!fresh) return jr({ error: 'already_claimed' }, 400);
     let balanceUsd = null;
-    try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) return jr({ error: d.error }, 403); balanceUsd = d.balanceUsd; } catch (e) {}
+    try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger refused the ' + m.cents + 'c credit: ' + d.error, { kind: 'mission-credit', sev: 'warn' }); return jr({ error: d.error }, 403); } balanceUsd = d.balanceUsd; } catch (e) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger credit of ' + m.cents + 'c FAILED (' + (e && e.message ? e.message : 'error') + ') — the claim is consumed, credit by hand', { kind: 'mission-credit', sev: 'warn' }); } // 2026-09-12: a swallowed failure here was a consumed mission with no money and no trace
     try { await evPush(env, request, 'mission', mid + ' +$' + (m.cents / 100).toFixed(2), '/rewards/'); } catch (e) {}
     // SET BONUS: the 6th claim of the day pays extra — idempotent through the same missions-table dedup (mid 'setbonus')
     let setBonusUsd = 0, weekBonusUsd = 0;
@@ -22504,7 +22504,7 @@ async function handleComm(url, request, env, ctx) {
       const d = JSON.parse(txt); const pb = JSON.parse(rawBody || '{}');
       if (d && d.ok && d.id) {
         const safe = x => String(x || '').replace(/[<>&]/g, '');
-        ctx.waitUntil(tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text: '\u270d\ufe0f <b>New community post</b> by ' + safe(author) + '\n' + safe(pb.title).slice(0, 120) + '\n\nhttps://marginpad.io/community/p/' + d.id }).catch(() => {}));
+        ctx.waitUntil(tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>New community post</b> by ' + safe(author) + '\n' + safe(pb.title).slice(0, 120) + '\n\nhttps://marginpad.io/community/p/' + d.id }).catch(() => {}));
         ctx.waitUntil(indexNowPing(['https://marginpad.io/community/p/' + d.id + '/' + commSlug(pb.title)])); // search engines learn about the post immediately
       }
     } catch (e) {}
@@ -22526,13 +22526,16 @@ async function commPage(url, request, env) {
   try { const sr = await env.ASSETS.fetch(new Request(url.origin + '/community/')); shell = await sr.text(); } catch (e) {}
   if (!shell) return new Response('community unavailable', { status: 503 });
   let html = shell;
+  // FUNCTION replacements only (2026-09-12): the replacement STRINGS carried user text — a post titled "BTC to $100k" expanded `$1`
+  // into the captured group and broke the attribute, `$'` / `` $` `` in a title duplicated the page. Same trap as the 8,608-line worker.js incident.
+  const attrV = (s) => escH(s).replace(/"/g, '&quot;');
   const setMeta = (title, desc, canon) => {
-    html = html.replace(/<title>[^<]*<\/title>/, '<title>' + escH(title) + '</title>');
-    html = html.replace(/(<meta name="description" content=")[^"]*(")/, '$1' + escH(desc).replace(/"/g, '&quot;') + '$2');
-    html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, '$1' + canon + '$2');
-    html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, '$1' + escH(title).replace(/"/g, '&quot;') + '$2');
-    html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, '$1' + escH(desc).replace(/"/g, '&quot;') + '$2');
-    html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, '$1' + canon + '$2');
+    html = html.replace(/<title>[^<]*<\/title>/, () => '<title>' + escH(title) + '</title>');
+    html = html.replace(/(<meta name="description" content=")[^"]*(")/, (mm, a, b) => a + attrV(desc) + b);
+    html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, (mm, a, b) => a + canon + b);
+    html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, (mm, a, b) => a + attrV(title) + b);
+    html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, (mm, a, b) => a + attrV(desc) + b);
+    html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, (mm, a, b) => a + canon + b);
   };
   let m;
   if ((m = url.pathname.match(/^\/community\/p\/([a-z0-9]{6,20})/i))) {
@@ -22549,7 +22552,7 @@ async function commPage(url, request, env) {
         const ssr = '<article class="ssr-post"><div class="pcrumb"><a href="/community/">Community</a> / <a href="/community/c/' + escH(p.cat) + '">' + escH(COMM_CATS[p.cat] || p.cat) + '</a></div><h1>' + escH(p.title) + '</h1><div class="pmeta">by <a href="/community/u/' + encodeURIComponent(p.author) + '">' + escH(p.author) + '</a> · ' + new Date(p.ts).toISOString().slice(0, 10) + ' · ' + (p.likes || 0) + ' likes · ' + (p.ncom || 0) + ' comments</div><div class="pbody">' + commMd(p.body) + '</div></article>'
           + '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>'
           + '<script type="application/ld+json">' + JSON.stringify(crumb).replace(/</g, '\\u003c') + '</script>';
-        html = html.replace('<!--SSR-->', ssr);
+        html = html.split('<!--SSR-->').join(ssr); // split/join: ssr carries user text, a `$'` in a post body would have duplicated the page tail
       } else { setMeta('Post not found — MarginPad Community', 'This community post does not exist or was removed.', 'https://marginpad.io/community/'); }
     } catch (e) {}
   } else if ((m = url.pathname.match(/^\/community\/u\/([^\/]{3,40})/))) {

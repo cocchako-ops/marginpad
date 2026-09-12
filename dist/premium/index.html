@@ -212,7 +212,7 @@
     <div class="cta-row">
       <button class="btn btn-primary" data-buy="monthly">Get Premium — $3.99/mo</button>
       <button class="btn btn-ghost" data-buy="founder">Founder — $39.99 lifetime</button>
-      <button class="btn btn-ghost" data-buy="balance" id="payBal" hidden>Pay from my rewards balance — $3.99</button>
+      <button class="btn btn-ghost" data-buy="balance" id="payBal2" hidden>Pay from my rewards balance — $3.99</button>
     </div>
   </div>
 </div>
@@ -241,11 +241,11 @@
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
     // if a premium member lands here, gently reflect it
     fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ msg.textContent = 'You are already a Premium member — thank you.'; } }).catch(function(){});
-    function showBal(){ var b=document.getElementById('payBal'); if(!b) return; fetch('/api/reward/account',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var bal=a&&(a.balanceUsd!=null?+a.balanceUsd:(a.balance!=null?+a.balance/100:0)); if(bal>=3.99){ b.hidden=false; b.textContent='Pay from my rewards balance — $3.99 (you have $'+bal.toFixed(2)+')'; } }).catch(function(){}); }
+    function showBal(){ var bs=document.querySelectorAll('[data-buy="balance"]'); if(!bs.length) return; /* BOTH pricing blocks (top + bottom CTA) carry the button; getElementById reached only the first, so the bottom one stayed hidden for a member who could pay (2026-09-12) */ fetch('/api/reward/account',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var bal=a&&(a.balanceUsd!=null?+a.balanceUsd:(a.balance!=null?+a.balance/100:0)); if(bal>=3.99){ Array.prototype.forEach.call(bs,function(b){ b.hidden=false; b.textContent='Pay from my rewards balance — $3.99 (you have $'+bal.toFixed(2)+')'; }); } }).catch(function(){}); }
     showBal(); window.addEventListener('mp-auth-change', showBal);
   })();
 </script>
 <script defer src="/assets/mp-auth.js?v=b232fd62"></script>
-<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
+<script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>

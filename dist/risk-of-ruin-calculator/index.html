@@ -167,7 +167,7 @@
     function line(k,col,w){var d='';for(var i=0;i<=N;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(qs[k][i]).toFixed(1);return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"/>';}
     var oneY=Y(1).toFixed(1);
     $('fan').innerHTML='<path d="'+band('p5','p95')+'" fill="rgba(70,224,230,.13)"/><path d="'+band('p25','p75')+'" fill="rgba(70,224,230,.28)"/><line x1="'+pad+'" y1="'+oneY+'" x2="'+(W-pad)+'" y2="'+oneY+'" stroke="#ff6258" stroke-dasharray="3 3"/>'+line('p50','#c2f64a',2);
-    var v;if(expR<=0)v="⚠ Negative expectancy — over time this loses money no matter the position size. Improve win rate or reward:risk first.";
+    var v;if(expR<=0)v="Negative expectancy — over time this loses money no matter the position size. Improve win rate or reward:risk first.";
     else if(ruin50/S>0.2)v="Your edge is positive, but risking {risk}% per trade gives a {ror} chance of a −50% drawdown. Consider sizing nearer half-Kelly ({hk}).".replace('{risk}',(risk*100).toFixed(1)).replace('{ror}',pc(ruin50/S*100)).replace('{hk}',pc(kelly*50));
     else v="Positive edge with controlled risk. Median outcome ×{med} over {n} trades, {ror} chance of a −50% drawdown.".replace('{med}',med.toFixed(2)).replace('{n}',N).replace('{ror}',pc(ruin50/S*100));
     $('verdict').textContent=v;
@@ -176,6 +176,6 @@
   $('run').addEventListener('click',run);run();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
+<script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>

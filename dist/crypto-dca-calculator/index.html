@@ -80,7 +80,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <h2>FAQ</h2>
 <div class="faq"><details><summary>Is DCA better than buying at once?</summary><p>Lump-sum wins slightly more often in rising markets, but DCA removes the timing decision and matches how income arrives — for volatile assets the discipline is usually worth the small expected-value gap.</p></details><details><summary>Does DCA work for averaging down a loser?</summary><p>Only when the original thesis still holds and total size stays inside the risk plan. Averaging down without a limit is how small losses become account-enders.</p></details><details><summary>How often should buys happen?</summary><p>Weekly vs monthly differences are minor; consistency through a bear market matters more than frequency.</p></details></div>
 <h2>Related tools</h2>
-<div class="rel"><a href="/crypto-roi-calculator/">ROI calculator</a><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/spot">Demo Spot (practice)</a><a href="/bitcoin-cycle">Bitcoin cycle</a></div>
+<div class="rel"><a href="/crypto-roi-calculator/">ROI calculator</a><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/spot/">Demo Spot (practice)</a><a href="/bitcoin-cycle/">Bitcoin cycle</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
@@ -88,6 +88,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var r=document.getElementById('res');var tot=0,qty=0;for(var i=1;i<=4;i++){var p=+document.getElementById('p'+i).value,a=+document.getElementById('a'+i).value;if(p>0&&a>0){tot+=a;qty+=a/p;}}if(!(qty>0)){r.innerHTML='';return;}var avg=tot/qty;r.innerHTML='<div class="rrow"><span class="k">Total invested</span><span class="v">'+tot.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Total coins</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow big"><span class="k">Average entry (break-even)</span><span class="v">'+avg.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=c1e0d929"></script>
+<script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>

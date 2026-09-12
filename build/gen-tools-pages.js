@@ -219,7 +219,8 @@ ${hreflang(slug)}
 <link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/lab.css" />
 <style>
-  .mx{border-collapse:separate;border-spacing:4px;font-family:'Space Mono',monospace}
+  .mxwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.mx{border-collapse:separate;border-spacing:4px;font-family:'Space Mono',monospace}
   .mx td,.mx th{text-align:center;padding:0}
   .mx th{font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:.03em;width:58px;padding-bottom:4px}
   .mx td.lbl{color:var(--ink2);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-align:right;padding-right:9px;white-space:nowrap}
@@ -262,7 +263,7 @@ ${topbar(lang, S, slug)}
   </div>
 
   <div id="out" hidden style="margin-top:18px">
-    <div class="card scrollx"><table class="mx" id="mx"></table></div>
+    <div class="card scrollx"><div class="mxwrap"><table class="mx" id="mx"></table></div></div>
     <div class="mxlegend">
       <span style="color:var(--up);font-weight:700">${C.legHedge}</span>
       <span class="scale"><i style="background:rgba(46,189,133,.70)"></i><i style="background:rgba(46,189,133,.34)"></i><i style="background:#1a2028"></i><i style="background:rgba(255,98,88,.34)"></i><i style="background:rgba(255,98,88,.70)"></i></span>

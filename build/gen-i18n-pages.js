@@ -116,8 +116,8 @@ for (const lang of LANGS) {
   html = html.replace('<meta property="og:url" content="https://marginpad.io/" />', `<meta property="og:url" content="https://marginpad.io/${lang}/" />`);
   // localize the TradingView widgets for this language
   html = html.replace(/"locale":"en"/g, `"locale":"${TVLOC[lang] || lang}"`);
-  // point footer About/Contact links to this language's pages
-  html = html.replace(/href="\/about\/"/g, `href="/${lang}/about/"`).replace(/href="\/contact\/"/g, `href="/${lang}/contact/"`);
+  // Footer About/Contact stay on the English pages: translated subpages are RETIRED (the worker 301s /<lang>/about/ and
+  // /<lang>/contact/ to the English originals), so rewriting these links only added a redirect hop on every language homepage (2026-09-12).
   const dir = path.join(DIST, lang);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), html);

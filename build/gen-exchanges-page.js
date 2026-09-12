@@ -76,7 +76,7 @@ const EX = [
     con: ['Very limited derivatives + low leverage', 'High fees on the basic app', 'Not a pro futures venue'] },
   { key: 'kucoin', name: 'KuCoin', logo: 311, color: '#23af91', href: 'https://www.kucoin.com/r/rf/VHP8AYKY',
     lev: '100×', tk: '0.06%', mk: '0.02%', pairs: '300+', kyc: 'Optional*', us: 'Banned', bonus: 'Up to 11,000 USDT rewards',
-    r: { fees: 78, liq: 60, mkts: 78, lev: 80, trust: 28, easy: 76 }, badge: '⚠ Trust concerns — read below', warn: true,
+    r: { fees: 78, liq: 60, mkts: 78, lev: 80, trust: 28, easy: 76 }, badge: 'Trust concerns — read below', warn: true,
     feel: 'Once a popular altcoin-and-futures venue, KuCoin now carries serious reputation baggage (details in the trust section below). The product itself is usable — decent selection, familiar UI — but the questions around victim handling, KYC integrity and regulation are the real story here. Treat any funds you keep there as at-risk and do your own research.',
     pro: ['Wide altcoin & futures selection', 'Familiar, capable trading UI'],
     con: ['Serious trust & compliance controversies (see below)', 'Pleaded guilty in the US (2025); US-banned', 'On-chain investigators allege poor victim & law-enforcement cooperation'] },
@@ -95,7 +95,7 @@ const card = e => {
     + '<div class="exc-pc"><div class="exc-pros"><div class="exc-pch">What helps your trade</div>' + e.pro.map(p => '<div class="exc-li pro">' + p + '</div>').join('') + '</div>'
     + '<div class="exc-cons"><div class="exc-pch">What can bite you</div>' + e.con.map(p => '<div class="exc-li con">' + p + '</div>').join('') + '</div></div>'
     + '<a class="exc-cta' + (warn ? ' warn' : '') + '" data-ex="' + e.name + '" href="' + e.href + '" target="_blank" rel="sponsored noopener noreferrer">' + (warn ? 'Visit KuCoin (proceed with caution)' : 'Get the ' + e.name + ' bonus') + ' →</a>'
-    + '<div class="exc-bonus">' + (warn ? '⚠ ' : '') + e.bonus + '</div></div>';
+    + '<div class="exc-bonus">' + (warn ? '' : '') + e.bonus + '</div></div>';
 };
 
 const trow = e => '<tr' + (e.warn ? ' class="tw"' : '') + '><td class="tx"><span class="tlg" style="--c:' + e.color + '"><img src="' + lg(e.logo) + '" width="20" height="20" loading="lazy" alt="" onerror="this.parentNode.textContent=\'' + e.name[0] + '\'"></span>' + e.name + '</td>'
@@ -304,7 +304,7 @@ ${ld}
 
     <h2 class="h2">The KuCoin problem — an honest word</h2>
     <div class="kbox">
-      <h3>⚠ Why we flag KuCoin</h3>
+      <h3>Why we flag KuCoin</h3>
       <div class="kwho">Reported by on-chain investigator ZachXBT, US prosecutors and EU regulators. Presented as public reporting — do your own research.</div>
       <div class="krow"><span class="kd">Jan 2025</span><span class="kt"><b>Pleaded guilty in the US</b> to operating an unlicensed money-transmitting business, agreeing to roughly <b>$300M</b> in penalties and forfeitures; prosecutors said prior AML/KYC failures let suspicious funds move through the platform. KuCoin is <b>banned for US users</b>.</span></div>
       <div class="krow"><span class="kd">Aug 2025</span><span class="kt">A user reported a <b>$250,000 theft</b> whose funds landed in five KuCoin deposit addresses allegedly opened with <b>purchased “mule” KYC</b>. When a community member spoke out, KuCoin reportedly <b>threatened legal action</b> over “false or unlawful statements.”</span></div>

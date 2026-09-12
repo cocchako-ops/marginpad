@@ -38,8 +38,15 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 }
 .jr-drawer .jr-stats{grid-template-columns:1fr 1fr;}
 .jr-tabs{display:inline-flex;gap:3px;background:#0a0c0f;border:1px solid var(--line-bright);border-radius:9px;padding:3px;margin:4px 0 14px;}
-.jr-tabs button{font-size:12px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:8px 16px;cursor:pointer;transition:.12s;}
+.jr-tabs button{font-size:12px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:8px 13px;cursor:pointer;transition:.12s;white-space:nowrap;}
 .jr-tabs button.on{background:rgba(255,255,255,.1);color:#fff;}
+/* MIRROR of home.css (ported 2026-09-12): three tabs with counts on a phone; resting-order cards; empty-state layout */
+@media(max-width:420px){.jr-tabs{display:flex;width:100%;}.jr-tabs button{flex:1;padding:8px 4px;font-size:11px;}}
+.pp.pp-ord{border-color:rgba(240,195,90,.34);border-style:dashed;}
+.pp.pp-ord .pp-pnl .big{color:#f0c35a;}
+.pp-ordtag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;flex-shrink:0;color:#f0c35a;background:rgba(240,195,90,.15);}
+.pp-empty{display:flex;flex-direction:column;align-items:center;gap:11px;}
+.pp-empty svg{opacity:.45;}
 .jr-list .pp-btns button{padding:8px 0;font-size:11px;}
 
 /* position cards */

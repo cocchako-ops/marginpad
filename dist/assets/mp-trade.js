@@ -47,7 +47,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function load(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
   function store(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
-  function money(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function money(x){x=+x||0;var n=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;} /* MIRROR of home.js: seven-figure values compact to M/B so a $10M position does not overflow the drawer tiles on a phone (2026-09-12) */
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   var jrTab='open';var jrShow=50;/* RENDER WINDOW. The list used to build a DOM card for every closed trade and hand the lot to innerHTML in one go; a heavy account froze Chrome on Android outright (reported 2026-08-15). Bounded here, extended on demand. Reset whenever the tab changes. */
   var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
@@ -79,7 +79,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     if(closed&&pnl!=null){if(pnl>0){var roe=margin>0?pnl/margin*100:0,mv=roe/lev,q=roe>=5&&mv>=0.2;
         add(q,(q?MT('eligR5ok','Counted win: +{r}% ROE on a {m}% price move'):MT('eligR5no','Not a counted win: +{r}% ROE on a {m}% price move. A win only counts at +5% ROE or better on a real price move of at least 0.2%; smaller profits count as neither')).replace('{r}',roe.toFixed(1)).replace('{m}',mv.toFixed(2)));}
       else add(true,MT('eligR5loss','Loss. Losses always count'),true);}
-    var twins=0;for(var i=0;i<all.length;i++){var o=all[i];if(!o||o===e||o.id===e.id)continue;if(String(o.sym||'').toUpperCase()!==String(e.sym||'').toUpperCase()||(o.side==='short')!==(e.side==='short'))continue;if(Math.abs(eligOpenTs(o)-openTs)<=600000)twins++;}
+    /* MIRROR of home.js rule 6 (2026-09-12): close times for closed rows, slices of one position are never copies */
+    var twins=0,_ei=String(e.id||''),_eT=(closed&&+e.closeTs>0)?+e.closeTs:openTs;for(var i=0;i<all.length;i++){var o=all[i];if(!o||o===e||o.id===e.id)continue;var _oi=String(o.id||'');if(_ei&&_oi&&(_oi.indexOf(_ei)===0||_ei.indexOf(_oi)===0))continue;if(String(o.sym||'').toUpperCase()!==String(e.sym||'').toUpperCase()||(o.side==='short')!==(e.side==='short'))continue;var _oT=((o.status==='win'||o.status==='loss')&&+o.closeTs>0)?+o.closeTs:eligOpenTs(o);if(Math.abs(_oT-_eT)<=600000)twins++;}
     if(twins)add(false,MT('eligR6no','Copies count once: {n} identical position(s) (same coin, same direction) opened together count as one trade').replace('{n}',twins));
     else add(true,MT('eligR6ok','Not a copy of another position'));
     return {ok:ok,rows:rows};}
@@ -130,10 +131,10 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function feeF(v){v=Math.abs(v);return '$'+(v>=0.005?v.toFixed(2):v.toFixed(4));}
   function feeHas(e){return (e.status==='win'||e.status==='loss')&&((+e.feeRate>0)||(+e.fund));}
   function feeLbl(e){var b=feeBrk(e);return (b.total<0?'+':'\u2212')+feeF(b.total);}
-  function feeBdHtml(e){var b=feeBrk(e);
+  function feeBdHtml(e){var b=feeBrk(e);var _fp=((+e.feeRate>0?+e.feeRate:0.00055)*100).toFixed(4).replace(/0+$/,'').replace(/\.$/,''); /* MIRROR of home.js: the label prints the rate this trade was actually charged (2026-09-12) */
     return '<div class="pp-feebd" data-fbwrap><div class="fb-h">'+MT('jFeeBd','What this trade cost')+'<span class="fb-x" data-fbx role="button" aria-label="Close">\u2715</span></div>'
-      +'<div class="fb-r"><span>'+MT('jFeeOpen','Open fee')+' <i>(0.055%)</i></span><b>\u2212'+feeF(b.fo)+'</b></div>'
-      +'<div class="fb-r"><span>'+MT('jFeeClose','Close fee')+' <i>(0.055%)</i></span><b>\u2212'+feeF(b.fc)+'</b></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeOpen','Open fee')+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fo)+'</b></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeClose','Close fee')+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fc)+'</b></div>'
       +(b.fu?'<div class="fb-r"><span>'+MT('jFeeFund','Funding')+' <i>(8h)</i></span><b'+(b.fu<0?' class="fb-rec"':'')+'>'+(b.fu<0?'+'+feeF(b.fu)+' '+MT('jFeeRec','received'):'\u2212'+feeF(b.fu))+'</b></div>':'')
       +((b.slip!=null&&b.slip>0)?'<div class="fb-r fb-dim"><span>'+MT('jFeeSlip','Entry slippage')+'</span><b>\u2248 \u2212'+feeF(b.slip)+' <i>'+MT('jFeeSlipN','(in the fill price)')+'</i></b></div>':'')
       +'<div class="fb-t"><span>'+MT('jFeeTot','Total costs')+'</span><b'+(b.total<0?' class="fb-rec"':'')+'>'+(b.total<0?'+':'\u2212')+feeF(b.total)+'</b></div>'
@@ -316,39 +317,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
-  function add(){
-    var pl=window.mpPlanLive, entry=pl&&pl.price;
-    var amt=num('planAmt'), lev=num('planLev');
-    if(isFinite(amt)&&amt>100000)amt=100000; // hard cap: max $100k margin per trade (matches home.js; was missing here)
-    if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
-    var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
-    var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
-    var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=0.005;
-    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L))); // default 0.055% taker fee so every trade carries a fee
-    var sl=num('planSlOpt'), tp=num('planTpOpt');
-    // block a wrong-side SL/TP instead of storing it (parity with home.js add() — it would self-trigger instantly)
-    var _lng2=side==='long',_bad2=[];
-    if(isFinite(sl)&&((_lng2&&sl>=entry)||(!_lng2&&sl<=entry)))_bad2.push('stop-loss');
-    if(isFinite(tp)&&((_lng2&&tp<=entry)||(!_lng2&&tp>=entry)))_bad2.push('take-profit');
-    if(_bad2.length){var _bm='Your '+_bad2.join(' and ')+' is on the wrong side of the entry price — fix it (or clear the field) to open the trade.';if(window.mpLimitToast)window.mpLimitToast(_bm);else alert(_bm);return;}
-    var notional=amt*L, qty=notional/entry;
-    var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);
-    var stop=isFinite(sl)?sl:null;
-    var rrv=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
-    var data=load();
-    // one-way mode: can't open the opposite direction on a pair you already hold open (no long+short hedge)
-    if(window.mpTradeGate){ if(!window.mpTradeGate(sym,side))return; }
-    else { try{ var _w=(side==='short')?'short':'long'; if(data.some(function(e){return e&&e.status==='open'&&String(e.sym||'').toUpperCase()===sym&&((e.side==='short'?'short':'long')!==_w);})){ var _m='You already have a '+(_w==='long'?'SHORT':'LONG')+' '+sym+' position open — close it before opening a '+(_w==='long'?'LONG':'SHORT')+'.'; if(window.mpLimitToast)window.mpLimitToast(_m); else alert(_m); return; } }catch(_){} }
-    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:L,rr:isFinite(rrv)?rrv:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
-    if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:entry,t:Date.now()};
-    store(data);
-    try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with home.js add())
-    try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
-    var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
-    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
-    try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
-  }
-  var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
+  /* the local-only add() that used to live here was deleted 2026-09-12: every page with a plan form ships home.js, whose add() is server-first (mpSrvOpen, cid, fresh-price and market-closed checks) — this copy opened locally with none of that and doubled trades when both bundles met */
   document.addEventListener('click',function(ev){
     var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
@@ -421,7 +390,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   window.mpOpenTrades=openJr;
   /* clamp an ISOLATED outlier wick (a bad exchange print) that sits >3.5% beyond the candle's own body AND both
      neighbours — so a phantom wick can't trigger a false liquidation. Ported verbatim from home.js (was missing here). */
-  function sanitizeBars(kd){ if(!kd||kd.length<2)return kd; var TH=0.035;
+  function sanitizeBars(kd){ if(!kd||!kd.length)return kd;
+    /* MIRROR of home.js: a bar with a null/NaN OHLC value is dropped entirely (it would otherwise be replayed as a 0 low = instant liquidation) */
+    var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;
+      if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;
+      _q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}
+    kd=_ok;
+    if(kd.length<2)return kd; var TH=0.035;
     for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;
       var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);
       var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;
@@ -437,11 +412,12 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   // could get wrongly liquidated for the full margin.
   function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
     open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return;
+      if(e.src==='srv'||e.src==='bot')return; /* MIRROR of home.js (was missing here, 2026-09-12): server-filled rows are settled by the server's own candle-check — letting this page decide too is how a position ends up liquidated on screen and open on the server */
       var lng=e.side!=='short',liq=metrics(e).liq,ageH=(Date.now()-e.ts)/3600000;
       var stop=(e.stop!=null&&isFinite(+e.stop))?+e.stop:null,tp=(e.tp!=null&&isFinite(+e.tp))?+e.tp:null;
       var lossExit=stop!=null?(lng?Math.max(stop,liq):Math.min(stop,liq)):liq, isLiq=(lossExit===liq); // SL caps the loss only if hit before liq; else liq
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5';
-      fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+      fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
         if(!kd||!kd.length)return;kd=sanitizeBars(kd);var cross=null,exitPx=null,liab=false;
         for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open (pre-open wick guard)
           var lossHit=lng?(isLiq?(+b.low<=liq&&+b.close<=liq*1.03):(+b.low<=lossExit)):(isLiq?(+b.high>=liq&&+b.close>=liq*0.97):(+b.high>=lossExit)); // liq close-confirmed; SL fills on the wick
@@ -480,7 +456,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     try{document.dispatchEvent(new CustomEvent('mp:price',{detail:{sym:sym,price:price,chg:window.mpLivePrices[sym].chg}}));}catch(_){}
   }
   function connect(){
-    try{ws=new WebSocket('wss://stream.bybit.com/v5/public/spot');}catch(e){return reconnect();}
+    try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();} /* MIRROR of home.js (2026-09-12): the terminal, the server fills and the close sheet all price on USDT-perps; this page priced the same open position on Bybit SPOT, so P&L, liq buffer and a manual close from the homepage drawer differed by the basis */
     ws.onopen=function(){alive=true;retry=0;try{var args=[];SYMS.forEach(function(s){args.push('publicTrade.'+s+'USDT');args.push('tickers.'+s+'USDT');});for(var i=0;i<args.length;i+=10){ws.send(JSON.stringify({op:'subscribe',args:args.slice(i,i+10)}));}}catch(_){}
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
     ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(!m.topic)return;
@@ -586,7 +562,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function setOnline(n){/* online count removed per owner */}
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
- var LB_META={1:{t:'Green days',k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:'Best win rate',k:'topWr'},3:{t:'Weekly XP',k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
+ var LB_META={1:{t:'Green days',k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:'Best win rate',k:'topWr'},3:{t:'Season XP',k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
   function showLeaderboard(board){board=(board===2||board===3||board===4||board===5)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['','',''];
@@ -620,7 +596,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
  window.addEventListener('pagehide',function(){if(ws){try{ws.onclose=null;ws.close(1000);}catch(e){}ws=null;}});
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&joined&&!ws)connect();});
  window.addEventListener('pageshow',function(){if(joined&&!ws)connect();});
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   window.mpOpenChat=openBox;
@@ -650,7 +626,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   input.addEventListener('input',function(){var v=(input.value||'');if(v.charAt(0)==='/'){ccProbe();ccRender();}else ccHide();});
   input.addEventListener('keyup',function(){var v=(input.value||'');if(v.charAt(0)!=='/')ccHide();});
   input.addEventListener('blur',function(){setTimeout(ccHide,160);});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(t.charAt(0)==='/'){input.value='';fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:t})}).then(function(r){return r.json();}).then(function(j){window.__mpCcSys((j&&j.reply)||'Command failed.');}).catch(function(){window.__mpCcSys('Network error.');});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([12345])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(t.charAt(0)==='/'){input.value='';fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:t})}).then(function(r){return r.json();}).then(function(j){window.__mpCcSys((j&&j.reply)||'Command failed.');}).catch(function(){window.__mpCcSys('Network error.');});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
   /* post a message into chat programmatically (used by "Share to chat" on a ticket): open the chat, ensure the WS is
      up, queue the send until it connects. Returns false if the user isn't signed in (chat requires login). */
   window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
