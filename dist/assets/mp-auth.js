@@ -2005,6 +2005,7 @@
     var dir = (lp > 0 && px > lp) ? 'up' : 'down';
     if (open.length >= MAX) return fail(T('otMax', 'You already have 20 orders waiting - cancel one first.'));
     if (!me()) { // guest: the order lives on this device and fills while the page is open
+      if (!(lp > 0)) return fail(T('mtWaitPx', 'Waiting for the live price — try again in a second.')); // dir is derived from the live price; without one a breakout level above the market would be filed as "down" and fill the moment a price arrived (2026-09-12)
       var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1, dir: dir };
       setOpen(open.concat([g]));
       if (ok) ok(g);

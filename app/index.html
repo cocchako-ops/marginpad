@@ -98,7 +98,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=92b919d6">
+<link rel="stylesheet" href="/assets/home.css?v=4a46baa2">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -157,24 +157,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     </div>
   </section>
 
-  <div class="mterm" aria-label="Quick paper trade">
-    <div class="mtick" id="mTick" aria-hidden="true"></div>
-    <div class="mtp-chart" id="mtpChart" aria-hidden="true"></div>
-    <div class="mtp">
-      <div class="mtp-top">
-        <div class="mtp-symwrap"><button type="button" class="mtp-symbtn" id="mtpSymBtn" aria-label="Choose coin"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span id="mtpSymCur">BTC</span></button><div class="mtp-dd" id="mtpDD" hidden><input type="text" class="mtp-dd-s" id="mtpDDs" placeholder="Search any ticker…" data-ph="mtSearchTicker" autocomplete="off" spellcheck="false" inputmode="search"><div class="mtp-dd-list" id="mtpDDl"></div></div></div>
-        <div class="mtp-pxw"><span class="mtp-px" id="mtpPx">$—</span><span class="mtp-chg" id="mtpChg"></span></div>
-      </div>
-      <div class="mtp-side" id="mtpSide"><button type="button" class="mtp-l on" data-side="long" data-i18n="long">Long</button><button type="button" class="mtp-s" data-side="short" data-i18n="short">Short</button></div>
-      <div class="mtp-levwrap">
-        <div class="mtp-levrow"><span class="mtp-levlbl" data-i18n="lLeverage">Leverage</span><span class="mtp-levval" id="mtpLevVal">20×</span></div>
-        <input type="range" class="mtp-levsl" id="mtpLevSl" min="0" max="1000" value="434" step="1" aria-label="Leverage">
-      </div>
-      <button type="button" class="mtp-go" id="mtpGo" data-i18n="mtOpen">Open demo trade</button>
-      <div class="mtp-pnl" id="mtpPnl" hidden></div>
-      <div class="mtp-foot" data-i18n="mtFoot">$100 demo position · no signup · risk-free</div>
-    </div>
-  </div>
+  <!-- the mobile "living terminal" (.mterm) was removed 2026-09-12: it rendered only on the tool-less landing, which no route reaches any more -->
 
   <div class="prodnav" role="tablist" aria-label="Main tools">
     <button class="prod active" data-prod="calc" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></span><span class="pt"><b data-i18n="prodCalc">Liquidation Calculator</b><small data-i18n="prodCalcS">Know your exit price</small></span></button>
@@ -829,7 +812,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script defer src="/assets/mp-auth.js?v=b232fd62"></script>
+<script defer src="/assets/mp-auth.js?v=b668dd3a"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -837,7 +820,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=92b919d6"></script>
+<script src="/assets/home.js?v=4a46baa2"></script>
 <script defer src="/assets/mp-nav.js?v=a275e128"></script>
 </body>
 </html>
