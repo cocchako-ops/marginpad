@@ -14649,7 +14649,16 @@ async function handleReward(url, request, env) {
     const uid9 = String(acct).replace(/^u:/, ''); const allow9 = await bybitUidSet(env);
     if (request.method === 'POST') {
       const buid = String(b.uid == null ? b.buid : b.uid || '').trim();
-      const bylog = (err) => bybitLinkLog(env, request, { uid: uid9, buid, err: err || '', ok: err ? 0 : 1 }); // every attempt, refused or not → mp-ops › Money › Bybit UIDs
+      // the UID the account already holds — recorded on every attempt, so an unlink is traceable to WHAT was unlinked
+      let had9 = ''; try { const pg0 = await usersDO(env, '/prefsget', { uid: uid9, keys: ['bybit_uid'] }); had9 = String((pg0 && pg0.prefs && pg0.prefs.bybit_uid && pg0.prefs.bybit_uid.v) || ''); } catch (e) {}
+      const bylog = (err) => bybitLinkLog(env, request, { uid: uid9, buid, had: had9, err: err || '', ok: err ? 0 : 1 }); // every attempt, refused or not → mp-ops › Money › Bybit UIDs
+      // UNLINKING IS NOT A USER ACTION (2026-09-13, owner: "to ne sme da bude opcija, napraviće veću glupost"). A member
+      // who drops their UID mid-season silently leaves the volume board and loses the season's standing; there is no
+      // good reason for them to do it and one bad one — a mistaken tap. Support can still do it with the admin key.
+      if (!buid) {
+        const adminUnlink = isAdminKey(env, adminKeyFrom(request, url));
+        if (!adminUnlink) { await bylog('unlink_blocked'); return jr({ error: 'unlink_blocked', message: 'A registered Bybit UID stays with the account for the season. If it is wrong, contact support and we will correct it.' }, 403); }
+      }
       if (buid && !/^[0-9]{5,15}$/.test(buid)) { await bylog('bad_uid'); return jr({ error: 'bad_uid' }, 400); }
       if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) { await bylog('uid_not_ours'); return jr({ error: 'uid_not_ours', ref: BYBIT_REF_URL, hint: 'This Bybit UID was not opened through MarginPad. Open a Bybit account with our link, then link that UID.' }, 403); }
       if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct); if (others.length) { await bylog('uid_taken'); return jr({ error: 'uid_taken' }, 409); } } catch (e) {} }
@@ -16042,6 +16051,23 @@ export default {
     // Joins three sources the board already keeps: the registrations themselves (uprefs bybit_uid, plus UIDs a payout has
     // gone to), the affiliate allowlist (KV bybit:uids — the same list that gates withdrawals), and this season's volume
     // report. `attempts` is the OpsLog ring written by bybitLinkLog: the refusals exist nowhere else.
+    // Support's hand on the same field members can no longer clear themselves (2026-09-13). The user-facing refusal says
+    // "contact support and we will correct it", so support has to be able to. {username|uid, buid} sets it, buid:'' clears
+    // it, force:true skips the affiliate-list check (a UID we know is ours before the list catches up). Every use is
+    // written to the same 'bylog' ring as a member's own attempt, tagged admin, so the trail stays in one place.
+    if (url.pathname === '/api/admin/bybitlinks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let ab = {}; try { ab = await request.json(); } catch (e) {}
+      const who = await usersDO(env, '/xpdiag', { username: String(ab.username || ''), uid: String(ab.uid || '') });
+      if (!who || !who.user) return J({ error: 'not_found' }, 404);
+      const auid = String(who.user.id), buid = String(ab.buid == null ? '' : ab.buid).trim();
+      if (buid && !/^[0-9]{5,15}$/.test(buid)) return J({ error: 'bad_uid' }, 400);
+      if (buid && !ab.force) { const allow = await bybitUidSet(env); if (!allow.has(buid)) return J({ error: 'uid_not_ours', hint: 'That UID is not on the affiliate list. Re-send with force:true only if you have checked the Bybit dashboard yourself.' }, 409); }
+      const r = await usersDO(env, '/bybitlink', { uid: auid, buid });
+      if (!r || r.error) return J({ error: (r && r.error) || 'unavailable' }, r && r.error === 'uid_taken' ? 409 : 503);
+      try { await bybitLinkLog(env, request, { uid: auid, un: who.user.username || '', buid, err: '', ok: 1, admin: 1 }); } catch (e) {}
+      try { await tgAdmin(env, '<b>Bybit UID set by admin</b> @' + (who.user.username || auid.slice(0, 8)) + ' → ' + (buid || '(cleared)'), { kind: 'bybit uid admin', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, username: who.user.username || '', uid: auid, buid });
+    }
     if (url.pathname === '/api/admin/bybitlinks' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
       const e2eOn = url.searchParams.get('e2e') === '1';

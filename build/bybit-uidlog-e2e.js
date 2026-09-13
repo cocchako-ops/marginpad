@@ -28,6 +28,18 @@ const j = async (r) => { const t = await r.text(); try { return JSON.parse(t); }
   ok(mine.every(a => a.ts && a.ip != null), 'rows carry a timestamp and the address');
   const reg = (d.registered || []).find(r => r.uid === uid);
   ok(reg && reg.buid === '999900001' && reg.source === 'registered', 'the accepted UID shows up as a registration (' + JSON.stringify(reg || null) + ')');
+  // UNLINKING IS NOT A USER ACTION (2026-09-13, owner: a member dropped their own UID mid-season and left the board).
+  // Support keeps a hand on the same field through the admin route, because the refusal tells the member to ask support.
+  const un = await j(await fetch(O + '/api/reward/bybitlink', { method: 'POST', headers: CK, body: JSON.stringify({ uid: '' }) }));
+  ok(un.error === 'unlink_blocked', 'a member cannot unlink their own UID (' + JSON.stringify(un).slice(0, 60) + ')');
+  const still = await j(await fetch(O + '/api/reward/bybitlink', { headers: CK }));
+  ok(still.uid === '999900001', 'the registration survived that attempt (' + still.uid + ')');
+  const admClear = await j(await fetch(O + '/api/admin/bybitlinks', { method: 'POST', headers: H, body: JSON.stringify({ uid, buid: '' }) }));
+  ok(admClear.ok === true, 'support can still clear it with the admin key');
+  const admSet = await j(await fetch(O + '/api/admin/bybitlinks', { method: 'POST', headers: H, body: JSON.stringify({ uid, buid: '999900001', force: true }) }));
+  ok(admSet.ok === true && admSet.buid === '999900001', 'and set it back again');
+  ok((await j(await fetch(O + '/api/admin/bybitlinks', { method: 'POST', headers: H, body: JSON.stringify({ uid, buid: '187654321' }) }))).error === 'uid_not_ours', 'the admin route still checks the affiliate list unless forced');
+
   const pub = await j(await fetch(O + '/api/admin/bybitlinks', { headers: { 'x-admin-key': K } }));
   ok(!(pub.attempts || []).some(a => a.uid === uid), 'test rows are hidden from the default (non-e2e) view');
   await fetch(O + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid, op: 'rm' }) });

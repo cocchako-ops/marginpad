@@ -706,14 +706,14 @@ h1 b{color:var(--lime)}
     box.innerHTML='<div class="bybox2">'+head(el?'ok':(uid?'no':'wait'),el?'\u2713 registered':(uid?'not on our list':'not registered'))
       +'<div class="bt">'+(el?'You are in \u2014 your Bybit account is registered':(uid?'This Bybit UID was not opened through MarginPad':'Register the Bybit account you opened through MarginPad'))+'</div>'
       +'<div class="bd">'+(el?'Bybit UID <b>'+esc(uid)+'</b> is tied to this account'+(BYL.source==='payout'?' (from your payout)':'')+'. Your Bybit trading volume this season counts toward the $200 \u2014 the board refreshes with each report.':(uid?'UID <b>'+esc(uid)+'</b> is not on our affiliate list, so it cannot compete. Open a Bybit account with our link below and register that UID instead.':'Enter the UID of the Bybit account you opened with our link. It is checked against our affiliate list \u2014 one Bybit UID, one MarginPad account.'))+'</div>'
-      +'<div class="bf">'+(el?'<span class="uidv">UID '+esc(uid)+'</span><button type="button" class="btn ghost" id="byUnlink">Unlink</button>':'<input id="byUid" inputmode="numeric" placeholder="Bybit UID" maxlength="15" value="'+esc(uid)+'"><button type="button" class="btn" id="byLink">Register UID</button>')+'</div><div class="msg" id="byMsg"></div>'+full+'</div>';
-    var lb=$('byLink'),ub=$('byUnlink');
+      +'<div class="bf">'+(el?'<span class="uidv">UID '+esc(uid)+'</span><span class="bd" style="margin:0">Locked to this account for the season — <a href="/support/">contact support</a> if it is wrong</span>':'<input id="byUid" inputmode="numeric" placeholder="Bybit UID" maxlength="15" value="'+esc(uid)+'"><button type="button" class="btn" id="byLink">Register UID</button>')+'</div><div class="msg" id="byMsg"></div>'+full+'</div>';
+    var lb=$('byLink');
     if(lb)lb.addEventListener('click',function(){var v=String(($('byUid')||{}).value||'').trim();if(!/^[0-9]{5,15}$/.test(v)){$('byMsg').className='msg err';$('byMsg').textContent='A Bybit UID is 5 to 15 digits.';return;}lb.disabled=true;
       fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(d){lb.disabled=false;
         if(d&&d.ok){BYL=null;toast('<b>Registered.</b> Your Bybit volume counts from the next report');paintBybox(D);loadLB();return;}
         var E={uid_not_ours:'This UID was not opened through MarginPad. Open a Bybit account with our link below, then register that one.',uid_taken:'This Bybit UID is already registered on another MarginPad account.',bad_uid:'A Bybit UID is 5 to 15 digits.',login_required:'Sign in first.'};
         $('byMsg').className='msg err';$('byMsg').textContent=E[d&&d.error]||'Could not register right now. Try again in a minute.';}).catch(function(){lb.disabled=false;$('byMsg').className='msg err';$('byMsg').textContent='Network error.';});});
-    if(ub)ub.addEventListener('click',function(){ub.disabled=true;fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:''})}).then(function(){BYL=null;paintBybox(D);loadLB();});});}
+    /* the Unlink control was removed 2026-09-13 (owner): a member dropping their UID mid-season silently leaves the volume board. The server refuses it too (unlink_blocked). The brace below closed paintBybox. */}
 
   /* ---- floor ---- */
   var MET={roe:'ROE',wr:'win rate',win:'biggest win',pnl:'profit',survival:'survival',streak:'win streak',sniper:'sniper'};
