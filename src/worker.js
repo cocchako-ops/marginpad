@@ -11135,23 +11135,80 @@ async function sendLeaderboardEmail(env, to, info) {
 const BYBIT_LB_START = Date.UTC(2026, 8, 14);
 const BYBIT_REF_URL = 'https://www.bybit.com/invite?ref=LZKBERJ';
 async function bybitLedger(env, p, body) { try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })); return await r.json(); } catch (e) { return null; } }
-function bybitParseReport(text) { // → [{uid, vol}], last line per UID wins. Tolerant: CSV/TSV/";"/"|", quoted "1,234.56", $ signs, k/M/B suffixes, a header row naming the UID and volume columns
-  const lines = String(text || '').replace(/"(-?\d{1,3}(?:,\d{3})+(?:\.\d+)?)"/g, (m, n) => n.replace(/,/g, '')).split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  if (!lines.length) return [];
-  const split = l => l.split(/\t|;|\||,/).map(c => c.replace(/^"|"$/g, '').trim());
-  const num = c => { const t = String(c).replace(/[$\s]/g, '').replace(/,/g, ''); const m = t.match(/^-?([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/); return m ? +m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1) : null; };
-  let volCol = -1, uidCol = -1; split(lines[0]).forEach((c, i) => { if (volCol < 0 && /vol/i.test(c)) volCol = i; if (uidCol < 0 && /^uid$|user ?id|referee|member/i.test(c)) uidCol = i; });
-  const out = new Map();
-  for (const ln of lines) {
-    const cells = split(ln); if (cells.length < 2) continue;
-    const ui = (uidCol >= 0 && /^[0-9]{5,15}$/.test(cells[uidCol] || '')) ? uidCol : cells.findIndex(c => /^[0-9]{5,15}$/.test(c)); if (ui < 0) continue;
-    let vol = null;
-    if (volCol >= 0 && volCol !== ui) vol = num(cells[volCol] || '');
-    if (vol == null) for (let i = 0; i < cells.length; i++) { if (i === ui) continue; const v = num(cells[i]); if (v != null) { vol = v; break; } }
-    if (vol == null || !isFinite(vol) || vol < 0) continue;
-    out.set(cells[ui], Math.round(vol * 100) / 100);
+// Parse the Bybit affiliate export into [{uid, vol}] and SAY WHAT IT DID. This file decides real prize money, so the
+// parser refuses to guess: when a header names the volume column, a row whose volume cell is not a number is SKIPPED
+// and counted, never quietly costed from some other column (a dash in the volume column used to fall through to the
+// commission column). Returns {rows, diag} — the ops preview prints diag so the owner sees the columns it picked, the
+// rows it dropped and why, BEFORE the upload replaces the season table.
+// Tolerant of: CSV / TSV / ";" / "|", a UTF-8 BOM, quoted cells containing commas, "1,234.56", "1.234,56" (European),
+// "$", a trailing USDT/USD, and k/M/B suffixes. Last line per UID wins.
+function bybitParseReport(text) {
+  const diag = { lines: 0, rows: 0, skipped: [], header: null, uidCol: null, volCol: null, sep: null };
+  let src = String(text || '');
+  if (src.charCodeAt(0) === 0xFEFF) src = src.slice(1); // Excel writes a BOM; it would glue itself to the first header cell
+  const lines = src.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  diag.lines = lines.length;
+  if (!lines.length) return { rows: [], diag };
+  // pick the separator that actually splits this file, counted OUTSIDE quotes
+  const count = (l, ch) => { let n = 0, q = false; for (let i = 0; i < l.length; i++) { const c = l[i]; if (c === '"') q = !q; else if (!q && c === ch) n++; } return n; };
+  const cands = ['\t', ';', '|', ','];
+  let sep = cands.map(c => [c, count(lines[0], c)]).sort((a, b) => b[1] - a[1])[0];
+  sep = (sep && sep[1] > 0) ? sep[0] : ',';
+  diag.sep = sep === '\t' ? 'tab' : sep;
+  // quote-aware split: a quoted cell may contain the separator (a name, an address) and must not shift the columns
+  const split = (l) => { const out = []; let cur = '', q = false; for (let i = 0; i < l.length; i++) { const c = l[i]; if (c === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; } else if (c === sep && !q) { out.push(cur); cur = ''; } else cur += c; } out.push(cur); return out.map(s => s.trim()); };
+  const num = (cell) => {
+    let t = String(cell == null ? '' : cell).replace(/^"|"$/g, '').trim();
+    if (!t || /^[-–—]+$/.test(t)) return null;                       // an empty cell or a dash is NOT a zero
+    t = t.replace(/\b(usdt|usd|busd)\b/ig, '').replace(/[$\s\u00a0]/g, '');
+    if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, '').replace(',', '.'); // 1.234.567,89 European
+    else t = t.replace(/,/g, '');                                    // 1,234,567.89 or a plain integer
+    const m = t.match(/^-?([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/);
+    if (!m) return null;
+    const mult = { k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1;
+    return +m[1] * mult;
+  };
+  const isUid = (c) => /^[0-9]{5,15}$/.test(String(c || '').replace(/^"|"$/g, '').trim());
+  // a header row is one whose cells name things rather than hold a UID
+  const head = split(lines[0]);
+  let volCol = -1, uidCol = -1, hasHeader = !head.some(isUid);
+  if (hasHeader) {
+    head.forEach((c, i) => {
+      const t = c.toLowerCase();
+      if (volCol < 0 && /vol/.test(t)) volCol = i;
+      if (uidCol < 0 && (/^uid$/.test(t) || /user ?id/.test(t) || /referee/.test(t) || /member/.test(t) || /account/.test(t))) uidCol = i;
+    });
+    diag.header = head.slice(0, 12);
+    diag.uidCol = uidCol >= 0 ? { i: uidCol, name: head[uidCol] } : null;
+    diag.volCol = volCol >= 0 ? { i: volCol, name: head[volCol] } : null;
   }
-  return [...out.entries()].map(([uid, vol]) => ({ uid, vol }));
+  const out = new Map();
+  for (let n = 0; n < lines.length; n++) {
+    if (hasHeader && n === 0) continue;
+    const ln = lines[n], cells = split(ln);
+    if (cells.length < 2) { diag.skipped.push({ line: n + 1, why: 'not a row', text: ln.slice(0, 60) }); continue; }
+    // A row with MORE cells than the header is malformed — almost always an unquoted comma inside a number
+    // ("$12,345.67" written without quotes), which would otherwise read as 12. Skip it loudly rather than pay on it.
+    if (hasHeader && head.length > 1 && cells.length > head.length) { diag.skipped.push({ line: n + 1, why: 'more columns than the header — an unquoted comma inside a value?', text: ln.slice(0, 60) }); continue; }
+    const ui = (uidCol >= 0 && isUid(cells[uidCol])) ? uidCol : cells.findIndex(isUid);
+    if (ui < 0) { diag.skipped.push({ line: n + 1, why: 'no Bybit UID in the line', text: ln.slice(0, 60) }); continue; }
+    let vol = null;
+    if (volCol >= 0 && volCol !== ui) {
+      vol = num(cells[volCol]);
+      // header said WHICH column holds volume: never substitute another one. Guessing here once cost the wrong number.
+      if (vol == null) { diag.skipped.push({ line: n + 1, why: 'the volume column is empty or not a number', text: String(cells[volCol] || '').slice(0, 24) || '(empty)' }); continue; }
+    } else {
+      for (let i = 0; i < cells.length; i++) { if (i === ui) continue; const v = num(cells[i]); if (v != null) { vol = v; break; } }
+      if (vol == null) { diag.skipped.push({ line: n + 1, why: 'no number next to the UID', text: ln.slice(0, 60) }); continue; }
+    }
+    if (!isFinite(vol) || vol < 0) { diag.skipped.push({ line: n + 1, why: 'negative or unreadable volume', text: String(vol) }); continue; }
+    out.set(String(cells[ui]).replace(/^"|"$/g, '').trim(), Math.round(vol * 100) / 100);
+  }
+  const rows = [...out.entries()].map(([uid, vol]) => ({ uid, vol }));
+  diag.rows = rows.length;
+  diag.total = Math.round(rows.reduce((s, r) => s + r.vol, 0) * 100) / 100;
+  diag.skippedN = diag.skipped.length; diag.skipped = diag.skipped.slice(0, 12);
+  return { rows, diag };
 }
 async function bybitUpload(env, ws) { try { return JSON.parse((await env.STATS.get('lb:bybitup:' + ws)) || 'null'); } catch (e) { return null; } }
 async function bybitRegistrations(env) { // Bybit UID → {uid, name, ts, e2e}: explicit registrations first, then UIDs a payout already went to
@@ -11225,6 +11282,27 @@ async function payBybitPrizes(env) { // */10 cron: every ENDED season from BYBIT
     }
     try { await tgAdmin(env, '<b>Bybit board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ': ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(0)).join(' · ') : 'nobody eligible'), { kind: 'lbbybit', sev: 'green' }); } catch (e) {}
   }
+}
+// Promote board prizes that were scheduled for the next season (ops Settings, "apply from the next season"). Runs at the
+// TOP of the prize cron, before anything is paid, so the season that just ended still pays the numbers that were in
+// force while it ran and the new season opens with the new ones. Idempotent: the parked block is deleted as it lands.
+async function promoteLbPending(env) {
+  try {
+    if (!env.STATS) return null;
+    let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) { return null; }
+    const p = cfg.lbPending;
+    if (!p || !(+p.fromWs > 0) || Date.now() < +p.fromWs) return null;
+    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit'].filter(k => Array.isArray(p[k]));
+    if (!keys.length) { delete cfg.lbPending; await env.STATS.put('rwd:cfg', JSON.stringify(cfg)); return null; }
+    const lines = [];
+    for (const k of keys) { lines.push(k + ': ' + JSON.stringify(cfg[k] || []) + ' -> ' + JSON.stringify(p[k])); cfg[k] = p[k]; }
+    delete cfg.lbPending;
+    await env.STATS.put('rwd:cfg', JSON.stringify(cfg));
+    const NL = String.fromCharCode(10);
+    try { await tgAdmin(env, '<b>Season prizes promoted</b> — the changes you scheduled are now live for the season that just started.' + NL + '<code>' + lines.join(NL).slice(0, 900) + '</code>', { kind: 'prizes promoted', sev: 'info' }); } catch (e) {}
+    try { await evPush(env, null, 'cfgchange', 'season prizes promoted: ' + keys.join(', '), '/rewards/'); } catch (e) {}
+    return { promoted: keys, fromWs: +p.fromWs };
+  } catch (e) { return null; }
 }
 async function payWeeklyPrizes(env) {
   if (!env.STATS || !env.REWARDS || !env.USERS) return;
@@ -11307,6 +11385,10 @@ async function payWeeklyPrizes(env) {
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
   }
+  // Scheduled prize changes land AFTER the ended season has been paid: the season that just finished pays the numbers
+  // that were in force while it ran, and the season now starting opens with the new ones. That is the whole point of
+  // the checkbox — promoting first would have paid the finished season at the new rates.
+  await promoteLbPending(env);
 }
 
 async function checkAccountAlerts(env) {
@@ -14433,7 +14515,23 @@ async function handleReward(url, request, env) {
  // table but gates on 'moonEnabled', which stays.
  for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
  for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'redditUsd', 'redditMaxUsd', 'referralUsd', 'moonUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k]; /* 'exsignUsd' dropped 2026-08-20 — retired system, see the boolean list above */
-      for (const k of ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
+      // BOARD PRIZES, NOW OR NEXT SEASON (2026-09-13, owner: "kad promenim nagrade treba nešto što kaže da promene
+      // nastupe po novoj sezoni a ne po trenutnoj ... hoću smooth transition"). Prizes are read at PAYOUT time, which
+      // happens AFTER a season ends — so editing them mid-season silently changes what the season that just finished
+      // pays out. With `nextSeason:true` the new numbers are parked in `lbPending` and promoted by `promoteLbPending`
+      // the moment the next season starts; without it they apply immediately, exactly as before.
+      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit'];
+      const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
+      const boardsIn = BOARD_KEYS.filter(k => k in b && Array.isArray(b[k]));
+      if (b.nextSeason && boardsIn.length) {
+        const fromWs = lbPeriodStart(Date.now()) + LB_PERIOD; // the start of the season that has not begun yet
+        const park = { fromWs, by: 'ops', ts: Date.now() };
+        for (const k of boardsIn) park[k] = clean5(b[k]);
+        next.lbPending = park;
+      } else {
+        for (const k of boardsIn) next[k] = clean5(b[k]);
+        if (b.clearPending) delete next.lbPending;
+      }
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
       // CONFIG AUDIT (2026-08-03, the silent $5-claim/$200-cap incident): every change to the money config
@@ -14451,7 +14549,7 @@ async function handleReward(url, request, env) {
       } catch (e) {}
       return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2) } });
     }
-    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit } });
+    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -15928,8 +16026,9 @@ export default {
       if (request.method === 'POST') {
         let bb = {}; try { bb = await request.json(); } catch (e) {}
         if (bb.clear) { try { await env.STATS.delete('lb:bybitup:' + ws); } catch (e) {} const snap = await bybitSnapshotRebuild(env, ws); return J({ ok: true, cleared: true, snapshot: snap }); }
-        const rows = bybitParseReport(bb.text); if (!rows.length) return J({ error: 'no_rows', hint: 'No "UID, volume" lines found in the text' }, 400);
-        if (bb.preview) return J({ ok: true, preview: true, rows: rows.slice(0, 500), n: rows.length });
+        const parsed = bybitParseReport(bb.text), rows = parsed.rows;
+        if (!rows.length) return J({ error: 'no_rows', hint: 'No "UID, volume" lines found in the text', diag: parsed.diag }, 400);
+        if (bb.preview) return J({ ok: true, preview: true, rows: rows.slice(0, 500), n: rows.length, diag: parsed.diag });
         const up = { ts: Date.now(), rows, final: !!bb.final, by: 'ops' };
         try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
         const snap = await bybitSnapshotRebuild(env, ws);
