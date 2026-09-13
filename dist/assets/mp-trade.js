@@ -143,16 +143,20 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
          cost; this says where the same trade is cheaper and links straight to the pair. Only for readers MEXC can
          actually onboard - mpEx.blocked() keeps it away from the US, the same rule the partner cards follow. The
          numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. */
-      +feeMexc(e)+'</div>';}
+      +'</div>';}
+  /* MEXC line on EVERY closed ticket, win or loss (owner 2026-09-13) — MIRROR of home.js feeMexc: out of the popover, onto the card;
+     a row without a stamped rate is costed at the default crypto taker rate; never for US readers, never when the trade ran at MEXC's rate. */
   function feeMexc(e){ try{
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
     var sym=String(e&&e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!sym)return '';
     if(String(e.feeVenue||'').toLowerCase()==='mexc')return '';
-    var b=feeBrk(e),tot=feeF(b.total);
+    var b=feeBrk(e);
     /* MIRROR of home.js (2026-09-12): the card prints what THIS round trip costs at MEXC's taker rate, not the fee already paid */
     var _rt=(+e.feeRate>0?+e.feeRate:0.00055),_mxT=(window.mpFeeVenues&&window.mpFeeVenues.mexc&&+window.mpFeeVenues.mexc.t>0)?+window.mpFeeVenues.mexc.t/100:0.0002;
-    var _legs=(+b.fo||0)+(+b.fc||0),_mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0.005))return '';
+    var _legs=(+b.fo||0)+(+b.fc||0);
+    if(!(_legs>0)){var _q=+e.qty||0,_en=+e.entry||0,_ex=(e.exit!=null?+e.exit:_en);if(!(_q>0)&&+e.margin>0&&_en>0)_q=(+e.margin*((+e.lev>0)?+e.lev:1))/_en;_legs=_q*(_en+_ex)*_rt;}
+    var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0.005))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
       +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','instead of')+' '+feeF(_legs)+' \u2014 '+MT('jFeeMxC','you keep')+' '+feeF(_save)+'</b>'
       +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
@@ -190,6 +194,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div>'
+      +feeMexc(e) /* on EVERY closed ticket, win or loss (owner 2026-09-13); MIRROR of home.js */
       +((_i===_glIdx&&window.mpGoLive)?window.mpGoLive(e):'') /* MIRROR of home.js closedCard: newest winning close gets one dismissible line to the same pair (mp-auth.js owns it) */
       +'</div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}

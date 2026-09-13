@@ -5518,7 +5518,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3f87bd75" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c328e597" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12457,7 +12457,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '034bd270';
+const ASSET_V = 'cbe7dfde';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -15643,7 +15643,8 @@ export default {
     }
     if (url.pathname === '/api/admin/e2euser' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E: mint/remove a throwaway member {uid, op}
       let eb = {}; try { eb = await request.json(); } catch (e) {}
-      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); return new Response(await rr.text(), { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
+      // {op:'mk', xp:N} also grants XP (e2e uids only) so an E2E can pass the Bronze gate on rewards routes (moon-limit-e2e, 2026-09-13)
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
@@ -18571,6 +18572,10 @@ export class RewardLedger {
       const uidRe = exchange === 'coinbase' ? /^[A-Za-z0-9_.-]{3,64}$/ : exchange === 'moon' ? /^[A-Za-z0-9_.-]{3,32}$/ : /^[A-Za-z0-9_-]{4,32}$/; // moon = a moon.com username, not a numeric UID
       if (!uidRe.test(uid)) return this.j({ error: 'bad_uid' }, 400);
       if (this.rows("SELECT id FROM exsign WHERE acct=? AND exchange=? AND status!='rejected'", acct, exchange).length) return this.j({ error: 'already_submitted' }, 409); // one bonus per exchange per account, ever
+      // 2026-09-13 (owner: "ladyp03 submits the Moon bonus far too often"): a rejection used to reopen the form without limit, so one
+      // account could keep asking after being told no. ONE retry per account per exchange (a mistyped username deserves a second go),
+      // then the door closes for good — support can still be asked.
+      if (this.rows('SELECT id FROM exsign WHERE acct=? AND exchange=?', acct, exchange).length >= 2) return this.j({ error: 'limit_reached', hint: 'This account has used both of its submissions for this bonus. If you believe a rejection was a mistake, write to support.' }, 409);
       if (this.rows("SELECT id FROM exsign WHERE exchange=? AND lower(uid)=lower(?) AND status!='rejected'", exchange, uid).length) return this.j({ error: 'uid_taken' }, 409); // each exchange UID pays once, across ALL accounts
       const id = 'xs' + now.toString(36) + Math.floor(Math.random() * 1679616).toString(36);
       sql.exec('INSERT INTO exsign(id,acct,exchange,uid,ts,status,ip,cc) VALUES(?,?,?,?,?,?,?,?)', id, acct, exchange, uid, now, 'pending', ip, cc);
@@ -19637,6 +19642,10 @@ export class UserStore {
     const sql = this.state.storage.sql, now = Date.now();
     try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {} // A3: index of users with OPEN srv/bot trades — sweeps iterate THIS, not every journal
     incoming = Array.isArray(incoming) ? incoming : [];
+    // 'planned' rows (a June 2026 plan-form feature no bundle writes any more) are not trades. _loadJournal drops them on read,
+    // so a browser that still carries them in localStorage re-sent them as NEW rows on every sync and each sync logged
+    // "opened XRP 30x $0 +SL +TP" to the activity feed (240 rows in 48 h on the owner's own account, 2026-09-13). Drop on input too.
+    incoming = incoming.filter(t => !(t && t.status === 'planned'));
     let stored = this._loadJournal(uid);
     // P0 phase 3 — SERVER AUTHORITY over server-filled trades ('srv' ids). Client syncs (srvAuth falsy) cannot:
     // fabricate an srv trade (server mints those ids), modify a server-closed one (sc:1 = final), alter the core

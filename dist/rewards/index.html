@@ -777,7 +777,9 @@
       else if(x.status==='rejected')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:12px;font-weight:700">REJECTED</span>'+(x.note?' <span class="note" style="font-size:12px">'+String(x.note).replace(/</g,'&lt;')+'</span>':'');
       else chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,215,90,.5);color:#ffd75a;font-size:12px;font-weight:700">IN REVIEW</span>';
       st.innerHTML='<span class="note" style="font-size:12px">Moon username <b>'+String(x.uid).replace(/</g,'&lt;')+'</b> &middot; </span>'+chip;
-      if(form)form.style.display=(x.status==='rejected')?'':'none';
+      var again=(x.status==='rejected')&&rows.length<2; /* one retry per account (2026-09-13): after the second rejection the form stays closed */
+      if(form)form.style.display=again?'':'none';
+      if(x.status==='rejected'&&!again)st.innerHTML+=' <span class="note" style="font-size:12px">This account has used both submissions for this bonus. If you think that was a mistake, write to support.</span>';
     }).catch(function(){});}
   (function(){var sb=document.getElementById('moonSubmit'),inp=document.getElementById('moonUser');
     if(!sb)return;
@@ -790,6 +792,7 @@
         sb.disabled=false;
         if(j.ok){moonMsg('Submitted ✓ — we check every sign-up manually; the bonus lands on your balance once approved.','ok');loadMoon();}
         else if(j.error==='already_submitted')moonMsg('You already submitted a Moon sign-up on this account.','err');
+        else if(j.error==='limit_reached')moonMsg('This account has used both of its submissions for this bonus. If you think a rejection was a mistake, write to support.','err');
         else if(j.error==='uid_taken')moonMsg('That Moon username was already claimed by another account.','err');
         else if(j.error==='bad_uid')moonMsg('Invalid Moon username.','err');
         else if(j.error==='login_required')moonMsg('Sign in first (top of the page).','err');
@@ -1106,10 +1109,10 @@
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!bp.hidden)close();});
 })();
 </script>
-<script src="/assets/mp-trade.js?v=647e9f88" defer></script>
-<script defer src="/assets/mp-auth.js?v=034bd270"></script>
+<script src="/assets/mp-trade.js?v=1e448736" defer></script>
+<script defer src="/assets/mp-auth.js?v=cbe7dfde"></script>
 <script defer src="/assets/mp-profile.js?v=ab5000e7"></script>
-<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+<script defer src="/assets/mp-nav.js?v=c328e597"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;

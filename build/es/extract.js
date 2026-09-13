@@ -12,7 +12,7 @@ const LANG = /^(es|pt|fr|de|ru|tr|zh|ja|ko|ar|id|nl|sv|no|da|fi)$/;
 const SKIP_DIRS = new Set(['assets', 'demo-home', 'i18n', 'sdk', 'og', 'img', 'fonts', 'widget']);
 // already Spanish / Portuguese by design
 const SKIP_PAGES = new Set(['dolar-cripto/index.html', 'bitcoin-hoje/index.html', 'simulador-trading-cripto-argentina/index.html',
-  'simulador-trading-cripto-brasil/index.html']);
+  'simulador-trading-cripto-brasil/index.html', 'app-es.html' /* our own output */]);
 
 function pages() {
   const out = [];

@@ -14,7 +14,7 @@ const ORIGIN = 'https://marginpad.io';
 const LANG = /^(es|pt|fr|de|ru|tr|zh|ja|ko|ar|id|nl|sv|no|da|fi)$/;
 const SKIP_DIRS = new Set(['assets', 'demo-home', 'i18n', 'sdk', 'og', 'img', 'fonts', 'widget']);
 const SKIP_PAGES = new Set(['dolar-cripto/index.html', 'bitcoin-hoje/index.html', 'simulador-trading-cripto-argentina/index.html',
-  'simulador-trading-cripto-brasil/index.html', 'app.html' /* → app-es.html, handled apart */]);
+  'simulador-trading-cripto-brasil/index.html', 'app.html' /* → app-es.html, handled apart */, 'app-es.html' /* our own output */]);
 const NOINDEX_OK = true; // a noindex English page gets a noindex Spanish twin (same meta) — nothing to decide here
 const TOOL_ROUTES = ['/paper-trade', '/charts', '/calculators', '/screener', '/heatmap', '/swap'];
 const MIN_COVER = 0.6; // a twin with less than 60% of its text in Spanish is not published (English fallback would read as a broken page)

@@ -235,8 +235,58 @@
       + '<button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>'
       + '<select class="lang" id="langSel" aria-label="Language">' + lo + '</select></nav>';
   }
+  /* ONE language switch for every page (owner 2026-09-13: "kad izaberem španski, uvek treba da bude selektovan taj jezik
+     na svakoj stranici" — on /es/ and /rewards/ the dropdown still said EN because five different copies of the <select>
+     (bento home, rewards, rekt, app shell, this canonical header) each had their own idea of the current language).
+     Rules: the current language = URL prefix > ?lang > localStorage mp_lang (_mpLang). Every #langSel on the page is set
+     to it on load (option values are '/es/' on hand-made headers and 'es' on the app shell — both understood) and its
+     inline onchange is replaced by wireLangSel: the choice is written to mp_lang FIRST, then en <-> es keep the page
+     (/x/ <-> /es/x/, the worker 302s back when a twin is missing), other languages go to their homepage as before, and a
+     page that translates itself (Demo Spot, the app shell's i18n loader) still gets __mpSetLang / its own listener.
+     esRedirect: a reader who chose Spanish and lands on an English URL is sent to the twin once per path per session
+     (sessionStorage mp_es_miss stops the bounce when the worker answers 302 because no twin exists). */
+  var _LANG_HOME = { pt: 1, de: 1, fr: 1, ru: 1, tr: 1, zh: 1, ja: 1, ko: 1, ar: 1, id: 1, nl: 1 };
+  function langCode(v) { v = String(v || ''); if (!v || v === '/') return v === '/' ? 'en' : ''; var m = v.match(/^\/([a-z]{2})\/?$/); return m ? m[1] : (/^[a-z]{2}$/.test(v) ? v : ''); }
+  function syncLangSel() {
+    try {
+      var cur = window.__mpLangCur || _mpLang(), sels = document.querySelectorAll('#langSel, select.lang[aria-label="Language"]');
+      for (var i = 0; i < sels.length; i++) { var s = sels[i], hit = -1; for (var k = 0; k < s.options.length; k++) { if (langCode(s.options[k].value) === cur) { hit = k; break; } } if (hit >= 0 && s.selectedIndex !== hit) s.selectedIndex = hit; if (!s.__mpLangWired) wireLangSel(s); }
+    } catch (e) {}
+  }
+  function wireLangSel(ls) {
+    if (!ls || ls.__mpLangWired) return; ls.__mpLangWired = 1;
+    try { ls.removeAttribute('onchange'); ls.onchange = null; } catch (e) {}
+    ls.addEventListener('change', function () {
+      if (!ls.value) return;
+      var _code = langCode(ls.value); if (!_code) { location.href = ls.value; return; }
+      try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {}
+      try { localStorage.setItem('mp_lang', _code); } catch (e) {}
+      try { sessionStorage.removeItem('mp_es_miss'); } catch (e) {}
+      if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; // self-translating page (Demo Spot)
+      var _p = location.pathname, _onEs = _p.indexOf('/es/') === 0 || _p === '/es';
+      if (_code === 'en') { location.href = _onEs ? (_p.slice(3) || '/') + location.search : (_LANG_HOME[(_p.match(/^\/([a-z]{2})\//) || [])[1]] ? '/' : (_p + location.search)); return; }
+      if (_code === 'es') { if (_onEs) return; location.href = (/^\/([a-z]{2})\/$/.test(_p) ? '/es/' : '/es' + _p) + location.search; return; }
+      if (window.mpT && document.getElementById('langSel') === ls) return; // app shell: i18n.js applies the pack in place
+      location.href = '/' + _code + '/';
+    });
+  }
+  function esRedirect() {
+    try {
+      if (window.__mpEsRedir) return; window.__mpEsRedir = 1;
+      var L = localStorage.getItem('mp_lang'), p = location.pathname;
+      if (L !== 'es' || /^\/es(\/|$)/.test(p) || /^\/(api|assets|mcp|widget|community)\//.test(p) || /^\/(pt|de|fr|ru|tr|zh|ja|ko|ar|id|nl)\//.test(p)) return;
+      if (/^\/(dolar-cripto|bitcoin-hoje|simulador-trading-cripto-argentina|simulador-trading-cripto-brasil)\//.test(p)) return;
+      if (new URLSearchParams(location.search).get('lang')) return;
+      var miss = (sessionStorage.getItem('mp_es_miss') || '').split('|');
+      if (miss.indexOf(p) >= 0) return;
+      miss.push(p); sessionStorage.setItem('mp_es_miss', miss.filter(Boolean).join('|'));
+      location.replace('/es' + (p === '/' ? '/' : p) + location.search + location.hash);
+    } catch (e) {}
+  }
+  esRedirect();
   function normalizeHeader() {
     try {
+      syncLangSel();
       if (document.querySelector('header .hbot')) return; // already the canonical header (homepage / app-shell / defi / rekt / rewards) — .hbot is the stable sentinel (Rewards link was removed from headers)
       var h = document.querySelector('body>header') || document.querySelector('body>.wrap>header');
       if (!h) return;
@@ -244,7 +294,7 @@
       if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
       h.classList.add('mpnav-hdr');
       h.innerHTML = canonHeaderHTML();   // burger click is bound by wireBurgers() below (mp-auth handles [data-auth-open] by delegation)
-      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} var _code = ls.value === '/' ? 'en' : ls.value.replace(/\//g, ''); if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; var _p = location.pathname, _onEs = _p.indexOf('/es/') === 0; if (_code === 'en' && _onEs) { location.href = _p.slice(3) || '/'; return; } if (_code === 'es' && !_onEs && _p !== '/') { location.href = '/es' + _p; return; } location.href = ls.value; } });
+      var ls = h.querySelector('#langSel'); if (ls) wireLangSel(ls);
     } catch (e) {}
   }
   // EVERY header burger opens THE shared drawer. Pages' own scripts may also route here (defi, demo-home,
@@ -362,7 +412,7 @@
       + '<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>'
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=647e9f88', CHAT_CSS = '/assets/mp-trade.css?v=ea372819', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=1e448736', CHAT_CSS = '/assets/mp-trade.css?v=ea372819', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
     function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=ea372819"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }

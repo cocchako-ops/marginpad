@@ -1537,6 +1537,7 @@
     var arr; try { arr = JSON.parse(j); } catch (e) { return; }
     if (!Array.isArray(arr)) return;
     lastJ = j;
+    arr = arr.filter(function (e) { return !(e && e.status === 'planned'); }); // plan-form drafts are not trades — never sync them (they re-appeared as $0 XRP opens in the activity feed, 2026-09-13)
     // send the most-recent ~200 trades (the server keeps the recent/best 100 anyway) so the payload stays bounded for heavy traders.
     var send = arr;
     if (arr.length > 200) { try {
