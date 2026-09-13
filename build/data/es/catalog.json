@@ -1,12 +1,12 @@
 {
  "meta": {
-  "generated": "2026-09-13T12:40:13.884Z",
+  "generated": "2026-09-13T13:01:53.418Z",
   "pages": 369,
   "occurrences": 22736,
   "unique": 12824,
   "words": 237588,
   "untranslated": 1,
-  "untranslatedWords": 34
+  "untranslatedWords": 25
  },
  "items": {
   "-1NAT9wpkg": {
@@ -134692,9 +134692,9 @@
    "n": 1,
    "w": 20
   },
-  "KT5um-Z3Vf": {
-   "en": "<b>Gold Room.</b> Gold members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.",
-   "es": "<b>The Gold Room.</b> Solo para miembros Gold. Una operación cerrada en ganancia suma +1 punto, cerrada en pérdida −1. Un título, no un pago, hasta la temporada del 14 de septiembre.",
+  "yeiD7-3Lh-": {
+   "en": "<b>Gold Room.</b> Gold+ members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.",
+   "es": "",
    "kind": [
     "html"
    ],

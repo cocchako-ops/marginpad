@@ -414,7 +414,7 @@ h1 b{color:var(--lime)}
         <p><b>Highest ROE.</b> Your best single closed paper trade of the season, by ROE (profit as % of margin). Only trades opened and closed this season count, filled and closed by the server. The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</p>
         <p><b>Best win rate.</b> At least 20 counted trades closed this season. A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count. Copies count once. Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a higher one.</p>
         <p><b>Season XP.</b> All XP earned during the season counts: trading, Academy, missions, duels, streaks, goals. Rewards activity, not position size.</p>
-        <p><b>Gold Room.</b> Gold members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.</p>
+        <p><b>Gold Room.</b> Gold+ members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.</p>
         <p><b>Bybit volume — powered by Bybit.</b> Ranked by the real trading volume you make on Bybit, taken from our affiliate report and loaded a few times a day — nothing you do on MarginPad counts here. Anyone can compete, with one condition: the Bybit account must be opened through MarginPad. Register that account's UID under the board; it is checked against our affiliate list, and one Bybit UID belongs to one MarginPad account. Top 5 share $200: $100, $50, $25, $15, $10 — from the season starting 14 September.</p>
         <p>Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
       </details>
@@ -671,7 +671,7 @@ h1 b{color:var(--lime)}
         +'<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></span>'
         +'<div class="wm">'+(IC[b.k]||'')+'</div>'
         +(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
-        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold only</small>')+'</div>'
+        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold+ only</small>')+'</div>'
         +'<div class="ld"><i>1</i>'+(ld?'<span title="'+esc(ld.who)+'">'+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>\u2014</b>')+'</div>'
         +'<div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' \u00b7 $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
     var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
@@ -691,7 +691,7 @@ h1 b{color:var(--lime)}
     setTimeout(function(){paintBoards();tw.classList.remove(dir);tw.classList.add(back);void tw.offsetWidth;requestAnimationFrame(function(){tw.classList.remove(back);});},190);}
   $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
-    if(curBoard==='gold'){el.textContent='Gold members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
+    if(curBoard==='gold'){el.textContent='Gold+ members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
     if(curBoard==='bybit'){el.textContent='';return;} /* no note under the Bybit board (owner 2026-09-13): the banner, the prize preview and the registration box say it all */
     el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
   /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */

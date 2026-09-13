@@ -414,7 +414,7 @@ h1 b{color:var(--lime)}
         <p><b>ROE más alto.</b> Tu mejor operación individual cerrada en paper trading de la temporada, según el ROE (ganancia como % del margen). Solo cuentan las operaciones abiertas y cerradas esta temporada, ejecutadas y cerradas por el servidor. El ROE debe ser físicamente posible para el movimiento y el apalancamiento — los números fabricados se descartan.</p>
         <p><b>Mejor tasa de acierto.</b> Al menos 20 operaciones contabilizadas y cerradas esta temporada. Una operación solo cuenta como ganada con +5% de ROE o más sobre un movimiento de precio real (al menos 0.2%). Las pérdidas siempre cuentan. Las copias cuentan una vez. La clasificación usa una puntuación ajustada por confianza, no el porcentaje bruto — más partidas con una buena tasa de acierto superan a menos partidas con una tasa aún mejor.</p>
         <p><b>XP de temporada.</b> Cuenta todo el XP ganado durante la temporada: trading, Academy, misiones, duelos, rachas, objetivos. Premia la actividad, no el tamaño de la posición.</p>
-        <p><b>The Gold Room.</b> Solo para miembros Gold. Una operación cerrada en ganancia suma +1 punto, cerrada en pérdida −1. Un título, no un pago, hasta la temporada del 14 de septiembre.</p>
+        <p><b>Gold Room.</b> Gold+ members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.</p>
         <p><b>Volumen Bybit — powered by Bybit.</b> Se clasifica por el volumen real que operas en Bybit, tomado de nuestro informe de afiliados y cargado unas cuantas veces al día — nada de lo que hagas en MarginPad cuenta aquí. Cualquiera puede competir, con una condición: la cuenta de Bybit debe estar abierta a través de MarginPad. Registra el UID de esa cuenta debajo de la tabla; se comprueba contra nuestra lista de afiliados, y un UID de Bybit pertenece a una sola cuenta de MarginPad. Los 5 primeros se reparten 00: 00, 0, 5, 5, 0 — desde la temporada que empieza el 14 de septiembre.</p>
         <p>Cada tabla corre por temporada de 14 días y paga a los 5 mejores en USDT real al saldo de recompensas. Las trampas, cuentas baneadas y símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.</p>
       </details>
@@ -671,7 +671,7 @@ h1 b{color:var(--lime)}
         +'<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></span>'
         +'<div class="wm">'+(IC[b.k]||'')+'</div>'
         +(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
-        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold only</small>')+'</div>'
+        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold+ only</small>')+'</div>'
         +'<div class="ld"><i>1</i>'+(ld?'<span title="'+esc(ld.who)+'">'+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>\u2014</b>')+'</div>'
         +'<div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' \u00b7 $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
     var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
@@ -691,7 +691,7 @@ h1 b{color:var(--lime)}
     setTimeout(function(){paintBoards();tw.classList.remove(dir);tw.classList.add(back);void tw.offsetWidth;requestAnimationFrame(function(){tw.classList.remove(back);});},190);}
   $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
-    if(curBoard==='gold'){el.textContent='Gold members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
+    if(curBoard==='gold'){el.textContent='Gold+ members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
     if(curBoard==='bybit'){el.textContent='';return;} /* no note under the Bybit board (owner 2026-09-13): the banner, the prize preview and the registration box say it all */
     el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
   /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */
