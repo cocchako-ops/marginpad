@@ -191,13 +191,43 @@ h1 b{color:var(--lime)}
 .opt .p{grid-column:2;grid-row:1/3;align-self:center;font:800 20px 'Space Mono',monospace;color:var(--pro);letter-spacing:-.02em;white-space:nowrap;padding-left:12px;border-left:1px dashed rgba(199,146,255,.3)}
 .code{display:flex;gap:7px}.code input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0}.code input:focus{border-color:var(--pro)}
 /* board switcher: five cards, one selected */
-.bsw{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
-.bs{position:relative;text-align:left;background:#0a0d11;border:1px solid var(--line2);border-radius:14px;padding:12px 12px 11px;cursor:pointer;color:inherit;min-width:0;transition:border-color .16s,transform .12s,background .16s;--c:#ffd75a}
-.bs:hover{border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
-/* selected card: a ring only. The old drop shadow (0 16px 36px -22px) fell under the table card 12 px below and read as a cut edge (owner 2026-09-06, twice). */
-.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,#0a0d11),#0a0d11);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent)}
-.bs .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:8px}
-.bs .ic svg{width:16px;height:16px}
+/* six cards (Bybit volume joined 2026-09-13); redesigned the same day (owner: "kartice mnogo više cool, slajdovanje mnogo više cool") */
+.bsw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.bs{position:relative;text-align:left;background:#0a0d11;border:1px solid var(--line2);border-radius:16px;padding:13px 13px 12px;cursor:pointer;color:inherit;min-width:0;overflow:hidden;isolation:isolate;transition:border-color .22s,transform .22s cubic-bezier(.2,.8,.2,1),background .22s,box-shadow .22s;--c:#ffd75a}
+.bs::before{content:"";position:absolute;inset:-40% -20% auto -20%;height:120%;background:radial-gradient(60% 55% at 50% 0%,color-mix(in srgb,var(--c) 26%,transparent),transparent 70%);opacity:0;transition:opacity .28s;z-index:-1;pointer-events:none}
+.bs::after{content:"";position:absolute;left:12px;right:12px;top:0;height:2px;border-radius:0 0 4px 4px;background:var(--c);opacity:0;transform:scaleX(.4);transition:opacity .22s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.bs:hover{border-color:rgba(255,255,255,.2);transform:translateY(-2px)}
+.bs:hover::before{opacity:.55}
+/* selected card: glow inside the card + a ring, never a drop shadow below it (the old 0 16px 36px shadow fell under the table card and read as a cut edge — owner 2026-09-06, twice) */
+.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 16%,#0a0d11),#0a0d11 70%);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 34%,transparent),inset 0 1px 0 color-mix(in srgb,var(--c) 40%,transparent);transform:translateY(-2px)}
+.bs.on::before{opacity:1}.bs.on::after{opacity:1;transform:scaleX(1)}
+.bs .ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:9px;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.bs.on .ic{transform:scale(1.08)}
+.bs .ic svg{width:17px;height:17px}
+/* the Bybit card: the partner's full wordmark instead of an icon, navy ground, orange glow */
+.bs.bybit{--c:#f7a600;background:linear-gradient(180deg,#12162a,#0a0d11 80%)}
+.bs.bybit.on{background:linear-gradient(180deg,#1a1f38,#0b0e16 75%)}
+.bs .pb{font:800 8.5px 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--c);opacity:.85;margin-bottom:5px}
+.bs .logo{height:22px;width:auto;display:block;color:#fff;margin:2px 0 9px}
+.bs .logo svg{height:22px;width:auto;display:block}
+.bybit-logo{color:#fff}
+.bs .rk5{position:absolute;right:10px;top:10px;font:800 9px 'Space Mono',monospace;letter-spacing:.1em;color:var(--c);opacity:.8}
+/* switching: the table slides in from the side of the card you picked, rows settle one after another */
+.tw{transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1)}
+.tw.sw-l{opacity:0;transform:translateX(-22px)}.tw.sw-r{opacity:0;transform:translateX(22px)}
+.tbl .tr{opacity:0;transform:translateY(6px);transition:opacity .32s ease calc(var(--i,0)*38ms),transform .32s cubic-bezier(.2,.8,.2,1) calc(var(--i,0)*38ms)}
+.tbl.in .tr,.tbl .tr.th{opacity:1;transform:none}
+/* Bybit board: link box under the table */
+.bybox{margin-top:12px;border:1px solid rgba(247,166,0,.35);border-radius:14px;padding:12px 14px;background:linear-gradient(120deg,rgba(247,166,0,.10),rgba(247,166,0,.02));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center}
+.bybox .t{font:800 13.5px 'Bricolage Grotesque',sans-serif;color:#fff}.bybox .d{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.4}
+.bybox .f{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.bybox input{width:150px;max-width:100%;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;color:#fff;font:700 13px 'Space Mono',monospace;letter-spacing:.04em;outline:0}.bybox input:focus{border-color:#f7a600}
+.bybox .btn{background:#f7a600;color:#0a0b0d;border:0;border-radius:10px;padding:9px 13px;font:800 12px 'Space Mono',monospace;cursor:pointer;white-space:nowrap}.bybox .btn[disabled]{opacity:.5;cursor:default}
+.bybox .btn.ghost{background:transparent;color:#f7a600;border:1px solid rgba(247,166,0,.5)}
+.bybox .ok{display:inline-flex;align-items:center;gap:6px;font:700 11px 'Space Mono',monospace;color:#2ebd85;border:1px solid rgba(46,189,133,.45);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.bybox .no{font:700 11px 'Space Mono',monospace;color:#ffb347;white-space:nowrap}
+.bybox .msg{grid-column:1/-1;font-size:11.5px;color:var(--dim)}.bybox .msg.err{color:#ff8a80}.bybox .msg.good{color:#2ebd85}
+@media(max-width:560px){.bybox{grid-template-columns:1fr}.bybox .f{justify-content:flex-start}}
 .bs .nm{font:800 13.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bs .pz{margin-top:2px;font:700 11px 'Space Mono',monospace;color:var(--c);white-space:nowrap}
 .bs .ld{margin-top:8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap}.bs .ld span{overflow:hidden;text-overflow:ellipsis}.bs .ld b{color:#e9e7df}
@@ -259,7 +289,7 @@ h1 b{color:var(--lime)}
 /* toast */
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
-@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
+@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(6,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
 @media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(40,112px)}.road::before,.road .fill{left:46px}}
 </style>
 </head>
@@ -356,17 +386,19 @@ h1 b{color:var(--lime)}
   </section>
 
   <section class="sec" id="boards">
-    <div class="sh"><div><span class="eb">Paid in real USDT at season end</span><h2>The boards</h2></div><span class="s">Five boards, top five on each get paid. Pick the one you can win.</span></div>
+    <div class="sh"><div><span class="eb">Paid in real USDT at season end</span><h2>The boards</h2></div><span class="s">Six boards, top five on each get paid. Pick the one you can win.</span></div>
     <div class="bsw" id="bsw" role="tablist"></div>
     <div class="card gold">
-      <div class="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>
+      <div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>
       <div class="bd-note" id="bdNote"></div>
+      <div id="bybox" hidden></div>
       <details class="rules"><summary>How each board counts</summary>
         <p><b>Green days.</b> Counts the days of the season you finished in profit — everything you closed that day, added up. A day only turns green with at least 3 closed trades, so one lucky micro-trade cannot buy a day. You need 10 closed trades in the season, and you must be up on the season overall, to rank. Ties go to the bigger season profit. Days run from the season start in UTC.</p>
         <p><b>Highest ROE.</b> Your best single closed paper trade of the season, by ROE (profit as % of margin). Only trades opened and closed this season count, filled and closed by the server. The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</p>
         <p><b>Best win rate.</b> At least 20 counted trades closed this season. A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count. Copies count once. Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a higher one.</p>
         <p><b>Season XP.</b> All XP earned during the season counts: trading, Academy, missions, duels, streaks, goals. Rewards activity, not position size.</p>
         <p><b>Gold Room.</b> Gold members only. A trade closed in profit is +1 point, closed in loss −1. A title, not a payout, until the season of 14 September.</p>
+        <p><b>Bybit volume — powered by Bybit.</b> Ranked by the real trading volume you make on Bybit, taken from our affiliate report and loaded a few times a day — nothing you do on MarginPad counts here. Anyone can compete, with one condition: the Bybit account must be opened through MarginPad. Register that account's UID under the board; it is checked against our affiliate list, and one Bybit UID belongs to one MarginPad account. Top 5 share $200: $100, $50, $25, $15, $10 — from the season starting 14 September.</p>
         <p>Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
       </details>
     </div>
@@ -610,18 +642,49 @@ h1 b{color:var(--lime)}
     {k:'roe',key:'top',name:'Highest ROE',c:'#c2f64a',cols:'36px minmax(140px,1fr) 88px 120px 96px 56px',head:['#','Trader','best ROE','trade','P&L','pays'],cells:function(r){return [pct(r.roe),'<span class="tag '+(r.side==='short'?'s':'l')+'">'+esc(String(r.symbol||'').toUpperCase())+' '+(r.side==='short'?'Short':'Long')+'</span>',money(r.pnl)];},lead:function(r){return pct(r.roe);}},
     {k:'wr',key:'topWr',name:'Win rate',c:'#57c7f7',cols:'36px minmax(140px,1fr) 78px 104px 76px 56px',head:['#','Trader','win rate','record','score','pays'],cells:function(r){return [r.wr+'%',r.w+'W · '+r.l+'L',String(r.score)];},lead:function(r){return r.wr+'%';}},
     {k:'xp',key:'topXp',name:'Season XP',c:'#c792ff',cols:'36px minmax(140px,1fr) 110px 56px',head:['#','Trader','season XP','pays'],cells:function(r){return [int(r.xp)+' XP'];},lead:function(r){return int(r.xp)+' XP';}},
-    {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#','Trader','points','record','pays'],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}}];
+    {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#','Trader','points','record','pays'],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}},
+    {k:'bybit',key:'topBybit',name:'Bybit volume',c:'#f7a600',cols:'36px minmax(140px,1fr) 132px 56px',head:['#','Trader','Bybit volume','pays'],cells:function(r){return [volF(r.vol)];},lead:function(r){return volF(r.vol);}}];
+  function volF(v){v=+v||0;return '$'+(v>=1e9?(v/1e9).toFixed(2)+'B':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'k':Math.round(v));} // traded volume: unsigned, compact
+  var BYBIT_SVG='<svg class="bybit-logo" viewBox="0 0 13547 4513" role="img" aria-label="Bybit" xmlns="http://www.w3.org/2000/svg"><g id="Bybit_x0020_Logo.cdr"> <polygon fill="#f7a600" points="9655,3480 9655,-1 10355,-1 10355,3480 "/> <path fill="currentColor" d="M1500 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="4732,3086 4732,4514 4037,4514 4037,3086 2960,1033 3720,1033 4389,2436 5049,1033 5809,1033 "/> <path fill="currentColor" d="M7793 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="12610,1639 12610,4514 11911,4514 11911,1639 10974,1639 10974,1033 13547,1033 13547,1639 "/> </g></svg>'; /* official Bybit wordmark (Wikimedia Commons file Bybit_Logo.svg), navy recoloured to currentColor for the dark card */
   var curBoard='green';
   function paintBoards(){var D=LB;if(!D)return;var pz=D.boardPrizes||{},m=me(),nm=(m&&m.username||'').toLowerCase();
     $('bsw').innerHTML=BOARDS.map(function(b){var rows=D[b.key]||[],p=pz[b.k]||[],tot=p.reduce(function(a,c){return a+c;},0),ld=rows[0],mine=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];
-      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div><div class="pz">'+(tot?'$'+tot+' to the top 5':'title · Gold only')+'</div><div class="ld">'+(ld?'<span title="'+esc(ld.who)+'">1. '+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>—</b>')+'</div><div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' · $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
+      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'">'+(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div>':'<div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div>')+'<div class="pz">'+(tot?'$'+tot+' to the top 5':'title · Gold only')+'</div><div class="ld">'+(ld?'<span title="'+esc(ld.who)+'">1. '+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>—</b>')+'</div><div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' · $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
     var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
     var head='<div class="tr th" style="grid-template-columns:'+B.cols+'">'+B.head.map(function(h,i){return '<div'+(i>=2?' style="text-align:right"':'')+'>'+h+'</div>';}).join('')+'</div>';
-    var body=rows.length?rows.slice(0,10).map(function(r){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):'<div class="empty">Nobody qualifies yet this season. The rules below say what it takes.</div>';
+    var body=rows.length?rows.slice(0,10).map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(i+1)+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):'<div class="empty">'+(curBoard==='bybit'?'The board fills from Bybit\'s report after the first upload of the season. Register your Bybit UID below so your volume counts.':'Nobody qualifies yet this season. The rules below say what it takes.')+'</div>';
     $('tbl').innerHTML=head+body;
-    $('bdNote').textContent=curBoard==='gold'?('Gold members only · a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' · needs '+int(D.goldMin||0)+' XP'):('Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' · '));
+    (function(){var tb=$('tbl');tb.classList.remove('in');requestAnimationFrame(function(){requestAnimationFrame(function(){tb.classList.add('in');});});})();
+    paintNote(D,prizes);paintBybox(D);
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
-  $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;curBoard=t.getAttribute('data-board');paintBoards();});
+    /* board switch (owner 2026-09-13: "slajdovanje mnogo više cool"): the table slides out toward the card you left and in from the one you picked,
+     then the rows settle one after another (CSS transitions driven from here — no @keyframes, the owner's Windows has animations off). */
+  function switchBoard(k){if(k===curBoard){paintBoards();return;}var from=BOARDS.findIndex(function(b){return b.k===curBoard;}),to=BOARDS.findIndex(function(b){return b.k===k;});
+    var tw=$('tw'),dir=to>from?'sw-l':'sw-r',back=to>from?'sw-r':'sw-l';curBoard=k;
+    tw.classList.add(dir);
+    setTimeout(function(){paintBoards();tw.classList.remove(dir);tw.classList.add(back);void tw.offsetWidth;requestAnimationFrame(function(){tw.classList.remove(back);});},190);}
+  $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});
+  function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
+    if(curBoard==='gold'){el.textContent='Gold members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
+    if(curBoard==='bybit'){var up=D.bybitUpdated?new Date(D.bybitUpdated):null,rp=D.bybitReport||{};
+      el.textContent='Powered by Bybit \u00b7 real trading volume on Bybit, from our affiliate report \u00b7 '+(up?'last report '+up.toLocaleDateString([],{month:'short',day:'numeric'})+' '+up.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(rp.final?' (final)':''):'no report yet this season')+' \u00b7 '+int(rp.registered||0)+' UIDs registered \u00b7 prizes from the season of '+new Date(D.bybitPaidFrom||0).toISOString().slice(0,10)+': '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');return;}
+    el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
+  /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */
+  var BYL=null;
+  function paintBybox(D){var box=$('bybox');if(!box)return;if(curBoard!=='bybit'){box.hidden=true;return;}box.hidden=false;var m=me();
+    if(!m){box.innerHTML='<div class="bybox"><div><div class="t">Only Bybit accounts opened through MarginPad compete</div><div class="d">Sign in, then link the UID of your Bybit account. No Bybit account yet? Open one with our link \u2014 that is the account that counts.</div></div><div class="f"><a class="btn ghost" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored">Open a Bybit account \u2192</a><button type="button" class="btn" data-auth-open>Sign in</button></div></div>';return;}
+    if(!BYL){box.innerHTML='<div class="bybox"><div><div class="t">Checking your Bybit link\u2026</div></div></div>';J('/api/reward/bybitlink').then(function(d){BYL=d||{};paintBybox(D);});return;}
+    var el=BYL.eligible,uid=BYL.uid||'';
+    box.innerHTML='<div class="bybox"><div><div class="t">'+(el?'You are in \u2014 your Bybit account is registered':(uid?'This Bybit UID is not on our list':'Only Bybit accounts opened through MarginPad compete'))+'</div>'
+      +'<div class="d">'+(el?'Bybit UID <b>'+esc(uid)+'</b> is linked to this account'+(BYL.source==='payout'?' (from your payout)':'')+'. Your Bybit trading volume this season counts toward the $200.':(uid?'UID <b>'+esc(uid)+'</b> was not opened with our link, so it cannot compete. Open a Bybit account with our link and link that UID.':'Paste the UID of the Bybit account you opened with our link. Not opened through us yet? Open one first \u2014 it takes a minute.'))+'</div></div>'
+      +'<div class="f">'+(el?'<span class="ok">\u2713 eligible</span><button type="button" class="btn ghost" id="byUnlink">Unlink</button>':'<input id="byUid" inputmode="numeric" placeholder="Bybit UID" maxlength="15" value="'+esc(uid)+'"><button type="button" class="btn" id="byLink">Register UID</button><a class="btn ghost" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored">Open Bybit \u2192</a>')+'</div><div class="msg" id="byMsg"></div></div>';
+    var lb=$('byLink'),ub=$('byUnlink');
+    if(lb)lb.addEventListener('click',function(){var v=String(($('byUid')||{}).value||'').trim();if(!/^[0-9]{5,15}$/.test(v)){$('byMsg').className='msg err';$('byMsg').textContent='A Bybit UID is 5 to 15 digits.';return;}lb.disabled=true;
+      fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(d){lb.disabled=false;
+        if(d&&d.ok){BYL=null;toast('<b>Registered.</b> Your Bybit volume counts from the next report');paintBybox(D);loadLB();return;}
+        var E={uid_not_ours:'This UID was not opened through MarginPad. Open a Bybit account with our link, then link that one.',uid_taken:'This Bybit UID is already linked to another MarginPad account.',bad_uid:'A Bybit UID is 5 to 15 digits.',login_required:'Sign in first.'};
+        $('byMsg').className='msg err';$('byMsg').textContent=E[d&&d.error]||'Could not link right now. Try again in a minute.';}).catch(function(){lb.disabled=false;$('byMsg').className='msg err';$('byMsg').textContent='Network error.';});});
+    if(ub)ub.addEventListener('click',function(){ub.disabled=true;fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:''})}).then(function(){BYL=null;paintBybox(D);loadLB();});});}
 
   /* ---- floor ---- */
   var MET={roe:'ROE',wr:'win rate',win:'biggest win',pnl:'profit',survival:'survival',streak:'win streak',sniper:'sniper'};
