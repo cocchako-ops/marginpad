@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="es" data-es-twin="/embed/calendar/"><head>
+<meta charset="utf-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Widget de calendario económico cripto — MarginPad</title>
+<link rel="canonical" href="https://marginpad.io/calendar/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/embed/calendar/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/embed/calendar/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/embed/calendar/" />
+<meta name="robots" content="noindex,follow">
+<style>
+*{margin:0;box-sizing:border-box}
+body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-serif;padding:14px 14px 10px;min-height:100vh;display:flex;flex-direction:column}
+.h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.h b{font-size:15px;letter-spacing:-.01em}
+.h b i{color:#c2f64a;font-style:normal}
+.h span{font-family:Consolas,monospace;font-size:10px;color:#6b7480;text-transform:uppercase;letter-spacing:.08em}
+.g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.g b{font-family:Consolas,monospace;font-size:8.5px;font-weight:700;color:#5c6570;text-align:center;padding:2px 0}
+.g span{position:relative;font-family:Consolas,monospace;font-size:11px;color:#9aa3ad;text-align:center;padding:4px 0 8px;border-radius:6px;line-height:1}
+.g span.tod{background:rgba(194,246,74,.16);color:#c2f64a;font-weight:700;box-shadow:0 0 0 1px rgba(194,246,74,.45)}
+.g span.i1{box-shadow:inset 0 0 0 1px rgba(46,189,133,.55)}
+.g span.i2{box-shadow:inset 0 0 0 1px rgba(255,159,67,.6)}
+.g span.i3{box-shadow:inset 0 0 0 1px rgba(255,90,77,.7)}
+.g span em{position:absolute;left:50%;transform:translateX(-50%);bottom:2px;width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:0 0 4px currentColor;font-style:normal}
+.nx{font-family:Consolas,monospace;font-size:10.5px;color:#9aa3ad;margin-top:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nx b{color:#ffd75a;font-weight:700}
+.ft{margin-top:auto;padding-top:8px;font-family:Consolas,monospace;font-size:9.5px;color:#5c6570}
+.ft a{color:#c2f64a;text-decoration:none;font-weight:700}
+</style>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+</head><body>
+<div class="h"><b>Calendario <i>Cripto</i></b><span id="mo">—</span></div>
+<div class="g" id="grid"></div>
+<div class="nx" id="next">Cargando…</div>
+<div class="ft">FOMC · IPC · NFP · vencimiento — <a href="https://marginpad.io/es/calendar/?utm_source=widget" target="_blank" rel="noopener">marginpad.io</a></div>
+<script>
+(function(){
+  var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d',macro:'#e9e7df'};
+  var now=new Date(),Y=now.getFullYear(),M=now.getMonth();
+  var MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('mo').textContent=MN[M]+' '+Y;
+  fetch('https://marginpad.io/api/calendar?year='+Y).then(function(r){return r.json();}).then(function(d){
+    var ev=((d&&d.events)||[]).filter(function(e){var x=new Date(e.ts);return x.getFullYear()===Y&&x.getMonth()===M;});
+    var byDay={};ev.forEach(function(e){var dd=new Date(e.ts).getDate();(byDay[dd]=byDay[dd]||[]).push(e);});
+    var first=new Date(Y,M,1),off=(first.getDay()+6)%7,dim=new Date(Y,M+1,0).getDate();
+    var h='<b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><b>S</b><b>S</b>',i;
+    for(i=0;i<off;i++)h+='<span></span>';
+    for(i=1;i<=dim;i++){var evs=byDay[i]||[],top=evs.sort(function(a,b){return (b.impact||1)-(a.impact||1);})[0];
+      h+='<span class="'+(i===now.getDate()?'tod ':'')+(top?'i'+(top.impact||1):'')+'">'+i+(top?'<em style="color:'+(TC[top.type]||'#ff9f4d')+'"></em>':'')+'</span>';}
+    document.getElementById('grid').innerHTML=h;
+    var fut=ev.filter(function(e){return e.ts>Date.now()&&e.impact>=3;})[0]||ev.filter(function(e){return e.ts>Date.now();})[0];
+    document.getElementById('next').innerHTML=fut?('Next: <b>'+String(fut.title).replace(/</g,'&lt;')+'</b> — in '+Math.ceil((fut.ts-Date.now())/86400000)+'d'):'Quiet month ahead.';
+  }).catch(function(){document.getElementById('next').textContent='';});
+})();
+</script><script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body></html>

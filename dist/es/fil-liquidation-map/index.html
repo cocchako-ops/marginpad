@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/fil-liquidation-map/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Mapa de liquidación de Filecoin (FIL) — En vivo, gratis, sin inicio de sesión | MarginPad</title>
+<meta name="description" content="Live Filecoin (FIL) liquidation map: real FIL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup." />
+<meta name="keywords" content="FIL liquidation map, Filecoin liquidations, FIL liquidation heatmap, crypto liquidations, FIL liquidation levels, liquidation chart" />
+<link rel="canonical" href="https://marginpad.io/es/fil-liquidation-map/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/fil-liquidation-map/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/fil-liquidation-map/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/fil-liquidation-map/" />
+<meta property="og:title" content="Filecoin (FIL) Liquidation Map — Live" />
+<meta property="og:description" content="Live Filecoin (FIL) liquidation map: real FIL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/fil-liquidation-map/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Filecoin (FIL) Liquidation Map — Live" />
+<meta name="twitter:description" content="Live Filecoin (FIL) liquidation map: real FIL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un mapa de liquidación de Filecoin?","acceptedAnswer":{"@type":"Answer","text":"Un mapa de liquidación de Filecoin muestra dónde se están cerrando forzosamente las posiciones apalancadas de FIL. MarginPad traza eventos reales de liquidación de nueve exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) como burbujas sobre el gráfico de precio de FIL, con un histograma por nivel de precio que muestra dónde se agrupan."}},{"@type":"Question","name":"¿Son reales los datos de liquidación de FIL?","acceptedAnswer":{"@type":"Answer","text":"Sí — las burbujas y el histograma del borde derecho son eventos reales de liquidación transmitidos en vivo desde los websockets de los exchanges. La capa opcional \"Grupos\" es un modelo estimado a partir de los cambios en el interés abierto y el apalancamiento asumido, claramente etiquetado como una estimación."}},{"@type":"Question","name":"¿Cómo leo el mapa de liquidación de FIL?","acceptedAnswer":{"@type":"Answer","text":"Cada burbuja es una liquidación en un precio y momento; las burbujas más grandes son posiciones más grandes. El rojo significa que se liquidaron longs, el verde que se liquidaron shorts. El histograma de la derecha muestra el total de liquidaciones en cada nivel de precio — las bandas más densas son donde se eliminó más apalancamiento."}},{"@type":"Question","name":"¿Es gratis el mapa de liquidación de Filecoin?","acceptedAnswer":{"@type":"Answer","text":"El mapa se abre sin registro y el heatmap en vivo corre gratis durante una vista previa de 5 minutos; el acceso ilimitado es parte de MarginPad Premium ($3.99/mes). Puedes cambiar de moneda, cambiar la temporalidad (1D/1W/1M/1Y) y activar las capas real, estimada y teórica."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Mapa de liquidación de FIL","item":"https://marginpad.io/es/fil-liquidation-map/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Mapa de liquidación de Filecoin (FIL) — En vivo, gratis, sin inicio de sesión","url":"https://marginpad.io/es/fil-liquidation-map/","dateModified":"2026-09-10T19:56:57.498Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/calculators">Calculadoras</a><a href="/es/heatmap">Heatmap</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Mapa de liquidación de FIL</div>
+  <article>
+    <h1>Mapa de liquidación de Filecoin (FIL)</h1>
+    <div class="meta">Datos de liquidación en vivo · 9 exchanges</div>
+    <div class="liqmap-cta top"><a class="cta" href="/es/heatmap?coin=FIL">Abre el mapa de liquidación de FIL en vivo →</a><span class="cta-s">Vista previa gratis de 5 minutos · sin inicio de sesión · ilimitado con Premium</span></div>
+    <p><strong>Qué es esto:</strong> un mapa de liquidación de Filecoin que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitada con Premium a $3.99/mes) — muestra, en tiempo real, dónde los traders apalancados de FIL están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short — su tamaño según el tamaño de la posición — trazadas directamente sobre el gráfico de precio de FIL. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cadáveres.</p>
+    <h2>Qué muestra el mapa de liquidación de FIL</h2>
+    <p>MarginPad transmite eventos reales de liquidación desde nueve exchanges de futuros perpetuos — Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX y Bitfinex — mediante websockets públicos. Se normalizan y se muestran de tres formas: <strong>burbujas</strong> en el precio y momento exactos de cada liquidación, un <strong>histograma por nivel de precio</strong> de dónde se agrupan las liquidaciones de FIL, y un <strong>ticker</strong> con desplazamiento de los mayores golpes. Puedes cambiar la temporalidad entre 1 día, 1 semana, 1 mes y 1 año.</p>
+    <h2>Cómo leerlo</h2>
+    <p>Las posiciones de alto apalancamiento se liquidan con movimientos mínimos, así que se ubican cerca del precio actual de FIL; las de menor apalancamiento se ubican más lejos. Las bandas densas del histograma actúan como imanes y como soporte o resistencia — una vez que se consume un clúster, ese nivel suele invertirse. Los clústeres rojos (long) se ubican debajo del precio; los verdes (short), por encima. Pasa el cursor sobre cualquier burbuja para ver el exchange, el lado, el tamaño y la hora.</p>
+    <h2>Liquidaciones reales vs. grupos estimados</h2>
+    <p>Las burbujas y el histograma son <strong>eventos reales</strong>. También hay una capa opcional de <strong>Clústeres</strong> — un modelo que estima dónde es probable que se ubiquen las próximas liquidaciones de FIL, construido a partir de cambios en el interés abierto y una distribución de apalancamiento asumida. Está claramente etiquetada como una estimación, no como datos del libro de órdenes del exchange. Una tercera capa de <strong>Niveles</strong> superpone los precios de liquidación teóricos clásicos según el apalancamiento. Activa cualquier combinación.</p>
+    <div class="liqmap-cta"><a class="cta" href="/es/heatmap?coin=FIL">Abre el mapa de liquidación de FIL en vivo →</a></div>
+    <h2>¿Qué tan profundo es el mercado de perpetuos de FIL?</h2>
+    <p>Cuando esta página se actualizó por última vez (17 de agosto de 2026), los perpetuos de FIL tenían <strong>$8.2 millones</strong> de interés abierto — menos del <strong>0.1%</strong> del de Bitcoin. En las 24 horas previas a esa instantánea, se liquidaron $688K en posiciones de FIL. Esas cifras son una instantánea; el recuadro en vivo en la parte superior de esta página siempre muestra las actuales.</p>
+    <p>FIL es un mercado delgado en términos de interés abierto, y eso cambia cómo debes leer este mapa: el mismo flujo de dólares mueve el precio mucho más de lo que lo haría en una moneda principal, así que los clústeres están más juntos y se eliminan en secuencias rápidas y violentas en lugar de uno por uno.</p>
+    <h2>Cómo usan los traders el mapa de liquidación de FIL</h2>
+    <p>Los clústeres de liquidación son donde se acumulan las órdenes forzadas, y el precio es atraído hacia ellos como un imán — una banda grande de liquidaciones de longs de FIL por debajo del precio spot alimenta una caída, mientras que un muro de liquidaciones de shorts por encima alimenta un squeeze al alza. Muchos traders usan el mapa para (1) evitar entrar justo encima de una banda densa de liquidaciones de longs, (2) anticipar dónde una cascada podría acelerarse o agotarse, y (3) colocar take-profits justo antes de un clúster en lugar de dentro de él. Combina bien con los <a href="/es/fil-liquidation-calculator/">precios de liquidación de FIL</a> para tu propia posición y con el <a href="/es/liquidations/">total de liquidaciones de FIL en 24h</a> en vivo.</p>
+    <p>Nada de esto es una señal por sí sola — los clústeres se consumen y los niveles se invierten. Trata el mapa como contexto, no como un disparador de operaciones, y practica la idea sin riesgo en la <a href="/es/paper-trade?coin=FIL">terminal de paper trading de FIL</a> antes de aumentar el tamaño.</p>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Heatmap de Liquidaciones</b><small>Todas las monedas, en vivo</small></a> <a class="ts-card" href="/es/swap"><b>Swap Cripto</b><small>Más de 900 monedas, sin cuenta</small></a> <a class="ts-card" href="/es/blog/how-to-read-a-liquidation-heatmap/"><b>Guía</b><small>Cómo leer un mapa de liquidaciones</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">DÓNDE OCURREN ESTAS LIQUIDACIONES</div><p class="mp-xr-w">Nada en esta página es teórico &mdash; son posiciones reales siendo cerradas forzosamente en libros de órdenes reales. Estos son los exchanges a los que pertenecen esos libros.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#5ee6c8" data-ex="Hyperliquid" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Hyperliquid')}catch(e){}"><span class="mp-xr-k">Hyperliquid</span><span class="mp-xr-d">perpetuos on-chain &middot; 4% de descuento &middot; código MARGINPAD</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
+<nav class="hublinks" data-hublinks aria-label="Mapas de liquidación para otras monedas"><h2>Mapas de liquidación para otras monedas</h2><p>El mismo heatmap en vivo y grupos long/short, por moneda.</p><div class="hl"><a href="/es/aave-liquidation-map/">AAVE</a><a href="/es/ada-liquidation-map/">ADA</a><a href="/es/apt-liquidation-map/">APT</a><a href="/es/arb-liquidation-map/">ARB</a><a href="/es/atom-liquidation-map/">ATOM</a><a href="/es/avax-liquidation-map/">AVAX</a><a href="/es/bnb-liquidation-map/">BNB</a><a href="/es/bonk-liquidation-map/">BONK</a><a href="/es/btc-liquidation-map/">BTC</a><a href="/es/doge-liquidation-map/">DOGE</a><a href="/es/dot-liquidation-map/">DOT</a><a href="/es/eth-liquidation-map/">ETH</a><a href="/es/floki-liquidation-map/">FLOKI</a><a href="/es/hype-liquidation-map/">HYPE</a><a href="/es/inj-liquidation-map/">INJ</a><a href="/es/link-liquidation-map/">LINK</a><a href="/es/ltc-liquidation-map/">LTC</a><a href="/es/near-liquidation-map/">NEAR</a><a href="/es/op-liquidation-map/">OP</a><a href="/es/ordi-liquidation-map/">ORDI</a><a href="/es/pepe-liquidation-map/">PEPE</a><a href="/es/sei-liquidation-map/">SEI</a><a href="/es/shib-liquidation-map/">SHIB</a><a href="/es/sol-liquidation-map/">SOL</a><a href="/es/sui-liquidation-map/">SUI</a><a href="/es/tao-liquidation-map/">TAO</a><a href="/es/ton-liquidation-map/">TON</a><a href="/es/trx-liquidation-map/">TRX</a><a href="/es/uni-liquidation-map/">UNI</a><a href="/es/wif-liquidation-map/">WIF</a><a href="/es/xrp-liquidation-map/">XRP</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Más sobre liquidaciones"><h2>Más sobre liquidaciones</h2><div class="hl"><a href="/es/fil-liquidation-calculator/">Calculadora de liquidación de FIL</a><a href="/es/liquidations/">Todas las liquidaciones (totales 24h)</a><a href="/es/rekt/">Feed de liquidaciones en vivo</a></div></nav>
+<footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/heatmap">Heatmap</a> · <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/trading-report/">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Tu Informe de Trading — Cómo Operaste Realmente | MarginPad</title>
+<meta name="description" content="A measured report of your own paper trades: win rate by coin, by leverage and by hour, median hold time, and the one number that explains your month." />
+<link rel="canonical" href="https://marginpad.io/es/trading-report/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/trading-report/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/trading-report/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/trading-report/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Your Trading Report — MarginPad" />
+<meta property="og:description" content="Win rate by coin, by leverage, by hour. Median hold time. What your month actually cost you." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/trading-report/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;}
+  a{color:var(--lime);}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 18px calc(48px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(27px,6vw,40px);line-height:1.08;letter-spacing:-.03em;margin:0 0 10px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:15px;margin:0 0 22px;max-width:56ch;}
+  .card{background:linear-gradient(180deg,var(--panel),#0c0f13);border:1px solid var(--line2);border-radius:16px;padding:20px;margin-bottom:16px;}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+  .seg{display:inline-flex;gap:3px;background:#0a0d11;border:1px solid var(--line2);border-radius:10px;padding:3px;margin-bottom:16px;}
+  .seg button{background:none;border:0;border-radius:8px;padding:8px 15px;color:var(--dim);font:600 13px/1 'Familjen Grotesk',sans-serif;cursor:pointer;transition:.14s;}
+  .seg button.on{background:rgba(194,246,74,.14);color:var(--lime);}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+  .tile{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:13px 14px;}
+  .tile .v{font-family:'Space Mono',monospace;font-size:23px;font-weight:700;line-height:1.1;letter-spacing:-.02em;}
+  .tile .l{font-size:11.5px;color:var(--faint);margin-top:4px;}
+/* Skill score (2026-09-06): four habits, each 0-25 with its own n; the total exists only when two or more are measured */
+.sk{border-color:rgba(194,246,74,.28);background:radial-gradient(120% 80% at 100% 0,rgba(194,246,74,.07),transparent 55%),linear-gradient(180deg,var(--panel),#0c0f13)}
+.sk-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.sk-head>div:first-child{flex:1 1 300px;min-width:0}.sk-head .sk-big{flex:0 0 auto;align-self:center}
+.sk-head h2{margin:0}
+.sk-sub{font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.45;max-width:520px}
+.sk-big{display:flex;align-items:baseline;gap:9px;margin-left:auto}
+.sk-big b{font:800 clamp(34px,6vw,46px)/1 'Space Mono',monospace;letter-spacing:-.03em;color:var(--lime)}
+.sk-big b.thin{color:var(--faint)}
+.sk-big span{font:700 12px 'Space Mono',monospace;color:var(--dim)}.sk-big span.up{color:#34d99a}.sk-big span.dn{color:#ff6c5c}
+.sk-parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-top:14px}
+.sk-p{background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-width:0}
+.sk-p .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:#c7ccd4;font-weight:700}
+.sk-p .t b{font:700 13px 'Space Mono',monospace;color:#fff}.sk-p .t b.thin{color:var(--faint);font-weight:400}
+.sk-p .bar{height:6px;border-radius:4px;background:#161b22;overflow:hidden;margin:8px 0 6px}.sk-p .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5f9d2e,var(--lime));width:0;transition:width .6s ease}
+.sk-p .n{font:600 10.5px 'Space Mono',monospace;color:var(--faint)}
+.sk-p .d{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.35}
+.sk-note{margin-top:12px;font-size:12px;color:var(--faint);line-height:1.5}
+  .up{color:var(--up);} .dn{color:var(--red);} .amb{color:var(--amber);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:400;padding:0 8px 8px 0;}
+  td{padding:9px 8px 9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;}
+  td:first-child{font-weight:600;}
+  .r{text-align:right;}
+  .tw{overflow-x:auto;}
+  .find{border-left:3px solid var(--lime);background:rgba(194,246,74,.05);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:9px;font-size:14.5px;line-height:1.55;}
+  .find b{color:var(--lime);}
+  .find .n{display:block;margin-top:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);}
+  .bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-top:6px;}
+  .bars i{flex:1;min-width:2px;border-radius:2px 2px 0 0;background:#2a313c;display:block;}
+  .bars i.p{background:var(--up);} .bars i.l{background:var(--red);}
+  .hx{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint);margin-top:5px;}
+  .gate{text-align:center;padding:26px 18px;}
+  .gate h2{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;margin:0 0 8px;}
+  .gate p{color:var(--dim);font-size:14.5px;margin:0 auto 16px;max-width:48ch;}
+  .go{display:inline-block;padding:13px 22px;border-radius:12px;background:var(--lime);color:#0a0d11;font-weight:800;font-size:15px;text-decoration:none;}
+  .go.ghost{background:none;border:1px solid var(--line2);color:var(--ink);}
+  .empty{color:var(--faint);font-size:14px;padding:14px 0;}
+  .pbadge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:20px;background:rgba(194,246,74,.16);border:1px solid rgba(194,246,74,.45);color:var(--lime);font:700 9.5px/1.5 'Space Mono',monospace;letter-spacing:.1em;vertical-align:2px;}
+  footer{color:var(--faint);font-size:12.5px;text-align:center;padding:12px 0 0;line-height:1.7;}
+  @media(max-width:520px){.tile .v{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <div class="hnav">
+      <a href="/es/paper-trade">Paper Trade</a>
+      <button class="hauth" type="button" data-auth-open data-auth-status>Iniciar sesión</button>
+    </div>
+  </header>
+
+  <h1>Cómo operaste <em>realmente</em></h1>
+  <p class="sub">No es una sensación — es un conteo. Cada número de abajo se mide a partir de tus propias operaciones cerradas, y cada uno lleva el número de operaciones en que se basa. Donde no hay suficientes para leer un patrón, lo dice en vez de adivinar.</p>
+
+  <div class="seg" id="winSeg">
+    <button data-d="7">7 días</button>
+    <button data-d="30" class="on">30 días</button>
+  </div>
+
+  <div class="card" id="gateCard" hidden>
+    <div class="gate">
+      <h2>Inicia sesión para ver tu informe</h2>
+      <p>Tus operaciones están ligadas a tu cuenta. Iniciar sesión es gratis y solo necesita un correo — sin contraseña, sin depósito.</p>
+      <button class="go" type="button" data-auth-open>Inicia sesión gratis</button>
+    </div>
+  </div>
+
+  <div id="body" hidden>
+    <div class="card">
+      <div class="lbl">La ventana <span id="winNote" style="color:var(--faint);letter-spacing:0;text-transform:none;font-family:inherit;font-size:12px"></span></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+
+    <div class="card sk" id="skillCard" hidden>
+      <div class="sk-head"><div><h2>Puntaje de habilidad</h2><div class="sk-sub" id="skSub"></div></div><div class="sk-big"><b id="skScore">—</b><span id="skDelta"></span></div></div>
+      <div class="sk-parts" id="skParts"></div>
+      <div class="sk-note" id="skNote"></div>
+    </div>
+    <div class="card" id="findCard" hidden>
+      <div class="lbl">Qué dicen los números <span class="pbadge">PREMIUM</span></div>
+      <div id="finds"></div>
+    </div>
+
+    <div class="card" id="premGate" hidden>
+      <div class="gate">
+        <h2>El desglose es Premium</h2>
+        <p>Los totales de arriba son tuyos gratis. Qué moneda, qué rango de apalancamiento y qué hora del día te está costando realmente dinero — esa es la parte que cambia cómo operas, y está incluida en Premium.</p>
+        <a class="go" href="/es/premium/">Ver Premium &rarr;</a>
+      </div>
+    </div>
+
+    <div class="card" id="levCard" hidden>
+      <div class="lbl">Por apalancamiento</div>
+      <div class="tw"><table><thead><tr><th>Rango</th><th class="r">Operaciones</th><th class="r">Tasa de acierto</th><th class="r">Neto</th><th class="r">Retorno sobre el margen</th></tr></thead><tbody id="levBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="coinCard" hidden>
+      <div class="lbl">Por moneda</div>
+      <div class="tw"><table><thead><tr><th>Moneda</th><th class="r">Operaciones</th><th class="r">Tasa de acierto</th><th class="r">Neto</th><th class="r">Retorno sobre el margen</th></tr></thead><tbody id="coinBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="sideCard" hidden>
+      <div class="lbl">Long vs. short</div>
+      <div class="tw"><table><thead><tr><th>Dirección</th><th class="r">Operaciones</th><th class="r">Tasa de acierto</th><th class="r">Neto</th><th class="r">Retorno sobre el margen</th></tr></thead><tbody id="sideBody"></tbody></table></div>
+    </div>
+
+    <div class="card" id="hourCard" hidden>
+      <div class="lbl">Por hora del día (UTC)</div>
+      <div class="bars" id="hourBars"></div>
+      <div class="hx"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+      <p style="color:var(--faint);font-size:12px;margin:10px 0 0">Las barras verdes son horas en las que cerraste con ganancia, las rojas son horas en las que cerraste con pérdida. La altura es el tamaño del resultado, no el número de operaciones.</p>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/es/paper-trade">Paper Trade</a> &middot; <a href="/es/alerts/">Alertas</a> &middot; <a href="/es/premium/">Premium</a><br> Solo operaciones simuladas. Los resultados pasados describen lo que pasó, no lo que pasará.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var days=30, signedIn=false;
+  var gateCard=document.getElementById('gateCard'), body=document.getElementById('body'),
+      tiles=document.getElementById('tiles'), winNote=document.getElementById('winNote'),
+      findCard=document.getElementById('findCard'), finds=document.getElementById('finds'), premGate=document.getElementById('premGate'),
+      levCard=document.getElementById('levCard'), levBody=document.getElementById('levBody'),
+      coinCard=document.getElementById('coinCard'), coinBody=document.getElementById('coinBody'),
+      sideCard=document.getElementById('sideCard'), sideBody=document.getElementById('sideBody'),
+      hourCard=document.getElementById('hourCard'), hourBars=document.getElementById('hourBars');
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function usd(v){v=+v||0;var n=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-$':'$')+n;}
+  function pc(v){return v==null?'—':((v>=0?'+':'')+v+'%');}
+  function cls(v){return v>0?'up':v<0?'dn':'';}
+
+  function tile(v,l,c){return '<div class="tile"><div class="v '+(c||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+  function rows(list,el,label){
+    if(!list||!list.length){el.innerHTML='<tr><td colspan="5" style="color:var(--faint)">Nothing closed in this window.</td></tr>';return;}
+    el.innerHTML=list.map(function(r){
+      return '<tr><td>'+esc(label?label(r.k):r.k)+'</td><td class="r">'+r.n+'</td><td class="r">'+(r.wr==null?'—':r.wr+'%')+'</td><td class="r '+cls(r.pnl)+'">'+usd(r.pnl)+'</td><td class="r '+cls(r.exp)+'">'+pc(r.exp)+'</td></tr>';
+    }).join('');
+  }
+  function drawHours(list){
+    var mx=1; list.forEach(function(h){var a=Math.abs(h.pnl||0); if(a>mx)mx=a;});
+    hourBars.innerHTML=list.map(function(h){
+      var a=Math.abs(h.pnl||0), ht=h.n?Math.max(3,Math.round(a/mx*100)):0;
+      return '<i class="'+(h.pnl>0?'p':h.pnl<0?'l':'')+'" style="height:'+ht+'%" title="'+h.k+':00 UTC — '+h.n+' trades, '+usd(h.pnl)+'"></i>';
+    }).join('');
+  }
+
+  function render(d){
+    if(!d){return;}
+    var t=d.total||{};
+    winNote.textContent='last '+(d.days||30)+' days, '+(t.n||0)+' closed trade'+((t.n||0)===1?'':'s');
+    tiles.innerHTML=tile(String(t.n||0),'Closed trades')
+      +tile(t.wr==null?'—':t.wr+'%','Win rate')
+      +tile(usd(t.pnl),'Net result',cls(t.pnl))
+      +tile(pc(t.exp),'Return on margin risked',cls(t.exp))
+      +tile(usd(t.best?t.best.pnl:0),'Best trade','up')
+      +tile(usd(t.worst?t.worst.pnl:0),'Worst trade','dn')
+      +tile(String(t.liq||0),'Liquidations',(t.liq?'amb':''))
+      +tile(t.holdMedianMin==null?'—':(t.holdMedianMin<60?t.holdMedianMin+'m':t.holdMedianMin<1440?(Math.round(t.holdMedianMin/6)/10)+'h':(Math.round(t.holdMedianMin/144)/10)+'d'),'Median hold');
+
+    (function(){var S=d.skill,card=document.getElementById('skillCard');if(!card)return;if(!S||!S.now){card.hidden=true;return;}
+      var now=S.now,wk=S.week||{},pv=S.prev||{},minN=S.minN||8;
+      var P={disc:['Discipline','stops set on your closes, minus liquidations'],size:['Sizing','how even your margin per trade is'],pat:['Patience','median time you hold a trade'],edge:['Edge','average return on margin risked']};
+      var big=document.getElementById('skScore'),delta=document.getElementById('skDelta'),sub=document.getElementById('skSub'),parts=document.getElementById('skParts'),note=document.getElementById('skNote');
+      card.hidden=false;
+      if(now.score==null){big.textContent='—';big.className='thin';delta.textContent='';sub.textContent='Needs '+minN+' closed trades in a window before any habit can be measured; '+(now.n||0)+' so far in the last '+(d.days||30)+' days.';}
+      else{big.textContent=String(now.score);big.className='';sub.textContent='Four habits you can actually change, scored 0-100 from your last '+(d.days||30)+' days ('+now.n+' closed trades, '+now.measured+' of 4 habits measurable).';
+        if(wk.score!=null&&pv.score!=null){var df=wk.score-pv.score;delta.textContent=(df>0?'+':'')+df+' vs last week';delta.className=df>0?'up':df<0?'dn':'';}
+        else if(wk.score!=null){delta.textContent='this week '+wk.score;delta.className='';}
+        else{delta.textContent='';}}
+      parts.innerHTML=Object.keys(P).map(function(k){var q=now.parts[k]||{};var have=q.v!=null;return '<div class="sk-p"><div class="t"><span>'+P[k][0]+'</span><b class="'+(have?'':'thin')+'">'+(have?q.v+' / 25':'—')+'</b></div><div class="bar"><i style="width:'+(have?Math.round(q.v/25*100):0)+'%"></i></div><div class="n">'+(have?'n = '+q.n:(q.n||0)+' of '+minN+' needed')+'</div><div class="d">'+P[k][1]+'</div></div>';}).join('');
+      note.textContent='A mirror of behaviour, not a prediction. Each habit needs '+minN+' trades in the window to count; the weekly change compares the last 7 days with the 7 before, each on its own trades.';
+    })();
+    var prem=!!d.premium;
+    premGate.hidden=prem;
+    findCard.hidden=!prem||!(d.findings&&d.findings.length);
+    levCard.hidden=coinCard.hidden=sideCard.hidden=hourCard.hidden=!prem;
+    if(!prem)return;
+    finds.innerHTML=(d.findings||[]).map(function(f){return '<div class="find">'+esc(f.text)+'<span class="n">based on '+f.n+' trade'+(f.n===1?'':'s')+'</span></div>';}).join('');
+    rows(d.byLev&&d.byLev.filter(function(r){return r.n>0;}),levBody);
+    rows(d.byCoin,coinBody);
+    rows(d.bySide,sideBody,function(k){return k==='short'?'Short':'Long';});
+    drawHours(d.byHour||[]);
+  }
+
+  function load(){
+    if(!signedIn)return;
+    fetch('/api/trade/report?days='+days,{credentials:'same-origin'})
+      .then(function(r){return r.ok?r.json():null;}).then(render).catch(function(){});
+  }
+  document.getElementById('winSeg').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-d]'); if(!b)return;
+    days=+b.getAttribute('data-d')||30;
+    this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+    load();
+  });
+  function gate(){ gateCard.hidden=signedIn; body.hidden=!signedIn; }
+  function onAuth(u){ signedIn=!!u; gate(); if(signedIn)load(); }
+  window.addEventListener('mp-auth-change',function(e){onAuth(e.detail&&e.detail.user);});
+  if(window.mpAuth&&window.mpAuth.me){onAuth(window.mpAuth.me());}else{gate();}
+  try{var u='/api/track?t=pageview&p=/trading-report/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);fetch(u,{keepalive:true});}catch(e){}
+})();
+</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/mp-auth.js?v=034bd270"></script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

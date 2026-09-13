@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-es-twin="/">
 <head>
 <meta charset="UTF-8" />
 
 <meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
 
-<meta name="description" content="Practicá futuros cripto con precios reales y dinero de mentira, calculá liquidación y tamaño de posición, mirá las liquidaciones en vivo de 9 exchanges, screener, calendario y academia. Gratis, sin registro." />
+<meta name="description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="https://marginpad.io/es/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
@@ -24,17 +24,22 @@
 <link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/" />
-<meta property="og:title" content="MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo" />
+<meta property="og:title" content="MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations" />
 <meta property="og:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content="es_ES" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo" />
+<meta name="twitter:title" content="MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations" />
 <meta name="twitter:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/es/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practica cripto, acciones, forex e índices con precios reales en vivo y riesgo cero: un terminal de paper trading, gráficos en vivo, screener, calculadoras, liquidaciones en tiempo real y una API de bot gratis. Gratis — sin depósito, sin KYC."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/es/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Herramientas Gratis para Futuros Cripto","url":"https://marginpad.io/es/","inLanguage":"es"}</script>
+<!-- The member card replaces the hero. Decide WHO this is before the first paint, from the non-HttpOnly mp_li
+     marker the worker sets on sign-in - mp-auth restores the account ~110-280 ms later, and until 2026-09-10 that
+     was long enough to see the guest hero flash under the card on every refresh (owner report). If the session
+     turns out to be dead, paint() takes the class off again and the hero comes back. -->
+<script>try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.className+=' mp-li';}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -54,7 +59,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07080a" />
-<title>MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo</title>
+<title>MarginPad — Terminal Gratis de Futuros Cripto, Paper Trade y Liquidaciones</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -67,7 +72,11 @@
   :root{--bg:#0b0d12;--panel:#12161d;--panel2:#171c26;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.17);--ink:#f0eee6;--dim:#a6afba;--faint:#707a86;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
   *{box-sizing:border-box;margin:0;padding:0;}
   html{touch-action:manipulation;overflow-x:hidden;scroll-behavior:smooth;}
-  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
+  /* the page scrollbar is a classic, styled bar in its own gutter on a desktop (2026-09-12, owner: "the scroll strip runs over the header and
+     the tape"): Chrome on Windows 11 draws its default scrollbar as an overlay across the whole viewport, header included; a styled scrollbar
+     is never an overlay, so the header ends where the gutter begins. Phones keep the browser's own indicator (nothing else exists there). */
+  @media(min-width:981px) and (pointer:fine){html{scrollbar-width:thin;scrollbar-color:#2a3140 #0a0b0d}html::-webkit-scrollbar{width:10px;height:10px}html::-webkit-scrollbar-track{background:#0a0b0d}html::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px;border:2px solid #0a0b0d}html::-webkit-scrollbar-thumb:hover{background:#333d4a}}
+  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip;position:relative;} /* clip, not hidden (2026-09-12): overflow-x:hidden made <body> a scroll container, so the sticky header never stuck in Chrome/Android (it scrolled away with the page; iOS alone kept it) */
   body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
   a{color:inherit;text-decoration:none;}
   .mono{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;}
@@ -98,7 +107,7 @@
   @keyframes au2{from{transform:translate(0,0);}to{transform:translate(-8vw,-6vh);}}
 
   /* ================= header — same as the live homepage ================= */
-  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid var(--line);}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:var(--bg);contain:paint;border-bottom:1px solid var(--line);} /* opaque, no blur (2026-09-12): mp-nav.js already forces body>header to a solid #0a0b0d, so the translucent + backdrop-filter pair here was dead code that only cost GPU; the member card must never show through the stuck block */
   .brand{display:flex;align-items:baseline;gap:10px;}
   .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
   .brand .mark:hover{letter-spacing:-.02em;}
@@ -117,7 +126,7 @@
   .hrwd{color:#c2f64a;}
   .hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
   .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
-  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}.hnav{gap:2px;}}
+  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}.hnav{gap:2px;}}
 
   /* ================= ticker ================= */
   .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
@@ -412,6 +421,7 @@
 .dash-stats .dst b{font:800 22px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dash-stats .dst b small{font-size:11px;color:#5c656f;font-weight:600;margin-left:2px}
 .dash-stats .dst em{font-style:normal;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-stats .dst i{font-style:normal;font-size:11px;color:#5c656f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst.sk{opacity:.32}.dash-stats .dst.sk b,.dash-stats .dst.sk em,.dash-stats .dst.sk i{color:#5c656f}
 .dash-stats .dst.ok{border-color:rgba(194,246,74,.45)}.dash-stats .dst.ok b{color:#c2f64a}.dash-stats .dst.pro{border-color:rgba(199,146,255,.45)}.dash-stats .dst.pro b{color:#c792ff}.dash-stats .dst.gold{border-color:rgba(255,215,90,.45)}.dash-stats .dst.gold b{color:#ffd75a}.dash-stats .dst.hot{border-color:rgba(255,176,32,.55);background:rgba(255,176,32,.08)}.dash-stats .dst.hot i{color:#ffb020}
 .dash-next{display:flex;flex-direction:column;gap:8px;padding-left:18px;border-left:1px solid rgba(255,255,255,.07);min-width:0}
 .dash-todo{display:flex;flex-direction:column;gap:6px}
@@ -422,7 +432,11 @@
 .dash-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}.dash-days i{display:block;height:5px;border-radius:3px;background:#1a1f27}.dash-days i.on{background:#c792ff}.dash-days i.now{background:#fff;box-shadow:0 0 8px #c792ff}
 @media(max-width:980px){.dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dash-next{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.07);padding-top:12px}}
 @media(max-width:640px){.dash{grid-template-columns:1fr;padding:16px}.dash-stats{grid-template-columns:1fr 1fr}.dash-t{font-size:21px}}
-body.mpa-authed .hero{display:none}
+/* The hero is replaced by the member card, so it may only disappear once that card is REALLY on screen.
+   Keyed on mpa-authed it vanished at ~180 ms while the card waited for /api/pass + /api/goals until ~950 ms,
+   and the top of the page sat empty in between (owner 2026-09-10, measured). */
+body.mpa-dash .hero,html.mp-li .hero{display:none}
+html.mp-li .dash[hidden]{display:grid} /* the static markup below already carries the skeleton, so this is the right shape from frame one */
 @media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
 @media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
@@ -807,8 +821,8 @@ body.mpa-authed .hero{display:none}
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
   .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:420px;}
-  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 26px -6px rgba(117,115,225,.75);}
-  .exbig-offer{display:block;margin:12px 0 4px;padding:13px 14px 12px;border-radius:14px;border:1px solid rgba(138,92,255,.38);background:linear-gradient(150deg,rgba(138,92,255,.14),rgba(138,92,255,.02) 62%),#0d0f16;position:relative;overflow:hidden}.exbig-offer::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(138,92,255,.22),transparent 68%);pointer-events:none}.xo-top{display:flex;align-items:center;gap:11px;position:relative;z-index:1}.xo-pct{font:800 27px/1 "Space Mono",ui-monospace,monospace;letter-spacing:-.02em;color:#b39aff;text-shadow:0 0 22px rgba(138,92,255,.5)}.xo-lab{display:block;font:800 12.5px/1.2 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e9e7df}.xo-lab em{display:block;margin-top:3px;font:500 12px/1.4 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#9aa3ad;font-style:normal}.xo-code{display:flex;align-items:center;gap:10px;margin-top:11px;padding:10px 12px;border-radius:11px;border:1px dashed rgba(179,154,255,.65);background:rgba(138,92,255,.10);position:relative;z-index:1}.xo-code i{flex:0 0 auto;font:700 9.5px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#9aa3ad;font-style:normal}.xo-code b{font:800 21px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.14em;color:#fff;text-shadow:0 0 18px rgba(138,92,255,.55)}.xo-alt{display:block;margin-top:8px;font:500 11.5px/1.4 "Familjen Grotesk",system-ui,sans-serif;color:#7a8390;position:relative;z-index:1}@media(max-width:640px){.exbig-offer{padding:12px}.xo-pct{font-size:24px}.xo-code b{font-size:18px;letter-spacing:.12em}.xo-lab em{font-size:11.5px}}/* 2026-09-10 (owner): the offer is its own column on wide screens - under the pitch it stretched the card by 170px. */@media(min-width:1101px){.exbig{flex-wrap:nowrap;gap:clamp(22px,2.6vw,38px)}.exbig-main{flex:1 1 40%}.exbig-side{flex:1 1 40%}.exbig-offer{flex:0 0 212px;align-self:center;margin:0}.xo-top{flex-direction:column;align-items:flex-start;gap:5px}.xo-pct{font-size:33px}.xo-code{margin-top:12px;flex-direction:column;align-items:center;gap:5px;text-align:center;padding:10px 8px}.xo-code b{font-size:20px;letter-spacing:.1em}.xo-alt{display:none}}@media(min-width:1101px) and (max-width:1380px){.exbig{gap:clamp(16px,1.8vw,26px)}.exbig-offer{flex:0 0 184px}.xo-pct{font-size:29px}.xo-code b{font-size:18px;letter-spacing:.1em}}@media(max-width:1100px){.exbig{flex-wrap:wrap}.exbig-offer{flex:1 1 100%;margin:0}}@media(max-width:760px){.exbig-main{order:1}.exbig-offer{order:2;width:100%;flex:0 0 auto;align-self:auto}.exbig-side{order:3}}.exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7573e1,#6358d3);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(117,115,225,.85);animation:moonCta 3.2s ease-in-out infinite;}
+  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 26px -6px rgba(117,115,225,.75);}.exbig-offer{display:block;margin:12px 0 4px;padding:13px 14px 12px;border-radius:14px;border:1px solid rgba(138,92,255,.38);background:linear-gradient(150deg,rgba(138,92,255,.14),rgba(138,92,255,.02) 62%),#0d0f16;position:relative;overflow:hidden}.exbig-offer::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(138,92,255,.22),transparent 68%);pointer-events:none}.xo-top{display:flex;align-items:center;gap:11px;position:relative;z-index:1}.xo-pct{font:800 27px/1 "Space Mono",ui-monospace,monospace;letter-spacing:-.02em;color:#b39aff;text-shadow:0 0 22px rgba(138,92,255,.5)}.xo-lab{display:block;font:800 12.5px/1.2 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e9e7df}.xo-lab em{display:block;margin-top:3px;font:500 12px/1.4 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#9aa3ad;font-style:normal}.xo-code{display:flex;align-items:center;gap:10px;margin-top:11px;padding:10px 12px;border-radius:11px;border:1px dashed rgba(179,154,255,.65);background:rgba(138,92,255,.10);position:relative;z-index:1}.xo-code i{flex:0 0 auto;font:700 9.5px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#9aa3ad;font-style:normal}.xo-code b{font:800 21px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.14em;color:#fff;text-shadow:0 0 18px rgba(138,92,255,.55)}.xo-alt{display:block;margin-top:8px;font:500 11.5px/1.4 "Familjen Grotesk",system-ui,sans-serif;color:#7a8390;position:relative;z-index:1}@media(max-width:640px){.exbig-offer{padding:12px}.xo-pct{font-size:24px}.xo-code b{font-size:18px;letter-spacing:.12em}.xo-lab em{font-size:11.5px}}/* 2026-09-10 (owner): the offer is its own column on wide screens - under the pitch it stretched the card by 170px. */@media(min-width:1101px){.exbig{flex-wrap:nowrap;gap:clamp(22px,2.6vw,38px)}.exbig-main{flex:1 1 40%}.exbig-side{flex:1 1 40%}.exbig-offer{flex:0 0 212px;align-self:center;margin:0}.xo-top{flex-direction:column;align-items:flex-start;gap:5px}.xo-pct{font-size:33px}.xo-code{margin-top:12px;flex-direction:column;align-items:center;gap:5px;text-align:center;padding:10px 8px}.xo-code b{font-size:20px;letter-spacing:.1em}.xo-alt{display:none}}@media(min-width:1101px) and (max-width:1380px){.exbig{gap:clamp(16px,1.8vw,26px)}.exbig-offer{flex:0 0 184px}.xo-pct{font-size:29px}.xo-code b{font-size:18px;letter-spacing:.1em}}@media(max-width:1100px){.exbig{flex-wrap:wrap}.exbig-offer{flex:1 1 100%;margin:0}}@media(max-width:760px){.exbig-main{order:1}.exbig-offer{order:2;width:100%;flex:0 0 auto;align-self:auto}.exbig-side{order:3}}
+  .exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7573e1,#6358d3);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(117,115,225,.85);animation:moonCta 3.2s ease-in-out infinite;}
   @keyframes moonCta{0%,100%{box-shadow:0 0 22px -8px rgba(117,115,225,.7);}50%{box-shadow:0 0 34px -4px rgba(142,148,235,.95);}}
   .exbig:hover .exbig-cta{box-shadow:0 0 38px -4px rgba(142,148,235,1);animation:none;}
   .exs{--exc:#f7a600;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
@@ -916,21 +930,21 @@ body.mpa-authed .hero{display:none}
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo","url":"https://marginpad.io/es/","dateModified":"2026-09-11T11:28:06.121Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
 
 <header>
   <div class="brand">
-    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-    <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    <button type="button" class="hmenu" id="mBurger" aria-label="Menú"><span></span><span></span><span></span></button>
+    <a href="/es/" class="mark" aria-label="MarginPad — inicio">MARGIN<b>PAD</b></a>
   </div>
   <nav class="hnav">
-    <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Join our Telegram group" aria-label="Telegram group"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
+    <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Únete a nuestro grupo de Telegram" aria-label="Grupo de Telegram"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
     <button type="button" class="hlink hjr" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</button>
-    <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Iniciar sesión</span></button>
-    <select class="lang" id="langSel" aria-label="Language">
+    <button type="button" class="hlink hauth" data-auth-open aria-label="Iniciar sesión"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Iniciar sesión</span></button>
+    <select class="lang" id="langSel" aria-label="Idioma">
       <option value="/">EN</option><option value="/es/">ES</option><option value="/de/">DE</option><option value="/fr/">FR</option><option value="/it/">IT</option><option value="/pt/">PT</option><option value="/pl/">PL</option><option value="/nl/">NL</option><option value="/tr/">TR</option><option value="/ru/">RU</option><option value="/id/">ID</option><option value="/hi/">HI</option><option value="/vi/">VI</option>
     </select>
   </nav>
@@ -940,21 +954,20 @@ body.mpa-authed .hero{display:none}
 
 <div class="tape"><div class="tape-in" id="tape"></div></div>
 
-<a class="dash" id="dash" href="/season/" hidden>
-  <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
-  <div class="dash-stats" id="dashChips"></div>
-  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"></div><span class="dash-go">Open your season →</span></div>
+<a class="dash" id="dash" href="/es/season/" hidden>
+  <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Temporada</span><span class="dash-t" id="dashT">Bienvenido de nuevo</span><div class="dash-lvl"><span class="nm" id="dashLvl">Sin clasificar</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
+  <div class="dash-stats" id="dashChips"><span class="dst sk"><b>&mdash;</b><em>Nivel del pase</em><i>cargando</i></span><span class="dst sk"><b>&mdash;</b><em>Predicción diaria</em><i>cargando</i></span><span class="dst sk"><b>&mdash;</b><em>Objetivos</em><i>cargando</i></span><span class="dst sk"><b>&mdash;</b><em>Tablas</em><i>cargando</i></span></div><!-- skeleton in the MARKUP: with html.mp-li the card is the right shape on the very first frame, so nothing resizes when the numbers land -->
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Lo que sigue</span><div class="dash-todo" id="dashTodo"><span><i>1</i>Comprobando tu temporada…</span></div><span class="dash-go">Abre tu temporada →</span></div>
 </a>
 <section class="hero">
   <div>
-    <span class="eyebrow"><span class="d"></span>Herramientas gratuitas de futuros cripto — sin depósito, sin KYC</span>
-    <h1>Opera como si fuera real.<br>Riesgo <b>cero</b>.</h1>
-    <p class="sub">Practice with real live prices, screen 100+ markets, watch liquidations as they happen, backtest strategies and learn from zero — everything a futures trader needs, free in one terminal.</p>
+    <span class="eyebrow"><span class="d"></span>Kit de herramientas gratis para futuros cripto — sin depósito, sin KYC</span>
+    <h1>Opera como si fuera real.<br>No arriesgues <b>nada</b>.</h1>
+    <p class="sub">Practica con precios reales en vivo, analiza más de 100 mercados, mira las liquidaciones en tiempo real, haz backtest de estrategias y aprende desde cero — todo lo que necesita un trader de futuros, gratis en un solo terminal.</p>
     <div class="hero-ctas">
-      <a class="btn-l" href="/paper-trade">Abrir Paper Trade →</a>
-      <a class="btn-g" href="#trade">Explora la terminal ↓</a>
+      <a class="btn-l" href="/es/paper-trade">Abrir Paper Trade →</a> <a class="btn-g" href="#trade">Explora el terminal ↓</a>
     </div>
-    <div class="hero-note">No necesitas cuenta para empezar · más de 20.000 operaciones de práctica abiertas</div>
+    <div class="hero-note">No necesitas cuenta para empezar · 20,000+ operaciones de práctica abiertas</div>
   </div>
   <div>
     <div class="hterm">
@@ -964,35 +977,33 @@ body.mpa-authed .hero{display:none}
         <canvas id="heroChart"></canvas>
         <div class="hterm-ticket"><span class="side">LONG</span>BTC · 20×<span class="pnl" id="hTickPnl">…</span><span class="lq" id="hTickLq"></span></div>
       </div>
-      <div class="hterm-foot"><span class="lng">LONG</span><span>SHORT</span><span>1–1000×</span><span>SL / TP</span><span>$100 demo</span></div>
+      <div class="hterm-foot"><span class="lng">LONG</span><span>SHORT</span><span>1–1000×</span><span>SL / TP</span><span>demo de $100</span></div>
     </div>
   </div>
 </section>
 
 <div class="snap">
-  <a href="/coins/"><div class="l">Capitalización total del mercado</div><div class="v" id="snMcap">—</div><div class="s" id="snMcapS"></div></a>
-  <a href="/coins/"><div class="l">Volumen 24h</div><div class="v" id="snVol">—</div><div class="s">en todos los mercados</div></a>
-  <a href="/coins/"><div class="l">Dominancia de BTC</div><div class="v" id="snDom">—</div><div class="s" id="snDomS"></div></a>
-  <a href="/fear-greed/"><div class="l">Miedo &amp; Codicia</div><div class="v" id="snFng">—</div><div class="s" id="snFngS"></div></a>
-  <a href="/defi/"><div class="l">TVL de DeFi</div><div class="v" id="snTvl">—</div><div class="s" id="snTvlS"></div></a>
+  <a href="/es/coins/"><div class="l">Capitalización total del mercado</div><div class="v" id="snMcap">—</div><div class="s" id="snMcapS"></div></a>
+  <a href="/es/coins/"><div class="l">Volumen 24h</div><div class="v" id="snVol">—</div><div class="s">en todos los mercados</div></a>
+  <a href="/es/coins/"><div class="l">Dominancia de BTC</div><div class="v" id="snDom">—</div><div class="s" id="snDomS"></div></a>
+  <a href="/es/fear-greed/"><div class="l">Fear &amp; Greed</div><div class="v" id="snFng">—</div><div class="s" id="snFngS"></div></a>
+  <a href="/es/defi/"><div class="l">TVL de DeFi</div><div class="v" id="snTvl">—</div><div class="s" id="snTvlS"></div></a>
 </div>
 
 <section class="band" id="trade" style="--glow:rgba(46,189,133,.10);--bandc:#2ebd85">
-  <div class="band-head"><span class="band-idx">01</span><h2 class="band-t">Operar</h2><span class="band-s">Practica en mercados reales con riesgo cero — luego observa lo que el apalancamiento le hace a los demás.</span></div>
+  <div class="band-head"><span class="band-idx">01</span><h2 class="band-t">Opera</h2><span class="band-s">Practica en mercados en vivo sin ningún riesgo — y mira lo que el apalancamiento le hace a los demás.</span></div>
   <div class="bento">
 
-    <a class="tile s8 pt-hero" href="/paper-trade" style="--ac:#c2f64a">
+    <a class="tile s8 pt-hero" href="/es/paper-trade" style="--ac:#c2f64a">
       <div class="in">
         <div class="pt-copy">
           <div class="t-kick"><span class="dot"></span> Precio en vivo · riesgo cero</div>
-          <div class="t-title" style="font-size:24px">Terminal Paper Trade</div>
-          <div class="t-sub">La mecánica exacta de un exchange de futuros real — al precio real en vivo, con dinero ficticio.</div>
+          <div class="t-title" style="font-size:24px">Terminal de Paper Trade</div>
+          <div class="t-sub">La mecánica exacta de un exchange de futuros real — al precio real en vivo, con dinero falso.</div>
           <div class="pt-feats">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Long y short, apalancamiento de 1 a 1000×</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Stop-loss, take-profit, trailing stops</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Liquidaciones reales — pierde el margen, aprende la lección</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Long y short, apalancamiento de 1–1000×</span> <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Stop-loss, take-profit, trailing stops</span> <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Liquidaciones reales — pierde el margen, aprende la lección</span>
           </div>
-          <div class="pt-cta"><span class="btn-l">Abrir una operación demo →</span></div>
+          <div class="pt-cta"><span class="btn-l">Abre una operación demo →</span></div>
         </div>
         <div class="pt-viz">
           <canvas id="ptChart"></canvas>
@@ -1002,17 +1013,17 @@ body.mpa-authed .hero{display:none}
       </div>
     </a>
 
-    <a class="tile s4" href="/screener" style="--ac:#6aa3ff">
-      <div class="t-kick"><span class="dot"></span> Los que más se mueven · 24h · en vivo</div>
+    <a class="tile s4" href="/es/screener" style="--ac:#6aa3ff">
+      <div class="t-kick"><span class="dot"></span> Mayores movimientos · 24h · en vivo</div>
       <div class="t-title">Screener</div>
       <div id="movers" style="margin-top:10px"><div class="skel" style="width:88%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:79%"></div><div class="skel" style="width:64%"></div><div class="skel" style="width:74%"></div></div>
-      <div class="t-go">Analiza más de 200 pares <i>→</i></div>
+      <div class="t-go">Analiza 200+ pares <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/rekt/" style="--ac:#ff5a4d">
+    <a class="tile s3" href="/es/rekt/" style="--ac:#ff5a4d">
       <div class="t-kick"><span class="dot"></span> Feed en tiempo real</div>
       <div class="t-title">Rekt</div>
-      <div class="t-sub">Liquidaciones, en vivo, exchange por exchange.</div>
+      <div class="t-sub">Liquidaciones en vivo, exchange por exchange.</div>
       <div class="rk-24" id="rk24"></div>
       <div id="rkFeed">
       <div class="rk-strip"><b>BTC LONG</b> 50× <span class="amt">−$234,500</span></div>
@@ -1022,17 +1033,17 @@ body.mpa-authed .hero{display:none}
       <div class="t-go">Mira la masacre <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/spot/" style="--ac:#a06bff">
-      <div class="t-kick"><span class="dot"></span> Life-simulation · fake money</div>
+    <a class="tile s3" href="/es/spot/" style="--ac:#a06bff">
+      <div class="t-kick"><span class="dot"></span> Simulación de vida · dinero falso</div>
       <div class="t-title">Demo Spot</div>
-      <div class="t-sub">A $10,000 card, an exchange, a self-custody wallet and memes on 4 chains. Real fees, real gas, nothing at stake.</div>
-      <div class="t-go">Start from zero <i>→</i></div>
+      <div class="t-sub">Una tarjeta de $10,000 y un exchange, una wallet de autocustodia y memecoins en 4 redes. Comisiones reales, gas real, nada en juego.</div>
+      <div class="t-go">Empieza desde cero <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/charts" style="--ac:#3fd8e6">
-      <div class="t-kick">Espacio de trabajo profesional</div>
+    <a class="tile s3" href="/es/charts" style="--ac:#3fd8e6">
+      <div class="t-kick">Espacio de trabajo Pro</div>
       <div class="t-title">Multigráfico</div>
-      <div class="t-sub">Hasta 10 ventanas, 12 indicadores, dibujo y analista de gráficos con IA.</div>
+      <div class="t-sub">Hasta 10 ventanas, 12 indicadores, dibujo y un analista de gráficos con IA.</div>
       <div class="cw-mock">
         <div class="cw-win cw-w1"><div class="bar"><i></i><i></i></div><div class="cw-candles"><i style="height:38%"></i><i class="d" style="height:56%"></i><i style="height:44%"></i><i style="height:72%"></i><i class="d" style="height:52%"></i><i style="height:80%"></i><i style="height:64%"></i><i class="d" style="height:40%"></i><i style="height:88%"></i></div></div>
         <div class="cw-win cw-w2"><div class="bar"><i></i><i></i></div><div class="cw-candles"><i class="d" style="height:60%"></i><i style="height:42%"></i><i style="height:74%"></i><i class="d" style="height:50%"></i><i style="height:66%"></i><i style="height:84%"></i></div></div>
@@ -1040,58 +1051,58 @@ body.mpa-authed .hero{display:none}
       <div class="t-go">Arma tu escritorio <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/coins/" style="--ac:#16c2d6">
+    <a class="tile s3" href="/es/coins/" style="--ac:#16c2d6">
       <div class="t-kick"><span class="dot"></span> Mercados en vivo</div>
       <div class="t-title">Mercados</div>
       <div id="mkts" style="margin-top:10px"><div class="skel" style="width:88%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:79%"></div><div class="skel" style="width:64%"></div><div class="skel" style="width:74%"></div></div>
-      <div class="t-go">Las 250 principales criptomonedas <i>→</i></div>
+      <div class="t-go">Las 250 principales monedas <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/alerts/" style="--ac:#ffd75a">
-      <div class="t-kick">Email · Telegram</div>
+    <a class="tile s3" href="/es/alerts/" style="--ac:#ffd75a">
+      <div class="t-kick">Correo · Telegram</div>
       <div class="t-title">Alertas de precio</div>
-      <div class="t-sub">Define un objetivo y despreocúpate. Te avisamos en el instante en que se cruce.</div>
+      <div class="t-sub">Fija un objetivo y despreocúpate. Te avisamos en el instante en que se cruce.</div>
       <div class="al-pill"><span class="bell"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffd75a" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span>BTC por encima de <b id="alTarget">…</b></span></div>
-      <div class="al-chan"><span>Email</span><span>Telegram</span></div>
-      <div class="t-go">Crear una alerta <i>→</i></div>
+      <div class="al-chan"><span>Correo</span><span>Telegram</span></div>
+      <div class="t-go">Crea una alerta <i>→</i></div>
     </a>
 
   </div>
 </section>
 
 <div class="trust">
-  <div><b><em data-live="trades" data-cnt="16000" data-suf="+">0</em></b><span>practice trades opened (30 days)</span></div>
+  <div><b><em data-live="trades" data-cnt="16000" data-suf="+">0</em></b><span>operaciones de práctica abiertas (30 días)</span></div>
   <div><b><em data-live="markets" data-cnt="100" data-suf="+">0</em></b><span>mercados analizados en vivo</span></div>
-  <div><b><em data-cnt="200" data-suf="+">0</em></b><span>guías &amp; lecciones</span></div>
+  <div><b><em data-cnt="200" data-suf="+">0</em></b><span>guías y lecciones</span></div>
   <div><b><em data-cnt="13" data-suf="">0</em></b><span>idiomas</span></div>
 </div>
 
 <section class="band" style="--glow:rgba(63,216,230,.09);--bandc:#3fd8e6">
-  <div class="band-head"><span class="band-idx">02</span><h2 class="band-t">Analizar</h2><span class="band-s">Conoce el número antes de hacer clic — liquidación, tamaño, sentimiento, funding, flujos.</span></div>
+  <div class="band-head"><span class="band-idx">02</span><h2 class="band-t">Analiza</h2><span class="band-s">Conoce el número antes de hacer clic — liquidación, tamaño, sentimiento, funding, flujos.</span></div>
   <div class="bento">
 
     <div class="tile s6" style="--ac:#c2f64a">
       <div class="calc-in">
         <div style="display:flex;flex-direction:column">
-          <div class="t-kick">Cálculo instantáneo</div>
-          <div class="t-title">Calculadoras de futuros</div>
+          <div class="t-kick">Cálculos al instante</div>
+          <div class="t-title">Calculadoras de Futuros</div>
           <div class="t-sub">Conoce tu precio de liquidación y el tamaño de tu posición antes de entrar, no después.</div>
           <div class="calc-chips">
-            <a href="/calculators?c=liq">Liquidación</a><a href="/calculators?c=size">Tamaño de posición</a><a href="/calculators?c=pnl">PnL / ROI</a><a href="/calculators?c=dca">DCA</a><a href="/calculators?c=tp">Take-profit</a><a href="/calculators?c=rr">Riesgo / recompensa</a>
+            <a href="/es/calculators?c=liq">Liquidación</a><a href="/es/calculators?c=size">Tamaño de posición</a><a href="/es/calculators?c=pnl">PnL / ROI</a><a href="/es/calculators?c=dca">DCA</a><a href="/es/calculators?c=tp">Take-profit</a><a href="/es/calculators?c=rr">Riesgo / beneficio</a>
           </div>
-          <a class="t-go" href="/calculators">Todas las calculadoras <i>→</i></a>
+          <a class="t-go" href="/es/calculators">Todas las calculadoras <i>→</i></a>
         </div>
         <div class="calc-live">
           <div class="l">Ejemplo en vivo · BTC long</div>
           <div class="big" id="calcEx">…</div>
-          <div class="note" id="calcExN">Con un apalancamiento de 20×, un movimiento de aproximadamente −4,8% liquida la posición. Por eso la calculadora va primero.</div>
+          <div class="note" id="calcExN">Con 20× de apalancamiento, un movimiento de aproximadamente −4.8% liquida la posición. Por eso la calculadora va primero.</div>
         </div>
       </div>
     </div>
 
-    <a class="tile s3" href="/fear-greed/" style="--ac:#7fd957">
+    <a class="tile s3" href="/es/fear-greed/" style="--ac:#7fd957">
       <div class="t-kick"><span class="dot"></span> Sentimiento · actualizado a diario</div>
-      <div class="t-title">Miedo &amp; Codicia</div>
+      <div class="t-title">Fear &amp; Greed</div>
       <div class="fng-wrap">
         <svg class="fng-g" viewBox="0 0 120 70">
           <path d="M10 65 A 50 50 0 0 1 110 65" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9" stroke-linecap="round"/>
@@ -1103,49 +1114,49 @@ body.mpa-authed .hero{display:none}
       <div class="t-go">Índice completo + historial <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/calendar/" style="--ac:#ffd75a">
+    <a class="tile s3" href="/es/calendar/" style="--ac:#ffd75a">
       <div class="t-kick"><span class="dot"></span> Este mes · en vivo</div>
-      <div class="t-title">Calendario cripto</div>
+      <div class="t-title">Calendario Cripto</div>
       <div class="mcal" id="mcalGrid"></div>
       <div class="mcal-next" id="mcalNext">Cargando eventos…</div>
       <div class="t-go">FOMC, CPI &amp; todas las fechas clave <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/tools/" style="--ac:#46e0e6">
-      <div class="t-kick">5 herramientas gratuitas</div>
-      <div class="t-title">Herramientas de trading</div>
+    <a class="tile s3" href="/es/tools/" style="--ac:#46e0e6">
+      <div class="t-kick">5 herramientas gratis</div>
+      <div class="t-title">Herramientas de Trading</div>
       <div class="tools-list">
-        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 3h6"/><path d="M10 3v5.4L4.8 17a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 8.4V3"/></svg></span>Backtester de estrategias</div>
-        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="5" y1="20" x2="5" y2="13"/><line x1="11" y1="20" x2="11" y2="8"/><line x1="17" y1="20" x2="17" y2="4"/></svg></span>Diario de trading &amp; estadísticas</div>
-        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 3v5.2c0 4.4-3 7.2-7 8.8-4-1.6-7-4.4-7-8.8V6z"/></svg></span>Riesgo de ruina</div>
-        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>Puntos pivote</div>
-        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Matriz de correlación</div>
+        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 3h6"/><path d="M10 3v5.4L4.8 17a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 8.4V3"/></svg></span>Backtester de Estrategias</div>
+        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="5" y1="20" x2="5" y2="13"/><line x1="11" y1="20" x2="11" y2="8"/><line x1="17" y1="20" x2="17" y2="4"/></svg></span>Diario de Trading y estadísticas</div>
+        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 3v5.2c0 4.4-3 7.2-7 8.8-4-1.6-7-4.4-7-8.8V6z"/></svg></span>Riesgo de Ruina</div>
+        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>Puntos Pivote</div>
+        <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Matriz de Correlación</div>
       </div>
-      <div class="t-go">Abrir el kit de herramientas <i>→</i></div>
+      <div class="t-go">Abre el kit de herramientas <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/trading-api/" style="--ac:#2ebd85">
+    <a class="tile s3" href="/es/trading-api/" style="--ac:#2ebd85">
       <div class="t-kick">Para desarrolladores</div>
-      <div class="t-title">API para bots de trading</div>
-      <div class="t-sub">Conecta tu bot a una API gratuita de paper trading — precios reales en vivo, dólares simulados.</div>
+      <div class="t-title">Bot API de Trading</div>
+      <div class="t-sub">Apunta tu bot a una API gratis de paper trading — precios reales en vivo, dólares simulados.</div>
       <div class="term">
         <div class="term-bar"><i></i><i></i><i></i></div>
         <div class="term-body"><span class="c">$</span> curl api/bot/v1/open -d side=long<br><span class="c">→</span> {"liq_price": 58463.37} <span class="caret"></span></div>
       </div>
-      <div class="t-go">Obtén una API key gratuita <i>→</i></div>
+      <div class="t-go">Obtén una clave API gratis <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/defi/" style="--ac:#9d7bff">
-      <div class="t-kick"><span class="dot"></span> Panorama de DeFi</div>
+    <a class="tile s3" href="/es/defi/" style="--ac:#9d7bff">
+      <div class="t-kick"><span class="dot"></span> Resumen de DeFi</div>
       <div class="t-title">TVL de DeFi</div>
       <div class="defi-tvl" id="tvl">—</div>
       <div class="chain-bars" id="chains"></div>
-      <div class="t-go">Explorar DeFi <i>→</i></div>
+      <div class="t-go">Explora DeFi <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/news/" style="--ac:#ff8c5a">
+    <a class="tile s3" href="/es/news/" style="--ac:#ff8c5a">
       <div class="t-kick"><span class="dot"></span> Titulares · en vivo</div>
-      <div class="t-title">Noticias cripto</div>
+      <div class="t-title">Noticias Cripto</div>
       <div id="news" style="margin-top:8px"><div class="skel" style="width:88%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:79%"></div></div>
       <div class="t-go">Todas las noticias <i>→</i></div>
     </a>
@@ -1154,91 +1165,83 @@ body.mpa-authed .hero{display:none}
 </section>
 
 <section class="band" style="--glow:rgba(247,166,0,.09);--bandc:#f7a600">
-  <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Pasa a lo real</h2><span class="band-s">Cuando las ganancias de práctica se vuelvan aburridas — opera de verdad. Abrir una cuenta a través de estos enlaces ayuda a mantener MarginPad.</span></div>
+  <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Hazlo real</h2><span class="band-s">Cuando las ganancias de papel se vuelvan aburridas, opera de verdad. Abrir una cuenta con estos enlaces apoya a MarginPad.</span></div>
   <div class="exch-grid">
     <a class="exbig" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored" data-ex="Moon">
-      <span class="exbig-tag"><i></i>Nuevo socio &middot; en vivo</span>
+      <span class="exbig-tag"><i></i>Nuevo socio &middot; activo</span>
       <div class="exbig-main">
         <img class="exbig-logo" src="/assets/moon.png" alt="Moon" width="44" height="44" loading="lazy">
         <div class="exbig-t">Moon &mdash; opera cripto, acciones, futuros,<br>materias primas y forex. 24/7.</div>
-        <div class="exbig-s">Nuestro socio más nuevo: apuesta a que el mercado sube o baja en cripto, acciones, futuros, materias primas y forex &mdash; con apalancamiento, las 24 horas, en una sola cuenta. ¿Ya practicaste aquí? Ve a probarlo de verdad. Los miembros de MarginPad incluso pueden retirar sus recompensas directamente a una cuenta de Moon.</div>
-        <span class="exbig-cta">Crear una cuenta de Moon &rarr;</span>
+        <div class="exbig-s">Nuestro socio más nuevo: apuesta si el mercado sube o baja en cripto, acciones, futuros, materias primas y forex &mdash; con apalancamiento, las 24 horas, en una sola cuenta. ¿Ya practicaste aquí? Ve a probarlo de verdad. Los miembros de MarginPad hasta pueden retirar sus recompensas directo a una cuenta de Moon.</div>
+        <span class="exbig-cta">Crea una cuenta de Moon &rarr;</span>
       </div>
       <div class="exbig-side" aria-hidden="true">
         <div class="moon-feats">
-          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="mf-tx">Hasta <b>&times;1000</b> apalancamiento</span></div>
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="mf-tx">Hasta <b>&times;1000</b> de apalancamiento</span></div>
           <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></svg></span><span class="mf-tx">Cripto, acciones, futuros, materias primas &amp; forex</span></div>
           <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="mf-tx"><b>24/7</b> — los mercados nunca cierran</span></div>
           <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="mf-tx">Una cuenta, registro instantáneo</span></div>
           <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg></span><span class="mf-tx">Retira tus recompensas de MarginPad</span></div>
         </div>
       </div>
-      <span class="exbig-offer"><span class="xo-top"><b class="xo-pct">3.5%</b><span class="xo-lab">Reembolso de comisiones<em>Recuperas el 3,5% de tus comisiones de trading.</em></span></span><span class="xo-code"><i>usa el código</i><b>MARGINPAD</b></span><span class="xo-alt">o abre la cuenta desde esta tarjeta &mdash; es lo mismo.</span></span>
+      <span class="exbig-offer"><span class="xo-top"><b class="xo-pct">3.5%</b><span class="xo-lab">reembolso de comisiones<em>Recuperas el 3.5% de tus comisiones de trading.</em></span></span><span class="xo-code"><i>usa el código</i><b>MARGINPAD</b></span><span class="xo-alt">o abre la cuenta desde esta tarjeta &mdash; es lo mismo.</span></span>
     </a>
-    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">El más popular</span><span class="exs-go">→</span></span><span class="exs-perk">Descuento en comisiones + bono de bienvenida para nuevos usuarios</span></a>
-    <a class="exs" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="noopener sponsored" data-ex="Hyperliquid" style="--exc:#5ee6c8"><span class="exs-top"><span class="exs-ic" style="background:#0f1f1b;color:#5ee6c8;font:800 15px/30px 'Bricolage Grotesque',sans-serif;text-align:center">HL</span><span class="exs-n">Hyperliquid</span><span class="exs-tag">On-chain perps</span><span class="exs-go">→</span></span><span class="exs-perk">4% off trading fees with code MARGINPAD</span></a>
-    <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Mayor volumen</span><span class="exs-go">→</span></span><span class="exs-perk">Hasta 20% de descuento de por vida en comisiones</span></a>
-    <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Herramientas profesionales</span><span class="exs-go">→</span></span><span class="exs-perk">Reembolso de comisiones + recompensa de registro en la app</span></a>
-    <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></span><span class="exs-perk">Descuento en comisiones + copia a los mejores traders con 1 clic</span></a>
-    <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">Listados anticipados</span><span class="exs-go">→</span></span><span class="exs-perk">Reembolso de comisiones + acceso anticipado a nuevos tokens</span></a>
-    <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">Comisiones bajas</span><span class="exs-go">→</span></span><span class="exs-perk">Comisiones ultrabajas + airdrops periódicos</span></a>
-    <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">Regulado</span><span class="exs-go">→</span></span><span class="exs-perk">Comisiones bajas en un exchange totalmente regulado</span></a>
-    <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">Regulado en EE. UU.</span><span class="exs-go">→</span></span><span class="exs-perk">Ideal para principiantes + bono de registro para nuevos usuarios</span></a>
+    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">El más popular</span><span class="exs-go">→</span></span><span class="exs-perk">Descuento en comisiones + bono de bienvenida para nuevos usuarios</span></a> <a class="exs" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="noopener sponsored" data-ex="Hyperliquid" style="--exc:#5ee6c8"><span class="exs-top"><span class="exs-ic" style="background:#0f1f1b;color:#5ee6c8;font:800 15px/30px 'Bricolage Grotesque',sans-serif;text-align:center">HL</span><span class="exs-n">Hyperliquid</span><span class="exs-tag">Perpetuos on-chain</span><span class="exs-go">→</span></span><span class="exs-perk">4% de descuento en comisiones con el código MARGINPAD</span></a> <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Mayor volumen</span><span class="exs-go">→</span></span><span class="exs-perk">Hasta 20% de descuento de por vida en comisiones</span></a> <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Herramientas Pro</span><span class="exs-go">→</span></span><span class="exs-perk">Reembolso de comisiones + recompensa de registro en la app</span></a> <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></span><span class="exs-perk">Descuento en comisiones + copia a los mejores traders con 1 clic</span></a> <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">Listados anticipados</span><span class="exs-go">→</span></span><span class="exs-perk">Reembolso de comisiones + acceso anticipado a nuevos tokens</span></a> <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">Comisiones bajas</span><span class="exs-go">→</span></span><span class="exs-perk">Comisiones ultra bajas + airdrops frecuentes</span></a> <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">Regulado</span><span class="exs-go">→</span></span><span class="exs-perk">Comisiones bajas en un exchange totalmente regulado</span></a> <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">Regulado en EE. UU.</span><span class="exs-go">→</span></span><span class="exs-perk">Ideal para principiantes + bono de registro para nuevos usuarios</span></a>
   </div>
-  <div class="exch-disc">Enlaces de referido — MarginPad puede ganar una comisión si abres una cuenta, sin costo alguno para ti. Eso es lo que mantiene gratuitas todas las herramientas de este sitio. Opera con responsabilidad: el apalancamiento puede liquidar todo tu margen.</div>
+  <div class="exch-disc">Enlaces de referido — MarginPad puede ganar una comisión si abres una cuenta, sin costo para ti. Eso es lo que mantiene gratis cada herramienta aquí. Opera con responsabilidad: el apalancamiento puede liquidar todo tu margen.</div>
 </section>
 
 <section class="band" id="season" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">This season</h2><span class="band-s">Five boards pay the top 5 in real USDT every 14 days. The pass, the daily call, your goals and the live floor all live on one page.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Esta temporada</h2><span class="band-s">Cinco tablas pagan a los 5 mejores en USDT real cada 14 días. El pase, la predicción diaria, tus objetivos y la actividad en vivo están todos en una sola página.</span></div>
   <div class="ss-grid">
-    <a class="ss-card ss-you" id="ssYou" href="/season/">
-      <div class="ss-k" id="ssEye">Season</div>
+    <a class="ss-card ss-you" id="ssYou" href="/es/season/">
+      <div class="ss-k" id="ssEye">Temporada</div>
       <div class="ss-days" id="ssDays"></div>
-      <div class="ss-big" id="ssBig">Your season</div>
+      <div class="ss-big" id="ssBig">Tu temporada</div>
       <div class="ss-rows" id="ssRows"></div>
-      <div class="ss-go">Open your season <span>→</span></div>
+      <div class="ss-go">Abre tu temporada <span>→</span></div>
     </a>
     <div class="ss-card ss-board">
-      <div class="ss-k" id="ssBoardK">Green days <span id="ssPz"></span></div>
-      <div class="ss-list" id="ssBoard"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/season/#boards">All five boards, rules and payouts →</a>
+      <div class="ss-k" id="ssBoardK">Días verdes <span id="ssPz"></span></div>
+      <div class="ss-list" id="ssBoard"><div class="ss-empty">Cargando…</div></div>
+      <a class="ss-more" href="/es/season/#boards">Las cinco tablas, reglas y pagos →</a>
     </div>
     <div class="ss-card ss-live">
-      <div class="ss-k">Live floor <span class="ss-dot"></span></div>
-      <div class="ss-list" id="ssLive"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/season/#floor">Every close and every duel →</a>
+      <div class="ss-k">Actividad en vivo <span class="ss-dot"></span></div>
+      <div class="ss-list" id="ssLive"><div class="ss-empty">Cargando…</div></div>
+      <a class="ss-more" href="/es/season/#floor">Cada cierre y cada duelo →</a>
     </div>
   </div>
 </section>
 
 <section class="band b-learn" style="--glow:rgba(255,215,90,.08);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">05</span><h2 class="band-t">Aprende &amp; gana</h2><span class="band-s">Desde tu primera lección hasta tu primer pago — todo el camino es gratis.</span></div>
+  <div class="band-head"><span class="band-idx">05</span><h2 class="band-t">Aprende y gana</h2><span class="band-s">Desde tu primera lección hasta tu primer pago — todo el camino es gratis.</span></div>
   <div class="bento">
 
-    <a class="tile s4" href="/academy/" style="--ac:#c2f64a">
+    <a class="tile s4" href="/es/academy/" style="--ac:#c2f64a">
       <div class="t-kick">Desde cero</div>
       <div class="t-title">Academia</div>
       <div class="path">
-        <div class="st done"><span class="nd">✓</span><span class="tx"><b>¿Qué es el apalancamiento?</b><small>Lección de 5 minutos</small></span></div>
+        <div class="st done"><span class="nd">✓</span><span class="tx"><b>¿Qué es el apalancamiento?</b><small>lección de 5 min</small></span></div>
         <div class="st"><span class="nd">02</span><span class="tx"><b>Abre tu primera operación demo</b><small>misión · sin riesgo</small></span></div>
-        <div class="st"><span class="nd">03</span><span class="tx"><b>Sobrevive a una liquidación</b><small>misión · aprende gratis</small></span></div>
+        <div class="st"><span class="nd">03</span><span class="tx"><b>Sobrevive a una liquidación</b><small>misión · apréndelo gratis</small></span></div>
       </div>
       <div class="t-go">Empieza a aprender <i>→</i></div>
     </a>
 
-    <a class="tile s4" href="/blog/" style="--ac:#98a1ab">
-      <div class="t-kick">100+ guides</div>
-      <div class="t-title">Blog &amp; Guías</div>
-      <div class="blog-q">"Por qué el 90% de los traders de futuros cripto pierde dinero — y cómo estar en el 10%."</div>
+    <a class="tile s4" href="/es/blog/" style="--ac:#98a1ab">
+      <div class="t-kick">Más de 100 guías</div>
+      <div class="t-title">Blog y Guías</div>
+      <div class="blog-q">"Por qué el 90% de los traders de futuros cripto pierde dinero — y cómo ser parte del 10%."</div>
       <div class="blog-tags"><span>Apalancamiento</span><span>Stop-loss</span><span>Funding</span><span>Impuestos</span><span>Exchanges</span></div>
-      <div class="t-go">Leer las guías <i>→</i></div>
+      <div class="t-go">Lee las guías <i>→</i></div>
     </a>
 
-    <a class="tile s4 lime" href="/rewards/" style="--ac:#c2f64a">
+    <a class="tile s4 lime" href="/es/rewards/" style="--ac:#c2f64a">
       <div class="t-kick" style="color:#a9d33f"><span class="dot"></span> USDT gratis</div>
       <div class="t-title">Recompensas</div>
-      <div class="t-sub">Claim free USDT every 5 minutes, finish daily missions, win the 14-day league. Withdraw real USDT.</div>
-      <div class="rw-chip"><span class="cd"></span> CLAIM EVERY 5 MIN · DAILY MISSIONS</div>
+      <div class="t-sub">Reclama USDT gratis cada 5 minutos, completa misiones diarias y gana la liga de 14 días. Retira USDT real.</div>
+      <div class="rw-chip"><span class="cd"></span> RECLAMA CADA 5 MIN · MISIONES DIARIAS</div>
       <div class="t-go">Empieza a ganar <i>→</i></div>
     </a>
 
@@ -1248,16 +1251,16 @@ body.mpa-authed .hero{display:none}
 <footer class="foot">
   <div class="foot-grid">
     <div>
-      <a class="brand" href="/">MARGIN<b>PAD</b></a>
-      <p class="foot-blurb">Herramientas gratuitas de futuros cripto — una terminal de paper trading, screener en vivo, feed de liquidaciones, calculadoras y una API para bots. Sin depósito, sin KYC.</p>
+      <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+      <p class="foot-blurb">Herramientas gratis para futuros cripto — un terminal de paper trading, screener en vivo, feed de liquidaciones, calculadoras y una API de bot. Sin depósito, sin KYC.</p>
     </div>
-    <div><h5>Operar</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Gráficos</a><a href="/stock-trading-simulator/">Simulador de acciones</a><a href="/forex-trading-simulator/">Simulador de forex</a><a href="/index-trading-simulator/">Simulador de índices</a><a href="/leverage-trading-simulator/">Leverage simulator</a><a href="/crypto-trading-simulator-no-sign-up/">No sign-up simulator</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidaciones</a><a href="/crypto-liquidations-today/">Liquidations today</a><a href="/alerts/">Alertas de precio</a></div>
-    <div><h5>Analizar</h5><a href="/calculators">Calculadoras</a><a href="/tools/">Herramientas de trading</a><a href="/trading-api/">API para bots</a><a href="/coins/">Mercados</a><a href="/defi/">DeFi</a></div>
-    <div><h5>Guías</h5><a href="/blog/what-is-liquidation-in-crypto/">¿Qué es la liquidación?</a><a href="/blog/what-is-funding-rate/">Las tasas de funding explicadas</a><a href="/blog/crypto-leverage-explained/">El apalancamiento explicado</a><a href="/blog/best-crypto-futures-exchanges/">Los mejores exchanges de futuros</a><a href="/blog/btc-dominance-altcoin-season/">Dominancia de BTC &amp; altseason</a><a href="/blog/paper-trade-crypto-futures/">Cómo hacer paper trading</a></div>
-    <div><h5>Aprende &amp; gana</h5><a href="/academy/">Academia</a><a href="/blog/">Blog</a><a href="/news/">Noticias</a><a href="/rewards/">Recompensas</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Aviso publicitario: enlaces de referido</a></div>
+    <div><h5>Opera</h5><a href="/es/paper-trade">Paper Trade</a><a href="/es/charts">Gráficos</a><a href="/es/stock-trading-simulator/">Simulador de acciones</a><a href="/es/forex-trading-simulator/">Simulador de forex</a><a href="/es/index-trading-simulator/">Simulador de índices</a><a href="/es/leverage-trading-simulator/">Simulador de apalancamiento</a><a href="/es/crypto-trading-simulator-no-sign-up/">Simulador sin registro</a><a href="/es/screener">Screener</a><a href="/es/rekt/">Rekt — Liquidaciones</a><a href="/es/crypto-liquidations-today/">Liquidaciones de hoy</a><a href="/es/alerts/">Alertas de precio</a></div>
+    <div><h5>Analiza</h5><a href="/es/calculators">Calculadoras</a><a href="/es/tools/">Herramientas de Trading</a><a href="/es/trading-api/">Bot API</a><a href="/es/coins/">Mercados</a><a href="/es/defi/">DeFi</a></div>
+    <div><h5>Guías</h5><a href="/es/blog/what-is-liquidation-in-crypto/">¿Qué es la liquidación?</a><a href="/es/blog/what-is-funding-rate/">Las tasas de funding explicadas</a><a href="/es/blog/crypto-leverage-explained/">El apalancamiento explicado</a><a href="/es/blog/best-crypto-futures-exchanges/">Los mejores exchanges de futuros</a><a href="/es/blog/btc-dominance-altcoin-season/">Dominancia de BTC y temporada de altcoins</a><a href="/es/blog/paper-trade-crypto-futures/">Cómo hacer paper trading</a></div>
+    <div><h5>Aprende y gana</h5><a href="/es/academy/">Academia</a><a href="/es/blog/">Blog</a><a href="/es/news/">Noticias</a><a href="/es/rewards/">Recompensas</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Aviso publicitario: enlaces de referido</a></div>
   </div>
   <div class="foot-word">MARGINPAD</div>
-  <div class="foot-bottom"><span>© 2026 MarginPad · Solo trading simulado · No es asesoría financiera</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">Acerca de</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">Contacto</a><a href="/terms/" style="display:inline;padding:0 12px 0 0">Terms</a><a href="/privacy/" style="display:inline;padding:0">Privacidad</a></span></div>
+  <div class="foot-bottom"><span>© 2026 MarginPad · Solo trading simulado · No es asesoría financiera</span><span><a href="/es/about/" style="display:inline;padding:0 12px 0 0">Acerca de</a><a href="/es/contact/" style="display:inline;padding:0 12px 0 0">Contacto</a><a href="/es/terms/" style="display:inline;padding:0 12px 0 0">Términos</a><a href="/es/privacy/" style="display:inline;padding:0">Privacidad</a></span></div>
 </footer>
 
 
@@ -1381,7 +1384,7 @@ body.mpa-authed .hero{display:none}
       +'<div class="lb-tkm-sym"><span class="s">'+lbEsc(t.symbol||'')+'</span><span class="sd '+(side==='SHORT'?'dn':'up')+'">'+lbEsc(side)+'</span></div>'
       +'<div class="lb-tkm-roe '+(up?'up':'dn')+'">'+(up?'+':'')+(+t.roe).toFixed(2)+'%</div>'
       +'<div class="lb-tkm-pnl">Profit <b class="'+(up?'up':'dn')+'">'+lbMoney(t.pnl)+'</b></div>'
-      +'<a class="lb-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.symbol||'BTC'))+'">Open this market &rarr;</a>'
+      +'<a class="lb-tkm-cta" href="/es/paper-trade?coin='+encodeURIComponent(String(t.symbol||'BTC'))+'">Open this market &rarr;</a>'
       +'</div>';
     function close(){try{w.remove();}catch(e){}document.removeEventListener('keydown',onKey);}
     function onKey(e){if(e.key==='Escape')close();}
@@ -1430,7 +1433,7 @@ body.mpa-authed .hero{display:none}
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='green'?' pay':'');
-        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">Ver reglas</button>';}}
+        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
@@ -1466,7 +1469,7 @@ body.mpa-authed .hero{display:none}
   function lbFollowSet(){try{return JSON.parse(localStorage.getItem('mp_lb_following')||'[]');}catch(e){return [];}}
   function lbSetFollowSet(a){try{localStorage.setItem('mp_lb_following',JSON.stringify(a));}catch(e){}}
   function lbRenderFollowing(el){
-    if(!lbSignedIn()){el.innerHTML='<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>Iniciar sesión</button></div>';return;}
+    if(!lbSignedIn()){el.innerHTML='<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>Sign in</button></div>';return;}
     el.innerHTML='<div class="lb-empty">Loading…</div>';
     fetch('/api/lb/following').then(function(r){return r.json();}).then(function(d){
       var f=(d&&d.following)||[];
@@ -1662,6 +1665,31 @@ body.mpa-authed .hero{display:none}
     function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
     function ago(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
     function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;}
+    /* INSTANT MEMBER CARD (2026-09-10, owner: "it does not load right away like the paper trade card, so it"
+       "appears later out of nowhere and the user wonders what they clicked"). Measured before: mpa-authed
+       landed at ~180 ms (mp-auth restores the account from its own cache) but paint() only ran after
+       /api/pass + /api/goals + /api/predict all resolved — ~950 ms — so a 460 px block dropped in.
+       Now the card is drawn from what the browser ALREADY has (the account, and last visit's season numbers
+       kept in localStorage) the moment the account is known; the live numbers replace them in place. */
+    var SNAPK='mp_dash_snap';
+    function snapGet(){try{var v=JSON.parse(localStorage.getItem(SNAPK)||'null');return (v&&Date.now()-(+v.ts||0)<864e5)?v:null;}catch(e){return null;}}
+    function snapPut(o){try{o.ts=Date.now();localStorage.setItem(SNAPK,JSON.stringify(o));}catch(e){}}
+    var SKEL='<span class="dst sk"><b>&mdash;</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>&mdash;</b><em>Boards</em><i>loading</i></span>';
+    function ident(m){ var L=m.level||{},col=L.col||'#c2f64a';
+      document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(m.username||'trader')+'</b>';
+      var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';
+      if(m.avatar&&/^data:image\//.test(m.avatar)){av.innerHTML='<img src="'+m.avatar+'" alt="">';}else{av.textContent=(m.username||'M').charAt(0).toUpperCase();}
+      var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;
+      return col; }
+    function quick(){ var m=me(); if(!m||!dash.hidden)return; var sn=snapGet()||{};
+      try{ ident(m); }catch(e){ return; }
+      document.getElementById('dashEye').textContent=sn.eye||'Season';
+      var dq=+sn.day||0;
+      document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<dq?'on':i+1===dq?'on now':'')+'"></i>';}).join('');
+      document.getElementById('dashChips').innerHTML=sn.chips||SKEL;
+      document.getElementById('dashTodo').innerHTML=sn.todo||'<span><i>1</i>Checking your season…</span>';
+      dash.hidden=false; document.body.classList.add('mpa-dash'); document.documentElement.classList.add('mp-li');
+      try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){} }
     function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
     function paint(){
       var m=me(),signed=!!m,sk=(S.pass&&S.pass.season)||(S.goals&&S.goals.season)||null;
@@ -1681,11 +1709,11 @@ body.mpa-authed .hero{display:none}
         rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">40 tiers · free track</b></div>');
         rows.push('<div class="ss-row"><span>Daily call</span><b>'+(D?(D.open?'open · up to 12 Ticks':'closed today'):'one a day')+'</b></div>');
         rows.push('<div class="ss-row"><span>Season goals</span><b class="gold">pick two · 100 XP each</b></div>');
-        if(H)rows.push('<div class="ss-row"><span>Hora Feliz de XP</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
+        if(H)rows.push('<div class="ss-row"><span>XP Happy Hour</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
       }
       document.getElementById('ssRows').innerHTML=rows.join('');
       /* strip */
-      if(signed&&sk){dash.hidden=false;var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+      if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');document.documentElement.classList.add('mp-li');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
         document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
         var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
         var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
@@ -1697,9 +1725,14 @@ body.mpa-authed .hero{display:none}
         if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
           ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'—')+'</b><em>Boards</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):'not ranked yet')+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' — $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
         if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
-        document.getElementById('dashChips').innerHTML=ch.join('');
-        document.getElementById('dashTodo').innerHTML=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('')||'<span class="ok"><i>1</i>All caught up — go trade</span>';}
-      else dash.hidden=true;
+        /* keep whatever quick() already drew until real data exists — a fetch that has not answered yet must
+           never blank a card the reader is looking at */
+        var todoH=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('');
+        if(ch.length){document.getElementById('dashChips').innerHTML=ch.join('');}
+        if(sk&&!todoH)todoH='<span class="ok"><i>1</i>All caught up — go trade</span>';
+        if(todoH)document.getElementById('dashTodo').innerHTML=todoH;
+        if(sk&&ch.length)snapPut({eye:eye,day:day,chips:ch.join(''),todo:todoH}); /* next visit paints this instantly */}
+      else {dash.hidden=true;document.body.classList.remove('mpa-dash');document.documentElement.classList.remove('mp-li');} // signed out (or a session that expired behind the cached card): the hero comes back
       /* leading board: green days, top 5 with prizes */
       if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
         board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet — 10 closes and a green season get you on.</div>';}
@@ -1711,7 +1744,9 @@ body.mpa-authed .hero{display:none}
       Promise.all(ps).then(paint);}
     if(window.mpWhenVisible&&document.getElementById('season'))mpWhenVisible(document.getElementById('season'),function(){load(true);});else setTimeout(function(){load(true);},900);
     setTimeout(function(){load(true);},1200); /* the strip sits above the fold: do not wait for the section to scroll into view */
-    window.addEventListener('mp-auth-change',function(){setTimeout(function(){load(true);},400);});
+    /* draw the card NOW from what we already hold, then let the fetches refresh it in place */
+    quick(); var _qt=setInterval(function(){ if(me()){ quick(); clearInterval(_qt); } },80); setTimeout(function(){clearInterval(_qt);},8000); // mp-auth is deferred: poll briefly instead of testing once (the mpEx gotcha)
+    window.addEventListener('mp-auth-change',function(){quick();setTimeout(function(){load(true);},400);});
     window.addEventListener('mp:xp',function(){setTimeout(function(){load(false);},1500);});
     setInterval(function(){if(!document.hidden)load(true);},300000);
   })();
@@ -1768,19 +1803,19 @@ body.mpa-authed .hero{display:none}
       var st=document.getElementById('sgState'),sub=document.getElementById('sgSub'),list=document.getElementById('sgList');
       st.textContent=daysLeft();
       var picks=G.picks||[],max=G.max||2,rw=G.reward||{xp:100,ticks:40};
-      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
+      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
       var left=max-picks.length;
-      if(left>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';
+      if(left>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';
         var taken={};picks.forEach(function(p){taken[p.k]=1;});
         list.innerHTML=picks.map(row).join('')+(G.catalogue||[]).filter(function(c){return !taken[c.k];}).map(function(c){return '<button type="button" class="sg-opt" data-pick="'+c.k+'"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></button>';}).join('');}
-      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> y <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
+      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> and <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
     }
     function row(p){var pct=Math.min(100,Math.round((p.n||0)/(p.target||1)*100));return '<div class="sg-g'+(p.done?' done':'')+'"><div class="t"><span>'+esc(p.name)+'</span><b>'+(Math.min(p.n||0,p.target))+' / '+p.target+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div>'+(p.paid?'<div class="sg-paid">Claimed · +'+(G.reward.xp)+' XP · +'+(G.reward.ticks)+' Ticks</div>':(p.done?'<button type="button" class="sg-claim" data-claim="'+p.k+'">Claim +'+G.reward.xp+' XP · +'+G.reward.ticks+' Ticks</button>':''))+'</div>';}
     function load(){fetch('/api/goals',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.catalogue){G=d;paint();}}).catch(function(){});}
     box.addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||busy)return;busy=true;b.disabled=true;
       var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
       fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){busy=false;
-        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)setTimeout(window.mpXpCheck,600);load();}
+        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)window.mpXpCheck();load();}
         else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}
       }).catch(function(){busy=false;b.disabled=false;});});
     window.addEventListener('mp-auth-change',load);setTimeout(load,1100);setInterval(function(){if(!document.hidden)load();},300000);
@@ -1852,11 +1887,11 @@ body.mpa-authed .hero{display:none}
     function openHH(){ensureModal();var now=Date.now()+off,d=new Date(now);var ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur;var count=live?('Live now · ends in '+fmt(ts+dur-now)):('Starts in '+fmt((now<ts?ts:ts+86400000)-now));
       var h2=String(cfg.hourUTC).padStart(2,'0')+':00', e2=String((cfg.hourUTC+Math.floor((cfg.durMin||60)/60))%24).padStart(2,'0')+':'+String((cfg.durMin||60)%60).padStart(2,'0');
       modal.querySelector('.hhm-card').style.setProperty('--hc','#ffb020');
-      modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span></span>Hora Feliz de XP<span class="hhm-badge">'+(live?'LIVE':'DAILY')+'</span></div>'
+      modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span></span>XP Happy Hour<span class="hhm-badge">'+(live?'LIVE':'DAILY')+'</span></div>'
         +'<div class="hhm-count">'+count+'</div>'
         +'<div class="hhm-rows">'+row('When','Every day · '+h2+'–'+e2+' UTC')+row('Reward','+'+(cfg.xp||150)+' XP / trade')+row('Condition','Winning trade ≥ '+cfg.roeMin+'% ROE')+row('Max leverage',(cfg.levMax||100)+'×')+'</div>'
         +'<div class="hhm-note">Close a <b>winning paper trade</b> with at least <b>'+cfg.roeMin+'% ROE</b> at <b>'+(cfg.levMax||100)+'× leverage or less</b> during the daily window and you earn <b>+'+(cfg.xp||150)+' bonus XP</b> on top of the usual trade XP. Bonus applies to the trade’s <b>close time</b>.</div>'
-        +'<a class="hhm-cta" href="/paper-trade">Abrir Paper Trade →</a>';
+        +'<a class="hhm-cta" href="/es/paper-trade">Open Paper Trade →</a>';
       modal.hidden=false;}
     function openPromo(p){ensureModal();var now=Date.now()+off;var live=now>=p.startMs&&now<p.endMs;var count=live?('Live now · ends in '+fmt(p.endMs-now)):('Starts in '+fmt(p.startMs-now));
       var endD=new Date(p.endMs);var endTxt=endD.toISOString().slice(5,16).replace('T',' ')+' UTC';
@@ -1865,11 +1900,11 @@ body.mpa-authed .hero{display:none}
         +'<div class="hhm-count">'+count+' <small>· ends '+endTxt+'</small></div>'
         +'<div class="hhm-rows">'+row('Coins',(p.coins&&p.coins.length)?'<span class="hhm-chips">'+p.coins.map(function(c){return '<span>'+esc(c)+'</span>';}).join('')+'</span>':'Any coin')+row('Reward','+'+p.xp+' XP / trade')+row('Condition',(p.winOnly!==false?'Winning trade':'Any trade')+' ≥ '+p.roeMin+'% ROE')+row('Max leverage',p.levMax+'×')+'</div>'
         +'<div class="hhm-note">Close a '+(p.winOnly!==false?'<b>winning</b> ':'')+'paper trade on <b>'+coinsTxt(p.coins)+'</b> with at least <b>'+p.roeMin+'% ROE</b> at <b>'+p.levMax+'× leverage or less</b> before it ends, and earn <b>+'+p.xp+' bonus XP</b> per qualifying trade.</div>'
-        +'<a class="hhm-cta" href="/paper-trade">Abrir Paper Trade →</a>';
+        +'<a class="hhm-cta" href="/es/paper-trade">Open Paper Trade →</a>';
       modal.hidden=false;}
     if(whenCard)whenCard.addEventListener('click',openHH);
     // ---- render promo cards ----
-    function renderPromos(){if(!promosEl)return;promosEl.innerHTML=promos.map(function(p){return '<button type="button" class="hh-card hh-promo" data-pid="'+esc(p.id)+'"><div class="hh-top">'+esc(p.title)+'<span class="hh-state">'+(p.active?'LIVE':'SOON')+'</span><span class="hh-more">Detalles ›</span></div><div class="hh-count promo-count">—</div><div class="hh-sub">'+esc(coinsTxt(p.coins))+' · '+(p.winOnly!==false?'WIN ':'')+'over <b>'+p.roeMin+'% ROE</b> · max <b>'+p.levMax+'×</b> · <b>+'+p.xp+' XP</b></div></button>';}).join('');
+    function renderPromos(){if(!promosEl)return;promosEl.innerHTML=promos.map(function(p){return '<button type="button" class="hh-card hh-promo" data-pid="'+esc(p.id)+'"><div class="hh-top">'+esc(p.title)+'<span class="hh-state">'+(p.active?'LIVE':'SOON')+'</span><span class="hh-more">Details ›</span></div><div class="hh-count promo-count">—</div><div class="hh-sub">'+esc(coinsTxt(p.coins))+' · '+(p.winOnly!==false?'WIN ':'')+'over <b>'+p.roeMin+'% ROE</b> · max <b>'+p.levMax+'×</b> · <b>+'+p.xp+' XP</b></div></button>';}).join('');
       Array.prototype.forEach.call(promosEl.querySelectorAll('[data-pid]'),function(btn){btn.addEventListener('click',function(){var p=promos.filter(function(x){return x.id===btn.getAttribute('data-pid');})[0];if(p)openPromo(p);});});}
     function tick(){
       var anyHH=cfg&&cfg.enabled, now=Date.now()+off;
@@ -1999,19 +2034,22 @@ body.mpa-authed .hero{display:none}
     try{var _ms='';try{_ms=sessionStorage.getItem('mp_src')||'';if(!_ms){var _f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(_f0&&_f0.s&&(Date.now()-(+_f0.ts||0))<=7776e6)_ms=String(_f0.s);}}catch(e8){}
       navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname)+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
 
-  // ---- geo-aware exchange cards: US/CA visitors see US-legal venues first (Bybit/Binance/OKX geoblock them) ----
-  try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){
-    var cc=(g&&g.cc)||'';var RESTRICT={US:1,CA:1};if(!RESTRICT[cc])return;
-    var grid=document.querySelector('.exch-grid');if(!grid)return;
-    var LEGAL={Kraken:1,Coinbase:1};var region=cc==='CA'?'Canada':'the US';
-    Array.prototype.forEach.call(grid.querySelectorAll('a.exs'),function(a){
-      var ex=a.getAttribute('data-ex');var tag=a.querySelector('.exs-tag');
-      if(LEGAL[ex]){a.style.order='-1';a.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+region;tag.style.color='var(--exc)';}}
-      else{a.style.order='9';a.style.opacity='.5';if(tag)tag.textContent='Not in '+region;}
-    });
-    var eb=grid.querySelector('.exbig');if(eb)eb.style.order='-2';
-    var sub=document.querySelector('.band .band-s');if(sub&&sub.innerHTML.indexOf('available in')<0)sub.innerHTML='Showing exchanges available in '+region+' first. '+sub.innerHTML;
-  }).catch(function(){});}catch(e){}
+  /* Exchange cards in the order that fits the reader (2026-09-09). The ranking, the referral URLs and the
+     "not available here" rule all live in ONE place — window.mpEx / mpExArrange in mp-auth.js — so the homepage,
+     the terminal ticket, the screener sheet and the calculators grid can never drift apart. This block only adds
+     the homepage's own dressing: the halo + tag on the top card and one line in the band subtitle, and only where
+     a restriction is a documented fact (US, CA). Everywhere else the cards are simply reordered, nothing is said.
+     NOTE: this used to fetch /api/geo directly and the endpoint did not exist — it was dead code for weeks. */
+  /* mp-auth.js is DEFERRED, this block runs at parse time — so wait for the shared layer instead of testing for it once
+     (the first version tested once, found nothing, and silently did nothing at all). */
+  try{(function(){var n=0,t=setInterval(function(){if(!window.mpExArrange){if(++n>80)clearInterval(t);return;}clearInterval(t);mpArrangeHome();},100);})();}catch(e){}
+  function mpArrangeHome(){window.mpExArrange('.exch-grid','a.exs',function(el,name,off,cc,reg,idx){
+    var tag=el.querySelector('.exs-tag');
+    if(off){if(tag){tag.textContent='Not in '+(reg||'your country');tag.style.color='#8b97a5';return true;}return false;} /* true = this card is already labelled, skip the shared note */
+    if(reg&&idx===0){el.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+reg;tag.style.color='var(--exc)';}
+      var bnd=el.closest?el.closest('.band'):null,sub=bnd?bnd.querySelector('.band-s'):null; /* THIS band, not the first one on the page */
+      if(sub&&sub.innerHTML.indexOf('available in')<0)sub.innerHTML='Showing exchanges available in '+reg+' first. '+sub.innerHTML;}
+  });}
 
   // ---- real 24h liquidation total on the Rekt tile ----
   fetch('/api/cg/liquidations').then(function(r){return r.json();}).then(function(d){
@@ -2068,29 +2106,29 @@ body.mpa-authed .hero{display:none}
 })();
 </script>
 
-<aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
-  <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span>Atrás</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Estadísticas</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+<aside id="jrDrawer" class="jr-drawer" hidden aria-label="Diario de trading">
+  <button class="jr-grab" data-jr-close type="button" aria-label="Volver"><span>Atrás</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</span><a class="jr-stats-lnk" href="/es/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Estadísticas</a><button id="jrClose" class="jr-x" type="button" aria-label="Cerrar">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
-  <p class="jr-empty" id="jrEmpty">Aún no hay operaciones. Abre una desde <a href="/paper-trade" style="color:#c2f64a;text-decoration:none">Paper Trade</a>.</p>
+  <p class="jr-empty" id="jrEmpty">Todavía no hay tickets. Abre uno desde <a href="/es/paper-trade" style="color:#c2f64a;text-decoration:none">Paper Trade</a>.</p>
 </aside>
-<button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Chat</span></button>
+<button id="chatFab" type="button" aria-label="Abrir chat de traders"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Chat</span></button>
 <div id="chatBox" hidden>
-  <div class="ct-head"><span class="ct-title">Chat de traders</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">✕</button></div>
+  <div class="ct-head"><span class="ct-title">Chat de Traders</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Cerrar">✕</button></div>
   <div class="ct-gate" id="ctGate">
-    <p>Inicia sesión para unirte al chat — es gratis (solo un código por email). Por favor, no publiques tu email en el chat.</p>
-    <button id="ctSignin" type="button">Iniciar sesión para chatear</button>
+    <p>Inicia sesión para unirte al chat — es gratis (solo un código por email). Por favor no publiques tu email en el chat.</p>
+    <button id="ctSignin" type="button">Inicia sesión para chatear</button>
   </div>
   <div class="ct-msgs" id="ctMsgs" hidden></div>
   <form class="ct-form" id="ctForm" hidden>
-    <input id="ctInput" maxlength="280" placeholder="Type a message…" autocomplete="off">
-    <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+    <input id="ctInput" maxlength="280" placeholder="Escribe un mensaje…" autocomplete="off">
+    <button type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=647e9f88"></script>
 <script defer src="/assets/mp-auth.js?v=034bd270"></script>
-<script defer src="/assets/mp-nav.js?v=ff97ec86"></script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
@@ -2107,7 +2145,7 @@ body.mpa-authed .hero{display:none}
 @media(max-width:980px){.mpq{display:none}}
 .mpqm{display:none}
 @media(max-width:980px){
-  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px dashed #232b3a;background:#07090c;margin:0 0 2px}
+  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px solid #1c2230;background:#07090c;margin:0;box-shadow:0 10px 16px -6px rgba(7,9,12,.95)} /* 2026-09-12: sticky under the header — no 2px gap and no dashed edge for the scrolling card to peek through; the shadow fades content out under the bar instead of cutting it */
   .mpqm-cap{flex:none;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#c2f64a;padding:0 10px;border-right:1px solid #1c2230;height:100%;display:flex;align-items:center;gap:5px}
   .mpqm-cap s{display:inline-block;width:6px;height:11px;background:#c2f64a;animation:mpqB 1s infinite;text-decoration:none}
   .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
@@ -2139,13 +2177,23 @@ body.mpa-authed .hero{display:none}
   } else { /* mobile: terminal price tape under the header — live via the same WS map mp-trade.js feeds */
     var hd=document.querySelector('header'); if(!hd)return;
     var m=document.createElement('div');m.className='mpqm';
-    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT"></span></span>';
-    hd.parentNode.insertBefore(m,hd.nextSibling);
+    /* 2026-09-12 (owner: "the tape sometimes slides under the header or vanishes and comes back"): (1) the track was rebuilt with innerHTML
+       every 1.5 s and only for coins that already had a price, so its width — and the -50% loop point of the CSS animation — jumped
+       whenever a coin appeared or a price changed digits, which read as the tape blinking out; now every coin has a fixed slot from the
+       start and only the text nodes change. (2) the tape is sticky right under the sticky header, so it never scrolls beneath it. */
     var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE'],chg={};
+    var slot=function(sy){return '<span data-tp="'+sy+'"><span class="sym">'+sy+'</span> <b data-p>—</b> <span data-c></span></span>';};
+    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT">'+COINS.map(slot).join('')+'<span class="sym">· marginpad.io ·</span>'+COINS.map(slot).join('')+'</span></span>';
+    /* The tape lives INSIDE the sticky header as its second row (2026-09-12, owner screenshot: a separately-stuck tape sat a few px
+       below the header once the header's height changed after load, and the member card showed through the gap). One sticky block,
+       one edge, nothing to re-measure. */
+    hd.style.flexWrap='wrap';hd.style.rowGap='0';hd.appendChild(m); /* rowGap 0 (owner 2026-09-12: "half a centimetre of empty space between the tape and the header"): measured 26 px = the header's flex gap 14 px wrapping onto the new row + the tape's own 12 px margin */
+    hd.style.setProperty('padding-bottom','0','important');hd.style.setProperty('border-bottom','none','important');hd.style.setProperty('margin-bottom','0','important'); /* mp-nav.js pins header padding-bottom:12px + margin-bottom:6px !important site-wide; here the tape's own bottom border is the header's bottom edge and the card starts right under it */
+    m.style.cssText='flex:0 0 calc(100% + 2*var(--pad));width:calc(100% + 2*var(--pad));margin:6px calc(-1*var(--pad)) 0;position:static;';
     function seed(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){(d&&d.pairs||[]).forEach(function(x){var sy=String(x.symbol||'').replace('USDT','');chg[sy]=+x.changePct;window.mpLivePrices=window.mpLivePrices||{};if(!window.mpLivePrices[sy]&&+x.price>0)window.mpLivePrices[sy]={p:+x.price,t:Date.now()};});draw();}).catch(function(){});}
-    function draw(){var px=window.mpLivePrices||{},h='';
-      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy];h+='<span><span class="sym">'+sy+'</span> <b>'+fpx(o.p)+'</b>'+(c!=null&&isFinite(c)?' <span class="'+(c>=0?'up':'dn')+'">'+(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%</span>':'')+'</span>';});
-      if(!h)return; var t=document.getElementById('mpqMT'); if(t)t.innerHTML=h+'<span class="sym">· marginpad.io ·</span>'+h;
+    function draw(){var px=window.mpLivePrices||{};
+      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy],pt=fpx(o.p),ct=(c!=null&&isFinite(c))?(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%':'',cc=(c!=null&&isFinite(c))?(c>=0?'up':'dn'):'';
+        var els=m.querySelectorAll('[data-tp="'+sy+'"]');for(var i=0;i<els.length;i++){var p=els[i].querySelector('[data-p]'),k=els[i].querySelector('[data-c]');if(p&&p.textContent!==pt)p.textContent=pt;if(k&&(k.textContent!==ct||k.className!==cc)){k.textContent=ct;k.className=cc;}}});
     }
     seed(); setInterval(draw,1500); setInterval(seed,90000);
   }
@@ -2195,11 +2243,11 @@ body.mpa-authed .hero{display:none}
 <div class="lbrm" id="lbRulesM" hidden>
   <div class="lbrm-p">
     <div class="lbrm-h"><b>Reglas de las tablas de temporada</b><button class="lbrm-x" type="button" id="lbRulesX">&times;</button></div>
-    <p class="lbrm-sub">Cada tabla corre por temporada de 14 días y paga a los 5 primeros en USDT real al saldo de recompensas. Las trampas, las cuentas baneadas y los símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.</p>
-    <div class="lbrm-sec"><b class="h">Green days</b><ul><li>Counts the <b>days of the season you finished in profit</b> — everything you closed that day, added up.</li><li>A day only turns green with <b>at least 3 closed trades</b>, so one lucky micro-trade can't buy a day.</li><li>You need <b>10 closed trades</b> in the season, and you must be <b>up on the season overall</b>, to rank.</li><li>Ties go to the bigger season profit. Days run from the season start in UTC.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> you trade on 9 days and finish 6 of them green — your score is <b>6 days</b>. A trader who made more in one huge session but was green on 2 days ranks below you.</div></div>
-    <div class="lbrm-sec"><b class="h">Mayor ROE</b><ul><li>Tu mejor operación de paper trading cerrada de la temporada, según el ROE (ganancia como % del margen).</li><li>Solo cuentan las operaciones abiertas Y cerradas en esta temporada, ejecutadas y cerradas por el servidor.</li><li>El ROE debe ser físicamente posible para el movimiento y el apalancamiento — los números falseados se descartan.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> BTC long a 20x, precio +4% antes de cerrar — esa operación es +80% de ROE.</div></div>
-    <div class="lbrm-sec"><b class="h">Mejor tasa de acierto</b><ul><li>Al menos 20 operaciones contabilizadas cerradas en esta temporada.</li><li>Una operación ganadora solo cuenta con +5% de ROE o más en un movimiento de precio real (al menos 0,2%). Las pérdidas siempre cuentan.</li><li>Las copias cuentan una sola vez: posiciones idénticas (misma moneda, misma dirección) abiertas juntas y cerradas juntas cuentan como UNA operación.</li><li>La clasificación usa un puntaje ajustado por confianza, no el porcentaje bruto — más partidas con una tasa de acierto alta superan a menos partidas con una perfecta.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> 45-3 (93,8%) obtiene 89,1 puntos y queda POR ENCIMA de 20-0 (100%), que obtiene 83,9.</div><div class="lbrm-ex"><b>Ejemplo (copias):</b> 10 shorts idénticos de SOL abiertos en un minuto y cerrados juntos = 1 operación contabilizada, gane o pierda.</div></div>
-    <div class="lbrm-sec"><b class="h">XP de temporada</b><ul><li>Todo el XP ganado durante la temporada cuenta: trading, Academia, misiones, duelos, rachas.</li><li>Premia la actividad, no el tamaño de la posición.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> 30 operaciones cerradas, 12 lecciones de la Academia y misiones diarias pueden superar a una operación de suerte.</div></div>
+    <p class="lbrm-sub">Cada tabla corre por temporada de 14 días y paga a los 5 mejores en USDT real al saldo de recompensas. Las trampas, cuentas baneadas y símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.</p>
+    <div class="lbrm-sec"><b class="h">Días verdes</b><ul><li>Cuenta los <b>días de la temporada que terminaste en ganancia</b> — todo lo que cerraste ese día, sumado.</li><li>Un día solo se vuelve verde con <b>al menos 3 operaciones cerradas</b>, así una micro-operación con suerte no puede comprar un día.</li><li>Necesitas <b>10 operaciones cerradas</b> en la temporada, y debes estar <b>en ganancia en la temporada en general</b>, para clasificar.</li><li>Los empates se resuelven a favor de la mayor ganancia de temporada. Los días corren desde el inicio de la temporada en UTC.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> operas 9 días y terminas 6 de ellos en verde — tu puntaje es <b>6 días</b>. Un trader que ganó más en una sesión enorme pero solo estuvo en verde 2 días queda por debajo de ti.</div></div>
+    <div class="lbrm-sec"><b class="h">Mayor ROE</b><ul><li>Tu mejor operación cerrada de paper trading de la temporada, por ROE (ganancia como % del margen).</li><li>Solo cuentan las operaciones abiertas Y cerradas esta temporada, ejecutadas y cerradas por el servidor.</li><li>El ROE debe ser físicamente posible para el movimiento y el apalancamiento — los números fabricados se descartan.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> BTC long a 20x, el precio sube +4% antes de que cierres — esa operación es +80% de ROE.</div></div>
+    <div class="lbrm-sec"><b class="h">Mejor tasa de acierto</b><ul><li>Al menos 20 operaciones contabilizadas cerradas esta temporada.</li><li>Una operación ganadora solo cuenta con +5% de ROE o mejor sobre un movimiento de precio real (al menos 0.2%). Las pérdidas siempre cuentan.</li><li>Las copias cuentan una sola vez: posiciones idénticas (misma moneda, misma dirección) abiertas juntas y cerradas juntas cuentan como UNA sola operación.</li><li>La clasificación usa un puntaje ajustado por confianza, no el porcentaje bruto — más operaciones con una tasa de acierto alta superan a menos operaciones con una tasa perfecta.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> 45-3 (93.8%) obtiene un puntaje de 89.1 y queda POR ENCIMA de 20-0 (100%), que obtiene 83.9.</div><div class="lbrm-ex"><b>Ejemplo (copias):</b> 10 shorts idénticos de SOL abiertos en un minuto y cerrados juntos = 1 operación contabilizada, gane o pierda.</div></div>
+    <div class="lbrm-sec"><b class="h">XP de Temporada</b><ul><li>Todo el XP ganado durante la temporada cuenta: trading, Academy, misiones, duelos, rachas.</li><li>Recompensa la actividad, no el tamaño de posición.</li></ul><div class="lbrm-ex"><b>Ejemplo:</b> 30 operaciones cerradas, 12 lecciones de Academy y misiones diarias pueden superar a una operación con suerte.</div></div>
   </div>
 </div>
 <script>

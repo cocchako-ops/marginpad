@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-drawdown-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Recuperación de Drawdown — La Ganancia que Exige una Pérdida | MarginPad</title>
+<meta name="description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss — why -50% needs +100% — and how long recovery takes at your edge." />
+<meta name="keywords" content="drawdown calculator, loss recovery calculator, percent to recover loss" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-drawdown-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-drawdown-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-drawdown-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-drawdown-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Drawdown Recovery Calculator — The Gain a Loss Demands | MarginPad" />
+<meta property="og:description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss — why -50% needs +100% — and how long recovery takes at your edge." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-drawdown-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Recuperación de Drawdown","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-drawdown-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Recuperación de Drawdown","item":"https://marginpad.io/es/crypto-drawdown-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué drawdown es sobrevivible?","acceptedAnswer":{"@type":"Answer","text":"Mecánicamente, cualquier cosa por debajo del 100%; psicológicamente, mucho menos. La mayoría de los programas profesionales tratan el 20-30% como la línea roja, más allá de la cual la recuperación necesaria exige retornos poco realistas."}},{"@type":"Question","name":"¿Cómo mantengo los drawdowns superficiales?","acceptedAnswer":{"@type":"Answer","text":"Riesgo fraccional fijo por operación (0.5-2%), dimensionar a partir de los stops, reducir el tamaño después de rachas perdedoras — la calculadora de tamaño de posición implementa las dos primeras."}},{"@type":"Question","name":"¿Aplica esto a cuentas apalancadas?","acceptedAnswer":{"@type":"Answer","text":"Incluso más: la liquidación es un drawdown del 100% de ese margen. Esta matemática es la razón por la que la liquidación nunca debe ser tu stop-loss."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Recuperación de Drawdown — La Ganancia que Exige una Pérdida","url":"https://marginpad.io/es/crypto-drawdown-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Recuperación de Drawdown</h1>
+<p class="sub">Las pérdidas y las ganancias no son simétricas. Esta es la aritmética brutal sobre la que se construye todo plan de riesgo.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="acct">Cuenta antes (USD)</label><input id="acct" type="number" inputmode="decimal" value="10000"></div><div class="f"><label for="dd">Drawdown %</label><input id="dd" type="number" inputmode="decimal" value="30" step="0.5"></div><div class="f"><label for="edge">Retorno mensual promedio %</label><input id="edge" type="number" inputmode="decimal" value="5" step="0.5"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">ganancia de recuperación = 1 / (1 &minus; drawdown) &minus; 1</div>
+<p>Los porcentajes se componen desde una base más pequeña después de una pérdida: <strong>-10% necesita +11%</strong>, -30% necesita +43%, -50% necesita +100%, -90% necesita +900%. Esta asimetría es el argumento matemático a favor de un riesgo pequeño por operación — los drawdowns superficiales son baratos de reparar, los profundos consumen meses de ventaja.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Una cuenta de $10,000 que cae <b>30%</b> queda en $7,000 y necesita <b>+42.9%</b> — unos <b>7.3 meses</b> de una sólida ventaja del 5%/mes gastados en reparar en lugar de componer.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Qué drawdown es sobrevivible?</summary><p>Mecánicamente, cualquier cosa por debajo del 100%; psicológicamente, mucho menos. La mayoría de los programas profesionales tratan el 20-30% como la línea roja, más allá de la cual la recuperación necesaria exige retornos poco realistas.</p></details><details><summary>¿Cómo mantengo los drawdowns superficiales?</summary><p>Riesgo fraccional fijo por operación (0.5-2%), dimensionar a partir de los stops, reducir el tamaño después de rachas perdedoras — la calculadora de tamaño de posición implementa las dos primeras.</p></details><details><summary>¿Aplica esto a cuentas apalancadas?</summary><p>Incluso más: la liquidación es un drawdown del 100% de ese margen. Esta matemática es la razón por la que la liquidación nunca debe ser tu stop-loss.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/position-size-calculator/">Tamaño de posición</a><a href="/es/risk-of-ruin-calculator/">Riesgo de ruina</a><a href="/es/crypto-win-rate-calculator/">Expectativa por tasa de acierto</a><a href="/es/paper-trade">Paper trading</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var a=+document.getElementById('acct').value,d=+document.getElementById('dd').value/100,e=+document.getElementById('edge').value/100;var r=document.getElementById('res');if(!(a>0&&d>0&&d<1)){r.innerHTML='';return;}var left=a*(1-d),need=(1/(1-d)-1)*100,months=e>0?Math.log(1/(1-d))/Math.log(1+e):null;r.innerHTML='<div class="rrow"><span class="k">Account after drawdown</span><span class="v dn">'+left.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Gain needed to recover</span><span class="v">+'+need.toFixed(1)+'%</span></div>'+(months!=null?'<div class="rrow"><span class="k">Months to highs at '+(e*100).toFixed(1)+'%/mo</span><span class="v">'+months.toFixed(1)+'</span></div>':'');}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

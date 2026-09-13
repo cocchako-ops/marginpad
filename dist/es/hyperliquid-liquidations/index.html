@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/hyperliquid-liquidations/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Liquidaciones de Hyperliquid — Niveles de Liquidación en Vivo y Cómo Funcionan | MarginPad</title>
+<meta name="description" content="How liquidations work on Hyperliquid: oracle mark price, maintenance margin, the HLP backstop and auto-deleveraging — plus a live board of the largest positions closest to their liquidation price." />
+<meta name="keywords" content="hyperliquid liquidations, hyperliquid liquidation price, hyperliquid liquidation feed, hyperliquid liquidation levels, hyperliquid margin, hlp vault, hyperliquid auto deleveraging, hyperliquid adl" />
+<link rel="canonical" href="https://marginpad.io/es/hyperliquid-liquidations/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/hyperliquid-liquidations/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/hyperliquid-liquidations/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/hyperliquid-liquidations/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Hyperliquid Liquidations — Live Levels &amp; How They Work" />
+<meta property="og:description" content="Oracle marks, maintenance margin, the HLP backstop and ADL — plus a live board of the biggest Hyperliquid positions closest to liquidation." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/hyperliquid-liquidations/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidaciones de Hyperliquid","item":"https://marginpad.io/es/hyperliquid-liquidations/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo funciona la liquidación en Hyperliquid?","acceptedAnswer":{"@type":"Answer","text":"Una posición se liquida cuando su margen cae por debajo del requisito de mantenimiento, medido frente a un precio mark del oráculo y no frente a la última operación del libro. El margen de mantenimiento de Hyperliquid es la mitad del margen inicial al apalancamiento máximo, así que en un activo de 40x el requisito de mantenimiento es el 1.25% del valor de la posición. Si la liquidación no puede ejecutarse en el libro, la bóveda HLP toma la posición, y en casos extremos el auto-deleveraging la cierra contra traders rentables del lado contrario."}},{"@type":"Question","name":"¿A qué precio liquida Hyperliquid?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid liquida contra su precio mark del oráculo, construido a partir de varios exchanges spot externos, no de la última operación en el propio Hyperliquid. Esto es deliberado: evita que un libro poco profundo o una sola mecha disparen liquidaciones, pero también significa que tu posición puede cerrarse aunque el gráfico de Hyperliquid nunca haya marcado tu nivel de liquidación."}},{"@type":"Question","name":"¿Qué es la bóveda HLP y qué hace en una liquidación?","acceptedAnswer":{"@type":"Answer","text":"HLP es la bóveda de liquidez propiedad del protocolo de Hyperliquid. Cuando el libro de órdenes no puede absorber una liquidación a un precio aceptable, HLP toma la posición en su propio libro y la va cerrando. Por eso las ganancias y pérdidas de HLP oscilan con más fuerza durante las cascadas: está en el otro lado del flujo forzado."}},{"@type":"Question","name":"¿Es posible el auto-deleveraging (ADL) en Hyperliquid?","acceptedAnswer":{"@type":"Answer","text":"Sí. Si una posición liquidada no puede cerrarse en el libro y el respaldo tampoco puede absorberla, el protocolo reduce las posiciones contrarias de traders rentables y muy apalancados para mantener el sistema solvente. Es poco frecuente y es la última línea de defensa, pero significa que una posición ganadora puede cerrarse sin que tú lo ordenes."}},{"@type":"Question","name":"¿Puedo ver las liquidaciones de Hyperliquid en tiempo real?","acceptedAnswer":{"@type":"Answer","text":"Las posiciones y sus precios de liquidación son públicos on-chain, así que la tabla de esta página muestra qué posiciones grandes están más cerca de cerrarse a la fuerza ahora mismo. Las liquidaciones individuales ejecutadas son más difíciles: Hyperliquid no publica un feed dedicado de liquidaciones, así que los agregadores, MarginPad incluido, las reconstruyen a partir de las ejecuciones, lo que capta los eventos grandes y las cascadas pero no cada liquidación pequeña."}},{"@type":"Question","name":"¿Por qué mi precio de liquidación en Hyperliquid es distinto al de la calculadora de mi exchange?","acceptedAnswer":{"@type":"Answer","text":"Porque Hyperliquid deriva el margen de mantenimiento del apalancamiento máximo del activo (la mitad del margen inicial al apalancamiento máximo) en lugar de usar una tasa fija, y porque las posiciones con margen cruzado están respaldadas por toda tu cuenta. Usa una calculadora construida sobre la fórmula propia de Hyperliquid, no una genérica."}}]}</script>
+<style>
+  .hl-eyebrow{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8b95a1;border:1px solid var(--line-bright);border-radius:999px;padding:5px 12px;margin-bottom:14px}
+  .hl-eyebrow i{width:6px;height:6px;border-radius:50%;background:#c2f64a;box-shadow:0 0 8px #c2f64a}
+  .hl-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 6px}
+  @media(max-width:640px){.hl-tiles{grid-template-columns:1fr}}
+  .hl-tile{background:var(--panel);border:1px solid var(--line-bright);border-radius:13px;padding:13px 15px}
+  .hl-tile .k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8b95a1;margin-bottom:6px}
+  .hl-tile .v{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--ink)}
+  .hl-tile .v.up{color:#2ebd85}.hl-tile .v.dn{color:#ff5a4d}
+  .hl-wrap{overflow-x:auto;margin:16px 0 6px;border:1px solid var(--line-bright);border-radius:14px}
+  table.hl-t{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px}
+  table.hl-t th{text-align:left;padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid #2a3140;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b95a1;white-space:nowrap}
+  table.hl-t td{padding:10px 12px;border-bottom:1px solid #1c2230;white-space:nowrap;font-variant-numeric:tabular-nums}
+  table.hl-t tr:last-child td{border-bottom:none}
+  .hl-side{font-family:'Space Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px}
+  .hl-side.l{color:#2ebd85;background:rgba(46,189,133,.12)}
+  .hl-side.s{color:#ff5a4d;background:rgba(255,90,77,.12)}
+  .hl-dist{font-family:'Space Mono',monospace;font-weight:700}
+  .hl-dist.hot{color:#ff5a4d}.hl-dist.warm{color:#f5a623}.hl-dist.cool{color:#8b95a1}
+  .hl-note{font-size:12.5px;color:var(--ink-faint);margin:8px 0 0}
+  .hl-cta{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 4px}
+  .hl-cta a{color:#c2f64a;border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:8px 15px;font-size:13px;text-decoration:none}
+  .hl-cta a:hover{background:rgba(194,246,74,.1)}
+  .hl-mm{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .hl-mm th,.hl-mm td{text-align:left;padding:8px 10px;border-bottom:1px solid #1c2230}
+  .hl-mm th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8b95a1}
+</style>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
+.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
+.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
+.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
+.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
+.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
+.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
+.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
+.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
+.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
+.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
+@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Liquidaciones de Hyperliquid — Niveles de Liquidación en Vivo y Cómo Funcionan","url":"https://marginpad.io/es/hyperliquid-liquidations/","dateModified":"2026-09-11T11:39:32.518Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/rekt/">Feed de Rekt</a><a href="/es/hyperliquid-whales/">Ballenas</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Liquidaciones de Hyperliquid</div>
+  <article>
+    <div class="hl-eyebrow"><i></i>En vivo · posiciones on-chain</div>
+    <h1>Liquidaciones de Hyperliquid</h1>
+    <p class="lead">Hyperliquid liquida todas las posiciones on-chain, así que lo que la mayoría de los exchanges esconde es público aquí: puedes ver las posiciones abiertas y el precio exacto al que cada una se cierra a la fuerza. Esta página explica cómo ocurre realmente una liquidación en Hyperliquid, y muestra cuáles de las posiciones más grandes están más cerca de ese precio ahora mismo.</p>
+
+    <div class="hl-tiles">
+      <div class="hl-tile"><div class="k">Posiciones de ballenas abiertas</div><div class="v" id="hlTot">—</div></div>
+      <div class="hl-tile"><div class="k">Long vs. short</div><div class="v" id="hlLs">—</div></div>
+      <div class="hl-tile"><div class="k">A menos del 5% de la liquidación</div><div class="v" id="hlNear">—</div></div>
+    </div>
+
+    <h2>Más cerca de la liquidación ahora mismo</h2>
+    <p>Cada fila es una posición real en Hyperliquid. <strong>Distancia</strong> es cuánto tiene que recorrer el precio mark del oráculo antes de que esa posición se cierre a la fuerza — cuanto más pequeña es, más precaria es la posición.</p>
+    <div class="hl-wrap">
+      <table class="hl-t">
+        <thead><tr><th>Moneda</th><th>Lado</th><th>Valor de la posición</th><th>Apalancamiento</th><th>Marca</th><th>Liquidación</th><th>Distancia</th></tr></thead>
+        <tbody id="hlBody"><tr><td colspan="7" style="color:#8b95a1;padding:16px 12px">Cargando posiciones en vivo…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="hl-note" id="hlStamp">Las posiciones se leen en vivo desde el conjunto de ballenas on-chain y se actualizan cada 60 segundos.</p>
+    <div class="hl-cta">
+      <a href="/es/hyperliquid-liquidation-calculator/">Calcula tu propio precio de liquidación</a> <a href="/es/hyperliquid-whales/">Tabla completa de ballenas</a> <a href="/es/rekt/">Feed de liquidaciones en vivo</a>
+    </div>
+
+    <h2>Cómo ocurre una liquidación en Hyperliquid</h2>
+    <p>La secuencia es la misma que sigue cualquier exchange de perpetuos, pero la versión de Hyperliquid tiene tres detalles que deciden la mayoría de los resultados.</p>
+    <p><strong>1. El disparador es un mark del oráculo, no el libro de órdenes.</strong> Hyperliquid valora tu posición frente a un precio mark construido a partir de varios exchanges spot externos, y luego lo compara con tu requisito de mantenimiento. Por eso un libro poco profundo o una sola mecha violenta en el propio Hyperliquid no liquida a todo el mundo — y también por eso tu posición puede cerrarse aunque el gráfico de Hyperliquid nunca haya marcado tu nivel de liquidación. El gráfico no es la autoridad; el oráculo sí lo es.</p>
+    <p><strong>2. El requisito de mantenimiento escala con el apalancamiento máximo del activo.</strong> En lugar de una tasa fija, Hyperliquid fija el margen de mantenimiento en la mitad del margen inicial requerido al apalancamiento máximo del activo. En un activo de 40x eso es el 1.25% del valor de la posición; en uno de 3x es el 16.7%. La consecuencia práctica es que el mismo apalancamiento nominal representa una cantidad de riesgo distinta según qué activo estés operando.</p>
+    <table class="hl-mm">
+      <tr><th>Apalancamiento máximo del activo</th><th>Margen de mantenimiento</th><th>Qué significa eso al apalancamiento máximo</th></tr>
+      <tr><td>40x (clase BTC)</td><td>1.25%</td><td>Un movimiento adverso de aproximadamente 1.2% acaba con la posición</td></tr>
+      <tr><td>20x</td><td>2.5%</td><td>Aproximadamente 2.5%</td></tr>
+      <tr><td>10x</td><td>5%</td><td>Aproximadamente 5%</td></tr>
+      <tr><td>3x (listados poco líquidos y volátiles)</td><td>16.7%</td><td>Deliberadamente difícil de liquidar — el exchange se protege a sí mismo, no a ti</td></tr>
+    </table>
+    <p>Nuestra <a href="/es/hyperliquid-liquidation-calculator/">calculadora de liquidación de Hyperliquid</a> usa esta misma construcción, así que el número que devuelve coincide con lo que hará el protocolo, en lugar de ser una aproximación genérica de exchange.</p>
+    <p><strong>3. Si el libro no puede absorberla, lo hace el protocolo.</strong> Una posición liquidada se ofrece primero al libro de órdenes. Cuando el libro no puede tomarla a un precio aceptable, la <strong>bóveda HLP</strong> — el fondo de liquidez propiedad del protocolo de Hyperliquid — asume la posición en su propio balance y la va cerrando poco a poco. Por eso el P&amp;L de HLP oscila con más fuerza justo durante las cascadas: está en el otro lado del flujo forzado cuando nadie más lo está. En el caso extremo en que ni eso alcanza, el <strong>auto-deleveraging</strong> cierra posiciones rentables y muy apalancadas del lado contrario para mantener el sistema solvente. Es poco frecuente, es la última línea de defensa, y puede cerrar una operación ganadora sin que tú lo ordenes.</p>
+
+    <h2>El margen cruzado convierte el precio de liquidación en un blanco móvil</h2>
+    <p>En modo aislado, solo el margen que asignaste respalda la posición, y el precio de liquidación se comporta como predice una calculadora. En modo cruzado, todo el saldo de tu cuenta la respalda, así que el precio de liquidación no depende solo de esa operación — cada otra posición que tengas, y cada ganancia o pérdida no realizada, lo mueve. Abre una segunda posición cruzada y el precio de liquidación de la primera cambia, sin que tú la toques.</p>
+    <p>Esta es la causa más común de "¿por qué me liquidaron ahí?" en Hyperliquid. Si quieres un precio de liquidación sobre el que puedas planear, usa margen aislado; si quieres que una posición grande tenga toda la cuenta como colchón, usa margen cruzado y acepta que el número es dinámico. Lee la mecánica en <a href="/es/blog/cross-vs-isolated-margin/">margen cruzado frente a margen aislado</a>.</p>
+
+    <h2>Leer la tabla de arriba como un trader</h2>
+    <ul>
+      <li><strong>Los grupos importan más que cualquier fila individual.</strong> Cuando varias posiciones grandes comparten una zona de liquidación es donde un movimiento normal se convierte en una cascada — la primera liquidación vende contra el nivel de la siguiente. Es el mismo mecanismo que un <a href="/es/heatmap">mapa de calor de liquidaciones</a> visualiza para los exchanges centralizados.</li>
+      <li><strong>El apalancamiento te dice cómo va a morir la posición.</strong> Una posición a 40x con un colchón del 1% está a una vela de cerrarse; una posición a 3x a un 30% de distancia es, en la práctica, una tenencia spot con pasos extra.</li>
+      <li><strong>Grande y cerca no es lo mismo que equivocado.</strong> Las ballenas añaden margen, se cubren en otro lado y mantienen posiciones que, aisladas, parecen temerarias. Trata la tabla como un mapa de dónde podría aparecer flujo forzado, no como una predicción ni una señal.</li>
+    </ul>
+
+    <h2>Qué podemos mostrarte y qué no</h2>
+    <p>Dos cosas distintas se llaman "liquidaciones de Hyperliquid", y vale la pena ser preciso sobre cuál estás viendo.</p>
+    <p><strong>Las posiciones abiertas y sus niveles de liquidación son públicos y exactos.</strong> Están on-chain: la tabla de esta página lee posiciones reales, apalancamiento real y el precio de liquidación propio del protocolo. Nada es una estimación.</p>
+    <p><strong>Las liquidaciones individuales ejecutadas son más difíciles de rastrear, y no vamos a fingir lo contrario.</strong> Hyperliquid no publica un stream dedicado de liquidaciones — un cierre forzado se resuelve como una ejecución normal, y el detalle de liquidación solo es visible a través del historial de ejecuciones de la contraparte. Los agregadores, MarginPad incluido, las reconstruyen a partir de eso. Esto capta los eventos grandes y las cascadas, que es lo que importa para la estructura del mercado, pero es una muestra, no un recuento completo. Nuestro <a href="/es/rekt/">feed de liquidaciones en vivo</a> transmite Hyperliquid junto con otros ocho exchanges sobre esa misma base. Si ves un total de 24 horas de Hyperliquid citado en algún lugar sin esa advertencia, desconfía del número.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿A qué precio liquida Hyperliquid?</h3>
+    <p>El precio mark del oráculo, construido a partir de varios exchanges spot externos — no la última operación en Hyperliquid. Esto protege contra la caza de mechas en un libro poco profundo, pero significa que tu gráfico no es la autoridad sobre cuándo te cierran.</p>
+    <h3>¿Cuál es el margen de mantenimiento en Hyperliquid?</h3>
+    <p>La mitad del margen inicial requerido al apalancamiento máximo del activo. En un activo de 40x eso es el 1.25% del valor de la posición; en uno de 10x, el 5%. Escala con el activo, no con el apalancamiento que tú elegiste.</p>
+    <h3>¿Qué pasa si una liquidación no se puede ejecutar?</h3>
+    <p>La bóveda HLP toma la posición. Si ni siquiera eso es suficiente, el auto-deleveraging reduce posiciones apalancadas rentables del lado contrario. Ambos son mecanismos de solvencia, no castigos.</p>
+    <h3>¿Tiene Hyperliquid un fondo de seguro?</h3>
+    <p>HLP cumple ese papel en la práctica: es el respaldo que absorbe las posiciones que el libro no puede tomar, y gana o pierde en consecuencia. A diferencia de un fondo de seguro oculto, su rendimiento es público.</p>
+    <h3>¿Puedo practicar esto sin arriesgar dinero?</h3>
+    <p>Sí — <a href="/es/paper-trade">Paper Trade</a> ejecuta la misma mecánica (apalancamiento, margen de mantenimiento, cierre forzado en un precio de liquidación) con precios en vivo, sin cuenta y sin depósito, la forma más barata de sentir de verdad lo que es un colchón de 40x.</p>
+
+    <h2>Relacionado</h2>
+    <div class="related">
+      <a href="/es/hyperliquid-liquidation-calculator/">Calculadora de Liquidación de Hyperliquid</a> <a href="/es/hyperliquid-whales/">Rastreador de Ballenas de Hyperliquid</a> <a href="/es/rekt/">Feed de Liquidaciones en Vivo</a> <a href="/es/heatmap">Mapa de Calor de Liquidaciones</a> <a href="/es/blog/liquidation-cascade-explained/">Cascadas de Liquidación Explicadas</a> <a href="/es/blog/cross-vs-isolated-margin/">Margen Cruzado vs Aislado</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Herramienta educativa, no asesoramiento financiero. Los datos de posiciones se leen en vivo desde fuentes públicas on-chain y pueden tener hasta un minuto de retraso; confirma siempre con el propio Hyperliquid antes de actuar.</p>
+  
+<div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
+<div class="mp-hl-e"><i></i>DÓNDE OCURREN ESTAS LIQUIDACIONES</div>
+<div class="mp-hl-row">
+<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid &mdash; perpetuos <b>on-chain</b>, con un descuento en comisiones de nuestra parte.</div><p class="mp-hl-w">Cada evento de esta página es una posición real cerrada a la fuerza en el libro on-chain de Hyperliquid. Opera en el mismo libro, un 4% más barato.</p></div>
+<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>de descuento en comisiones<br>para cuentas referidas</span></div><div class="mp-hl-code"><span>usa el código</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Únete a Hyperliquid &rarr;</a></div>
+</div>
+<p class="mp-hl-d">Enlace de referido &mdash; MarginPad puede ganar una comisión si abres una cuenta. El descuento del 4% en comisiones es el descuento de referidos de Hyperliquid; nunca pagas más de lo que pagarías yendo directo. No disponible para personas de EE. UU. según los términos de Hyperliquid.</p>
+</div>
+<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
+/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) — Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
+function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
+var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
+if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
+var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
+<div class="mp-xr"><div class="mp-xr-t">DÓNDE OCURREN ESTAS LIQUIDACIONES</div><p class="mp-xr-w">Nada en esta página es teórico &mdash; son posiciones reales siendo cerradas forzosamente en libros de órdenes reales. Estos son los exchanges a los que pertenecen esos libros.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/glossary/">Glosario</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script>
+(function () {
+  var body = document.getElementById('hlBody');
+  function usd(v) { v = +v || 0; var a = Math.abs(v);
+    if (a >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+    if (a >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+    if (a >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+    return '$' + v.toFixed(0); }
+  function px(v) { v = +v || 0; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 0 : v >= 1 ? 2 : 6 }); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
+  function load() {
+    fetch('/api/cg/hyper', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.active || !Array.isArray(d.positions)) throw 0;
+      var ps = d.positions.filter(function (p) { return +p.liq > 0 && +p.mark > 0 && +p.val > 0; });
+      ps.forEach(function (p) { p._d = Math.abs(+p.mark - +p.liq) / +p.mark * 100; });
+      ps.sort(function (a, b) { return a._d - b._d; });
+      var a = d.agg || {}, tot = (+a.longUsd || 0) + (+a.shortUsd || 0);
+      var lp = tot ? (+a.longUsd || 0) / tot * 100 : 0;
+      document.getElementById('hlTot').textContent = tot ? usd(tot) : '—';
+      document.getElementById('hlLs').innerHTML = tot ? '<span style="color:#2ebd85">' + lp.toFixed(0) + '%</span> / <span style="color:#ff5a4d">' + (100 - lp).toFixed(0) + '%</span>' : '—';
+      var near = ps.filter(function (p) { return p._d <= 5; });
+      var nv = near.reduce(function (s, p) { return s + (+p.val || 0); }, 0);
+      document.getElementById('hlNear').textContent = near.length ? near.length + ' · ' + usd(nv) : '0';
+      if (!ps.length) { body.innerHTML = '<tr><td colspan="7" style="color:#8b95a1;padding:16px 12px">No positions with a published liquidation price right now.</td></tr>'; return; }
+      body.innerHTML = ps.slice(0, 20).map(function (p) {
+        var cls = p._d <= 2 ? 'hot' : p._d <= 6 ? 'warm' : 'cool';
+        return '<tr><td><b>' + esc(p.sym) + '</b></td>'
+          + '<td><span class="hl-side ' + (p.long ? 'l">LONG' : 's">SHORT') + '</span></td>'
+          + '<td>' + usd(p.val) + '</td>'
+          + '<td>' + (p.lev ? esc(p.lev) + 'x' : '—') + '</td>'
+          + '<td>' + px(p.mark) + '</td>'
+          + '<td>' + px(p.liq) + '</td>'
+          + '<td class="hl-dist ' + cls + '">' + p._d.toFixed(2) + '%</td></tr>';
+      }).join('');
+      var st = document.getElementById('hlStamp');
+      if (st) st.textContent = 'Showing the ' + Math.min(20, ps.length) + ' positions closest to liquidation out of ' + ps.length + ' tracked, updated ' + new Date(d.ts || Date.now()).toISOString().slice(11, 16) + ' UTC. Refreshes every 60 seconds.';
+    }).catch(function () {
+      body.innerHTML = '<tr><td colspan="7" style="color:#8b95a1;padding:16px 12px">Live position data is refreshing — try again in a moment.</td></tr>';
+    });
+  }
+  load();
+  setInterval(function () { if (!document.hidden) load(); }, 60000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) load(); });
+})();
+</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

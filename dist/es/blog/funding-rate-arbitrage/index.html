@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/funding-rate-arbitrage/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<title>Arbitraje de tasa de funding: la operación delta-neutral que te paga por esperar — MarginPad</title>
+<meta name="description" content="Cash-and-carry in crypto: hold spot, short the perp, collect funding — no price exposure. How the trade works mechanically, what it realistically yields, and the four risks that blow it up (funding flips, liquidation on the short leg, exchange risk, fees)." />
+<meta name="keywords" content="funding rate arbitrage, cash and carry crypto, delta neutral crypto strategy, funding arbitrage explained, crypto basis trade, earn funding rates" />
+<link rel="canonical" href="https://marginpad.io/es/blog/funding-rate-arbitrage/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/funding-rate-arbitrage/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/funding-rate-arbitrage/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/funding-rate-arbitrage/" />
+<meta property="og:title" content="Funding Rate Arbitrage: The Delta-Neutral Trade That Pays You to Wait" />
+<meta property="og:description" content="Cash-and-carry in crypto: hold spot, short the perp, collect funding — no price exposure. How the trade works mechanically, what it realistically yields, and the four risks that blow it up (funding flips, liquidation on the short leg, exchange risk, fees)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/funding-rate-arbitrage/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Arbitraje de tasa de funding: la operación delta-neutral que te paga por esperar","description":"Cash-and-carry en cripto: mantén el spot, ponte short en el perpetuo y cobra el funding — sin exposición al precio. Cómo funciona la operación mecánicamente, qué rinde realmente y los cuatro riesgos que la pueden arruinar (el funding se invierte, liquidación en la pata short, riesgo del exchange, comisiones).","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/funding-rate-arbitrage/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo genera dinero el arbitraje de tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"¿Cómo genera dinero el arbitraje de tasa de funding?"}},{"@type":"Question","name":"Compras el activo en spot y abres un short del mismo tamaño en un futuro perpetuo. Los movimientos de precio se cancelan (delta-neutral), pero mientras el funding sea positivo, los longs pagan a los shorts cada 8 horas — y tú eres el short. Tu ganancia es el flujo de funding menos las comisiones.","acceptedAnswer":{"@type":"Answer","text":"¿Qué puede salir mal en una operación de funding delta-neutral?"}},{"@type":"Question","name":"Cuatro cosas: el funding se vuelve negativo y empiezas a pagar; la pata short del perpetuo se liquida en un pump violento si está infracolateralizada; el exchange que guarda tu colateral falla; y las comisiones más el slippage se comen un funding escaso. Es de bajo riesgo, no de riesgo cero.","acceptedAnswer":{"@type":"Answer","text":"En mercados tranquilos, el funding ronda el nivel base de 0.01% cada 8h (~10% APR antes de comisiones). En mercados eufóricos puede dispararse mucho más alto por periodos cortos. Los rendimientos sostenidos de dos dígitos solo existen mientras la mayoría está agresivamente long — que es justo cuando la operación está más popular y más saturada."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Arbitraje de funding","item":"https://marginpad.io/es/blog/funding-rate-arbitrage/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Arbitraje de funding</div>
+  <article>
+    <h1>Arbitraje de tasa de funding: la operación delta-neutral que te paga por esperar</h1>
+    <div class="meta">Guías · 7 min de lectura · Actualizado en junio de 2026</div>
+    <p>Cada 8 horas, los futuros perpetuos transfieren dinero entre longs y shorts para mantener el perpetuo pegado al spot — la <a href="/es/blog/what-is-funding-rate/">tasa de funding</a>. Cuando la mayoría está long, los longs pagan a los shorts. El arbitraje de funding es la operación que cobra ese pago sin asumir <b>ningún riesgo de precio</b>: long en spot, short en perpetuo, mismo tamaño.</p><h2>La mecánica</h2><p>Compra 1 BTC en spot. Abre un short de 1 BTC en un perpetuo. Si BTC sube $1,000, tu spot gana lo mismo que pierde tu short — queda plano. Pero mientras el funding sea positivo, lo cobras en la pata short, normalmente tres veces al día. Esa es toda la operación: te pagan por ofrecer el otro lado a una mayoría demasiado ansiosa. Puedes ver qué pares pagan más ahora mismo en la <a href="/es/funding/">página de funding en vivo</a> — ~160 pares, agregados.</p><h2>Lo que rinde, con honestidad</h2><p>El funding base es 0.01% cada 8h ≈ <b>~11% APR</b> antes de comisiones. Durante la euforia, los mejores pares imprimen múltiplos de eso durante días — ahí es cuando las mesas de basis se dan un festín. Pero los rendimientos revierten a la media: un funding alto atrae arbitrajistas, lo que lo comprime. Cualquiera que te prometa un 40% APR permanente por funding te está vendiendo algo.</p><h2>Las cuatro formas en que puede salir mal</h2><p><b>1. El funding se invierte.</b> El sentimiento cambia, los shorts empiezan a pagar y tu ingreso se convierte en un costo. Monitoreas y sales — esto es una operación gestionada, no una cuenta de ahorro. <b>2. Liquidación en la pata short.</b> Un pump violento puede liquidar un short de perpetuo infracolateralizado aunque tu posición NETA esté plana — la pata spot no puede aportarse automáticamente como margen en la mayoría de los exchanges. Mantén el short con un apalancamiento efectivo bajo; revisa el precio exacto de liquidación con la <a href="/es/calculators?c=liq">calculadora</a>. <b>3. Riesgo del exchange.</b> Tu colateral vive en un exchange. Diversifica. <b>4. Costos.</b> Las comisiones de entrada/salida y el slippage pueden comerse semanas de funding escaso — cuéntalos antes, no después.</p><h2>Pruébalo en seco primero</h2><p>Monta ambas patas en una <a href="/es/paper-trade">cuenta de paper trading</a> y sigue el P&amp;L neto a lo largo de varias ventanas de funding. Si la mecánica te sorprende ahí, te habría costado dinero real en vivo.</p><div class="callout"><b>Opera el evento sin el riesgo.</b> Abre una <a href="/es/paper-trade">cuenta de paper trading</a> gratis (sin registro) y sigue el <a href="/es/calendar/">calendario económico cripto</a>: cada CPI, FOMC y vencimiento de opciones con cuentas regresivas en vivo y recordatorios con un toque.</div>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <section class="related">
+    <h2 class="rel-title">Guías relacionadas</h2>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/moon-trading-platform-review/"><span class="tag">Guías</span><span class="rel-t">Reseña de Moon (2026): predice si cripto, acciones y forex suben o bajan — 24/7</span></a><a class="rel-card" href="/es/blog/crypto-cost-basis-fifo-lifo-hifo/"><span class="tag">Guías</span><span class="rel-t">Base de costo en cripto: FIFO vs LIFO vs HIFO explicado (2026)</span></a><a class="rel-card" href="/es/blog/crypto-tax-loss-harvesting/"><span class="tag">Guías</span><span class="rel-t">Tax-Loss Harvesting en cripto: la forma legal de reducir tus impuestos (2026)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comentarios</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Tu nombre (opcional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Publicar comentario</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

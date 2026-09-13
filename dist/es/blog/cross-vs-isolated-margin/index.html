@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/cross-vs-isolated-margin/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Margen cruzado vs. aislado: ¿cuál deberías usar? — MarginPad</title>
+<meta name="description" content="Cross margin vs isolated margin explained for crypto futures: how each handles liquidation, the pros and cons, and which to use as a beginner or pro." />
+<meta name="keywords" content="cross vs isolated margin, isolated margin, cross margin, crypto margin mode, futures margin explained" />
+<link rel="canonical" href="https://marginpad.io/es/blog/cross-vs-isolated-margin/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/cross-vs-isolated-margin/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/cross-vs-isolated-margin/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/cross-vs-isolated-margin/" />
+<meta property="og:title" content="Cross vs Isolated Margin: Which Should You Use?" />
+<meta property="og:description" content="How cross and isolated margin handle liquidation — and which to use." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/cross-vs-isolated-margin/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Margen cruzado vs. aislado: ¿cuál deberías usar?","description":"Margen cruzado vs. margen aislado, explicado para traders de futuros cripto.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-08-20","mainEntityOfPage":"https://marginpad.io/es/blog/cross-vs-isolated-margin/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es mejor, el margen aislado o el cruzado?","acceptedAnswer":{"@type":"Answer","text":"El margen aislado es más seguro para la mayoría de los traders porque la pérdida queda limitada al margen asignado a esa posición. El margen cruzado usa todo tu saldo como colateral, lo que reduce el riesgo de liquidación de una operación pero pone en riesgo toda la cuenta."}},{"@type":"Question","name":"¿El modo de margen cambia mi precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Sí. Con margen cruzado, todo tu saldo disponible respalda la posición, así que el precio de liquidación queda más lejos. Con margen aislado, solo la respalda el margen asignado, así que la liquidación está más cerca pero las pérdidas quedan contenidas."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Margen cruzado vs. aislado</div>
+  <article>
+    <h1>Margen cruzado vs. aislado: ¿cuál deberías usar?</h1>
+    <div class="meta">Básico · 5 min de lectura · Actualizado agosto 2026</div>
+
+    <p>Todo exchange de futuros cripto te pide elegir un <strong>modo de margen</strong> —cruzado o aislado— antes de operar. Esa elección cambia cuánto dinero tuyo está en riesgo y dónde te liquidan. Aquí va la diferencia en palabras simples y cómo decidir.</p>
+
+    <h2>Margen aislado</h2>
+    <p>Con el <strong>margen aislado</strong>, solo puedes perder el margen que asignas a esa posición. Si la operación se liquida, eso es lo máximo que pierdes; el resto de tu cuenta queda intacto. La contrapartida es que tu precio de liquidación queda más cerca de la entrada, porque solo ese trozo de dinero respalda la posición.</p>
+    <p><strong>Ideal para:</strong> principiantes, operaciones individuales de alta convicción y cualquiera que quiera un tope fijo a la pérdida de una posición.</p>
+
+    <h2>Margen cruzado</h2>
+    <p>Con el <strong>margen cruzado</strong>, todo tu saldo disponible respalda la posición. Eso aleja el precio de liquidación: un saldo ganador puede absorber un drawdown mayor antes de liquidarse. Pero el peligro es real: una sola operación descontrolada puede vaciar toda tu cuenta, y varias posiciones comparten el mismo colateral.</p>
+    <p><strong>Ideal para:</strong> traders con experiencia que cubren varias posiciones, o quienes gestionan el margen activamente y entienden el riesgo de toda la cuenta.</p>
+
+    <h2>Cómo afecta a la liquidación</h2>
+    <p>El modo de margen mueve directamente tu precio de liquidación. Nuestra calculadora usa la estimación conservadora de margen aislado, que es la opción correcta por defecto para planear el riesgo. Sea cual sea el modo que elijas, calcula los números primero.</p>
+
+    <div class="callout">
+      <div class="k">Planea antes de operar</div>
+      <p style="margin-bottom:14px">Comprueba tu precio de liquidación y calcula el tamaño por riesgo en segundos, aislado o cruzado.</p>
+      <a class="cta" href="/es/calculators?c=liq">Abrir las calculadoras →</a>
+    </div>
+
+    <h2>Regla rápida</h2>
+    <ul>
+      <li>Aprendiendo, o una operación grande que quieres contener → <strong>aislado</strong>.</li>
+      <li>Cubriendo varias posiciones y gestionando el margen activamente → <strong>cruzado</strong>.</li>
+      <li>En cualquier caso, mantén el apalancamiento moderado y conoce siempre tu <a href="/es/blog/how-to-calculate-liquidation-price/">precio de liquidación</a>.</li>
+    </ul>
+
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+    <h2>Cara a cara: toda la diferencia en una tabla</h2><div style="overflow-x:auto;margin:18px 0"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1"></th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Aislado</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Cruzado</th></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Qué respalda la posición</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Solo el margen que asignaste</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Todo tu saldo disponible</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Máximo que puedes perder</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">El margen asignado</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Todo lo que hay en la cuenta</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Distancia hasta la liquidación</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Fija según el apalancamiento (1/apalanc. − MMR)</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Variable: más lejos mientras dure el saldo</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Una mala operación puede hundir a las demás</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">No</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Sí: drena el fondo compartido</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Ideal para</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Apuestas direccionales, aprendizaje, apalancamiento alto</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Carteras cubiertas, profesionales gestionando exposición neta</td></tr></table></div><h2>La misma operación en ambos modos: ejemplo resuelto</h2><p>Cuenta: $1,000. Abres un long con $100 de margen a 10× en BTC a $60,000 (posición de $1,000, el cálculo de liquidación usa ~0.5% de MMR).</p><ul><li><b>Aislado:</b> la liquidación queda cerca de <b>$54,300</b> (−9.5%). El BTC cae 12%: pierdes los $100 de margen y los $900 restantes de la cuenta quedan intactos.</li><li><b>Cruzado:</b> los $1,000 completos respaldan la operación, así que la MISMA posición sobrevive la caída del 12% — la liquidación solo llega cerca de un drawdown efectivo del ~99% del saldo utilizable. Suena más seguro, hasta que la caída sigue: en −25% has perdido silenciosamente $250 de patrimonio de la cuenta en una operación a la que "asignaste" $100. El margen cruzado no reduce el riesgo: pospone el cierre forzado comprometiendo dinero que nunca pusiste conscientemente en riesgo.</li></ul><p><b>La trampa en una frase:</b> el aislado limita el daño por operación; el cruzado reprecia en silencio cada posición abierta contra toda tu cuenta, y una sola operación perdedora descontrolada puede consumir el margen con el que contaban tus otras posiciones, provocando liquidaciones en cascada en toda la cartera.</p><h2>¿Cuál deberías usar?</h2><ul><li><b>Si aprendes o operas de forma direccional: aislado, siempre.</b> El límite de pérdida es justamente el punto. Por eso todas las calculadoras de este sitio y el <a href="/es/paper-trade">terminal de Paper Trade</a> modelan el margen aislado.</li><li><b>Cobertura (spot en long, perpetuo en short; o una cartera de pares): el margen cruzado se justifica</b>: las posiciones que se compensan comparten margen de forma eficiente, y esa compensación es justo la ventaja.</li><li><b>Apalancamiento alto + margen cruzado es la combinación que mata cuentas.</b> 50× con todo tu saldo como respaldo significa que una sola mecha lo decide todo de golpe. Si necesitas margen cruzado, baja el apalancamiento.</li></ul><p>Modela ambos casos con la <a href="/es/calculators?c=cross">calculadora de margen cruzado</a> y la <a href="/es/calculators?c=liq">calculadora de liquidación aislada</a> antes de comprometer margen real.</p><h2>Guías relacionadas</h2>
+    <div class="related">
+      <a href="/es/blog/how-to-calculate-liquidation-price/">Cómo calcular el precio de liquidación</a> <a href="/es/blog/crypto-position-sizing-risk-management/">Tamaño de posición en cripto (la regla del 1%)</a> <a href="/es/blog/crypto-leverage-explained/">El apalancamiento en cripto explicado</a> <a href="/es/blog/risk-reward-ratio-explained/">El ratio riesgo/beneficio explicado</a>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

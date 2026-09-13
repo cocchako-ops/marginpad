@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/what-is-funding-rate/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>¿Qué es la tasa de funding en futuros cripto? (Guía sencilla) — MarginPad</title>
+<meta name="description" content="Funding rate explained: what it is, who pays whom, how often it's charged, and how it quietly eats into your PnL on perpetual futures. With examples." />
+<meta name="keywords" content="what is funding rate, funding rate crypto, perpetual futures funding, funding fee explained, crypto funding rate" />
+<link rel="canonical" href="https://marginpad.io/es/blog/what-is-funding-rate/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/what-is-funding-rate/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/what-is-funding-rate/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/what-is-funding-rate/" />
+<meta property="og:title" content="What Is Funding Rate in Crypto Futures?" />
+<meta property="og:description" content="Funding rate explained — who pays whom, how often, and how it affects PnL." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/what-is-funding-rate/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es la tasa de funding en los futuros de cripto?","description":"La tasa de funding explicada para traders de futuros perpetuos.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-08-20","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-funding-rate/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Quién paga la tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"Cuando el funding es positivo, los longs le pagan a los shorts. Cuando es negativo, los shorts le pagan a los longs. Se intercambia entre traders, no se paga al exchange."}},{"@type":"Question","name":"¿Con qué frecuencia se cobra el funding?","acceptedAnswer":{"@type":"Answer","text":"La mayoría de los exchanges cobran el funding cada 8 horas, aunque algunos usan intervalos de 4 o 1 hora en mercados volátiles."}},{"@type":"Question","name":"¿Cómo se calcula la tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"Combina un componente de prima - cuánto se ha alejado el perpetuo de su índice spot durante el intervalo - con un pequeño componente de interés fijo, y luego limita el resultado para que un movimiento violento no cree un cobro extremo. En cripto la prima domina, así que el funding sube cuando el perpetuo cotiza persistentemente por encima del spot."}},{"@type":"Question","name":"¿El funding afecta mi precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Sí. El funding se liquida con cargo a tu margen, así que cada pago reduce tu colchón y acerca un poco la liquidación. En una posición apalancada de varios días, el precio de liquidación que revisaste al entrar no es el que tienes días después."}},{"@type":"Question","name":"¿Qué se considera una tasa de funding alta?","acceptedAnswer":{"@type":"Answer","text":"El nivel base es de unos +0.01% cada 8 horas, cerca de un 11% anualizado. Lecturas sostenidas por encima de +0.03% (cerca de un 33% al año) significan un mercado saturado, y +0.05% o más es euforia - un nivel que históricamente no dura y en el que el lado que paga está más expuesto a un squeeze."}},{"@type":"Question","name":"¿Puedo evitar pagar funding?","acceptedAnswer":{"@type":"Answer","text":"Cierra antes del instante de liquidación, toma el lado que recibe en vez del que paga, o mantén spot en lugar de un perpetuo. El funding se cobra a quien mantiene la posición en el momento de la liquidación, así que una exposición que nunca cruza una ventana no cuesta nada."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Qué es la tasa de funding</div>
+  <article>
+    <h1>¿Qué es la tasa de funding en los futuros de cripto?</h1>
+    <div class="meta">Básicos · 8 min de lectura · Actualizado en agosto de 2026</div>
+
+    <p>Si operas <strong>futuros perpetuos</strong>, seguro has visto un pequeño número llamado <strong>tasa de funding</strong> subir y bajar. Ese número mueve dinero, en silencio, dentro y fuera de tu cuenta cada pocas horas. Esto es lo que es y por qué importa.</p>
+
+    <h2>Por qué existen las tasas de funding</h2>
+    <p>Un futuro perpetuo nunca vence, así que no hay nada que obligue a su precio a igualar el precio real (spot). La tasa de funding es el mecanismo que los mantiene cerca. Es un pequeño pago periódico que se intercambia <em>entre traders</em> —no se paga al exchange— y que empuja el precio del perpetuo de vuelta hacia el spot.</p>
+
+    <h2>¿Quién le paga a quién?</h2>
+    <ul>
+      <li><strong>Funding positivo</strong> (el perpetuo cotiza por encima del spot): <strong>los longs le pagan a los shorts</strong>. Hay demasiada gente en long, así que se les cobra para desincentivarlo.</li>
+      <li><strong>Funding negativo</strong> (el perpetuo por debajo del spot): <strong>los shorts le pagan a los longs</strong>.</li>
+    </ul>
+    <p>La mayoría de los exchanges liquidan el funding <strong>cada 8 horas</strong>. Algunos usan ventanas de 4 o 1 hora cuando el mercado está volátil.</p>
+
+    <h2>Cómo afecta a tu PnL</h2>
+    <p>El funding se cobra sobre el <em>tamaño de tu posición</em>, no sobre tu margen, así que con apalancamiento se acumula más rápido de lo que parece. Mantener un long grande y apalancado durante varios períodos de funding positivo puede erosionar tu ganancia en silencio. Para operaciones a corto plazo suele ser mínimo; para posiciones de varios días merece atención.</p>
+
+    <div class="callout">
+      <div class="k">Planifica el resto de tu operación</div>
+      <p style="margin-bottom:14px">Más allá del funding, primero asegúrate de tener bien calculados la liquidación, el PnL y el tamaño de posición.</p>
+      <a class="cta" href="/es/calculators?c=pnl">Abrir la calculadora de PnL →</a>
+    </div>
+
+    <h2>Un ejemplo simple</h2>
+    <p>Supongamos que el funding es <code>+0.01%</code> y mantienes una posición long de <code>$10,000</code>. En la liquidación, pagas <code>$1</code> a los shorts. Es poco una sola vez, pero a lo largo de muchos períodos de 8 horas sobre una posición grande, se acumula. Nota: nuestras calculadoras muestran el PnL basado en el precio y no incluyen funding ni comisiones, así que tómalas como la foto antes de costos.</p>
+
+    <h2>Lo que realmente cuesta el funding: la aritmética</h2><p>El funding se cobra sobre tu <b>posición nocional</b> (margen × apalancamiento), no sobre tu margen, por eso parece pequeño y termina acumulándose en algo que no lo es. Con un +0.01% típico cada 8 horas sobre una posición de $1,000:</p><div style="overflow-x:auto;margin:18px 0"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Tiempo en la posición</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Ventanas de funding</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Costo sobre $1,000 nocionales</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Como % de $100 de margen (10×)</th></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">8 horas</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">1</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$0.10</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.1%</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">1 día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">3</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$0.30</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.3%</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">1 semana</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">21</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$2.10</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">2.1%</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">30 días</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">90</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$9.00</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">9.0%</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">30 días con un funding elevado de +0.05%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">90</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$45.00</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">45%</td></tr></table></div><p style="font-size:12px;color:#8b95a1;margin-top:-8px">Las tasas fluctúan en cada ventana; esto asume una tasa constante solo para ilustrar. La última fila es lo que realmente cuesta mantener un long saturado durante un mes de euforia.</p><h2>Leer el funding como termómetro de sentimiento</h2><div style="overflow-x:auto;margin:18px 0"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Lectura del funding</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Qué significa</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Qué suele pasar</th></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Muy positivo (&gt;+0.03%/8h)</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Longs saturados, pagando por quedarse</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Combustible para un squeeze a la baja: las caídas se vuelven violentas</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Levemente positivo (~+0.01%)</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Nivel base normal de mercado alcista</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Nada especial: el estado por defecto</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Cercano a cero</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Libro equilibrado</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Los movimientos necesitan un nuevo catalizador</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Negativo</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Shorts saturados, pagando por quedarse</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Combustible para un short squeeze al alza: las subidas se vuelven violentas</td></tr></table></div><p>Los extremos son señales contrarias: quien más está pagando es la multitud más vulnerable a un squeeze. Revisa las lecturas en vivo por moneda en el <a href="/es/funding/">panel de funding</a> antes de mantener una posición, y si quieres la versión neutral al mercado de esta operación, lee <a href="/es/blog/funding-rate-arbitrage/">arbitraje de tasa de funding</a>: cobrar la tasa en vez de pagarla.</p><h2>Tres hábitos prácticos con el funding</h2><ul><li><b>Revisa el funding antes de mantener una posición más de un día.</b> Una comisión que no calculaste es una desventaja que te impusiste tú mismo.</li><li><b>Ajusta tus entradas según la ventana.</b> El funding se cobra a quien mantiene la posición en ese instante exacto; entrar minutos después de una ventana te da casi 8 horas gratis.</li><li><b>Nunca pagues un funding alto solo por estar con la mayoría.</b> Pagar +0.05% cada 8 horas por estar del mismo lado que todos es pagar una prima por el riesgo de squeeze.</li></ul><h2>Cómo se calcula realmente la tasa de funding</h2>
+<p>El funding no es un número que el exchange inventa. La construcción estándar tiene dos partes:</p>
+<ul>
+<li><b>El componente de prima.</b> Cuánto se ha alejado el perpetuo, por encima o por debajo, de su precio índice (spot) durante el intervalo, medido de forma continua y no en un solo instante. Esta es la parte que realmente hace el trabajo &mdash; un perpetuo que cotiza persistentemente por encima del spot genera funding positivo.</li>
+<li><b>El componente de interés.</b> Un pequeño diferencial fijo entre las dos monedas del par, normalmente un 0.01% plano cada 8 horas en contratos cotizados en USDT. En cripto casi siempre queda opacado por la prima.</li>
+</ul>
+<p>Ambos se combinan y luego se limitan, para que un minuto de violencia no genere un cobro absurdo: <code>funding = premium + clamp(interest &minus; premium, &plusmn;0.05%)</code>, con un tope adicional propio de cada exchange. Por eso el funding suele mantenerse cerca del nivel base de 0.01% en mercados tranquilos y solo alcanza múltiplos de ese valor cuando el perpetuo lleva un tiempo sostenido alejado del spot.</p>
+<p>La consecuencia práctica: el funding es una lectura <em>rezagada</em> del posicionamiento, no un pronóstico. Te dice lo que la mayoría ya ha estado haciendo y lo que esa mayoría está pagando ahora mismo por seguir ahí.</p>
+
+<h2>De un porcentaje diminuto a una tasa anual</h2>
+<p>Un número por ventana es casi imposible de sentir. Convertirlo en una tasa anual hace que la misma cifra sea evidente:</p>
+<div style="overflow-x:auto;margin:18px 0"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Tasa de funding (por 8h)</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Por día</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">APR equivalente</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Sobre una posición de $10,000</th><th style="text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:Space Mono,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1">Qué significa</th></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">+0.01% (base)</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.03%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">~11%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$3.00 / día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Valor habitual en mercado alcista</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">+0.03%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.09%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">~33%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$9.00 / día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Empieza a saturarse</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">+0.05%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.15%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">~55%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$15.00 / día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Euforia &mdash; los longs pagan caro</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">+0.10%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">0.30%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">~110%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">$30.00 / día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Extremo, rara vez dura</td></tr><tr><td style="padding:8px 10px;border-bottom:1px solid #1c2230">&minus;0.01%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">&minus;0.03%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">~&minus;11%</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230"><b>recibes</b> $3.00 / día</td><td style="padding:8px 10px;border-bottom:1px solid #1c2230">Mercado inclinado a los shorts</td></tr></table></div><p style="font-size:12px;color:#8b95a1;margin-top:-8px">Tres ventanas de 8 horas al día, 365 días, anualización simple (sin interés compuesto). Las tasas fluctúan en cada ventana &mdash; esto son conversiones de una tasa constante, no pronósticos.</p>
+<p>La tasa base equivale a un costo anual de aproximadamente el 11% por mantener un long. Ese es el precio del apalancamiento en un mercado donde la mayoría quiere estar en long, y es totalmente razonable. Lo que no es razonable es pagar la fila de +0.05% durante semanas: un costo anualizado del 55% exige una convicción direccional muy fuerte, y se cobra justo cuando la posición está más saturada. Las lecturas en vivo de unos 160 pares están en el <a href="/es/funding/">panel de funding</a>.</p>
+
+<h2>Intervalos: por qué algunos pares cobran cada hora</h2>
+<p>El ciclo de 8 horas (00:00, 08:00 y 16:00 UTC) es la convención en la mayoría de los exchanges, pero no es universal. Los exchanges acortan el intervalo a cuatro o una hora en contratos donde la prima está muy elevada, porque una liquidación más frecuente devuelve al perpetuo hacia el spot más rápido.</p>
+<p>De ahí se desprenden dos cosas. Primero, una tasa por sí sola no significa nada sin su intervalo &mdash; 0.01% cada hora cuesta ocho veces más que 0.01% cada ocho horas, y compararlas directamente es un error clásico. Normaliza siempre a una cifra diaria o anual antes de comparar pares o exchanges. Segundo, un par al que acaban de cambiarle a un intervalo más corto te está diciendo algo: el mercado está lo bastante lejos del spot como para que el exchange esté tirando activamente de la correa.</p>
+
+<h2>Las tres formas en que el funding te golpea y que los traders pasan por alto</h2>
+<ul>
+<li><b>Se cobra en un instante exacto, no según la duración.</b> Quien mantiene la posición en el momento de la liquidación paga la ventana completa. Dos minutos de exposición que crucen ese instante cuestan lo mismo que ocho horas; cerrar un minuto antes no cuesta nada. Si estás indeciso sobre una posición marginal, la ventana te da una razón gratuita para decidir.</li>
+<li><b>Mueve tu precio de liquidación.</b> El funding se liquida con cargo a tu margen, así que cada pago recorta tu colchón y acerca un poco más la liquidación. En una posición apalancada de varios días esto se acumula en silencio &mdash; el precio de liquidación que revisaste al entrar no es el que tienes al tercer día.</li>
+<li><b>Se cobra ganes o pierdas.</b> El funding es indiferente a tu PnL. Una posición muy en pérdida sigue pagando por quedarse con la mayoría, justo en el momento en que menos ganas tienen los traders de revisar los costos.</li>
+</ul>
+
+<h2>Cuando el funding decide la operación &mdash; y cuando es solo ruido</h2>
+<p>Compara el costo con el movimiento que realmente esperas. Un scalp buscando un 0.5% en diez minutos: el funding es irrelevante, puede que ni siquiera cruces una ventana. Un swing buscando un 3% en una semana con +0.01%: el funding cuesta cerca de un 0.21% del nocional, casi un siete por ciento de la ganancia esperada &mdash; un lastre real pero tolerable. Ese mismo swing del 3% con el funding en +0.05%: el costo es de cerca de un 1.05%, un tercio de toda la tesis, entregado al otro lado de la operación.</p>
+<p>Esa es toda la disciplina en una sola frase: <b>el funding importa en proporción a cuánto tiempo mantienes la posición y qué tan saturado está tu lado</b>. Revísalo antes de mantener una posición más de un día, y vuelve a revisarlo si el mercado se mueve a tu favor, porque una posición ganadora suele volverse una posición más cara.</p>
+
+<h2>Cobrar en vez de pagar</h2>
+<p>Todo pago de funding tiene un receptor. Mantener el lado menos popular cobra la tasa, y una posición long en spot y short en el perpetuo del mismo tamaño la cobra sin ninguna exposición direccional &mdash; el llamado cash-and-carry. No es dinero gratis: la pata short igual puede ser liquidada en un squeeze, el rendimiento tiende a revertir a la media a medida que llegan los arbitrajistas, y tu colateral carga con el riesgo del exchange. El recorrido completo, incluyendo las cuatro formas en que puede salir mal, está en <a href="/es/blog/funding-rate-arbitrage/">arbitraje de tasa de funding</a>, y puedes ensayar ambas patas en una <a href="/es/paper-trade">cuenta de paper trading</a> antes de arriesgar algo real.</p>
+<h2>FAQ</h2>
+    <h3>¿La tasa de funding es una comisión?</h3>
+    <p>No exactamente: es un pago entre traders, no al exchange. Pero funciona como un costo (o un reembolso) sobre tu posición.</p>
+    <h3>¿Puedo ganar dinero con el funding?</h3>
+    <p>Sí. Si estás del lado que recibe el funding (por ejemplo, en short durante un funding positivo), te pagan en cada período: es la base del "funding farming" y las estrategias delta-neutrales.</p>
+    <h3>¿Cómo se calcula la tasa de funding?</h3>
+    <p>Combina un componente de prima (cuánto se ha alejado el perpetuo de su índice spot durante el intervalo) con un pequeño componente de interés fijo, y luego limita el resultado para que un movimiento violento no genere un cobro extremo. En cripto la prima domina, por eso el funding sube cuando el perpetuo cotiza persistentemente por encima del spot.</p>
+    <h3>¿El funding afecta mi precio de liquidación?</h3>
+    <p>Sí. El funding se liquida con cargo a tu margen, así que cada pago reduce tu colchón y acerca un poco la liquidación. En una posición apalancada de varios días, el precio de liquidación que revisaste al entrar no es el que tienes días después &mdash; vuelve a revisarlo.</p>
+    <h3>¿Qué se considera una tasa de funding alta?</h3>
+    <p>El nivel base habitual es de unos +0.01% cada 8 horas, cerca de un 11% anualizado. Cualquier valor sostenido por encima de +0.03% (alrededor de un 33% al año) indica un mercado saturado, y +0.05% o más es euforia &mdash; históricamente un nivel que no dura, y en el que el lado que paga está más expuesto a un squeeze.</p>
+    <h3>¿Puedo evitar pagar funding?</h3>
+    <p>Cierra antes del instante de liquidación, opera del lado que recibe en vez del que paga, o mantén spot en lugar de un perpetuo. El funding se cobra a quien mantiene la posición en el momento de la liquidación, así que una exposición que no cruce una ventana no cuesta nada.</p>
+
+        <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+    <h2>Guías relacionadas</h2>
+    <div class="related">
+      <a href="/es/blog/how-to-calculate-liquidation-price/">Cómo calcular el precio de liquidación</a> <a href="/es/blog/crypto-position-sizing-risk-management/">Tamaño de posición en cripto (la regla del 1%)</a> <a href="/es/blog/crypto-leverage-explained/">El apalancamiento en cripto explicado</a> <a href="/es/blog/risk-reward-ratio-explained/">El ratio riesgo/beneficio explicado</a>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/leverage-trading-simulator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Simulador de trading con apalancamiento — Practica hasta 1000x, gratis | MarginPad</title>
+<meta name="description" content="Free leverage trading simulator with real liquidation math: practice long and short with 1x to 1000x leverage at live prices on crypto, stocks, forex and indices. No sign-up, no deposit — see exactly how leverage and liquidation work before risking money." />
+<meta name="keywords" content="leverage trading simulator, crypto leverage trading simulator, 100x leverage demo, practice leverage trading, margin trading simulator, leverage demo account, liquidation simulator" />
+<link rel="canonical" href="https://marginpad.io/es/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/leverage-trading-simulator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/leverage-trading-simulator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/leverage-trading-simulator/" />
+<meta property="og:title" content="Leverage Trading Simulator — Practice up to 1000x, Free" />
+<meta property="og:description" content="Free leverage trading simulator with real liquidation math: practice long and short with 1x to 1000x leverage at live prices. No sign-up, no deposit." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Leverage Trading Simulator — Practice up to 1000x, Free" />
+<meta name="twitter:description" content="Free leverage trading simulator with real liquidation math: practice long and short with 1x to 1000x leverage at live prices. No sign-up, no deposit." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .simtop{display:block;margin:0 0 20px}
+.simtop .btn{display:block;width:100%;max-width:400px;text-align:center;padding:15px 22px;font-size:15.5px;text-decoration:none}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+  .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+  .scard{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);transition:border-color .16s,transform .16s}
+  .scard:hover{border-color:var(--line2);transform:translateY(-2px);color:var(--ink)}
+  .scard .tk{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:var(--lime)}
+  .scard .nm{font-size:12.5px;color:var(--dim);line-height:1.25}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px}
+  .step{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:20px}
+  .step .n{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--cyan);letter-spacing:.1em}
+  .step h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;margin:10px 0 7px}
+  .step p{color:var(--dim);font-size:13.5px;margin:0;line-height:1.55}
+  .prose{max-width:760px;color:var(--ink2);font-size:15.5px;line-height:1.7}
+  .prose p{margin:0 0 14px}
+  .faq{max-width:820px;margin-top:6px}
+  .qa{border-bottom:1px solid var(--line);padding:18px 0}
+  .qa:last-child{border-bottom:none}
+  .qa h3{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;margin:0 0 8px;color:var(--ink)}
+  .qa p{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+  .cmp td:first-child{color:var(--ink2)}
+  .cta-band{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:var(--r);padding:30px 26px;margin-top:40px;text-align:center;box-shadow:var(--shadow)}
+  .cta-band h2{justify-content:center;margin-top:0}
+  .lnav{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none}
+  .lnav::-webkit-scrollbar{display:none}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Simulador de trading con apalancamiento","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/leverage-trading-simulator/","description":"Simulador gratuito de trading con apalancamiento y matemáticas reales de liquidación: practica long y short con apalancamiento de 1x a 1000x a precios en vivo en cripto, acciones, forex e índices. Sin registro, sin depósito.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Simulador de trading con apalancamiento","item":"https://marginpad.io/es/leverage-trading-simulator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Hay una demo gratuita de apalancamiento a 100x?","acceptedAnswer":{"@type":"Answer","text":"Sí. MarginPad te permite practicar con cualquier apalancamiento de 1x a 1000x en los pares cripto principales (aplican límites por símbolo, por ejemplo 100x-200x en altcoins más pequeñas) usando precios en vivo y un saldo virtual. Es gratis y se abre sin registro."}},{"@type":"Question","name":"¿El simulador realmente liquida posiciones?","acceptedAnswer":{"@type":"Answer","text":"Sí. Las posiciones usan la misma fórmula de liquidación con margen aislado que usan los exchanges de futuros reales, incluyendo un margen de mantenimiento. A 100x, un movimiento adverso de aproximadamente 1% te liquida — en el simulador exactamente igual que en una cuenta real."}},{"@type":"Question","name":"¿Con qué apalancamiento debería practicar un principiante?","acceptedAnswer":{"@type":"Answer","text":"Empieza con 3x-10x. A 10x, tu liquidación queda a aproximadamente 10% de distancia, lo que deja margen para aprender a colocar el stop-loss. Vale la pena experimentar un apalancamiento alto (50x o más) en un simulador precisamente porque enseña lo poco margen que hay — una posición a 50x muere con un movimiento del 2%."}},{"@type":"Question","name":"¿Los precios son reales?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los precios llegan en vivo desde un feed real de un exchange y tu PnL se mueve tick a tick, así que la experiencia coincide con una cuenta apalancada real con cero dinero en riesgo."}},{"@type":"Question","name":"¿También puedo practicar apalancamiento en acciones y forex?","acceptedAnswer":{"@type":"Answer","text":"Sí. La misma cuenta opera acciones de EE. UU., pares de forex, índices bursátiles y oro como posiciones apalancadas, con límites de apalancamiento y comisiones realistas para cada clase de activo."}},{"@type":"Question","name":"¿Necesito una cuenta?","acceptedAnswer":{"@type":"Answer","text":"No. El simulador se abre y opera sin registro. Una cuenta gratuita es opcional y añade clasificaciones, misiones, XP y recompensas."}},{"@type":"Question","name":"¿Cuál es el tamaño máximo de posición?","acceptedAnswer":{"@type":"Answer","text":"Hasta $100,000 de margen por posición, con apalancamiento de hasta 1000x en los pares principales — lo bastante grande para practicar el tamaño de posición como lo haría una cuenta real fondeada."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Simulador de trading con apalancamiento — Practica hasta 1000x, gratis","url":"https://marginpad.io/es/leverage-trading-simulator/","dateModified":"2026-09-10T19:56:57.539Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<header class="topbar"><a class="brand" href="/es/">MARGIN<b>PAD</b></a><nav class="tool-switch lnav"><a href="/es/paper-trade">Paper Trade</a><a href="/es/crypto-trading-simulator-no-sign-up/">Simulador sin registro</a><a href="/es/stock-trading-simulator/">Simulador de acciones</a><a href="/es/calculators">Calculadoras</a><a href="/es/tools/">Herramientas</a></nav><a class="home" href="/es/paper-trade">Abrir app &rarr;</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="simtop"><a class="btn" href="/es/paper-trade">Abrir el simulador de trading &rarr;</a></div>
+    <span class="eyebrow">Simulador de apalancamiento gratis</span>
+    <h1>Simulador de trading con apalancamiento</h1>
+    <p class="sub">Practica long y short con apalancamiento de 1x a 1000x a precios en vivo — con las matemáticas reales de liquidación, no un juego. El simulador de MarginPad se abre en tu navegador sin registro: más de 60 pares perpetuos cripto, más de 20 acciones de EE. UU., forex, índices y oro, stop-loss y take-profit, hasta $100,000 de margen por posición, y $0 en riesgo.</p>
+    <div class="hero-cta">
+      <a class="btn" href="/es/paper-trade">Empieza a practicar gratis</a> <a class="btn ghost" href="/es/calculators">Calculadoras de liquidación</a>
+    </div>
+    <p class="note" style="margin-top:16px">Precios en vivo · mecánica de liquidación real · 1x-1000x · sin registro, nada que instalar</p>
+  </section>
+
+  <h2>¿Qué es un simulador de trading con apalancamiento?</h2>
+  <div class="prose"><p>Un simulador de trading con apalancamiento te permite abrir posiciones long y short apalancadas con dinero virtual a precios reales de mercado. El apalancamiento multiplica tanto tu ganancia como tu pérdida: una posición a 10x gana o pierde el 10% de tu margen por cada 1% que se mueve el precio — y si el movimiento va lo bastante en tu contra, la posición se liquida y el margen desaparece. Ese mecanismo es exactamente lo que acaba con la mayoría de los traders nuevos con apalancamiento, y es exactamente lo que un simulador te deja experimentar gratis.</p><p>MarginPad lo simula con honestidad: el precio de liquidación se calcula con la misma fórmula de margen aislado que usan los exchanges de futuros reales, incluyendo un margen de mantenimiento. Una posición a 100x que explotaría en una cuenta real también explota aquí, al mismo precio.</p></div>
+
+  <h2>¿A qué distancia está la liquidación en cada apalancamiento?</h2>
+  <p class="muted">Margen aislado, margen de mantenimiento del 0.5% — el movimiento adverso del precio que liquida la posición:</p>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>Apalancamiento</th><th>Movimiento hasta la liquidación</th><th>Qué significa eso</th></tr></thead>
+    <tbody>
+      <tr><td>5x</td><td class="pos">-19.9%</td><td>Sobrevive a la volatilidad normal; hay margen para gestionar la operación</td></tr>
+      <tr><td>10x</td><td class="pos">-9.95%</td><td>Un mal día puede acabar con ella; se recomienda encarecidamente un stop-loss</td></tr>
+      <tr><td>25x</td><td>-3.98%</td><td>Un rango diario promedio puede liquidarte</td></tr>
+      <tr><td>50x</td><td class="neg">-1.99%</td><td>Basta con una sola vela brusca</td></tr>
+      <tr><td>100x</td><td class="neg">-1.00%</td><td>El ruido habitual del mercado te liquida</td></tr>
+      <tr><td>500x</td><td class="neg">-0.20%</td><td>El spread más un pequeño grupo de ticks puede hacerlo</td></tr>
+      <tr><td>1000x</td><td class="neg">-0.10%</td><td>Es prácticamente una moneda al aire medida en segundos</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Revisa cualquier moneda y precio de entrada con precisión en la <a href="/es/btc-liquidation-calculator/">calculadora de liquidación de BTC</a> o en el <a href="/es/calculators">conjunto completo de calculadoras</a>.</p>
+
+  <h2>Mercados donde puedes practicar con apalancamiento</h2>
+  <div class="sgrid">
+    <a class="scard" href="/es/paper-trade?coin=BTC"><span class="tk">BTC</span><span class="nm">Bitcoin · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=ETH"><span class="tk">ETH</span><span class="nm">Ethereum · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=SOL"><span class="tk">SOL</span><span class="nm">Solana · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=XRP"><span class="tk">XRP</span><span class="nm">XRP · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=DOGE"><span class="tk">DOGE</span><span class="nm">Dogecoin · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=HYPE"><span class="tk">HYPE</span><span class="nm">Hyperliquid · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=PEPE"><span class="tk">PEPE</span><span class="nm">Pepe · hasta 1000x</span></a> <a class="scard" href="/es/paper-trade?coin=AAPL"><span class="tk">AAPL</span><span class="nm">Apple · acciones</span></a> <a class="scard" href="/es/paper-trade?coin=NVDA"><span class="tk">NVDA</span><span class="nm">Nvidia · acciones</span></a> <a class="scard" href="/es/paper-trade?coin=EURUSD"><span class="tk">EURUSD</span><span class="nm">Euro · forex</span></a> <a class="scard" href="/es/paper-trade?coin=SPX500"><span class="tk">SPX500</span><span class="nm">S&amp;P 500 · índice</span></a> <a class="scard" href="/es/paper-trade?coin=XAU"><span class="tk">XAU</span><span class="nm">Oro · metales</span></a>
+  </div>
+
+  <h2>Cómo funciona</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Elige un mercado y el apalancamiento</h3><p>Abre cualquier par, fija tu margen y desliza el apalancamiento de 1x a 1000x. La terminal muestra tu precio exacto de liquidación antes de confirmar.</p></div>
+    <div class="step"><div class="n">2</div><h3>Abre un long o un short</h3><p>Se ejecuta al precio en vivo. Añade un stop-loss y un take-profit — la terminal muestra lo que significa cada nivel en dólares y en porcentaje del margen.</p></div>
+    <div class="step"><div class="n">3</div><h3>Sobrevive o te liquidan</h3><p>Tu PnL se mueve tick a tick. Gestiona la posición, toma ganancias parciales, o mira cómo llega la liquidación — y aprende la lección a un precio de $0.</p></div>
+  </div>
+
+  <h2>Por qué practicar el apalancamiento primero en un simulador</h2>
+  <div class="prose"><p>El apalancamiento es la forma más común de que los traders nuevos pierdan su primera cuenta. No porque elijan la moneda equivocada — sino porque nunca sintieron lo rápido que se mueve un 50x en su contra hasta que hubo dinero real en juego. En un simulador puedes quemar posiciones deliberadamente en cada nivel de apalancamiento y desarrollar el instinto de lo que realmente se siente cada multiplicador: qué tan ajustado tiene que estar el stop, cuánto ruido absorbe un nivel, cuánto cuesta el funding a lo largo de los días.</p><p>MarginPad también te muestra dónde se liquida el resto del mercado: el <a href="/es/heatmap">mapa de calor de liquidaciones</a> gratuito y el <a href="/es/rekt/">feed de liquidaciones en vivo</a> ponen tu práctica en contexto — puedes ver una cascada en directo y entender por qué importa tu propio precio de liquidación.</p></div>
+
+  <h2>Simulador vs. trading real con apalancamiento</h2>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>&nbsp;</th><th>Simulador de MarginPad</th><th>Exchange real</th></tr></thead>
+    <tbody>
+      <tr><td>Dinero en riesgo</td><td class="pos">$0</td><td class="neg">Tu capital</td></tr>
+      <tr><td>Apalancamiento máx.</td><td>1000x (pares principales)</td><td>Normalmente 100x-125x</td></tr>
+      <tr><td>Matemáticas de liquidación</td><td>Fórmula real de margen aislado</td><td>Fórmula real de margen aislado</td></tr>
+      <tr><td>Registro / KYC</td><td class="pos">Ninguna</td><td class="neg">Cuenta + KYC</td></tr>
+      <tr><td>Disponibilidad en EE. UU.</td><td class="pos">Funciona en todas partes</td><td class="neg">La mayoría de las plataformas de apalancamiento bloquean a EE. UU. por geolocalización</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Preguntas frecuentes</h2>
+  <div class="faq">
+    <div class="qa"><h3>¿Hay una demo gratuita de apalancamiento a 100x?</h3><p>Sí. MarginPad te permite practicar con cualquier apalancamiento de 1x a 1000x en los pares cripto principales (aplican límites por símbolo, por ejemplo 100x-200x en altcoins más pequeñas) usando precios en vivo y un saldo virtual. Es gratis y se abre sin registro.</p></div>
+    <div class="qa"><h3>¿El simulador realmente liquida posiciones?</h3><p>Sí. Las posiciones usan la misma fórmula de liquidación con margen aislado que usan los exchanges de futuros reales, incluyendo un margen de mantenimiento. A 100x, un movimiento adverso de aproximadamente 1% te liquida — en el simulador exactamente igual que en una cuenta real.</p></div>
+    <div class="qa"><h3>¿Con qué apalancamiento debería practicar un principiante?</h3><p>Empieza con 3x-10x. A 10x, tu liquidación queda a aproximadamente 10% de distancia, lo que deja margen para aprender a colocar el stop-loss. Vale la pena experimentar un apalancamiento alto (50x o más) en un simulador precisamente porque enseña lo poco margen que hay — una posición a 50x muere con un movimiento del 2%.</p></div>
+    <div class="qa"><h3>¿Los precios son reales?</h3><p>Sí. Los precios llegan en vivo desde un feed real de un exchange y tu PnL se mueve tick a tick, así que la experiencia coincide con una cuenta apalancada real con cero dinero en riesgo.</p></div>
+    <div class="qa"><h3>¿También puedo practicar apalancamiento en acciones y forex?</h3><p>Sí. La misma cuenta opera acciones de EE. UU., pares de forex, índices bursátiles y oro como posiciones apalancadas, con límites de apalancamiento y comisiones realistas para cada clase de activo.</p></div>
+    <div class="qa"><h3>¿Necesito una cuenta?</h3><p>No. El simulador se abre y opera sin registro. Una cuenta gratuita es opcional y añade clasificaciones, misiones, XP y recompensas.</p></div>
+    <div class="qa"><h3>¿Cuál es el tamaño máximo de posición?</h3><p>Hasta $100,000 de margen por posición, con apalancamiento de hasta 1000x en los pares principales — lo bastante grande para practicar el tamaño de posición como lo haría una cuenta real fondeada.</p></div>
+  </div>
+
+  <div class="cta-band">
+    <h2>Siente lo que realmente hace un 100x — gratis</h2>
+    <p class="sub" style="margin:0 auto 20px">Abre la terminal, fija tu apalancamiento y coloca una operación en simulado al precio en vivo. Sin cuenta, sin riesgo.</p>
+    <a class="btn" href="/es/paper-trade">Abrir el simulador</a>
+  </div>
+
+  <p class="note">Relacionado: <a href="/es/crypto-trading-simulator-no-sign-up/">Simulador cripto sin registro</a> · <a href="/es/paper-trading/">Guía completa de paper trading</a> · <a href="/es/blog/crypto-leverage-explained/">El apalancamiento cripto explicado</a> · <a href="/es/blog/how-to-avoid-liquidation/">Cómo evitar la liquidación</a>. MarginPad es una plataforma de práctica gratuita — no es asesoramiento de inversión, y los resultados simulados no garantizan retornos reales.</p>
+</div>
+
+
+<div class="mp-xr"><div class="mp-xr-t">CUANDO LA PRÁCTICA DEJA DE ENSEÑARTE</div><p class="mp-xr-w">Un simulador no puede enseñarte el slippage, el funding, ni lo que el dinero real le hace a tu criterio. Cuando la cuenta de paper trading deje de sorprenderte, reduce el tamaño y pasa a operar en vivo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+<footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
+  <div><a class="brand" href="/es/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Practica el apalancamiento en cripto, acciones, forex e índices con precios en vivo y cero riesgo. Gratis, sin registro.</p></div>
+  <div><h4>Práctica</h4><a href="/es/paper-trade">Paper Trade</a><a href="/es/crypto-trading-simulator-no-sign-up/">Simulador sin registro</a><a href="/es/stock-trading-simulator/">Simulador de acciones</a><a href="/es/forex-trading-simulator/">Simulador de forex</a></div>
+  <div><h4>Liquidaciones</h4><a href="/es/heatmap">Mapa de calor</a><a href="/es/rekt/">Feed en vivo</a><a href="/es/calculators">Calculadoras</a><a href="/es/liquidations/">Centro de liquidaciones</a></div>
+</div><div class="bottom">© MarginPad · Plataforma de práctica, no es asesoría financiera · marginpad.io</div></div></footer>
+
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

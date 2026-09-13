@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/how-to-read-crypto-candlestick-charts/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<title>Cómo leer gráficos de velas cripto: guía para principiantes (2026) — MarginPad</title>
+<meta name="description" content="Candlestick charts show open, high, low and close at a glance — the language of every trading screen. Learn to read candles, the key patterns that matter, and how to practise on live charts risk-free." />
+<meta name="keywords" content="how to read candlestick charts, candlestick patterns, crypto candlesticks, reading crypto charts, candlestick chart explained, candlestick patterns crypto" />
+<link rel="canonical" href="https://marginpad.io/es/blog/how-to-read-crypto-candlestick-charts/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-read-crypto-candlestick-charts/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-read-crypto-candlestick-charts/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/how-to-read-crypto-candlestick-charts/" />
+<meta property="og:title" content="How to Read Crypto Candlestick Charts: A Beginner's Guide (2026)" />
+<meta property="og:description" content="Candlestick charts show open, high, low and close at a glance — the language of every trading screen. Learn to read candles, the key patterns that matter, and how to practise on live charts risk-free." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/how-to-read-crypto-candlestick-charts/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo leer gráficos de velas cripto: guía para principiantes (2026)","description":"Los gráficos de velas muestran la apertura, el máximo, el mínimo y el cierre de un vistazo: el idioma de toda pantalla de trading. Aprende a leer velas, los patrones clave que importan y cómo practicar en gráficos en vivo sin riesgo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-read-crypto-candlestick-charts/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se lee un gráfico de velas?","acceptedAnswer":{"@type":"Answer","text":"Cada vela muestra cuatro precios de su periodo de tiempo: la apertura, el cierre, el máximo y el mínimo. El cuerpo abarca de la apertura al cierre (verde/alcista si el precio subió, rojo/bajista si cayó), y las mechas finas muestran los puntos más alto y más bajo alcanzados. Un cuerpo verde alto significa compras fuertes; una mecha inferior larga significa que los vendedores empujaron el precio hacia abajo pero los compradores lo recuperaron."}},{"@type":"Question","name":"¿Qué significan las mechas de una vela?","acceptedAnswer":{"@type":"Answer","text":"Las mechas (o sombras) son las líneas finas por encima y por debajo del cuerpo. La mecha superior es el precio más alto alcanzado durante el periodo, y la mecha inferior, el más bajo. Las mechas largas indican rechazo: una mecha superior larga significa que el precio subió de golpe y luego fue vendido de vuelta; una mecha inferior larga significa que cayó y luego fue comprado de vuelta."}},{"@type":"Question","name":"¿Cuáles son los patrones de velas más importantes?","acceptedAnswer":{"@type":"Answer","text":"Para principiantes, conviene centrarse en unos pocos de alta señal: el doji (indecisión), el martillo y la estrella fugaz (mechas de reversión), y las velas envolventes (una vela grande que engulle a la anterior, señal de un cambio de momentum). Los patrones importan más en niveles clave y con confirmación, no de forma aislada."}},{"@type":"Question","name":"¿Qué temporalidad debería usar un principiante?","acceptedAnswer":{"@type":"Answer","text":"Las temporalidades más altas (4 horas y diaria) son más limpias y con menos ruido que los gráficos de 1 minuto, así que los principiantes aprenden más rápido y sufren menos latigazos. Empieza por la diaria para leer el panorama general y luego baja a temporalidades menores para las entradas una vez que te sientas cómodo."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Cómo leer las velas","item":"https://marginpad.io/es/blog/how-to-read-crypto-candlestick-charts/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Cómo leer las velas</div>
+  <article>
+    <h1>Cómo leer gráficos de velas cripto: guía para principiantes (2026)</h1>
+    <div class="meta">Básico · 7 min de lectura · Actualizado en junio de 2026</div>
+    <p>Toda pantalla de trading habla un mismo idioma: las <strong>velas</strong>. Una vez que sabes leerlas, un gráfico deja de ser un muro de rojo y verde y empieza a contarte una historia sobre quién está ganando: los compradores o los vendedores. Aquí tienes cómo leer velas desde cero, los patrones que vale la pena conocer, y cómo practicar gratis en gráficos en vivo. <em>(Solo con fines educativos, no es asesoramiento financiero.)</em></p>
+    <h2>Qué te dice una sola vela</h2>
+    <p>Cada vela comprime <strong>cuatro precios</strong> de su periodo de tiempo en una sola forma:</p>
+    <ul>
+    <li><strong>Cuerpo</strong>: la parte gruesa, que abarca la <strong>apertura</strong> y el <strong>cierre</strong>. <span style="color:#2ebd85">Verde/alcista</span> = cerró más arriba de donde abrió (ganaron los compradores); <span style="color:#ff5a4d">rojo/bajista</span> = cerró más abajo (ganaron los vendedores).</li>
+    <li><strong>Mechas</strong> (sombras): las líneas finas por encima y por debajo, que marcan el <strong>máximo</strong> y el <strong>mínimo</strong> alcanzados antes del cierre.</li>
+    </ul>
+    <p>Un cuerpo verde alto = compras fuertes. Una mecha inferior larga = los vendedores tiraron el precio abajo pero los compradores recuperaron el nivel (rechazo alcista). Una mecha superior larga = los compradores empujaron hacia arriba pero fueron vendidos de vuelta (rechazo bajista). Con eso ya basta para leer el momentum.</p>
+    <h2>Los patrones que importan</h2>
+    <ul>
+    <li><strong>Doji</strong>: apertura y cierre casi iguales, un cuerpo diminuto: indecisión, a menudo antes de un giro.</li>
+    <li><strong>Martillo / estrella fugaz</strong>: un cuerpo pequeño con una mecha larga: rechazo de precios más bajos (martillo, alcista) o más altos (estrella fugaz, bajista).</li>
+    <li><strong>Envolvente</strong>: una vela grande cuyo cuerpo engulle por completo a la anterior: un cambio de momentum, sobre todo en un nivel clave.</li>
+    </ul>
+    <p>Los patrones son más fuertes <strong>en soporte/resistencia y con confirmación</strong>: un martillo en medio de la nada significa poco; un martillo en un nivel donde el precio ya ha rebotado tres veces significa mucho.</p>
+    <h2>Empieza con temporalidades más altas</h2>
+    <p>El gráfico de 1 minuto es sobre todo ruido. Los principiantes aprenden más rápido en las temporalidades de <strong>4 horas y diaria</strong>, donde los patrones son más limpios y los latigazos más raros. Lee primero el panorama general ahí, y luego baja de temporalidad para las entradas. Añade uno o dos indicadores (mira <a href="/es/blog/rsi-indicator-explained/">cómo usar el RSI</a>) para confirmar lo que sugieren las velas.</p>
+    <h2>Practica en gráficos en vivo, sin riesgo</h2>
+    <p>Leer velas es una habilidad que se construye mirando velas reales. Abre el <a href="/es/charts">espacio de gráficos</a> o el gráfico de <a href="/es/paper-trade">Paper Trade</a>, observa cómo se forman las velas en tiempo real y haz operaciones de práctica en torno a los patrones anteriores, sin dinero en riesgo, hasta que leer un gráfico te salga natural. ¿Eres nuevo en todo esto? La guía gratuita <a href="/es/where-to-start/">Where to Start</a> te acompaña paso a paso.</p>
+    <div class="callout"><div class="k">LEE VELAS EN VIVO, SIN RIESGO</div><p style="margin-bottom:14px">Observa cómo se forman las velas en tiempo real y practica los patrones al precio en vivo, sin cuenta y sin dinero en juego.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <section class="related">
+    <h2 class="rel-title">Guías relacionadas</h2>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/rsi-indicator-explained/"><span class="tag">Básico</span><span class="rel-t">El indicador RSI explicado (2026): cómo usarlo en trading de cripto</span></a><a class="rel-card" href="/es/blog/crypto-trading-for-beginners/"><span class="tag">Básico</span><span class="rel-t">Trading de cripto para principiantes: guía completa 2026 (empieza sin riesgo)</span></a><a class="rel-card" href="/es/blog/limit-vs-market-orders/"><span class="tag">Básico</span><span class="rel-t">Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comentarios</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Tu nombre (opcional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Publicar comentario</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

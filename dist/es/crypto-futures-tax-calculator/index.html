@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-futures-tax-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Impuestos de Futuros Cripto — Estimador de P&L Neto Realizado | MarginPad</title>
+<meta name="description" content="Free crypto futures tax estimator: turn a year of realized gains, losses, fees and funding into a net taxable figure and an estimated bill at your own tax rate. Educational, not tax advice." />
+<meta name="keywords" content="crypto futures tax calculator, crypto tax estimator, futures trading tax, capital gains crypto calculator, do i pay tax on crypto futures" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-futures-tax-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-futures-tax-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-futures-tax-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-futures-tax-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Crypto Futures Tax Calculator — Net Realized P&L Estimator | MarginPad" />
+<meta property="og:description" content="Free crypto futures tax estimator: turn a year of realized gains, losses, fees and funding into a net taxable figure and an estimated bill at your own tax rate. Educational, not tax advice." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-futures-tax-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Estimador de Impuestos de Futuros Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-futures-tax-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Estimador de Impuestos de Futuros Cripto","item":"https://marginpad.io/es/crypto-futures-tax-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Pago impuestos sobre las ganancias de futuros cripto?","acceptedAnswer":{"@type":"Answer","text":"En la mayoría de los países, sí, una vez que una posición se cierra y el beneficio se realiza. Lo que cambia es la categoría en la que cae y la tasa que se aplica: ganancia de capital en algunos lugares, ingreso ordinario en otros, un régimen dedicado a futuros o una tasa plana cripto en otros. Consulta tu propia jurisdicción o pregúntale a un contador local — esta herramienta deliberadamente no asume ninguna."}},{"@type":"Question","name":"¿Se gravan las ganancias no realizadas de una posición abierta?","acceptedAnswer":{"@type":"Answer","text":"Generalmente no. La mayoría de los sistemas gravan los resultados realizados, así que una posición abierta con una ganancia importante normalmente no es un evento gravable hasta que la cierras. Un pequeño número de regímenes aplica el tratamiento de valoración a mercado a ciertos contratos o traders profesionales, lo cual es una razón más para confirmar tu regla local en lugar de asumir."}},{"@type":"Question","name":"¿Puedo deducir las comisiones de trading y los pagos de funding?","acceptedAnswer":{"@type":"Answer","text":"En la mayoría de los sistemas, las comisiones de trading y el funding neto pagado son costos de la operación y reducen el resultado gravable, por eso son campos separados aquí. Mantenlos desglosados en tus registros — una declaración que los mezcla en un solo número de P&amp;L es mucho más difícil de justificar si alguien pregunta."}},{"@type":"Question","name":"¿Qué pasa con un año perdedor?","acceptedAnswer":{"@type":"Answer","text":"Las pérdidas realizadas normalmente compensan las ganancias realizadas del mismo periodo, y el saldo no usado a menudo se traslada a años futuros. Introduce arriba un monto trasladado para ver cómo se aplica. Cuántos años se traslada y qué puede compensar depende de cada jurisdicción."}},{"@type":"Question","name":"¿Es esta calculadora asesoramiento fiscal?","acceptedAnswer":{"@type":"Answer","text":"No. Es un estimador educativo que hace aritmética con los números que introduces, usando una tasa de impuesto que tú indicas. No conoce tu país, tu ingreso, tus tipos de contrato ni tu situación de declaración, y no debe usarse como base para una declaración. Trata el resultado como una cifra de planificación y confirma la real con un profesional calificado."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Impuestos de Futuros Cripto — Estimador de P&L Neto Realizado","url":"https://marginpad.io/es/crypto-futures-tax-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Estimador de Impuestos de Futuros Cripto</h1>
+<p class="sub">Convierte un año de trading en el número que realmente importa: el P&amp;L neto realizado después de costos, y lo que podría costarte a tu propia tasa.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="gains">Ganancias realizadas (USD)</label><input id="gains" type="number" inputmode="decimal" value="12000"></div><div class="f"><label for="losses">Pérdidas realizadas (USD)</label><input id="losses" type="number" inputmode="decimal" value="7500"></div><div class="f"><label for="fees">Comisiones de trading pagadas (USD)</label><input id="fees" type="number" inputmode="decimal" value="420"></div><div class="f"><label for="funding">Funding neto pagado (USD)</label><input id="funding" type="number" inputmode="decimal" value="180"></div><div class="f"><label for="carry">Pérdida trasladada (USD)</label><input id="carry" type="number" inputmode="decimal" value="0"></div><div class="f"><label for="rate">Tu tasa de impuesto %</label><input id="rate" type="number" inputmode="decimal" value="25" step="0.5"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">gravable &asymp; (ganancias realizadas &minus; pérdidas realizadas &minus; comisiones &minus; funding neto) &minus; pérdida trasladada &nbsp;&nbsp;|&nbsp;&nbsp; impuesto = gravable &times; tu tasa</div>
+<p><strong>Lee esto primero: esto es un estimador, no asesoramiento fiscal.</strong> Cómo se grava una operación de futuros depende de dónde vives y de qué operaste exactamente, y ninguna calculadora en internet sabe ninguna de las dos cosas. Lo que sí hace es la parte que todos hacen mal a mano — convertir un año desordenado de operaciones en un único número neto honesto, tratando las comisiones y el funding como los costos reales que son.</p>
+<h2>Por qué "realizado" es la única palabra que importa</h2>
+<p>Casi todo sistema fiscal grava las posiciones <strong>cerradas</strong>. Un long abierto que marca +$40,000 generalmente no es un evento gravable por muy bien que se vea; el día que lo cierras, normalmente sí lo es. Esa única distinción es la razón por la que un trader puede sentirse rico en diciembre y no deber nada, o sentirse plano y deber mucho porque las ganancias se realizaron pronto y se devolvieron después, ya en un nuevo año fiscal.</p>
+<p>Tu <a href="/es/trading-journal/">diario de trading</a> es lo que hace esto respondible — separa las operaciones cerradas de las abiertas y suma el P&amp;L realizado por periodo, que es exactamente el dato que necesita este estimador.</p>
+<h2>Las comisiones y el funding son costos, no decoración</h2>
+<p>Los traders suelen introducir su P&amp;L bruto y olvidan que también pagaron comisiones taker en cada entrada y salida y, en los perpetuos, <a href="/es/blog/what-is-funding-rate/">funding</a> cada ocho horas. En la mayoría de los sistemas esos son costos deducibles de la operación. En una cuenta activa no es un error de redondeo: un año de viajes redondos al 0.055% más el funding puede ser una deducción de cinco cifras sobre un volumen nocional de seis cifras, y eso es la diferencia entre una declaración precisa y una cara.</p>
+<h2>Las pérdidas son un activo — si las registras</h2>
+<p>Las pérdidas realizadas normalmente compensan las ganancias realizadas, y muchas jurisdicciones permiten que una pérdida no usada se traslade a años futuros. Por eso el campo de pérdida aquí no es decoración: una pérdida de $30,000 en un mal año puede reducir silenciosamente la factura de uno bueno. La regla asociada (cuánto tiempo se traslada, qué puede compensar) varía enormemente, así que el mecanismo es universal pero los límites son locales.</p>
+<h2>Por qué no elegimos una tasa por ti</h2>
+<p>Porque no hay una única respuesta honesta. Según dónde declares, el beneficio de futuros puede tratarse como ganancia de capital, como ingreso ordinario, bajo un régimen especial de futuros con su propia tasa combinada, o bajo una tasa plana específica para cripto — y dentro de cualquiera de esos casos, el porcentaje suele depender de tu ingreso total del año, no solo del trading. Cualquiera que te diga con seguridad "debes X" sin conocer tu país y tu ingreso está adivinando. Introduce <em>tu</em> tasa marginal, o pídesela a un contador, y la aritmética de arriba será entonces genuinamente tuya.</p>
+<h2>Guarda registros que resistan una pregunta</h2>
+<ul>
+<li><strong>Cada operación cerrada</strong> con fecha, símbolo, lado, tamaño, entrada, salida y resultado — sirven tanto las exportaciones del exchange como un diario.</li>
+<li><strong>Comisiones y funding por separado</strong>, porque son deducciones y meterlos dentro del P&amp;L hace que la declaración sea imposible de verificar.</li>
+<li><strong>Transferencias entre plataformas</strong>, que normalmente no son eventos gravables pero parecen exactamente ingresos para cualquiera que reconstruya tu año más tarde.</li>
+<li><strong>La foto de fin de año</strong> de las posiciones abiertas, para que la línea entre lo realizado y lo no realizado quede documentada en lugar de recordada.</li>
+</ul>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Un año con <b>$12,000</b> de ganancias realizadas, <b>$7,500</b> de pérdidas realizadas, <b>$420</b> en comisiones y <b>$180</b> de funding neto pagado: P&amp;L neto <b>+$4,500</b>, menos <b>$600</b> de costos = <b>$3,900</b> después de costos. A una tasa introducida de <b>25%</b> la estimación es <b>$975</b> de impuesto, quedando <b>$2,925</b>. Nota que los $600 de costos por sí solos movieron la factura en $150 — la parte que la mayoría de las hojas de cálculo hechas a mano olvidan.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Pago impuestos sobre las ganancias de futuros cripto?</summary><p>En la mayoría de los países, sí, una vez que una posición se cierra y el beneficio se realiza. Lo que cambia es la categoría en la que cae y la tasa que se aplica: ganancia de capital en algunos lugares, ingreso ordinario en otros, un régimen dedicado a futuros o una tasa plana cripto en otros. Consulta tu propia jurisdicción o pregúntale a un contador local — esta herramienta deliberadamente no asume ninguna.</p></details><details><summary>¿Se gravan las ganancias no realizadas de una posición abierta?</summary><p>Generalmente no. La mayoría de los sistemas gravan los resultados realizados, así que una posición abierta con una ganancia importante normalmente no es un evento gravable hasta que la cierras. Un pequeño número de regímenes aplica el tratamiento de valoración a mercado a ciertos contratos o traders profesionales, lo cual es una razón más para confirmar tu regla local en lugar de asumir.</p></details><details><summary>¿Puedo deducir las comisiones de trading y los pagos de funding?</summary><p>En la mayoría de los sistemas, las comisiones de trading y el funding neto pagado son costos de la operación y reducen el resultado gravable, por eso son campos separados aquí. Mantenlos desglosados en tus registros — una declaración que los mezcla en un solo número de P&amp;L es mucho más difícil de justificar si alguien pregunta.</p></details><details><summary>¿Qué pasa con un año perdedor?</summary><p>Las pérdidas realizadas normalmente compensan las ganancias realizadas del mismo periodo, y el saldo no usado a menudo se traslada a años futuros. Introduce arriba un monto trasladado para ver cómo se aplica. Cuántos años se traslada y qué puede compensar depende de cada jurisdicción.</p></details><details><summary>¿Es esta calculadora asesoramiento fiscal?</summary><p>No. Es un estimador educativo que hace aritmética con los números que introduces, usando una tasa de impuesto que tú indicas. No conoce tu país, tu ingreso, tus tipos de contrato ni tu situación de declaración, y no debe usarse como base para una declaración. Trata el resultado como una cifra de planificación y confirma la real con un profesional calificado.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/trading-journal/">Diario de trading</a><a href="/es/crypto-profit-calculator/">Calculadora de beneficio</a><a href="/es/crypto-fee-calculator/">Calculadora de comisiones</a><a href="/es/crypto-funding-cost-calculator/">Costo de funding</a><a href="/es/calculators">Todas las calculadoras (app)</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var g=+document.getElementById('gains').value,l=+document.getElementById('losses').value,f=+document.getElementById('fees').value,fu=+document.getElementById('funding').value,cf=+document.getElementById('carry').value,rt=+document.getElementById('rate').value/100;var r=document.getElementById('res');if(!(g>=0&&l>=0)){r.innerHTML='';return;}var net=g-l,costs=(f||0)+(fu||0),afterCosts=net-costs,taxable=Math.max(0,afterCosts-(cf||0)),unused=Math.max(0,(cf||0)-Math.max(0,afterCosts)),tax=taxable*rt,keep=afterCosts-tax;var m=function(v){return (v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2});};
+r.innerHTML='<div class="rrow"><span class="k">Net realized P&L (gains &minus; losses)</span><span class="v '+(net>=0?'up':'dn')+'">'+m(net)+'</span></div><div class="rrow"><span class="k">Deductible trading costs</span><span class="v dn">-'+m(costs).replace('$','')+' USD</span></div><div class="rrow"><span class="k">Result after costs</span><span class="v '+(afterCosts>=0?'up':'dn')+'">'+m(afterCosts)+'</span></div>'+(cf>0?'<div class="rrow"><span class="k">Loss carried forward applied</span><span class="v">-'+m(Math.min(cf,Math.max(0,afterCosts))).replace('$','')+' USD</span></div>':'')+'<div class="rrow"><span class="k">Estimated taxable amount</span><span class="v">'+m(taxable)+'</span></div><div class="rrow big"><span class="k">Estimated tax at '+(rt*100).toFixed(1)+'%</span><span class="v dn">'+m(tax)+'</span></div><div class="rrow"><span class="k">Keep after estimated tax</span><span class="v '+(keep>=0?'up':'dn')+'">'+m(keep)+'</span></div>'+(afterCosts<0?'<div class="rrow"><span class="k">Loss available to carry forward</span><span class="v">'+m(Math.abs(afterCosts)+(cf||0))+'</span></div>':(unused>0?'<div class="rrow"><span class="k">Unused carry-forward remaining</span><span class="v">'+m(unused)+'</span></div>':''));}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

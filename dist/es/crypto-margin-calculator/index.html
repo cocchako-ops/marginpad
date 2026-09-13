@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-margin-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Margen — Garantía que Requiere una Posición | MarginPad</title>
+<meta name="description" content="Free crypto margin calculator: position size and leverage turned into exact initial margin, quantity, maintenance margin and your liquidation buffer." />
+<meta name="keywords" content="margin calculator crypto, initial margin calculator, required margin futures" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-margin-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-margin-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-margin-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-margin-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Margin Calculator — Collateral a Position Requires | MarginPad" />
+<meta property="og:description" content="Free crypto margin calculator: position size and leverage turned into exact initial margin, quantity, maintenance margin and your liquidation buffer." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-margin-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Margen Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-margin-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Margen Cripto","item":"https://marginpad.io/es/crypto-margin-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Cruzado vs aislado — ¿cuál modela esta calculadora?","acceptedAnswer":{"@type":"Answer","text":"Aislado: solo el margen asignado está en juego. El cruzado usa toda la wallet como colchón, retrasando la liquidación pero arriesgándolo todo — consulta la guía de cruzado vs aislado en el blog."}},{"@type":"Question","name":"¿Por qué el exchange pidió más margen?","acceptedAnswer":{"@type":"Answer","text":"Las posiciones más grandes alcanzan niveles de mantenimiento más altos, las órdenes abiertas reservan margen, y los motores de riesgo añaden colchones de comisión. Esto modela el primer nivel estándar."}},{"@type":"Question","name":"¿Pueden cambiar los requisitos en medio de la operación?","acceptedAnswer":{"@type":"Answer","text":"Sí — los exchanges suben los niveles durante volatilidad extrema, acercando la liquidación sin que el precio se mueva. Una razón más por la que el colchón nunca debería ser tu stop."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Margen — Garantía que Requiere una Posición","url":"https://marginpad.io/es/crypto-margin-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Margen Cripto</h1>
+<p class="sub">Cuánta garantía bloquea la operación — antes de descubrirlo en el formulario de orden.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="pos">Tamaño de posición (USD)</label><input id="pos" type="number" inputmode="decimal" value="5000"></div><div class="f"><label for="entry">Precio de entrada</label><input id="entry" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="lev">Apalancamiento</label><input id="lev" type="number" inputmode="decimal" value="10"></div><div class="f"><label for="mmr">Margen de mantenimiento %</label><input id="mmr" type="number" inputmode="decimal" value="0.5" step="0.1"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">margen inicial = posición / apalancamiento &nbsp;|&nbsp; mantenimiento = posición &times; MMR</div>
+<p>El margen inicial abre la posición; el <strong>margen de mantenimiento</strong> es el piso por debajo del cual el exchange la cierra a la fuerza. La distancia entre ambos es todo tu colchón — y con apalancamiento alto ese colchón es un error de redondeo.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Una posición de <b>$5,000</b> a 10x bloquea <b>$500</b> de margen inicial. Con un 0.5% de mantenimiento ($25) el colchón es de <b>$475</b> — un movimiento adverso del 9.5% acaba con la posición.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>Cruzado vs aislado — ¿cuál modela esta calculadora?</summary><p>Aislado: solo el margen asignado está en juego. El cruzado usa toda la wallet como colchón, retrasando la liquidación pero arriesgándolo todo — consulta la guía de cruzado vs aislado en el blog.</p></details><details><summary>¿Por qué el exchange pidió más margen?</summary><p>Las posiciones más grandes alcanzan niveles de mantenimiento más altos, las órdenes abiertas reservan margen, y los motores de riesgo añaden colchones de comisión. Esto modela el primer nivel estándar.</p></details><details><summary>¿Pueden cambiar los requisitos en medio de la operación?</summary><p>Sí — los exchanges suben los niveles durante volatilidad extrema, acercando la liquidación sin que el precio se mueva. Una razón más por la que el colchón nunca debería ser tu stop.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/leverage-calculator/">Calculadora de apalancamiento</a><a href="/es/btc-liquidation-calculator/">Calculadora de liquidación</a><a href="/es/blog/cross-vs-isolated-margin/">Cruzado vs aislado (guía)</a><a href="/es/calculators">Todas las calculadoras (app)</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var p=+document.getElementById('pos').value,en=+document.getElementById('entry').value,l=+document.getElementById('lev').value,mm=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(p>0&&en>0&&l>0)){r.innerHTML='';return;}var im=p/l,qty=p/en,mmv=p*mm;r.innerHTML='<div class="rrow big"><span class="k">Initial margin required</span><span class="v">'+im.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Maintenance margin</span><span class="v">'+mmv.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Buffer before liquidation</span><span class="v">'+(im-mmv).toFixed(2)+' USD</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

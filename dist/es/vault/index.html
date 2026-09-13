@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/vault/"><head>
+<meta charset="UTF-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>The Vault — Marcos, Niveles y Cosméticos | MarginPad</title>
+<meta name="description" content="The Vault: earn Ticks by trading and showing up, then spend them on profile frames, ticket skins and card backgrounds. Try any of them on your own card first.">
+<link rel="canonical" href="https://marginpad.io/es/vault/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/vault/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/vault/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/vault/" />
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--line:#232932;--lime:#c2f64a;--panel:#101216}
+html,body{background:#0a0b0d;color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+a{color:var(--lime);text-decoration:none}
+.wrap{max-width:1260px;margin:0 auto;padding:20px 16px 80px}
+/* The header used to spend 330px before a single item appeared. Title and blurb share one
+   band, so the shop starts roughly where the second row of frames used to. */
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+.vhead .sub{margin-top:2px}
+@media(max-width:760px){.vhead{gap:10px}}
+.crumb{font-size:12.5px;color:var(--faint)}.crumb a{color:var(--faint)}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5.5vw,44px);letter-spacing:-.03em;margin:8px 0 4px}
+h1 b{color:var(--lime)}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;margin:40px 0 4px}
+.h2s{color:var(--faint);font-size:13px;margin-bottom:16px}
+.wchip{display:flex;align-items:baseline;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:7px 12px}
+.wchip b{font-family:'Space Mono',monospace;font-size:15px}
+.wchip span{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
+.wchip.xp b{color:#ffd75a}.wchip.bal b{color:var(--lime)}.wchip.lvl b{color:#7ee0ff}
+.wchip.tk{border-color:#3f6e2a;background:rgba(194,246,74,.07)}.wchip.tk b{color:var(--lime);font-size:17px}
+/* collection meter: how much of the Vault you actually hold, which is the thing a collector wants to see
+   and the shop never told anyone. Sits inside the fitting room so it costs no extra vertical space. */
+.collect{display:flex;align-items:center;gap:8px;margin-top:5px}
+.cbar{flex:1;max-width:190px;height:5px;border-radius:3px;background:#1b2028;overflow:hidden}
+.cbar i{display:block;height:100%;background:linear-gradient(90deg,#2ebd85,var(--lime));width:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.collect b{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim);font-weight:400;white-space:nowrap}
+/* what is still earnable today, and what is already capped out. Answers "how do I get Ticks" in the one
+   place the question actually occurs: standing in the shop, short of a frame. */
+.earn{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:9px 13px;margin:0 0 14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.012)}
+.earn>b{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:400}
+.earn span{display:flex;gap:14px;flex-wrap:wrap}
+.esrc{font-size:11.5px;color:var(--dim);white-space:nowrap}
+.esrc b{font-family:'Space Mono',monospace;color:var(--lime);font-weight:700}
+.esrc.done{color:var(--faint)}.esrc.done b{color:var(--faint)}
+/* a "new" flag so a returning trader can see what changed without reading every card */
+.fcard[data-new="1"] .fbar::after{content:"NEW";font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#0a0b0d;background:var(--lime);border-radius:99px;padding:1px 6px;margin-left:6px}
+/* wishlist: a star that pins one item as the thing you are saving toward */
+.wish{position:absolute;top:9px;right:9px;z-index:8;width:24px;height:24px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,16,.72);color:#6b7480;cursor:pointer;font-size:13px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:.15s}
+.fcard:hover .wish,.fcard:focus-within .wish,.wish.on{opacity:1}
+.wish.on{color:var(--lime);border-color:rgba(194,246,74,.5)}
+.wish:hover{color:var(--lime)}
+.sortsel{margin-left:auto;flex:none;font:600 12px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:8px 10px;cursor:pointer}
+/* ---- account card: one panel replacing the six chips --------------------------------------------- */
+.acct{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,#12151b,#0c0e12 62%);overflow:hidden;margin:0 0 14px}
+.acct::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 0% 0%,var(--lvc,#5c6b7a)22,transparent 58%)}
+.acct::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--lvc,#5c6b7a),transparent)}
+.acct-l{position:relative;padding:15px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.acct-r{position:relative;padding:15px 18px;border-left:1px solid var(--line);min-width:0}
+@media(max-width:820px){.acct{grid-template-columns:1fr}.acct-r{border-left:0;border-top:1px solid var(--line)}}
+.acct-top{display:flex;align-items:center;gap:11px;min-width:0}
+.acct-lvi{width:38px;height:38px;flex:0 0 38px}
+.acct-id{display:flex;flex-direction:column;min-width:0}
+.acct-lvn{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--lvc,#e9e7df);line-height:1.15}
+.acct-lvs{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-bal{margin-left:auto;text-align:right;flex:0 0 auto}
+.acct-bal b{display:block;font-family:'Space Mono',monospace;font-size:16px;color:var(--lime);line-height:1.1}
+.acct-bal span{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-family:'Space Mono',monospace}
+.xpwrap{display:flex;flex-direction:column;gap:5px}
+.xpbar{height:6px;border-radius:4px;background:#191d24;overflow:hidden}
+.xpbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--lvc,#5c6b7a),var(--lime));width:0;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.xpnum{display:flex;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.tickrow{display:flex;align-items:flex-end;gap:13px;padding-top:2px}
+.tickbig{font-family:'Space Mono',monospace;font-weight:700;font-size:34px;line-height:.95;color:var(--lime);letter-spacing:-.02em}
+.tickbig small{font-size:14px;margin-left:3px;color:#7f9a4a}
+.tickcap{font-size:11.5px;color:var(--dim);line-height:1.4;padding-bottom:3px}
+.acct-foot{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.acct-foot b{color:var(--dim);font-weight:400}
+.acct-foot .hot{color:#ff9a3a}.acct-foot .cool{color:#7ee0ff}.acct-foot .boost{color:#c792ff}
+/* today's earning sources, as bars rather than a rulebook */
+.thead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
+.thead b{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:400}
+.thead i{font-style:normal;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim)}
+.tk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px}
+.tk-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel);display:flex;flex-direction:column;gap:5px}
+.tk-card b{font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tk-card b i{font-style:normal;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime)}
+.tk-card span{font-size:12px;color:var(--dim);line-height:1.5}
+.tk-card small{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
+.tsw{display:inline-flex;gap:2px;background:#14181e;border:1px solid var(--line);border-radius:9px;padding:2px}
+.tsw button{font:600 10.5px 'Familjen Grotesk',sans-serif;color:var(--faint);background:none;border:0;border-radius:7px;padding:4px 10px;cursor:pointer;transition:.14s}
+.tsw button.on{background:var(--lime);color:#0a0b0d}
+.tsw button:not(.on):hover{color:var(--dim)}
+.tlog{display:flex;align-items:baseline;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.045);font-size:11.5px}
+.tlog:last-child{border-bottom:0}
+.tlog b{font-family:'Space Mono',monospace;font-size:11px;color:var(--lime);flex:0 0 auto;min-width:30px}
+.tlog b.neg{color:#ff7b72}
+.tlog span{color:var(--dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlog i{font-style:normal;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint);flex:0 0 auto}
+.tsrc{display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:center;margin-bottom:7px}
+.tsrc:last-child{margin-bottom:0}
+.tsrc-n{font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsrc-v{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.tsrc-b{grid-column:1/-1;height:4px;border-radius:3px;background:#191d24;overflow:hidden}
+.tsrc-b i{display:block;height:100%;border-radius:3px;background:var(--lime);width:0;transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.tsrc.full .tsrc-n,.tsrc.full .tsrc-v{color:var(--faint)}
+.tsrc.full .tsrc-b i{background:#39502a}
+.signin{margin:14px 0 0;padding:13px 16px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.3);border-radius:12px;font-size:13.5px}
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));gap:10px}
+.lv{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center;transition:transform .15s,border-color .15s}
+.lv:hover{transform:translateY(-2px)}
+.lv .ic{width:44px;height:44px;margin:0 auto 8px}
+.lv b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px}
+.lv small{display:block;color:var(--faint);font-size:10.5px;font-family:'Space Mono',monospace;margin-top:2px}
+.lv .perk{display:block;font-size:11px;color:var(--dim);margin-top:7px;line-height:1.45;min-height:32px}
+.lv.cur{border-color:var(--lime);box-shadow:0 0 24px -12px rgba(194,246,74,.5)}
+.lv.cur::after{content:"YOU";position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;border-radius:99px;padding:1px 8px}
+.lv.done{border-color:#2e3a2e}
+.lv.lock{opacity:.62}
+/* gallery — REBUILT 2026-08-19. The old card stacked preview + name + tier badge + a description line +
+   a button row into 251px and fitted four per row, so twenty frames meant a long scroll past text that
+   mostly repeated what the badge already said. The frame is the product, so the frame now gets the space:
+   preview, then one line carrying the name and the price. Tier moved to a colour on the card edge, and the
+   description and secondary actions surface on hover instead of holding a row open on every card forever. */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px}
+/* On a phone a 196px minimum collapses to a single column, which turns a 34-item shop back into the
+   long scroll this redesign existed to remove. Two columns at 360px+ keeps it a grid; the preview
+   shrinks with it so the frame still reads. */
+@media(max-width:640px){.gal{grid-template-columns:repeat(2,1fr);gap:9px}
+  /* grid items default to min-width:auto, so a column cannot shrink below the preview's unbreakable
+     content and the whole page grows sideways instead. */
+  .fcard{padding:9px;min-width:0}.prev>span:last-child{min-width:0}.prev .un{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+  .prev{height:74px;padding:0 10px;gap:8px}.prev .av{width:32px;height:32px;flex:0 0 32px;font-size:14px;border-radius:9px}
+  .prev .un{font-size:12px}.prev .us{font-size:8.5px}.fname{font-size:12px}.fnote{font-size:9px}}
+@media(max-width:360px){.gal{grid-template-columns:1fr}}
+/* isolation:isolate is load-bearing: the frame rings are ::after pseudo-elements carrying z-index 6-7, and a
+   position:relative card with z-index:auto makes NO stacking context, so those rings escaped into the page's
+   root layer. Isolating each card keeps every ring inside the card it belongs to. */
+.fcard{position:relative;isolation:isolate;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:11px;display:flex;flex-direction:column;gap:9px;transition:transform .15s,border-color .15s,box-shadow .15s}
+.fcard:hover{transform:translateY(-2px);border-color:#37404d}
+.fcard::before{content:"";position:absolute;left:11px;right:11px;top:0;height:2px;border-radius:0 0 3px 3px;background:var(--tc,#3a4450);opacity:.9}
+.fcard[data-tier="common"]{--tc:#6b7480}
+.fcard[data-tier="rare"]{--tc:#5aa9ff}
+.fcard[data-tier="epic"]{--tc:#c792ff}
+.fcard[data-tier="legendary"]{--tc:#ffd75a}
+.fcard[data-tier="mythic"]{--tc:#ff5ad0}
+.fcard[data-tier="nation"]{--tc:#c2f64a}
+.fcard.tryon{border-color:var(--lime);box-shadow:0 0 0 1px rgba(194,246,74,.5),0 0 26px -10px rgba(194,246,74,.6)}
+/* name + price on one line; the price IS the buy control, so no separate button row in the resting state */
+.tryhit{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.tryhit:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:14px}
+.fbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:22px}
+.fname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnote{font-size:10px;color:var(--faint);font-family:'Space Mono',monospace;white-space:nowrap}
+/* the hover layer: description + secondary actions, so a resting card stays two rows tall */
+.fbar{transition:opacity .14s}
+.fcard:hover .fbar,.fcard:focus-within .fbar{opacity:0}
+/* z-index 12, above every frame ring (6 and 7). At 6 the loud frames -- petrol, dusk, midas, cathedral,
+   obsidian and the rest of the z-7 set -- drew their ring straight across this panel's text and buttons. */
+.fhov{position:absolute;left:0;right:0;bottom:0;padding:16px 11px 11px;background:linear-gradient(180deg,rgba(16,18,22,0) 0,#101216 12px);border-radius:0 0 15px 15px;opacity:0;transform:translateY(6px);transition:opacity .16s,transform .16s;pointer-events:none;z-index:12}
+.fcard:hover .fhov,.fcard:focus-within .fhov{opacity:1;transform:none;pointer-events:auto}
+/* the preview's dummy name and avatar used to ghost through the panel's top fade, so the description read as
+   double-exposed text. The FRAME stays -- that is what is being shopped for -- only its contents fade out. */
+.prev>span{transition:opacity .16s}
+.fcard:hover .prev>span,.fcard:focus-within .prev>span{opacity:0}
+.fhov .fdesc2{font-size:11px;color:var(--dim);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (hover:none){.fhov{position:static;opacity:1;transform:none;pointer-events:auto;background:none;padding:0}.fhov .fdesc2{display:none}.fcard:hover .fbar,.fcard:focus-within .fbar{opacity:1}.fcard:hover .prev>span,.fcard:focus-within .prev>span{opacity:1}}
+.prev{position:relative;border-radius:14px;background:linear-gradient(180deg,#151a21,#0c0f13);border:2px solid #2a313c;height:96px;display:flex;align-items:center;gap:11px;padding:0 14px}
+.prev .av{width:44px;height:44px;border-radius:11px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--lime);flex:0 0 44px}
+.prev .un{font-weight:800;font-size:15px;font-family:'Bricolage Grotesque',sans-serif}
+.prev .us{font-size:10.5px;color:var(--faint);font-family:'Space Mono',monospace;margin-top:2px}
+.fmeta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px}
+.tier{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:2px 9px;border:1px solid}
+.tier.common{color:#9aa3ad;border-color:#3a434f}
+.tier.rare{color:#7fb6ff;border-color:#2c4a75}
+.tier.epic{color:#c792ff;border-color:#5a3a85}
+.tier.legendary{color:#ffd75a;border-color:#7a6220}
+.tier.level{color:#7ee0ff;border-color:#2a5a6e}
+.tier.limited{color:#ff9a3a;border-color:#7a4a1a}
+.tier.nation{color:#c2f64a;border-color:#4b6a1a}
+.btn.gift{color:#c792ff;border-color:#5a3a85;font-size:11px}
+.sup-state{font-family:'Space Mono',monospace;font-size:11px;color:#7ee0ff;margin-top:6px}
+/* THE FITTING ROOM — the answer to "let me preview a frame on my own card before I pay for it".
+   It is your real card, with your real name, pinned under the tabs. Clicking any item in the shop dresses
+   it instantly. Nothing is saved and nobody else sees it, so trying on a $19.99 frame you do not own costs
+   nothing and commits to nothing — which is exactly why it makes the shop worth browsing. */
+.fit[hidden],.acct[hidden],.collect[hidden]{display:none}
+/* The tabs bar above is 58px tall and sits at z-index 30, so top:52px parked this bar 6px UNDER it and the
+   tabs clipped its top edge. It also has to be OPAQUE: at 94% the card grid ghosted through it while it was
+   stuck over the gallery, which reads as a broken overlay rather than a bar. */
+.fit{position:sticky;top:58px;z-index:29;display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:11px 13px;margin:0 0 14px;background:#0d0f13;border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 30px -20px rgba(0,0,0,.95)}
+.fit-card{flex:0 0 auto}
+/* a real min-width so the bar WRAPS on a narrow window instead of pushing the buttons out over the cards */
+.fit-txt{flex:1 1 150px;min-width:140px}
+.fit-h{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.fit-n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fit-s{font-size:11.5px;color:var(--dim);margin-top:1px}
+.fit-act{display:flex;gap:7px;flex:0 0 auto}
+/* .btn is flex:1 globally (the buy row splits evenly). Here that squeezed both buttons to 84px and broke
+   "Share look" and "Take off" onto two lines, 56px tall. In this bar they size to their own text. */
+.fit-act .btn{flex:0 0 auto;white-space:nowrap}
+@media(max-width:620px){.fit{gap:10px;padding:9px 10px;top:58px}.fit .prev{width:158px!important;height:66px!important;padding:0 10px!important}.fit .prev .av{width:34px;height:34px;flex:0 0 34px;font-size:15px}.fit .prev .un{font-size:12.5px}.fit .prev .us{font-size:9px}.fit-s{display:none}}
+.vtabs{position:sticky;top:0;z-index:30;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px 0 10px;margin:4px 0 6px;background:linear-gradient(180deg,#0a0b0d 82%,rgba(10,11,13,0))}
+.vtabs::-webkit-scrollbar{display:none}
+.vtabs button{flex:none;font:700 12.5px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s}
+.vtabs button:hover{border-color:#3a434f;color:#cdd3da}
+/* "Owned" is a filter, not a section — a checkbox that keeps every gallery down to what you own.
+   It reuses the tab button it replaced, so the bar costs exactly the same height as before. */
+.vtabs button[data-vfilter]{display:inline-flex;align-items:center;gap:7px}
+.vtabs .vfbox{width:13px;height:13px;border:1.5px solid #3a434f;border-radius:4px;flex:none;position:relative;transition:.15s}
+.vtabs button[aria-pressed="true"]{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
+.vtabs button[aria-pressed="true"] .vfbox{background:#0a0b0d;border-color:#0a0b0d}
+.vtabs .vfbox::after{content:"";position:absolute;left:3.5px;top:.5px;width:3px;height:7px;border:solid #c2f64a;border-width:0 2px 2px 0;transform:rotate(45deg);opacity:0;transition:.12s}
+.vtabs button[aria-pressed="true"] .vfbox::after{opacity:1}
+.gal .fcard[data-hidden="1"]{display:none}
+.vf-none{padding:18px 0;color:#8b95a1;font-size:13.5px}
+.vtabs button.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
+section[data-vsec] h2:first-child{margin-top:6px}
+.tprev{border:1px solid #232932;border-radius:12px;background:#111419;padding:12px 14px;margin-bottom:10px}
+.tprev .tp-h{display:flex;gap:8px;align-items:center;font-size:12px;color:#cdd3da}
+.tprev .tp-h b{font-family:'Space Mono',monospace}
+.tprev .tp-long{color:#2ebd85;font-weight:700;font-size:10.5px}
+.tprev .tp-roe{font-family:'Space Mono',monospace;font-size:22px;font-weight:800;color:#2ebd85;margin-top:6px}
+.tprev .tp-pnl{font-family:'Space Mono',monospace;font-size:12px;color:#9fe9c8}
+.tprev.tsk-tkt_noir{background:linear-gradient(180deg,#101014,#0a0a0d);border-color:#3a3f4a;box-shadow:inset 0 1px 0 rgba(200,210,255,.14)}
+.tprev.tsk-tkt_holo{border-color:#7fb6ff;background:linear-gradient(135deg,rgba(127,214,255,.08),rgba(199,146,255,.09) 45%,rgba(46,189,133,.08));box-shadow:0 0 22px -10px rgba(150,180,255,.5)}
+.tprev.tsk-tkt_aurum{border-color:#c98f1b;background:linear-gradient(180deg,rgba(255,215,90,.12),rgba(22,17,8,.92));box-shadow:0 0 26px -10px rgba(255,200,60,.55)}
+.fdesc{font-size:11.5px;color:var(--faint);line-height:1.45;min-height:32px}
+.fact{display:flex;gap:8px}
+.btn{flex:1;text-align:center;border:1px solid var(--line);background:#0a0c0f;color:var(--ink);border-radius:10px;padding:10px 8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:.13s}
+.btn:hover{border-color:#3a434f}
+.btn.xp{color:#ffd75a}.btn.usd{color:var(--lime)}
+.btn.eq{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+.btn.owned{color:#34d99a;border-color:#1f4a38;cursor:default}
+.btn.lock{color:var(--faint);cursor:not-allowed}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.msg{position:fixed;left:50%;bottom:26px;transform:translate(-50%,8px);z-index:1200;background:#12151d;border:1px solid #2a3140;border-radius:12px;padding:11px 18px;font-size:12.5px;font-family:'Space Mono',monospace;max-width:min(92vw,480px);text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.msg.show{opacity:1;transform:translate(-50%,0)}
+.msg.ok{color:#34d99a;border-color:rgba(52,217,154,.45)}.msg.err{color:#ff7b72;border-color:rgba(255,123,114,.45)}
+.gmod{position:fixed;inset:0;z-index:1100;background:rgba(5,6,9,.72);display:none;align-items:center;justify-content:center;padding:20px}
+.gmod.on{display:flex}
+.gmod-card{background:#101318;border:1px solid #2a3140;border-radius:16px;padding:22px 22px 18px;max-width:380px;width:100%;box-shadow:0 24px 80px -20px rgba(0,0,0,.8)}
+.gmod-t{font-weight:800;font-size:17px;margin:0 0 4px}
+.gmod-s{font-size:12px;color:#8a93a0;line-height:1.5;margin:0 0 14px}
+.gmod input{width:100%;box-sizing:border-box;background:#0a0d11;border:1px solid #2b323b;border-radius:10px;color:#e9e7df;padding:11px 12px;font-size:16px;font-family:inherit}
+.gmod input.bad{border-color:#ff7b72}
+.gmod-m{font-size:12px;font-family:'Space Mono',monospace;min-height:16px;margin-top:8px;line-height:1.45}
+.gmod-m.ok{color:#34d99a}.gmod-m.err{color:#ff7b72}
+.gmod-row{display:flex;gap:8px;margin-top:12px}
+.gmod-row .btn{flex:1}
+.note{font-size:12px;color:var(--faint);margin-top:22px;line-height:1.6}
+footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .tprev.tsk-tkt_dragon{border-color:#c9302a;background:linear-gradient(135deg,rgba(255,90,40,.16),rgba(20,6,4,.95) 45%),repeating-linear-gradient(115deg,rgba(255,120,50,.10) 0 7px,rgba(60,12,6,.18) 7px 14px);box-shadow:0 0 30px -10px rgba(255,90,40,.5)}
+.pp.tsk-tkt_carbon,.mptk.tsk-tkt_carbon,.tprev.tsk-tkt_carbon{border-color:#3f454e;background:repeating-linear-gradient(45deg,rgba(255,255,255,.055) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.45) 0 2px,transparent 2px 5px),linear-gradient(180deg,#171a1f,#0e1114);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.pp.tsk-tkt_thermal,.mptk.tsk-tkt_thermal,.tprev.tsk-tkt_thermal{border-color:#4a4740;background:repeating-linear-gradient(180deg,rgba(255,246,230,.05) 0 1px,transparent 1px 7px),linear-gradient(90deg,rgba(0,0,0,.4),transparent 11%,transparent 89%,rgba(0,0,0,.4)),linear-gradient(180deg,#1b1a17,#131210);box-shadow:inset 0 1px 0 rgba(255,240,215,.11)}
+.pp.tsk-tkt_ledger,.mptk.tsk-tkt_ledger,.tprev.tsk-tkt_ledger{border-color:#2f4a3c;background:linear-gradient(90deg,transparent 0 23px,rgba(255,90,77,.34) 23px 24.4px,transparent 24.4px),linear-gradient(90deg,transparent 0 34px,rgba(150,190,220,.11) 34px 35px,transparent 35px),repeating-linear-gradient(180deg,rgba(185,228,206,.07) 0 1px,transparent 1px 9px),linear-gradient(180deg,#131b15,#0c120f);box-shadow:inset 0 1px 0 rgba(190,235,215,.11)}
+.pp.tsk-tkt_circuit,.mptk.tsk-tkt_circuit,.tprev.tsk-tkt_circuit{border-color:#2f6b4c;background:radial-gradient(2.6px 2.6px at 22% 30%,rgba(236,178,98,.6),transparent 62%),radial-gradient(2.6px 2.6px at 62% 74%,rgba(236,178,98,.5),transparent 62%),radial-gradient(2px 2px at 86% 34%,rgba(236,178,98,.42),transparent 62%),linear-gradient(90deg,transparent 0 22%,rgba(212,146,66,.22) 22% 22.5%,transparent 22.5%),linear-gradient(90deg,transparent 0 62%,rgba(212,146,66,.18) 62% 62.5%,transparent 62.5%),linear-gradient(90deg,transparent 0 86%,rgba(212,146,66,.14) 86% 86.4%,transparent 86.4%),linear-gradient(180deg,transparent 0 30%,rgba(212,146,66,.18) 30% 30.7%,transparent 30.7%),linear-gradient(180deg,transparent 0 74%,rgba(212,146,66,.14) 74% 74.7%,transparent 74.7%),linear-gradient(45deg,transparent 0 48%,rgba(212,146,66,.1) 48% 48.5%,transparent 48.5%),linear-gradient(180deg,#0b1310,#070d0b);box-shadow:inset 0 1px 0 rgba(215,160,80,.16)}
+.pp.tsk-tkt_marble,.mptk.tsk-tkt_marble,.tprev.tsk-tkt_marble{border-color:#4b525c;background:linear-gradient(64deg,transparent 0 46%,rgba(226,232,240,.16) 46% 47.1%,transparent 47.1%),linear-gradient(71deg,transparent 0 58%,rgba(226,232,240,.09) 58% 58.7%,transparent 58.7%),linear-gradient(-58deg,transparent 0 30%,rgba(200,212,228,.07) 30% 30.6%,transparent 30.6%),radial-gradient(120% 90% at 20% 8%,rgba(255,255,255,.05),transparent 62%),linear-gradient(160deg,#191c21,#0d0f12);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.pp.tsk-tkt_titanium,.mptk.tsk-tkt_titanium,.tprev.tsk-tkt_titanium{border-color:#7c8794;background:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 3px,rgba(0,0,0,.22) 3px 4px,transparent 4px 7px),linear-gradient(105deg,transparent 0 34%,rgba(214,228,242,.1) 45%,transparent 57%),linear-gradient(180deg,#23272d,#141719);box-shadow:0 0 24px -14px rgba(200,220,240,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.pp.tsk-tkt_phosphor,.mptk.tsk-tkt_phosphor,.tprev.tsk-tkt_phosphor{border-color:#7a5a1e;background:radial-gradient(120% 90% at 50% 45%,rgba(255,176,60,.13),transparent 64%),repeating-linear-gradient(180deg,rgba(255,176,60,.1) 0 1px,transparent 1px 4px),radial-gradient(150% 120% at 50% 50%,transparent 52%,rgba(0,0,0,.55) 100%),linear-gradient(180deg,#100c06,#080604);box-shadow:0 0 26px -12px rgba(255,170,60,.45),inset 0 0 30px -18px rgba(255,190,90,.5)}
+.pp.tsk-tkt_obsidian,.mptk.tsk-tkt_obsidian,.tprev.tsk-tkt_obsidian{border-color:#5b5f74;background:linear-gradient(118deg,rgba(255,255,255,.09) 0 22%,transparent 22.3% 40%),linear-gradient(-142deg,rgba(190,205,235,.07) 0 30%,transparent 30.3% 55%),linear-gradient(96deg,rgba(255,255,255,.045) 0 62%,transparent 62.3%),radial-gradient(80% 60% at 30% -12%,rgba(160,180,255,.1),transparent 62%),linear-gradient(200deg,#0e0f14,#050507 60%);box-shadow:0 0 34px -14px rgba(150,170,255,.45),inset 0 1px 0 rgba(210,220,255,.2),inset 0 -18px 30px -26px rgba(120,140,220,.5)}
+/* VAULT DROP 2026-09-05 - ticket skins. Mirrored byte-for-byte in home.css, mp-trade.css and dist/vault/index.html. */
+.pp.tsk-tkt_kraft,.mptk.tsk-tkt_kraft,.tprev.tsk-tkt_kraft{border-color:#7a6440;background:radial-gradient(3px 3px at 7px 50%,rgba(0,0,0,.9) 0 55%,rgba(255,232,190,.3) 55% 78%,transparent 80%) left top/14px 14px repeat-y,repeating-linear-gradient(45deg,rgba(255,232,190,.05) 0 3px,transparent 3px 7px),linear-gradient(180deg,#40341f,#2a2216);box-shadow:inset 0 1px 0 rgba(255,232,190,.12)}
+.pp.tsk-tkt_blueprint,.mptk.tsk-tkt_blueprint,.tprev.tsk-tkt_blueprint{border-color:#2a6fa8;background:repeating-linear-gradient(0deg,transparent 0 11px,rgba(150,214,255,.16) 11px 12px),repeating-linear-gradient(90deg,transparent 0 11px,rgba(150,214,255,.16) 11px 12px),linear-gradient(160deg,#0f3557,#0a2338);box-shadow:inset 0 1px 0 rgba(150,214,255,.16)}
+.pp.tsk-tkt_terminal,.mptk.tsk-tkt_terminal,.tprev.tsk-tkt_terminal{border-color:#3f8a63;background:linear-gradient(90deg,transparent 0 10px,rgba(46,189,133,.6) 10px 17px,transparent 17px) left 8px top 12px/100% 12px no-repeat,linear-gradient(90deg,transparent 0 10px,rgba(46,189,133,.3) 10px 62px,transparent 62px) left 8px top 30px/100% 7px no-repeat,linear-gradient(90deg,transparent 0 10px,rgba(46,189,133,.22) 10px 44px,transparent 44px) left 8px top 44px/100% 7px no-repeat,repeating-linear-gradient(180deg,rgba(46,189,133,.14) 0 1px,transparent 1px 4px),radial-gradient(120% 100% at 50% 50%,rgba(46,189,133,.1),transparent 66%),linear-gradient(180deg,#08150e,#040a07);box-shadow:0 0 28px -10px rgba(46,189,133,.5),inset 0 1px 0 rgba(46,189,133,.18)}
+.pp.tsk-tkt_boarding,.mptk.tsk-tkt_boarding,.tprev.tsk-tkt_boarding{border-color:#3f5a7a;background:repeating-linear-gradient(90deg,rgba(240,246,255,.6) 0 1.5px,transparent 1.5px 3px,rgba(240,246,255,.38) 3px 4.5px,transparent 4.5px 8px) right 10px center/52px 20px no-repeat,repeating-linear-gradient(180deg,rgba(255,255,255,.42) 0 5px,transparent 5px 10px) left 34%/1.4px 100% no-repeat,linear-gradient(160deg,#152233,#0c141f);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.pp.tsk-tkt_frost,.mptk.tsk-tkt_frost,.tprev.tsk-tkt_frost{border-color:#7fb0cc;background:linear-gradient(58deg,transparent 0 40%,rgba(226,244,255,.22) 40% 41%,transparent 41%),linear-gradient(-47deg,transparent 0 55%,rgba(200,232,255,.16) 55% 55.8%,transparent 55.8%),linear-gradient(22deg,transparent 0 68%,rgba(226,244,255,.12) 68% 68.7%,transparent 68.7%),radial-gradient(120% 90% at 50% 0%,rgba(180,222,255,.16),transparent 62%),linear-gradient(180deg,#101a22,#0a1116);box-shadow:0 0 28px -10px rgba(150,210,255,.5),inset 0 1px 0 rgba(226,244,255,.2)}
+.pp.tsk-tkt_neon,.mptk.tsk-tkt_neon,.tprev.tsk-tkt_neon{border-color:#b0356f;background:linear-gradient(90deg,transparent 0 12%,rgba(255,64,190,.85) 12% 12.9%,rgba(255,64,190,.16) 12.9% 15%,transparent 15%),radial-gradient(60% 120% at 13% 50%,rgba(255,64,190,.2),transparent 62%),repeating-linear-gradient(180deg,rgba(255,255,255,.03) 0 7px,rgba(0,0,0,.28) 7px 8px),linear-gradient(180deg,#171015,#0d0a0c);box-shadow:0 0 32px -10px rgba(255,64,190,.5)}
+.pp.tsk-tkt_platinum,.mptk.tsk-tkt_platinum,.tprev.tsk-tkt_platinum{border-color:#c3ccd6;background:linear-gradient(102deg,transparent 0 28%,rgba(255,255,255,.2) 41%,transparent 54%),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px),linear-gradient(180deg,#2b3138,#171b20);box-shadow:0 0 36px -12px rgba(220,235,250,.5),inset 0 1px 0 rgba(255,255,255,.22)}
+  .tprev.tsk-tkt_vapor{border-color:#b06cff;background:linear-gradient(180deg,rgba(255,64,190,.16),rgba(24,8,40,.94) 55%),repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,220,255,.12) 9px 10px);box-shadow:0 0 30px -10px rgba(176,108,255,.55)}
+</style>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué son los Ticks en MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Los Ticks son la moneda de The Vault, la tienda de cosméticos de MarginPad. No se pueden comprar con dinero a ningún precio — cada Tick se gana usando el sitio, y eso es lo que hace que valga la pena llevar un marco pagado con Ticks. Son independientes del XP: el XP solo sube y determina tu nivel, mientras que los Ticks son lo que gastas."}},{"@type":"Question","name":"¿Cómo se ganan los Ticks?","acceptedAnswer":{"@type":"Answer","text":"Siete fuentes, cada una con un tope diario para que ninguna se pueda explotar: el check-in diario (hasta 40, según tu racha), cerrar una operación que tenía un stop-loss puesto antes de abrirla (hasta 24), reclamar las misiones diarias (hasta 20), terminar lecciones de la Academia (hasta 30), ganar duelos (hasta 30), participar en el chat de la comunidad (hasta 16) y simplemente cerrar una operación simulada (hasta 8). Hacer absolutamente todo en un día llega a un tope de 168."}},{"@type":"Question","name":"¿Se pueden comprar Ticks con dinero real?","acceptedAnswer":{"@type":"Answer","text":"No. No existe ninguna forma de comprar Ticks en ningún lugar del producto, por diseño. Algunos artículos de The Vault sí se pueden comprar directamente con tu saldo de recompensas, pero los Ticks en sí solo se ganan."}},{"@type":"Question","name":"¿En qué puedo gastar los Ticks?","acceptedAnswer":{"@type":"Answer","text":"En dos cosas: cosméticos en The Vault — marcos de perfil, skins de tickets y fondos de tarjeta, con precios desde 300 Ticks para lo común hasta 7,000 para lo legendario — y apuestas de duelo, donde apuestas Ticks cara a cara contra otro trader y el ganador se lleva el bote."}},{"@type":"Question","name":"¿Gastar Ticks afecta tu nivel?","acceptedAnswer":{"@type":"Answer","text":"No, y ese es precisamente el sentido de tenerlos. Los niveles vienen del XP, que nunca se descuenta por nada. Antes de que existieran los Ticks, comprar un marco o perder un duelo gastaba XP y podía costarte un nivel, junto con tus marcos de nivel y el acceso a las recompensas."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"The Vault","item":"https://marginpad.io/es/vault/"}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"The Vault — Marcos, Niveles y Cosméticos","url":"https://marginpad.io/es/vault/","dateModified":"2026-09-11T11:28:06.248Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head><body>
+<div class="wrap">
+  <div class="crumb"><a href="/es/">Inicio</a> / The Vault</div>
+  <div class="vhead">
+    <div>
+      <h1>THE <b>VAULT</b></h1>
+      <p class="sub">Marcos, skins de tickets y fondos de tarjeta. Gana Ticks operando y estando presente, y gástalos en cómo te ve la sala.</p>
+    </div>
+  </div>
+  <section class="acct" id="acct" hidden aria-label="Tu cuenta">
+    <div class="acct-l">
+      <div class="acct-top">
+        <span class="acct-lvi" id="aLvIcon"></span> <span class="acct-id"> <span class="acct-lvn" id="aLvName">Sin rango</span> <span class="acct-lvs" id="aLvPerk">la línea de partida</span> </span> <span class="acct-bal"><b id="aBal">$0.00</b><span>saldo de recompensas</span></span>
+      </div>
+      <div class="xpwrap">
+        <div class="xpbar"><i id="aXpBar"></i></div>
+        <div class="xpnum"><span id="aXpNow">0 XP</span><span id="aXpNext"></span></div>
+      </div>
+      <div class="tickrow">
+        <span class="tickbig" id="aTicks">0<small>T</small></span> <span class="tickcap" id="aTickCap">Los Ticks se ganan, nunca se venden. Gástalos en cualquier cosa de The Vault.</span>
+      </div>
+      <div class="acct-foot" id="aFoot"></div>
+    </div>
+    <div class="acct-r">
+      <div class="thead">
+        <span class="tsw"><button type="button" class="on" data-tv="caps">Hoy</button><button type="button" data-tv="log">Recientes</button></span>
+        <i id="aToday"></i>
+      </div>
+      <div id="aSrc"></div>
+      <div id="aLog" hidden></div>
+    </div>
+  </section>
+  <div class="signin" id="signin" hidden>Inicia sesión (gratis, solo código por correo) para ver tus Ticks, probarte marcos en tu propia tarjeta y equiparlos. <a href="/es/paper-trade">Abre la app para iniciar sesión →</a></div>
+
+  <nav class="vtabs" id="vtabs" aria-label="Secciones de The Vault">
+    <button type="button" data-vfilter="owned" id="vfOwned" aria-pressed="false"><i class="vfbox"></i>Adquirido</button>
+    <button type="button" data-vfilter="afford" id="vfAfford" aria-pressed="false" title="Solo lo que ya cubren tus Ticks"><i class="vfbox"></i>Te alcanza</button>
+    <button type="button" data-vtab="frames">Marcos</button>
+    <button type="button" data-vtab="nations">Naciones</button>
+    <button type="button" data-vtab="tickets">Skins de tickets</button>
+    <button type="button" data-vtab="backgrounds">Fondos</button>
+    <button type="button" data-vtab="supply">Suministro</button>
+    <button type="button" data-vtab="earned">Ganados</button>
+    <button type="button" data-vtab="levels">Niveles</button>
+    <button type="button" data-vtab="ticks">Cómo funcionan los Ticks</button>
+    <select class="sortsel" id="vsort" aria-label="Ordenar artículos">
+      <option value="tier">Más raros primero</option>
+      <option value="cheap">Más baratos primero</option>
+      <option value="rich">Más caros primero</option>
+      <option value="az">De la A a la Z</option>
+    </select>
+  </nav>
+  <div class="fit" id="fit" hidden>
+    <div class="fit-card" id="fitCard"></div>
+    <div class="fit-txt">
+      <div class="fit-h">Probador</div>
+      <div class="fit-n" id="fitName">Tu tarjeta</div>
+      <div class="fit-s" id="fitSub">Toca cualquier artículo para probártelo. Solo tú ves esto.</div>
+      <div class="collect" id="collect" hidden><span class="cbar"><i id="cbarF"></i></span><b id="cbarT"></b></div>
+    </div>
+    <div class="fit-act">
+      <button class="btn" id="fitLink" type="button" title="Copia un enlace que abra este look para otra persona" hidden>Compartir look</button>
+      <button class="btn" id="fitReset" type="button" hidden>Quitar</button>
+    </div>
+  </div>
+
+  <div class="msg" id="msg"></div>
+  <div class="gmod" id="gmod" role="dialog" aria-modal="true">
+    <div class="gmod-card">
+      <div id="gmBody">
+        <h3 class="gmod-t" id="gmTitle">Regalar</h3>
+        <p class="gmod-s" id="gmSub"></p>
+        <input id="gmUser" type="text" placeholder="Nombre de usuario del trader" autocomplete="off" spellcheck="false" maxlength="24">
+        <div class="gmod-m" id="gmMsg"></div>
+        <div class="gmod-row">
+          <button class="btn" id="gmCancel" type="button">Cancelar</button>
+          <button class="btn" id="gmSend" type="button" style="background:#c2f64a;color:#0a0b0d;border-color:#c2f64a;font-weight:800">Enviar regalo</button>
+        </div>
+      </div>
+      <div id="gmDone" style="display:none;text-align:center">
+        <div style="font-size:15px;font-weight:800;color:#c2f64a;margin-bottom:8px">Regalo enviado</div>
+        <p class="gmod-s" id="gmDoneTxt" style="text-align:center"></p>
+        <button class="btn" id="gmOk" type="button" style="width:100%">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <section data-vsec="levels" hidden>
+  <h2>La escalera</h2>
+  <div class="h2s">Sube con el XP de tus operaciones, misiones, la Academia y los duelos — cada nivel desbloquea su marco y sus beneficios. Las recompensas se desbloquean en Bronze.</div>
+  <div class="ladder" id="ladder"></div>
+
+  <h2>Marcos de nivel</h2>
+  <div class="h2s">Se ganan al alcanzar el nivel — nunca se pueden comprar.</div>
+  <div class="gal" id="galLevel"></div>
+  </section>
+
+
+  <section data-vsec="frames" hidden>
+  <h2>Marcos de The Vault</h2>
+  <div class="h2s">Cómpralos con los Ticks que ganaste, o con tu saldo de recompensas. Los Ticks nunca están a la venta — operar, mantener rachas y las lecciones son la única forma de conseguirlos. Las compras con saldo son definitivas.</div>
+  <div class="gal" id="galShop"></div>
+  </section>
+
+  <section data-vsec="nations" hidden>
+  <h2>Naciones</h2>
+  <div class="h2s">Muestra tus colores. Veinte marcos de país recortados de la propia bandera, cada uno con su emblema fijado en el borde de tu tarjeta de trader. $1.99 de tu saldo de recompensas, tuyo para siempre, y regalable a un compatriota.</div>
+  <div class="gal" id="galNations"></div>
+  </section>
+
+  <section data-vsec="tickets" hidden>
+  <h2>Skins de tickets</h2>
+  <div class="h2s">Cambia el estilo de tus tickets de P&amp;L — el diario, los cajones y cada ticket que compartes en el chat.</div>
+  <div class="gal" id="galTkt"></div>
+  </section>
+
+  <section data-vsec="backgrounds" hidden>
+  <h2>Fondos de tarjeta</h2>
+  <div class="h2s">Una escena detrás de toda tu tarjeta de trader — sutil, pero tuya.</div>
+  <div class="gal" id="galBg"></div>
+  </section>
+
+  <section data-vsec="supply" hidden>
+  <h2>Suministro</h2>
+  <div class="h2s">Consumibles — efectos instantáneos para tu cuenta, que puedes comprar una y otra vez.</div>
+  <div class="gal" id="galSupply" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))"></div>
+  </section>
+
+  <section data-vsec="earned" hidden>
+  <h2>Marcos ganados</h2>
+  <div class="h2s">Estos no se pueden comprar a ningún precio — hitos de racha y la corona semanal.</div>
+  <div class="gal" id="galEarn"></div>
+
+  <h2>Logros</h2>
+  <div class="h2s">Verificados por el servidor a partir de tu historial real de trading — se ganan una vez y se conservan para siempre.</div>
+  <div class="gal" id="galAch" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
+  </section>
+
+  <section data-vsec="ticks" hidden>
+  <h2>Cómo funcionan los Ticks</h2>
+  <div class="h2s">Los Ticks son la moneda de The Vault. No se pueden comprar con dinero a ningún precio &mdash; cada uno se gana, y eso es lo que hace que valga la pena llevar un marco pagado con Ticks.</div>
+  <div class="tk-grid" id="tkGrid"></div>
+  <h2>En qué se gastan</h2>
+  <div class="h2s">Dos destinos, tú eliges.</div>
+  <div class="tk-grid">
+    <div class="tk-card"><b>The Vault</b><span>Marcos, skins de tickets y fondos de tarjeta. Común 300 T, raro 1,200 T, épico 3,000 T, legendario 7,000 T.</span></div>
+    <div class="tk-card"><b>Apuestas de duelo</b><span>Apuesta Ticks cara a cara. El ganador se lleva el bote; un empate devuelve ambas apuestas. Antes los duelos apostaban XP, así que perder uno podía costarte un nivel &mdash; con Ticks eso no puede pasar.</span></div>
+  </div>
+  <p class="note" style="margin-top:18px">El XP y los Ticks son cosas distintas a propósito. El XP solo sube y determina tu nivel; los Ticks son lo que gastas. Nada de lo que compres aquí puede costarte un rango.</p>
+  </section>
+
+  <p class="note">Los Ticks son la moneda ganada de The Vault: gastarlos nunca puede costarte un nivel, porque el XP ahora es puramente tu progreso y nunca se descuenta. Las compras con saldo salen de tu saldo de recompensas retirable y son definitivas. Los artículos equipados se ven en tu tarjeta pública de trader, en el chat y en las tablas de clasificación.</p>
+
+  <footer><span>© 2026 MarginPad · No es asesoría financiera</span><span><a href="/es/rewards/">Recompensas</a> · <a href="/es/levels/">Niveles</a> · <a href="/es/paper-trade">Paper Trade</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span></footer>
+</div>
+<script src="/assets/mp-nav.js?v=3f87bd75" defer></script>
+<script src="/assets/mp-auth.js?v=034bd270" defer></script>
+<script>
+(function(){
+  var LEVELS=[
+    {k:'unranked',name:'Unranked',min:0,col:'#5c6b7a',perk:'The starting line'},
+    {k:'bronze',name:'Bronze',min:500,col:'#c97f4a',perk:'Rewards + Vault unlock'},
+    {k:'silver',name:'Silver',min:3000,col:'#b7c2d0',perk:'Silver frame · +10% claims · +10% daily cap'},
+    {k:'gold',name:'Gold',min:12000,col:'#ffcf3f',perk:'Gold frame · +20% claims · +25% daily cap'},
+    {k:'platinum',name:'Platinum',min:30000,col:'#7ee0ff',perk:'Platinum frame · +35% claims · +40% daily cap'},
+    {k:'diamond',name:'Diamond',min:60000,col:'#8b5cff',perk:'Diamond frame · +50% claims · +60% daily cap · +10% WD bonus'},
+    {k:'legendary',name:'Legendary',min:120000,col:'#ff7a1a',perk:'Legendary frame · +75% claims · 2x daily cap · +15% WD bonus'}
+  ];
+  var LEVEL_FRAMES=[
+    {id:'silver',name:'Silver',need:'Reach Silver (3,000 XP)'},
+    {id:'gold',name:'Gold',need:'Reach Gold (12,000 XP)'},
+    {id:'platinum',name:'Platinum',need:'Reach Platinum (30,000 XP)'},
+    {id:'diamond',name:'Diamond',need:'Reach Diamond (60,000 XP)'},
+    {id:'legendary',name:'Legendary',need:'Reach Legendary (120,000 XP)'},
+    {id:'neon',name:'Neon',need:'Premium members'},
+    {id:'aurora',name:'Aurora',need:'Premium members'}
+  ];
+  function medal(k,col){
+    if(k==='legendary')return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="'+col+'30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="'+col+'" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="'+col+'"/></svg>';
+    if(k==='diamond')return '<svg viewBox="0 0 24 24" fill="none"><path d="M8 5h8l4 5-8 9-8-9z" fill="'+col+'2e"/><path d="M8 5h8l4 5-8 9-8-9zM4 10h16M8 5l4 5 4-5M12 10v9" stroke="'+col+'" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+    if(k==='platinum')return '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.7 5.6 6.3.8-4.6 4.3 1.2 6.1L12 16.9 6.4 19.8l1.2-6.1L3 9.4l6.3-.8z" fill="'+col+'26" stroke="'+col+'" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+    if(k==='gold')return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="5.2" fill="'+col+'26" stroke="'+col+'" stroke-width="1.4"/><path d="M8.6 13.4 7 21l5-2.6L17 21l-1.6-7.6" stroke="'+col+'" stroke-width="1.4" stroke-linejoin="round"/><path d="M10.2 9l1.3 1.4 2.5-2.8" stroke="'+col+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    if(k==='silver')return '<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="5" width="14" height="14" rx="3" fill="'+col+'22" stroke="'+col+'" stroke-width="1.4"/><path d="M9 12.2l2.1 2.2L15.4 10" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    if(k==='bronze')return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" fill="'+col+'22" stroke="'+col+'" stroke-width="1.4"/><path d="M12 8.4v7.2M8.4 12h7.2" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="'+col+'" stroke-width="1.4" stroke-dasharray="3 3"/></svg>';
+  }
+  var ST=null;
+  function fmt(n){return (+n||0).toLocaleString('en-US');}
+  function renderLadder(){
+    var xp=ST?ST.xp:0,cur=ST?ST.level:null;
+    document.getElementById('ladder').innerHTML=LEVELS.map(function(l){
+      var state=cur? (l.k===cur?'cur':(xp>=l.min?'done':'lock')) : (l.min===0?'':'lock');
+      return '<div class="lv '+state+'"><div class="ic">'+medal(l.k,l.col)+'</div><b style="color:'+l.col+'">'+l.name+'</b><small>'+fmt(l.min)+' XP</small><span class="perk">'+l.perk+'</span></div>';
+    }).join('');
+  }
+  // ---- the fitting room ----------------------------------------------------------------------------
+  // TRY is purely local state. Nothing is written, nothing is sent, nothing shows on the public card, so a
+  // trader can walk the whole shop wearing things they have not bought. That is the point: the frame is the
+  // product, and a product you cannot hold does not sell.
+  var TRY=null,SEC_TRYABLE=true;
+  // Items added in this drop. A returning trader should be able to see what is new without re-reading a
+  // shop they already know, and a date-based rule would need a per-item timestamp the catalogue lacks.
+  var NEW_IDS={nat_ng:1,nat_pk:1,nat_us:1,nat_in:1,nat_id:1,nat_rs:1,nat_de:1,nat_tr:1,nat_th:1,nat_ir:1,nat_ph:1,nat_za:1,nat_nl:1,nat_ca:1,nat_pl:1,nat_bd:1,nat_gb:1,nat_br:1,nat_vn:1,nat_ua:1,
+    nat_et:1,nat_ao:1,nat_sg:1,nat_it:1,nat_ma:1,nat_kw:1,nat_al:1,nat_fr:1,nat_lk:1,nat_ke:1,nat_ro:1,nat_jp:1,nat_au:1,nat_qa:1,nat_bw:1,nat_ye:1,nat_np:1,nat_eg:1,nat_mr:1,nat_ee:1,nat_dz:1,nat_ar:1,nat_mx:1,nat_kr:1,nat_gh:1,nat_sa:1,nat_il:1,nat_se:1,nat_cn:1,nat_ge:1,
+    sandstone:1,arctic:1,copper:1,neonoir:1,bamboo:1,rust:1,venom:1,magnetar:1,koi:1,tungsten:1,leviathan:1,emperor:1,
+    tkt_kraft:1,tkt_blueprint:1,tkt_terminal:1,tkt_boarding:1,tkt_frost:1,tkt_neon:1,tkt_platinum:1,
+    bg_dunes:1,bg_static:1,bg_circuit:1,bg_waves:1,bg_matrix:1,bg_city:1,bg_orbit:1,
+    shield3:1,surge72:1};
+  // The wishlist is one item, not a list. A list of twenty things you might want is a spreadsheet; one
+  // thing you are saving for is a goal, and the wallet can show honest progress toward exactly one.
+  function wishGet(){try{return localStorage.getItem('mp_vault_wish')||'';}catch(e){return '';}}
+  function wishSet(v){try{v?localStorage.setItem('mp_vault_wish',v):localStorage.removeItem('mp_vault_wish');}catch(e){}}
+  function myName(){try{var m=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();return (m&&m.username)||'';}catch(e){return '';}}
+  function itemById(id){var L=(ST&&ST.items)||[];for(var i=0;i<L.length;i++)if(L[i].id===id)return L[i];
+    for(var j=0;j<LEVEL_FRAMES.length;j++)if(LEVEL_FRAMES[j].id===id)return LEVEL_FRAMES[j];return null;}
+  function renderFit(){
+    var box=document.getElementById('fit');if(!box)return;
+    if(!ST||!ST.signedIn||!SEC_TRYABLE){box.hidden=true;return;}
+    box.hidden=false;
+    var worn=TRY||(ST.equipped||'default');
+    document.getElementById('fitCard').innerHTML=prevCard(worn,myName());
+    var it=TRY?itemById(TRY):null;
+    document.getElementById('fitName').textContent=TRY?(it?it.name:TRY):'Your card';
+    var owned=ST.owned||[],own=TRY&&owned.indexOf(TRY)>=0;
+    document.getElementById('fitSub').textContent=TRY
+      ?(own?'You own this. Equip it to make it public.':'Trying on. Nobody else can see this.')
+      :'Tap any item to try it on. Only you see this.';
+    var rst=document.getElementById('fitReset');if(rst)rst.hidden=!TRY;
+    var lnk=document.getElementById('fitLink');if(lnk)lnk.hidden=!TRY;
+    var cards=document.querySelectorAll('.fcard[data-item]');
+    for(var i=0;i<cards.length;i++)cards[i].classList.toggle('tryon',TRY===cards[i].getAttribute('data-item'));
+    renderCollect();
+  }
+  // How much of the Vault you hold. Counts only things that can actually be obtained, so the mythic
+  // owners-only pieces do not permanently hold the bar below 100 for everyone else.
+  // The account card. Level leads because it is the identity the whole page is about, the XP bar shows the
+  // real distance to the next rung rather than a bare number, and Ticks carry the biggest type on the page
+  // because they are the thing this shop actually spends.
+  function renderAcct(){
+    var box=document.getElementById('acct');if(!box)return;
+    if(!ST||!ST.signedIn){box.hidden=true;return;}
+    box.hidden=false;
+    var xp=+ST.xp||0,cur=null,nxt=null;
+    for(var i=0;i<LEVELS.length;i++){if(xp>=LEVELS[i].min)cur=LEVELS[i];else{nxt=LEVELS[i];break;}}
+    cur=cur||LEVELS[0];
+    box.style.setProperty('--lvc',cur.col);
+    document.getElementById('aLvIcon').innerHTML=medal(cur.k,cur.col);
+    document.getElementById('aLvName').textContent=cur.name;
+    document.getElementById('aLvPerk').textContent=cur.perk||'';
+    document.getElementById('aBal').textContent='$'+(+ST.balance||0).toFixed(2);
+    var span=nxt?(nxt.min-cur.min):1,into=nxt?(xp-cur.min):1;
+    document.getElementById('aXpBar').style.width=Math.max(2,Math.min(100,Math.round(into/span*100)))+'%';
+    document.getElementById('aXpNow').textContent=fmt(xp)+' XP';
+    document.getElementById('aXpNext').textContent=nxt?(fmt(nxt.min-xp)+' to '+nxt.name):'top of the ladder';
+    document.getElementById('aTicks').innerHTML=fmt(+ST.ticks||0)+'<small>T</small>';
+    var w=wishGet(),wi=w?itemById(w):null,cap='Ticks are earned, never sold. Spend them on anything in the Vault.';
+    if(wi&&(ST.owned||[]).indexOf(w)<0&&wi.ticks){
+      var short=wi.ticks-(+ST.ticks||0);
+      cap=short>0?('Saving for '+wi.name+' — '+fmt(short)+' T to go.'):(wi.name+' is within reach now.');
+    }
+    document.getElementById('aTickCap').textContent=cap;
+    var f=[];
+    f.push('<span><b>'+(+ST.streak||0)+'</b> day streak</span>');
+    f.push('<span class="cool"><b>'+(+ST.freezes||0)+'</b>/5 freezes</span>');
+    var bu=+ST.boostUntil||0;
+    if(bu>Date.now())f.push('<span class="boost">2x XP · '+Math.ceil((bu-Date.now())/3600000)+'h left</span>');
+    document.getElementById('aFoot').innerHTML=f.join('');
+    renderToday();renderLog();
+  }
+  // What is still on the table today, as bars. A cap you can see is a plan; a cap you cannot is a wall.
+  function renderToday(){
+    var wrap=document.getElementById('aSrc');if(!wrap||!ST)return;
+    var rows=ST.earn||[],tot=0;
+    rows.forEach(function(r){tot+=(+r.got||0);});
+    document.getElementById('aToday').textContent=tot?('+'+fmt(tot)+' T'):'nothing yet';
+    if(!rows.length){wrap.innerHTML='<div class="tsrc-n">Earning starts with your next check-in.</div>';return;}
+    wrap.innerHTML=rows.map(function(r){
+      var got=+r.got||0,cap=+r.cap||1,full=got>=cap;
+      return '<div class="tsrc'+(full?' full':'')+'">'
+        +'<span class="tsrc-n">'+r.label+'</span>'
+        +'<span class="tsrc-v">'+got+'/'+cap+'</span>'
+        +'<span class="tsrc-b"><i style="width:'+Math.min(100,Math.round(got/cap*100))+'%"></i></span></div>';
+    }).join('');
+  }
+  // The ledger. Sources are named in plain words rather than keys, because "trade_sl" is a column name and
+  // "closed with a stop set" is the reason the Ticks arrived.
+  var TSRC_NAME={checkin:'Check-in',trade:'Trade closed',trade_sl:'Stop set',mission:'Mission',academy:'Academy',chat:'Chat',duel:'Duel'};
+  function renderLog(){
+    var box=document.getElementById('aLog');if(!box||!ST)return;
+    var rows=ST.tlog||[];
+    if(!rows.length){box.innerHTML='<div class="tsrc-n">Nothing yet. Your next check-in starts the record.</div>';return;}
+    var now=Date.now();
+    box.innerHTML=rows.map(function(r){
+      var mins=Math.max(0,Math.round((now-(+r.ts||0))/60000));
+      var when=mins<1?'now':mins<60?(mins+'m'):mins<1440?(Math.round(mins/60)+'h'):(Math.round(mins/1440)+'d');
+      var amt=+r.amt||0;
+      return '<div class="tlog"><b'+(amt<0?' class="neg"':'')+'>'+(amt>0?'+':'')+amt+'</b>'
+        +'<span>'+(r.note||TSRC_NAME[r.src]||r.src||'')+'</span><i>'+when+'</i></div>';
+    }).join('');
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-tv]');if(!t)return;
+    var v=t.getAttribute('data-tv');
+    document.querySelectorAll('[data-tv]').forEach(function(b){b.classList.toggle('on',b===t);});
+    document.getElementById('aSrc').hidden=(v!=='caps');
+    document.getElementById('aLog').hidden=(v!=='log');
+    if(v==='log')renderLog();
+  });
+  // Generated from ST.earn, which the worker builds from TICK_SOURCES -- the same table _grantTicks caps
+  // against. Writing these numbers by hand is how a shop ends up promising a cap the code does not honour.
+  var TK_HOW={checkin:'Sign in and open the app. The amount climbs with your streak, so a long run is worth far more than a first day.',
+    trade_sl:'Close a position that had a stop-loss set before it was opened. The best-paying source on the board, because it is the habit that keeps traders alive.',
+    mission:'Claim any of the daily missions on the Rewards page.',
+    academy:'Finish a lesson in the Academy. Every lesson counts once.',
+    trade:'Close any paper position. Small on purpose &mdash; XP already pays for volume.',
+    chat:'Say something real in the community chat. One-word noise and repeats earn nothing.',
+    duel:'Win a duel. The stake pot is separate and comes straight from your opponent.'};
+  function renderTicksHow(){
+    var g=document.getElementById('tkGrid');if(!g)return;
+    var rows=(ST&&ST.earn&&ST.earn.length)?ST.earn:[
+      {k:'checkin',label:'Daily check-in',cap:40},{k:'trade_sl',label:'Closed with a stop set',cap:24},
+      {k:'mission',label:'Missions claimed',cap:20},{k:'academy',label:'Academy lessons',cap:30},
+      {k:'trade',label:'Trades closed',cap:8},{k:'chat',label:'Talking in chat',cap:16},
+      {k:'duel',label:'Duels won',cap:30}];
+    var total=0;rows.forEach(function(r){total+=+r.cap||0;});
+    g.innerHTML=rows.map(function(r){
+      var got=(+r.got||0),cap=+r.cap||0;
+      return '<div class="tk-card"><b>'+r.label+'<i>up to '+cap+' T</i></b>'
+        +'<span>'+(TK_HOW[r.k]||'')+'</span>'
+        +(ST&&ST.signedIn?'<small>'+got+' of '+cap+' earned today</small>':'')+'</div>';
+    }).join('')
+      +'<div class="tk-card" style="border-color:#3f6e2a;background:rgba(194,246,74,.05)"><b>Every day resets<i>'+fmt(total)+' T</i></b>'
+      +'<span>That is the ceiling if you did absolutely everything in one day. Nobody does &mdash; the point is that no single source can be farmed.</span></div>';
+  }
+  function renderCollect(){
+    var box=document.getElementById('collect');if(!box||!ST||!ST.signedIn)return;
+    var items=(ST.items||[]).filter(function(it){return it.tier!=='mythic';});
+    var owned=ST.owned||[],have=0;
+    for(var i=0;i<items.length;i++)if(owned.indexOf(items[i].id)>=0)have++;
+    if(!items.length)return;
+    box.hidden=false;
+    document.getElementById('cbarF').style.width=Math.round(have/items.length*100)+'%';
+    var w=wishGet(),extra='';
+    if(w){var wi=itemById(w);
+      if(wi&&owned.indexOf(w)<0&&wi.ticks){var short=wi.ticks-(+ST.ticks||0);
+        extra=short>0?(' · saving for '+wi.name+', '+fmt(short)+' T to go'):(' · '+wi.name+' is affordable now');}}
+    document.getElementById('cbarT').textContent=have+' of '+items.length+' collected'+extra;
+  }
+  function tryOn(id){
+    if(!ST||!ST.signedIn){say('Sign in to try frames on your own card.',false);return;}
+    TRY=(TRY===id)?null:id;
+    renderFit();
+    if(TRY){var f=document.getElementById('fit');if(f&&f.getBoundingClientRect().top<0)f.scrollIntoView({block:'center',behavior:'smooth'});}
+  }
+  function visibleTryables(){
+    var sec=document.querySelector('section[data-vsec]:not([hidden])');
+    return sec?[].slice.call(sec.querySelectorAll('.fcard[data-item] [data-try]')):[];
+  }
+  document.addEventListener('click',function(e){
+    var w=e.target.closest('[data-wish]');
+    if(w){e.preventDefault();e.stopPropagation();
+      var id=w.getAttribute('data-wish');
+      wishSet(wishGet()===id?'':id);
+      document.querySelectorAll('[data-wish]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-wish')===wishGet());});
+      renderCollect();
+      say(wishGet()?'Saving for this one. The bar under your card tracks it.':'Removed from your goal.',true);
+      return;}
+    var t=e.target.closest('[data-try]');
+    if(t){e.preventDefault();tryOn(t.getAttribute('data-try'));return;}
+    if(e.target.closest('#fitReset')){TRY=null;renderFit();return;}
+    if(e.target.closest('#fitLink')&&TRY){
+      var url=location.origin+location.pathname+'?try='+encodeURIComponent(TRY);
+      var done=function(){say('Link copied — it opens the Vault wearing this.',true);};
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){say(url,true);});
+      else say(url,true);
+    }
+  });
+  // Arrow keys walk the rack, R rolls something random, Escape takes it off. Trying twenty frames should
+  // not cost twenty round trips to the mouse.
+  document.addEventListener('keydown',function(e){
+    if(/^(INPUT|TEXTAREA)$/.test((e.target.tagName||''))||!ST||!ST.signedIn)return;
+    if(e.key==='Escape'&&TRY){TRY=null;renderFit();return;}
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+    var all=visibleTryables().map(function(b){return b.getAttribute('data-try');});
+    if(!all.length)return;
+    var i=TRY?all.indexOf(TRY):-1;
+    i=e.key==='ArrowRight'?(i+1)%all.length:(i<=0?all.length-1:i-1);
+    e.preventDefault();TRY=null;tryOn(all[i]);
+  });
+  function prevCard(id,un){
+    return '<div class="prev lbm-card frame-'+id+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
+  }
+  function renderLevelGal(){
+    var owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    document.getElementById('galLevel').innerHTML=LEVEL_FRAMES.map(function(f){
+      var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
+      var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+f.need+'</button>';
+      return '<div class="fcard" data-item="'+f.id+'" data-tier="rare"><button type="button" class="tryhit" data-try="'+f.id+'" title="Try it on your card">'+prevCard(f.id,un)+'</button><div class="fbar"><span class="fname">'+f.name+'</span><span class="fnote">'+(own?'UNLOCKED':(f.need.indexOf('Premium')>=0?'PREMIUM':'LOCKED'))+'</span></div><div class="fhov"><div class="fdesc2">'+f.need+'</div><div class="fact">'+act+'</div></div></div>';
+    }).join('');
+  }
+  // One card builder for every gallery. A resting card is preview + one line; the description and the
+  // secondary actions live in the hover layer, which is what took the old card from 251px down to ~175px
+  // and let a sixth column fit on the same screen.
+  function price(it){
+    if(it.ticks)return fmt(it.ticks)+' T';
+    if(it.cents)return '$'+(it.cents/100).toFixed(2);
+    return '';
+  }
+  function shopCard(it,opt){
+    opt=opt||{};
+    var owned=(ST&&ST.owned)||[],own=owned.indexOf(it.id)>=0;
+    var eqNow=opt.equipped,eq=eqNow===it.id;
+    var expired=it.until&&Date.now()>Date.parse(it.until);
+    var main='',extra='';
+    if(own)main=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-'+(opt.eqAttr||'eq')+'="'+it.id+'">Equip</button>';
+    else if(expired)main='<button class="btn lock" disabled>Drop over</button>';
+    else{
+      if(it.ticks)main+='<button class="btn xp" data-buy="'+it.id+'" data-cur="ticks">'+fmt(it.ticks)+' T</button>';
+      if(it.cents)main+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+    }
+    if(!expired&&ST&&ST.signedIn&&it.kind!=='c')extra='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.ticks?'ticks':'usd')+'" data-name="'+it.name+'" data-price="'+(it.ticks?fmt(it.ticks)+' T':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this for another trader">Gift</button>';
+    var note=own?'OWNED':(it.until&&!expired?Math.max(1,Math.ceil((Date.parse(it.until)-Date.now())/86400000))+'d left':price(it));
+    var desc=(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'');
+    var prev=opt.preview?opt.preview(it):prevCard(it.id,myName());
+    var wished=wishGet()===it.id;
+    return '<div class="fcard" data-item="'+it.id+'" data-tier="'+(it.tier||'common')+'"'+(NEW_IDS[it.id]&&!own?' data-new="1"':'')+'>'
+      +((own||!it.ticks)?'':'<button type="button" class="wish'+(wished?' on':'')+'" data-wish="'+it.id+'" title="Save toward this one" aria-label="Save toward this one">*</button>')
+      +(opt.noTry?prev:'<button type="button" class="tryhit" data-try="'+it.id+'" title="Try it on your card">'+prev+'</button>')
+      +'<div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">'+note+'</span></div>'
+      +'<div class="fhov"><div class="fdesc2">'+desc+'</div><div class="fact">'+(main||'<button class="btn lock" disabled>Unavailable</button>')+extra+'</div></div>'
+      +'</div>';
+  }
+  // One ordering function for every gallery. Rarest-first is the default because a shop that opens on its
+  // cheapest goods reads like a clearance rack, and the flagship frames are the reason to visit.
+  var TIER_RANK={mythic:0,legendary:1,epic:2,nation:2,rare:3,common:4};
+  function sortMode(){var s=document.getElementById('vsort');return s?s.value:'tier';}
+  function sortItems(a){
+    var m=sortMode(),v=a.slice();
+    function cost(x){return x.ticks?x.ticks:(x.cents?x.cents*40:0);} // rough parity so mixed pricing sorts sanely
+    if(m==='cheap')v.sort(function(x,y){return cost(x)-cost(y);});
+    else if(m==='rich')v.sort(function(x,y){return cost(y)-cost(x);});
+    else if(m==='az')v.sort(function(x,y){return (x.name||'').localeCompare(y.name||'');});
+    else v.sort(function(x,y){function rk(t){return TIER_RANK[t]===undefined?9:TIER_RANK[t];} /* mythic is rank 0, and 0||9 is 9 */
+      var d=rk(x.tier)-rk(y.tier);return d||cost(y)-cost(x);});
+    return v;
+  }
+  function renderShopGal(){
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return (it.ticks||it.cents)&&!it.kind&&it.group!=='nation';}));
+    document.getElementById('galShop').innerHTML=items.map(function(it){
+      return shopCard(it,{equipped:ST&&ST.equipped});
+    }).join('');
+  }
+  function renderNations(){ // country frames: catalogue order (top countries first) unless the user picks a sort
+    var all=((ST&&ST.items)||[]).filter(function(it){return it.group==='nation';});
+    var items=sortMode()==='tier'?all:sortItems(all);
+    var g=document.getElementById('galNations');if(!g)return;
+    g.innerHTML=items.map(function(it){return shopCard(it,{equipped:ST&&ST.equipped});}).join('');
+  }
+  function tktPrev(id){return '<div class="tprev'+(id?' tsk-'+id:'')+'"><div class="tp-h"><b>BTCUSDT</b><span class="tp-long">LONG</span><span>25x</span></div><div class="tp-roe">+184.6%</div><div class="tp-pnl">+$462.10</div></div>';}
+  function renderTkt(){
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return it.kind==='t';})),owned=ST?ST.owned:[];
+    var eqT=ST?(ST.equippedTkt||''):'';
+    var cards=items.map(function(it){
+      return shopCard(it,{equipped:eqT,eqAttr:'eqt',noTry:1,preview:function(x){return tktPrev(x.id);}});
+    });
+    cards.unshift('<div class="fcard" data-tier="common">'+tktPrev('')+'<div class="fbar"><span class="fname">Standard</span><span class="fnote">DEFAULT</span></div><div class="fhov"><div class="fdesc2">The classic MarginPad ticket.</div><div class="fact">'+(eqT?'<button class="btn" data-eqt="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div></div>');
+    document.getElementById('galTkt').innerHTML=cards.join('');
+  }
+  function bgPrev(id,un){
+    return '<div class="prev lbm-card'+(id?' bg-'+id:'')+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
+  }
+  function renderBg(){
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return it.kind==='bg';})),owned=ST?ST.owned:[];
+    var un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var eqB=ST?(ST.equippedBg||''):'';
+    var cards=items.map(function(it){
+      if(it.id==='bg_one'&&owned.indexOf(it.id)<0)return '<div class="fcard" data-tier="'+(it.tier||'legendary')+'">'+bgPrev(it.id,un)+'<div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">OWNERS</span></div><div class="fhov"><div class="fdesc2">'+(it.desc||'')+'</div><div class="fact"><button class="btn lock" disabled>Owners only</button></div></div></div>';
+      return shopCard(it,{equipped:eqB,eqAttr:'eqbg',preview:function(x){return bgPrev(x.id,un);}});
+    });
+    cards.unshift('<div class="fcard" data-tier="common">'+bgPrev('',un)+'<div class="fbar"><span class="fname">Plain</span><span class="fnote">DEFAULT</span></div><div class="fhov"><div class="fdesc2">The standard card face.</div><div class="fact">'+(eqB?'<button class="btn" data-eqbg="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div></div>');
+    document.getElementById('galBg').innerHTML=cards.join('');
+  }
+  function renderSupply(){
+    var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='c';});
+    var now=Date.now(),bu=ST?(+ST.boostUntil||0):0,fz=ST?(+ST.freezes||0):0;
+    document.getElementById('galSupply').innerHTML=items.map(function(it){
+      var g=it.grant||{},state='';
+      if(g.fz)state='Freezes banked: '+fz+'/5';
+      else if(g.hrs)state=bu>now?('Active — '+Math.ceil((bu-now)/3600000)+'h left'):'Not active';
+      var acts='';
+      if(g.fz&&fz+g.fz>5)acts='<button class="btn lock" disabled>'+(fz>=5?'Bank full':'No room for '+g.fz)+'</button>';
+      else if(g.hrs&&bu>now)acts='<button class="btn lock" disabled>Already active</button>';
+      else{
+        if(it.ticks)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="ticks">'+fmt(it.ticks)+' T</button>';
+        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+      }
+      return '<div class="fcard sup" data-tier="'+(it.tier||'common')+'"'+(NEW_IDS[it.id]?' data-new="1"':'')+'><div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">'+(it.ticks?fmt(it.ticks)+' T':'$'+((it.cents||0)/100).toFixed(2))+'</span></div><div class="fdesc2" style="font-size:11.5px;color:var(--dim);line-height:1.45">'+(it.desc||'')+'</div><div class="sup-state">'+state+'</div><div class="fact">'+acts+'</div></div>';
+    }).join('');
+  }
+  var EARN_FRAMES=[
+    {id:'streak7',name:'Kindling',need:'Hold a 7-day streak',tier:'rare'},
+    {id:'streak30',name:'Wildfire',need:'Hold a 30-day streak',tier:'epic'},
+    {id:'streak100',name:'Eternal Flame',need:'Hold a 100-day streak',tier:'legendary'},
+    {id:'dwell10',name:'Local',need:'Spend 10 hours on MarginPad',tier:'rare'},
+    {id:'dwell100',name:'Resident',need:'Spend 100 hours on MarginPad',tier:'legendary'},
+    {id:'closer',name:'The Closer',need:'Close 500 trades',tier:'epic'},
+    {id:'operative',name:'Operative',need:'Claim 100 daily missions',tier:'epic'},
+    {id:'champion',name:'Champion',need:'Finish #1 on the Highest ROE board (worn for the 14-day season)',tier:'legendary'},
+    {id:'deadeye',name:'Deadeye',need:'Finish #1 on the Win-Rate board (worn for the 14-day season)',tier:'legendary'},
+    {id:'overdrive',name:'Overdrive',need:'Finish #1 on the XP board (worn for the 14-day season)',tier:'legendary'},
+    {id:'tycoon',name:'Tycoon',need:'Finish #1 on the Green Days board (worn for the 14-day season)',tier:'legendary'}
+  ];
+  function renderEarn(){
+    var owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var st=ST?(+ST.streak||0):0;
+    document.getElementById('galEarn').innerHTML=EARN_FRAMES.map(function(f){
+      var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
+      var pg=ST&&ST.progress?ST.progress:null;
+      var prog=f.id==='streak7'?Math.min(st,7)+'/7 days':f.id==='streak30'?Math.min(st,30)+'/30 days':f.id==='streak100'?Math.min(st,100)+'/100 days'
+        :(f.id==='dwell10'&&pg)?Math.min(Math.floor((pg.dwellS||0)/3600),10)+'/10 hours'
+        :(f.id==='dwell100'&&pg)?Math.min(Math.floor((pg.dwellS||0)/3600),100)+'/100 hours'
+        :(f.id==='closer'&&pg)?Math.min(pg.closes||0,500)+'/500 closes'
+        :(f.id==='operative'&&pg)?Math.min(pg.missions||0,100)+'/100 missions':'';
+      var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+(prog?prog:'Not earned yet')+'</button>';
+      return '<div class="fcard" data-item="'+f.id+'" data-tier="'+f.tier+'"><button type="button" class="tryhit" data-try="'+f.id+'" title="Try it on your card">'+prevCard(f.id,un)+'</button><div class="fbar"><span class="fname">'+f.name+'</span><span class="fnote">'+(own?'EARNED':(prog||'LOCKED'))+'</span></div><div class="fhov"><div class="fdesc2">'+f.need+'</div><div class="fact">'+act+'</div></div></div>';
+    }).join('');
+  }
+  function renderAch(){
+    var defs=(ST&&ST.achDefs)||[],got=(ST&&ST.ach)||[];
+    if(!defs.length){document.getElementById('galAch').innerHTML='<div class="fdesc">Sign in to see your achievements.</div>';return;}
+    document.getElementById('galAch').innerHTML=defs.map(function(a){
+      var own=got.indexOf(a.id)>=0;
+      return '<div class="fcard" style="opacity:'+(own?'1':'.55')+'"><div class="fmeta"><span class="fname" style="font-size:14px">'+a.name+'</span><span class="tier '+(own?'legendary':'common')+'">'+(own?'EARNED':'LOCKED')+'</span></div><div class="fdesc">'+a.how+'</div></div>';
+    }).join('');
+  }
+  function say(t,ok){if(window.mpToast){window.mpToast({msg:t,kind:(ok?'good':'warn'),mark:(ok?'✓':'!'),ms:4000,key:String(t).slice(0,40)});return;} /* one channel, mp-auth.js */
+    var m=document.getElementById('msg');m.textContent=t;m.className='msg show '+(ok?'ok':'err');clearTimeout(say._t);say._t=setTimeout(function(){m.className='msg '+(ok?'ok':'err');},5200);} /* fixed toast — the old inline top-of-page line was OFF-SCREEN whenever the user was down in a section, so buys/gifts looked like "nothing happened" */
+  var gmState=null;
+  function gmMsg(t,kind){var el=document.getElementById('gmMsg');if(el){el.textContent=t||'';el.className='gmod-m '+(kind||'');}}
+  function gmOpen(id,cur,name,price){gmState={id:id,cur:cur,name:name,price:price||''};
+    document.getElementById('gmBody').style.display='';document.getElementById('gmDone').style.display='none';
+    document.getElementById('gmTitle').textContent='Gift '+name;
+    var free=!!(ST&&ST.tester);
+    document.getElementById('gmSub').innerHTML=free
+      ?('Send <b>'+name+'</b> to any trader — <b style="color:#c2f64a">free on your owner account</b>. They own it forever and get a full-screen celebration.')
+      :('Buy <b>'+name+'</b> for another trader — you pay <b style="color:#c2f64a">'+(price||'')+'</b>'+(cur==='xp'?' from your XP':' from your rewards balance')+'. They own it forever and get a full-screen celebration.');
+    var inp=document.getElementById('gmUser');inp.value='';inp.classList.remove('bad');gmMsg('');
+    var sb=document.getElementById('gmSend');sb.disabled=false;sb.textContent=free?'Send gift (free)':('Send gift · '+(price||''));
+    document.getElementById('gmod').classList.add('on');
+    setTimeout(function(){try{inp.focus();}catch(_){}},60);}
+  function gmClose(){document.getElementById('gmod').classList.remove('on');gmState=null;}
+  (function(){var ov=document.getElementById('gmod');if(!ov)return;
+    ov.addEventListener('click',function(e){if(e.target===ov)gmClose();});
+    document.getElementById('gmCancel').addEventListener('click',gmClose);
+    document.getElementById('gmOk').addEventListener('click',gmClose);
+    var inp=document.getElementById('gmUser'),sb=document.getElementById('gmSend');
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
+    sb.addEventListener('click',function(){
+      if(!gmState)return;
+      var v=(inp.value||'').replace(/^@/,'').replace(/[^a-zA-Z0-9_]/g,'').slice(0,24);
+      if(v.length<2){inp.classList.add('bad');gmMsg('Enter the trader&#39;s username.','err');return;}
+      inp.classList.remove('bad');sb.disabled=true;sb.textContent='Sending…';gmMsg('');
+      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:gmState.id,cur:gmState.cur,to:v})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){
+            document.getElementById('gmBody').style.display='none';document.getElementById('gmDone').style.display='block';
+            document.getElementById('gmDoneTxt').innerHTML='<b>'+gmState.name+'</b> now belongs to <b>@'+(d.giftedTo||v)+'</b>. They got a notification and a full-screen celebration next time they look.';
+            say('Gifted to @'+(d.giftedTo||v)+'.',true);load();
+          } else {
+            var er=d&&d.error;sb.disabled=false;sb.textContent=(ST&&ST.tester)?'Send gift (free)':('Send gift · '+(gmState&&gmState.price||''));inp.classList.toggle('bad',er==='no_target');
+            gmMsg(er==='no_target'?'No trader with that username — check the spelling.':er==='self'?'That is you. You cannot gift to yourself — just buy it.':er==='target_owned'?'@'+v+' already owns '+gmState.name+'.':er==='insufficient'?'Not enough rewards balance for this gift.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='no_gift_consumable'?'Consumables cannot be gifted.':'Gift failed: '+(er||'error')+' — try again.','err');
+          }
+        }).catch(function(){sb.disabled=false;sb.textContent='Send gift';gmMsg('Network error — try again.','err');});
+    });
+  })();
+  function load(){
+    fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      ST=d;
+      document.getElementById('signin').hidden=!!d.signedIn;
+      if(d.signedIn){
+      }
+      renderLadder();renderLevelGal();renderShopGal();renderNations();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();renderTicksHow();
+      try{var qt=new URLSearchParams(location.search).get('try');if(qt&&!TRY&&itemById(qt))tryOn(qt);}catch(e){} /* a shared look opens already worn */
+      try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
+      if(d.signedIn){
+      }
+      if(!d.on)say('The Vault is temporarily paused — purchases are disabled.',false);
+    }).catch(function(){say('Could not load the Vault. Refresh to retry.',false);});
+  }
+  document.addEventListener('click',function(e){
+    var bb=e.target.closest('[data-buy]');
+    if(bb){
+      if(!ST||!ST.signedIn){say('Sign in first to buy frames.',false);return;}
+      bb.disabled=true;
+      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:bb.getAttribute('data-buy'),cur:bb.getAttribute('data-cur')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){
+            var iid=bb.getAttribute('data-buy');
+            var bit=((ST&&ST.items)||[]).filter(function(x){return x.id===iid;})[0]||{},bg=bit.grant||{};
+            say(bg.fz?(bg.fz===1?'Streak Shield added — one extra freeze is banked.':(bg.fz+' streak freezes are banked.')):bg.hrs?('XP Surge is live — double XP for the next '+bg.hrs+' hours.'):d.giftedTo?('Gifted to @'+d.giftedTo+' — they have been notified.'):'Purchased. It is yours forever — equip it below.',true);
+            load();
+          }
+          else{
+            var er=d&&d.error;
+            say(er==='short_ticks'?('Not enough Ticks — this costs '+fmt(d.need)+' T and you have '+fmt(d.have)+' T.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='max_freezes'?('Your freeze bank cannot take '+(d.need||1)+' more — you hold '+(d.have||0)+' of 5.'):er==='boost_active'?'An XP Surge is already running — let it finish first.':er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':'Purchase failed: '+(er||'error'),false);
+            bb.disabled=false;
+          }
+        }).catch(function(){say('Network error.',false);bb.disabled=false;});
+      return;
+    }
+    var gb=e.target.closest('[data-gift]');
+    if(gb){
+      if(!ST||!ST.signedIn){say('Sign in first to gift frames.',false);return;}
+      gmOpen(gb.getAttribute('data-gift'),gb.getAttribute('data-cur'),gb.getAttribute('data-name')||gb.getAttribute('data-gift'),gb.getAttribute('data-price')||'');
+      return;
+    }
+    var gbg=e.target.closest('[data-eqbg]');
+    if(gbg){
+      if(!ST||!ST.signedIn){say('Sign in first.',false);return;}
+      gbg.disabled=true;
+      fetch('/api/auth/cardbg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({bg:gbg.getAttribute('data-eqbg')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say(d.bg==='default'?'Back to the plain card.':'Equipped — your card now sits on '+d.bg.replace('bg_','')+'.',true);load();}
+          else{say(d&&d.error==='locked'?'You do not own that background yet.':'Equip failed.',false);gbg.disabled=false;}
+        }).catch(function(){say('Network error.',false);gbg.disabled=false;});
+      return;
+    }
+    var tb=e.target.closest('[data-eqt]');
+    if(tb){
+      if(!ST||!ST.signedIn){say('Sign in first.',false);return;}
+      tb.disabled=true;
+      fetch('/api/auth/ticket',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({skin:tb.getAttribute('data-eqt')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say(d.skin==='default'?'Back to the standard ticket.':'Equipped — your tickets now wear '+d.skin.replace('tkt_','')+'.',true);load();}
+          else{say(d&&d.error==='locked'?'You do not own that skin yet.':'Equip failed.',false);tb.disabled=false;}
+        }).catch(function(){say('Network error.',false);tb.disabled=false;});
+      return;
+    }
+    var eb=e.target.closest('[data-eq]');
+    if(eb){
+      if(!ST||!ST.signedIn){say('Sign in first.',false);return;}
+      eb.disabled=true;
+      fetch('/api/auth/frame',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({frame:eb.getAttribute('data-eq')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say('Equipped — your card now wears '+d.frame+'.',true);load();}
+          else{say(d&&d.error==='locked'?'You do not own that frame yet.':'Equip failed.',false);eb.disabled=false;}
+        }).catch(function(){say('Network error.',false);eb.disabled=false;});
+    }
+  });
+  (function(){ /* section tabs: pick one, see only it (owner: no more mile-long scroll) */
+    var SECS=['frames','nations','tickets','backgrounds','supply','earned','levels','ticks'];
+    function show(k){
+      if(SECS.indexOf(k)<0)k='frames';
+      document.querySelectorAll('[data-vsec]').forEach(function(sc){sc.hidden=sc.getAttribute('data-vsec')!==k;});
+      document.querySelectorAll('[data-vtab]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-vtab')===k);});
+      try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* entering a section keeps the Owned filter applied */
+      try{localStorage.setItem('mp_vault_tab',k);}catch(e){}
+      try{history.replaceState(null,'','#'+k);}catch(e){}
+      // The fitting room dresses a profile card, so it only belongs where trying something on changes what
+      // you are looking at. Ticket skins restyle a P&L receipt and the supply drop has no visual at all.
+      SEC_TRYABLE=(k==='frames'||k==='nations'||k==='backgrounds'||k==='earned'||k==='levels');
+      if(!SEC_TRYABLE)TRY=null;
+      try{renderFit();}catch(e){}
+    }
+    /* OWNED FILTER: a card counts as owned when its action area offers Equip or is already equipped —
+       the same test the old Owned tab used, so there is still a single definition of ownership. */
+    function cardAfford(c){
+    var id=c.getAttribute('data-item');if(!id||!ST)return false;
+    var it=itemById(id);if(!it||!it.ticks)return false;
+    return (+ST.ticks||0)>=it.ticks&&(ST.owned||[]).indexOf(id)<0;
+  }
+  function cardOwned(c){var f=c.querySelector('.fact');return !!(f&&f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'));}
+    var OWNED_ONLY=false;try{OWNED_ONLY=localStorage.getItem('mp_vault_owned')==='1';}catch(e){}
+    var AFFORD_ONLY=false;
+    try{AFFORD_ONLY=localStorage.getItem('mp_vault_afford')==='1';}catch(e){}
+    function applyOwnedFilter(){
+      var btn=document.getElementById('vfOwned');
+      if(btn){btn.setAttribute('aria-pressed',OWNED_ONLY?'true':'false');btn.classList.toggle('on',OWNED_ONLY);}
+      var ab=document.getElementById('vfAfford');
+      if(ab){ab.setAttribute('aria-pressed',AFFORD_ONLY?'true':'false');ab.classList.toggle('on',AFFORD_ONLY);}
+      Array.prototype.forEach.call(document.querySelectorAll('.gal'),function(g){
+        var cards=g.querySelectorAll('.fcard'),shown=0;
+        Array.prototype.forEach.call(cards,function(c){
+          var hide=(OWNED_ONLY&&!cardOwned(c))||(AFFORD_ONLY&&!cardAfford(c));
+          if(hide)c.setAttribute('data-hidden','1');else c.removeAttribute('data-hidden');
+          if(!hide)shown++;
+        });
+        var msg=g.parentNode&&g.parentNode.querySelector('.vf-none');
+        if((OWNED_ONLY||AFFORD_ONLY)&&cards.length&&!shown){
+          if(!msg){msg=document.createElement('div');msg.className='vf-none';g.parentNode.insertBefore(msg,g.nextSibling);}
+          msg.textContent=AFFORD_ONLY&&!OWNED_ONLY?'Nothing here is within your Ticks yet — keep the streak going, or untick the filter to browse.':'Nothing owned in this section yet — untick Owned to see what is available.';
+          msg.hidden=false;
+        } else if(msg){msg.hidden=true;}
+      });
+    }
+    window.mpVaultOwnedFilter=applyOwnedFilter;
+    (function(){var b=document.getElementById('vfOwned');if(b)
+      b.addEventListener('click',function(){OWNED_ONLY=!OWNED_ONLY;try{localStorage.setItem('mp_vault_owned',OWNED_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});
+      var a=document.getElementById('vfAfford');if(a)
+      a.addEventListener('click',function(){AFFORD_ONLY=!AFFORD_ONLY;try{localStorage.setItem('mp_vault_afford',AFFORD_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});
+      var so=document.getElementById('vsort');if(so)
+      so.addEventListener('change',function(){renderShopGal();renderNations();renderTkt();renderBg();applyOwnedFilter();});
+    })();
+  document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
+    var init=(location.hash||'').replace('#','');
+    if(SECS.indexOf(init)<0){try{init=localStorage.getItem('mp_vault_tab')||'';}catch(e){}}
+    show(init);
+  })();
+  load();
+  setTimeout(load,2500); /* mpAuth resolves the session async — second pass picks up the username for previews */
+})();
+</script>
+</body></html>

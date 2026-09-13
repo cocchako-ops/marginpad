@@ -90,3 +90,4 @@ Sitemap: https://marginpad.io/community/sitemap.xml
 Sitemap: https://marginpad.io/sitemap.xml
 Sitemap: https://marginpad.io/sitemap-i18n.xml
 Sitemap: https://marginpad.io/sitemap-recaps.xml
+Sitemap: https://marginpad.io/sitemap-es.xml

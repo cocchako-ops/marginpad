@@ -244,7 +244,7 @@
       if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
       h.classList.add('mpnav-hdr');
       h.innerHTML = canonHeaderHTML();   // burger click is bound by wireBurgers() below (mp-auth handles [data-auth-open] by delegation)
-      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} var _code = ls.value === '/' ? 'en' : ls.value.replace(/\//g, ''); if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; location.href = ls.value; } });
+      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} var _code = ls.value === '/' ? 'en' : ls.value.replace(/\//g, ''); if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; var _p = location.pathname, _onEs = _p.indexOf('/es/') === 0; if (_code === 'en' && _onEs) { location.href = _p.slice(3) || '/'; return; } if (_code === 'es' && !_onEs && _p !== '/') { location.href = '/es' + _p; return; } location.href = ls.value; } });
     } catch (e) {}
   }
   // EVERY header burger opens THE shared drawer. Pages' own scripts may also route here (defi, demo-home,

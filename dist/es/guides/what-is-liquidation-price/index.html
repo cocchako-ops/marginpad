@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/guides/what-is-liquidation-price/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>¿Qué Es un Precio de Liquidación en Cripto? | MarginPad</title>
+<meta name="description" content="What a liquidation price is, how leverage moves it closer to your entry, and how to calculate it before you open a position." />
+<link rel="canonical" href="https://marginpad.io/es/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/what-is-liquidation-price/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="What Is a Liquidation Price in Crypto?" />
+<meta property="og:description" content="What a liquidation price is, how leverage moves it closer to your entry, and how to calculate it before you open a position." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/guides/what-is-liquidation-price/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Guías","item":"https://marginpad.io/guides/"},{"@type":"ListItem","position":3,"name":"¿Qué Es un Precio de Liquidación en Cripto?","item":"https://marginpad.io/es/guides/what-is-liquidation-price/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Aproximadamente, liquidación ≈ entrada × (1 − 1/apalancamiento + margen de mantenimiento) para un long, e invertido para los shorts. El valor preciso depende de la tasa de margen de mantenimiento y las comisiones del exchange."}},{"@type":"Question","name":"¿Un apalancamiento más alto significa un precio de liquidación más cercano?","acceptedAnswer":{"@type":"Answer","text":"Sí. A 100×, el precio de liquidación está a solo un 1% aproximado de la entrada, mientras que a 5× está más cerca del 20%: un apalancamiento más alto deja casi ningún margen para que el precio se mueva en tu contra."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"¿Qué Es un Precio de Liquidación en Cripto?","url":"https://marginpad.io/es/guides/what-is-liquidation-price/","dateModified":"2026-09-10T19:56:57.506Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/es/markets/">Mercados</a><a href="/es/screener">Screener</a><a href="/es/">Herramientas</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/guides/">Guías</a> / ¿Qué Es un Precio de Liquidación en Cripto?</div>
+  <article>
+    <h1>¿Qué Es un Precio de Liquidación en Cripto?</h1>
+    <p class="lead">Qué es un precio de liquidación, cómo el apalancamiento lo acerca a tu entrada, y cómo calcularlo antes de abrir una posición.</p>
+    <p style="margin:10px 0 20px"><a href="/es/btc-liquidation-calculator/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">Calculadora de precio de liquidación →</a></p>
+    <h2>Qué es</h2><p>Tu <strong>precio de liquidación</strong> es el precio al que un exchange cierra por la fuerza tu posición apalancada porque tu margen ya no puede cubrir la pérdida. Si lo cruzas, pierdes tu margen. Conocerlo antes de entrar es el número más importante en el trading apalancado.</p>
+<h2>Cómo lo mueve el apalancamiento</h2><p>Cuanto más alto es tu apalancamiento, más cerca queda el precio de liquidación de tu entrada. A 5×, un long se liquida con una caída de aproximadamente el 20%; a 100×, con un movimiento de apenas el 1%. Por eso el apalancamiento alto es tan frágil: una mecha cualquiera puede liquidar una posición.</p>
+<h2>Cómo se calcula</h2><p>Para un long en margen aislado, liquidación ≈ entrada × (1 − 1/apalancamiento + tasa de margen de mantenimiento); en los shorts se invierte el signo. La cifra exacta depende del margen de mantenimiento y las comisiones del exchange, así que confírmala con una <a href="/es/btc-liquidation-calculator/">calculadora de liquidación</a> para tu moneda y apalancamiento.</p>
+<h2>Dale margen de maniobra</h2><p>Ajusta tu tamaño y apalancamiento para que el precio de liquidación quede más allá del ruido, pasando soportes y resistencias evidentes y mechas recientes, no encima de tu entrada. Consulta también <a href="/es/guides/how-to-avoid-liquidation/">cómo evitar la liquidación</a>.</p>
+    <h2>FAQ</h2><h3 style="font-size:16px;margin:16px 0 4px">¿Cómo se calcula el precio de liquidación?</h3><p>Aproximadamente, liquidación ≈ entrada × (1 − 1/apalancamiento + margen de mantenimiento) para un long, e invertido para los shorts. El valor preciso depende de la tasa de margen de mantenimiento y las comisiones del exchange.</p><h3 style="font-size:16px;margin:16px 0 4px">¿Un apalancamiento más alto significa un precio de liquidación más cercano?</h3><p>Sí. A 100×, el precio de liquidación está a solo un 1% aproximado de la entrada, mientras que a 5× está más cerca del 20%: un apalancamiento más alto deja casi ningún margen para que el precio se mueva en tu contra.</p>
+    <h2>Más guías</h2>
+    <div class="related"><a href="/es/guides/how-to-read-funding-rates/">Cómo Leer las Tasas de Funding en Cripto</a> <a href="/es/guides/how-to-read-liquidations/">Cómo Leer las Liquidaciones en Cripto</a> <a href="/es/guides/what-is-open-interest/">¿Qué Es el Interés Abierto en Cripto?</a> <a href="/es/guides/long-short-ratio-explained/">El Ratio Long/Short en Cripto Explicado</a> <a href="/es/guides/isolated-vs-cross-margin/">Margen Aislado vs Cruzado Explicado</a> <a href="/es/guides/how-to-calculate-position-size/">Cómo Calcular el Tamaño de Posición en Cripto</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Solo con fines informativos, no es asesoría financiera. Explora los datos en vivo en el <a href="/es/markets/">hub de mercados</a>.</p>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/markets/">Mercados</a> · <a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/funding/">Funding</a> · <a href="/es/screener">Screener</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

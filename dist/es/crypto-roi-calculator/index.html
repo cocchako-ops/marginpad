@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-roi-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de ROI Cripto — Retorno sobre la Inversión % | MarginPad</title>
+<meta name="description" content="Free crypto ROI calculator: buy and sell prices turned into exact return percentage, profit and the annualized rate for the holding period." />
+<meta name="keywords" content="crypto roi calculator, return on investment crypto, percent gain calculator" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-roi-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-roi-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-roi-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-roi-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Crypto ROI Calculator — Return on Investment % | MarginPad" />
+<meta property="og:description" content="Free crypto ROI calculator: buy and sell prices turned into exact return percentage, profit and the annualized rate for the holding period." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-roi-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de ROI Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-roi-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de ROI Cripto","item":"https://marginpad.io/es/crypto-roi-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Esto incluye comisiones?","acceptedAnswer":{"@type":"Answer","text":"No — mide el retorno puro de precio. Las comisiones en spot suelen ser ~0.1% por lado; para posiciones apalancadas usa la calculadora de beneficio, donde las comisiones importan mucho más."}},{"@type":"Question","name":"¿Qué es un buen ROI en cripto?","acceptedAnswer":{"@type":"Answer","text":"El punto de referencia honesto es si una elección superó simplemente mantener BTC en la misma ventana — muchas carteras no lo logran."}},{"@type":"Question","name":"¿Por qué anualizar?","acceptedAnswer":{"@type":"Answer","text":"El capital tiene un costo de oportunidad. Anualizar muestra si el dinero trabajó más aquí que en un índice o simplemente en BTC."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de ROI Cripto — Retorno sobre la Inversión %","url":"https://marginpad.io/es/crypto-roi-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de ROI Cripto</h1>
+<p class="sub">De la entrada y salida a porcentajes honestos — incluyendo a cuánto se anualiza el retorno.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="inv">Monto invertido (USD)</label><input id="inv" type="number" inputmode="decimal" value="1000"></div><div class="f"><label for="buy">Precio de compra</label><input id="buy" type="number" inputmode="decimal" value="30000"></div><div class="f"><label for="sell">Precio de venta</label><input id="sell" type="number" inputmode="decimal" value="45000"></div><div class="f"><label for="days">Días en posición</label><input id="days" type="number" inputmode="decimal" value="180"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">ROI = (venta &minus; compra) / compra &nbsp;|&nbsp; anualizado = (1 + ROI)^(365/días) &minus; 1</div>
+<p>El ROI en bruto ignora el tiempo — un +50% en cinco años es una operación muy distinta a un +50% en un trimestre. Anualizar pone a cada posición en el mismo reloj para que las operaciones rápidas y las tenencias largas se comparen con honestidad.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">$1,000 en BTC a <b>$30,000</b>, vendido a <b>$45,000</b> después de <b>180 días</b>: ROI <b>+50%</b>, beneficio $500, anualizado <b>+127.6%</b>.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Esto incluye comisiones?</summary><p>No — mide el retorno puro de precio. Las comisiones en spot suelen ser ~0.1% por lado; para posiciones apalancadas usa la calculadora de beneficio, donde las comisiones importan mucho más.</p></details><details><summary>¿Qué es un buen ROI en cripto?</summary><p>El punto de referencia honesto es si una elección superó simplemente mantener BTC en la misma ventana — muchas carteras no lo logran.</p></details><details><summary>¿Por qué anualizar?</summary><p>El capital tiene un costo de oportunidad. Anualizar muestra si el dinero trabajó más aquí que en un índice o simplemente en BTC.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/crypto-profit-calculator/">Calculadora de beneficio</a><a href="/es/crypto-compound-calculator/">Calculadora de interés compuesto</a><a href="/es/crypto-dca-calculator/">Calculadora de DCA</a><a href="/es/bitcoin-cycle/">Ciclo de Bitcoin</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var i=+document.getElementById('inv').value,b=+document.getElementById('buy').value,s=+document.getElementById('sell').value,d=+document.getElementById('days').value;var r=document.getElementById('res');if(!(i>0&&b>0&&s>0)){r.innerHTML='';return;}var roi=(s-b)/b,val=i*(1+roi),pr=val-i,ann=d>0?(Math.pow(1+roi,365/d)-1)*100:0;r.innerHTML='<div class="rrow big"><span class="k">ROI</span><span class="v '+(roi>=0?'up':'dn')+'">'+(roi>=0?'+':'')+(roi*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">Profit</span><span class="v '+(pr>=0?'up':'dn')+'">'+(pr>=0?'+':'')+pr.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Final value</span><span class="v">'+val.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Annualized</span><span class="v">'+(ann>=0?'+':'')+ann.toFixed(1)+'% / yr</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

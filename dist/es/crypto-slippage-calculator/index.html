@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-slippage-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Slippage — El Costo de las Órdenes a Mercado | MarginPad</title>
+<meta name="description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars — and what it silently costs over a month of trading." />
+<meta name="keywords" content="slippage calculator, market order cost, execution slippage crypto" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-slippage-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-slippage-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-slippage-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-slippage-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Slippage Calculator — The Cost of Market Orders | MarginPad" />
+<meta property="og:description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars — and what it silently costs over a month of trading." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-slippage-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Slippage","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-slippage-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Slippage","item":"https://marginpad.io/es/crypto-slippage-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo reduzco el slippage?","acceptedAnswer":{"@type":"Answer","text":"Usa órdenes límite cuando la urgencia lo permita, divide las órdenes grandes, opera en pares y horas líquidos, y evita las órdenes a mercado alrededor de noticias — la profundidad es visible en el libro antes de hacer clic."}},{"@type":"Question","name":"¿Es peor el slippage con apalancamiento?","acceptedAnswer":{"@type":"Answer","text":"El porcentaje es el mismo pero se aplica sobre toda la posición: a 20x, un slip del 0.1% cuesta instantáneamente 2% del margen — en la entrada Y en la salida."}},{"@type":"Question","name":"¿Los stop-loss también sufren slippage?","acceptedAnswer":{"@type":"Answer","text":"Sí — un stop activado se convierte en una orden a mercado justo cuando los libros se quedan sin liquidez. Las órdenes stop-limit acotan el daño a riesgo de no ejecutarse."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Slippage — El Costo de las Órdenes a Mercado","url":"https://marginpad.io/es/crypto-slippage-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Slippage</h1>
+<p class="sub">El libro de órdenes cobra una comisión invisible por la impaciencia. Mídela.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="exp">Precio esperado</label><input id="exp" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="fill">Precio de ejecución real</label><input id="fill" type="number" inputmode="decimal" value="60045"></div><div class="f"><label for="pos">Tamaño de posición (USD)</label><input id="pos" type="number" inputmode="decimal" value="5000"></div><div class="f"><label for="tpm">Operaciones por mes</label><input id="tpm" type="number" inputmode="decimal" value="40"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">slippage % = |ejecución &minus; esperado| / esperado</div>
+<p>El slippage escala con el tamaño de la orden, la profundidad del libro y la volatilidad — casi nulo en los principales pares de BTC en horas tranquilas, brutal en altcoins de poca liquidez durante noticias. Para traders activos, suele costar más que la propia comisión taker, y nunca aparece en un estado de cuenta.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Esperando <b>$60,000</b>, ejecutado a <b>$60,045</b>: 0.075% — <b>$3.75</b> en una posición de $5,000. Ambos lados de 40 operaciones mensuales: <b>$300/mes</b>, en silencio.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Cómo reduzco el slippage?</summary><p>Usa órdenes límite cuando la urgencia lo permita, divide las órdenes grandes, opera en pares y horas líquidos, y evita las órdenes a mercado alrededor de noticias — la profundidad es visible en el libro antes de hacer clic.</p></details><details><summary>¿Es peor el slippage con apalancamiento?</summary><p>El porcentaje es el mismo pero se aplica sobre toda la posición: a 20x, un slip del 0.1% cuesta instantáneamente 2% del margen — en la entrada Y en la salida.</p></details><details><summary>¿Los stop-loss también sufren slippage?</summary><p>Sí — un stop activado se convierte en una orden a mercado justo cuando los libros se quedan sin liquidez. Las órdenes stop-limit acotan el daño a riesgo de no ejecutarse.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/crypto-fee-calculator/">Calculadora de comisiones</a><a href="/es/crypto-break-even-calculator/">Calculadora de punto de equilibrio</a><a href="/es/exchanges/">Comparar exchanges</a><a href="/es/screener">Screener (liquidez)</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var e=+document.getElementById('exp').value,f=+document.getElementById('fill').value,p=+document.getElementById('pos').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(e>0&&f>0&&p>0)){r.innerHTML='';return;}var sl=Math.abs(f-e)/e,usd=p*sl,mo=usd*2*n;r.innerHTML='<div class="rrow big"><span class="k">Slippage</span><span class="v">'+(sl*100).toFixed(3)+'%</span></div><div class="rrow"><span class="k">Cost on this fill</span><span class="v dn">-'+usd.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Monthly (both sides, '+n+' trades)</span><span class="v dn">-'+mo.toFixed(2)+' USD</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -988,7 +988,7 @@ function ssrCoinBlock(sym, name, sentences, L) {
     '</section>\n';
 }
 async function handleSsrCoin(request, url, env) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1168,7 +1168,7 @@ async function ssrBlogSentences(kind, env) {
 // questions assistants field most about markets, and the grid on this page is drawn entirely client-side,
 // so a crawler saw 92 words and none of the dates. Ten-minute cache; renders nothing if the feed is down.
 async function handleSsrCalendar(request, url, env) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1211,7 +1211,7 @@ async function handleSsrCalendar(request, url, env) {
 }
 
 async function handleSsrVenues(request, url, env, ctx) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1242,7 +1242,7 @@ async function handleSsrVenues(request, url, env, ctx) {
 }
 
 async function handleSsrCompare(request, url, env, ak, bk, ctx) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1284,7 +1284,7 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
 }
 
 async function handleSsrBlog(request, url, env, kind) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1553,7 +1553,7 @@ async function ssrLiqSentences(mode, param, env) {
   return { S };
 }
 async function handleSsrLiq(request, url, env, mode, param) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -1716,7 +1716,7 @@ async function ssrHubSentences(page, sym, env) {
   return { S };
 }
 async function handleSsrHub(request, url, env, page, sym) {
-  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
@@ -5518,7 +5518,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=ff97ec86" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3f87bd75" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14543,6 +14543,24 @@ export default {
     const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };
     if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
     if (/^\/pass\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/season/#pass', 301); // 2026-09-06: the pass lives on the season page now (the old static page was removed so this is reached)
+    { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
+    // SPANISH SITE (2026-09-12, owner: "ceo sajt na španski"): /es/<path> is a full twin of the English page, written by
+    // build/es/gen-pages.js from the SAME markup with the text swapped through build/data/es/catalog.json. "/es/*" is in
+    // run_worker_first, so every Spanish request lands here: the request keeps its own URL (every `env.ASSETS.fetch(request)`
+    // below therefore reads the Spanish file) while `url.pathname` becomes the English path, so the SSR routes (liquidation
+    // calculators and maps, hubs, the six coin pages, blog live boxes, compare pages) inject the same live data into the twin.
+    // No twin on disk → 302 to the English page, never a 404 on a language prefix. The six tool routes serve dist/app-es.html.
+    let esSite = false;
+    if (url.pathname.startsWith('/es/') && url.pathname.length > 4) {
+      const enPath = url.pathname.slice(3);
+      const isTool = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test(enPath);
+      if (!isTool) {
+        let ok = false;
+        try { const pr = await env.ASSETS.fetch(new Request(url.origin + url.pathname)); ok = pr.status === 200; try { if (pr.body) await pr.body.cancel(); } catch (e) {} } catch (e) {}
+        if (!ok) return Response.redirect(url.origin + enPath + url.search, 302);
+      }
+      esSite = true; url.pathname = enPath;
+    }
     // 2026-08-18 consolidation: 754 /coin/ pages (58 English + 696 translations) were 96% identical to one
     // another and returned 69 pageviews and ONE Google visit in 90 days; the 20 /liquidations/<coin> pages
     // were 99% identical and returned 11 with none from search, while the /liquidations/ hub above them
@@ -14557,8 +14575,9 @@ export default {
       // The translated SEO subpages were removed the same day for the same reason: 1,008 pages
       // returning 47 pageviews and 7 Google visits in 90 days while multiplying every duplicate
       // signal twelvefold. Each 301s to its English original, which is an exact topical match.
-      // The language HOMEPAGES (/de/, /es/ ...) are untouched — they are app entry points.
-      const _I18N_SUB = url.pathname.match(/^\/(ar|de|es|fr|id|ja|ko|nl|pt|ru|tr|zh)\/(.+)$/);
+      // The language HOMEPAGES (/de/, /es/ ...) are untouched — they are app entry points. Spanish left this list on
+      // 2026-09-12: /es/ is a full site now (see esSite above), the other eleven still 301.
+      const _I18N_SUB = url.pathname.match(/^\/(ar|de|fr|id|ja|ko|nl|pt|ru|tr|zh)\/(.+)$/);
       if (_I18N_SUB && _I18N_SUB[2].replace(/\/$/, '')) return Response.redirect(url.origin + '/' + _I18N_SUB[2], 301);
     }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
@@ -16823,7 +16842,7 @@ export default {
       catch (e) { return new Response('chat reconnecting', { status: 503 }); }
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
-      const r = await env.ASSETS.fetch(new Request(url.origin + '/app', request)); // fetch the APP SHELL (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
+      const r = await env.ASSETS.fetch(new Request(url.origin + (esSite ? '/app-es' : '/app'), request)); // fetch the APP SHELL (Spanish twin dist/app-es.html on /es/<tool>, 2026-09-12) (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
       const base = new Response(r.body, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
       // Per-route <title>/description/canonical so each dedicated tool reads as its own keyword-matched page (Google Ads landing-page relevance + SEO). The page HTML is shared; only the head metadata is rewritten.
       const SPA_META = {
@@ -16834,9 +16853,20 @@ export default {
  '/heatmap': { title: 'Crypto Liquidation Heatmap — Live, Free Preview | MarginPad', desc: 'Live crypto liquidation heatmap — free 5-minute preview without an account, unlimited with Premium ($3.99/mo): see where leveraged positions cluster and get liquidated on BTC, ETH and top alts, updated in real time.', canon: 'https://marginpad.io/heatmap', hm: true },
         '/swap': { title: 'Swap Crypto — 900+ Coins, No Account | MarginPad', desc: 'Swap 900+ cryptocurrencies instantly with no account and no signup. Fast, non-custodial crypto swaps.', canon: 'https://marginpad.io/swap' },
       };
-      const m = SPA_META[url.pathname.replace(/\/$/, '') || '/'];
+      // Spanish twins of the six tool routes (2026-09-12): own title/description/canonical/h1; the English SEO blocks (pt/sc/hm) stay off here.
+      const SPA_META_ES = {
+        '/paper-trade': { title: 'Paper Trading de Cripto — Simulador gratis, sin registro, recompensas reales | MarginPad', desc: 'La única plataforma de paper trading social: practica futuros cripto a precio en vivo con apalancamiento hasta 1000x, sube en las clasificaciones de temporada de 14 días con premios, completa misiones y gana USDT reales mientras aprendes. Gratis, sin registro, sin depósito: cripto, acciones y forex en una sola cuenta.', canon: 'https://marginpad.io/es/paper-trade' },
+        '/calculators': { title: 'Calculadoras de futuros cripto — Liquidación, PnL y tamaño | MarginPad', desc: 'Calculadoras gratis de futuros cripto: precio de liquidación, ganancias y pérdidas, tamaño de posición, take-profit y riesgo/beneficio. Instantáneas, privadas, sin registro.', canon: 'https://marginpad.io/es/calculators' },
+        '/charts': { title: 'Espacio multigráfico de cripto — Gráficos de futuros en vivo | MarginPad', desc: 'Un espacio de trabajo gratuito con varias ventanas: gráficos de futuros en vivo, indicadores, herramientas de dibujo y operaciones simuladas rápidas en un solo tablero.', canon: 'https://marginpad.io/es/charts' },
+        '/screener': { title: 'Screener de futuros cripto — Setups puntuados, funding y OI | MarginPad', desc: 'Screener gratis de futuros cripto: puntuaciones técnicas de 0 a 100 con RSI, MACD, funding e interés abierto en los principales perpetuos USDT, más setups listos para operar.', canon: 'https://marginpad.io/es/screener' },
+        '/heatmap': { title: 'Mapa de calor de liquidaciones cripto — En vivo, vista previa gratis | MarginPad', desc: 'Mapa de calor de liquidaciones en vivo: vista previa gratis de 5 minutos sin cuenta, ilimitado con Premium ($3.99/mes). Mira dónde se concentran y se liquidan las posiciones apalancadas en BTC, ETH y las principales alts, actualizado en tiempo real.', canon: 'https://marginpad.io/es/heatmap' },
+        '/swap': { title: 'Swap de cripto — Más de 900 monedas, sin cuenta | MarginPad', desc: 'Intercambia más de 900 criptomonedas al instante, sin cuenta y sin registro. Swaps rápidos y sin custodia.', canon: 'https://marginpad.io/es/swap' },
+      };
+      const m = (esSite ? SPA_META_ES : SPA_META)[url.pathname.replace(/\/$/, '') || '/'];
       if (!m) return base;
-      const H1 = { '/paper-trade': 'Crypto paper trading at live prices', '/calculators': 'Crypto futures calculators', '/charts': 'Multi-chart crypto workspace', '/screener': 'Crypto futures screener', '/heatmap': 'Live crypto liquidation heatmap', '/swap': 'Swap crypto' }[url.pathname.replace(/\/$/, '')]; // the shared shell's h1 reads "Everything you need to trade futures." on every tool route (2026-09-07 UX pass); the hero is hidden on tool routes, so this is for crawlers and screen readers
+      const H1 = (esSite
+        ? { '/paper-trade': 'Paper trading de cripto a precio en vivo', '/calculators': 'Calculadoras de futuros cripto', '/charts': 'Espacio multigráfico de cripto', '/screener': 'Screener de futuros cripto', '/heatmap': 'Mapa de calor de liquidaciones en vivo', '/swap': 'Swap de cripto' }
+        : { '/paper-trade': 'Crypto paper trading at live prices', '/calculators': 'Crypto futures calculators', '/charts': 'Multi-chart crypto workspace', '/screener': 'Crypto futures screener', '/heatmap': 'Live crypto liquidation heatmap', '/swap': 'Swap crypto' })[url.pathname.replace(/\/$/, '')]; // the shared shell's h1 reads "Everything you need to trade futures." on every tool route (2026-09-07 UX pass); the hero is hidden on tool routes, so this is for crawlers and screen readers
       let h1done = false;
       let rw = new HTMLRewriter()
         .on('h1', { element(e) { if (H1 && !h1done) { h1done = true; e.setInnerContent(H1); } } })

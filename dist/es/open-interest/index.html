@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/open-interest/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Interés abierto cripto — Rastreador de OI en vivo | MarginPad</title>
+<meta name="description" content="Live crypto perpetual-futures open interest: total OI per coin and the biggest 24h inflows and outflows. See where leverage is building and where money is flowing. Free, no signup." />
+<meta name="keywords" content="crypto open interest, open interest tracker, btc open interest, eth open interest, oi change, futures open interest, leverage building" />
+<link rel="canonical" href="https://marginpad.io/es/open-interest/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/open-interest/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Crypto Open Interest — Live OI Tracker" />
+<meta property="og:description" content="Live crypto perpetual-futures open interest: total OI per coin and the biggest 24h inflows and outflows. See where leverage is building and where money is flowing. Free, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/open-interest/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Open Interest — Live OI Tracker" />
+<meta name="twitter:description" content="Live crypto perpetual-futures open interest: total OI per coin and the biggest 24h inflows and outflows. See where leverage is building and where money is flowing. Free, no signup." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .oitop{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:560px){.oitop{grid-template-columns:1fr}}
+  .oicard{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:15px;padding:16px 18px}
+  .oicard.in{border-color:rgba(46,189,133,.4)}.oicard.out{border-color:rgba(255,90,77,.4)}
+  .oi-k{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px}
+  .oi-row{display:flex;align-items:baseline;gap:9px}
+  .oi-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px}
+  .oi-val{font-family:'Space Mono',monospace;font-weight:800;font-size:20px;margin-left:auto}
+  .oi-val.up{color:#34d99a}.oi-val.dn{color:#ff7b72}
+  .oi-hint{font-size:12.5px;color:var(--ink-dim);margin-top:6px;line-height:1.45}
+  .oitbl{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
+  .oitbl th,.oitbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .oitbl th:first-child,.oitbl td:first-child,.oitbl th:nth-child(2),.oitbl td:nth-child(2){text-align:left}
+  .oitbl th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
+  .oitbl td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .oitbl td.sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px}
+  .oitbl .rk{color:var(--ink-faint);width:26px;text-align:right}
+  .oitbl td.ch.up{color:#34d99a;font-weight:700}.oitbl td.ch.dn{color:#ff7b72;font-weight:700}
+  .oitbl td.pc.up{color:#34d99a}.oitbl td.pc.dn{color:#ff7b72}
+  .oinote{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;margin:8px 0 0}
+  .oicta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .oicta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .oicta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
+  .oiload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
+  @media(max-width:600px){.oitbl th.hide,.oitbl td.hide{display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Rastreador de interés abierto cripto","url":"https://marginpad.io/es/open-interest/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es el interés abierto en cripto?","acceptedAnswer":{"@type":"Answer","text":"El interés abierto es el valor total de todas las posiciones de futuros perpetuos pendientes (abiertas) en una moneda. Un interés abierto en aumento significa que está entrando nuevo apalancamiento al mercado; un interés abierto en descenso significa que se están cerrando posiciones."}},{"@type":"Question","name":"¿Qué significa un aumento en el interés abierto?","acceptedAnswer":{"@type":"Answer","text":"Un interés abierto que aumenta junto con el precio sugiere dinero nuevo respaldando el movimiento; un interés abierto que cae mientras el precio sube suele significar cobertura de shorts. Una caída brusca del interés abierto suele seguir a una cascada de liquidaciones a medida que se elimina el apalancamiento."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Interés abierto","item":"https://marginpad.io/es/open-interest/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Interés abierto cripto — Rastreador de OI en vivo","url":"https://marginpad.io/es/open-interest/","dateModified":"2026-09-10T19:56:57.548Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/es/markets/">Mercados</a><a href="/es/liquidations/">Liquidaciones</a><a href="/es/funding/">Funding</a><a href="/es/open-interest/">Interés abierto</a><a href="/es/long-short/">Long/Short</a><a href="/es/screener">Screener</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Interés abierto</div>
+  <article>
+    <h1>Interés abierto cripto</h1>
+    <p class="lead">Interés abierto en vivo de futuros perpetuos — el valor total de las posiciones abiertas en cada moneda, y dónde creció o se deshizo más el apalancamiento en las últimas 24 horas. Un OI en aumento significa dinero nuevo y más apalancamiento; un OI en descenso significa que se están cerrando posiciones. Se actualiza automáticamente.</p>
+
+    <div class="oitop" id="oiTop"><div class="oiload">Cargando datos de interés abierto en vivo…</div></div>
+
+    <h2>Interés abierto · todas las monedas</h2>
+    <div id="oiTable"><div class="oiload">Cargando…</div></div>
+    <p class="oinote" id="oiUpd"></p>
+
+    <div class="oicta">
+      <a class="go" href="/es/screener">Abre el screener del mercado →</a> <a href="/es/funding/">Tasas de funding</a> <a href="/es/liquidations/">Liquidaciones en vivo</a>
+    </div>
+
+    <h2>¿Qué es el interés abierto?</h2>
+    <p><strong>El interés abierto (OI)</strong> es el valor total en dólares de todas las posiciones de futuros perpetuos pendientes en una moneda. A diferencia del volumen (que cuenta cada operación), el OI cuenta cuánto apalancamiento está actualmente <em>abierto</em> en el mercado. Un OI en aumento significa que están entrando posiciones nuevas y apalancamiento fresco; un OI en descenso significa que los traders están cerrando posiciones.</p>
+
+    <h2>Cómo leer los cambios de OI</h2>
+    <p>El OI es más útil junto al precio. <strong>Precio arriba + OI arriba</strong> significa que hay dinero nuevo respaldando el movimiento — una tendencia más fuerte. <strong>Precio arriba + OI abajo</strong> suele significar cobertura de shorts en lugar de demanda nueva. Una <strong>caída repentina del OI</strong> suele seguir a una <a href="/es/liquidations/">cascada de liquidaciones</a> a medida que se eliminan las posiciones sobreapalancadas. Una fuerte acumulación de OI combinada con un <a href="/es/funding/">funding</a> unidireccional señala un setup abarrotado y frágil.</p>
+
+    <h2>Dónde se está acumulando el apalancamiento</h2>
+    <p>Las tarjetas de arriba destacan las mayores entradas y salidas de OI en 24 horas — una lectura rápida de dónde se están acumulando los traders y hacia dónde se dirigen a la salida. Confirma los setups en el <a href="/es/screener">screener técnico</a> y calcula el tamaño con la <a href="/es/">calculadora de tamaño de posición</a>.</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Datos de interés abierto agregados de las principales plataformas. Solo con fines informativos — no es asesoría financiera.</p>
+  
+<div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/screener">Screener</a> · <a href="/es/funding/">Funding</a> · <a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/long-short/">Long/Short</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script>(function(){
+  var topEl=document.getElementById('oiTop'),tEl=document.getElementById('oiTable'),uEl=document.getElementById('oiUpd');
+  function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+  function pc(v){return (v>=0?'+':'')+(+v).toFixed(2)+'%';}
+  function render(d){
+    if(!d||d.error||!d.coins||!d.coins.length){topEl.innerHTML='<div class="oiload">Live data unavailable right now — retry shortly.</div>';tEl.innerHTML='';return;}
+    var c=d.coins.slice().filter(function(x){return isFinite(x.oiChg24h);});
+    var byCh=c.slice().sort(function(a,b){return b.oiChg24h-a.oiChg24h;});
+    var inflow=byCh[0], outflow=byCh[byCh.length-1];
+    topEl.innerHTML=(inflow?'<div class="oicard in"><div class="oi-k">Biggest OI inflow · 24h</div><div class="oi-row"><span class="oi-sym">'+inflow.s+'</span><span class="oi-val up">'+pc(inflow.oiChg24h)+'</span></div><div class="oi-hint">Leverage building fastest here — fresh positions piling in.</div></div>':'')
+      +(outflow?'<div class="oicard out"><div class="oi-k">Biggest OI outflow · 24h</div><div class="oi-row"><span class="oi-sym">'+outflow.s+'</span><span class="oi-val dn">'+pc(outflow.oiChg24h)+'</span></div><div class="oi-hint">Positions unwinding fastest here — traders heading for the exits.</div></div>':'');
+    var rows=d.coins.map(function(x,i){var och=(x.oiChg24h||0)>=0,pch=(x.chg24h||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+bn(x.oiUsd)+'</td><td class="ch '+(och?'up':'dn')+'">'+(isFinite(x.oiChg24h)?pc(x.oiChg24h):'—')+'</td><td class="hide pc '+(pch?'up':'dn')+'">'+(pch?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td></tr>';}).join('');
+    tEl.innerHTML='<table class="oitbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Open interest</th><th>OI 24h</th><th class="hide">Price 24h</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    if(uEl)uEl.textContent='Updated just now · refreshes automatically';
+  }
+  function load(){fetch('/api/cg/openinterest',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
+  load();setInterval(load,60000);
+})();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

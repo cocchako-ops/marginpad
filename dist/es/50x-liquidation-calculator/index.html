@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/50x-liquidation-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Calculadora de Liquidación 50x — Futuros Cripto Long y Short | MarginPad</title>
+<meta name="description" content="Free 50x liquidation calculator. See exactly where a 50x long or short is liquidated and how extremely thin the buffer is. Instant, private, no signup." />
+<meta name="keywords" content="50x liquidation calculator, 50x leverage calculator, 50x liquidation price, crypto 50x calculator, 50x futures liquidation" />
+<link rel="canonical" href="https://marginpad.io/es/50x-liquidation-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/50x-liquidation-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/50x-liquidation-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/50x-liquidation-calculator/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="50x Liquidation Calculator — Crypto Futures Long & Short" />
+<meta property="og:description" content="Free 50x liquidation calculator. See exactly where a 50x long or short is liquidated and how extremely thin the buffer is. Instant, private, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/50x-liquidation-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Calculadora de Liquidación 50x","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/es/50x-liquidation-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Calculadora gratis de liquidación 50x. Mira exactamente dónde se liquida un long o short a 50x y lo extremadamente ajustado que es el margen. Instantánea, privada, sin registro."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿A qué porcentaje se liquida una posición de 50x?","acceptedAnswer":{"@type":"Answer","text":"Aproximadamente 1.50% en tu contra — cerca de 1/50 del precio menos el margen de mantenimiento. Las comisiones y el funding hacen que el número real sea un poco más cercano."}},{"@type":"Question","name":"¿Es seguro el apalancamiento de 50x?","acceptedAnswer":{"@type":"Answer","text":"50x significa que un movimiento de ~1.5% te liquida. Solo el movimiento adverso más pequeño te elimina — esto es para traders experimentados que manejan un riesgo muy ajustado."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Calculadora de Liquidación 50x","item":"https://marginpad.io/es/50x-liquidation-calculator/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Liquidación 50x — Futuros Cripto Long y Short","url":"https://marginpad.io/es/50x-liquidation-calculator/","dateModified":"2026-09-10T19:56:57.320Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a><a href="/es/glossary/">Glosario</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Calculadora de liquidación 50x</div>
+  <article>
+    <h1>Calculadora de Liquidación 50x</h1>
+    <p class="lead">Mira exactamente dónde se liquida una posición con <b>50× de apalancamiento</b> — long o short, cualquier entrada. A 50×, la liquidación está a solo un <b>1.50%</b> de tu entrada. Gratis y privado.</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+        <label>Precio de entrada (USD)</label><input id="liqEntry" type="number" value="60000" step="any">
+        <label>Apalancamiento</label><input id="liqLev" type="number" value="50" step="any">
+        <label>Tasa de margen de mantenimiento (%)</label><input id="liqMmr" type="number" value="0.5" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">Precio de liquidación estimado</div><div class="big" id="liqOut">—</div>
+        <div class="rr"><span>Distancia desde la entrada</span><b id="liqDist">—</b></div>
+      </div>
+    </div>
+    <h2>¿A qué distancia está la liquidación con 50× de apalancamiento?</h2>
+    <p>El margen de liquidación es aproximadamente <code>1 / leverage</code>, menos un pequeño margen de mantenimiento. A 50×, eso es cerca de <b>1.50%</b> en contra de tu posición. Solo el movimiento adverso más pequeño te elimina — esto es para traders experimentados que manejan un riesgo muy ajustado.</p>
+    <h2>Ejemplo resuelto</h2>
+    <p>Un long de 50× abierto a <code>$60,000.00</code> se liquida aproximadamente en:</p>
+    <div class="example">
+      <div class="row"><span>Precio de liquidación</span><b>$59,100.00</b></div>
+      <div class="row"><span>Movimiento hasta la liquidación</span><b>−1.50%</b></div>
+    </div>
+    <p>Siempre pon tu stop-loss <em>dentro</em> de ese nivel. Aprende más en <a href="/es/blog/crypto-leverage-explained/">el apalancamiento explicado</a> y <a href="/es/blog/what-is-liquidation-in-crypto/">cómo evitar la liquidación</a>.</p>
+
+    <h2>50× en contexto — distancia de liquidación según el apalancamiento</h2>
+    <p>La misma operación con distintos niveles de apalancamiento, mostrando cuánto margen da cada uno antes de que un long con margen aislado se liquide (0.5% de margen de mantenimiento):</p>
+    <table style="width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px">
+      <thead><tr><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Apalancamiento</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Movimiento hasta la liquidación</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Colchón</th></tr></thead>
+      <tbody><tr><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">5×</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−19.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#34d99a">cómodo</td></tr><tr><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">10×</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−9.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#34d99a">cómodo</td></tr><tr><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">20×</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−4.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#ffd75a">ajustado</td></tr><tr><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">25×</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−3.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#ffd75a">ajustado</td></tr><tr style="background:rgba(194,246,74,.06)"><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">50× <span style="font-family:'Space Mono',monospace;font-size:9px;color:#c2f64a;text-transform:uppercase">esta página</span></td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−1.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#ff8a80">extremadamente ajustado</td></tr><tr><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">100×</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−0.50%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:#ff8a80">extremadamente ajustado</td></tr></tbody>
+    </table>
+
+    <h2>Para quién es el apalancamiento de 50×</h2>
+    <p>50× es terreno de alta convicción y riesgo muy ajustado. Una mecha de ~1.5% en tu contra termina la operación, y el cripto genera mechas de ese tamaño con regularidad — así que 50× solo tiene sentido para traders experimentados haciendo scalping en pares líquidos, con un stop firme y una porción pequeña de su capital. Si no puedes vigilarla, no la uses.</p>
+
+    <h2>Cómo sobrevivir al apalancamiento de 50×</h2>
+    <ul>
+      <li><strong>Define primero el stop.</strong> Decide tu precio de invalidación y luego dimensiona la posición para que ese stop equivalga a un % fijo de tu cuenta (1–2%). La <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> hace el cálculo.</li>
+      <li><strong>Mantén la liquidación lejos de tu stop.</strong> Si la liquidación y tu stop están casi encima uno del otro, una mecha puede ganarle a tu stop — baja el apalancamiento o amplía el stop.</li>
+      <li><strong>Cuenta las comisiones y el funding.</strong> Ambos consumen margen y acercan la liquidación más que el 1.50% bruto — calcúlalos con la <a href="/es/funding-fee-calculator/">calculadora de funding</a>.</li>
+      <li><strong>Practícala primero.</strong> Abre la misma operación de 50× en el <a href="/es/paper-trade">terminal de paper trading</a> con precios en vivo, sin riesgo, hasta que el comportamiento de la liquidación se vuelva automático.</li>
+    </ul>
+
+    <h2>Compara otros niveles de apalancamiento</h2>
+    <div class="related">
+      <a href="/es/calculators?c=liq">Apalancamiento personalizado</a> <a href="/es/5x-liquidation-calculator/">Liquidación 5×</a> <a href="/es/10x-liquidation-calculator/">Liquidación 10×</a> <a href="/es/20x-liquidation-calculator/">Liquidación 20×</a> <a href="/es/25x-liquidation-calculator/">Liquidación 25×</a> <a href="/es/100x-liquidation-calculator/">Liquidación 100×</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Herramienta educativa, no es asesoría financiera. Las estimaciones no incluyen comisiones ni funding y pueden diferir de tu exchange.</p>
+  
+<div class="mp-xr"><div class="mp-xr-t">LOS EXCHANGES EN LOS QUE SE BASAN ESTOS NÚMEROS</div><p class="mp-xr-w">El margen de mantenimiento, los niveles de comisión y los intervalos de funding varían según el exchange &mdash; estos son los que sirvieron de base para esta calculadora.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
+<nav class="hublinks" data-hublinks aria-label="Calculadoras de liquidación para otras monedas"><h2>Calculadoras de liquidación para otras monedas</h2><div class="hl"><a href="/es/100x-liquidation-calculator/">100X</a><a href="/es/10x-liquidation-calculator/">10X</a><a href="/es/20x-liquidation-calculator/">20X</a><a href="/es/25x-liquidation-calculator/">25X</a><a href="/es/5x-liquidation-calculator/">5X</a><a href="/es/aave-liquidation-calculator/">AAVE</a><a href="/es/ada-liquidation-calculator/">ADA</a><a href="/es/algo-liquidation-calculator/">ALGO</a><a href="/es/ape-liquidation-calculator/">APE</a><a href="/es/apt-liquidation-calculator/">APT</a><a href="/es/arb-liquidation-calculator/">ARB</a><a href="/es/atom-liquidation-calculator/">ATOM</a><a href="/es/avax-liquidation-calculator/">AVAX</a><a href="/es/axs-liquidation-calculator/">AXS</a><a href="/es/bch-liquidation-calculator/">BCH</a><a href="/es/binance-liquidation-calculator/">BINANCE</a><a href="/es/bitget-liquidation-calculator/">BITGET</a><a href="/es/bnb-liquidation-calculator/">BNB</a><a href="/es/bonk-liquidation-calculator/">BONK</a><a href="/es/btc-liquidation-calculator/">BTC</a><a href="/es/bybit-liquidation-calculator/">BYBIT</a><a href="/es/crv-liquidation-calculator/">CRV</a><a href="/es/doge-liquidation-calculator/">DOGE</a><a href="/es/dot-liquidation-calculator/">DOT</a><a href="/es/ena-liquidation-calculator/">ENA</a><a href="/es/ens-liquidation-calculator/">ENS</a><a href="/es/etc-liquidation-calculator/">ETC</a><a href="/es/eth-liquidation-calculator/">ETH</a><a href="/es/fet-liquidation-calculator/">FET</a><a href="/es/fil-liquidation-calculator/">FIL</a><a href="/es/floki-liquidation-calculator/">FLOKI</a><a href="/es/gala-liquidation-calculator/">GALA</a><a href="/es/gate-liquidation-calculator/">GATE</a><a href="/es/grt-liquidation-calculator/">GRT</a><a href="/es/hbar-liquidation-calculator/">HBAR</a><a href="/es/hype-liquidation-calculator/">HYPE</a><a href="/es/hyperliquid-liquidation-calculator/">HYPERLIQUID</a><a href="/es/icp-liquidation-calculator/">ICP</a><a href="/es/imx-liquidation-calculator/">IMX</a><a href="/es/inj-liquidation-calculator/">INJ</a><a href="/es/jup-liquidation-calculator/">JUP</a><a href="/es/kas-liquidation-calculator/">KAS</a><a href="/es/kraken-liquidation-calculator/">KRAKEN</a><a href="/es/kucoin-liquidation-calculator/">KUCOIN</a><a href="/es/link-liquidation-calculator/">LINK</a><a href="/es/ltc-liquidation-calculator/">LTC</a><a href="/es/mana-liquidation-calculator/">MANA</a><a href="/es/matic-liquidation-calculator/">MATIC</a><a href="/es/mexc-liquidation-calculator/">MEXC</a><a href="/es/mkr-liquidation-calculator/">MKR</a><a href="/es/near-liquidation-calculator/">NEAR</a><a href="/es/okx-liquidation-calculator/">OKX</a><a href="/es/ondo-liquidation-calculator/">ONDO</a><a href="/es/op-liquidation-calculator/">OP</a><a href="/es/ordi-liquidation-calculator/">ORDI</a><a href="/es/pepe-liquidation-calculator/">PEPE</a><a href="/es/rndr-liquidation-calculator/">RNDR</a><a href="/es/rune-liquidation-calculator/">RUNE</a><a href="/es/sand-liquidation-calculator/">SAND</a><a href="/es/sei-liquidation-calculator/">SEI</a><a href="/es/shib-liquidation-calculator/">SHIB</a><a href="/es/sol-liquidation-calculator/">SOL</a><a href="/es/stx-liquidation-calculator/">STX</a><a href="/es/sui-liquidation-calculator/">SUI</a><a href="/es/tao-liquidation-calculator/">TAO</a><a href="/es/tia-liquidation-calculator/">TIA</a><a href="/es/ton-liquidation-calculator/">TON</a><a href="/es/trx-liquidation-calculator/">TRX</a><a href="/es/uni-liquidation-calculator/">UNI</a><a href="/es/wif-liquidation-calculator/">WIF</a><a href="/es/wld-liquidation-calculator/">WLD</a><a href="/es/xlm-liquidation-calculator/">XLM</a><a href="/es/xmr-liquidation-calculator/">XMR</a><a href="/es/xrp-liquidation-calculator/">XRP</a><a href="/es/zec-liquidation-calculator/">ZEC</a></div></nav>
+
+<nav class="hublinks" data-hublinks aria-label="Relacionado"><h2>Relacionado</h2><div class="hl"><a href="/es/calculators">Todas las calculadoras</a><a href="/es/paper-trade">Practica con paper trading</a></div></nav>
+<footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a> · <a href="/es/glossary/">Glosario</a> · <a href="/es/about/">Acerca de</a></span>
+  </footer>
+</div>
+<script src="/assets/liqcalc.js"></script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/etf-flows/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Flujos de ETF de Bitcoin y Ethereum — Entradas diarias en ETF spot y AUM | MarginPad</title>
+<meta name="description" content="Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflows, total assets under management, and a per-fund breakdown (IBIT, FBTC, ETHA and more). Free, no signup, updated daily." />
+<meta name="keywords" content="bitcoin etf flows, spot bitcoin etf, ethereum etf flows, ibit flows, etf inflows, etf outflows, bitcoin etf aum, spot etf net flow, etha flows" />
+<link rel="canonical" href="https://marginpad.io/es/etf-flows/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/etf-flows/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/etf-flows/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/etf-flows/" />
+<meta name="robots" content="noindex, follow" /><!-- TEMP hidden 2026-08-21: no-coinglass test period; flip HIDDEN in gen-etf-page.js to restore -->
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Bitcoin & Ethereum ETF Flows — Daily Spot ETF Inflows & AUM" />
+<meta property="og:description" content="Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflows, total assets under management, and a per-fund breakdown (IBIT, FBTC, ETHA and more). Free, no signup, updated daily." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/etf-flows/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Bitcoin & Ethereum ETF Flows — Daily Spot ETF Inflows & AUM" />
+<meta name="twitter:description" content="Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflows, total assets under management, and a per-fund breakdown (IBIT, FBTC, ETHA and more). Free, no signup, updated daily." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
+  .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
+  header .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
+  header .mark b{color:#c2f64a}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
+  .hmenu span:nth-child(2){width:13px}
+  header .hnav{display:flex;align-items:center;gap:3px}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .hlink svg{flex-shrink:0}
+  .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
+  .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
+  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+
+  :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6;--btc:#f7a600;--eth:#8a92ff}
+  .ef-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 8% 2%,rgba(247,166,0,.07),transparent 62%),radial-gradient(48% 55% at 94% 26%,rgba(138,146,255,.07),transparent 60%)}
+  .wrap{position:relative;z-index:1}
+  .ef-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
+  .ef-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:efblink 1.6s ease-in-out infinite}
+  @keyframes efblink{0%,100%{opacity:1}50%{opacity:.35}}
+  .ef-wait{margin:14px 0 2px;display:flex;align-items:center;gap:11px;background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.3);border-radius:13px;padding:13px 15px;font-size:13px;color:#ffcf80;line-height:1.5}
+  .ef-hero{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0 8px}
+  @media(min-width:820px){.ef-hero{grid-template-columns:1fr 1fr;gap:16px}}
+  .ef-panel{position:relative;background:linear-gradient(168deg,rgba(255,255,255,.035),rgba(255,255,255,.006)),var(--panel);border:1px solid var(--line-bright);border-radius:20px;padding:20px 22px;overflow:hidden}
+  .ef-panel.btc{border-color:rgba(247,166,0,.28)}
+  .ef-panel.eth{border-color:rgba(138,146,255,.28)}
+  .ef-ph{display:flex;align-items:center;gap:10px}
+  .ef-dot{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;color:#0a0b0d}
+  .ef-panel.btc .ef-dot{background:var(--btc)}.ef-panel.eth .ef-dot{background:var(--eth)}
+  .ef-pt{font-family:'Familjen Grotesk',sans-serif;font-weight:800;font-size:16px;color:var(--ink)}
+  .ef-pt small{display:block;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase}
+  .ef-flow{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:clamp(34px,5vw,46px);letter-spacing:-.02em;line-height:1;margin:16px 0 3px}
+  .ef-flow.up{color:var(--grn)}.ef-flow.dn{color:var(--red)}
+  .ef-fsub{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint)}
+  .ef-stats{display:flex;gap:22px;margin:14px 0 4px}
+  .ef-stat .k{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
+  .ef-stat .v{font-family:'Space Mono',monospace;font-weight:800;font-size:17px;margin-top:3px;color:var(--ink)}
+  .ef-chart{margin-top:12px;height:90px}
+  .ef-chart svg{width:100%;height:90px;display:block}
+  .ef-clab{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);margin-top:3px}
+  .ef-h2{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;margin:26px 0 12px;display:flex;align-items:center;gap:12px}
+  .ef-tabs{display:flex;gap:6px;background:rgba(0,0,0,.25);border:1px solid var(--line-bright);border-radius:11px;padding:4px}
+  .ef-tab{padding:6px 14px;border:none;border-radius:8px;background:none;color:var(--ink-faint);font:700 11px 'Space Mono',monospace;letter-spacing:.03em;cursor:pointer;transition:.15s;text-transform:uppercase}
+  .ef-tab.on{background:var(--lime);color:#0a0b0d}
+  .ef-list{display:flex;flex-direction:column;gap:7px}
+  .ef-row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:11px 14px}
+  .ef-tk{font-family:'Space Mono',monospace;font-weight:800;font-size:13px;color:var(--ink);flex:0 0 auto;min-width:56px}
+  .ef-nm{flex:1;min-width:0;font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ef-aum{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);flex:0 0 auto;min-width:78px;text-align:right}
+  .ef-df{font-family:'Space Mono',monospace;font-weight:800;font-size:13px;flex:0 0 auto;min-width:80px;text-align:right}
+  .up{color:var(--grn)}.dn{color:var(--red)}.flat{color:var(--ink-faint)}
+  .ef-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
+  .ef-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .ef-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  @media(min-width:861px){.wrap{max-width:1280px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:840px}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué son los flujos de ETF de Bitcoin?","acceptedAnswer":{"@type":"Answer","text":"Los flujos de ETF son los dólares netos que entran (entradas) o salen (salidas) de los ETF spot de Bitcoin cada día de negociación. Las entradas persistentes indican que las instituciones están acumulando; las salidas sostenidas señalan distribución. Esta página sigue el flujo neto diario de todos los ETF spot de Bitcoin y Ethereum en EE. UU., además de los activos bajo gestión de cada fondo."}},{"@type":"Question","name":"¿Cuál es el ETF de Bitcoin más grande?","acceptedAnswer":{"@type":"Answer","text":"El iShares Bitcoin Trust (IBIT) de BlackRock es, con diferencia, el mayor ETF spot de Bitcoin por activos bajo gestión, seguido del FBTC de Fidelity. El desglose completo por fondo, con AUM en vivo y flujo diario, está en esta página."}},{"@type":"Question","name":"¿Los flujos de ETF mueven el precio de Bitcoin?","acceptedAnswer":{"@type":"Answer","text":"Los ETF spot compran Bitcoin real para respaldar sus participaciones, así que las entradas grandes y sostenidas suman presión de compra persistente, mientras que las salidas grandes suman presión de venta. Los flujos son un indicador adelantado de demanda, mejor interpretado junto a la tasa de funding y el interés abierto."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Flujos de ETF de Bitcoin y Ethereum — Entradas diarias en ETF spot y AUM","url":"https://marginpad.io/es/etf-flows/","dateModified":"2026-08-20T01:29:15.469Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="ef-glow" aria-hidden="true"></div>
+<div class="wrap">
+  <header id="efHead">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menú"><span></span><span></span><span></span></button>
+      <a href="/es/" class="mark" aria-label="MarginPad — inicio">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a> <a href="/es/rewards/" class="hlink hrwd" title="USDT gratis — reclama cada 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Recompensas</a> <a href="/es/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis Operaciones</a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Iniciar sesión"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Iniciar sesión</span></button>
+    </nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Flujos de ETF</div>
+  <article>
+    <div class="ef-eyebrow"><i></i>En vivo · ETF spot de EE. UU.</div>
+    <h1>Flujos de ETF de Bitcoin y Ethereum</h1>
+    <p class="lead">Adónde va el dinero institucional. Sigue las entradas y salidas netas diarias de todos los ETF spot de Bitcoin y Ethereum en EE. UU., los activos totales bajo gestión, y un desglose en vivo por fondo (IBIT, FBTC, ETHA y el resto). Entradas persistentes = acumulación; salidas sostenidas = distribución. Gratis, sin registro.</p>
+
+    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Los datos de ETF se están <b>actualizando</b>, un momento.</span></div>
+
+    <div class="ef-hero">
+      <div class="ef-panel btc" id="efBtc">
+        <div class="ef-ph"><span class="ef-dot">₿</span><span class="ef-pt">ETF spot de Bitcoin<small id="efBtcN">— fondos</small></span></div>
+        <div class="ef-flow" id="efBtcFlow">—</div>
+        <div class="ef-fsub" id="efBtcFsub">flujo neto · última sesión</div>
+        <div class="ef-stats"><div class="ef-stat"><div class="k">AUM total</div><div class="v" id="efBtcAum">—</div></div><div class="ef-stat"><div class="k">Precio de BTC</div><div class="v" id="efBtcPx">—</div></div></div>
+        <div class="ef-chart" id="efBtcChart"></div>
+        <div class="ef-clab"><span id="efBtcC0"></span><span>flujo neto diario</span><span id="efBtcC1"></span></div>
+      </div>
+      <div class="ef-panel eth" id="efEth">
+        <div class="ef-ph"><span class="ef-dot">Ξ</span><span class="ef-pt">ETF spot de Ethereum<small id="efEthN">— fondos</small></span></div>
+        <div class="ef-flow" id="efEthFlow">—</div>
+        <div class="ef-fsub" id="efEthFsub">flujo neto · última sesión</div>
+        <div class="ef-stats"><div class="ef-stat"><div class="k">AUM total</div><div class="v" id="efEthAum">—</div></div><div class="ef-stat"><div class="k">Precio de ETH</div><div class="v" id="efEthPx">—</div></div></div>
+        <div class="ef-chart" id="efEthChart"></div>
+        <div class="ef-clab"><span id="efEthC0"></span><span>flujo neto diario</span><span id="efEthC1"></span></div>
+      </div>
+    </div>
+
+    <div class="ef-h2">Desglose por fondo <span class="ef-tabs" id="efTabs"><button type="button" class="ef-tab on" data-a="btc">Bitcoin</button><button type="button" class="ef-tab" data-a="eth">Ethereum</button></span></div>
+    <div class="ef-list" id="efList"><div class="ef-fsub">Cargando fondos…</div></div>
+
+    <div class="ef-cta">
+      <a class="go" href="/es/paper-trade">Opera BTC y ETH — paper trading gratis →</a> <a href="/es/bitcoin-cycle/">Ciclo de Bitcoin</a> <a href="/es/funding/">Tasas de funding</a> <a href="/es/liquidations/">Liquidaciones</a>
+    </div>
+
+    <h2>Cómo leer los flujos de ETF</h2>
+    <p>Los <strong>ETF spot</strong> de EE. UU. mantienen Bitcoin y Ethereum reales para respaldar sus participaciones, así que cada dólar de entrada neta obliga al fondo a comprar el activo subyacente, y cada dólar de salida obliga a una venta. Eso hace que el <strong>flujo neto</strong> diario sea una de las lecturas más limpias de la demanda institucional. Una racha de días verdes (entradas) señala acumulación y suma presión de compra persistente; una racha de días rojos (salidas) señala distribución. Las barras de arriba muestran el flujo neto de todos los fondos cada día de negociación; el desglose por fondo muestra qué emisores tienen más.</p>
+    <h2>Los fondos que importan</h2>
+    <p>El <strong>IBIT</strong> de BlackRock domina los activos de ETF de Bitcoin, con el <strong>FBTC</strong> de Fidelity, Grayscale, Bitwise (BITB) y ARK (ARKB) formando la mayor parte del resto. Del lado de Ethereum, el <strong>ETHA</strong> de BlackRock lidera. Los activos bajo gestión (AUM) te dicen el tamaño total que ha acumulado cada fondo; el flujo diario te dice la dirección en este momento. Lee los flujos junto con las <a href="/es/funding/">tasas de funding</a> y las <a href="/es/liquidations/">liquidaciones</a> para separar la demanda impulsada por el spot de los movimientos impulsados por el apalancamiento.</p>
+
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Datos de ETF agregados desde Coinglass. Solo con fines informativos — no es asesoramiento financiero.</p>
+  
+<div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+
+  <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/es/">marginpad.io</a> · No es asesoría financiera</span></div></footer>
+</div>
+
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});};
+  function usd(v){var s=v<0?'-':'+';var a=Math.abs(+v||0);if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(0)+'K';return s+'$'+Math.round(a);}
+  function aum(v){var a=+v||0;if(a>=1e9)return '$'+(a/1e9).toFixed(1)+'B';if(a>=1e6)return '$'+(a/1e6).toFixed(0)+'M';return '$'+Math.round(a);}
+  function dstr(ts){if(!ts)return '';var d=new Date(+ts);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+  function bars(el,series){if(!el)return;var d=(series||[]).filter(function(x){return x&&isFinite(x.flow);});if(d.length<2){el.innerHTML='';return;}var w=el.clientWidth||300,h=90,mid=h/2;var mx=1;d.forEach(function(x){mx=Math.max(mx,Math.abs(x.flow));});var bw=Math.max(1,w/d.length*0.72),gap=w/d.length;var svg='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><line x1="0" y1="'+mid+'" x2="'+w+'" y2="'+mid+'" stroke="#2a323d" stroke-width="1"/>';d.forEach(function(x,i){var bh=Math.abs(x.flow)/mx*(mid-3);var xx=i*gap+(gap-bw)/2;var yy=x.flow>=0?(mid-bh):mid;svg+='<rect x="'+xx.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0.6,bh).toFixed(1)+'" rx="0.8" fill="'+(x.flow>=0?'#2ebd85':'#ff5a4d')+'" fill-opacity="'+(i>d.length-3?1:.82)+'"/>';});el.innerHTML=svg+'</svg>';}
+  var DATA=null,tab='btc';
+  function paintAsset(pfx,x,sym){
+    if(!x)return;
+    var fEl=document.getElementById(pfx+'Flow');if(fEl){fEl.textContent=usd(x.latestFlow);fEl.className='ef-flow '+(x.latestFlow>=0?'up':'dn');}
+    var fs=document.getElementById(pfx+'Fsub');if(fs)fs.textContent='net flow · '+(x.latestTs?dstr(x.latestTs):'latest session');
+    var aEl=document.getElementById(pfx+'Aum');if(aEl)aEl.textContent=aum(x.totalAum);
+    var nEl=document.getElementById(pfx+'N');if(nEl)nEl.textContent=(x.list?x.list.length:0)+' funds';
+    var pxEl=document.getElementById(pfx+'Px');if(pxEl)pxEl.textContent=x.latestPrice?('$'+Math.round(x.latestPrice).toLocaleString('en-US')):'—';
+    var chart=document.getElementById(pfx+'Chart');bars(chart,x.series);
+    if(x.series&&x.series.length){var c0=document.getElementById(pfx+'C0'),c1=document.getElementById(pfx+'C1');if(c0)c0.textContent=dstr(x.series[0].t);if(c1)c1.textContent=dstr(x.series[x.series.length-1].t);}
+  }
+  function renderList(){
+    var el=document.getElementById('efList');if(!el||!DATA)return;
+    var x=DATA[tab==='btc'?'btc':'eth'];if(!x||!x.list){el.innerHTML='<div class="ef-fsub">No fund data.</div>';return;}
+    var per={};(x.latestPer||[]).forEach(function(p){per[p.etf_ticker]=+p.flow_usd||0;});
+    el.innerHTML=x.list.map(function(f){var df=per[f.ticker];var cls=df==null?'flat':(df>0?'up':(df<0?'dn':'flat'));var dt=df==null?'—':usd(df);return '<div class="ef-row"><span class="ef-tk">'+esc(f.ticker)+'</span><span class="ef-nm">'+esc(f.name||'')+'</span><span class="ef-aum">'+aum(f.aum)+'</span><span class="ef-df '+cls+'">'+dt+'</span></div>';}).join('');
+  }
+  function paint(d){
+    DATA=d;
+    var w=document.getElementById('efWait');if(w)w.hidden=!!(d&&d.active);
+    if(d&&d.btc)paintAsset('efBtc',d.btc,'BTC');
+    if(d&&d.eth)paintAsset('efEth',d.eth,'ETH');
+    renderList();
+  }
+  function load(){fetch('/api/cg/etf',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){paint(d||{});}).catch(function(){var w=document.getElementById('efWait');if(w)w.hidden=false;});}
+  load();setInterval(load,600000);
+  var tabs=document.getElementById('efTabs');if(tabs)tabs.addEventListener('click',function(e){var b=e.target.closest('.ef-tab');if(!b)return;tab=b.getAttribute('data-a');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===b);renderList();});
+  (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
+  (function(){var hd=document.getElementById('efHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});})();
+})();
+</script>
+<script defer src="/assets/mp-auth.js?v=034bd270"></script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

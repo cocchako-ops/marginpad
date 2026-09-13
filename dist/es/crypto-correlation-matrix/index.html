@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-correlation-matrix/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<title>Matriz de Correlación Cripto — Correlaciones en Vivo entre Monedas | MarginPad</title>
+<meta name="description" content="A live crypto correlation matrix of the majors — BTC, ETH, SOL, BNB and more. See how tightly coins move together over your chosen window to avoid hidden double-exposure when you stack trades. Free, no signup." />
+<meta name="keywords" content="crypto correlation matrix, bitcoin correlation, coin correlation, crypto diversification, correlation calculator, altcoin correlation" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-correlation-matrix/" />
+<meta name="theme-color" content="#08090b" />
+<meta property="og:title" content="Crypto Correlation Matrix — Live Coin Correlations | MarginPad" />
+<meta property="og:description" content="A live crypto correlation matrix of the majors — BTC, ETH, SOL, BNB and more. See how tightly coins move together over your chosen window to avoid hidden double-exposure when you stack trades. Free, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/crypto-correlation-matrix/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Correlation Matrix — Live Coin Correlations | MarginPad" />
+<meta name="twitter:description" content="A live crypto correlation matrix of the majors — BTC, ETH, SOL, BNB and more. See how tightly coins move together to avoid hidden double-exposure. Free, no signup." />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .mxwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.mx{border-collapse:separate;border-spacing:4px;font-family:'Space Mono',monospace}
+  .mx td,.mx th{text-align:center;padding:0}
+  .mx th{font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:.03em;width:58px;padding-bottom:4px}
+  .mx td.lbl{color:var(--ink2);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-align:right;padding-right:9px;white-space:nowrap}
+  .cell{width:58px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#f4f2ec;border:1px solid rgba(255,255,255,.05);text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s}
+  .cell:hover{transform:scale(1.06)}
+  .cell.diag{background:var(--panel3)!important;color:var(--faint);border-color:var(--line2)}
+  .mxlegend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;font-size:12px;color:var(--dim)}
+  .mxlegend .scale{display:flex;height:11px;width:200px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .mxlegend .scale i{flex:1}
+  .faq h3{font-family:'Bricolage Grotesque',sans-serif;font-size:15.5px;font-weight:700;margin:22px 0 6px;letter-spacing:-.01em}
+  .faq p{color:var(--dim);font-size:14px;line-height:1.65;margin:0;max-width:760px}
+  .prose p{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:760px;margin:0 0 12px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Matriz de Correlación Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/es/crypto-correlation-matrix/","description":"Una matriz de correlación cripto en vivo de las principales monedas — BTC, ETH, SOL, BNB y más. Descubre cuán unidas se mueven las monedas en la ventana que elijas para evitar una doble exposición oculta al acumular operaciones. Gratis, sin registro."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Matriz de Correlación Cripto","item":"https://marginpad.io/es/crypto-correlation-matrix/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es una matriz de correlación?","acceptedAnswer":{"@type":"Answer","text":"Una matriz de correlación es una cuadrícula que muestra cuán de cerca siguen entre sí los movimientos de precio de varios activos. Cada celda contiene un coeficiente entre −1 y +1 para el par de esa fila y columna: +1 significa que se mueven perfectamente juntos, 0 significa que no hay relación lineal, y −1 significa que se mueven en direcciones exactamente opuestas. Esta herramienta calcula la correlación de Pearson sobre los retornos vela a vela de las principales monedas en la ventana que elijas."}},{"@type":"Question","name":"¿Por qué importa la correlación en el trading?","acceptedAnswer":{"@type":"Answer","text":"Acumular posiciones altamente correlacionadas multiplica el mismo riesgo. Si vas long en tres monedas que se mueven como una sola, no tienes tres operaciones independientes — tienes una apuesta, tres veces más grande, y un solo movimiento adverso las golpea a todas a la vez. Conocer las correlaciones te permite dimensionar posiciones con sensatez, evitar una doble exposición oculta, y repartir el riesgo entre monedas que no se mueven al unísono."}},{"@type":"Question","name":"¿Qué significa una correlación negativa?","acceptedAnswer":{"@type":"Answer","text":"Una correlación negativa significa que dos monedas tienden a moverse en direcciones opuestas: cuando una sube, la otra tiende a bajar. Un par cercano a −1 actúa como cobertura natural, compensando en parte los movimientos de la otra. En cripto, una correlación negativa genuina entre las principales monedas es rara y suele ser leve — la mayoría de las monedas tienen correlación fuertemente positiva frente a Bitcoin — así que una lectura negativa suele reflejar una divergencia puntual de esa ventana, más que una relación duradera."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Matriz de Correlación Cripto — Correlaciones en Vivo entre Monedas","url":"https://marginpad.io/es/crypto-correlation-matrix/","dateModified":"2026-09-10T19:56:57.477Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<header class="topbar"><a class="brand" href="/es/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/es/tools/">Todas las herramientas</a><a href="/es/crypto-backtester/">Backtester</a><a href="/es/trading-journal/">Diario</a><a href="/es/pivot-point-calculator/">Pivotes</a><a href="/es/risk-of-ruin-calculator/">Riesgo</a><a href="/es/crypto-correlation-matrix/" class="on">Correlación</a></nav><a class="home" href="/es/">← marginpad.io</a></header>
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Correlación</span>
+    <h1>Matriz de Correlación Cripto</h1>
+    <p class="sub">Si estás long en tres monedas que se mueven como una sola, no tienes tres operaciones — tienes una, tres veces más grande. Esto muestra la superposición oculta entre las principales monedas en la ventana que elijas.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">Temporalidad<select id="tf"><option value="60">1h</option><option value="240" selected>4h</option><option value="1440">1d</option></select></label>
+      <label class="f">Ventana (velas)<select id="win"><option>60</option><option selected>120</option><option>200</option></select></label>
+      <button class="btn" id="run">Calcular</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden style="margin-top:18px">
+    <div class="card scrollx"><div class="mxwrap"><table class="mx" id="mx"></table></div></div>
+    <div class="mxlegend">
+      <span style="color:var(--up);font-weight:700">−1 cobertura</span> <span class="scale"><i style="background:rgba(46,189,133,.70)"></i><i style="background:rgba(46,189,133,.34)"></i><i style="background:#1a2028"></i><i style="background:rgba(255,98,88,.34)"></i><i style="background:rgba(255,98,88,.70)"></i></span> <span style="color:var(--red);font-weight:700">+1 se mueven juntos</span>
+    </div>
+    <div class="note">Correlación de Pearson de los retornos vela a vela. <b style="color:#ff8a80">Rojo ≈ +1</b>: se mueven juntas (acumularlas concentra el riesgo). Cerca de 0: independientes. <b style="color:#41e3a3">Verde</b>: se mueven en sentido opuesto (una cobertura natural). Las criptomonedas suelen tener correlación fuertemente positiva frente a BTC.</div>
+  </div>
+
+  <h2>Cómo leer la matriz</h2>
+  <div class="prose">
+    <p>Cada celda es la <b>correlación de Pearson</b> de los retornos vela a vela de dos monedas en la ventana que elijas, en una escala de <b>−1 a +1</b>. La diagonal siempre es <b>1.00</b> — cada moneda está perfectamente correlacionada consigo misma. Lee a lo largo de una fila o hacia abajo en una columna para ver cómo se relaciona una moneda con todas las demás.</p>
+    <p>Las celdas <b style="color:#ff8a80">rojas</b> intensas (cerca de +1) se mueven muy unidas: si vas long en ambas, estás duplicando una sola apuesta. Las celdas cerca de <b>0</b> son casi independientes, así que reparten el riesgo. Las celdas <b style="color:#41e3a3">verdes</b> (negativas) se mueven en direcciones opuestas y actúan como cobertura parcial. Acorta la ventana para ver cambios de régimen recientes; alárgala para obtener una imagen estructural más estable de cómo se mueven en conjunto las principales monedas.</p>
+  </div>
+
+  <h2>FAQ</h2>
+  <div class="faq">
+    <h3>¿Qué es una matriz de correlación?</h3>
+    <p>Una matriz de correlación es una cuadrícula que muestra cuán de cerca siguen entre sí los movimientos de precio de varios activos. Cada celda contiene un coeficiente entre −1 y +1 para el par de esa fila y columna: +1 significa que se mueven perfectamente juntos, 0 significa que no hay relación lineal, y −1 significa que se mueven en direcciones exactamente opuestas. Esta herramienta calcula la correlación de Pearson sobre los retornos vela a vela de las principales monedas en la ventana que elijas.</p>
+    <h3>¿Por qué importa la correlación en el trading?</h3>
+    <p>Acumular posiciones altamente correlacionadas multiplica el mismo riesgo. Si vas long en tres monedas que se mueven como una sola, no tienes tres operaciones independientes — tienes una apuesta, tres veces más grande, y un solo movimiento adverso las golpea a todas a la vez. Conocer las correlaciones te permite dimensionar posiciones con sensatez, evitar una doble exposición oculta, y repartir el riesgo entre monedas que no se mueven al unísono.</p>
+    <h3>¿Qué significa una correlación negativa?</h3>
+    <p>Una correlación negativa significa que dos monedas tienden a moverse en direcciones opuestas: cuando una sube, la otra tiende a bajar. Un par cercano a −1 actúa como cobertura natural, compensando en parte los movimientos de la otra. En cripto, una correlación negativa genuina entre las principales monedas es rara y suele ser leve — la mayoría de las monedas tienen correlación fuertemente positiva frente a Bitcoin — así que una lectura negativa suele reflejar una divergencia puntual de esa ventana, más que una relación duradera.</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">OPERA DE VERDAD</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futuros &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>sube o baja &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/es/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Herramientas gratuitas de futuros cripto — calculadoras, un espacio de gráficos en vivo, un terminal de paper trading y un feed de liquidaciones en tiempo real. Sin registro.</p></div><div><h4>Herramientas</h4><a href="/es/crypto-backtester/">Backtester de Estrategias</a><a href="/es/trading-journal/">Diario de Trading</a><a href="/es/pivot-point-calculator/">Puntos Pivote</a><a href="/es/risk-of-ruin-calculator/">Riesgo de Ruina</a><a href="/es/crypto-correlation-matrix/">Matriz de Correlación</a></div><div><h4>MarginPad</h4><a href="/es/paper-trade">Paper Trade</a><a href="/es/charts">Gráficos</a><a href="/es/calculators">Calculadoras</a><a href="/es/screener">Screener</a><a href="/es/rekt/">Liquidaciones</a></div></div><div class="bottom">© 2026 MarginPad · Herramientas gratuitas de trading cripto · No es asesoramiento financiero</div></footer>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE','LINK','AVAX'];
+  function col(v){if(v>=0)return 'rgba(255,98,88,'+(0.08+v*0.62).toFixed(3)+')';return 'rgba(46,189,133,'+(0.08+(-v)*0.62).toFixed(3)+')';}
+  function corr(a,b){var n=Math.min(a.length,b.length);if(n<3)return 0;a=a.slice(-n);b=b.slice(-n);var ma=0,mb=0,i;for(i=0;i<n;i++){ma+=a[i];mb+=b[i];}ma/=n;mb/=n;var sa=0,sb=0,sab=0;for(i=0;i<n;i++){var da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db;}var d=Math.sqrt(sa*sb);return d?sab/d:0;}
+  function run(){
+    var tf=$('tf').value, win=+$('win').value||120;
+    $('status').textContent="Loading "+COINS.length+" markets…";$('run').disabled=true;
+    Promise.all(COINS.map(function(c){return fetch('/api/klines?symbol='+c+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});})).then(function(res){
+      var rets={};COINS.forEach(function(c,i){var d=res[i];var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);var cl=k.map(function(x){return Array.isArray(x)?+x[4]:+x.close;}).filter(function(x){return isFinite(x);}).slice(-win-1);var r=[];for(var j=1;j<cl.length;j++)r.push(Math.log(cl[j]/cl[j-1]));rets[c]=r;});
+      var have=COINS.filter(function(c){return rets[c]&&rets[c].length>=10;});
+      if(have.length<2){$('status').textContent="Could not load enough data — try again.";$('run').disabled=false;return;}
+      var html='<tr><th></th>'+have.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+      have.forEach(function(a){html+='<tr><td class="lbl">'+a+'</td>'+have.map(function(b){var v=a===b?1:corr(rets[a],rets[b]);return '<td><div class="cell'+(a===b?' diag':'')+'" style="background:'+(a===b?'#1a2028':col(v))+'">'+v.toFixed(2)+'</div></td>';}).join('')+'</tr>';});
+      $('mx').innerHTML=html;$('out').hidden=false;$('status').textContent='';$('run').disabled=false;
+    }).catch(function(){$('status').textContent="Could not load — try again.";$('run').disabled=false;});
+  }
+  $('run').addEventListener('click',run);run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

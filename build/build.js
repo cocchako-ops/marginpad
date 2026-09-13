@@ -129,4 +129,9 @@ run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 // service worker serves those bundles network-first on every load. check-home-hash (predeploy) fails on a bare ref.
 run('Stamp bundle versions (?v=)', 'node build/bump-home-assets.js');
 
+// 14) SPANISH SITE (2026-09-12): /es/<path> twins written from the translated catalog (build/data/es/catalog.json) out of
+// the SAME English markup — after the stamper so the twins inherit the ?v= references. Missing strings fall back to English
+// and are listed by `node build/es/extract.js --chunks` for the translators.
+run('Spanish site (/es/ twins)', 'node build/es/gen-pages.js');
+
 process.stdout.write('\n Build complete. Review dist/, then: npm run deploy\n');

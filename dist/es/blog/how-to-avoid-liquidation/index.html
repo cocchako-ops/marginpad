@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/how-to-avoid-liquidation/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<title>Cómo evitar la liquidación en cripto: 8 reglas que funcionan — MarginPad</title>
+<meta name="description" content="Learn how to avoid liquidation in crypto futures with 8 practical rules: lower leverage, the 1% sizing rule, stop-losses, margin buffers, and more." />
+<meta name="keywords" content="how to avoid liquidation, crypto liquidation, futures risk management, leverage, stop-loss, position sizing, isolated margin, liquidation price" />
+<link rel="canonical" href="https://marginpad.io/es/blog/how-to-avoid-liquidation/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-avoid-liquidation/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-avoid-liquidation/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/how-to-avoid-liquidation/" />
+<meta property="og:title" content="How to Avoid Liquidation in Crypto: 8 Rules That Work" />
+<meta property="og:description" content="Learn how to avoid liquidation in crypto futures with 8 practical rules: lower leverage, the 1% sizing rule, stop-losses, margin buffers, and more." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/how-to-avoid-liquidation/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo evitar la liquidación en cripto: 8 reglas que funcionan","description":"Aprende a evitar la liquidación en futuros de cripto con 8 reglas prácticas: menos apalancamiento, la regla de dimensionamiento del 1%, stop-losses, colchones de margen y más.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-avoid-liquidation/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuál es la causa principal de la liquidación en cripto?","acceptedAnswer":{"@type":"Answer","text":"El apalancamiento excesivo combinado con posiciones sobredimensionadas. Un apalancamiento alto reduce la distancia entre tu entrada y tu precio de liquidación, así que un movimiento normal del mercado puede sacarte a la fuerza. Bajar el apalancamiento y dimensionar por riesgo soluciona la mayor parte."}},{"@type":"Question","name":"¿Un stop-loss evita la liquidación?","acceptedAnswer":{"@type":"Answer","text":"Sí, si se coloca dentro de tu precio de liquidación con margen de sobra. Un stop es tu salida elegida que se activa antes de que el exchange fuerce una liquidación, así que sales en tus términos con una mejor ejecución y comisiones más bajas."}},{"@type":"Question","name":"¿Es más seguro el margen aislado o el cruzado para evitar la liquidación?","acceptedAnswer":{"@type":"Answer","text":"El margen aislado es más seguro para la mayoría de los traders porque solo está en riesgo el margen asignado a una posición. Con el margen cruzado, todo tu saldo puede ser liquidado por una sola mala operación."}},{"@type":"Question","name":"¿Cuánto apalancamiento es seguro para los futuros de cripto?","acceptedAnswer":{"@type":"Answer","text":"No hay un número seguro único, pero menos es más seguro. A 10x, un movimiento de aproximadamente 9-10% te liquida, y las criptos se mueven así de regularmente. Muchos traders se quedan en 2x-5x y dejan que el dimensionamiento de posición, no el apalancamiento, impulse los retornos."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Cómo evitar la liquidación","item":"https://marginpad.io/es/blog/how-to-avoid-liquidation/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Cómo evitar la liquidación</div>
+  <article>
+    <h1>Cómo evitar la liquidación en cripto: 8 reglas que funcionan</h1>
+    <div class="meta">Gestión de riesgo · 7 min de lectura · Actualizado en junio de 2026</div>
+<p>La liquidación es la forma más rápida de perder una cuenta de futuros, pero casi siempre se puede evitar. No es mala suerte — es el resultado predecible de demasiado apalancamiento, la falta de un stop-loss o una posición demasiado grande para la cuenta. Aquí tienes 8 reglas que de verdad te mantienen en el juego.</p>
+
+<p>Si eres nuevo en la mecánica, empieza por <a href="/es/blog/what-is-liquidation-in-crypto/">qué es la liquidación</a> para que las reglas de abajo tengan sentido. Si no, vayamos a lo práctico.</p>
+
+<h2>1. Usa menos apalancamiento del que crees necesitar</h2>
+<p>El apalancamiento es, con diferencia, el mayor causante de la liquidación, porque reduce la distancia entre tu entrada y tu precio de liquidación. Cuanto mayor el apalancamiento, más pequeño el movimiento que te barre.</p>
+<ul>
+<li><strong>2x</strong> sobrevive aproximadamente a un <code>45-50% move</code> en tu contra.</li>
+<li><strong>5x</strong> es aproximadamente un <code>18-20% move</code>.</li>
+<li><strong>10x es aproximadamente un movimiento del 9-10%</strong>.</li>
+<li><strong>25x</strong> es aproximadamente un <code>3-4% move</code> — una sola vela.</li>
+</ul>
+<p>Las criptos se mueven habitualmente 5-10% en un día. A 25x, el ruido normal te liquida. Elegir un apalancamiento que realmente puedas sobrevivir es la base sobre la que se apoya todo lo demás. En caso de duda, redúcelo a la mitad.</p>
+
+<h2>2. Dimensiona por riesgo, no por instinto</h2>
+<p>La mayoría de las explosiones vienen del tamaño de la posición, no de la dirección. La solución es la <strong>regla del 1%</strong>: nunca arriesgues más del 1% de tu cuenta en una sola operación. El riesgo es la distancia entre tu entrada y tu stop-loss, no el tamaño nocional de la posición.</p>
+<p>Si tu cuenta tiene 10,000 USDT y tu stop está a un 2% de distancia, tu posición máxima es <code>(10000 x 0.01) / 0.02 = 5,000 USDT</code> de valor nocional. Deja que las matemáticas determinen tu tamaño. Nuestra <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> hace esto en un solo paso, y <a href="/es/blog/crypto-position-sizing-risk-management/">dimensionamiento de posición</a> cubre el método completo.</p>
+
+<h2>3. Coloca siempre un stop-loss dentro de tu precio de liquidación</h2>
+<p>Un stop-loss es una salida manual que tú eliges; la liquidación es una salida forzada que ejecuta el exchange — normalmente con una comisión y una peor ejecución. Tu stop siempre debe activarse <strong>antes</strong> de que el precio alcance tu nivel de liquidación, con margen de sobra.</p>
+<p>Si tu liquidación está a un 9% de distancia, no coloques tu stop al 8.9%. Las mechas y el slippage tocarán primero la liquidación. Mantén una separación clara. Consulta <a href="/es/blog/how-to-set-a-stop-loss/">cómo colocar un stop-loss</a> para una ubicación que respete la estructura del mercado en lugar de números redondos.</p>
+
+<div class="callout"><div class="k">CONOCE TU SALIDA</div><p style="margin-bottom:14px">Revisa tu precio exacto de liquidación antes de entrar — y luego observa dónde liquida cada apalancamiento en el mapa de calor.</p><a class="cta" href="/es/calculators?c=liq">Abrir la calculadora de liquidación →</a></div>
+
+<h2>4. Mantén un colchón de margen — y añade margen cuando importa</h2>
+<p>Operar usando cada moneda disponible como margen no deja colchón. Un pequeño margen de saldo sin usar aleja tu precio de liquidación y te da tiempo durante un movimiento brusco.</p>
+<ul>
+<li>Mantén parte de tu saldo sin comprometer en lugar de maximizar el margen.</li>
+<li>Si una operación va en tu contra pero tu tesis sigue intacta, <strong>añadir margen</strong> aleja la liquidación.</li>
+<li>Nunca añadas margen solo para evitar admitir que una operación está mal — eso ya es terreno de la regla 7.</li>
+</ul>
+
+<h2>5. Prefiere el margen aislado para acotar el riesgo</h2>
+<p>Con <strong>margen cruzado</strong>, todo tu saldo respalda cada posición, así que una mala operación puede liquidarlo todo. Con <strong>margen aislado</strong>, solo está en riesgo el margen asignado a esa posición — el resto de tu cuenta queda protegido.</p>
+<p>Para la mayoría de los traders, el margen aislado es la opción por defecto más segura porque limita el daño de un solo error. <a href="/es/blog/cross-vs-isolated-margin/">margen cruzado vs. aislado</a> desglosa cuándo tiene sentido cada uno.</p>
+
+<h2>6. Vigila el funding y los eventos de alta volatilidad</h2>
+<p>Dos cosas empujan silenciosamente a los traders hacia la liquidación. Primero, la <strong>tasa de funding</strong>: mantener una posición apalancada durante muchos periodos de funding drena el margen lentamente, acercando tu precio de liquidación. Segundo, los <strong>eventos de volatilidad</strong> programados — publicaciones del CPI, el FOMC, grandes desbloqueos de tokens — producen mechas violentas que cazan liquidaciones.</p>
+<ul>
+<li>Revisa la tasa de funding antes de mantener una posición durante la noche.</li>
+<li>Reduce el tamaño o el apalancamiento antes de noticias de alto impacto conocidas.</li>
+<li>Recuerda que la liquidez fina del fin de semana exagera los movimientos.</li>
+</ul>
+
+<h2>7. No hagas revenge trading ni te sobreapalanques después de una pérdida</h2>
+<p>La operación después de una pérdida dolorosa es la más peligrosa que harás. El impulso de recuperarlo todo de inmediato lleva a posiciones sobredimensionadas y sobreapalancadas, abiertas sin ningún plan — la receta exacta para la liquidación.</p>
+<ul>
+<li>Aléjate después de una pérdida en lugar de volver a entrar de inmediato.</li>
+<li>Mantén fijas tus reglas de tamaño y apalancamiento; nunca las aumentes para "recuperarlo".</li>
+<li>Una liquidación es un contratiempo. Perseguirla puede vaciar la cuenta.</li>
+</ul>
+
+<h2>8. Revisa tus números antes de cada operación</h2>
+<p>Ninguna de las reglas anteriores funciona si estás adivinando los números. Antes de entrar, conoce tu precio exacto de liquidación, el tamaño de tu posición y dónde liquidaría cada nivel de apalancamiento.</p>
+<p>Pasa la entrada por la <a href="/es/calculators?c=liq">calculadora de liquidación</a> para confirmar que la liquidación queda cómodamente más allá de tu stop, dimensiónala con la <a href="/es/calculators?c=size">calculadora de tamaño de posición</a>, y usa el <a href="/es/heatmap">mapa de calor de liquidaciones</a> para ver cuán dramáticamente un apalancamiento más alto acerca la liquidación a tu entrada. Treinta segundos de revisión evitan la mayoría de las salidas forzadas.</p>
+
+<h2>Ejemplo resuelto: dimensiona para que un movimiento normal no pueda liquidarte</h2>
+<p>Supongamos que tienes una cuenta de <strong>$2,000</strong> y quieres arriesgar el 1% (<strong>$20</strong>) en un long de BTC a $60,000, con tu stop a un 3% de distancia en $58,200. El tamaño de tu posición es riesgo ÷ distancia del stop = <code>$20 ÷ 0.03</code> ≈ <strong>$667</strong> de exposición — sin importar el apalancamiento. A 10× eso necesita solo unos $67 de margen, y tu liquidación queda a aproximadamente un 9% de distancia, tres veces más lejos que tu stop de $58,200. El stop hace el trabajo; el motor de liquidación del exchange nunca tiene oportunidad de actuar. La siguiente tabla muestra por qué la misma operación se convierte en una moneda al aire con apalancamiento más alto:</p>
+<table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14px">
+<thead><tr><th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em">Apalancamiento</th><th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em">Distancia hasta la liquidación</th><th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em">¿Un stop del 3% queda dentro con seguridad?</th></tr></thead>
+<tbody>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>5×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)">~18%</td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">Sí — un colchón enorme</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>10×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)">~9%</td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">Sí — 3× el stop</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>25×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)">~3.5%</td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ffd75a">Apenas — una mecha podría ganarle</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>50×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)">~1.5%</td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72">No — la liquidación queda dentro de tu stop</td></tr>
+</tbody></table>
+<p>La lección: a 50× tu liquidación está más cerca que tu stop, así que el exchange decide tu salida, no tú. Mantén el apalancamiento lo bastante bajo para que tu stop siempre se active primero.</p>
+
+<h2>Mira dónde están ocurriendo liquidaciones ahora mismo</h2>
+<p>Estas reglas son más fáciles de interiorizar cuando ves las consecuencias en tiempo real. El <a href="/es/liquidations/">feed de liquidaciones en vivo</a> de MarginPad muestra cuánto apalancamiento se está barriendo en Binance, Bybit y OKX cada pocos minutos, y el <a href="/es/rekt/">ticker de Rekt</a> transmite los golpes individuales más grandes en cuanto ocurren. Ver una ola de liquidaciones de longs en cascada a través de un soporte defiende la idea de un colchón más amplio mejor que cualquier regla.</p>
+<p>Cada moneda importante también tiene su propia página en vivo — <a href="/liquidations/btc/">BTC</a>, <a href="/liquidations/eth/">ETH</a>, <a href="/liquidations/sol/">SOL</a> y más — con el total de 24 horas, el reparto entre longs y shorts, y dónde se ubica esa moneda entre los mercados más liquidados. Revisa la moneda que operas antes de aumentar el tamaño: un mercado que acaba de barrer un enorme grupo de longs se comporta muy distinto a uno tranquilo. Luego ensaya todo el plan sin riesgo en la <a href="/es/paper-trade">terminal de paper trading</a> al precio en vivo, y mantén abierto el <a href="/es/calendar/">calendario económico</a> — las cascadas más violentas se concentran alrededor del CPI y el FOMC.</p>
+
+<p>Evitar la liquidación no consiste en predecir el mercado a la perfección — consiste en construir suficiente margen de error para que un solo movimiento no acabe con tu cuenta. Baja tu apalancamiento, dimensiona por riesgo, opera siempre con un stop dentro de tu precio de liquidación y verifica los números antes de cada entrada. Haz eso de forma constante y la liquidación deja de ser una amenaza y se convierte en algo con lo que simplemente operas alrededor.</p>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <section class="related">
+    <h2 class="rel-title">Guías relacionadas</h2>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/best-leverage-for-beginners/"><span class="tag">Gestión de riesgo</span><span class="rel-t">El mejor apalancamiento para principiantes (por qué menos es más)</span></a><a class="rel-card" href="/es/blog/crypto-position-sizing-risk-management/"><span class="tag">Gestión de riesgo</span><span class="rel-t">Dimensionamiento de posición en cripto: la regla de riesgo del 1% explicada</span></a><a class="rel-card" href="/es/blog/how-to-set-a-stop-loss/"><span class="tag">Gestión de riesgo</span><span class="rel-t">Cómo colocar un stop-loss en cripto (de la forma correcta)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comentarios</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Tu nombre (opcional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Publicar comentario</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

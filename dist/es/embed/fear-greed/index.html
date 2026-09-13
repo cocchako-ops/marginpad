@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="es" data-es-twin="/embed/fear-greed/"><head>
+<meta charset="utf-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Widget de miedo y codicia cripto — MarginPad</title>
+<link rel="canonical" href="https://marginpad.io/fear-greed/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/embed/fear-greed/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/embed/fear-greed/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/embed/fear-greed/" />
+<meta name="robots" content="noindex,follow">
+<style>
+*{margin:0;box-sizing:border-box}
+body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-serif;padding:14px 14px 10px;min-height:100vh;display:flex;flex-direction:column}
+.h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.h b{font-size:15px}.h b i{color:#c2f64a;font-style:normal}
+.h span{font-family:Consolas,monospace;font-size:10px;color:#6b7480;text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:16px;margin:4px 0 2px}
+svg{flex:0 0 auto}
+.v{font-family:Consolas,monospace;font-weight:800;font-size:40px;line-height:1}
+.c{font-family:Consolas,monospace;font-size:12px;font-weight:700;margin-top:3px}
+.hist{font-family:Consolas,monospace;font-size:10px;color:#6b7480;margin-top:6px}
+.ft{margin-top:auto;padding-top:8px;font-family:Consolas,monospace;font-size:9.5px;color:#5c6570}
+.ft a{color:#c2f64a;text-decoration:none;font-weight:700}
+</style>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+</head><body>
+<div class="h"><b>Miedo y <i>Codicia</i></b><span>cripto · diario</span></div>
+<div class="row">
+  <svg width="120" height="72" viewBox="0 0 120 72">
+    <path d="M10 66 A 50 50 0 0 1 110 66" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round"/>
+    <path id="arc" d="M10 66 A 50 50 0 0 1 110 66" fill="none" stroke="#f3d44a" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 999"/>
+  </svg>
+  <div><div class="v" id="v">—</div><div class="c" id="c">cargando…</div><div class="hist" id="h"></div></div>
+</div>
+<div class="ft">Índice en vivo — <a href="https://marginpad.io/es/fear-greed/?utm_source=widget" target="_blank" rel="noopener">marginpad.io</a></div>
+<script>
+(function(){
+  fetch('https://marginpad.io/api/fng').then(function(r){return r.json();}).then(function(d){
+    var arr=(d&&d.data)||[],now=arr[0];if(!now)return;var v=+now.v;
+    var col=v<25?'#ff5a4d':v<45?'#ff9f43':v<55?'#f3d44a':v<76?'#7fd957':'#2ebd85';
+    var el=document.getElementById('v');el.textContent=v;el.style.color=col;
+    var c=document.getElementById('c');c.textContent=now.c;c.style.color=col;
+    var L=Math.PI*50,arc=document.getElementById('arc');
+    arc.setAttribute('stroke',col);arc.setAttribute('stroke-dasharray',(v/100*L).toFixed(1)+' 999');
+    var y=arr[1],w=arr[7];
+    document.getElementById('h').textContent='yesterday '+(y?y.v:'—')+' · last week '+(w?w.v:'—');
+  }).catch(function(){});
+})();
+</script><script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body></html>

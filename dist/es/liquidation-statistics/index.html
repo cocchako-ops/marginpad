@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/liquidation-statistics/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Estadísticas de liquidaciones cripto — Totales de 24h en vivo por moneda | MarginPad</title>
+<meta name="description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
+<meta name="keywords" content="crypto liquidation statistics, liquidations today, 24h liquidations, bitcoin liquidations, long short liquidations, biggest liquidation" />
+<link rel="canonical" href="https://marginpad.io/es/liquidation-statistics/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/liquidation-statistics/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/liquidation-statistics/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/liquidation-statistics/" />
+<meta property="og:title" content="Crypto Liquidation Statistics — Live" />
+<meta property="og:description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/liquidation-statistics/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Liquidation Statistics — Live" />
+<meta name="twitter:description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuánto cripto se liquida cada día?","acceptedAnswer":{"@type":"Answer","text":"Varía enormemente con la volatilidad: los días tranquilos borran decenas de millones de dólares en todos los mercados de futuros, mientras que los días de crash o squeeze pueden superar los mil millones. El total de 24 horas en vivo medido ahora mismo se muestra en la parte superior de esta página y se actualiza continuamente."}},{"@type":"Question","name":"¿Qué significa una liquidación en los futuros de criptomonedas?","acceptedAnswer":{"@type":"Answer","text":"Una liquidación es el cierre forzado de una posición apalancada cuando su margen ya no puede cubrir la pérdida. El exchange cierra la posición a mercado, lo que añade presión vendedora (en los longs) o compradora (en los shorts) y puede desencadenar una cascada de más liquidaciones."}},{"@type":"Question","name":"¿Por qué la mayoría de las liquidaciones son de longs?","acceptedAnswer":{"@type":"Answer","text":"La mayoría de los días, la mayor parte del apalancamiento abierto es long, así que las caídas liquidan más volumen que las subidas. Cuando son los shorts los que dominan el total diario, suele significar que hay un short squeeze en marcha."}},{"@type":"Question","name":"¿De dónde vienen estos datos de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"Dos fuentes medidas: el propio colector de MarginPad transmite en vivo cada evento de liquidación desde los websockets públicos de 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), y los totales de 24 horas por moneda se suman de ese mismo archivo. Cada cifra de esta página es una medición con marca de tiempo, no una estimación."}},{"@type":"Question","name":"¿Existe una API gratuita para datos de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"Sí. La API gratuita de MarginPad, sin clave, sirve los mismos datos en JSON: /api/v1/liquidations/recent (agrupados por nivel de precio), /api/v1/liquidations/live (últimos eventos individuales) y /api/v1/clusters. Con CORS habilitado, 60 peticiones por minuto, sin registro."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Estadísticas de Liquidaciones","item":"https://marginpad.io/es/liquidation-statistics/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Estadísticas de Liquidaciones Cripto (en vivo)","description":"Estadísticas en vivo de liquidaciones cripto: totales de 24 horas por moneda, reparto entre longs y shorts, y las mayores liquidaciones individuales — medido en tiempo real desde 9 exchanges. Gratis, con actualización continua.","url":"https://marginpad.io/es/liquidation-statistics/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/recent"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>
+<style>
+.lqs-table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:14.5px}
+/* Six columns of figures do not fit a phone: the table forced the whole document 28px wider than the
+   viewport, so the page scrolled sideways and the fixed bottom nav mis-sized against it. Let the table
+   scroll inside its own box instead of dragging the page with it. */
+@media (max-width:620px){.lqs-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;font-size:13.5px}.lqs-table th,.lqs-table td{padding-left:9px;padding-right:9px}}
+.lqs-table th,.lqs-table td{padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08)}
+.lqs-table th:first-child,.lqs-table td:first-child{text-align:left}
+.lqs-table th{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:#9aa3ad;text-transform:uppercase}
+.lqs-long{color:#ff5a4d}.lqs-short{color:#2ebd85}
+.lqs-note{font-family:'Space Mono',monospace;font-size:11.5px;color:#9aa3ad;margin:-14px 0 22px}
+</style>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Estadísticas de Liquidaciones Cripto — Totales en Vivo de 24h por Moneda","url":"https://marginpad.io/es/liquidation-statistics/","dateModified":"2026-09-10T19:56:57.540Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/rekt/">Feed de Rekt</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Estadísticas de liquidaciones</div>
+  <article>
+    <h1>Estadísticas de liquidaciones cripto</h1>
+    <div class="meta">Medido en vivo · 9 exchanges · API JSON gratuita</div>
+    <p>Esta página registra cuánto cripto apalancado se está borrando realmente, ahora mismo. Los totales de 24 horas, la división long/short y los mayores golpes individuales de abajo son <strong>mediciones, no estimaciones</strong> — transmitidos desde los feeds públicos de liquidación de 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) y agregados por moneda. Cada cifra lleva su propia marca de tiempo.</p>
+    <h2>Liquidaciones de 24 horas por moneda</h2>
+    <table class="lqs-table" id="lqsCoins"><thead><tr><th>Moneda</th><th>Total 24h</th><th>Longs</th><th>Shorts</th><th>Lado dominante</th></tr></thead><tbody><tr><td colspan="5" style="text-align:left;color:#9aa3ad">Cargando totales en vivo…</td></tr></tbody></table>
+    <p class="lqs-note" id="lqsCoinsNote"></p>
+    <h2>Mayores liquidaciones individuales (BTC y ETH, recientes)</h2>
+    <table class="lqs-table" id="lqsBig"><thead><tr><th>Moneda</th><th>Lado</th><th>Tamaño</th><th>Precio</th><th>Exchange</th><th>Cuándo</th></tr></thead><tbody><tr><td colspan="6" style="text-align:left;color:#9aa3ad">Cargando eventos en vivo…</td></tr></tbody></table>
+    <p class="lqs-note" id="lqsBigNote"></p>
+    <h2>Cómo leer estos números</h2>
+    <p>Las liquidaciones long dominan en los movimientos a la baja — los compradores apalancados se ven forzados a vender, lo que acelera la caída. Las liquidaciones short dominan en los squeezes — la compra forzada alimenta el repunte. Por eso una división diaria desequilibrada te dice qué lado del mercado acaba de pagar por el movimiento. Los días tranquilos borran decenas de millones de dólares en todos los mercados de futuros; los días de crash o squeeze pueden superar los mil millones. El <a href="/es/btc-liquidation-map/">mapa de liquidaciones</a> muestra <em>dónde</em> se ubica el apalancamiento restante, y el <a href="/es/rekt/">feed de Rekt</a> transmite cada golpe en cuanto ocurre.</p>
+    <h2>Metodología</h2>
+    <p>MarginPad opera su propio colector que se suscribe a los websockets públicos de liquidación de los 9 exchanges mencionados arriba, normaliza cada evento (símbolo, lado, precio, nocional, marca de tiempo) y archiva cada día. Los totales de 24 horas por moneda se suman a partir de ese archivo para las monedas más liquidadas del día. En esta página no aparece ningún valor modelado o extrapolado — donde faltan datos, no se muestra nada.</p>
+    <h2>Obtén los datos en bruto (API gratuita, sin clave)</h2>
+    <p>Los mismos datos se sirven como JSON a través de la <a href="/es/free-crypto-api/">API gratuita de cripto de MarginPad</a>: <code>/api/v1/liquidations/recent</code> (grupos por nivel de precio por moneda), <code>/api/v1/liquidations/live</code> (últimos eventos individuales) y <code>/api/v1/clusters</code> (grupos futuros estimados, etiquetados como estimaciones). Con CORS habilitado, 60 peticiones por minuto, sin registro.</p>
+    <h2>FAQ</h2>
+    <h3>¿Cuánto cripto se liquida cada día?</h3>
+    <p>Varía enormemente con la volatilidad: los días tranquilos borran decenas de millones de dólares en todos los mercados de futuros, mientras que los días de crash o squeeze pueden superar los mil millones. El total de 24 horas en vivo medido ahora mismo se muestra en la parte superior de esta página y se actualiza continuamente.</p>
+    <h3>¿Qué significa una liquidación en los futuros de criptomonedas?</h3>
+    <p>Una liquidación es el cierre forzado de una posición apalancada cuando su margen ya no puede cubrir la pérdida. El exchange cierra la posición a mercado, lo que añade presión vendedora (en los longs) o compradora (en los shorts) y puede desencadenar una cascada de más liquidaciones.</p>
+    <h3>¿Por qué la mayoría de las liquidaciones son de longs?</h3>
+    <p>La mayoría de los días, la mayor parte del apalancamiento abierto es long, así que las caídas liquidan más volumen que las subidas. Cuando son los shorts los que dominan el total diario, suele significar que hay un short squeeze en marcha.</p>
+    <h3>¿De dónde vienen estos datos de liquidaciones?</h3>
+    <p>Dos fuentes medidas: el propio colector de MarginPad transmite en vivo cada evento de liquidación desde los websockets públicos de 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), y los totales de 24 horas por moneda se suman de ese mismo archivo. Cada cifra de esta página es una medición con marca de tiempo, no una estimación.</p>
+    <h3>¿Existe una API gratuita para datos de liquidaciones?</h3>
+    <p>Sí. La API gratuita de MarginPad, sin clave, sirve los mismos datos en JSON: /api/v1/liquidations/recent (agrupados por nivel de precio), /api/v1/liquidations/live (últimos eventos individuales) y /api/v1/clusters. Con CORS habilitado, 60 peticiones por minuto, sin registro.</p>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/rekt/"><b>Rekt Feed</b><small>Cada liquidación, en vivo</small></a> <a class="ts-card" href="/es/btc-liquidation-map/"><b>Mapa de Liquidaciones de BTC</b><small>Dónde está el apalancamiento</small></a> <a class="ts-card" href="/es/calculators"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/paper-trade"><b>Paper Trade</b><small>Practica sin riesgo</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">DÓNDE OCURREN ESTAS LIQUIDACIONES</div><p class="mp-xr-w">Nada en esta página es teórico &mdash; son posiciones reales siendo cerradas forzosamente en libros de órdenes reales. Estos son los exchanges a los que pertenecen esos libros.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#5ee6c8" data-ex="Hyperliquid" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Hyperliquid')}catch(e){}"><span class="mp-xr-k">Hyperliquid</span><span class="mp-xr-d">perpetuos on-chain &middot; 4% de descuento &middot; código MARGINPAD</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <p style="margin:18px 0 0">Ver también: <a href="/es/liquidations/by-exchange/">liquidaciones por exchange</a> &mdash; qué plataforma liquidó más en las últimas 24 horas.</p>
+    <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/rekt/">Rekt</a> · <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script>
+(function(){
+  function usd(n){n=+n||0;var a=Math.abs(n);return a>=1e9?'$'+(n/1e9).toFixed(2)+'B':a>=1e6?'$'+(n/1e6).toFixed(1)+'M':a>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+n.toFixed(0);}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  fetch('/api/cg/liquidations').then(function(r){return r.json();}).then(function(j){
+    var tb=document.querySelector('#lqsCoins tbody');if(!tb)return;
+    if(!j||j.error||!j.coins||!j.coins.length){tb.innerHTML='<tr><td colspan="5" style="text-align:left;color:#9aa3ad">Live totals are unavailable right now.</td></tr>';return;}
+    var rows=j.coins.slice(0,12).map(function(c){
+      var side=c.long>=c.short*1.5?'<span class="lqs-long">Longs</span>':c.short>=c.long*1.5?'<span class="lqs-short">Shorts</span>':'Balanced';
+      return '<tr><td>'+esc(c.s)+'</td><td>'+usd(c.liq)+'</td><td class="lqs-long">'+usd(c.long)+'</td><td class="lqs-short">'+usd(c.short)+'</td><td>'+side+'</td></tr>';
+    });
+    if(j.market)rows.push('<tr><td><b>All coins ('+j.market.count+')</b></td><td><b>'+usd(j.market.total)+'</b></td><td class="lqs-long">'+usd(j.market.long)+'</td><td class="lqs-short">'+usd(j.market.short)+'</td><td></td></tr>');
+    tb.innerHTML=rows.join('');
+    var note=document.getElementById('lqsCoinsNote');if(note&&j.ts)note.textContent='Measured over the past 24 hours · n = '+(j.market?j.market.count:j.coins.length)+' coins · updated '+new Date(j.ts).toISOString().replace('T',' ').slice(0,16)+' UTC';
+  }).catch(function(){});
+  Promise.all(['BTC','ETH'].map(function(s){return fetch('/api/v1/liquidations/live?symbol='+s+'&limit=200').then(function(r){return r.json();}).catch(function(){return null;});})).then(function(res){
+    var tb=document.querySelector('#lqsBig tbody');if(!tb)return;
+    var evs=[];res.forEach(function(j){var d=j&&j.data?j.data:j;if(d&&d.events)evs=evs.concat(d.events);});
+    if(!evs.length){tb.innerHTML='<tr><td colspan="6" style="text-align:left;color:#9aa3ad">Live events are unavailable right now.</td></tr>';return;}
+    evs.sort(function(a,b){return (+b.notional||0)-(+a.notional||0);});
+    tb.innerHTML=evs.slice(0,10).map(function(e){
+      var lng=/long/.test(e.side||'');
+      return '<tr><td>'+esc(e.symbol||'')+'</td><td class="'+(lng?'lqs-long':'lqs-short')+'">'+(lng?'Long':'Short')+'</td><td>'+usd(e.notional)+'</td><td>$'+(+e.price).toLocaleString('en-US')+'</td><td>'+esc(e.exchange||'')+'</td><td>'+new Date(+e.ts).toISOString().replace('T',' ').slice(5,16)+' UTC</td></tr>';
+    }).join('');
+    var note=document.getElementById('lqsBigNote');if(note)note.textContent='Largest of the last '+evs.length+' measured BTC/ETH events from our 9-exchange collector.';
+  }).catch(function(){});
+})();
+</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

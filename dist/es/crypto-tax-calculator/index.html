@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-tax-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Impuestos Cripto 2026 (EE. UU., Canadá, Reino Unido) — Estimador Gratuito | MarginPad</title>
+<meta name="description" content="Free crypto tax calculator for the US, Canada and UK. Estimate capital-gains tax on your trades — short-term vs long-term, effective rate and after-tax profit — and import your own trade history in one click. An estimate, not tax advice." />
+<meta name="keywords" content="crypto tax calculator, crypto capital gains tax, crypto tax usa, crypto tax canada, crypto tax uk, short term vs long term crypto tax, how much tax on crypto, bitcoin tax calculator" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-tax-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-tax-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-tax-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-tax-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/crypto-tax-calculator/" />
+<meta property="og:title" content="Crypto Tax Calculator 2026 (US, Canada, UK) — Free Estimator | MarginPad" />
+<meta property="og:description" content="Estimate capital-gains tax on your crypto trades — short-term vs long-term, effective rate and after-tax profit. Import your trade history in one click." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:site_name" content="MarginPad" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Tax Calculator 2026 (US, Canada, UK) — Free Estimator" />
+<meta name="twitter:description" content="Estimate capital-gains tax on your crypto trades — short-term vs long-term, effective rate and after-tax profit. Import your trade history in one click." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .verdict{font-size:13.5px;color:var(--ink2);line-height:1.65;margin-top:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px 16px}
+  .content{max-width:760px;margin-top:8px}
+  .content p{color:var(--ink2);font-size:14.5px;line-height:1.7;margin:0 0 14px}
+  .disc{font-size:12.5px;color:var(--ink3,#7a8494);line-height:1.6;margin-top:14px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2)}
+  .brk{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .brk table{width:100%;border-collapse:collapse;font-size:13px}
+  .brk th,.brk td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);color:var(--ink2)}
+  .brk th{color:var(--ink);font-weight:700;background:var(--panel)}
+  .brk td.n{font-family:'Space Mono',monospace;text-align:right}
+  .faq{margin-top:10px}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:10px;overflow:hidden}
+  .faq summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';color:var(--cyan);font-family:'Space Mono',monospace;font-size:18px;font-weight:700}
+  .faq details[open] summary::after{content:'\2212'}
+  .faq details[open] summary{border-bottom:1px solid var(--line)}
+  .faq .a{padding:14px 18px 17px;color:var(--ink2);font-size:14px;line-height:1.7}
+  .imp{background:none;border:1px solid var(--line);color:var(--ink2);border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  .imp:hover{border-color:var(--cyan);color:var(--ink)}
+  .us-only.hide,.filing.hide{display:none}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Impuestos Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/es/crypto-tax-calculator/","description":"Estimador gratuito de impuestos a las ganancias de capital en cripto para EE. UU., Canadá y el Reino Unido — corto vs largo plazo, tasa efectiva y beneficio después de impuestos, con importación de operaciones en un clic.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Impuestos Cripto","item":"https://marginpad.io/es/crypto-tax-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se grava la cripto en EE. UU.?","acceptedAnswer":{"@type":"Answer","text":"El IRS trata la cripto como propiedad. Vender o cerrar una posición con ganancia es un evento gravable. Si la mantuviste un año o menos, es una ganancia de capital de corto plazo gravada a tu tasa de ingreso ordinario; más de un año, es una ganancia de largo plazo gravada al 0%, 15% o 20% según tu ingreso gravable total. Esta herramienta estima solo el monto federal y excluye el impuesto estatal y el impuesto del 3.8% sobre ingresos netos de inversión."}},{"@type":"Question","name":"¿Cuál es la diferencia entre ganancias cripto de corto y largo plazo?","acceptedAnswer":{"@type":"Answer","text":"El periodo de tenencia decide la tasa. Mantenida un año o menos, una ganancia es de corto plazo y se grava como ingreso ordinario a tu tasa marginal — que para traders activos es la tasa más alta que pagas. Mantenida más de un año, es de largo plazo y se grava a las tasas más bajas de ganancias de capital (0/15/20% en EE. UU.). El trading activo de futuros y el day trading son casi enteramente de corto plazo."}},{"@type":"Question","name":"¿Es precisa esta calculadora de impuestos cripto?","acceptedAnswer":{"@type":"Answer","text":"Da una estimación de buena fe usando tramos representativos de 2026, pero no es asesoramiento fiscal. Simplifica las reglas: excluye el impuesto estatal y provincial, sobretasas, deducciones, pérdidas trasladadas y la elección de método de costo base. Úsala para entender aproximadamente cuánto podrías deber y para planificar — luego confirma con un profesional fiscal calificado o software fiscal oficial antes de declarar."}},{"@type":"Question","name":"¿Debo impuestos por operaciones simuladas (paper trading)?","acceptedAnswer":{"@type":"Answer","text":"No. El paper trading es una simulación sin dinero real, así que no genera eventos gravables. Si importas un diario de paper trading a esta herramienta, el resultado es educativo — muestra cuánto habrían costado en impuestos esas mismas operaciones si fueran reales, una forma útil de ver cuánto del beneficio de una estrategia se llevaría el impuesto."}}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Impuestos Cripto 2026 (EE. UU., Canadá, Reino Unido) — Estimador Gratuito","url":"https://marginpad.io/es/crypto-tax-calculator/","dateModified":"2026-09-10T19:56:57.480Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<header class="topbar"><a class="brand" href="/es/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/es/tools/">Todas las herramientas</a><a href="/es/crypto-backtester/">Backtester</a><a href="/es/trading-journal/">Diario</a><a href="/es/crypto-tax-calculator/" class="on">Impuestos</a><a href="/es/crypto-cost-basis-calculator/">Costo base</a><a href="/es/pivot-point-calculator/">Pivotes</a><a href="/es/risk-of-ruin-calculator/">Riesgo</a><a href="/es/crypto-correlation-matrix/">Correlación</a></nav><a class="home" href="/es/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Impuestos</span>
+    <h1>Calculadora de Impuestos Cripto</h1>
+    <p class="sub">Estima el impuesto a las ganancias de capital sobre tus operaciones cripto para EE. UU., Canadá o el Reino Unido — corto plazo vs largo plazo, tu tasa efectiva, y lo que queda después de impuestos. Introduce tus números o importa tu historial de operaciones con un clic. Una estimación para planificar, no asesoramiento fiscal.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">País<select id="ctry" style="width:150px"><option value="US">Estados Unidos</option><option value="CA">Canadá</option><option value="UK">Reino Unido</option></select></label>
+      <label class="f filing">Estado civil fiscal<select id="filing" style="width:190px"><option value="single">Soltero/a</option><option value="mfj">Casado/a declarando en conjunto</option><option value="hoh">Cabeza de familia</option></select></label>
+      <label class="f">Ingreso anual (antes de ganancias)<input id="inc" type="number" value="60000" min="0" step="1000" style="width:150px"></label>
+    </div>
+    <div class="row">
+      <label class="f">Ganancias de corto plazo <span class="muted">(mantenidas ≤1 año)</span><input id="stg" type="number" value="8000" step="100" style="width:150px"></label>
+      <label class="f us-only">Ganancias de largo plazo <span class="muted">(mantenidas &gt;1 año)</span><input id="ltg" type="number" value="0" step="100" style="width:150px"></label>
+      <button class="btn" id="run">Calcular impuesto</button>
+      <button class="imp" id="imp" type="button">Importar mis operaciones</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden>
+    <h2>Impuesto estimado de <span id="ctryL">US</span> sobre tus ganancias</h2>
+    <div class="kpis" id="kMain"></div>
+
+    <h2>Desglose</h2>
+    <div class="brk"><table id="brkT"></table></div>
+
+    <div class="verdict" id="verdict"></div>
+    <div class="disc" id="disc"></div>
+  </div>
+
+  <section class="content">
+    <h2>Cómo funciona realmente el impuesto a las ganancias de capital en cripto</h2>
+    <p>En la mayoría de los sistemas fiscales, la cripto se trata como <b>propiedad</b>, así que cada vez que cierras una posición con beneficio generas un evento gravable. La palanca más importante sobre lo que debes es el <b>periodo de tenencia</b>. En EE. UU., una moneda mantenida un año o menos es una ganancia de corto plazo gravada a tu tasa de ingreso ordinario — la tasa más alta que pagas — mientras que una moneda mantenida más de un año recibe las tasas más bajas de largo plazo del 0%, 15% o 20%. El trading activo de futuros y el day trading son casi enteramente de corto plazo, por eso tu ventaja después de impuestos es menor de lo que sugiere tu P&amp;L en bruto. Canadá grava el 50% de una ganancia de capital a tu tasa marginal; el Reino Unido otorga un pequeño monto anual exento, y luego grava el resto a sus tasas de ganancias de capital. Esta calculadora aplica cifras representativas de 2026 para darte una estimación de planificación — el número real depende de tu declaración completa, tu estado o provincia, y reglas que esta herramienta simplifica deliberadamente. Cuando estés listo para declarar, usa un software oficial o un profesional. Si compraste la misma moneda a varios precios, calcula primero de qué lotes se toma una venta — y tu división entre corto y largo plazo — con la <a href="/es/crypto-cost-basis-calculator/">calculadora de costo base</a> (FIFO/LIFO/HIFO), y luego trae esos números aquí. Para mantener los registros que necesitarás, anota cada operación cerrada en el <a href="/es/trading-journal/">diario de trading</a> gratuito, y si quieres probar el beneficio después de impuestos de una estrategia antes de arriesgar dinero, pruébala primero en <a href="/es/paper-trade">paper trading</a> — las operaciones simuladas no deben nada, así que es una forma gratuita de ver cuánto del beneficio se llevaría el impuesto.</p>
+  </section>
+
+  <section class="content faq">
+    <h2>FAQ</h2>
+    <details><summary>¿Cómo se grava la cripto en EE. UU.?</summary><div class="a">El IRS trata la cripto como propiedad, así que cerrar una posición con ganancia es un evento gravable. Mantenida un año o menos, es una ganancia de corto plazo gravada a tu tasa de ingreso ordinario; mantenida más de un año, es una ganancia de largo plazo gravada al 0%, 15% o 20% según tu ingreso gravable total. Esta herramienta estima solo el monto <b>federal</b> y excluye el impuesto estatal y el impuesto del 3.8% sobre ingresos netos de inversión.</div></details>
+    <details><summary>¿Cuál es la diferencia entre ganancias de corto y largo plazo?</summary><div class="a">El periodo de tenencia. Un año o menos es corto plazo, gravado como ingreso ordinario a tu tasa marginal. Más de un año es largo plazo, gravado a las tasas más bajas de ganancias de capital. El trading activo es casi todo de corto plazo — por eso se grava a tu tasa más alta.</div></details>
+    <details><summary>¿Es precisa esta calculadora?</summary><div class="a">Es una estimación de buena fe usando tramos representativos de 2026 — no asesoramiento fiscal. Simplifica las reglas (excluye impuesto estatal/provincial, sobretasas, deducciones, pérdidas trasladadas y métodos de costo base). Úsala para planificar, y luego confirma con un profesional o software fiscal oficial antes de declarar.</div></details>
+    <details><summary>¿Debo impuestos por operaciones simuladas (paper trading)?</summary><div class="a">No — el paper trading es una simulación sin dinero real y sin eventos gravables. Importar aquí un diario de simulación es educativo: muestra cuánto habrían costado en impuestos esas mismas operaciones si fueran reales, una forma útil de ver cuánto del beneficio de una estrategia se llevaría el impuesto.</div></details>
+  </section>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+
+<div class="mp-xr"><div class="mp-xr-t">LOS EXCHANGES EN LOS QUE SE BASAN ESTOS NÚMEROS</div><p class="mp-xr-w">El margen de mantenimiento, los niveles de comisión y los intervalos de funding varían según el exchange &mdash; estos son los que sirvieron de base para esta calculadora.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/es/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Herramientas gratuitas de futuros cripto — calculadoras, un espacio de gráficos en vivo, un terminal de paper trading y un feed de liquidaciones en tiempo real. Sin registro.</p></div><div><h4>Herramientas</h4><a href="/es/crypto-backtester/">Backtester de Estrategias</a><a href="/es/trading-journal/">Diario de Trading</a><a href="/es/crypto-tax-calculator/">Calculadora de Impuestos</a><a href="/es/pivot-point-calculator/">Puntos Pivote</a><a href="/es/risk-of-ruin-calculator/">Riesgo de Ruina</a><a href="/es/crypto-correlation-matrix/">Matriz de Correlación</a></div><div><h4>MarginPad</h4><a href="/es/paper-trade">Paper Trade</a><a href="/es/charts">Gráficos</a><a href="/es/calculators">Calculadoras</a><a href="/es/screener">Screener</a><a href="/es/rekt/">Liquidaciones</a></div></div><div class="bottom">© 2026 MarginPad · Herramientas gratuitas de trading cripto · No es asesoramiento financiero ni fiscal</div></footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function money(x){var n=Math.round(+x||0);return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US');}
+  function pct(x){return (+x||0).toFixed(1)+'%';}
+
+  // Representative 2026 figures. ESTIMATE ONLY — federal/national, excludes state/provincial + surtaxes.
+  // US federal ordinary brackets by filing status [thresholdTop, rate]
+  var US_ORD={
+    single:[[11925,.10],[48475,.12],[103350,.22],[197300,.24],[250525,.32],[626350,.35],[1/0,.37]],
+    mfj:[[23850,.10],[96950,.12],[206700,.22],[394600,.24],[501050,.32],[751600,.35],[1/0,.37]],
+    hoh:[[17000,.10],[64850,.12],[103350,.22],[197300,.24],[250500,.32],[626350,.35],[1/0,.37]]
+  };
+  // US long-term cap-gains 0/15/20 thresholds (taxable income top for each rate)
+  var US_LTCG={ single:[[48350,0],[533400,.15],[1/0,.20]], mfj:[[96700,0],[600050,.15],[1/0,.20]], hoh:[[64750,0],[566700,.15],[1/0,.20]] };
+  // Canada federal marginal brackets [top, rate] (provincial excluded); 50% inclusion rate
+  var CA_FED=[[57375,.15],[114750,.205],[177882,.26],[253414,.29],[1/0,.33]];
+  // UK: annual CGT exempt amount + basic-rate band; CGT 18% within basic band, 24% above (2024-25 style)
+  var UK={ personalAllow:12570, basicTop:50270, cgtExempt:3000, cgtBasic:.18, cgtHigher:.24 };
+
+  // marginal tax on an amount stacked ON TOP of base income, using a [top,rate] bracket table
+  function marginalOn(base, amount, table){
+    var lo=base, hi=base+amount, tax=0, prev=0;
+    for(var i=0;i<table.length;i++){ var top=table[i][0], rate=table[i][1];
+      var seg=Math.max(0, Math.min(hi, top)-Math.max(lo, prev));
+      if(seg>0) tax+=seg*rate;
+      prev=top; if(prev>=hi) break;
+    }
+    return tax;
+  }
+  function usLtcgRate(income, table){ for(var i=0;i<table.length;i++){ if(income<=table[i][0]) return table[i][1]; } return .20; }
+
+  function calc(){
+    var ctry=$('ctry').value, inc=Math.max(0,+$('inc').value||0), stg=+$('stg').value||0, ltg=+$('ltg').value||0;
+    var rows=[], main=[], verdict='', disc='';
+    function kpi(v,l,cls){return '<div class="kpi"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+    function row(a,b){rows.push('<tr><td>'+a+'</td><td class="n">'+b+'</td></tr>');}
+    var totalGain=stg+ltg, tax=0;
+
+    if(ctry==='US'){
+      $('ctryL').textContent='US federal';
+      var fil=$('filing').value, ord=US_ORD[fil]||US_ORD.single;
+      var stTax = stg>0 ? marginalOn(inc, stg, ord) : 0; // short-term stacked on income as ordinary
+      var incAfterOrd = inc + Math.max(0,stg); // LTCG rate keys off taxable income incl. ST
+      var ltRate = ltg>0 ? usLtcgRate(incAfterOrd, US_LTCG[fil]||US_LTCG.single) : 0;
+      var ltTax = Math.max(0,ltg)*ltRate;
+      tax = stTax + ltTax;
+      row('Short-term gains (ordinary rate)', money(stg));
+      row('Estimated tax on short-term', money(stTax));
+      row('Long-term gains', money(ltg));
+      row('Long-term rate applied', pct(ltRate*100));
+      row('Estimated tax on long-term', money(ltTax));
+      disc='Federal estimate only. Excludes state income tax, the 3.8% net investment income tax, deductions and loss carry-forwards. Uses representative 2026 brackets — confirm current figures.';
+    } else if(ctry==='CA'){
+      $('ctryL').textContent='Canada federal';
+      var taxable = totalGain*0.5; // 50% inclusion rate
+      tax = marginalOn(inc, taxable, CA_FED);
+      row('Total capital gain', money(totalGain));
+      row('Taxable portion (50% inclusion)', money(taxable));
+      row('Estimated federal tax on gains', money(tax));
+      disc='Federal estimate only — provincial tax (roughly another 5–21% marginal) is NOT included, so your real total is higher. Uses the 50% inclusion rate and representative 2025-26 federal brackets. Not tax advice.';
+    } else { // UK
+      $('ctryL').textContent='UK';
+      var gain=totalGain, taxableGain=Math.max(0, gain-UK.cgtExempt);
+      // how much basic-rate band remains after income
+      var bandLeft=Math.max(0, UK.basicTop - Math.max(inc, UK.personalAllow));
+      var atBasic=Math.min(taxableGain, bandLeft), atHigher=taxableGain-atBasic;
+      tax=atBasic*UK.cgtBasic + atHigher*UK.cgtHigher;
+      row('Total capital gain', money(gain).replace('$','£'));
+      row('Annual CGT exempt amount', '£'+UK.cgtExempt.toLocaleString('en-US'));
+      row('Taxable gain', money(taxableGain).replace('$','£'));
+      row('Taxed at 18% (within basic band)', money(atBasic*UK.cgtBasic).replace('$','£'));
+      row('Taxed at 24% (higher band)', money(atHigher*UK.cgtHigher).replace('$','£'));
+      disc='Estimate using 2024-25-style CGT rates (18%/24%) and a £3,000 annual exempt amount. Excludes Scottish variations, losses and allowances. Not tax advice.';
+    }
+
+    var cur = ctry==='UK'?'£':'$';
+    function m2(x){var v=money(x);return ctry==='UK'?v.replace('$','£'):v;}
+    var eff = totalGain>0 ? tax/totalGain*100 : 0;
+    var after = totalGain - tax;
+    main.push(kpi(m2(tax),'Estimated tax owed','neg'));
+    main.push(kpi(pct(eff),'Effective rate on gains', eff>25?'neg':''));
+    main.push(kpi(m2(after),'After-tax profit', after>=0?'pos':'neg'));
+    main.push(kpi(m2(totalGain),'Total gains',''));
+    $('kMain').innerHTML=main.join('');
+    $('brkT').innerHTML=rows.join('');
+
+    if(ctry==='US' && stg>0 && ltg===0) verdict='All of this is short-term, taxed as ordinary income — the highest rate you pay. Holding a position past one year would move it to long-term rates ('+pct((usLtcgRate(inc+stg,US_LTCG[$('filing').value]||US_LTCG.single))*100)+' here). That gap is why long-term holders keep more of the same gain.';
+    else if(eff>30) verdict='Tax is taking a large bite ('+pct(eff)+' of your gains). Before sizing real trades, remember your true edge is the after-tax number — smaller than the raw P&L. Test strategies free in paper trading first.';
+    else verdict='This is a planning estimate — your real bill depends on your full return, where you live, and rules this tool simplifies. Keep clean records of every trade so filing is not a guess.';
+    $('verdict').textContent=verdict;
+    $('disc').textContent=disc+' This is general information, not tax advice.';
+    $('out').hidden=false; $('status').textContent='';
+  }
+
+  // Import from the user's paper-trade journal: categorize closed trades short/long by holding period, sum P&L
+  function importJournal(){
+    var j=[]; try{ j=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]; }catch(e){}
+    var closed=j.filter(function(t){return t && (t.status==='win'||t.status==='loss');});
+    if(!closed.length){ $('status').textContent='No closed trades found in your journal yet. Open a free paper-trade account, close a few trades, then import.'; return; }
+    var st=0, lt=0, YR=365*86400000;
+    closed.forEach(function(t){
+      var pnl=+t.pnl; if(!isFinite(pnl)) return;
+      var open=+t.ts||0, close=+t.closeTs||+t.closedTs||0;
+      var held = (open&&close)? (close-open) : 0;
+      if(held>YR) lt+=pnl; else st+=pnl;
+    });
+    $('stg').value=Math.round(st); $('ltg').value=Math.round(lt);
+    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=event&type=tax_import&p=/crypto-tax-calculator/');}catch(_){}
+    calc(); // calc() clears status, so set the import note AFTER it
+    $('status').textContent='Imported '+closed.length+' closed trades (paper trades owe no real tax — this is an educational estimate). Short-term '+money(st)+', long-term '+money(lt)+'.';
+  }
+
+  function syncFields(){var us=$('ctry').value==='US';
+    document.querySelectorAll('.us-only').forEach(function(e){e.classList.toggle('hide',!us);});
+    document.querySelectorAll('.filing').forEach(function(e){e.classList.toggle('hide',!us);});
+  }
+  $('ctry').addEventListener('change',function(){syncFields();calc();});
+  $('run').addEventListener('click',calc);
+  $('imp').addEventListener('click',importJournal);
+  syncFields(); calc();
+})();
+</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/what-is-a-trailing-stop/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<title>¿Qué es un trailing stop? Cómo asegurar la ganancia mientras se mueve el precio (2026) — MarginPad</title>
+<meta name="description" content="A trailing stop follows price by a set distance, locking in gains while letting a winner run. Learn how it works, how to set the distance, the common mistakes, and when to use one." />
+<meta name="keywords" content="trailing stop, what is a trailing stop, trailing stop loss, trailing stop crypto, how to set a trailing stop, lock in profit trading, trailing stop percentage, ride a winner" />
+<link rel="canonical" href="https://marginpad.io/es/blog/what-is-a-trailing-stop/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/what-is-a-trailing-stop/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/what-is-a-trailing-stop/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/what-is-a-trailing-stop/" />
+<meta property="og:title" content="What Is a Trailing Stop? How to Lock In Profit as Price Moves (2026)" />
+<meta property="og:description" content="A trailing stop follows price by a set distance, locking in gains while letting a winner run. Learn how it works, how to set the distance, the common mistakes, and when to use one." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/what-is-a-trailing-stop/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)","description":"Un trailing stop sigue el precio a una distancia fija, asegurando ganancias mientras deja correr una posición ganadora. Aprende cómo funciona, cómo fijar la distancia, los errores más comunes y cuándo usarlo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Un trailing stop es un stop-loss que sigue automáticamente el precio a tu favor a una distancia fija: un porcentaje o una cantidad en dólares. Cuando el precio sube en un long, el stop se ajusta hacia arriba con él; si luego el precio revierte esa distancia, el stop se activa y asegura tu ganancia. Nunca retrocede, así que protege el beneficio mientras deja correr una posición ganadora."}},{"@type":"Question","name":"¿Qué tan amplio debe ser un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Lo bastante amplio para sobrevivir al ruido normal del mercado, y lo bastante ajustado para proteger una ganancia real. Si es demasiado ajustado, la volatilidad habitual te saca antes de tiempo; si es demasiado amplio, devuelves una buena parte de la ganancia antes de que se active. Muchos traders basan la distancia en la volatilidad (por ejemplo, un múltiplo del ATR) en lugar de un número redondo, para que el stop respire con el mercado."}},{"@type":"Question","name":"¿Cuándo debería usar un trailing stop en vez de uno fijo?","acceptedAnswer":{"@type":"Answer","text":"Usa un stop fijo para definir tu riesgo al entrar, y cambia a (o añade) un trailing stop una vez que la operación esté en ganancia y siga la tendencia, para acompañar el movimiento mientras proteges las ganancias. Los trailing stops brillan en tendencias fuertes; en mercados laterales y erráticos suelen saltar antes de tiempo."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Trailing stop","item":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Trailing stop</div>
+  <article>
+    <h1>¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)</h1>
+    <div class="meta">Riesgo · 5 min de lectura · Actualizado en junio de 2026</div>
+    <p>Cortar una pérdida es fácil de entender. La habilidad más difícil es saber cuándo <em>tomar ganancias</em> &mdash; vendes demasiado pronto y te pierdes el gran movimiento; te quedas demasiado tiempo y lo devuelves todo. Un <strong>trailing stop</strong> está diseñado para resolver exactamente eso. <em>(Solo con fines educativos &mdash; no es asesoría financiera.)</em></p>
+    <h2>Qué hace un trailing stop</h2>
+    <p>Un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> normal se queda en un precio fijo. Un <strong>trailing stop</strong>, en cambio, sigue al precio a una <strong>distancia</strong> fija &mdash; digamos 3% &mdash; pero solo a tu favor. En un long:</p>
+    <ul>
+    <li>A medida que el precio <strong>sube</strong>, el stop <strong>avanza</strong> un 3% por detrás del nuevo máximo.</li>
+    <li>Cuando el precio <strong>baja</strong>, el stop <strong>se queda quieto</strong> &mdash; nunca retrocede.</li>
+    <li>Si el precio cae tu distancia del 3%, el stop <strong>se dispara</strong> y sales, asegurando la ganancia.</li>
+    </ul>
+    <p>El efecto: <strong>dejas correr una ganadora</strong> tan lejos como la tendencia la lleve, mientras un piso fijo debajo de tu ganancia sigue subiendo. Ya no tienes que adivinar el techo exacto.</p>
+    <h2>Un ejemplo rápido</h2>
+    <p>Abres un long a $60,000 con un <strong>trailing stop del 3%</strong>. El precio sube a $66,000 &mdash; tu stop ha subido hasta cerca de $64,000. Luego el precio se revierte; en $64,000 el stop se dispara. Capturaste la mayor parte de un movimiento de $4,000 <strong>sin predecir el techo</strong> &mdash; y si el precio hubiera seguido subiendo, el stop habría seguido subiendo con él.</p>
+    <h2>Cómo fijar la distancia</h2>
+    <p>Aquí está todo el juego. <strong>Demasiado ajustada</strong> y el ruido normal del mercado te saca antes de que el movimiento se desarrolle. <strong>Demasiado amplia</strong> y devuelves una buena parte antes de que se dispare. En vez de un número redondo, muchos traders ajustan la distancia según la <strong>volatilidad</strong> &mdash; un múltiplo del <a href="/es/blog/what-is-open-interest/">rango reciente</a> (ATR) &mdash; para que el stop respire con el mercado. Y recuerda: los trailing stops están hechos para <strong>tendencias</strong>; en mercados laterales y erráticos te sacan a latigazos.</p>
+    <h2>Úsalo junto a un stop fijo, no en su lugar</h2>
+    <p>Lo mejor es definir tu riesgo con un <strong>stop fijo al entrar</strong>, y luego, una vez que la operación está cómodamente en ganancias, dejar que un <strong>trailing stop</strong> tome el control para proteger y extender la ganancia. El stop fijo limita la caída; el trailing stop administra la subida.</p>
+    <h2>Pruébalo sin riesgo</h2>
+    <p>El <a href="/es/paper-trade">Paper Trade</a> de MarginPad tiene una opción de <strong>trailing stop</strong> integrada (junto al break-even y los stops fijos) en el panel Avanzado. Abre una posición al precio en vivo, define una distancia de trailing, y mira cómo el stop avanza mientras se mueve la operación &mdash; sin cuenta y sin dinero en riesgo &mdash; hasta que sientas cuál es la distancia correcta para las condiciones.</p>
+    <div class="callout"><div class="k">ACOMPAÑA UNA GANADORA CON SEGURIDAD</div><p style="margin-bottom:14px">Pon un trailing stop en una operación de práctica a precio en vivo y mira cómo asegura la ganancia mientras sube el precio &mdash; sin cuenta, sin dinero en riesgo.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <section class="related">
+    <h2 class="rel-title">Guías relacionadas</h2>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/what-is-a-trading-journal/"><span class="tag">Riesgo</span><span class="rel-t">¿Qué es un diario de trading? Cómo registrar tus operaciones y encontrar tu ventaja (2026)</span></a><a class="rel-card" href="/es/blog/why-most-crypto-traders-lose-money/"><span class="tag">Riesgo</span><span class="rel-t">Por qué el 90% de los traders de futuros cripto pierde dinero (y cómo ser parte del 10%)</span></a><a class="rel-card" href="/es/blog/how-to-calculate-position-size/"><span class="tag">Riesgo</span><span class="rel-t">Cómo calcular el tamaño de posición en futuros cripto (basado en riesgo)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comentarios</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Tu nombre (opcional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Publicar comentario</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/api/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>API de MarginPad — datos cripto gratis, Bot API de paper trading, MCP | MarginPad</title>
+<meta name="description" content="Every MarginPad API on one page: a free keyless crypto market-data API (prices, candles, screener, funding, open interest, liquidations, calendar), a paper-trading Bot API with REST, WebSocket, webhooks, trailing stops and limit/stop orders, a remote MCP server with 22 tools, OpenAPI 3.1 and one-file Python and JS clients." />
+<meta name="keywords" content="marginpad api, free crypto api, crypto price api no key, paper trading api, trading bot api, crypto liquidation api, funding rate api, mcp server crypto, openapi crypto, crypto calculator api" />
+<link rel="canonical" href="https://marginpad.io/es/api/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/api/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/api/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/api/" />
+<meta property="og:title" content="MarginPad API — free crypto data, paper-trading Bot API, MCP" />
+<meta property="og:description" content="Keyless market data at 60 req/min (120–600 with a free key), a full paper-trading Bot API with webhooks and trailing stops, MCP with 22 tools, OpenAPI 3.1, Python and JS clients." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/api/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  pre{background:var(--panel);border:1px solid var(--line-bright);border-left:3px solid var(--lime);border-radius:8px;padding:14px 16px;margin:12px 0;overflow-x:auto;font-family:'Space Mono',monospace;font-size:13px;color:var(--ink);line-height:1.5}
+  .ep{font-family:'Space Mono',monospace;font-size:14px;color:var(--lime);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:18px 0 8px;word-break:break-all}
+  .ep b{color:#2ebd85}
+  table.params{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:14px}
+  table.params td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.params td:first-child{font-family:'Space Mono',monospace;color:var(--ink);white-space:nowrap;width:120px}
+  table.params td:last-child{color:var(--ink-dim)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}.chips span{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-dim);border:1px solid var(--line-bright);border-radius:99px;padding:6px 12px}
+  .ways{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0 8px}
+  @media(max-width:900px){.ways{grid-template-columns:1fr 1fr}}@media(max-width:520px){.ways{grid-template-columns:1fr}}
+  .way{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:16px;text-decoration:none;color:var(--ink);min-width:0}
+  .way b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--lime)}
+  .way strong{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;line-height:1.2}
+  .way span{font-size:13px;color:var(--ink-dim);line-height:1.55}.way em{font-style:normal;font-size:12.5px;color:var(--lime);font-weight:700;margin-top:auto}
+  .way:hover{border-color:var(--lime)}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0 18px}
+  table.eps{width:100%;min-width:560px;border-collapse:collapse;font-size:13.5px}
+  table.eps th{text-align:left;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);padding:8px;border-bottom:1px solid var(--line-bright)}
+  table.eps td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-dim);line-height:1.5}
+  table.eps td:nth-child(2){white-space:nowrap}table.eps code{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink)}
+  .m{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;border-radius:6px;padding:3px 7px}
+  .m.get{background:rgba(63,216,230,.15);color:#3fd8e6}.m.post{background:rgba(46,189,133,.15);color:#2ebd85}.m.ws{background:rgba(194,246,74,.15);color:#c2f64a}
+  .tag{display:inline-block;font:800 9.5px/1 'Space Mono',monospace;letter-spacing:.08em;border-radius:5px;padding:3px 6px;vertical-align:middle;margin-left:4px}
+  .tag.p{background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a}.tag.n{background:rgba(94,230,200,.12);border:1px solid rgba(94,230,200,.4);color:#5ee6c8}
+  .plans{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}.plans th,.plans td{padding:9px 10px;border:1px solid var(--line);text-align:left;vertical-align:top}
+  .plans th{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);background:var(--panel)}
+  .plans td:first-child{color:var(--ink);font-weight:600}.plans td{color:var(--ink-dim)}.plans .hl{color:var(--lime);font-weight:700}
+  .golive{margin:30px 0 10px;padding:22px;border:1px solid var(--line-bright);border-left:3px solid var(--lime);border-radius:14px;background:var(--panel)}
+  .golive .gl-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.01em;color:var(--ink);margin:0 0 8px}
+  .golive>p{color:var(--ink-dim);font-size:14.5px;line-height:1.65;margin:0 0 16px}
+  .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}@media(max-width:640px){.gl-grid{grid-template-columns:1fr}}
+  .gl-card{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:14px;border:1px solid var(--line-bright);background:#0d1015;overflow:hidden}
+  .gl-card p{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink-dim)}
+  .gl-hl{border-color:rgba(94,230,200,.35);background:radial-gradient(110% 130% at 100% 0%,rgba(94,230,200,.13),transparent 55%),#0d1412}
+  .gl-hl::after{content:'HL';position:absolute;right:-6px;bottom:-30px;font:800 100px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-7px;color:rgba(94,230,200,.07);pointer-events:none}
+  .gl-ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.gl-ch b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;color:var(--ink)}
+  .gl-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#0f1f1b;color:#5ee6c8;font:800 12px/1 'Bricolage Grotesque',sans-serif}
+  .gl-pill{font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);border:1px solid var(--line);border-radius:99px;padding:5px 9px}
+  .gl-offer{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28);position:relative;z-index:1}.gl-offer b{font:800 30px/1 'Bricolage Grotesque',sans-serif;color:#5ee6c8;letter-spacing:-.02em}.gl-offer span{font-size:12.5px;line-height:1.3;color:#cfe3dd}.gl-offer i{font-style:normal;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.1em;color:#f2fbf8}
+  .gl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;padding:12px 18px;border-radius:11px;background:var(--lime);color:#0a0b0d;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;position:relative;z-index:1}
+  .gl-hl .gl-cta{background:#5ee6c8;color:#062a24}.gl-note{display:block;font-size:11.5px;line-height:1.5;color:var(--ink-faint)}
+  .gl-card.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-ex-na{display:block;font:700 9.5px/1.3 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#8b97a5;margin-top:5px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebAPI","name":"API de MarginPad","description":"API gratuita de datos de mercado cripto sin clave (precios, OHLC, screener, funding, interés abierto, liquidaciones, calendario, calculadoras), una Bot API de paper trading (REST, WebSocket, webhooks, órdenes límite/stop, trailing stops) y un servidor MCP remoto con 22 herramientas. OpenAPI 3.1.","url":"https://marginpad.io/es/api/","documentation":"https://marginpad.io/api/openapi.json","termsOfService":"https://marginpad.io/terms/","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/free-crypto-api/">API de datos</a><a href="/es/trading-api/">Bot API</a><a href="/api/changelog">Registro de cambios</a></nav>
+  </header>
+
+  <div class="crumb"><a href="/es/">Inicio</a> / API</div>
+  <article>
+    <h1>API de MarginPad</h1>
+    <p class="lead">Todo lo que el sitio sabe, en JSON: precios y velas en vivo, un screener con puntuación, funding, interés abierto, long/short, liquidaciones medidas en nueve exchanges, un calendario económico &mdash; sin clave. Además, una <b>Bot API</b> de paper trading completa para probar un bot de trading con precios reales y dinero simulado, un <b>servidor MCP</b> remoto para que un asistente de IA use todo esto de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo para Python y JavaScript.</p>
+    <div class="chips"><span>Datos de mercado sin clave · 60 pet/min</span><span>Clave gratis · 120 pet/min</span><span>Premium · 600 pet/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 23 herramientas</span><span>Bot API 2.4.0</span></div>
+
+    <div class="ways">
+      <a class="way" href="/es/free-crypto-api/"><b>Datos de mercado</b><strong>API gratuita de datos cripto</strong><span>Precios, velas, screener, funding, OI, long/short, liquidaciones, calendario, Fear &amp; Greed, TVL de DeFi. Sin clave, sin registro.</span><em>Documentación &rarr;</em></a> <a class="way" href="/es/trading-api/"><b>Paper trading</b><strong>Bot API</strong><span>Abrir, cerrar, órdenes límite y stop, trailing stops, webhooks, WebSocket, un informe de trading. Precios reales, dinero simulado.</span><em>Documentación + clave gratis &rarr;</em></a> <a class="way" href="/mcp"><b>Asistentes de IA</b><strong>Servidor MCP remoto</strong><span>23 herramientas para Claude, ChatGPT y Cursor: datos de mercado, calculadoras y tu cuenta de paper trading.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class="way" href="/api/openapi.json"><b>Legible por máquina</b><strong>OpenAPI 3.1 + clientes</strong><span>La especificación completa con esquemas de solicitud y respuesta, y clientes sin dependencias <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Especificación &rarr;</em></a>
+    </div>
+
+    <h2 id="data">Datos de mercado — <code>/api/v1/*</code>, sin clave</h2>
+    <p>Cada respuesta viene en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, para que una página del navegador pueda llamarla directamente. <b>60 peticiones por minuto por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (obtenida en <a href="/es/trading-api/">/trading-api/</a>) en las mismas llamadas y se miden contra tu clave en su lugar &mdash; 120 por minuto, 600 con <a href="/es/premium/">Premium</a>. Manual completo con ejemplos: <a href="/es/free-crypto-api/">/free-crypto-api/</a>.</p>
+    <div class="tw"><table class="eps">
+      <tr><th></th><th>Endpoint</th><th>Qué obtienes</th></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/price?symbol=BTC</code></td><td>Precio en vivo de una moneda, agregado entre Binance / Bybit / OKX / Gate.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/prices</code></td><td>Instantánea en lote de las principales monedas en una sola llamada.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/klines?symbol=BTC&amp;interval=60</code></td><td>Velas OHLC: 1, 5, 15, 60, 240, 1440 minutos; hasta 1000 por llamada, <code>&amp;end=</code> para paginar hacia atrás.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/symbols</code></td><td>~500 símbolos de perpetuos USDT líquidos por volumen.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/screener</code></td><td>Screener de futuros con puntuación: puntaje de 0 a 100 puntos, veredicto, RSI, MACD, tendencia, configuración de ATR.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/funding</code></td><td>Tasas de funding en ~160 pares, medidas desde los endpoints públicos de los exchanges.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/open-interest</code></td><td>Interés abierto (USD) en ~160 pares.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/long-short</code></td><td>Ratio long/short de cuentas para las principales monedas (Binance + OKX + Bybit).</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations</code></td><td>Totales de liquidación de 24h por moneda, longs contra shorts, desde nuestro propio recolector de nueve exchanges.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/venues</code></td><td>Liquidaciones por exchange: total de 24h, participación, división long/short.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/feed</code></td><td>Los eventos de liquidación más recientes en todos los símbolos (con segundos de retraso respecto a los exchanges).</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations/live?symbol=BTC</code></td><td>Eventos de liquidación recientes sin procesar para un símbolo.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code></td><td>Histograma long/short agrupado por tiempo, hasta 30 días.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/clusters?symbol=BTC</code></td><td>Clústeres de liquidación modelados: niveles de precio donde se concentra la venta forzada ahora mismo.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/calendar</code></td><td>FOMC, CPI, NFP, vencimiento de opciones e hitos cripto con marcas de tiempo UTC.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/fear-greed</code></td><td>Índice Fear &amp; Greed, valor y clasificación.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/coins</code></td><td>Top ~250 monedas: precio, capitalización de mercado, cambio 1h/24h/7d, sparkline.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/global</code></td><td>Capitalización total del mercado, volumen, dominancia de BTC.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/trending</code></td><td>Monedas en tendencia.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/defi</code></td><td>TVL de DeFi: cadenas, protocolos, stablecoins.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/latam/ar · /api/latam/br</code></td><td>Cotizaciones regionales: USDT en pesos argentinos en 35 exchanges; Bitcoin y USDT en reales con la prima sobre el dólar oficial.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/v1/calc/liquidation · position-size · pnl · risk-reward · take-profit</code></td><td>Las cinco calculadoras de abajo, en el mismo formato de sobre.</td></tr>
+    </table></div>
+    <pre>curl "https://marginpad.io/api/v1/price?symbol=BTC"
+curl "https://marginpad.io/api/v1/screener"
+curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;interval=15"   # counts against your key, not your IP</pre>
+
+    <h2 id="bot">Bot API de paper trading — <code>/api/bot/v1/*</code> y <code>/api/bot/v2/*</code></h2>
+    <p>Apunta un bot de trading a precios reales en vivo y liquida cada operación en dólares simulados: margen aislado, apalancamiento hasta 1000&times;, liquidaciones confirmadas en velas de 1 minuto, comisiones taker y funding cobrados como en un exchange real. Inicia sesión con un email y genera una clave en <a href="/es/trading-api/">/trading-api/</a>; las posiciones viven en tu cuenta y cuentan para las tablas de temporada. Las formas de respuesta de <code>v1</code> están congeladas; <code>v2</code> es la misma API dentro del sobre <code>{ ok, data, ts }</code>. Autenticación: <code>X-API-Key</code>.</p>
+    <div class="tw"><table class="eps">
+      <tr><th></th><th>Endpoint</th><th>Qué hace</th></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/price · /klines · /time · /markets</code></td><td>Precio de ejecución, velas, reloj del servidor (con <code>drift_ms</code>) y todos los símbolos operables con su tope de apalancamiento y comisión — los primeros tres no necesitan clave.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open</code></td><td>Apertura a mercado al precio en vivo con <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class="tag n">2.3</span> opcionales, <code>client_order_id</code> (reintentos idempotentes) y <code>dry_run</code> <span class="tag n">2.3</span> (calcula el precio, no escribe nada).</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open <i>type: limit | stop</i></code></td><td>Órdenes pendientes que se ejecutan EN tu nivel a partir de velas de 1m mientras el bot está desconectado: una orden límite por debajo del mercado o una entrada stop por encima <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/orders</code></td><td>Órdenes pendientes (con <code>type</code>) más las últimas 20 que se ejecutaron, expiraron o se cancelaron.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/modify_order</code></td><td>Modifica una orden pendiente sin cancelarla: precio, sl, tp, margen, apalancamiento, trailing stop <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/cancel_order</code></td><td>Cancela una orden pendiente (una ya ejecutada responde 409, así un reintento nunca puede deshacer una ejecución).</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/close · /close_all</code></td><td>Cierra una posición, parcialmente con <code>pct</code>, o todas; el P&amp;L se liquida neto de la comisión de ida y vuelta y el funding.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/sltp</code></td><td>Modifica el stop-loss, take-profit o trailing stop de una posición abierta sin cerrarla.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/positions?status=open</code></td><td>Posiciones con precio de marca en vivo y P&amp;L; ETag / 304 cuando nada cambió; <code>?since=</code>.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/trades · /account · /balance · /usage</code></td><td>Registro paginado de operaciones cerradas, estadísticas de la cuenta de por vida, saldo y equity, tu plan con límites y beneficios.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/fees</code></td><td>Cobra tus ejecuciones simuladas con la tabla de comisiones taker real de un exchange, menos nuestro descuento de referido (Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid); POST fija el valor predeterminado de la cuenta, <code>fee_venue</code> al abrir lo sobrescribe <span class="tag n">2.4</span>.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/report?days=30</code></td><td>Tu informe de trading de 30 días: totales y puntaje de habilidad gratis; desglose por moneda / apalancamiento / lado / hora / día y hallazgos escritos con Premium <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m ws">WS</span></td><td><code>wss://marginpad.io/api/bot/v2/stream?api_key=…</code></td><td>Eventos de posición abierta / actualizada / cerrada y precios de marca enviados cada ~2 s. Gratis en todos los planes.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/webhooks <span class="tag p">Premium</span></code></td><td>Eventos de trading enviados por POST a tu propia URL, firmados con HMAC-SHA256 y reintentados, esté o no conectado el bot <span class="tag n">2.3</span>.</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/ai <span class="tag p">Premium</span></code></td><td>La lectura de la IA del panel de gráficos a partir de la API: una respuesta, un plan ya interpretado y el resumen sobre el que razonó, 50 al día <span class="tag n">2.3</span>.</td></tr>
+    </table></div>
+    <div class="tw"><table class="plans">
+      <tr><th>Plan</th><th>Gratis</th><th class="hl">Premium ($3.99/mes)</th></tr>
+      <tr><td>Solicitudes por minuto por clave (trading y datos de mercado)</td><td>120</td><td class="hl">600</td></tr>
+      <tr><td>Claves API · posiciones abiertas · órdenes pendientes</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td></tr>
+      <tr><td>Datos de mercado, WebSocket, MCP, órdenes límite &amp; stop, trailing stops, modificar, dry run, tablas de comisiones por exchange</td><td>incluido</td><td class="hl">incluido</td></tr>
+      <tr><td>Webhooks · lectura de mercado por IA · desgloses de informes</td><td>&mdash;</td><td class="hl">3 webhooks · 50/día · informe completo</td></tr>
+    </table></div>
+    <p>La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href="/es/trading-api/">/trading-api/</a>. Cada cambio queda registrado en <a href="/api/changelog">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es 2.4.0.</p>
+
+    <div class="golive" id="golive">
+      <div class="gl-h">Cuando el bot ya está probado, necesita una clave real de un exchange</div>
+      <p>Todo lo anterior se liquida en dólares simulados. Una vez que una estrategia sobrevive semanas de forward testing, ese mismo código necesita una API en vivo para colocar órdenes reales. Dos exchanges a los que orientamos a quienes construyen bots:</p>
+      <div class="gl-grid">
+        <div class="gl-card gl-hl" data-ex="Hyperliquid" id="glHl">
+          <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; enfocado en la API</span></div>
+          <p>Perpetuos en su propia cadena con una API pública REST y WebSocket, <b>subcuentas que tienen cada una su propia wallet de API</b>, funding cada hora y un libro de órdenes que cualquiera puede auditar on-chain.</p>
+          <div class="gl-offer"><b>4%</b><span>de descuento en comisiones de trading<br>con el código <i>MARGINPAD</i></span></div>
+          <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Únete a Hyperliquid &rarr;</a>
+        </div>
+        <div class="gl-card" data-ex="Bybit" id="glBy">
+          <div class="gl-ch"><span class="gl-mark" style="background:#f7a600;color:#1a1200">B</span><b id="glName">Bybit</b><span class="gl-pill">centralizado &middot; los libros más profundos</span></div>
+          <p id="glTxt">Formatos REST y WebSocket muy parecidos a los de esta API, una clave distinta por subcuenta, y una de las fuentes de las que vienen nuestros propios precios. La opción por defecto cuando quieres un libro centralizado con rampas de entrada en fiat.</p>
+          <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Abre una cuenta en Bybit &rarr;</a>
+        </div>
+      </div>
+      <span class="gl-note">Enlaces de referido &mdash; MarginPad puede ganar una comisión si abres una cuenta, sin costo para ti; el descuento de Hyperliquid es su propio descuento por referido. Todas las API de esta página siguen siendo gratis de todas formas. Hyperliquid no está disponible para personas de EE. UU. según sus términos.</span>
+    </div>
+
+    <h2 id="mcp">MCP — úsalo desde Claude, ChatGPT o Cursor</h2>
+    <p>Agrega <code>https://marginpad.io/mcp</code> como servidor MCP remoto (Streamable HTTP). Las herramientas de datos de mercado no necesitan clave; configura el encabezado <code>X-API-Key</code> para las herramientas de paper trading. <b>23 herramientas:</b> get_price, get_klines, get_markets, get_screener, get_funding, get_open_interest, get_liquidations, get_fear_greed, get_economic_calendar, calc_liquidation, calc_position_size, paper_balance, paper_positions, paper_trades, paper_open, paper_close, paper_sltp, paper_modify_order, paper_fees, paper_report, paper_limit_order, paper_orders, paper_cancel_order.</p>
+
+    <h2 id="sdk">Clientes — un archivo, cero dependencias</h2>
+    <p><a href="/assets/sdk/marginpad.py">marginpad.py</a> (Python 3.8+, solo urllib; <code>websockets</code> opcional para el stream) y <a href="/assets/sdk/marginpad.js">marginpad.js</a> (Node 18+ o un navegador). Ambos cubren datos de mercado, todas las llamadas de paper trading, sondeo con ETag, back-off en el 429, el stream por WebSocket y la verificación de firma de los webhooks.</p>
+    <pre>from marginpad import MarginPad
+mp = MarginPad("mpb_...")                              # key from /trading-api/
+print(mp.price("BTC"))                                 # keyless market data
+r = mp.open("BTC", "long", margin_usd=100, leverage=10, trail_pct=1.5,
+            client_order_id="sig-1403")                # a retry can never open twice
+print(r["position"]["liq_price"], mp.report()["skill"])</pre>
+
+    <h2 id="calc">Calculadoras — <code>/api/*</code>, JSON plano</h2>
+    <p>Una API JSON pública y gratuita para los cálculos más comunes de futuros de cripto. Sin clave API, sin registro, con CORS habilitado — llámala desde donde quieras.</p>
+    <pre>Base URL   https://marginpad.io/api
+Method     GET
+Auth       none
+CORS       enabled (Access-Control-Allow-Origin: *)
+Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</pre>
+
+    <h3>Precio de liquidación</h3>
+    <div class="ep"><b>GET</b> /api/liquidation?entry=60000&amp;leverage=10&amp;side=long&amp;mmr=0.5</div>
+    <table class="params">
+      <tr><td>entry</td><td>obligatorio — precio de entrada</td></tr>
+      <tr><td>leverage</td><td>obligatorio — múltiplo de apalancamiento (>0)</td></tr>
+      <tr><td>side</td><td>opcional — long (por defecto) o short</td></tr>
+      <tr><td>mmr</td><td>opcional — % de tasa de margen de mantenimiento, por defecto 0.5</td></tr>
+    </table>
+    <pre>{
+  "side": "long",
+  "liquidationPrice": 54300,
+  "distancePct": -9.5
+}</pre>
+
+    <h3>Tamaño de posición (por riesgo)</h3>
+    <div class="ep"><b>GET</b> /api/position-size?balance=5000&amp;risk=1&amp;entry=60000&amp;stop=58800&amp;leverage=10</div>
+    <table class="params">
+      <tr><td>balance</td><td>obligatorio — saldo de la cuenta</td></tr>
+      <tr><td>risk</td><td>obligatorio — % de riesgo por operación</td></tr>
+      <tr><td>entry</td><td>obligatorio — precio de entrada</td></tr>
+      <tr><td>stop</td><td>obligatorio — precio de stop-loss</td></tr>
+      <tr><td>leverage</td><td>opcional — para el margen requerido</td></tr>
+    </table>
+    <pre>{ "positionSize": 0.041667, "notional": 2500, "riskAmount": 50, "marginRequired": 250 }</pre>
+
+    <h3>PnL / ROI / ROE</h3>
+    <div class="ep"><b>GET</b> /api/pnl?entry=60000&amp;exit=66000&amp;size=0.5&amp;leverage=10&amp;side=long</div>
+    <pre>{ "pnl": 3000, "roiPct": 10, "roePct": 100 }</pre>
+
+    <h3>Riesgo / beneficio</h3>
+    <div class="ep"><b>GET</b> /api/risk-reward?entry=60000&amp;stop=58000&amp;tp=66000</div>
+    <pre>{ "riskRewardRatio": 3, "riskPerUnit": 2000, "rewardPerUnit": 6000, "breakevenWinRatePct": 25 }</pre>
+
+    <h3>Objetivo de take-profit</h3>
+    <div class="ep"><b>GET</b> /api/take-profit?entry=60000&amp;leverage=10&amp;roe=75&amp;side=long</div>
+    <pre>{ "targetExitPrice": 64500, "priceMovePct": 7.5 }</pre>
+
+    <h2>Notas</h2>
+    <p>Los cálculos usan la estimación de margen aislado y son solo para uso educativo, no es asesoría financiera. Las cifras no incluyen comisiones del exchange ni funding. La API se ofrece gratis y tal cual. Si construyes algo con ella, se agradece un enlace de vuelta a <a href="https://marginpad.io">marginpad.io</a>. Los datos de mercado son de uso público gratuito, se agradece la atribución; la Bot API es un simulador y nunca toca fondos reales. Solo con fines educativos, no es asesoría financiera.</p>
+
+    <div class="endcta">
+      <h3>Construye algo con ella</h3>
+      <p>Consigue una clave API gratis en un minuto, o pega la URL del MCP en tu asistente y pregúntale qué se ve alcista ahora mismo.</p>
+      <a class="cta" href="/es/trading-api/">Consigue una clave API gratis →</a>
+    </div>
+  </article>
+
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/free-crypto-api/">API de datos</a> · <a href="/es/trading-api/">Bot API</a> · <a href="/api/openapi.json">OpenAPI</a> · <a href="/api/changelog">Registro de cambios</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script>
+/* Bybit does not onboard the US or Canada and Hyperliquid's terms exclude US persons: the shared partner table (window.mpEx,
+   deferred mp-auth.js pulled in by mp-nav) dims and labels the cards for those readers, same rule as everywhere else. */
+(function () {
+  var n = 0;
+  if (!document.querySelector('script[src*="mp-auth"]')) n = 80; // the bundle is not on this page (mp-nav does not pull it): skip straight to the geo fallback below
+  var iv = setInterval(function () {
+    if (++n > 80) { clearInterval(iv); try { var cached = null; try { var v = JSON.parse(localStorage.getItem('mp_cc') || 'null'); if (v && v.cc && Date.now() - (+v.ts || 0) < 864e5) cached = v.cc; } catch (e0) {} (cached ? Promise.resolve({ cc: cached }) : fetch('/api/geo', { credentials: 'omit' }).then(function (r) { return r.json(); })).then(function (d) { if (d && d.cc === 'US') { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in the US'; h.appendChild(s); } } }).catch(function () {}); } catch (e) {} return; }
+    if (!window.mpEx || !window.mpEx.cc) return;
+    clearInterval(iv);
+    window.mpEx.cc(function (c) {
+      if (!c) return;
+      var reg = window.mpEx.region(c) || 'your country';
+      if (window.mpEx.blocked('Hyperliquid', c)) { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + reg; h.appendChild(s); } }
+      if (!window.mpEx.blocked('Bybit', c)) return;
+      var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
+      var a = document.getElementById('glLink'), t = document.getElementById('glTxt'), nm = document.getElementById('glName'), by = document.getElementById('glBy');
+      if (!v || !a || !t) return;
+      a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v); a.textContent = 'Open a ' + v + ' account →';
+      if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
+      t.innerHTML = 'Bybit does not onboard traders in ' + reg + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
+    });
+  }, 100);
+})();
+</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

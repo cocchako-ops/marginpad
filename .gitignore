@@ -77,3 +77,7 @@ build/pt-shots/
 
 # Vault cosmetics E2E screenshots (build/vault-shots.js)
 build/vault-shots/
+
+# Spanish translation work files (transient; the catalog is the source)
+build/data/es/chunks/
+build/data/es/leftover.json

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/markets/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Datos del Mercado de Futuros Cripto — Liquidaciones, Funding, OI, Long/Short | MarginPad</title>
+<meta name="description" content="Live crypto perpetual-futures market data in one place: liquidations, funding rates, open interest and long/short positioning, plus a live dashboard for every major coin. Free, no signup." />
+<meta name="keywords" content="crypto market data, futures market data, crypto liquidations, funding rates, open interest, long short ratio, crypto perpetuals" />
+<link rel="canonical" href="https://marginpad.io/es/markets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/markets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Crypto Futures Market Data — Liquidations, Funding, OI, Long/Short" />
+<meta property="og:description" content="Live crypto perpetual-futures market data in one place: liquidations, funding rates, open interest and long/short positioning, plus a live dashboard for every major coin. Free, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/markets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .mkgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:640px){.mkgrid{grid-template-columns:1fr}}
+  .mkcard{display:flex;align-items:flex-start;gap:13px;background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:14px;padding:15px 16px;text-decoration:none;color:var(--ink);transition:transform .14s,border-color .14s}
+  .mkcard:hover{transform:translateY(-2px);border-color:#c2f64a}
+  .mk-e{font-size:26px;line-height:1;flex:0 0 auto}
+  .mk-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0 0 3px}
+  .mk-d{color:var(--ink-dim);font-size:13px;line-height:1.45;margin:0}
+  .mk-coins{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+  .mk-coin{text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:8px 12px;transition:.13s}
+  .mk-coin:hover{border-color:#c2f64a;color:#c2f64a}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Mercados","item":"https://marginpad.io/es/markets/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Datos del Mercado de Futuros Cripto — Liquidaciones, Funding, OI, Long/Short","url":"https://marginpad.io/es/markets/","dateModified":"2026-09-10T19:56:57.542Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/es/screener">Screener</a><a href="/es/liquidations/">Liquidaciones</a><a href="/es/funding/">Funding</a><a href="/es/">Herramientas</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / Mercados</div>
+  <article>
+    <h1>Datos del Mercado de Futuros Cripto</h1>
+    <p class="lead">Todo lo que pasa en el mercado de futuros perpetuos cripto, en un solo lugar — liquidaciones en vivo, tasas de funding, interés abierto y posicionamiento de traders, además de un panel en vivo dedicado para cada moneda importante. Todo gratis, sin registro.</p>
+
+    <h2>Datos de mercado en vivo</h2>
+    <div class="mkgrid">
+      <a class="mkcard" href="/es/liquidations/"><span><span class="mk-t">Liquidaciones</span><p class="mk-d">Total de liquidaciones en 24h, longs frente a shorts, las monedas más reventadas.</p></span></a>
+      <a class="mkcard" href="/es/funding/"><span><span class="mk-t">Tasas de funding</span><p class="mk-d">El funding más alto y más negativo — longs y shorts masificados.</p></span></a>
+      <a class="mkcard" href="/es/open-interest/"><span><span class="mk-t">Interés abierto</span><p class="mk-d">Dónde se está acumulando y liberando apalancamiento entre monedas.</p></span></a>
+      <a class="mkcard" href="/es/long-short/"><span><span class="mk-t">Ratio Long / Short</span><p class="mk-d">Cómo está posicionada la multitud en cada moneda.</p></span></a>
+      <a class="mkcard" href="/es/screener/"><span><span class="mk-t">Screener del mercado</span><p class="mk-d">Screener técnico con puntuación, entradas y configuraciones.</p></span></a>
+      <a class="mkcard" href="/es/rekt/"><span><span class="mk-t">Feed de liquidaciones en vivo</span><p class="mk-d">Transmisión en tiempo real de cada gran liquidación en el momento en que ocurre.</p></span></a>
+    </div>
+
+    <h2>Paneles por moneda <span style="color:var(--ink-faint);font-weight:400;font-size:14px">(6 monedas)</span></h2>
+    <p style="color:var(--ink-dim);font-size:14px;margin:0 0 12px">Precio en vivo, funding, interés abierto, posicionamiento long/short y liquidaciones de 24h para cada moneda — más enlaces para operarla.</p>
+    <div class="mk-coins">
+      <a class="mk-coin" href="/es/coin/bnb/">BNB</a><a class="mk-coin" href="/es/coin/btc/">BTC</a><a class="mk-coin" href="/es/coin/doge/">DOGE</a><a class="mk-coin" href="/es/coin/eth/">ETH</a><a class="mk-coin" href="/es/coin/sol/">SOL</a><a class="mk-coin" href="/es/coin/xrp/">XRP</a>
+    </div>
+
+    <h2>Qué puedes hacer aquí</h2>
+    <p>Usa el <a href="/es/liquidations/">rastreador de liquidaciones</a> para ver dónde se está barriendo el apalancamiento, el <a href="/es/funding/">escáner de funding</a> para detectar longs y shorts masificados, el <a href="/es/open-interest/">interés abierto</a> para seguir hacia dónde fluye el dinero, y el <a href="/es/long-short/">ratio long/short</a> para leer a la multitud. Después abre cualquier <a href="/es/coin/btc/">panel de moneda</a> para el panorama completo, confirma una configuración en el <a href="/es/screener">screener técnico</a>, y dimensiónala con la <a href="/es/">calculadora de precio de liquidación</a>.</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Datos agregados de los principales exchanges. Solo con fines informativos — no es asesoría financiera.</p>
+  
+<div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/funding/">Funding</a> · <a href="/es/open-interest/">OI</a> · <a href="/es/long-short/">Long/Short</a> · <a href="/es/screener">Screener</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

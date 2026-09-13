@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/stop-loss-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Stop-Loss y Take-Profit — Objetivos R:R | MarginPad</title>
+<meta name="description" content="Free stop-loss calculator for crypto: exact stop price from your dollar risk and position size, plus 1R, 2R and 3R take-profit targets for clean risk-reward planning." />
+<meta name="keywords" content="stop loss calculator crypto, take profit calculator, risk reward calculator, r multiple targets" />
+<link rel="canonical" href="https://marginpad.io/es/stop-loss-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/stop-loss-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/stop-loss-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/stop-loss-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Stop-Loss & Take-Profit Calculator — R:R Targets | MarginPad" />
+<meta property="og:description" content="Free stop-loss calculator for crypto: exact stop price from your dollar risk and position size, plus 1R, 2R and 3R take-profit targets for clean risk-reward planning." />
+<meta property="og:url" content="https://marginpad.io/es/stop-loss-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Stop-Loss y Take-Profit","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/stop-loss-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Stop-Loss y Take-Profit","item":"https://marginpad.io/es/stop-loss-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿El stop debe ir debajo del soporte o en mi número de riesgo?","acceptedAnswer":{"@type":"Answer","text":"Ambos, en orden: primero encuentra el nivel estructural que invalida la operación (debajo del soporte para longs, encima de la resistencia para shorts), y después calcula el tamaño de la POSICIÓN para que la pérdida en dólares en ese nivel sea igual a tu número de riesgo. Si la posición queda demasiado pequeña para importar, el setup es demasiado amplio — descártalo en lugar de apretar el stop hasta meterlo en el ruido."}},{"@type":"Question","name":"¿Qué relación riesgo-beneficio es buena?","acceptedAnswer":{"@type":"Answer","text":"Solo significa algo junto a tu tasa de acierto: R:R de equilibrio = (1 / tasa de acierto) - 1. Una tasa de acierto del 50% empata en 1:1, una del 33% necesita 2:1. La mayoría de los sistemas swing apuntan a ganadoras promedio de al menos 2R para que una tasa de acierto normal siga componiendo."}},{"@type":"Question","name":"¿Por qué mi stop se ejecutó a un precio peor?","acceptedAnswer":{"@type":"Answer","text":"Un stop-loss se convierte en una orden a mercado al tocarse, así que en movimientos rápidos o libros de órdenes delgados se ejecuta con slippage. En el paper trading de MarginPad los stops se resuelven en el cierre de la vela con confirmación, y en los exchanges reales puedes usar órdenes stop-limit para acotar el slippage a costa de que quizás no se ejecuten."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Stop-Loss y Take-Profit — Objetivos R:R","url":"https://marginpad.io/es/stop-loss-calculator/","dateModified":"2026-09-10T19:56:57.575Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Stop-Loss y Take-Profit</h1>
+<p class="sub">Coloca el stop donde tu riesgo dice que debe ir — y después lee los objetivos 1R / 2R / 3R que la operación debe alcanzar para que valga la pena tomarla.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="side">Dirección</label><select id="side"><option value="1">Long</option><option value="-1">Short</option></select></div><div class="f"><label for="entry">Precio de entrada</label><input id="entry" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="pos">Tamaño de posición (USD)</label><input id="pos" type="number" inputmode="decimal" value="1000"></div><div class="f"><label for="riskusd">Pérdida máxima (USD)</label><input id="riskusd" type="number" inputmode="decimal" value="50"></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">distancia del stop % = pérdida máxima / posición &nbsp;&nbsp;|&nbsp;&nbsp; objetivo nR = entrada &plusmn; n &times; distancia del stop</div>
+<p>"R" es tu unidad de riesgo — la distancia en dólares entre la entrada y el stop. Pensar en R hace que todas las operaciones sean comparables: una ganadora de 2R paga dos perdedoras de 1R sin importar la moneda, el apalancamiento o el tamaño de la posición. Una estrategia que gana solo el 40% de las veces sigue siendo rentable si la ganadora promedio alcanza 2R.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Long en <b>$60,000</b> con una posición de <b>$1,000</b> arriesgando <b>$50</b>: distancia del stop 5%, stop en <b>$57,000</b>. Objetivos: 1R $63,000, 2R $66,000, 3R $69,000. Gana 2R aunque sea 4 de cada 10 veces y el balance queda en verde.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿El stop debe ir debajo del soporte o en mi número de riesgo?</summary><p>Ambos, en orden: primero encuentra el nivel estructural que invalida la operación (debajo del soporte para longs, encima de la resistencia para shorts), y después calcula el tamaño de la POSICIÓN para que la pérdida en dólares en ese nivel sea igual a tu número de riesgo. Si la posición queda demasiado pequeña para importar, el setup es demasiado amplio — descártalo en lugar de apretar el stop hasta meterlo en el ruido.</p></details><details><summary>¿Qué relación riesgo-beneficio es buena?</summary><p>Solo significa algo junto a tu tasa de acierto: R:R de equilibrio = (1 / tasa de acierto) - 1. Una tasa de acierto del 50% empata en 1:1, una del 33% necesita 2:1. La mayoría de los sistemas swing apuntan a ganadoras promedio de al menos 2R para que una tasa de acierto normal siga componiendo.</p></details><details><summary>¿Por qué mi stop se ejecutó a un precio peor?</summary><p>Un stop-loss se convierte en una orden a mercado al tocarse, así que en movimientos rápidos o libros de órdenes delgados se ejecuta con slippage. En el paper trading de MarginPad los stops se resuelven en el cierre de la vela con confirmación, y en los exchanges reales puedes usar órdenes stop-limit para acotar el slippage a costa de que quizás no se ejecuten.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/position-size-calculator/">Tamaño de posición</a><a href="/es/crypto-profit-calculator/">Calculadora de ganancias</a><a href="/es/risk-of-ruin-calculator/">Riesgo de ruina</a><a href="/es/blog/crypto-position-sizing-risk-management/">Guía de tamaño de posición</a><a href="/es/paper-trade">Paper trading</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var s=+document.getElementById('side').value,en=+document.getElementById('entry').value,p=+document.getElementById('pos').value,ru=+document.getElementById('riskusd').value;var r=document.getElementById('res');if(!(en>0&&p>0&&ru>0)){r.innerHTML='';return;}var dist=ru/p,sl=en*(1-s*dist),t1=en*(1+s*dist),t2=en*(1+s*dist*2),t3=en*(1+s*dist*3);var fx=function(v){return v.toLocaleString(undefined,{maximumFractionDigits:2});};
+r.innerHTML='<div class="rrow"><span class="k">Stop distance</span><span class="v">'+(dist*100).toFixed(2)+'%</span></div><div class="rrow big"><span class="k">Stop-loss price</span><span class="v dn">'+fx(sl)+'</span></div><div class="rrow"><span class="k">Take-profit 1R (risk = reward)</span><span class="v up">'+fx(t1)+'</span></div><div class="rrow"><span class="k">Take-profit 2R</span><span class="v up">'+fx(t2)+'</span></div><div class="rrow"><span class="k">Take-profit 3R</span><span class="v up">'+fx(t3)+'</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-funding-cost-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Costo de Funding — Lo que Realmente Cuesta Mantener un Perpetuo | MarginPad</title>
+<meta name="description" content="Free funding cost calculator for crypto perpetuals: position size, funding rate and hold time turned into the exact dollars paid or earned per interval, per day and total." />
+<meta name="keywords" content="funding cost calculator, funding rate calculator crypto, perpetual funding fees, how much is funding" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-funding-cost-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-funding-cost-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-funding-cost-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-funding-cost-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Funding Cost Calculator — What Holding a Perp Really Costs | MarginPad" />
+<meta property="og:description" content="Free funding cost calculator for crypto perpetuals: position size, funding rate and hold time turned into the exact dollars paid or earned per interval, per day and total." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-funding-cost-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Costo de Funding","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-funding-cost-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Costo de Funding","item":"https://marginpad.io/es/crypto-funding-cost-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Quién le paga el funding a quién?","acceptedAnswer":{"@type":"Answer","text":"Cuando la tasa es positiva, los longs le pagan a los shorts (el perpetuo cotiza por encima del spot y el mercado paga a quienes lo empujan de vuelta hacia abajo con shorts). Cuando es negativa, los shorts le pagan a los longs. Pagas o recibes automáticamente cada 8 horas mientras la posición esté abierta en la marca de funding."}},{"@type":"Question","name":"¿Es el funding igual en todos los exchanges?","acceptedAnswer":{"@type":"Answer","text":"No — cada exchange calcula su propia tasa a partir de su propia prima perpetuo-vs-índice, y divergen, especialmente en monedas más pequeñas. Esa divergencia es lo que operan las mesas de arbitraje de funding. Revisa las tasas en vivo por exchange en la página de funding de MarginPad antes de elegir dónde mantener una posición larga."}},{"@type":"Question","name":"¿Puedo evitar el funding por completo?","acceptedAnswer":{"@type":"Answer","text":"Cierra antes de la marca de funding y no pagas nada por ese intervalo — el funding solo afecta a las posiciones abiertas justo en ese instante. Las tenencias en spot nunca pagan funding, y los futuros con vencimiento (trimestrales) lo reemplazan con una base fija, que se adapta mejor a las posiciones direccionales de largo plazo que los perpetuos."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Costo de Funding — Lo que Realmente Cuesta Mantener un Perpetuo","url":"https://marginpad.io/es/crypto-funding-cost-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Costo de Funding</h1>
+<p class="sub">Los perpetuos nunca vencen — el funding es el alquiler que los mantiene atados al spot. Calcula lo que tu posición realmente cuesta (o gana).</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="pos">Tamaño de posición (USD)</label><input id="pos" type="number" inputmode="decimal" value="10000"></div><div class="f"><label for="frate">Tasa de funding % / 8h</label><input id="frate" type="number" inputmode="decimal" value="0.01" step="0.001"></div><div class="f"><label for="days">Días en posición</label><input id="days" type="number" inputmode="decimal" value="7" step="0.5"></div><div class="f"><label for="dir">Estás</label><select id="dir"><option value="1">Pagando (con la mayoría)</option><option value="-1">Recibiendo (contra la mayoría)</option></select></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">costo por intervalo = posición &times; tasa &nbsp;&nbsp;|&nbsp;&nbsp; diario = &times;3 &nbsp;&nbsp;|&nbsp;&nbsp; APR = tasa &times; 3 &times; 365</div>
+<p>El funding se intercambia directamente entre traders cada 8 horas sobre el <strong>valor total de la posición</strong>, no sobre tu margen. Una tasa "pequeña" del 0.01% es 10.95% anualizado — dinero real en cualquier posición mantenida durante semanas. Cuando las tasas se disparan durante la euforia (0.1%+ por intervalo), mantener el lado más concurrido puede costar más que el movimiento que esperas.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">Un long de <b>$10,000</b> a <b>+0.01%/8h</b> durante <b>7 días</b>: $1 por intervalo, $3 por día, <b>$21 en total</b> — unos 10.95% de APR. La misma semana a una tasa eufórica del 0.1% costaría <b>$210</b>.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Quién le paga el funding a quién?</summary><p>Cuando la tasa es positiva, los longs le pagan a los shorts (el perpetuo cotiza por encima del spot y el mercado paga a quienes lo empujan de vuelta hacia abajo con shorts). Cuando es negativa, los shorts le pagan a los longs. Pagas o recibes automáticamente cada 8 horas mientras la posición esté abierta en la marca de funding.</p></details><details><summary>¿Es el funding igual en todos los exchanges?</summary><p>No — cada exchange calcula su propia tasa a partir de su propia prima perpetuo-vs-índice, y divergen, especialmente en monedas más pequeñas. Esa divergencia es lo que operan las mesas de arbitraje de funding. Revisa las tasas en vivo por exchange en la página de funding de MarginPad antes de elegir dónde mantener una posición larga.</p></details><details><summary>¿Puedo evitar el funding por completo?</summary><p>Cierra antes de la marca de funding y no pagas nada por ese intervalo — el funding solo afecta a las posiciones abiertas justo en ese instante. Las tenencias en spot nunca pagan funding, y los futuros con vencimiento (trimestrales) lo reemplazan con una base fija, que se adapta mejor a las posiciones direccionales de largo plazo que los perpetuos.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/funding/">Tasas de funding en vivo</a><a href="/es/crypto-break-even-calculator/">Calculadora de punto de equilibrio</a><a href="/es/blog/what-is-funding-rate/">¿Qué es el funding? (guía)</a><a href="/es/crypto-profit-calculator/">Calculadora de beneficio</a><a href="/es/calculators">Todas las calculadoras (app)</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var p=+document.getElementById('pos').value,fr=+document.getElementById('frate').value/100,d=+document.getElementById('days').value,dir=+document.getElementById('dir').value;var r=document.getElementById('res');if(!(p>0&&d>0)){r.innerHTML='';return;}var per=p*fr,day=per*3,tot=day*d,sgn=dir>0?-1:1;var fx=function(v){return (v>=0?'+':'')+v.toFixed(2);};
+r.innerHTML='<div class="rrow"><span class="k">Per 8h interval</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*per)+' USD</span></div><div class="rrow"><span class="k">Per day (3 intervals)</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*day)+' USD</span></div><div class="rrow big"><span class="k">Over '+d+' day'+(d===1?'':'s')+'</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*tot)+' USD</span></div><div class="rrow"><span class="k">Annualized rate</span><span class="v">'+(fr*3*365*100).toFixed(1)+'% APR</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

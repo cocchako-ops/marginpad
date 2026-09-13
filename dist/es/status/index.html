@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/status/">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Estado de MarginPad — Disponibilidad de la API, el almacén de trading y el feed de liquidaciones</title>
+<meta name="description" content="Live status of the MarginPad Bot API, the paper-trading store, the liquidation collector and the price feed, with 90 days of sampled uptime. No login." />
+<link rel="canonical" href="https://marginpad.io/es/status/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/status/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/status/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/status/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="MarginPad Status" />
+<meta property="og:description" content="Bot API, trading store, liquidation feed and price feed: live checks and 90 days of uptime." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/status/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--lime)}
+  .wrap{max-width:820px;margin:0 auto;padding:18px 18px calc(48px + env(safe-area-inset-bottom))}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+  .brand b{color:var(--lime)}
+  .hnav{display:flex;align-items:center;gap:14px}.hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.03em;margin:0 0 6px;line-height:1.05}
+  .sub{color:var(--dim);margin:0 0 18px;max-width:64ch}
+  .overall{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 14px}
+  .overall i{width:12px;height:12px;border-radius:50%;background:var(--faint);flex:none}
+  .overall.ok i{background:var(--up);box-shadow:0 0 10px var(--up)}.overall.bad i{background:var(--red);box-shadow:0 0 10px var(--red)}.overall.warn i{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .overall b{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;letter-spacing:-.01em}
+  .overall span{color:var(--dim);font:12px 'Space Mono',monospace;margin-left:auto;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:0 0 22px}
+  .c{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+  .c .k{font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px}
+  .c .k i{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none;margin-top:3px}
+  .c.ok .k i{background:var(--up)}.c.bad .k i{background:var(--red)}.c.warn .k i{background:var(--amber)}
+  .c b{display:block;font:700 20px 'Space Mono',monospace;letter-spacing:-.02em;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .c small{display:block;color:var(--dim);font-size:12px;margin-top:3px}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em;margin:26px 0 10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  h2 small{font:12px 'Space Mono',monospace;color:var(--faint);font-weight:400}
+  .bars{display:grid;grid-template-columns:repeat(90,minmax(0,1fr));gap:2px;height:34px}
+  .bars i{display:block;border-radius:2px;background:#1a2027;position:relative}
+  .bars i.ok{background:var(--up)}.bars i.part{background:var(--amber)}.bars i.bad{background:var(--red)}.bars i.none{background:#1a2027}
+  .bars i:hover::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1b212a;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font:11px 'Space Mono',monospace;color:var(--ink);white-space:nowrap;z-index:5}
+  .legend{display:flex;justify-content:space-between;font:11px 'Space Mono',monospace;color:var(--faint);margin-top:6px}
+  .pct{font:700 13px 'Space Mono',monospace;color:var(--ink)}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+  th{text-align:left;font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:8px 8px 8px 0;border-bottom:1px solid var(--line2)}
+  td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td.n{font-family:'Space Mono',monospace;white-space:nowrap}
+  .tag{display:inline-block;font:700 10px 'Space Mono',monospace;letter-spacing:.05em;border-radius:5px;padding:2px 7px}
+  .tag.ok{color:var(--up);background:rgba(46,189,133,.12)}.tag.bad{color:var(--red);background:rgba(255,98,88,.12)}.tag.quiet{color:var(--dim);background:#161b22}
+  .note{color:var(--dim);font-size:13px;max-width:70ch;margin-top:20px;line-height:1.55}
+  .note code{font-family:'Space Mono',monospace;font-size:12px;background:#12161c;border-radius:5px;padding:1px 5px}
+  @media(max-width:520px){.bars{height:28px}.hnav a.hide{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a href="/es/" class="brand">MARGIN<b>PAD</b></a>
+  <nav class="hnav"><a href="/es/trading-api/">Bot API</a><a href="/es/api-docs/" class="hide">Referencia</a><a href="/es/rekt/" class="hide">Liquidaciones</a></nav>
+</header>
+<h1>Estado del sistema</h1>
+<p class="sub">De qué depende un bot, verificado cada 10 minutos: el almacén de paper trading, el recolector de liquidaciones y el feed de precios. Los días están en UTC. Nada aquí requiere iniciar sesión.</p>
+<div class="overall" id="overall"><i></i><b id="ovT">Verificando…</b><span id="ovS"></span></div>
+<div class="grid" id="cards"></div>
+
+<h2>Almacén de trading <small id="upStore"></small></h2>
+<div class="bars" id="bStore"></div><div class="legend"><span>hace 90 días</span><span id="pStore" class="pct"></span><span>hoy</span></div>
+<h2>Recolector de liquidaciones <small id="upColl"></small></h2>
+<div class="bars" id="bColl"></div><div class="legend"><span>hace 90 días</span><span id="pColl" class="pct"></span><span>hoy</span></div>
+<h2>Feed de precios <small id="upPx"></small></h2>
+<div class="bars" id="bPx"></div><div class="legend"><span>hace 90 días</span><span id="pPx" class="pct"></span><span>hoy</span></div>
+
+<h2>Fuentes de liquidación <small>en vivo desde el recolector</small></h2>
+<table><thead><tr><th>Plataforma</th><th>Socket</th><th>Última liquidación</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Cargando…</td></tr></tbody></table>
+
+<p class="note">Cada día muestra la proporción de muestras que pasaron. Un día con menos muestras de las esperadas significa que el programador mismo no estaba funcionando, y eso cuenta en nuestra contra en lugar de ocultarse. Las plataformas con poco volumen (BitMEX, dYdX, Bitfinex) legítimamente pasan horas sin una liquidación; un socket conectado con un último evento antiguo está en silencio, no roto. Legible por máquinas: <code>GET /api/status</code>, los monitores externos pueden usar <code>GET /api/health</code> (200 mientras el programador esté vivo). Cambios en la API: <a href="/api/changelog.xml">RSS</a>.</p>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function ago(m){return m==null?'':m<1?'just now':m<60?m+' min ago':Math.round(m/60)+' h ago';}
+  function bars(el,days,field,pctEl,upEl){
+    var html='',okDays=0,seen=0,sumOk=0,sumN=0,today=new Date().toISOString().slice(0,10);
+    days.forEach(function(d){var cls='none',t=d.d+': no samples';
+      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var start=Date.parse(d.d+'T00:00:00Z'),end=Math.min(Date.now(),start+86400000),from=Math.max(start,d.first||start);var exp=Math.max(1,Math.floor((end-from)/600000)+1);var cov=Math.min(1,d.n/exp);var eff=r*cov;cls=eff>=0.995?'ok':eff>=0.9?'part':'bad';if(cls==='ok')okDays++;t=d.d+': '+Math.round(eff*100)+'% ('+d[field]+'/'+d.n+' ok'+(d.n<exp*0.9?', '+d.n+' of '+exp+' samples':'')+')';}
+      html+='<i class="'+cls+'" data-t="'+t+'"></i>';});
+    el.innerHTML=html;
+    if(sumN){pctEl.textContent=(sumOk/sumN*100).toFixed(2)+'% of samples passed';upEl.textContent=seen+' day'+(seen===1?'':'s')+' measured';}else{pctEl.textContent='no samples yet';upEl.textContent='';}
+  }
+  function card(cls,k,v,s){return '<div class="c '+cls+'"><div class="k"><span>'+k+'</span><i></i></div><b>'+v+'</b><small>'+s+'</small></div>';}
+  fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    var n=j.now||{},st=n.store,co=n.collector,px=n.prices,cr=n.cron;
+    var bad=[],warn=[];
+    if(!cr||!cr.ok)bad.push('scheduler');if(st&&!st.ok)bad.push('trading store');if(co&&!co.ok)bad.push('liquidation collector');if(px&&!px.ok)warn.push('price feed');
+    var ov=$('overall');ov.className='overall '+(bad.length?'bad':warn.length?'warn':'ok');
+    $('ovT').textContent=bad.length?'Degraded: '+bad.join(', '):warn.length?'Partly degraded: '+warn.join(', '):'All systems operational';
+    $('ovS').textContent='checked '+new Date(j.ts).toISOString().slice(11,16)+' UTC';
+    var h='';
+    h+=card(cr&&cr.ok?'ok':'bad','Scheduler',cr&&cr.ok?'alive':'down','last pass '+ago(cr?cr.ageMin:null));
+    h+=card(st?(st.ok?'ok':'bad'):'','Trading store',st?(st.ok?(st.ms+' ms'):'no answer'):'—',st?'round trip, sampled '+ago(st.sampledAgoMin):'');
+    h+=card(co?(co.ok?'ok':'bad'):'','Liquidation collector',co?co.connected+' / '+co.total:'—',co?'sockets connected · up '+(co.uptimeSec?Math.round(co.uptimeSec/3600)+' h':'?'):'');
+    h+=card(px?(px.ok?'ok':'warn'):'','Price feed',px?(px.ageSec!=null?px.ageSec+' s':'live'):'—',px?px.pairs+' pairs · age of the price floor':'');
+    $('cards').innerHTML=h;
+    bars($('bStore'),j.days,'store',$('pStore'),$('upStore'));
+    bars($('bColl'),j.days,'coll',$('pColl'),$('upColl'));
+    bars($('bPx'),j.days,'px',$('pPx'),$('upPx'));
+    var vs=(co&&co.venues)||[];
+    $('venues').innerHTML=vs.length?vs.map(function(v){var q=v.lastEventAgeMin;return '<tr><td>'+v.name+'</td><td><span class="tag '+(v.connected?'ok':'bad')+'">'+(v.connected?'connected':'down')+'</span></td><td class="n">'+(q==null?'<span class="tag quiet">none yet</span>':q<60?q+' min ago':Math.round(q/60)+' h ago')+'</td></tr>';}).join(''):'<tr><td colspan="3" style="color:var(--faint)">Collector unreachable</td></tr>';
+  }).catch(function(){$('ovT').textContent='Status endpoint unreachable';$('overall').className='overall bad';});
+})();
+</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/mp-auth.js?v=034bd270"></script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

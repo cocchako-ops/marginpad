@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/liquidations/by-exchange/"><head>
+<meta charset="UTF-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Liquidaciones Cripto por Exchange — Totales en Vivo de 24h por Plataforma | MarginPad</title>
+<meta name="description" content="Which exchange is liquidating the most traders right now. Live 24-hour liquidation totals per venue with the long/short split, measured from the public websockets of nine exchanges. Free, no signup, free JSON API.">
+<link rel="canonical" href="https://marginpad.io/es/liquidations/by-exchange/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/liquidations/by-exchange/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/liquidations/by-exchange/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/liquidations/by-exchange/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Crypto Liquidations by Exchange — Live 24h Totals per Venue | MarginPad">
+<meta property="og:description" content="Which exchange is liquidating the most traders right now. Live 24-hour liquidation totals per venue with the long/short split, measured from the public websockets of nine exchanges. Free, no signup, free JSON API.">
+<meta property="og:url" content="https://marginpad.io/es/liquidations/by-exchange/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+.vx-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:18px 0 8px}
+.vx{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px}
+.vx th,.vx td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.vx th{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim);font-weight:400}
+.vx td:first-child{font-weight:700}
+.vx td.n{font-family:'Space Mono',monospace}
+.vx .bar{display:block;height:5px;border-radius:3px;background:#ff5a4d;overflow:hidden;min-width:80px}
+.vx .bar i{display:block;height:100%;background:#2ebd85}
+.vx-stamp{font-family:'Space Mono',monospace;font-size:11.5px;color:#6f7885;margin:2px 0 26px}
+.vx-note{border:1px solid #262e3a;border-radius:13px;padding:14px 17px;background:rgba(255,255,255,.015);margin:22px 0}
+.vx-note b{display:block;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1;margin-bottom:6px}
+.vx-note p{font-size:13px;color:#9aa3ad;line-height:1.65;margin:0}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Liquidaciones cripto por exchange (24h)","description":"Totales móviles de 24 horas de liquidaciones forzadas por plataforma de derivados, con el desglose long/short, observados del websocket público de liquidaciones de cada exchange.","url":"https://marginpad.io/es/liquidations/by-exchange/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/venues"}],"measurementTechnique":"Direct subscription to each venue's public liquidation websocket; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué exchange tiene más liquidaciones cripto?","acceptedAnswer":{"@type":"Answer","text":"Cambia a diario, por eso la tabla de arriba se mide en lugar de anotarse de memoria. Binance suele ser el mayor en tamaño absoluto porque concentra más apalancamiento abierto, pero la cuota varía según el día: Hyperliquid suele llevarse una porción mayor durante movimientos bruscos porque su libro es más delgado, y una plataforma puede pasar de un cinco por ciento a una cuarta parte del total del día en una sola cascada. Lee la columna de cuota, no los dólares brutos, al comparar plataformas de distinto tamaño."}},{"@type":"Question","name":"¿De dónde vienen estos datos de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"MarginPad ejecuta su propio colector, suscrito al websocket público de liquidaciones de cada plataforma: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX y Bitfinex. Cada cierre forzado se normaliza (símbolo, lado, precio, valor nocional, marca de tiempo) y se agrega en una ventana móvil de 24 horas. Son eventos observados, no estimaciones ni un modelo, y no se rellena nada cuando un feed está en silencio."}},{"@type":"Question","name":"¿Qué me dice el reparto long/short?","acceptedAnswer":{"@type":"Answer","text":"Muestra de qué lado quedó atrapada la mayoría. Una plataforma cuyo flujo de 24 horas es sobre todo liquidaciones long tenía muchos longs masificados cuando llegó la caída; si predominan las liquidaciones short, el squeeze fue en la otra dirección. El reparto suele ser más informativo que el total, porque describe el posicionamiento en lugar del tamaño."}},{"@type":"Question","name":"¿Un total de liquidaciones más alto significa que un exchange es más riesgoso?","acceptedAnswer":{"@type":"Answer","text":"No. Sobre todo significa que ahí hay más tamaño apalancado abierto. Una plataforma con libros profundos y muchos traders liquidará más dólares que una pequeña ante el mismo movimiento del mercado. Lo que sí indicaría riesgo es que una plataforma liquide muy por encima de su cuota de interés abierto, o cascadas repetidas en libros delgados."}},{"@type":"Question","name":"¿Puedo obtener estos datos como API?","acceptedAnswer":{"@type":"Answer","text":"Sí, gratis y sin clave: GET https://marginpad.io/api/v1/venues devuelve cada plataforma con su total de 24 horas, el desglose long/short y su cuota sobre la cifra del mercado en conjunto. El mismo colector también alimenta /api/v1/liquidations para los totales del mercado y /api/v1/clusters para las bandas del mapa de calor."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Liquidaciones","item":"https://marginpad.io/liquidations/"},{"@type":"ListItem","position":2,"name":"Por exchange","item":"https://marginpad.io/es/liquidations/by-exchange/"}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
+.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
+.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
+.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
+.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
+.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
+.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
+.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
+.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
+.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
+.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
+@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Liquidaciones Cripto por Exchange — Totales en Vivo de 24h por Plataforma","url":"https://marginpad.io/es/liquidations/by-exchange/","dateModified":"2026-09-11T11:39:32.519Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/heatmap">Mapa de calor</a><a href="/es/trading-api/">API</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/liquidations/">Liquidaciones</a> / Por exchange</div>
+  <article>
+    <h1>Liquidaciones cripto por exchange</h1>
+    <p class="lead">Qué plataforma está realmente reventando a los traders, en las últimas 24 horas. Son cierres forzados observados y leídos directamente del websocket público de cada exchange &mdash; no es una estimación, ni un feed de terceros, ni un modelo.</p>
+
+    <div id="vxdata">
+      <p class="vx-stamp">Leyendo las últimas 24 horas de nuestro recolector&hellip;</p>
+    </div>
+
+    <div class="vx-note">
+      <b>Cómo leer esto</b>
+      <p>La cuota importa más que la cifra bruta en dólares. Una plataforma con más apalancamiento abierto siempre liquidará más dinero ante el mismo movimiento del mercado, así que un total grande habla sobre todo de tamaño. La columna del reparto long/short es más útil: te dice de qué lado quedó atrapada la multitud cuando llegó el movimiento. Y un solo día es clima, no tendencia &mdash; una sola cascada puede darle a una plataforma que normalmente ronda el cinco por ciento, una cuarta parte del total del día.</p>
+    </div>
+
+    <h2>Por qué esto es difícil de encontrar gratis</h2>
+    <p>El flujo de liquidaciones por plataforma es uno de los pocos conjuntos de datos de derivados que está realmente restringido. Los agregadores que lo publican cobran por el desglose, porque recopilarlo implica mantener una conexión websocket en vivo con cada exchange, normalizar nueve formatos de mensaje distintos y seguir conectado durante sus caídas en lugar de consultar un endpoint REST cada pocos minutos. MarginPad ya ejecuta ese colector para su propio <a href="/es/heatmap">mapa de calor de liquidaciones</a> y su <a href="/es/rekt/">feed en vivo</a>, así que publicar el desglose por plataforma no cuesta nada extra y no hay motivo para cobrarlo.</p>
+
+    <h2>El método, completo</h2>
+    <p>El colector se suscribe al stream público de liquidaciones de <strong>nueve exchanges</strong>: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX y Bitfinex. Binance se lee en dos feeds (con margen en USD y con margen en la moneda) que se cuentan como una sola plataforma. Cada evento lleva un símbolo, un lado, un precio de ejecución y un tamaño; el valor nocional es el precio por el tamaño en dólares estadounidenses. Los eventos se agregan en una ventana móvil de 24 horas, y la tabla de arriba es esa ventana en el momento en que se sirvió la página.</p>
+    <p>No se infiere nada. Si el socket de una plataforma está en silencio, se muestra cero en vez de una cifra interpolada, y si el propio colector está caído, la tabla lo indica en lugar de mostrar números desactualizados como si fueran actuales. Los totales van a diferir de otros rastreadores, y es lo esperado: los exchanges publican los eventos de liquidación con distinta granularidad, algunos los agrupan, y cualquier agregador que modele esos huecos reportará más que uno que no lo hace.</p>
+
+    <h2>Toma los datos</h2>
+    <p>Las mismas cifras están disponibles gratis en JSON, sin clave y sin registro: <code>GET https://marginpad.io/api/v1/venues</code> devuelve cada plataforma con su total de 24 horas, el desglose long/short y su cuota. Los totales del mercado en conjunto están en <code>/api/v1/liquidations</code> y las bandas del mapa de calor en <code>/api/v1/clusters</code>. La documentación completa está en la página de la <a href="/es/trading-api/">API cripto gratuita</a> &mdash; se agradece la atribución, pero no es obligatoria.</p>
+
+    <h2>Preguntas</h2>
+    <details><summary>¿Qué exchange tiene más liquidaciones cripto?</summary><p>Cambia a diario, por eso la tabla de arriba se mide en lugar de anotarse de memoria. Binance suele ser el mayor en tamaño absoluto porque concentra más apalancamiento abierto, pero la cuota varía según el día: Hyperliquid suele llevarse una porción mayor durante movimientos bruscos porque su libro es más delgado, y una plataforma puede pasar de un cinco por ciento a una cuarta parte del total del día en una sola cascada. Lee la columna de cuota, no los dólares brutos, al comparar plataformas de distinto tamaño.</p></details>
+    <details><summary>¿De dónde vienen estos datos de liquidaciones?</summary><p>MarginPad ejecuta su propio colector, suscrito al websocket público de liquidaciones de cada plataforma: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX y Bitfinex. Cada cierre forzado se normaliza (símbolo, lado, precio, valor nocional, marca de tiempo) y se agrega en una ventana móvil de 24 horas. Son eventos observados, no estimaciones ni un modelo, y no se rellena nada cuando un feed está en silencio.</p></details>
+    <details><summary>¿Qué me dice el reparto long/short?</summary><p>Muestra de qué lado quedó atrapada la mayoría. Una plataforma cuyo flujo de 24 horas es sobre todo liquidaciones long tenía muchos longs masificados cuando llegó la caída; si predominan las liquidaciones short, el squeeze fue en la otra dirección. El reparto suele ser más informativo que el total, porque describe el posicionamiento en lugar del tamaño.</p></details>
+    <details><summary>¿Un total de liquidaciones más alto significa que un exchange es más riesgoso?</summary><p>No. Sobre todo significa que ahí hay más tamaño apalancado abierto. Una plataforma con libros profundos y muchos traders liquidará más dólares que una pequeña ante el mismo movimiento del mercado. Lo que sí indicaría riesgo es que una plataforma liquide muy por encima de su cuota de interés abierto, o cascadas repetidas en libros delgados.</p></details>
+    <details><summary>¿Puedo obtener estos datos como API?</summary><p>Sí, gratis y sin clave: GET https://marginpad.io/api/v1/venues devuelve cada plataforma con su total de 24 horas, el desglose long/short y su cuota sobre la cifra del mercado en conjunto. El mismo colector también alimenta /api/v1/liquidations para los totales del mercado y /api/v1/clusters para las bandas del mapa de calor.</p></details>
+
+    <p style="margin-top:26px">Relacionado: <a href="/es/liquidations/">totales de liquidaciones en vivo</a> &middot; <a href="/es/heatmap">mapa de calor de liquidaciones</a> &middot; <a href="/es/rekt/">feed de liquidaciones en tiempo real</a> &middot; <a href="/es/liquidation-statistics/">estadísticas de liquidaciones por moneda</a></p>
+  
+<div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
+<div class="mp-hl-e"><i></i>LA PLATAFORMA ON-CHAIN DE ESTA TABLA</div>
+<div class="mp-hl-row">
+<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid &mdash; perpetuos <b>on-chain</b>, con un descuento en comisiones de nuestra parte.</div><p class="mp-hl-w">Hyperliquid es el único exchange de esta tabla cuyas liquidaciones se liquidan en una chain pública. Los mismos perpetuos, sin custodio, 4% de descuento en comisiones con nuestro código.</p></div>
+<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>de descuento en comisiones<br>para cuentas referidas</span></div><div class="mp-hl-code"><span>usa el código</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Únete a Hyperliquid &rarr;</a></div>
+</div>
+<p class="mp-hl-d">Enlace de referido &mdash; MarginPad puede ganar una comisión si abres una cuenta. El descuento del 4% en comisiones es el descuento de referidos de Hyperliquid; nunca pagas más de lo que pagarías yendo directo. No disponible para personas de EE. UU. según los términos de Hyperliquid.</p>
+</div>
+<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
+/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) — Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
+function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
+var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
+if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
+var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
+<div class="mp-xr"><div class="mp-xr-t">DÓNDE OCURREN ESTAS LIQUIDACIONES</div><p class="mp-xr-w">Nada en esta página es teórico &mdash; son posiciones reales siendo cerradas forzosamente en libros de órdenes reales. Estos son los exchanges a los que pertenecen esos libros.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

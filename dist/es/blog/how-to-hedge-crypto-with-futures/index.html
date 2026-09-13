@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/blog/how-to-hedge-crypto-with-futures/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<title>Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender — MarginPad</title>
+<meta name="description" content="How to use a short futures position to protect your spot crypto from a drop — what hedging is, how a delta-neutral hedge works, what it costs in funding, a worked example, and when it makes sense." />
+<meta name="keywords" content="hedge crypto, how to hedge crypto with futures, crypto hedging, short hedge bitcoin, delta neutral crypto, protect crypto portfolio, hedge bitcoin without selling, futures hedge" />
+<link rel="canonical" href="https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-hedge-crypto-with-futures/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-hedge-crypto-with-futures/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/" />
+<meta property="og:title" content="How to Hedge Crypto with Futures (2026): Protect Your Holdings Without Selling" />
+<meta property="og:description" content="How to use a short futures position to protect your spot crypto from a drop — what hedging is, how a delta-neutral hedge works, what it costs in funding, a worked example, and when it makes sense." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender","description":"Cómo usar una posición short en futuros para proteger tu cripto en spot de una caída — qué es cubrirse, cómo funciona una cobertura delta-neutral, cuánto cuesta en funding, un ejemplo resuelto y cuándo tiene sentido.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué significa cubrirse en cripto con futuros?","acceptedAnswer":{"@type":"Answer","text":"Cubrirse significa abrir una posición de futuros que gana cuando caen tus tenencias en spot, de modo que las dos se cancelan aproximadamente. Si tienes 1 BTC en spot y abres un short de 1 BTC en futuros, una caída de precio pierde en tu spot pero gana en el short — protegiendo tu valor sin tener que vender la moneda subyacente (lo cual podría generar impuestos o hacerte perder tu posición a largo plazo)."}},{"@type":"Question","name":"¿Cuánto cuesta una cobertura?","acceptedAnswer":{"@type":"Answer","text":"El principal costo continuo es el funding: si el funding es positivo lo pagas en un short solo cuando se les paga a los shorts, pero más a menudo un short recibe funding cuando el mercado está muy long. También pagas comisiones de trading al abrir y cerrar, y renuncias al potencial alcista — mientras estás cubierto, las ganancias en spot se compensan con las pérdidas en el short. Una cobertura compra protección, no dinero gratis."}},{"@type":"Question","name":"¿Cuándo tiene sentido cubrirse?","acceptedAnswer":{"@type":"Answer","text":"Cuando quieres conservar tus monedas pero reducir el riesgo bajista a corto plazo — por ejemplo, durante un evento que esperas que sea volátil, o para evitar vender y materializar una ganancia gravable. Es una herramienta de gestión de riesgo, no una estrategia de ganancias. Practícalo primero en un simulador para entender exactamente cómo se mueven juntos los dos lados."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Cobertura con futuros","item":"https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/"}]}</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/">Calculadoras</a><a href="/es/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Cobertura con futuros</div>
+  <article>
+    <h1>Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender</h1>
+    <div class="meta">Guías · 6 min de lectura · Actualizado en junio de 2026</div>
+    <p>Eres alcista a largo plazo, pero te preocupa una caída a corto plazo. Vender tus monedas significa materializar una ganancia (y una posible factura de impuestos) y renunciar a tu posición. Hay otra opción: <strong>cubrirte con futuros</strong> &mdash; abrir un short que gana si el precio cae, así tus tenencias quedan protegidas sin vender ni una sola moneda. Así es como funciona. <em>(Solo con fines educativos &mdash; no es asesoría financiera.)</em></p>
+    <h2>Qué significa realmente cubrirse</h2>
+    <p>Una <strong>cobertura (hedge)</strong> es una posición que se mueve en dirección <em>opuesta</em> a algo que ya posees, de modo que las dos se compensan. Si tienes cripto en <strong>spot</strong> y abres un <strong>short por la misma cantidad en futuros</strong>, una caída de precio <strong>pierde en tu spot pero gana en el short</strong> &mdash; y las dos se cancelan aproximadamente. Sigues invertido, conservas tus monedas, pero has neutralizado la caída mientras la cobertura esté activa.</p>
+    <h2>Un ejemplo resuelto</h2>
+    <p>Supongamos que tienes <strong>1 BTC</strong> comprado a $60,000 y estás nervioso antes de un gran evento. Abres un <strong>short de 1 BTC</strong> de futuros perpetuos. El precio cae a $54,000 (&minus;10%):</p>
+    <ul>
+    <li>Tu BTC en spot vale <strong>$6,000 menos</strong>.</li>
+    <li>Tu short de 1 BTC sube <strong>unos $6,000</strong>.</li>
+    <li>Cambio neto: <strong>prácticamente cero</strong> &mdash; aguantaste la caída sin vender.</li>
+    </ul>
+    <p>Cuando pasa el peligro, cierras el short y vuelves a ser simplemente long &mdash; sigues teniendo el mismo 1 BTC con el que empezaste. Igualar el tamaño es todo el truco; dimensiona el short según tu spot con nuestra <a href="/es/calculators?c=size">calculadora de tamaño de posición</a>.</p>
+    <h2>Esto es "delta-neutral"</h2>
+    <p>Una cobertura perfectamente equilibrada es <strong>delta-neutral</strong>: tu exposición neta al precio es prácticamente cero. Ese es el punto &mdash; ya no estás apostando por una dirección, estás estacionado. También puedes cubrirte <em>parcialmente</em> (poner en short la mitad de tu posición) para suavizar una caída mientras conservas algo de potencial al alza. Usa poco apalancamiento en la cobertura; no necesitas 50&times; para abrir un short del mismo tamaño que ya tienes.</p>
+    <h2>Lo que cuesta</h2>
+    <ul>
+    <li><strong>Funding.</strong> Mientras la cobertura está abierta, pagas o recibes la <a href="/es/blog/what-is-funding-rate/">tasa de funding</a> en el short &mdash; a menudo la <em>recibes</em> cuando el mercado está muy long, lo que puede hacer que mantener la cobertura sea barato o incluso ligeramente positivo.</li>
+    <li><strong>Comisiones</strong> de apertura y cierre.</li>
+    <li><strong>Costo de oportunidad.</strong> Mientras estás cubierto, también renuncias al potencial alcista &mdash; si el precio se dispara, el short pierde lo que gana el spot. Una cobertura compra protección, no ganancias.</li>
+    </ul>
+    <h2>Practica primero la mecánica</h2>
+    <p>El riesgo de cubrirse es equivocar el <strong>tamaño o el apalancamiento</strong> &mdash; una "cobertura" sobredimensionada o sobreapalancada es solo una nueva apuesta que puede terminar <a href="/es/calculators?c=liq">liquidada</a>. Ensáyalo primero en el <a href="/es/paper-trade">Paper Trade de MarginPad</a>: abre un short al precio en vivo, observa cómo se mueve frente a una bolsa de spot imaginaria, y aprende a dimensionarlo bien &mdash; sin dinero real en juego.</p>
+    <div class="callout"><div class="k">PRACTICA UNA COBERTURA</div><p style="margin-bottom:14px">Abre un short al precio en vivo y observa exactamente cómo compensa una posición que cae &mdash; sin cuenta, sin dinero en riesgo &mdash; hasta que dimensionar una cobertura limpia sea algo natural.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
+    <div class="toolshow">
+      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
+      </div>
+    </div>
+  
+<div class="mp-xr"><div class="mp-xr-t">PONLO EN PRÁCTICA</div><p class="mp-xr-w">Leer sobre esto solo te lleva hasta cierto punto. Practícalo gratis en nuestra terminal, y llévalo a una cuenta real una vez que lo entiendas del todo.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">Perpetuos USDT &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Cualquier mercado, sube o baja</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
+</article>
+  <section class="related">
+    <h2 class="rel-title">Guías relacionadas</h2>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/moon-trading-platform-review/"><span class="tag">Guías</span><span class="rel-t">Reseña de Moon (2026): predice si cripto, acciones y forex suben o bajan — 24/7</span></a><a class="rel-card" href="/es/blog/crypto-cost-basis-fifo-lifo-hifo/"><span class="tag">Guías</span><span class="rel-t">Base de costo en cripto: FIFO vs LIFO vs HIFO explicado (2026)</span></a><a class="rel-card" href="/es/blog/crypto-tax-loss-harvesting/"><span class="tag">Guías</span><span class="rel-t">Tax-Loss Harvesting en cripto: la forma legal de reducir tus impuestos (2026)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comentarios</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Tu nombre (opcional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Publicar comentario</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/crypto-compound-calculator/">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Calculadora de Crecimiento Compuesto — Pequeñas Ventajas, Grandes Curvas | MarginPad</title>
+<meta name="description" content="Free compound calculator for traders: starting balance, periodic return and time turned into compounded growth, total return and the non-compounded comparison." />
+<meta name="keywords" content="compound calculator trading, compound interest crypto, compounding returns" />
+<link rel="canonical" href="https://marginpad.io/es/crypto-compound-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-compound-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-compound-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-compound-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Compound Growth Calculator — Small Edges, Big Curves | MarginPad" />
+<meta property="og:description" content="Free compound calculator for traders: starting balance, periodic return and time turned into compounded growth, total return and the non-compounded comparison." />
+<meta property="og:url" content="https://marginpad.io/es/crypto-compound-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Crecimiento Compuesto","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-compound-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Crecimiento Compuesto","item":"https://marginpad.io/es/crypto-compound-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Es realista un porcentaje semanal constante?","acceptedAnswer":{"@type":"Answer","text":"Ninguna semana es la promedio — trata la tasa como tu media a largo plazo incluyendo las semanas perdedoras, que para traders minoristas consistentemente rentables suele quedar en dígitos bajos semanales."}},{"@type":"Question","name":"¿Retirar o reinvertir?","acceptedAnswer":{"@type":"Answer","text":"Un patrón común: reinvertir hasta alcanzar un tamaño de cuenta objetivo, y luego retirar una parte fija cada mes. El interés compuesto total maximiza el crecimiento, pero también maximiza el costo de un drawdown tardío."}},{"@type":"Question","name":"¿Cómo encajan las pérdidas?","acceptedAnswer":{"@type":"Answer","text":"Las pérdidas SON la r — una semana de -5% entre semanas de +4% arrastra con fuerza la media geométrica. Mantén los drawdowns poco profundos y la curva sobrevive."}}]}</script>
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Crecimiento Compuesto — Pequeñas Ventajas, Grandes Curvas","url":"https://marginpad.io/es/crypto-compound-calculator/","dateModified":"2026-09-10T19:56:57.477Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<body>
+<div class="wrap">
+<h1>Calculadora de Crecimiento Compuesto</h1>
+<p class="sub">Una ventaja modesta repetida es la fuerza más poderosa en el trading. Descubre en qué se convierte la tuya.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="start">Saldo inicial (USD)</label><input id="start" type="number" inputmode="decimal" value="1000"></div><div class="f"><label for="ret">Retorno por periodo %</label><input id="ret" type="number" inputmode="decimal" value="3" step="0.1"></div><div class="f"><label for="per">Periodos</label><input id="per" type="number" inputmode="decimal" value="52"></div><div class="f"><label for="unit">Periodo</label><select id="unit"><option value="week">Semanas</option><option value="month">Meses</option><option value="day">Días</option></select></div></div><div class="res" id="res"></div></div>
+<h2>Cómo se calcula</h2>
+<div class="frm">final = inicio &times; (1 + r)^n</div>
+<p>El interés compuesto premia la constancia por encima de las heroicidades: un 3% semanal son +365% en un año, mientras que perseguir meses del 50% suele terminar con la matemática del drawdown en tu contra. La diferencia entre las filas compuesta y simple es el pago por la disciplina.</p>
+<h2>Ejemplo resuelto</h2>
+<div class="ex">$1,000 al <b>3% semanal</b> durante <b>52 semanas</b> se compone hasta <b>$4,650</b> (+365%); ese mismo 3% retirado cada semana suma solo $2,560.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>¿Es realista un porcentaje semanal constante?</summary><p>Ninguna semana es la promedio — trata la tasa como tu media a largo plazo incluyendo las semanas perdedoras, que para traders minoristas consistentemente rentables suele quedar en dígitos bajos semanales.</p></details><details><summary>¿Retirar o reinvertir?</summary><p>Un patrón común: reinvertir hasta alcanzar un tamaño de cuenta objetivo, y luego retirar una parte fija cada mes. El interés compuesto total maximiza el crecimiento, pero también maximiza el costo de un drawdown tardío.</p></details><details><summary>¿Cómo encajan las pérdidas?</summary><p>Las pérdidas SON la r — una semana de -5% entre semanas de +4% arrastra con fuerza la media geométrica. Mantén los drawdowns poco profundos y la curva sobrevive.</p></details></div>
+<h2>Herramientas relacionadas</h2>
+<div class="rel"><a href="/es/crypto-drawdown-calculator/">Recuperación de drawdown</a><a href="/es/crypto-win-rate-calculator/">Expectativa por tasa de acierto</a><a href="/es/crypto-roi-calculator/">Calculadora de ROI</a><a href="/es/paper-trade">Paper trading</a></div>
+<div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+</div>
+<script>function calc(){var s=+document.getElementById('start').value,re=+document.getElementById('ret').value/100,n=+document.getElementById('per').value;var u=document.getElementById('unit').value;var r=document.getElementById('res');if(!(s>0&&n>0)){r.innerHTML='';return;}var f=s*Math.pow(1+re,n),tot=(f/s-1)*100;r.innerHTML='<div class="rrow big"><span class="k">After '+n+' '+u+'s</span><span class="v">'+f.toLocaleString(undefined,{maximumFractionDigits:2})+' USD</span></div><div class="rrow"><span class="k">Total return</span><span class="v '+(tot>=0?'up':'dn')+'">'+(tot>=0?'+':'')+tot.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Same edge NOT compounded</span><span class="v">'+(s+s*re*n).toFixed(2)+' USD</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js?v=3f87bd75"></script>
+</body>
+</html>
