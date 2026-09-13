@@ -314,7 +314,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
-  function posToLev(p){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,p/1000))));}  // logarithmic 1×…1000×
+  // Round numbers only (owner 2026-09-13: "umesto 107 ili 203 da budu okrugli brojevi zaokruženi na desetinu").
+  // Below 10x every whole number is already round and all of them matter (1,2,3,5); above it the ladder steps by ten,
+  // so the slider offers 10, 20, 30 ... 130 ... 540 and never 107. levSnap is also applied when the number field is
+  // committed, so the two controls can never disagree.
+  function levSnap(l){l=Math.max(1,Math.min(1000,Math.round(+l||1)));return l<=10?l:Math.round(l/10)*10;}
+  window.mpLevSnap=levSnap;
+  function posToLev(p){return levSnap(Math.max(1,Math.min(1000,Math.round(Math.pow(1000,p/1000)))));}  // logarithmic 1×…1000×, snapped to the ladder
   function levToPos(l){l=Math.max(1,Math.min(1000,l));return Math.round(Math.log(l)/Math.log(1000)*1000);}
   function levFill(){if(levR)levR.style.setProperty('--fill',(levR.value/(levR.max||1000)*100).toFixed(1)+'%');}
   function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v)&&v>0){levR.value=String(levToPos(v));levFill();}}
@@ -326,6 +332,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(levEl)levEl.addEventListener('input',function(){var cap=planCap();if(parseFloat(levEl.value)>cap){levEl.value=String(cap);var _n=Date.now();if(_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}syncLevR();levRisk();});
   var _levRaf=false;
   if(levR)levR.addEventListener('input',function(){if(!levEl)return;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
+  // the number field snaps on COMMIT, not on every keystroke: snapping while typing would turn "107" into 110 at the
+  // second digit and fight the user. On blur or Enter the value lands on the same ladder the slider offers.
+  if(levEl)levEl.addEventListener('change',function(){var v=parseFloat(levEl.value);if(!isFinite(v))return;var s=Math.min(planCap(),levSnap(v));if(String(s)!==String(levEl.value)){levEl.value=String(s);syncLevR();levRisk();try{calc();}catch(_){}}});
   var _pSymCap=document.getElementById('planSym');if(_pSymCap)_pSymCap.addEventListener('change',function(){applyLevCap(true);});
   syncLevR();levRisk();setTimeout(function(){applyLevCap(false);},200);
   /* ── MARKET / LIMIT ────────────────────────────────────────────────────────────────────────────────────────
@@ -650,7 +659,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function showNoData(sym){var el=document.getElementById('ptChart');if(!el)return;var s=el.querySelector('.chart-skel');if(s&&s.parentNode)s.parentNode.removeChild(s);if(el.querySelector('.chart-nodata'))return;var d=document.createElement('div');d.className='chart-nodata';d.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;color:#9aa3ad;z-index:6;pointer-events:none;padding:24px';d.innerHTML='<div style="font-size:15px;font-weight:700;color:#e9e7df">No market data for '+String(sym||'').replace(/[^A-Za-z0-9]/g,'')+'</div><small style="font-size:12px;color:#707a86;line-height:1.5;max-width:280px">This coin isn\'t on our live data feed (it may be delisted or renamed on the exchanges). Pick another pair to keep trading.</small>';el.appendChild(d);} // a coin our sources can\'t resolve now shows a message instead of a silent, frozen blank chart
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false,morePages=0;
-  try{window.__mpPT=function(){return {bars:bars,chart:chart,candle:candle,noMore:noMore,morePages:morePages,sym:chartSym,tf:chartTf};};}catch(e){} // permanent read-only debug accessor (mirror of /charts __mpWinsDbg + mobile __mfcPanes) — lets headless E2E introspect the paper-trade chart's live bars/pagination state (bars/noMore/morePages are reassigned, so return via closure)
+  try{window.__mpPT=function(){return {bars:bars,chart:chart,candle:candle,noMore:noMore,morePages:morePages,sym:chartSym,tf:chartTf,entryMode:entryMode,marks:_marks.slice()};};}catch(e){} // permanent read-only debug accessor (mirror of /charts __mpWinsDbg + mobile __mfcPanes) — lets headless E2E introspect the paper-trade chart's live bars/pagination state (bars/noMore/morePages are reassigned, so return via closure)
   // Clamp ISOLATED phantom wicks (bad/transient prints in the exchange klines): a candle whose low/high is an extreme
   // outlier vs its OWN body AND BOTH neighbouring candles is almost certainly bad data (the "a drop/spike that never
   // happened" candle). Clamp it to a sane bound so it doesn't show as a giant vertical line — or feed a liquidation.
@@ -766,7 +775,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function fmtLeg(v,dec){if(v==null||!isFinite(v))return '–';return dec===0?String(Math.round(v)):(dec==null?fp(v):(+v).toFixed(dec));}
   function updatePtLegend(param){ensurePtLeg();if(!ptLeg)return;if(!ptLegItems.length){ptLeg.style.display='none';ptLeg.innerHTML='';return;}ptLeg.style.display='';ptLeg.innerHTML=ptLegItems.map(function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}return '<span style="color:'+it.color+'">'+it.label+' <b>'+fmtLeg(v,it.dec)+'</b></span>';}).join('');}
   function applyInds(){if(!chart||!candle)return; // indicators removed from Paper Trade — cleanup no-op (kept so loadKlines/loadMore/refresh callers stay valid)
-    try{candle.setMarkers([]);}catch(e){}
+    // NOT setMarkers([]) any more: this cleanup runs after every kline load and re-sync, and it was wiping the entry
+    // marks a second after they were drawn (owner 2026-09-13 — the marks existed in state but never on screen).
+    // The entry marks are the only markers on this series now, so re-apply whatever drawMarks last decided.
+    try{candle.setMarkers(_marks||[]);}catch(e){}
     indSeries.forEach(function(s){try{chart.removeSeries(s);}catch(e){}});indSeries=[];ptLegItems=[];
     try{updatePtLegend();}catch(e){}return;
     if(!bars||!bars.length){updatePtLegend();return;}var c=bars.map(function(b){return +b.close;}),t=bars.map(function(b){return b.time;});
@@ -864,6 +876,39 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   }
   document.addEventListener('visibilitychange',function(){if(!document.hidden)startSmoothP();});
   function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));}
+  // ENTRY AS A LINE, OR AS A MARK ON THE CANDLE (owner 2026-09-13). "line" keeps the horizontal entry price line;
+  // "mark" drops it and puts a small circle on the bar the position opened in — green B for a long, red S for a short.
+  // Markers are series markers, anchored to a bar time, so they stay glued to the candles under pan and zoom. The mark
+  // size follows the chart: tiny on a phone, a little bigger on a wide desktop, never a blob.
+  var entryMode='line';try{entryMode=localStorage.getItem('mp_entry_mode')==='mark'?'mark':'line';}catch(e){}
+  function markSize(){try{var w=(document.getElementById("ptChart")||{}).clientWidth||0;return w>=900?1.1:w>=560?0.95:0.8;}catch(e){return 1;}}
+  function barOf(ts){ // snap a trade timestamp onto the bar it belongs to, so the mark sits ON a candle and not between two
+    var t=Math.floor((+ts||0)/1000); if(!(t>0))return null;
+    if(!bars||!bars.length)return null;
+    var iv=(bars.length>1)?(bars[1].time-bars[0].time):60; if(!(iv>0))iv=60;
+    var first=bars[0].time,last=bars[bars.length-1].time;
+    if(t<first)return first;            // opened before the window we are showing: pin it to the left edge
+    if(t>last)return last;              // just opened, the forming bar
+    return first+Math.floor((t-first)/iv)*iv;
+  }
+  var _marks=[]; // what was last handed to the series — LWC has no getter, and the E2E has to prove the marks are bar-anchored
+  function drawMarks(op){
+    if(!candle)return;
+    if(entryMode!=="mark"){_marks=[];try{candle.setMarkers([]);}catch(e){} return;}
+    var sz=markSize(),seen={},out=[];
+    (op||[]).forEach(function(e){
+      var t=barOf(e.ts); if(t==null)return;
+      var long=e.side!=="short";
+      var k=t+":"+(long?"B":"S");
+      if(seen[k]){seen[k].n++;return;}                 // two longs in the same bar = one mark, counted
+      var m={time:t,position:long?"belowBar":"aboveBar",color:long?"#10b981":"#ef4444",shape:"circle",text:long?"B":"S",size:sz,n:1};
+      seen[k]=m;out.push(m);
+    });
+    out.forEach(function(m){if(m.n>1)m.text=m.text+m.n;delete m.n;});
+    out.sort(function(a,b){return a.time-b.time;});    // LWC requires markers in time order
+    _marks=out.slice();try{candle.setMarkers(out);}catch(e){}
+  }
+  window.mpEntryMode=function(){return entryMode;};
   function drawLines(d){if(!candle)return;
     var op=(d||load()).filter(function(e){return e.status==='open'&&e.sym===chartSym;});
     // diff: only destroy/recreate the chart price-line objects when the open-position set actually changes. This used
@@ -871,6 +916,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // updateZone still runs so the liq zone/edge pills track scroll/scale. renderKlines/refreshKlinesQuiet reset _linesSig.
     var ords=[];try{if(window.mpOrders)ords=window.mpOrders.forSym(chartSym);}catch(e){} // resting limit orders on this coin get their own dashed line — a waiting order you cannot see is one you forget you placed
     var sig=op.map(function(e){return e.id+':'+e.entry+':'+e.stop+':'+e.tp+':'+e.side+':'+e.lev+':'+liqOf(e)+':'+JSON.stringify(e.tps||0)+':'+JSON.stringify(e.sls||0);}).join('|')+'#'+ords.map(function(o){return o.id+':'+o.px+':'+o.side;}).join('|');
+    sig+='#'+entryMode;
     if(sig===_linesSig){updateZone();return;} _linesSig=sig;
     plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
     // cache the line prices FIRST so the autoscale provider (which fires the moment a price line is created) already sees them
@@ -879,7 +925,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     _openLines=[];_openMarks=[];var _grp={};
     function _gAdd(p,label,color,w,style){if(!(p>0))return;_openLines.push(p);var k=label+'@'+p.toPrecision(6);var g=_grp[k];if(g){g.n++;return;}_grp[k]={p:p,label:label,color:color,w:w,style:style,n:1};}
     op.forEach(function(e){var long=e.side!=='short';
-      _gAdd(+e.entry,(long?'LONG':'SHORT'),long?'#10b981':'#ef4444',1,0);
+      if(entryMode!=='mark')_gAdd(+e.entry,(long?'LONG':'SHORT'),long?'#10b981':'#ef4444',1,0); // in mark mode the entry is the circle on the bar, not a line
       _gAdd(liqOf(e),'LIQ','#ff3b3b',2,0);
       if(e.tps&&e.tps.length)e.tps.forEach(function(L){if(+L.p>0)_gAdd(+L.p,'TP'+(+L.pct<100?' '+(+L.pct)+'%':''),'#6b7280',1,2);});
       else if(e.tp!=null)_gAdd(+e.tp,'TP','#6b7280',1,2);
@@ -889,6 +935,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     for(var gk in _grp){var g=_grp[gk];var t=g.label+(g.n>1?' ×'+g.n:'');
       _openMarks.push({p:g.p,label:t,color:(g.label.slice(0,2)==='TP'||g.label.slice(0,2)==='SL')?'#9aa3ad':g.color});
       if(isFinite(g.p))try{plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}catch(e){}}
+    drawMarks(op);
     updateZone();}
   // shaded "liquidation zone" beyond the liq line: a translucent red overlay (slight blur) so candles still show through
   var zoneEl=null,edgeEl=null;
@@ -925,6 +972,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // the on-chart live-price label colour follows the 24h change (consistent) — never the current TF candle's up/down
     if(candle){var _cc=(cg>=0?'#2ebd85':'#ff5a4d');if(_cc!==_plc){_plc=_cc;try{candle.applyOptions({priceLineColor:_cc});}catch(e){}}}}
   var tfEl=document.getElementById('ptTf'),tfBtn=document.getElementById('ptTfBtn'),tfCur=document.getElementById('ptTfCur');
+  // the entry-style toggle lives beside the timeframe button: one glyph, no label, no second row
+  var emBtn=document.getElementById('ptEntryMode');
+  function emPaint(){if(!emBtn)return;
+    emBtn.classList.toggle('on',entryMode==='mark');
+    emBtn.setAttribute('aria-pressed',entryMode==='mark'?'true':'false');
+    emBtn.title=entryMode==='mark'?'Entries: B/S marks on the candle — tap for lines':'Entries: price lines — tap for B/S marks on the candle';
+  }
+  if(emBtn)emBtn.addEventListener('click',function(){entryMode=(entryMode==='mark')?'line':'mark';try{localStorage.setItem('mp_entry_mode',entryMode);}catch(e){}emPaint();try{drawLines();}catch(e){}});
+  emPaint();
   function tfMenu(open){if(!tfEl||!tfBtn)return;tfEl.hidden=!open;tfBtn.setAttribute('aria-expanded',open?'true':'false');}
   if(tfBtn)tfBtn.addEventListener('click',function(e){e.stopPropagation();tfMenu(tfEl.hidden);});
   if(tfEl)tfEl.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;tfEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');chartTf=b.getAttribute('data-tf');if(tfCur)tfCur.textContent=b.textContent;tfMenu(false);loadKlines();});

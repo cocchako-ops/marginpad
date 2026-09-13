@@ -103,7 +103,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=cb326032">
+<link rel="stylesheet" href="/assets/home.css?v=26bed038">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -332,6 +332,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
               <button type="button" class="ptt-tf-btn" id="ptTfBtn" aria-haspopup="menu" aria-expanded="false"><span id="ptTfCur">5m</span><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1" type="button">1m</button><button data-tf="5" class="on" type="button">5m</button><button data-tf="15" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
             </div>
+            <button type="button" class="ptt-em" id="ptEntryMode" aria-pressed="false" title="Entries: price lines — tap for B/S marks on the candle"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="5" cy="11" r="3" fill="currentColor"/><circle cx="11" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
           </div>
           <div id="ptChart"></div>
         </div>
@@ -835,7 +836,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=cb326032"></script>
+<script src="/assets/home.js?v=26bed038"></script>
 <script defer src="/assets/mp-nav.js?v=951fdee7"></script>
 </body>
 </html>
