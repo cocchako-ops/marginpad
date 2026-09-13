@@ -3592,6 +3592,15 @@ async function checkChartSignals(env, force) {
     const htfOn = (await env.STATS.get('csig:htf')) !== '0';
     const evGuardOn = (await env.STATS.get('csig:evguard')) !== '0';
     const liveCool = (+(await env.STATS.get('csig:livecool') || 12)) * 60000; // per-symbol cooldown between live Fast signals (min) — stops intrabar flip-flop spam
+    // QUALITY GATE (2026-09-13, owner: "smanji broj loših signala, dobri da ostanu isti"). Measured on 344 confirmed signals
+    // (jan–sep 2026, 9 coins, production indicator code, walk-forward): the plain rule is −0.05R/signal net. A signal is
+    // posted only when it passes >= csig:qgate (default 4) of EIGHT checks — ADX>=18, vol>=2x, weekday, before 20:00 UTC,
+    // >=2 coins flipped the same way this hour, entry within 3 ATR of the 200-EMA, ATR>=0.6% of price, long. Result:
+    // 89% of winners kept, 22% of losers cut, the dropped bucket is −0.31R (IS) / −0.80R (OOS) / −1.08R (channel era,
+    // 13 of 14 were stops). No single check carries it (ablation: any one removed still holds) — it is an ensemble, not a
+    // fit. A quiet (failed) signal is still TRACKED to its outcome (state.quiet, results src:'quiet') so the gate stays
+    // measurable; csig:qgate='0' disables the gate. Scratch: forensics.js / backtest.js / scan.js / ablate.js (session b387feb4).
+    const qGate = Math.max(0, Math.min(8, +(await env.STATS.get('csig:qgate') ?? 4)));
     const fpx = v => { v = +v; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 2 : v >= 1 ? 4 : 6 }); };
     const pct = (a, b) => Math.abs((a - b) / b * 100).toFixed(1);
     const levOf = (e, sl) => { const p = Math.abs((sl - e) / e * 100) || 1; return Math.max(3, Math.min(20, Math.floor((100 / p) / 2.5))); };
@@ -3628,10 +3637,26 @@ async function checkChartSignals(env, force) {
     const slog = [];
     const DIRN = d => (d === 1 ? 'LONG' : 'SHORT');
     const BART = b => { try { return new Date(b * 1000).toISOString().slice(0, 16); } catch (e) { return String(b); } };
-    const sl = o => { try { slog.push({ t: Date.now(), ...o }); } catch (e) {} };
+    // NOTE: named dlog, not sl — the confirmed branch declares `const sl = <stop price>`, which shadowed the logger and
+    // threw "sl is not a function" inside the per-coin try/catch: FIRE-confirmed rows were never written (found 2026-09-13).
+    const dlog = o => { try { slog.push({ t: Date.now(), ...o }); } catch (e) {} };
+    // pre-pass: fetch every coin's 1h bars ONCE and count the coins whose CLOSED Supertrend flipped on the newest closed
+    // bar, per direction — the "cluster" check of the quality gate (>=2 coins flipping the same way in the same hour =
+    // a market-wide impulse; a lone flip is the weakest signal in the sample). The main loop reuses these bars.
+    const kdMap = {}, flipCnt = {};
     for (const sym of coins) {
       try {
-        const kd = await sigKlines(sym, 60); if (!kd || kd.bars.length < 40) continue;
+        const kd = await sigKlines(sym, 60); if (!kd || kd.bars.length < 40 || kd.closed.length < 30) continue;
+        kdMap[sym] = kd;
+        const stc = _supertrend(kd.closed, 10, 3); if (!stc) continue;
+        const li = kd.closed.length - 1, dN = stc.dir[li], dP = stc.dir[li - 1];
+        if (dN != null && dP != null && dN !== dP) { const k = kd.closed[li].time + ':' + dN; flipCnt[k] = (flipCnt[k] || 0) + 1; }
+      } catch (e) {}
+      await new Promise(r => setTimeout(r, 40));
+    }
+    for (const sym of coins) {
+      try {
+        const kd = kdMap[sym]; if (!kd || kd.bars.length < 40) continue;
         const bars = kd.bars, closed = kd.closed; if (closed.length < 30) continue;
         report.scanned++;
         const now = Date.now();
@@ -3673,7 +3698,7 @@ async function checkChartSignals(env, force) {
               // BUY that never appeared on the chart (ETH 2026-07-23). lDir!==ls.sigDir stays as a same-direction dedupe.
               if (lDir !== cDir && lDir !== ls.sigDir) {
                 if (ls.firedBar === curBar) { /* already fired once this 1h candle → never a second (opposite) signal in the same candle */ }
-                else if (ls.pendDir !== lDir || !ls.pendTs) { ls.pendDir = lDir; ls.pendTs = now; await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); sl({ s: sym, ev: 'arm', closed: DIRN(cDir), live: DIRN(lDir), bar: BART(curBar) }); } // arm — do NOT fire yet
+                else if (ls.pendDir !== lDir || !ls.pendTs) { ls.pendDir = lDir; ls.pendTs = now; await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); dlog({ s: sym, ev:'arm', closed: DIRN(cDir), live: DIRN(lDir), bar: BART(curBar) }); } // arm — do NOT fire yet
                 else if (now - ls.pendTs >= 170000 && now >= (ls.cool || 0)) { // held ≥~3 cron cycles (~3min) → a real, sticking flip, fire it
                   const long = lDir === 1, e = lPx, risk = 1.5 * lAtr;
                   const tp1 = long ? e + 1.5 * risk : e - 1.5 * risk, tp2 = long ? e + 3 * risk : e - 3 * risk, sl = long ? e - risk : e + risk;
@@ -3687,14 +3712,14 @@ async function checkChartSignals(env, force) {
                   await env.STATS.put('csig:live:' + sym, JSON.stringify({ sigDir: lDir, entry: e, risk, tp1, tp2, sl, phase: 0, peakHi: e, peakLo: e, cool: now + liveCool, ts: now, done: false, msgId: mid, sigId, firedBar: curBar }));
                   try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} // owner morning-brief grand total
                   if (mid) await bumpSentToday(env, 'fast'); // honest per-channel counter → the fast digest line counts what fast ACTUALLY received (never confirmed/other-tier fires)
-                  sl({ s: sym, ev: 'FIRE-live', sig: long ? 'BUY' : 'SELL', closed: DIRN(cDir), live: DIRN(lDir), hold: Math.round((now - ls.pendTs) / 1000), bar: BART(curBar), px: e, atr: Number(lAtr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) }); // atr + last-3 closed closes = data fingerprint — a data-source phantom becomes provable by diffing c3 vs the chart's candles
+                  dlog({ s: sym, ev:'FIRE-live', sig: long ? 'BUY' : 'SELL', closed: DIRN(cDir), live: DIRN(lDir), hold: Math.round((now - ls.pendTs) / 1000), bar: BART(curBar), px: e, atr: Number(lAtr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) }); // atr + last-3 closed closes = data fingerprint — a data-source phantom becomes provable by diffing c3 vs the chart's candles
                   report.sent.push(sym + ' LIVE ' + (long ? 'BUY' : 'SELL'));
                   try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' live', ''); } catch (e) {}
                 }
               } else {
                 let dirty = false;
-                if (ls.pendDir != null) { sl({ s: sym, ev: 'cancel', closed: DIRN(cDir), live: DIRN(lDir), hold: ls.pendTs ? Math.round((now - ls.pendTs) / 1000) : 0, bar: BART(curBar) }); ls.pendDir = null; ls.pendTs = 0; dirty = true; } // forming dir snapped back before holding → it was a wick, cancel
-                if (ls.done && lDir === cDir && ls.sigDir !== cDir) { ls.sigDir = cDir; dirty = true; sl({ s: sym, ev: 'resync', closed: DIRN(cDir), bar: BART(curBar) }); } // wobble over / candle closed → re-sync to the closed trend so the NEXT genuine flip fires exactly once
+                if (ls.pendDir != null) { dlog({ s: sym, ev:'cancel', closed: DIRN(cDir), live: DIRN(lDir), hold: ls.pendTs ? Math.round((now - ls.pendTs) / 1000) : 0, bar: BART(curBar) }); ls.pendDir = null; ls.pendTs = 0; dirty = true; } // forming dir snapped back before holding → it was a wick, cancel
+                if (ls.done && lDir === cDir && ls.sigDir !== cDir) { ls.sigDir = cDir; dirty = true; dlog({ s: sym, ev:'resync', closed: DIRN(cDir), bar: BART(curBar) }); } // wobble over / candle closed → re-sync to the closed trend so the NEXT genuine flip fires exactly once
                 if (dirty) await env.STATS.put('csig:live:' + sym, JSON.stringify(ls));
               }
             }
@@ -3748,6 +3773,29 @@ async function checkChartSignals(env, force) {
           }
           const postTiers = tiers.filter(t => chans[t]);
           if (!postTiers.length) { if (!force) await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
+          // ---- quality gate: 8 measured checks, post only at >= qGate (see the qGate comment above) ----
+          const bdt = new Date(bar * 1000), dow = bdt.getUTCDay(), hr = bdt.getUTCHours();
+          const qc = {
+            adx: adxV != null && adxV >= 18,
+            vol: volR >= 2,
+            weekday: dow !== 0 && dow !== 6,
+            hour: hr < 20,
+            cluster: (flipCnt[bar + ':' + dNow] || 0) >= 2,
+            ema: ema200 == null || Math.abs(entry - ema200) / atr <= 3,
+            atr: atr / entry * 100 >= 0.6,
+            long,
+          };
+          const qScore = Object.values(qc).filter(Boolean).length;
+          const qWhy = Object.keys(qc).filter(k => qc[k]).join(',');
+          if (!force && qGate > 0 && qScore < qGate) {
+            // QUIET: below the gate → nothing is posted, but the signal is tracked to its outcome exactly like a posted one
+            // (results src:'quiet') so the gate's effect stays measurable from the same ring. tiers:[] = no follow-ups.
+            await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: [], premium: false, quiet: true, src: 'quiet', qScore, msgIds: {}, sigId, ts: Date.now(), done: false }));
+            dlog({ s: sym, ev:'FIRE-quiet', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), px: entry, score: qScore, gate: qGate, why: qWhy });
+            try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' quiet ' + qScore + '/8', ''); } catch (e) {}
+            report.sent.push(sym + ' QUIET ' + qScore + '/8');
+            continue;
+          }
           const isPrem = tiers.includes('premium');
           const text = ticket(long, sym, entry, tp1, tp2, sl, force ? ' <i>(test)</i>' : '') + 'Supertrend flipped ' + (long ? 'bullish' : 'bearish') + ' on the 1h (candle closed).\n <code>#' + sigId + '</code>\n' + TG_AFF_LINE;
           // ---- enriched PREMIUM message: honest confluence readout (pass/fail per check) + trade plan + hold / time-stop guidance ----
@@ -3760,6 +3808,7 @@ async function checkChartSignals(env, force) {
           const premText = ticket(long, sym, entry, tp1, tp2, sl, '') + '<b>Confirmed 1h ' + (long ? 'LONG' : 'SHORT') + '</b> — Supertrend flip on candle close.\n'
             + (hiConv ? '<b>High-conviction</b> — trend, ADX, RSI and the 200-EMA all aligned.\n' : '')
             + '<b>Checks:</b> ' + cfl.join(' · ') + '\n'
+            + '<b>Quality:</b> ' + qScore + '/8 checks passed' + (qc.cluster ? ' · ' + (flipCnt[bar + ':' + dNow] || 0) + ' coins flipped this way this hour' : '') + '\n'
             + '<b>Plan:</b> enter now, take ~50% at TP1, move stop to breakeven, trail the runner to TP2.\n'
  + ' <b>Hold ~1–4h</b> (until TP1/TP2 or the 1h Supertrend flips back). If TP1 isn’t tagged within ~3h and price stalls, momentum failed — I’ll ping a time-check.\n'
             + '<code>#' + sigId + '</code>' + TG_AFF_LINE;
@@ -3768,10 +3817,10 @@ async function checkChartSignals(env, force) {
           for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; if (msgIds[t]) await bumpSentToday(env, t); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } // per-channel honest counter → the daily digest's "Signals today" line counts what THAT channel actually received
           // NOTE: the FREE channel is served by checkFreeSignals (the screener product), NOT here. The old `chans.free`
           // send lived on this line but chans never had a `free` key → it silently posted nothing for ~6 days. Removed.
-          if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
+          if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, qScore, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
           if (!force && sentOk) { try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} }
           if (!force && sentOk) { try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' ' + postTiers.join('/'), ''); } catch (e) {} }
-          if (!force && sentOk) sl({ s: sym, ev: 'FIRE-confirmed', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), tiers: postTiers.join('/'), px: entry, atr: Number(atr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) });
+          if (!force && sentOk) dlog({ s: sym, ev:'FIRE-confirmed', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), tiers: postTiers.join('/'), px: entry, atr: Number(atr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close), score: qScore, why: qWhy });
           report.sent.push(sym + ' ' + (long ? 'BUY' : 'SELL') + ' [' + postTiers.join('/') + ']');
           continue;
         }
@@ -3800,9 +3849,9 @@ async function checkChartSignals(env, force) {
           }
           if (msg) {
             const tagged = msg + (state.sigId ? '\n <code>#' + state.sigId + '</code>' : '');
-            for (const t of (state.tiers || ['premium'])) { const c = chans[t]; if (c) { try { await send(c, tagged, state.msgIds && state.msgIds[t], sym); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } } // reply to the original signal per channel (threaded); per-channel try/catch — a missed follow-up in one channel beats duplicate spam in all of them
+            if (!state.quiet) for (const t of (state.tiers || ['premium'])) { const c = chans[t]; if (c) { try { await send(c, tagged, state.msgIds && state.msgIds[t], sym); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } } // reply to the original signal per channel (threaded); per-channel try/catch — a missed follow-up in one channel beats duplicate spam in all of them. A quiet (gated) signal is tracked, never messaged.
             await env.STATS.put('csig:st:' + sym, JSON.stringify(state));
-            report.sent.push(sym + (state.done ? (state.phase === 1 ? ' TP2/BE' : ' SL') : ' TP1'));
+            report.sent.push(sym + (state.quiet ? ' quiet-' : ' ') + (state.done ? (state.phase === 1 ? 'TP2/BE' : 'SL') : 'TP1'));
           }
         }
       } catch (e) {}
@@ -15598,7 +15647,7 @@ export default {
       if (q.get('chat') != null) await env.STATS.put('csig:chat', q.get('chat').trim());
       if (q.get('coins') != null) await env.STATS.put('csig:coins', q.get('coins').trim().toUpperCase());
       if (q.get('on') != null) await env.STATS.put('csig:on', q.get('on') === '0' ? '0' : '1');
-      for (const k of ['adx', 'volmul', 'htf', 'evguard']) if (q.get(k) != null) await env.STATS.put('csig:' + k, q.get(k).trim());
+      for (const k of ['adx', 'volmul', 'htf', 'evguard', 'qgate']) if (q.get(k) != null) await env.STATS.put('csig:' + k, q.get(k).trim()); // qgate = quality-gate threshold 0..8 (0 = off), default 4
       for (const t of ['fast', 'balanced', 'premium', 'free']) if (q.get('chat' + t) != null) await env.STATS.put('csig:chat:' + t, q.get('chat' + t).trim()); // chatfree= manages the free (screener) channel id — one place to set/clear it (empty = clear → checkFreeSignals ALARMS on next post)
       for (const t of ['free', 'p1', 'p2', 'p3']) if (q.get('prem' + t) != null) await env.STATS.put('tg:prem:' + t, q.get('prem' + t).trim()); // /premium signal-group invite links
       if (q.get('seen') === '1') { let l = []; try { l = JSON.parse(await env.STATS.get('tg:seenchans') || '[]'); } catch (e) {} return J({ seenChannels: l }); }
@@ -15629,7 +15678,7 @@ export default {
         for (const s of cl) { const sy = s.toUpperCase(); st[sy] = { live: await env.STATS.get('csig:live:' + sy), conf: await env.STATS.get('csig:st:' + sy) }; }
         return J({ dbg: await env.STATS.get('csig:dbg'), results: await env.STATS.get('csig:results'), log: await env.STATS.get('csig:log'), lastFast: await env.STATS.get('csig:lastfast'), state: st });
       }
-      return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
+      return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', qgate: +((await env.STATS.get('csig:qgate')) ?? 4), adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
     }
     // FREE-channel (screener) signal config/state/proof. adminCookie OR ?key=ADMIN_KEY.
     if (url.pathname === '/api/admin/content' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // free-channel content + C-paper state (read-only; ?preview=1 builds the wrap text WITHOUT sending)

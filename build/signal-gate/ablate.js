@@ -1,0 +1,35 @@
+const { P, COINS } = require('./backtest.js');
+const T = JSON.parse(require('fs').readFileSync(__dirname + '/scan-trades.json', 'utf8'));
+// raw cluster: coins whose CLOSED 1h ST flipped on the same bar (no gates), same direction / any direction
+const flips = {}; for (const c of COINS) { const { b, st } = P[c]; for (let i = 1; i < b.length; i++) if (st.dir[i] != null && st.dir[i - 1] != null && st.dir[i] !== st.dir[i - 1]) { const k = b[i].time; (flips[k] = flips[k] || { 1: 0, '-1': 0 })[st.dir[i]]++; } }
+T.forEach(t => { const f = flips[t.t] || { 1: 0, '-1': 0 }; t.f.rawSame = f[t.long ? 1 : -1]; t.f.rawAny = f[1] + f['-1']; });
+const OOS = Date.UTC(2026, 4, 15) / 1000, LIVE = Date.UTC(2026, 6, 24) / 1000;
+const good = t => t.R > 0, bad = t => t.tag === 'loss';
+const IS = T.filter(t => t.t < OOS), OS = T.filter(t => t.t >= OOS), LV = T.filter(t => t.t >= LIVE);
+const seg = (a, keep) => { const k = a.filter(keep); const g0 = a.filter(good).length, b0 = a.filter(bad).length; return { n: k.length, w: k.filter(good).length, l: k.filter(bad).length, gKeep: k.filter(good).length / g0, bCut: 1 - k.filter(bad).length / b0, avg: k.length ? k.reduce((s, t) => s + t.R, 0) / k.length : 0, sum: k.reduce((s, t) => s + t.R, 0) }; };
+const pct = v => String(Math.round(v * 100)).padStart(3) + '%';
+const f = s => 'n' + String(s.n).padStart(3) + ' W' + String(s.w).padStart(3) + '/L' + String(s.l).padStart(3) + ' keepW' + pct(s.gKeep) + ' cutL' + pct(s.bCut) + ' R' + (s.avg >= 0 ? '+' : '') + s.avg.toFixed(2) + ' sum' + (s.sum >= 0 ? '+' : '') + s.sum.toFixed(0);
+const line = (label, keep) => console.log(label.padEnd(30), '| ALL', f(seg(T, keep)), '| IS', f(seg(IS, keep)), '| OOS', f(seg(OS, keep)), '| LIVE', f(seg(LV, keep)));
+console.log('=== cluster definitions ===');
+line('gated cl>=2 (scan def)', t => t.f.cl >= 2);
+line('raw same-dir flips>=2', t => t.f.rawSame >= 2);
+line('raw same-dir flips>=3', t => t.f.rawSame >= 3);
+line('raw any-dir flips>=2', t => t.f.rawAny >= 2);
+line('raw any-dir flips>=3', t => t.f.rawAny >= 3);
+const C = { adx18: t => t.f.adx >= 18, vol2: t => t.f.volR >= 2, noWknd: t => t.f.dow !== 0 && t.f.dow !== 6, not2023: t => t.f.hour < 20, cl2: t => t.f.rawSame >= 2, ema3: t => Math.abs(t.f.ema200) <= 3, atr06: t => t.f.atrPct >= 0.6, long: t => t.long };
+const S = Object.keys(C);
+const score = (t, skip) => S.reduce((s, k) => s + (k !== skip && C[k](t) ? 1 : 0), 0);
+console.log('\n=== score>=4 with RAW same-dir cluster, and ablation (drop one condition, threshold 4 of 7 -> use >=3.5 i.e. >=4 of remaining 7) ===');
+line('score>=4 (8 cond, raw cl)', t => score(t) >= 4);
+for (const k of S) line('  without ' + k + ' (>=4 of 7)', t => score(t, k) >= 4);
+for (const k of S) line('  without ' + k + ' (>=3 of 7)', t => score(t, k) >= 3);
+console.log('\n=== low-score bucket (score<=3) by half: is it bad everywhere? ===');
+line('score<=3 (dropped)', t => score(t) <= 3);
+console.log('\n=== what score>=4 removes by tag (ALL) ===');
+const d = T.filter(t => score(t) < 4); const tg = {}; d.forEach(t => tg[t.tag] = (tg[t.tag] || 0) + 1); console.log('dropped', d.length, JSON.stringify(tg), 'dropped sumR', d.reduce((s, t) => s + t.R, 0).toFixed(1));
+const k4 = T.filter(t => score(t) >= 4); const tk = {}; k4.forEach(t => tk[t.tag] = (tk[t.tag] || 0) + 1); console.log('kept', k4.length, JSON.stringify(tk), 'kept sumR', k4.reduce((s, t) => s + t.R, 0).toFixed(1));
+console.log('\n=== monthly, kept vs all ===');
+const mo = {}; T.forEach(t => { const m = new Date(t.t * 1000).toISOString().slice(0, 7); (mo[m] = mo[m] || { a: [], k: [] }); mo[m].a.push(t); if (score(t) >= 4) mo[m].k.push(t); });
+Object.keys(mo).sort().forEach(m => { const a = mo[m].a, k = mo[m].k; console.log(m, 'all n' + a.length, 'R' + (a.reduce((s, t) => s + t.R, 0) / a.length).toFixed(2), '| kept n' + k.length, 'R' + (k.length ? (k.reduce((s, t) => s + t.R, 0) / k.length).toFixed(2) : '-')); });
+console.log('\n=== live-window (channel era) list of DROPPED signals: would the owner have missed a good one? ===');
+LV.filter(t => score(t) < 4).forEach(t => console.log(new Date(t.t * 1000).toISOString().slice(0, 13), t.c, t.long ? 'LONG ' : 'SHORT', t.tag.padEnd(5), 'R' + t.R.toFixed(2), 'score', score(t), S.filter(k => C[k](t)).join(',')));

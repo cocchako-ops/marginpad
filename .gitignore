@@ -81,3 +81,6 @@ build/vault-shots/
 # Spanish translation work files (transient; the catalog is the source)
 build/data/es/chunks/
 build/data/es/leftover.json
+
+build/signal-gate/klines.json
+build/signal-gate/scan-trades.json
