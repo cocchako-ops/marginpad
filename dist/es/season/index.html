@@ -246,7 +246,8 @@ h1 b{color:var(--lime)}
 .bybox2 .uidv{font:700 12px 'Space Mono',monospace;color:#fff;background:rgba(255,255,255,.06);border-radius:10px;padding:9px 12px}
 .bybox2 .msg{margin-top:8px;font-size:11.5px;color:var(--dim);min-height:0}.bybox2 .msg.err{color:#ff8a80}.bybox2 .msg.good{color:#2ebd85}
 .byfull{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px -15px -1px;padding:13px 14px;border-top:1px solid rgba(247,166,0,.3);background:linear-gradient(90deg,#f7a600,#ffbf3a);color:#0a0b0d;text-decoration:none;font:700 12.5px 'Familjen Grotesk',system-ui,sans-serif;transition:filter .2s}
-.byfull b{font:800 12px 'Space Mono',monospace;white-space:nowrap}.byfull:hover{filter:brightness(1.06)}
+.byfull b{font:800 12px 'Space Mono',monospace;white-space:nowrap}.byfull:hover{filter:brightness(1.06)}.byfull em{font-style:normal}.byfull .sm{display:none}
+@media(max-width:560px){.byfull{padding:10px 12px;font-size:12px}.byfull .lg{display:none}.byfull .sm{display:inline}.byfull span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 @media(max-width:560px){.bybanner,.pzprev{max-width:calc(100vw - 62px)}.bybanner .l{white-space:normal}.pzl{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:0 2px}.pzc{padding:8px 4px;border-radius:10px}.pzc b{font-size:15px}.pzc.r1 b{font-size:17px}.pzc span{font-size:8px}.pzprev .empty{white-space:normal}.bybox2 .bh{align-items:flex-start}}
 .bs .nm{font:800 13.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bs.on::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#0b0e13;border-right:1px solid var(--c);border-bottom:1px solid var(--c)}
@@ -697,7 +698,7 @@ h1 b{color:var(--lime)}
   /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */
   var BYL=null;
   function paintBybox(D){var box=$('bybox');if(!box)return;if(curBoard!=='bybit'){box.hidden=true;return;}box.hidden=false;var m=me();
-    var full='<a class="byfull" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored"><span>No Bybit account through MarginPad yet? Open one with our link \u2014 that is the account that counts.</span><b>Open Bybit \u2192</b></a>';
+    var full='<a class="byfull" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored"><span><em class="lg">No Bybit account through MarginPad yet? Open one with our link \u2014 that is the account that counts.</em><em class="sm">No Bybit account yet? Open one with our link</em></span><b>Open Bybit \u2192</b></a>';
     var head=function(st,stTxt){return '<div class="bh"><span class="pill">Bybit volume board \u00b7 registration</span><span class="st '+st+'">'+stTxt+'</span></div>';};
     if(!m){box.innerHTML='<div class="bybox2">'+head('wait','not registered')+'<div class="bt">Register the Bybit account you opened through MarginPad</div><div class="bd">Sign in, then enter that account\'s UID. It is checked against our affiliate list \u2014 one Bybit UID, one MarginPad account. From then on your Bybit volume counts toward the $200.</div><div class="bf"><button type="button" class="btn" data-auth-open>Sign in to register</button></div>'+full+'</div>';return;}
     if(!BYL){box.innerHTML='<div class="bybox2">'+head('wait','checking\u2026')+'<div class="bt">Checking your Bybit registration\u2026</div></div>';J('/api/reward/bybitlink').then(function(d){BYL=d||{};paintBybox(D);});return;}
