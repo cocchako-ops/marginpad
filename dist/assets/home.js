@@ -775,10 +775,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function fmtLeg(v,dec){if(v==null||!isFinite(v))return '–';return dec===0?String(Math.round(v)):(dec==null?fp(v):(+v).toFixed(dec));}
   function updatePtLegend(param){ensurePtLeg();if(!ptLeg)return;if(!ptLegItems.length){ptLeg.style.display='none';ptLeg.innerHTML='';return;}ptLeg.style.display='';ptLeg.innerHTML=ptLegItems.map(function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}return '<span style="color:'+it.color+'">'+it.label+' <b>'+fmtLeg(v,it.dec)+'</b></span>';}).join('');}
   function applyInds(){if(!chart||!candle)return; // indicators removed from Paper Trade — cleanup no-op (kept so loadKlines/loadMore/refresh callers stay valid)
-    // NOT setMarkers([]) any more: this cleanup runs after every kline load and re-sync, and it was wiping the entry
-    // marks a second after they were drawn (owner 2026-09-13 — the marks existed in state but never on screen).
-    // The entry marks are the only markers on this series now, so re-apply whatever drawMarks last decided.
-    try{candle.setMarkers(_marks||[]);}catch(e){}
+    // The entry dots are their own one-point series (drawMarks), not series markers, so this cleanup leaves them alone.
+    try{candle.setMarkers([]);}catch(e){}
     indSeries.forEach(function(s){try{chart.removeSeries(s);}catch(e){}});indSeries=[];ptLegItems=[];
     try{updatePtLegend();}catch(e){}return;
     if(!bars||!bars.length){updatePtLegend();return;}var c=bars.map(function(b){return +b.close;}),t=bars.map(function(b){return b.time;});
@@ -881,7 +879,6 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // Markers are series markers, anchored to a bar time, so they stay glued to the candles under pan and zoom. The mark
   // size follows the chart: tiny on a phone, a little bigger on a wide desktop, never a blob.
   var entryMode='line';try{entryMode=localStorage.getItem('mp_entry_mode')==='mark'?'mark':'line';}catch(e){}
-  function markSize(){try{var w=(document.getElementById("ptChart")||{}).clientWidth||0;return w>=900?1.1:w>=560?0.95:0.8;}catch(e){return 1;}}
   function barOf(ts){ // snap a trade timestamp onto the bar it belongs to, so the mark sits ON a candle and not between two
     var t=Math.floor((+ts||0)/1000); if(!(t>0))return null;
     if(!bars||!bars.length)return null;
@@ -891,22 +888,29 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(t>last)return last;              // just opened, the forming bar
     return first+Math.floor((t-first)/iv)*iv;
   }
-  var _marks=[]; // what was last handed to the series — LWC has no getter, and the E2E has to prove the marks are bar-anchored
+  var _marks=[],_dots=[]; // _dots = the one-point series drawing each entry; _marks mirrors them for the E2E
+  function markSizePx(){try{var w=(document.getElementById("ptChart")||{}).clientWidth||0;return w>=900?4.5:w>=560?4:3.2;}catch(e){return 4;}}
+  function clearDots(){_dots.forEach(function(s){try{chart.removeSeries(s);}catch(e){}});_dots=[];_marks=[];}
   function drawMarks(op){
-    if(!candle)return;
-    if(entryMode!=="mark"){_marks=[];try{candle.setMarkers([]);}catch(e){} return;}
-    var sz=markSize(),seen={},out=[];
+    if(!chart||!candle)return;
+    clearDots();
+    if(entryMode!=="mark")return;
+    var r=markSizePx(),seen={};
     (op||[]).forEach(function(e){
-      var t=barOf(e.ts); if(t==null)return;
-      var long=e.side!=="short";
-      var k=t+":"+(long?"B":"S");
-      if(seen[k]){seen[k].n++;return;}                 // two longs in the same bar = one mark, counted
-      var m={time:t,position:long?"belowBar":"aboveBar",color:long?"#10b981":"#ef4444",shape:"circle",text:long?"B":"S",size:sz,n:1};
-      seen[k]=m;out.push(m);
+      var t=barOf(e.ts),px=+e.entry; if(t==null||!isFinite(px)||px<=0)return;
+      var long=e.side!=="short",k=t+":"+px.toPrecision(8);
+      if(seen[k])return; seen[k]=1;                       // two identical entries in one bar draw one dot
+      var col=long?"#10b981":"#ef4444";
+      var s;
+      try{
+        s=chart.addLineSeries({color:col,lineWidth:1,lineVisible:false,pointMarkersVisible:true,pointMarkersRadius:r,
+          priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,
+          autoscaleInfoProvider:function(){return null;}});   // a dot must never stretch the price scale
+        s.setData([{time:t,value:px}]);                       // ONE point: the chart pins it to (bar, price) itself
+      }catch(err){return;}
+      _dots.push(s);
+      _marks.push({time:t,price:px,color:col,side:long?"buy":"sell",r:r}); // read-only mirror for the E2E
     });
-    out.forEach(function(m){if(m.n>1)m.text=m.text+m.n;delete m.n;});
-    out.sort(function(a,b){return a.time-b.time;});    // LWC requires markers in time order
-    _marks=out.slice();try{candle.setMarkers(out);}catch(e){}
   }
   window.mpEntryMode=function(){return entryMode;};
   function drawLines(d){if(!candle)return;
@@ -972,14 +976,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // the on-chart live-price label colour follows the 24h change (consistent) — never the current TF candle's up/down
     if(candle){var _cc=(cg>=0?'#2ebd85':'#ff5a4d');if(_cc!==_plc){_plc=_cc;try{candle.applyOptions({priceLineColor:_cc});}catch(e){}}}}
   var tfEl=document.getElementById('ptTf'),tfBtn=document.getElementById('ptTfBtn'),tfCur=document.getElementById('ptTfCur');
-  // the entry-style toggle lives beside the timeframe button: one glyph, no label, no second row
-  var emBtn=document.getElementById('ptEntryMode');
-  function emPaint(){if(!emBtn)return;
-    emBtn.classList.toggle('on',entryMode==='mark');
-    emBtn.setAttribute('aria-pressed',entryMode==='mark'?'true':'false');
-    emBtn.title=entryMode==='mark'?'Entries: B/S marks on the candle — tap for lines':'Entries: price lines — tap for B/S marks on the candle';
+  // Entry style: its own control beside the timeframe pill, two explicit options rather than a toggle you have to
+  // guess the state of. Lines = the horizontal entry price line; dot = a circle pinned to the exact entry price.
+  var esWrap=document.querySelector('.ptt-es');
+  function emPaint(){if(!esWrap)return;
+    Array.prototype.forEach.call(esWrap.querySelectorAll('button'),function(b){var on=b.getAttribute('data-es')===entryMode;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
   }
-  if(emBtn)emBtn.addEventListener('click',function(){entryMode=(entryMode==='mark')?'line':'mark';try{localStorage.setItem('mp_entry_mode',entryMode);}catch(e){}emPaint();try{drawLines();}catch(e){}});
+  if(esWrap)esWrap.addEventListener('click',function(ev){var b=ev.target.closest('button[data-es]');if(!b)return;
+    var m=b.getAttribute('data-es')==='mark'?'mark':'line';if(m===entryMode)return;
+    entryMode=m;try{localStorage.setItem('mp_entry_mode',entryMode);}catch(e){}emPaint();try{drawLines();}catch(e){}});
   emPaint();
   function tfMenu(open){if(!tfEl||!tfBtn)return;tfEl.hidden=!open;tfBtn.setAttribute('aria-expanded',open?'true':'false');}
   if(tfBtn)tfBtn.addEventListener('click',function(e){e.stopPropagation();tfMenu(tfEl.hidden);});

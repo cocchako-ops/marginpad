@@ -324,12 +324,13 @@
   .ptt-chart-top{position:absolute;top:8px;left:8px;z-index:6;display:inline-flex;align-items:stretch;gap:0;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:linear-gradient(180deg,rgba(30,37,47,.9),rgba(19,24,31,.9));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 16px -6px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.07);}
   .ptt-chart-top>*{pointer-events:auto;}
   .ptt-tfwrap{position:relative;display:flex;align-items:stretch;border-left:1px solid rgba(255,255,255,.09);}
-  /* entry-style toggle: same height and weight as the timeframe button, one glyph wide (owner 2026-09-13:
-     "minimalno da zauzima mesta"). On = B/S marks on the candles, off = the entry price line. */
-  .ptt-em{display:inline-flex;align-items:center;justify-content:center;width:26px;height:24px;flex:0 0 auto;margin-left:6px;color:#8b97a5;background:#11151c;border:1px solid #232a34;border-radius:8px;cursor:pointer;transition:color .13s,border-color .13s,background .13s;padding:0}
-  .ptt-em:hover{color:#cfd6de;border-color:#33404f}
-  .ptt-em.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
-  .ptt-em:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}
+  /* entry style: its own pill next to the timeframe one, two options (owner 2026-09-13). Kept to two small glyphs
+     so the chart toolbar stays a single row on a phone. */
+  .ptt-es{display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;margin-left:7px;background:#11151c;border:1px solid #232a34;border-radius:9px;padding:2px}
+  .ptt-es button{display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;padding:0;border:0;border-radius:7px;background:none;color:#8b97a5;cursor:pointer;transition:color .13s,background .13s}
+  .ptt-es button:hover{color:#cfd6de}
+  .ptt-es button.on{background:#c2f64a;color:#0a0b0d}
+  .ptt-es button:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}
   .ptt-tf-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:#cfd6de;background:none;border:none;border-radius:0 8px 8px 0;padding:4px 8px 4px 7px;cursor:pointer;transition:background .13s,color .13s;white-space:nowrap;}
 .pt2-class{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#cfd6de;background:transparent;border:none;border-right:1px solid rgba(255,255,255,.14);border-radius:8px 0 0 8px;padding:3px 4px 3px 9px;margin:0;cursor:pointer;outline:none;max-width:92px;transition:color .13s;}
 .pt2-class:hover{color:#c2f64a;}

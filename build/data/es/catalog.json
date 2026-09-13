@@ -1,12 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-13T21:52:49.336Z",
+  "generated": "2026-09-13T22:17:16.193Z",
   "pages": 369,
-  "occurrences": 22742,
-  "unique": 12828,
-  "words": 237663,
+  "occurrences": 22745,
+  "unique": 12831,
+  "words": 237676,
   "untranslated": 0,
-  "untranslatedWords": 0
+  "untranslatedWords": 0,
+  "merged": "2026-09-13T22:17:27.276Z"
  },
  "items": {
   "-1NAT9wpkg": {
@@ -13669,6 +13670,42 @@
    ],
    "n": 1,
    "w": 1
+  },
+  "ndFi5Pc_Kc": {
+   "en": "Entry style",
+   "es": "Estilo de entrada",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "pOPpTmYgjY": {
+   "en": "Entries as price lines",
+   "es": "Entradas como líneas de precio",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "nyX8ibjCH3": {
+   "en": "Entries as a dot at the entry price",
+   "es": "Entradas como un punto en el precio de entrada",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 7
   },
   "mX7ellhB2i": {
    "en": "Recently traded pairs",

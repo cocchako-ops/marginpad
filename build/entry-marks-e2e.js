@@ -1,25 +1,24 @@
-/* Two Paper-Trade terminal changes (owner 2026-09-13):
+/* Two Paper-Trade terminal controls (owner 2026-09-13, second pass):
    1. the leverage slider offers ROUND numbers only — whole steps to 10x, then tens (never 107 or 203);
-   2. an entry-style toggle by the timeframe button: the entry price LINE, or a small green B / red S circle on the
-      candle the position opened in. The circles must be ANCHORED to the bars, so panning the chart must not move them
-      relative to the candles.                                                   node build/entry-marks-e2e.js       */
+   2. an entry-style chooser in its OWN control beside the timeframe pill: entries as price LINES, or as a DOT pinned
+      to the exact entry price. The first cut used series markers, which are anchored to a BAR and floated up and down
+      with it — "cela poenta je da prikaže tačno gde je bio ulaz". A dot is now a one-point series, so the chart itself
+      pins it to (time, price) and it cannot drift.                              node build/entry-marks-e2e.js       */
 'use strict';
 const { withBrowser, newPage } = require('./e2e-browser.js');
 const O = process.env.MP_ORIGIN || 'https://marginpad.io';
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ok  ' + m); } else { fail++; console.log('  FAIL ' + m); } };
 const now = Date.now();
-// Two OPEN positions on BTC, one long one short, opened far enough apart to land on different bars. They are priced
-// off the LIVE market: a position seeded miles from spot is liquidated the instant the terminal prices it, and the
-// mark it should have drawn never exists (that is what made the first run of this test report one mark instead of two).
+// Positions priced off the LIVE market: one seeded far from spot is liquidated before it can ever be drawn.
 async function seed() {
   let px = 0;
   try { const r = await fetch(O + '/api/price?symbol=BTC'); const j = await r.json(); px = +(j.price || j.p || 0); } catch (e) {}
   if (!(px > 0)) px = 60000;
-  const lo = +(px * 0.985).toFixed(2), hi = +(px * 1.015).toFixed(2);   // long below spot, short above it: both in profit, neither near liquidation
+  const lo = +(px * 0.9985).toFixed(2), hi = +(px * 1.0015).toFixed(2);
   return [
-    { id: String(now - 5400000) + '_1', sym: 'BTC', side: 'long', lev: 5, margin: 100, qty: 100 * 5 / lo, entry: lo, ts: now - 5400000, status: 'open', src: 'client' },
-    { id: String(now - 1800000) + '_2', sym: 'BTC', side: 'short', lev: 5, margin: 50, qty: 50 * 5 / hi, entry: hi, ts: now - 1800000, status: 'open', src: 'client' },
+    { id: String(now - 3600000) + '_1', sym: 'BTC', side: 'long', lev: 5, margin: 100, qty: 100 * 5 / lo, entry: lo, ts: now - 3600000, status: 'open', src: 'client' },
+    { id: String(now - 1200000) + '_2', sym: 'BTC', side: 'short', lev: 5, margin: 50, qty: 50 * 5 / hi, entry: hi, ts: now - 1200000, status: 'open', src: 'client' },
   ];
 }
 (async () => {
@@ -29,79 +28,87 @@ async function seed() {
     await p.setViewport({ width: 1366, height: 900 });
     await p.evaluateOnNewDocument((j) => { try { localStorage.setItem('mp_journal', JSON.stringify(j)); localStorage.removeItem('mp_entry_mode'); } catch (e) {} }, J);
     await p.goto(O + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
-    await new Promise(r => setTimeout(r, 6000));
+    await new Promise(r => setTimeout(r, 7000));
 
-    // ---- the leverage ladder ----------------------------------------------------------------------------------
+    // ---- the leverage ladder ------------------------------------------------------------------------------------
     const lev = await p.evaluate(() => {
       const el = document.getElementById('planLev'), r = document.getElementById('planLevR');
       if (!el || !r) return null;
       const seen = [];
       for (let v = 0; v <= +r.max; v += 7) { r.value = String(v); r.dispatchEvent(new Event('input', { bubbles: true })); const n = +el.value; if (seen[seen.length - 1] !== n) seen.push(n); }
-      const odd = seen.filter(n => n > 10 && n % 10 !== 0);
-      // and a typed value commits to the same ladder
       el.value = '107'; el.dispatchEvent(new Event('change', { bubbles: true }));
-      const typed = +el.value;
-      return { seen: seen.slice(0, 22), odd, typed, max: +r.max };
+      return { seen: seen.slice(0, 22), odd: seen.filter(n => n > 10 && n % 10 !== 0), typed: +el.value };
     });
     ok(!!lev, 'the leverage controls are on the page');
     ok(lev && lev.odd.length === 0, 'no value above 10x is off the tens ladder (' + (lev ? lev.odd.slice(0, 6).join(', ') || 'none' : '?') + ')');
     ok(lev && lev.seen.filter(n => n <= 10).length >= 3, 'below 10x every whole step is still reachable (' + (lev ? lev.seen.filter(n => n <= 10).join(', ') : '') + ')');
     ok(lev && (lev.typed === 110 || lev.typed === 100), 'typing 107 commits to a round number (' + (lev ? lev.typed : '?') + ')');
 
-    // ---- the entry-style toggle --------------------------------------------------------------------------------
-    const btn = await p.evaluate(() => {
-      const b = document.getElementById('ptEntryMode'); if (!b) return null;
-      b.scrollIntoView({ block: 'center' });
-      const r = b.getBoundingClientRect();
-      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); // the glyph inside the button is the hit target, which still counts
-      const tf = document.getElementById('ptTfBtn');
-      const tr = tf ? tf.getBoundingClientRect() : null;
-      return { w: Math.round(r.width), h: Math.round(r.height), reachable: !!(hit && b.contains(hit)), pressed: b.getAttribute('aria-pressed'), besideTf: tr ? Math.abs(r.top - tr.top) < 20 && r.left > tr.left : null };
+    // ---- the entry-style control --------------------------------------------------------------------------------
+    const ctl = await p.evaluate(() => {
+      const w = document.querySelector('.ptt-es'); if (!w) return null;
+      w.scrollIntoView({ block: 'center' });
+      const bs = [...w.querySelectorAll('button[data-es]')];
+      const r = w.getBoundingClientRect(), tf = document.getElementById('ptTfBtn'), tr = tf ? tf.getBoundingClientRect() : null;
+      const first = bs[0].getBoundingClientRect();
+      const hit = document.elementFromPoint(first.left + first.width / 2, first.top + first.height / 2);
+      return {
+        opts: bs.map(b => b.getAttribute('data-es')), on: bs.filter(b => b.classList.contains('on')).map(b => b.getAttribute('data-es')),
+        w: Math.round(r.width), h: Math.round(r.height), reachable: !!(hit && bs[0].contains(hit)),
+        separate: tr ? (r.left > tr.right && Math.abs(r.top - tr.top) < 22) : null,
+      };
     });
-    ok(!!btn && btn.reachable, 'the toggle is on the chart toolbar and clickable');
-    ok(btn && btn.w <= 34 && btn.h <= 30, 'it takes one button of space (' + (btn ? btn.w + 'x' + btn.h : '?') + ')');
-    ok(btn && btn.besideTf, 'it sits beside the timeframe button, on the same row');
-    ok(btn && btn.pressed === 'false', 'it starts off: entries are lines, as before');
+    ok(!!ctl, 'the entry-style control is on the chart toolbar');
+    ok(ctl && ctl.opts.join(',') === 'line,mark', 'it offers both options explicitly, not a toggle (' + (ctl ? ctl.opts.join(', ') : '') + ')');
+    ok(ctl && ctl.separate, 'it is its own control, to the right of the timeframe pill');
+    ok(ctl && ctl.w <= 70 && ctl.h <= 30, 'it stays small (' + (ctl ? ctl.w + 'x' + ctl.h : '?') + ')');
+    ok(ctl && ctl.reachable, 'its buttons are clickable');
+    ok(ctl && ctl.on.join(',') === 'line', 'it opens on lines, as before');
 
-    
-    // switch to marks
-    await p.evaluate(() => document.getElementById('ptEntryMode').click());
-    await new Promise(r => setTimeout(r, 1200));
-    const marks = await p.evaluate(() => {
-      const b = document.getElementById('ptEntryMode');
-      const s = document.querySelector('#ptChart');
-      return { pressed: b.getAttribute('aria-pressed'), stored: (function () { try { return localStorage.getItem('mp_entry_mode'); } catch (e) { return null; } })(), canvas: !!s };
+    // ---- switch to dots -----------------------------------------------------------------------------------------
+    await p.evaluate(() => document.querySelector('.ptt-es button[data-es="mark"]').click());
+    await new Promise(r => setTimeout(r, 1300));
+    const dots = await p.evaluate(() => {
+      const d = window.__mpPT();
+      return {
+        stored: (function () { try { return localStorage.getItem('mp_entry_mode'); } catch (e) { return null; } })(),
+        on: [...document.querySelectorAll('.ptt-es button.on')].map(b => b.getAttribute('data-es')),
+        marks: (d.marks || []).map(m => ({ price: m.price, side: m.side, color: m.color, r: m.r, text: m.text })),
+      };
     });
-    ok(marks.pressed === 'true' && marks.stored === 'mark', 'tapping it switches to marks and remembers the choice');
+    ok(dots.stored === 'mark' && dots.on.join(',') === 'mark', 'picking dots switches and is remembered');
+    ok(dots.marks.length === 2, 'one dot per open position (' + dots.marks.length + ')');
+    ok(dots.marks.every(m => m.text === undefined), 'no letter on the dot, just the dot');
+    ok(dots.marks.some(m => m.side === 'buy' && /10b981/i.test(m.color)) && dots.marks.some(m => m.side === 'sell' && /ef4444/i.test(m.color)), 'green for the buy, red for the sell');
+    ok(dots.marks.every(m => m.r <= 5), 'the dot is proportional to the chart, not a blob (r=' + dots.marks.map(m => m.r).join('/') + ')');
 
-    // the markers are drawn by the chart library onto the candle canvas: prove they exist and are anchored by
-    // reading the series markers back off the chart object the page exposes for debugging
-    const anchored = await p.evaluate(async () => {
-      const dbg = window.__mpPT && window.__mpPT();
-      if (!dbg || !dbg.candle) return { no: true };
-      const before = (dbg.marks || []).map(m => ({ t: m.time, text: m.text, pos: m.position, color: m.color }));
-      // pan the chart hard, then read them again: a marker is bound to a bar time, so the times must not change
-      try { const r = dbg.chart.timeScale().getVisibleLogicalRange(); dbg.chart.timeScale().setVisibleLogicalRange({ from: r.from - 40, to: r.to - 40 }); } catch (e) {}
-      await new Promise(r => setTimeout(r, 500));
-      const d2 = window.__mpPT(); const after = (d2.marks || []).map(m => ({ t: m.time, text: m.text, pos: m.position, color: m.color }));
-      return { before, after };
+    // ---- the whole point: it marks the entry PRICE, and stays there ----------------------------------------------
+    const pinned = await p.evaluate(async () => {
+      const d = window.__mpPT();
+      const read = () => (d.marks || []).map(m => {
+        const y = d.candle.priceToCoordinate(m.price);
+        return { price: m.price, y: y == null ? null : Math.round(y), back: y == null ? null : +d.candle.coordinateToPrice(y).toFixed(2) };
+      });
+      const before = read();
+      const ts = d.chart.timeScale(), r = ts.getVisibleLogicalRange();
+      ts.setVisibleLogicalRange({ from: r.from - 60, to: r.to - 20 });                        // pan and zoom
+      await new Promise(x => setTimeout(x, 300));
+      d.chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.02, bottom: 0.45 } }); // and move the price scale
+      await new Promise(x => setTimeout(x, 600));
+      return { before, after: read() };
     });
-    if (anchored.no) { ok(false, 'the chart debug hook is available'); }
-    else {
-      ok(anchored.before.length === 2, 'one mark per open position (' + anchored.before.length + ')');
-      ok(anchored.before.some(m => m.text === 'B' && /10b981/i.test(m.color || '')) && anchored.before.some(m => m.text === 'S' && /ef4444/i.test(m.color || '')), 'a green B for the long and a red S for the short');
-      ok(anchored.before.every(m => Number.isFinite(m.t)), 'each mark carries a bar time, not a pixel');
-      ok(JSON.stringify(anchored.before) === JSON.stringify(anchored.after), 'panning the chart does not move them: same bar times after a 40-bar scroll');
-    }
+    ok(pinned.before.every((m, i) => Math.abs(pinned.after[i].back - m.price) < Math.max(0.5, m.price * 0.00002)),
+      'after a pan, a zoom and a price-scale change each dot still resolves to its entry price (' + pinned.after.map(m => m.back).join(', ') + ')');
+    ok(pinned.before.some((m, i) => pinned.after[i].y !== m.y), 'and the view really did move, so that is not a no-op');
 
-    // and back to lines
-    await p.evaluate(() => document.getElementById('ptEntryMode').click());
+    // ---- back to lines ------------------------------------------------------------------------------------------
+    await p.evaluate(() => document.querySelector('.ptt-es button[data-es="line"]').click());
     await new Promise(r => setTimeout(r, 900));
     const back = await p.evaluate(() => {
-      const dbg = window.__mpPT && window.__mpPT();
-      return { pressed: document.getElementById('ptEntryMode').getAttribute('aria-pressed'), marks: dbg ? (dbg.marks || []).length : -1 };
+      const d = window.__mpPT();
+      return { on: [...document.querySelectorAll('.ptt-es button.on')].map(b => b.getAttribute('data-es')), marks: (d.marks || []).length };
     });
-    ok(back.pressed === 'false' && back.marks === 0, 'switching back removes the marks and restores the lines');
+    ok(back.on.join(',') === 'line' && back.marks === 0, 'choosing lines removes the dots and restores the entry lines');
   });
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exit(fail ? 1 : 0);
