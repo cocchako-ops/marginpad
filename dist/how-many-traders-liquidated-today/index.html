@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>How Many Traders Got Liquidated Today? — Live 24h Count | MarginPad</title>
+<meta name="description" content="The number of positions force-closed across nine crypto exchanges in the last 24 hours, counted from their own public liquidation feeds. Updated continuously, free, no signup.">
+<link rel="canonical" href="https://marginpad.io/how-many-traders-liquidated-today/">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="How Many Traders Got Liquidated Today? — Live 24h Count | MarginPad">
+<meta property="og:description" content="The number of positions force-closed across nine crypto exchanges in the last 24 hours, counted from their own public liquidation feeds. Updated continuously, free, no signup.">
+<meta property="og:url" content="https://marginpad.io/how-many-traders-liquidated-today/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+.ask-a{border:1px solid rgba(194,246,74,.3);border-left:3px solid #c2f64a;border-radius:13px;padding:17px 19px;background:rgba(194,246,74,.04);margin:20px 0 8px}
+.ask-a .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(26px,5.4vw,40px);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
+.ask-a p{margin:0;font-size:15px;line-height:1.7}
+.ask-a .src{font-family:'Space Mono',monospace;font-size:11.5px;color:#6f7885;margin:11px 0 0}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0 0}
+.ask-t th,.ask-t td{padding:8px 11px 8px 0;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim);font-weight:400}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right}
+.ask-t td:last-child,.ask-t th:last-child{color:#8b95a1;font-size:12.5px;white-space:normal}
+.ask-t td:first-child{font-weight:600}
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ask-cta{display:inline-block;margin:4px 8px 0 0;padding:9px 15px;border-radius:10px;background:#c2f64a;color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none}
+.ask-cta.alt{background:none;border:1px solid #2a323d;color:var(--ink)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Crypto liquidation count (24h)","description":"The number of individual forced-liquidation events observed across nine derivatives venues in a rolling 24-hour window, with the dollar total and the number of coins involved.","url":"https://marginpad.io/how-many-traders-liquidated-today/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"How many crypto traders are liquidated in a day?","acceptedAnswer":{"@type":"Answer","text":"It swings by an order of magnitude with volatility. A calm day typically runs in the low tens of thousands of forced closes across the nine venues we watch; a sharp move can multiply that several times over in a matter of hours. The live figure at the top of this page is the count for the trailing 24 hours, so it answers the question for today rather than for an average day."}},{"@type":"Question","name":"Is this the number of people or the number of positions?","acceptedAnswer":{"@type":"Answer","text":"Positions, strictly speaking liquidation events published by the exchanges. Some venues emit one event per order filled as they unwind a position, so a single trader caught in a cascade can contribute more than one. Nobody outside an exchange can publish a headcount of distinct traders, and anyone who claims to is estimating."}},{"@type":"Question","name":"Why is your number different from other liquidation trackers?","acceptedAnswer":{"@type":"Answer","text":"Three reasons, all structural. We cover nine venues and other trackers cover a different set. Exchanges publish at different granularity and some batch their events. And several aggregators model the events they cannot see, which inflates the figure against one that only counts observed events. Ours is the smaller, checkable kind."}},{"@type":"Question","name":"What counts as a liquidation?","acceptedAnswer":{"@type":"Answer","text":"A forced close: the exchange closes a leveraged position because the margin backing it ran out, at whatever price the book gives. It is not a stop-loss, which the trader chose and which fills at their price. On most venues liquidation also carries a fee, so the trader loses slightly more than the margin they posted."}},{"@type":"Question","name":"Where can I see them happening?","acceptedAnswer":{"@type":"Answer","text":"The live feed at /rekt/ prints each forced close as it arrives with venue, coin, side and size. The heatmap shows where open leverage is stacked, and the per-coin breakdown is on the liquidation statistics page."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+
+<script defer src="/assets/sentry.js?v=42ed986c"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/liquidations/">Liquidations</a><a href="/heatmap">Heatmap</a><a href="/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <h1>How many traders got liquidated today?</h1>
+    <p class="lead">Counted, not estimated: every forced close our collector sees across nine exchanges in a rolling 24-hour window.</p>
+
+    <div id="askdata">
+      <div class="ask-a"><p>Reading the live figure&hellip;</p></div>
+    </div>
+
+    <p style="margin:18px 0 26px"><a class="ask-cta" href="/rekt/">The live liquidation feed</a><a class="ask-cta alt" href="/liquidations/">Market totals</a><a class="ask-cta alt" href="/liquidations/by-exchange/">By exchange</a><a class="ask-cta alt" href="/heatmap">Liquidation heatmap</a></p>
+
+    <h2>Why the count matters more than the dollars</h2>
+    <p>Almost every tracker publishes the dollar figure, because it is the bigger and more dramatic number. The <em>count</em> answers a different question: how many people it happened to. A quiet day where one whale loses forty million dollars and a violent day where twenty thousand retail positions are wiped out can print the same total, and they are not the same event. Divide the total by the count and you get the average position that died &mdash; usually a few thousand dollars, which is a better description of who trades leverage than any headline number.</p><p>A word on what this is not. It counts liquidation <em>events</em> published by the exchanges, and exchanges differ in how they publish: some emit one message per order filled while unwinding a position, so a single trader can appear more than once in a cascade. It is a measure of forced-close activity, not a headcount of distinct people, and nobody outside an exchange can produce the latter.</p>
+
+    <h2>Method, in full</h2>
+    <p>MarginPad runs its own collector subscribed to the public liquidation websocket of nine exchanges: Binance (USD- and coin-margined), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex. Every forced close is normalised to symbol, side, fill price and dollar notional, then aggregated over a rolling 24-hour window. These are observed events, not a model and not a vendor feed. Nothing is filled in when a venue goes quiet, and if the collector itself is down the page says so rather than showing yesterday&#39;s figures as if they were current.</p><p>Totals here will differ from other trackers, and they should. Venue sets differ, exchanges publish at different granularity, and any aggregator that models the gaps will report more than one that only counts what it saw. We only count what we saw.</p>
+
+    <h2>Take the number</h2>
+    <p>Free as JSON, no key and no signup: <code>GET https://marginpad.io/api/v1/liquidations</code> returns <code>data.market.count</code> (events), <code>data.market.total</code> (dollars), the long and short split and the top coins, with <code>ts</code> as the UTC millisecond timestamp of the measurement. Per-venue figures are at <code>/api/v1/venues</code>. Documentation on the <a href="/free-crypto-api/">free crypto API</a> page.</p>
+
+    <h2>Questions</h2>
+    <details><summary>How many crypto traders are liquidated in a day?</summary><p>It swings by an order of magnitude with volatility. A calm day typically runs in the low tens of thousands of forced closes across the nine venues we watch; a sharp move can multiply that several times over in a matter of hours. The live figure at the top of this page is the count for the trailing 24 hours, so it answers the question for today rather than for an average day.</p></details>
+    <details><summary>Is this the number of people or the number of positions?</summary><p>Positions, strictly speaking liquidation events published by the exchanges. Some venues emit one event per order filled as they unwind a position, so a single trader caught in a cascade can contribute more than one. Nobody outside an exchange can publish a headcount of distinct traders, and anyone who claims to is estimating.</p></details>
+    <details><summary>Why is your number different from other liquidation trackers?</summary><p>Three reasons, all structural. We cover nine venues and other trackers cover a different set. Exchanges publish at different granularity and some batch their events. And several aggregators model the events they cannot see, which inflates the figure against one that only counts observed events. Ours is the smaller, checkable kind.</p></details>
+    <details><summary>What counts as a liquidation?</summary><p>A forced close: the exchange closes a leveraged position because the margin backing it ran out, at whatever price the book gives. It is not a stop-loss, which the trader chose and which fills at their price. On most venues liquidation also carries a fee, so the trader loses slightly more than the margin they posted.</p></details>
+    <details><summary>Where can I see them happening?</summary><p>The live feed at /rekt/ prints each forced close as it arrives with venue, coin, side and size. The heatmap shows where open leverage is stacked, and the per-coin breakdown is on the liquidation statistics page.</p></details>
+
+    <p style="margin-top:26px">Related: <a href="/rekt/">the live liquidation feed</a> &middot; <a href="/liquidations/">market totals</a> &middot; <a href="/liquidations/by-exchange/">by exchange</a> &middot; <a href="/heatmap">liquidation heatmap</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=951fdee7"></script>
+</body>
+</html>

@@ -698,7 +698,12 @@ async function handleCgBoard(url, env) {
 //  - graceful: any data gap -> the static page is served unchanged (worst case = old behavior)
 //  - every sentence that INTERPRETS a number has an explicit neutral case (zero funding is NOT "longs pay shorts")
 //  - edge-cached 10 min per page -> upstreams see at most one build per colo per window
-function _susd(x) { x = +x; if (!isFinite(x)) return null; const a = Math.abs(x); if (a >= 1e12) return '$' + (x / 1e12).toFixed(2) + ' trillion'; if (a >= 1e9) return '$' + (x / 1e9).toFixed(2) + ' billion'; if (a >= 1e6) return '$' + (x / 1e6).toFixed(1) + ' million'; if (a >= 1e3) return '$' + (x / 1e3).toFixed(0) + 'K'; return '$' + x.toFixed(0); }
+// Magnitude words are FALSE FRIENDS in Spanish: 'billón' is 10^12 and 'trillón' is 10^18, so the English words put a
+// Spanish reader off by three and six orders of magnitude. Measured 2026-09-14 on the live /es/ coin pages: Bitcoin's
+// market cap read '$1.54 trillion', i.e. 1.54 quintillion dollars to anyone reading it as Spanish. Pass lang where the
+// text is localised; the bare call is unchanged everywhere else.
+const _SUSD_W = { en: [' trillion', ' billion', ' million'], es: [' billones', ' mil millones', ' millones'] };
+function _susd(x, lang) { x = +x; if (!isFinite(x)) return null; const a = Math.abs(x); const w = _SUSD_W[lang] || _SUSD_W.en; if (a >= 1e12) return '$' + (x / 1e12).toFixed(2) + w[0]; if (a >= 1e9) return '$' + (x / 1e9).toFixed(2) + w[1]; if (a >= 1e6) return '$' + (x / 1e6).toFixed(1) + w[2]; if (a >= 1e3) return '$' + (x / 1e3).toFixed(0) + 'K'; return '$' + x.toFixed(0); }
 function _spx(x) { x = +x; if (!isFinite(x)) return null; return '$' + x.toLocaleString('en-US', { maximumFractionDigits: x >= 100 ? 0 : x >= 1 ? 2 : 6 }); }
 function _pick(sym, arr) { let h = 0; const s = String(sym); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return arr[h % arr.length]; }
 function _hhmm() { const t = new Date(); return t.toISOString().slice(0, 10) + ' ' + ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2); } // date INCLUDED (SEO kompas 2026-08-16): AI engines weight freshness heavily (content <30d gets ~3.2x more citations) — a bare HH:MM carries no date signal; blocks genuinely refresh (10-min edge TTL), so the date is honest
@@ -818,7 +823,8 @@ const SSR_L10N = {
 };
 function _ssrFill(t, m) { return String(t || '').replace(/\{(\w+)\}/g, (x, k) => (k in m ? m[k] : x)); }
 // lang-aware mirror of ssrCoinProse: SAME data gating (thresholds, neutral cases), localized sentences
-function ssrCoinProseL10n(L, sym, name, cg, gk) {
+function ssrCoinProseL10n(L, sym, name, cg, gk, lang) {
+  const U = (v) => _susd(v, lang);
   const S = [];
   const px = cg && _spx(cg.price), ch = cg && isFinite(+cg.chg24h) ? +cg.chg24h : null;
   if (px) {
@@ -827,8 +833,8 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
     S.push(_ssrFill(L.px, { name, sym, px, ch: chTxt }));
   }
   if (gk && gk.rank && gk.mcap) {
-    let s2 = _ssrFill(L.rank, { rank: gk.rank, mcap: _susd(gk.mcap) });
-    if (gk.vol) s2 += _ssrFill(L.rankVol, { vol: _susd(gk.vol) });
+    let s2 = _ssrFill(L.rank, { rank: gk.rank, mcap: U(gk.mcap) });
+    if (gk.vol) s2 += _ssrFill(L.rankVol, { vol: U(gk.vol) });
     S.push(s2 + '.');
   }
   const f = cg && isFinite(+cg.funding) ? +cg.funding : null;
@@ -839,7 +845,7 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
     else S.push(_ssrFill(L.fundNeg, { f: f.toFixed(4), sym }));
   }
   if (cg && +cg.oiUsd > 0) {
-    let s4 = _ssrFill(L.oi, { oi: _susd(cg.oiUsd) });
+    let s4 = _ssrFill(L.oi, { oi: U(cg.oiUsd) });
     const oc = isFinite(+cg.oiChg24h) ? +cg.oiChg24h : null;
     if (oc != null) s4 += Math.abs(oc) < 2 ? L.oiSteady : _ssrFill(oc > 0 ? L.oiUp : L.oiDn, { v: Math.abs(oc).toFixed(1) });
     if (gk && +gk.mcap > 0) { const r = (+cg.oiUsd / +gk.mcap) * 100; if (isFinite(r) && r > 0.05) s4 += _ssrFill(L.oiRatio, { r: r >= 10 ? r.toFixed(0) : r.toFixed(1) }); }
@@ -848,10 +854,10 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
   if (cg) {
     const Lq = +cg.longLiq24h || 0, Sh = +cg.shortLiq24h || 0, T = Lq + Sh;
     if (T >= 50000) {
-      let s5 = _ssrFill(L.liq, { t: _susd(T), sym });
-      if (Lq >= Sh * 1.5) s5 += _ssrFill(L.liqLong, { l: _susd(Lq), s: _susd(Sh) });
-      else if (Sh >= Lq * 1.5) s5 += _ssrFill(L.liqShort, { l: _susd(Lq), s: _susd(Sh) });
-      else s5 += _ssrFill(L.liqEven, { l: _susd(Lq), s: _susd(Sh) });
+      let s5 = _ssrFill(L.liq, { t: U(T), sym });
+      if (Lq >= Sh * 1.5) s5 += _ssrFill(L.liqLong, { l: U(Lq), s: U(Sh) });
+      else if (Sh >= Lq * 1.5) s5 += _ssrFill(L.liqShort, { l: U(Lq), s: U(Sh) });
+      else s5 += _ssrFill(L.liqEven, { l: U(Lq), s: U(Sh) });
       S.push(s5 + '.');
     } else if (cg.price != null) S.push(_ssrFill(L.liqQuiet, { sym }));
   }
@@ -876,7 +882,8 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
 }
 // Seven-day liquidation history for one symbol, from our own daily recap records. This is the part of a
 // coin page a competitor cannot reproduce: not a live number an API sells everyone, but a measured week.
-function ssrLiqHistoryProse(sym, hist) {
+function ssrLiqHistoryProse(sym, hist, lang) {
+  const es = lang === 'es', U = (v) => _susd(v, lang);
   const S = [];
   if (!Array.isArray(hist) || hist.length < 3) return S;
   const total = hist.reduce((t, r) => t + r.usd, 0);
@@ -884,19 +891,26 @@ function ssrLiqHistoryProse(sym, hist) {
   const worst = hist.slice().sort((a, b) => b.usd - a.usd)[0];
   const wLong = hist.reduce((t, r) => t + r.usd * (r.longPct / 100), 0);
   const longShare = total > 0 ? Math.round(wLong / total * 100) : 0;
-  const dname = (d) => { try { return new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' }); } catch (e) { return d; } };
-  S.push('Over the last ' + hist.length + ' days our collector recorded ' + _susd(total) + ' of ' + sym + ' positions being force-closed across ' + events.toLocaleString('en-US') + ' individual liquidations.');
-  if (worst && worst.usd > 0) S.push('The heaviest single day was ' + dname(worst.day) + ' at ' + _susd(worst.usd) + (worst.longPct >= 65 ? ', overwhelmingly longs' : worst.longPct <= 35 ? ', overwhelmingly shorts' : ', split fairly evenly between longs and shorts') + '.');
-  if (longShare >= 62) S.push('Across those ' + hist.length + ' days ' + longShare + '% of the ' + sym + ' damage fell on longs — a market that has been punishing buyers more than sellers.');
-  else if (longShare <= 38) S.push('Across those ' + hist.length + ' days only ' + longShare + '% of the ' + sym + ' damage fell on longs; shorts took the rest, which is what a grinding move up looks like from the liquidation side.');
-  else S.push('Across those ' + hist.length + ' days the damage split roughly ' + longShare + '/' + (100 - longShare) + ' between longs and shorts, with neither side clearly on the wrong foot.');
-  S.push('You can see the day-by-day figures, including the biggest single liquidation and the busiest hour, in our <a href="/liquidations/recap/">dated liquidation archive</a>.');
+  const dname = (d) => { try { return new Date(d + 'T00:00:00Z').toLocaleDateString(es ? 'es-ES' : 'en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' }); } catch (e) { return d; } };
+  S.push(es ? ('En los últimos ' + hist.length + ' días nuestro colector registró ' + U(total) + ' en posiciones de ' + sym + ' cerradas a la fuerza, repartidas en ' + events.toLocaleString('es-ES') + ' liquidaciones individuales.')
+    : ('Over the last ' + hist.length + ' days our collector recorded ' + U(total) + ' of ' + sym + ' positions being force-closed across ' + events.toLocaleString('en-US') + ' individual liquidations.'));
+  if (worst && worst.usd > 0) S.push(es ? ('El día más duro fue el ' + dname(worst.day) + ' con ' + U(worst.usd) + (worst.longPct >= 65 ? ', casi todo en largos' : worst.longPct <= 35 ? ', casi todo en cortos' : ', repartido de forma bastante pareja entre largos y cortos') + '.')
+    : ('The heaviest single day was ' + dname(worst.day) + ' at ' + U(worst.usd) + (worst.longPct >= 65 ? ', overwhelmingly longs' : worst.longPct <= 35 ? ', overwhelmingly shorts' : ', split fairly evenly between longs and shorts') + '.'));
+  if (longShare >= 62) S.push(es ? ('En esos ' + hist.length + ' días el ' + longShare + '% del daño en ' + sym + ' cayó sobre los largos — un mercado que viene castigando más a los compradores que a los vendedores.')
+    : ('Across those ' + hist.length + ' days ' + longShare + '% of the ' + sym + ' damage fell on longs — a market that has been punishing buyers more than sellers.'));
+  else if (longShare <= 38) S.push(es ? ('En esos ' + hist.length + ' días solo el ' + longShare + '% del daño en ' + sym + ' cayó sobre los largos; el resto se lo llevaron los cortos, que es como se ve una subida lenta desde el lado de las liquidaciones.')
+    : ('Across those ' + hist.length + ' days only ' + longShare + '% of the ' + sym + ' damage fell on longs; shorts took the rest, which is what a grinding move up looks like from the liquidation side.'));
+  else S.push(es ? ('En esos ' + hist.length + ' días el daño se repartió aproximadamente ' + longShare + '/' + (100 - longShare) + ' entre largos y cortos, sin que ningún lado quedara claramente a contrapié.')
+    : ('Across those ' + hist.length + ' days the damage split roughly ' + longShare + '/' + (100 - longShare) + ' between longs and shorts, with neither side clearly on the wrong foot.'));
+  S.push(es ? ('Puedes ver las cifras día a día, incluida la mayor liquidación individual y la hora más activa, en nuestro <a href="/liquidations/recap/">archivo de liquidaciones con fecha</a>.')
+    : ('You can see the day-by-day figures, including the biggest single liquidation and the busiest hour, in our <a href="/liquidations/recap/">dated liquidation archive</a>.'));
   return S;
 }
 // Liquidation-cluster analysis from our own collector. Reads the model's price levels, works out where
 // the heaviest pile-ups sit relative to spot, and says what that means — the kind of sentence a generic
 // calculator page cannot produce because it has no such data behind it.
-function ssrLiqClusterProse(sym, cg, cl) {
+function ssrLiqClusterProse(sym, cg, cl, lang) {
+  const es = lang === 'es', U = (v) => _susd(v, lang);
   const S = [];
   const px = cg && isFinite(+cg.price) ? +cg.price : 0;
   if (!px || !cl || !Array.isArray(cl.clusters) || !cl.clusters.length) return S;
@@ -911,16 +925,22 @@ function ssrLiqClusterProse(sym, cg, cl) {
   const below = longs.filter(x => x.p < px), above = shorts.filter(x => x.p > px);
   const pct = (p) => Math.abs((p - px) / px * 100);
   const bl = top(below), ab = top(above);
-  if (bl) S.push('The heaviest band of ' + sym + ' long liquidations sits near ' + _spx(bl.p) + ' — roughly ' + pct(bl.p).toFixed(1) + '% below the current price — where about ' + _susd(bl.v) + ' of leveraged positions would be forced out.');
-  if (ab) S.push('On the other side, the largest short-liquidation band is around ' + _spx(ab.p) + ', about ' + pct(ab.p).toFixed(1) + '% above spot, holding roughly ' + _susd(ab.v) + '.');
+  if (bl) S.push(es ? ('La banda más densa de liquidaciones largas de ' + sym + ' está cerca de ' + _spx(bl.p) + ' — alrededor de un ' + pct(bl.p).toFixed(1) + '% por debajo del precio actual — donde se forzaría el cierre de unos ' + U(bl.v) + ' en posiciones apalancadas.')
+    : ('The heaviest band of ' + sym + ' long liquidations sits near ' + _spx(bl.p) + ' — roughly ' + pct(bl.p).toFixed(1) + '% below the current price — where about ' + U(bl.v) + ' of leveraged positions would be forced out.'));
+  if (ab) S.push(es ? ('Del otro lado, la mayor banda de liquidaciones cortas está en torno a ' + _spx(ab.p) + ', un ' + pct(ab.p).toFixed(1) + '% por encima del spot, con unos ' + U(ab.v) + '.')
+    : ('On the other side, the largest short-liquidation band is around ' + _spx(ab.p) + ', about ' + pct(ab.p).toFixed(1) + '% above spot, holding roughly ' + U(ab.v) + '.'));
   const lb = sum(below), sa = sum(above);
   if (lb > 0 && sa > 0) {
     const r = lb / sa;
-    if (r > 1.6) S.push('Taken together there is roughly ' + r.toFixed(1) + 'x more long liquidity stacked below ' + sym + ' than short liquidity above it, so a move down currently has more fuel behind it than a move up.');
-    else if (r < 0.62) S.push('Short liquidity above ' + sym + ' outweighs the long side below by about ' + (1 / r).toFixed(1) + 'x — an upward squeeze has more to feed on than a flush lower.');
-    else S.push('Long and short liquidation liquidity around ' + sym + ' are close to balanced right now, with no obvious magnet in either direction.');
+    if (r > 1.6) S.push(es ? ('En conjunto hay alrededor de ' + r.toFixed(1) + 'x más liquidez larga acumulada por debajo de ' + sym + ' que liquidez corta por encima, así que ahora mismo una caída tiene más combustible que una subida.')
+      : ('Taken together there is roughly ' + r.toFixed(1) + 'x more long liquidity stacked below ' + sym + ' than short liquidity above it, so a move down currently has more fuel behind it than a move up.'));
+    else if (r < 0.62) S.push(es ? ('La liquidez corta por encima de ' + sym + ' supera a la larga de abajo en unas ' + (1 / r).toFixed(1) + 'x — un squeeze al alza tiene más de lo que alimentarse que una purga a la baja.')
+      : ('Short liquidity above ' + sym + ' outweighs the long side below by about ' + (1 / r).toFixed(1) + 'x — an upward squeeze has more to feed on than a flush lower.'));
+    else S.push(es ? ('La liquidez de liquidaciones largas y cortas alrededor de ' + sym + ' está bastante equilibrada ahora mismo, sin un imán claro en ninguna dirección.')
+      : ('Long and short liquidation liquidity around ' + sym + ' are close to balanced right now, with no obvious magnet in either direction.'));
   }
-  if (S.length) S.push('These levels come from MarginPad&rsquo;s own liquidation collector, which reads forced-close events across nine exchanges and models where open leverage is concentrated. They move as positions do, so treat them as a map of pressure rather than a forecast.');
+  if (S.length) S.push(es ? ('Estos niveles salen del colector de liquidaciones propio de MarginPad, que lee los cierres forzosos de nueve exchanges y modela dónde se concentra el apalancamiento abierto. Se mueven con las posiciones, así que tómalos como un mapa de presión y no como un pronóstico.')
+    : ('These levels come from MarginPad&rsquo;s own liquidation collector, which reads forced-close events across nine exchanges and models where open leverage is concentrated. They move as positions do, so treat them as a map of pressure rather than a forecast.'));
   return S;
 }
 function ssrCoinProse(sym, name, cg, gk) {
@@ -978,30 +998,110 @@ function ssrCoinProse(sym, name, cg, gk) {
   }
   return S;
 }
-function ssrCoinBlock(sym, name, sentences, L) {
+// ── The machine-readable date has to agree with the page (2026-09-14) ───────────────────────────────────────────────
+// Every page below is rewritten with live numbers on the way out, and its body says so in words ("updated 22:05 UTC").
+// Its JSON-LD, though, carried the date the FILE was generated: measured across dist, 114 pages were months behind
+// their own body — the six coin dashboards said 2026-08-20, the 107 blog posts 2026-06-10. An assistant reads the
+// machine date to decide what is current, so a page that refreshes continuously must stamp the measurement time.
+// /bitcoin-hoje/ already did this through its <!--LATAM_UPDATED--> placeholder; this is the same thing for pages that
+// have no placeholder to fill. Function replacement, never a $-carrying replacement string.
+function ssrStampDate(html, ts) {
+  const iso = new Date(ts || Date.now()).toISOString();
+  return html.replace(/"dateModified"\s*:\s*"[^"]*"/g, () => '"dateModified":"' + iso + '"');
+}
+// ── The citable market-state table (2026-09-14) ─────────────────────────────────────────────────────────────────────
+// Measured: /coin/btc/ carried 6.5 figures per 100 words, /bitcoin-hoje/ — the one page built with a full SSR block —
+// carried 13.8, and the coin pages are the MOST crawled thing on the site (4,838 hits on /coin/btc/ in 30 days) while
+// sending almost nobody. Prose an assistant has to parse is not the same as a labelled figure it can lift. This is the
+// second half of the block: every number the page knows, named, with its unit, its measurement time and WHOSE
+// measurement it is — the liquidation rows are our own collector, which is the part no competing page can copy.
+function _sPct(x, dp) { const v = +x; if (!isFinite(v)) return null; return (v >= 0 ? '+' : '') + v.toFixed(dp == null ? 2 : dp) + '%'; }
+// The table is labelled text, so it needs the page's language like the prose does. Spanish is the only twin still
+// served (the other eleven lang coin pages 301 to the English original), so it is the only map here.
+const SSR_TBL_ES = {
+  'MARKET STATE': 'ESTADO DEL MERCADO', 'Price': 'Precio', 'Market cap': 'Capitalización', 'rank #': 'puesto #',
+  'in 24h': 'en 24 h', '24h spot volume': 'Volumen spot 24 h', '7-day change': 'Cambio en 7 días', '30-day change': 'Cambio en 30 días',
+  'All-time high': 'Máximo histórico', 'from here': 'desde aquí', 'Funding rate': 'Tasa de funding',
+  'longs pay shorts': 'los largos pagan a los cortos', 'shorts pay longs': 'los cortos pagan a los largos', 'flat': 'plana',
+  'Open interest': 'Interés abierto', 'Open interest / market cap': 'Interés abierto / capitalización',
+  'Liquidated in 24h': 'Liquidado en 24 h', 'MarginPad collector, 9 exchanges': 'colector de MarginPad, 9 exchanges',
+  '— longs liquidated': '— largos liquidados', '— shorts liquidated': '— cortos liquidados',
+  'Accounts long / short': 'Cuentas largas / cortas', 'our own daily records': 'nuestros propios registros diarios',
+  'Heaviest of those days': 'El más fuerte de esos días', '-day average': ' días de media', 'Liquidations, ': 'Liquidaciones, ', ' / day': ' / día',
+};
+function ssrCoinTable(sym, cg, gk, hist, es) {
+  const T = es ? (s => SSR_TBL_ES[s] || s) : (s => s);
+  const U = (v) => _susd(v, es ? 'es' : 'en');   // 'billion' means 10^12 in Spanish — never print the English word there
+  const R = [];                                                    // [label, value, note]
+  const add = (label, val, note) => { if (val != null && val !== '') R.push([label, val, note || '']); };
+  if (cg && cg.price != null) add(T('Price'), _spx(cg.price), isFinite(+cg.chg24h) ? _sPct(cg.chg24h) + ' ' + T('in 24h') : '');
+  if (gk) {
+    add(T('Market cap'), U(gk.mcap), gk.rank ? T('rank #') + gk.rank : '');
+    add(T('24h spot volume'), U(gk.vol));
+    if (isFinite(+gk.ch7d)) add(T('7-day change'), _sPct(gk.ch7d, 1));
+    if (isFinite(+gk.ch30d)) add(T('30-day change'), _sPct(gk.ch30d, 1));
+    if (gk.ath) add(T('All-time high'), _spx(gk.ath), isFinite(+gk.athChg) ? _sPct(gk.athChg, 0) + ' ' + T('from here') : '');
+  }
+  if (cg) {
+    if (isFinite(+cg.funding)) add(T('Funding rate'), _sPct(cg.funding, 4), +cg.funding > 0 ? T('longs pay shorts') : +cg.funding < 0 ? T('shorts pay longs') : T('flat'));
+    if (+cg.oiUsd > 0) {
+      add(T('Open interest'), U(cg.oiUsd), isFinite(+cg.oiChg24h) ? _sPct(cg.oiChg24h, 1) + ' ' + T('in 24h') : '');
+      if (gk && +gk.mcap > 0) { const r = (+cg.oiUsd / +gk.mcap) * 100; if (isFinite(r) && r > 0.05) add(T('Open interest / market cap'), (r >= 10 ? r.toFixed(0) : r.toFixed(1)) + '%'); }
+    }
+    const L = +cg.longLiq24h || 0, S = +cg.shortLiq24h || 0;
+    if (L + S > 0) {
+      add(T('Liquidated in 24h'), U(L + S), T('MarginPad collector, 9 exchanges'));
+      add(T('— longs liquidated'), U(L));
+      add(T('— shorts liquidated'), U(S));
+    }
+    if (cg.longPct != null && cg.shortPct != null) add(T('Accounts long / short'), cg.longPct + '% / ' + cg.shortPct + '%');
+  }
+  if (hist && hist.length >= 3) {
+    const tot = hist.reduce((s, r) => s + (+r.usd || 0), 0);
+    add(T('Liquidations, ') + hist.length + T('-day average'), U(tot / hist.length) + T(' / day'), T('our own daily records'));
+    const worst = hist.slice().sort((a, b) => b.usd - a.usd)[0];
+    if (worst) add(T('Heaviest of those days'), U(worst.usd), worst.day);
+  }
+  if (R.length < 4) return '';                                     // a three-row table is not worth a heading
+  return '<table style="width:100%;margin:12px 0 0;border-collapse:collapse;font-size:13.5px"><caption style="text-align:left;font-size:11px;letter-spacing:.12em;color:#c2f64a;font-weight:700;padding-bottom:6px">' + sym + ' ' + T('MARKET STATE') + '</caption><tbody>'
+    + R.map(r => '<tr><th scope="row" style="text-align:left;font-weight:500;color:var(--ink-dim,#98a2ae);padding:4px 10px 4px 0;border-bottom:1px solid rgba(255,255,255,.05)">' + r[0]
+      + '</th><td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:700;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)">' + r[1]
+      + '</td><td style="text-align:right;color:var(--ink-faint,#5a636e);padding:4px 0 4px 10px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap">' + r[2] + '</td></tr>').join('')
+    + '</tbody></table>';
+}
+function ssrCoinBlock(sym, name, sentences, L, table) {
   const head = L ? _ssrFill(L.head, { name, sym }) : (name + ' (' + sym + ') market read');
   const foot = L ? _ssrFill(L.foot, { t: _hhmm() }) : ('Written from live exchange-aggregated derivatives data · updated ' + _hhmm() + ' UTC · the numbers on this page refresh continuously.');
   return '\n    <section class="cdread" data-ssr="coin" style="margin:26px 0 10px;border:1px solid var(--line,#242a34);border-radius:14px;padding:16px 18px;background:rgba(194,246,74,.03)">' +
     '<h2 style="margin:0 0 10px;font-size:19px">' + head + ' <span style="font-size:10px;font-weight:700;letter-spacing:.14em;color:#c2f64a;vertical-align:2px">LIVE</span></h2>' +
-    '<p style="margin:0;line-height:1.75">' + sentences.join(' ') + '</p>' +
+    '<p style="margin:0;line-height:1.75">' + sentences.join(' ') + '</p>' + (table || '') +
     '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-faint,#5a636e)">' + foot + '</p>' +
     '</section>\n';
 }
 async function handleSsrCoin(request, url, env) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
   let html = '';
   try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
-  const pass = () => new Response(html, { status: 200, headers: asset.headers });
+  // stamped before either path: even without the SSR block the client fills this dashboard with live numbers
+  html = ssrStampDate(html, Date.now());
+  const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'coin-lite' } });
   const sm = html.match(/data-sym="([A-Z0-9]{2,12})"/);
   const anchor = html.indexOf('<div class="cdmkt"');
   if (!sm || anchor < 0) return pass();
   const sym = sm[1];
   let name = sym; const hm = html.match(/<h1>([^<(]+) \(/); if (hm) name = hm[1].trim();
-  const _lm = url.pathname.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//); const L10 = _lm ? SSR_L10N[_lm[1]] : null; // translated block on the 12 lang variants (696 pages were AI-invisible without it)
+  // The Spanish twin is served with url.pathname already rewritten to the ENGLISH path (the esSite block does that so
+  // every SSR handler injects the same live data), so the language has to be read off request.url — otherwise
+  // /es/coin/btc/ got the English block while a fully written SSR_L10N.es sat unused (found 2026-09-14).
+  const _rp = new URL(request.url).pathname;
+  const _lm = _rp.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//) || url.pathname.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//);
+  const L10 = _lm ? SSR_L10N[_lm[1]] : null; // translated block on the lang variants (696 pages were AI-invisible without it)
   let cg = null, gk = null;
   try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {}
   try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
@@ -1030,11 +1130,12 @@ async function handleSsrCoin(request, url, env) {
       if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.clusters) && j.clusters.length) cl = j; } }
   } catch (e) {}
   let sentences = [];
-  try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
-    try { const cs = ssrLiqClusterProse(sym, cg, cl); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
-    try { const hs = ssrLiqHistoryProse(sym, hist); if (hs.length) sentences = sentences.concat(hs); } catch (e) {}
+  try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk, _lm && _lm[1]) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
+    try { const cs = ssrLiqClusterProse(sym, cg, cl, _lm && _lm[1]); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
+    try { const hs = ssrLiqHistoryProse(sym, hist, _lm && _lm[1]); if (hs.length) sentences = sentences.concat(hs); } catch (e) {}
   if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
-  const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10) + '    ' + html.slice(anchor);
+  let table = ''; try { table = ssrCoinTable(sym, cg, gk, hist, _lm && _lm[1] === 'es'); } catch (e) {}
+  const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10, table) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -1169,7 +1270,9 @@ async function ssrBlogSentences(kind, env) {
 // so a crawler saw 92 words and none of the dates. Ten-minute cache; renders nothing if the feed is down.
 async function handleSsrCalendar(request, url, env) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1210,9 +1313,94 @@ async function handleSsrCalendar(request, url, env) {
   return out;
 }
 
+// ── The four question pages (2026-09-14, owner: "odgovaraj na pitanje koje je korisnik postavio") ───────────────────
+// Measured over 90 days: the narrow pages convert (/open-interest/ 54 crawls → 68 visits, /long-short/ 25 → 20) while
+// the broad ones get harvested (/liquidations/ 4,521 → 41, /coin/btc/ 4,857 → 7). An assistant lifts a figure out of a
+// big page and cites nothing; it links a page that IS the answer, because the link is the useful part of the reply.
+// So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
+// Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
+// cached, rather than printing a confident blank.
+const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding' };
+const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
+const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
+const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
+function _askBox(big, prose, rows, cols, src) {
+  return '<div class="ask-a"><p class="big">' + big + '</p><p>' + prose + '</p><p class="src">' + src + '</p></div>'
+    + (rows && rows.length ? '<div class="ask-w"><table class="ask-t"><thead><tr>' + cols.map((c, i) => '<th' + (i ? ' class="r"' : '') + '>' + c + '</th>').join('') + '</tr></thead><tbody>'
+      + rows.map(r => '<tr>' + r.map((c, i) => '<td' + (i ? ' class="n"' : '') + '>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '');
+}
+async function askRender(kind, env, ctx) {
+  const stamp = t => 'Measured ' + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  if (kind === 'funding') {
+    let rows = [];
+    try { const r = await handleV1(new URL('https://marginpad.io/api/v1/funding'), new Request('https://marginpad.io/api/v1/funding'), env, ctx); const j = await r.json(); rows = (j && j.data && (j.data.rows || j.data.coins)) || (j && Array.isArray(j.data) ? j.data : []); } catch (e) {}
+    if (!rows.length) return null;
+    const pick = s => rows.find(x => String(x.s).toUpperCase() === s);
+    const maj = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE'].map(pick).filter(Boolean);
+    const btc = pick('BTC');
+    const pos = rows.filter(x => +x.funding > 0).length, neg = rows.filter(x => +x.funding < 0).length;
+    const sorted = rows.slice().sort((a, b) => (+b.funding || 0) - (+a.funding || 0));
+    const hi = sorted[0], lo = sorted[sorted.length - 1];
+    const sign = f => (+f >= 0 ? '+' : '') + (+f).toFixed(4) + '%';
+    const head = btc ? (+btc.funding > 0 ? 'Positive on Bitcoin: ' + sign(btc.funding) : +btc.funding < 0 ? 'Negative on Bitcoin: ' + sign(btc.funding) : 'Flat on Bitcoin') : (pos > neg ? 'Positive across most of the market' : 'Negative across most of the market');
+    const prose = (btc ? 'Bitcoin funding is ' + sign(btc.funding) + ', so ' + (+btc.funding > 0 ? '<strong>longs are paying shorts</strong>' : +btc.funding < 0 ? '<strong>shorts are paying longs</strong>' : 'neither side is paying a meaningful premium') + '. ' : '')
+      + 'Across the ' + _aN(rows.length) + ' perpetual contracts we track, ' + _aN(pos) + ' are positive and ' + _aN(neg) + ' are negative'
+      + (hi && lo ? ', with the widest spread running from ' + sign(hi.funding) + ' on ' + hi.s + ' down to ' + sign(lo.funding) + ' on ' + lo.s : '') + '.';
+    const tbl = maj.map(m => [m.s, sign(m.funding), (+m.funding > 0 ? 'longs pay' : +m.funding < 0 ? 'shorts pay' : 'flat'), m.oiUsd ? _aUsd(m.oiUsd) : '—']);
+    return { html: _askBox(head, prose, tbl, ['Coin', 'Funding', 'Who pays', 'Open interest'], stamp(Date.now()) + ' · read from each exchange&#39;s own public funding endpoint · free JSON at /api/v1/funding'), ts: Date.now() };
+  }
+  let d = null; try { d = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); } catch (e) {}
+  if (!d || d.error || !d.market) return null;
+  const m = d.market, ex = d.exchanges || 9;
+  if (kind === 'count') {
+    if (!(+m.count > 0)) return null;
+    const avg = m.count ? m.total / m.count : 0;
+    const prose = _aN(m.count) + ' leveraged positions were force-closed across ' + ex + ' exchanges in the last 24 hours, worth ' + _aUsd(m.total) + ' in total and spread over ' + _aN(m.coinsN) + ' coins. That averages ' + _aUsd(avg) + ' per liquidation — the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.';
+    const tbl = [['Positions force-closed', _aN(m.count), '24h'], ['Total value', _aUsd(m.total), '24h'], ['Average per liquidation', _aUsd(avg), ''], ['Longs liquidated', _aUsd(m.long), (m.total ? Math.round(m.long / m.total * 100) : 0) + '% of the total'], ['Shorts liquidated', _aUsd(m.short), (m.total ? Math.round(m.short / m.total * 100) : 0) + '% of the total'], ['Coins involved', _aN(m.coinsN), '']];
+    return { html: _askBox(_aN(m.count) + ' in the last 24 hours', prose, tbl, ['', 'Figure', 'Note'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations'), ts: d.ts };
+  }
+  if (kind === 'side') {
+    if (!(m.total > 0)) return null;
+    const lp = Math.round(m.long / m.total * 100), sp = 100 - lp;
+    const head = lp >= 60 ? 'Longs, ' + lp + '% of the damage' : sp >= 60 ? 'Shorts, ' + sp + '% of the damage' : 'Close to even, ' + lp + '% long';
+    let vs = []; try { const v = await handleVenueStats(env, false, ctx); const vj = await v.json(); vs = (vj && vj.venues) || []; } catch (e) {}
+    const prose = 'Of the ' + _aUsd(m.total) + ' liquidated across ' + ex + ' exchanges in the last 24 hours, ' + _aUsd(m.long) + ' (' + lp + '%) was long positions and ' + _aUsd(m.short) + ' (' + sp + '%) was shorts. '
+      + (lp >= 60 ? 'Leveraged buyers were the crowded side and price came down into them.' : sp >= 60 ? 'Leveraged sellers were the crowded side and the squeeze ran upward.' : 'Neither side was clearly crowded — the market chopped and both paid for it.');
+    const tbl = vs.slice(0, 8).map(v => [_aVen[v.venue] || v.venue, _aUsd(v.total), v.longPct + '% long', (100 - v.longPct) + '% short']);
+    return { html: _askBox(head, prose, tbl, ['Exchange', '24h liquidated', 'Longs', 'Shorts'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations and /api/v1/venues'), ts: d.ts };
+  }
+  if (kind === 'big') {
+    const b = d.big;
+    if (!b || !(+b.usd > 0)) return null;
+    const side = /long/i.test(b.side || '') ? 'long' : 'short';
+    const ven = _aVen[b.ex] || b.ex;
+    const prose = 'The largest single forced close our collector has seen in the last 24 hours was a <strong>' + side + '</strong> position in ' + b.s + ' on ' + ven + ', worth ' + _aUsd(b.usd) + ' at the price it was closed at. It is ' + (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '% of everything liquidated market-wide in the same window (' + _aUsd(m.total) + ' across ' + _aN(m.count) + ' positions).';
+    const tbl = [['Size', _aUsd(b.usd), 'notional, not the trader&#39;s loss'], ['Coin', b.s, ''], ['Exchange', ven, ''], ['Side', side + ' liquidated', side === 'long' ? 'a leveraged buyer' : 'a leveraged seller'], ['Share of the 24h total', (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '%', 'of ' + _aUsd(m.total)]];
+    return { html: _askBox(_aUsd(b.usd) + ' — ' + b.s + ' ' + side + ' on ' + ven, prose, tbl, ['', 'Figure', 'Note'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations (data.big)'), ts: d.ts };
+  }
+  return null;
+}
+async function handleSsrAsk(request, url, env, kind, ctx) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const open = html.indexOf('<div id="askdata">'); if (open < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  const close = html.indexOf('</div>\n', open); if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  let res = null; try { res = await askRender(kind, env, ctx); } catch (e) {}
+  if (!res) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  const out = ssrStampDate(html.slice(0, open) + '<div id="askdata" data-ssr="ask">' + res.html + html.slice(close), res.ts);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleSsrVenues(request, url, env, ctx) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1243,7 +1431,9 @@ async function handleSsrVenues(request, url, env, ctx) {
 
 async function handleSsrCompare(request, url, env, ak, bk, ctx) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1285,7 +1475,9 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
 
 async function handleSsrBlog(request, url, env, kind) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1303,7 +1495,7 @@ async function handleSsrBlog(request, url, env, kind) {
     + '<p style="margin:0;line-height:1.7">' + res.S.join(' ') + '</p>'
     + (links ? '<p style="margin:9px 0 0;font-size:13px">See it live: ' + links + '</p>' : '')
     + '</div>\n    ';
-  const out = html.slice(0, anchor) + box + html.slice(anchor);
+  const out = ssrStampDate(html.slice(0, anchor) + box + html.slice(anchor), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'blog' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -1554,7 +1746,9 @@ async function ssrLiqSentences(mode, param, env) {
 }
 async function handleSsrLiq(request, url, env, mode, param) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1567,7 +1761,7 @@ async function handleSsrLiq(request, url, env, mode, param) {
   try { res = await ssrLiqSentences(mode, param, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
   const kick = mode === 'lev' ? 'LIVE — ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
-  const out = html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor);
+  const out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'liq-' + mode } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -1717,7 +1911,9 @@ async function ssrHubSentences(page, sym, env) {
 }
 async function handleSsrHub(request, url, env, page, sym) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
+  // cached page — which made a fresh deploy look like it had changed nothing for ten minutes (2026-09-14).
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
@@ -1730,7 +1926,7 @@ async function handleSsrHub(request, url, env, page, sym) {
   try { res = await ssrHubSentences(page, sym, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
   const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS', rekt: 'LIVE LIQUIDATIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") — name them for the reader
-  const out = html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor);
+  const out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -11142,7 +11338,22 @@ async function bybitLedger(env, p, body) { try { const r = await env.REWARDS.get
 // rows it dropped and why, BEFORE the upload replaces the season table.
 // Tolerant of: CSV / TSV / ";" / "|", a UTF-8 BOM, quoted cells containing commas, "1,234.56", "1.234,56" (European),
 // "$", a trailing USDT/USD, and k/M/B suffixes. Last line per UID wins.
-function bybitParseReport(text) {
+// Which header cell holds the trading volume. The REAL Bybit affiliate export ("Clients_0_All_<affId>_<from>_<to>.csv")
+// calls it `TradingAmount`; pasted tables say "Trading Volume" or "Volume"; some exports say "Turnover". Everything
+// money-ish that is NOT volume is named here explicitly, because scoring by "the first number after the UID" read the
+// export's `Source` column — the affiliate id — and handed all 31 accounts a volume of 162,071 (caught 2026-09-14 on
+// the owner's own file, before it was ever uploaded). `Tradfi Amount` is Bybit's stocks product, not futures volume.
+const BYBIT_NOT_VOL = /commission|fee|rebate|deposit|interest|profit|balance|bonus|kyc|vip|rank|level|coin|source|remark|engagement|joined|date|time|tradfi|name|email|country|status|note/i;
+function bybitVolScore(t) {
+  if (BYBIT_NOT_VOL.test(t)) return 0;
+  if (/volum/.test(t)) return 5;                       // volume / Volumen / volumes — the stem, so a translated export still reads
+  if (/trading\s*amount|tradingamount/.test(t)) return 4;
+  if (/turnover/.test(t)) return 3;
+  if (/taker\s*amount|takeramount/.test(t)) return 2;  // futures taker notional — a usable stand-in, never preferred
+  if (/\bvol\b/.test(t)) return 1;
+  return 0;
+}
+function bybitParseReport(text, pickCol) {
   const diag = { lines: 0, rows: 0, skipped: [], header: null, uidCol: null, volCol: null, sep: null };
   let src = String(text || '');
   if (src.charCodeAt(0) === 0xFEFF) src = src.slice(1); // Excel writes a BOM; it would glue itself to the first header cell
@@ -11169,22 +11380,34 @@ function bybitParseReport(text) {
     return +m[1] * mult;
   };
   const isUid = (c) => /^[0-9]{5,15}$/.test(String(c || '').replace(/^"|"$/g, '').trim());
-  // a header row is one whose cells name things rather than hold a UID
-  const head = split(lines[0]);
-  let volCol = -1, uidCol = -1, hasHeader = !head.some(isUid);
+  // The header is the first line that names columns rather than holding a UID — NOT necessarily line 1: an export can
+  // open with "Report generated <date>" or a portal banner. A single-cell line is a preamble, never a header.
+  let hIdx = -1;
+  for (let i = 0; i < Math.min(8, lines.length); i++) { const c = split(lines[i]); if (c.length >= 2 && !c.some(isUid)) { hIdx = i; break; } }
+  const head = hIdx >= 0 ? split(lines[hIdx]) : [];
+  let volCol = -1, uidCol = -1, hasHeader = hIdx >= 0;
   if (hasHeader) {
+    let best = 0;
     head.forEach((c, i) => {
       const t = c.toLowerCase();
-      if (volCol < 0 && /vol/.test(t)) volCol = i;
+      const sc = bybitVolScore(t);
+      if (sc > best) { best = sc; volCol = i; }
       if (uidCol < 0 && (/^uid$/.test(t) || /user ?id/.test(t) || /referee/.test(t) || /member/.test(t) || /account/.test(t))) uidCol = i;
     });
+    // the owner can name the column himself from the ops preview when the export changes shape again
+    if (pickCol) { const pi = head.findIndex(c => c.toLowerCase().trim() === String(pickCol).toLowerCase().trim()); if (pi >= 0) { volCol = pi; best = 9; diag.picked = head[pi]; } }
     diag.header = head.slice(0, 12);
+    diag.cols = head.map((c, i) => ({ i, name: c }));
     diag.uidCol = uidCol >= 0 ? { i: uidCol, name: head[uidCol] } : null;
     diag.volCol = volCol >= 0 ? { i: volCol, name: head[volCol] } : null;
+    // A file WITH a header and no recognisable volume column is not guessed at. Falling back to "the first number in
+    // the row" is exactly what read the affiliate id as volume. Refuse, hand back the column list, let the owner pick.
+    if (volCol < 0) { diag.error = 'no_volume_column'; diag.rows = 0; diag.skippedN = 0; return { rows: [], diag }; }
   }
   const out = new Map();
   for (let n = 0; n < lines.length; n++) {
-    if (hasHeader && n === 0) continue;
+    if (hasHeader && n === hIdx) continue;
+    if (hasHeader && n < hIdx) { diag.skipped.push({ line: n + 1, why: 'text above the header row', text: lines[n].slice(0, 60) }); continue; }
     const ln = lines[n], cells = split(ln);
     if (cells.length < 2) { diag.skipped.push({ line: n + 1, why: 'not a row', text: ln.slice(0, 60) }); continue; }
     // A row with MORE cells than the header is malformed — almost always an unquoted comma inside a number
@@ -11206,6 +11429,7 @@ function bybitParseReport(text) {
   }
   const rows = [...out.entries()].map(([uid, vol]) => ({ uid, vol }));
   diag.rows = rows.length;
+  diag.zeroN = rows.filter(r => !(r.vol > 0)).length; // "31 accounts, none of them has traded yet" is an ANSWER, not an empty board
   diag.total = Math.round(rows.reduce((s, r) => s + r.vol, 0) * 100) / 100;
   diag.skippedN = diag.skipped.length; diag.skipped = diag.skipped.slice(0, 12);
   return { rows, diag };
@@ -11243,7 +11467,10 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
   for (const r of (up && up.rows) || []) {
     const who = reg.get(String(r.uid)); if (!who) { unmatched.push({ uid: String(r.uid), vol: +r.vol || 0 }); continue; }
     const row = { uid: who.uid, name: who.name, buid: String(r.uid), vol: +r.vol || 0, listed: allow.has(String(r.uid)), e2e: !!who.e2e };
-    matched.push(row); if (!row.e2e && row.listed) rows.push(row);
+    // A row with NO volume is not a ranking, it is a registration. The owner's admin view keeps it (matched), the
+    // public board does not: 18 accounts tied at $0 says nothing and quietly publishes who signed up. Measured
+    // 2026-09-14 on the first real report — 31 accounts, exactly one of them had traded.
+    matched.push(row); if (!row.e2e && row.listed && row.vol > 0) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
   return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
@@ -15946,6 +16173,50 @@ export default {
     }
     // READ-ONLY SEO measurement from Analytics Engine (pageview blobs: blob3=path, blob4=src). Organic Google =
     // src 'google.<tld>' (referrer host); Google Ads is 'google-ads' → excluded by the dot. adminCookie OR ?key=.
+    // ── AI SEO in one read (2026-09-14, owner: "pretvori ovo u broj koji pratiš") ────────────────────────────────────
+    // Both halves already existed on separate endpoints and neither had a view: /api/admin/aibots counts CRAWLER hits
+    // by user-agent, the AI slice of /api/admin/seoae counts VISITS an assistant referred. The number worth watching is
+    // the pair — what gets read against what gets cited. Measured the day this shipped, over 30 days: 35,012 crawler
+    // hits, 2,481 assistant-referred visits (3.56% of all pageviews, two thirds of Google organic), and /coin/btc/ was
+    // the most-crawled page on the site (4,838 hits) while sending nobody at all. `gap` is that table, sorted by how
+    // much a page is read relative to what it returns.
+    if (url.pathname === '/api/admin/aiseo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
+      const AI = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%' OR blob4 LIKE '%you.com%' OR blob4 LIKE '%phind%')";
+      const SEARCH = "(blob4 LIKE 'google.%' OR blob4 LIKE 'bing%' OR blob4 LIKE 'duckduckgo%' OR blob4 LIKE 'yahoo%' OR blob4 LIKE 'yandex%' OR blob4 LIKE 'ecosia%' OR blob4 LIKE 'brave%')";
+      const [byBot, botPaths, botDay, aiRows, aiDay, totalPv, searchPv] = await Promise.all([
+        aeQuery(env, `SELECT blob2 AS bot, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND ${D} GROUP BY bot ORDER BY n DESC LIMIT 30`),
+        aeQuery(env, `SELECT blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 300`),
+        aeQuery(env, `SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND ${D} GROUP BY day ORDER BY day DESC LIMIT 90`),
+        aeQuery(env, `SELECT blob3 AS path, blob4 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${AI} AND ${D} GROUP BY path, src ORDER BY n DESC LIMIT 400`),
+        aeQuery(env, `SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${AI} AND ${D} GROUP BY day ORDER BY day DESC LIMIT 90`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${SEARCH} AND ${D}`),
+      ]);
+      const num = (r) => +((r || [])[0] || {}).n || 0;
+      const pv = num(totalPv), search = num(searchPv);
+      const bySrc = {}, byLand = {};
+      for (const r of aiRows || []) {
+        const s = String(r.src || '').replace(/^www\./, ''), k = /chatgpt|openai/i.test(s) ? 'ChatGPT' : /perplexity/i.test(s) ? 'Perplexity' : /claude/i.test(s) ? 'Claude' : /gemini/i.test(s) ? 'Gemini' : /copilot/i.test(s) ? 'Copilot' : s || 'other';
+        bySrc[k] = (bySrc[k] || 0) + (+r.n || 0);
+        byLand[r.path] = (byLand[r.path] || 0) + (+r.n || 0);
+      }
+      const visits = Object.values(byLand).reduce((a, b) => a + b, 0);
+      const crawl = {}; for (const r of botPaths || []) crawl[r.path] = (crawl[r.path] || 0) + (+r.n || 0);
+      // every path either side knows about, so a page that is read and never cited is as visible as one that converts
+      const gap = [...new Set(Object.keys(crawl).concat(Object.keys(byLand)))].map(p => ({ path: p, crawled: crawl[p] || 0, visits: byLand[p] || 0 }))
+        .filter(r => r.crawled >= 20 || r.visits > 0)
+        .sort((a, b) => (b.crawled + b.visits * 10) - (a.crawled + a.visits * 10)).slice(0, 60);
+      return J({
+        days: dA, pageviews: pv, aiVisits: visits, searchVisits: search,
+        sharePct: pv ? Math.round(visits / pv * 10000) / 100 : 0,
+        vsSearchPct: search ? Math.round(visits / search * 1000) / 10 : null,
+        bySrc: Object.entries(bySrc).map(([k, n]) => ({ src: k, n })).sort((a, b) => b.n - a.n),
+        byLanding: Object.entries(byLand).map(([k, n]) => ({ path: k, n })).sort((a, b) => b.n - a.n).slice(0, 40),
+        crawlTotal: (byBot || []).reduce((s, r) => s + (+r.n || 0), 0), byBot: byBot || [],
+        gap, byDay: (aiDay || []).map(r => ({ day: r.day, visits: +r.n || 0, crawled: ((botDay || []).find(x => x.day === r.day) || {}).n || 0 })),
+      });
+    }
     if (url.pathname === '/api/admin/aibots' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // AI-crawler hit summary (writer: aibot telemetry in the main fetch). ?days=N (1-90, def 7)
       const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 7)), DA = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
       const [byBot, byPath, byDay] = await Promise.all([
@@ -16035,7 +16306,8 @@ export default {
       if (request.method === 'POST') {
         let bb = {}; try { bb = await request.json(); } catch (e) {}
         if (bb.clear) { try { await env.STATS.delete('lb:bybitup:' + ws); } catch (e) {} const snap = await bybitSnapshotRebuild(env, ws); return J({ ok: true, cleared: true, snapshot: snap }); }
-        const parsed = bybitParseReport(bb.text), rows = parsed.rows;
+        const parsed = bybitParseReport(bb.text, bb.col), rows = parsed.rows;
+        if (parsed.diag.error === 'no_volume_column') return J({ error: 'no_volume_column', hint: 'The file has a header but no column that reads as trading volume. Pick one by name and send it as "col".', diag: parsed.diag }, 400);
         if (!rows.length) return J({ error: 'no_rows', hint: 'No "UID, volume" lines found in the text', diag: parsed.diag }, 400);
         if (bb.preview) return J({ ok: true, preview: true, rows: rows.slice(0, 500), n: rows.length, diag: parsed.diag });
         const up = { ts: Date.now(), rows, final: !!bb.final, by: 'ops' };
@@ -17410,6 +17682,7 @@ export default {
       }
       if (url.pathname === '/calendar/' || url.pathname === '/calendar') return handleSsrCalendar(request, url, env);
       if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env, ctx);
+      { const _ask = url.pathname.match(/^\/([a-z-]+)\/?$/); if (_ask && ASK_PAGES[_ask[1]]) return handleSsrAsk(request, url, env, ASK_PAGES[_ask[1]], ctx); } // the four question pages (2026-09-14)
       const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2], ctx);
       if (url.pathname === '/dolar-cripto/') return handleLatamPage(request, url, env, 'ar'); // es-AR live page (2026-09-07) — run_worker_first in wrangler.toml
       if (url.pathname === '/bitcoin-hoje/') return handleLatamPage(request, url, env, 'br'); // pt-BR live page

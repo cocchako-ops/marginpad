@@ -50,6 +50,11 @@ const EXTRAS = [
   ['https://marginpad.io/best-liquidation-heatmap-tools/', '0.9'],
   ['https://marginpad.io/hyperliquid-liquidation-calculator/', '0.9'],
   ['https://marginpad.io/crypto-liquidations-today/', '0.9'],
+  // the four one-question pages (2026-09-14) — narrow pages are what an assistant links; broad ones it harvests
+  ['https://marginpad.io/how-many-traders-liquidated-today/', '0.9'],
+  ['https://marginpad.io/longs-or-shorts-liquidated-more/', '0.9'],
+  ['https://marginpad.io/biggest-liquidation-today/', '0.9'],
+  ['https://marginpad.io/is-funding-positive-or-negative/', '0.9'],
   ['https://marginpad.io/dolar-cripto/', '0.9'],
   ['https://marginpad.io/bitcoin-hoje/', '0.9'],
   ['https://marginpad.io/simulador-trading-cripto-argentina/', '0.8'],

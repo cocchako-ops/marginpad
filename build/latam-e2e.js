@@ -57,8 +57,21 @@ const ld = (html) => { const m = [...html.matchAll(/<script type="application\/l
         const big = await reach('#lvBig'); chk(W + ' ' + kind + ': headline reachable with a currency number', big.ok && /^(\$|R\$) [\d.]+/.test(big.txt), big);
         const rows = await page.evaluate(() => ({ rows: document.querySelectorAll('#lvTbl tbody tr').length, best: document.querySelectorAll('#lvBest .bc').length, chips: document.querySelectorAll('#lvChips .chip').length }));
         chk(W + ' ' + kind + ': table rows, best cards and chips rendered', rows.rows >= 3 && rows.best >= 1 && rows.chips >= 2, rows);
-        const sub0 = await page.evaluate(() => document.getElementById('lvSub').textContent); await sleep(2100); const sub1 = await page.evaluate(() => document.getElementById('lvSub').textContent);
-        chk(W + ' ' + kind + ': "updated N s ago" ticks', sub0 !== sub1 && /\d/.test(sub1), { sub0, sub1 });
+        // The "updated N ago" label has to AGREE with the data it is describing. This used to assert that the text
+        // changed within 2.1 s, which only held while the label was counting seconds — the quote is served from a
+        // 60 s cache, so at first paint it is always a minute or more old and the label ticks once a minute. That
+        // made the check unpassable rather than flaky (2026-09-14). Comparing it to the inline data's own timestamp
+        // tests the thing that matters, and instantly.
+        const age = await page.evaluate(() => {
+          const el = document.getElementById('lvSub'); const j = document.getElementById('latamData');
+          let ts = 0; try { ts = +(JSON.parse(j.textContent).ts) || 0; } catch (e) {}
+          return { sub: (el.textContent || '').trim(), secs: ts ? Math.round((Date.now() - ts) / 1000) : null };
+        });
+        const said = /(\d+)\s*(s|seg|min)/i.exec(age.sub);
+        const agrees = !!said && age.secs != null && (/^s/i.test(said[2])
+          ? Math.abs(+said[1] - age.secs) <= 20                       // seconds label: within 20 s of the data
+          : Math.abs(+said[1] - Math.floor(age.secs / 60)) <= 1);      // minutes label: within one minute
+        chk(W + ' ' + kind + ': "updated N ago" matches the data it describes', agrees, { sub: age.sub, dataAgeSecs: age.secs });
         const inId = kind === 'ar' ? 'cArs' : 'cBrl';
         await page.evaluate((id) => { const i = document.getElementById(id); i.value = '1000000'; i.dispatchEvent(new Event('input')); }, inId); await sleep(200);
         const co = await page.evaluate(() => Array.from(document.querySelectorAll('#cOut .co')).map(x => x.textContent.trim()).slice(0, 2));

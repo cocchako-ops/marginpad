@@ -52,7 +52,7 @@
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
-    { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
+    { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }] },
     { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }, { id: 'codes', title: 'Codes' }] }
   ];
@@ -757,6 +757,58 @@
       + '<div class="grid g2" style="margin-top:12px"><div class="card" style="margin:0"><h2>Top pages <span>7d vs prior 7d</span></h2>' + tbl([{ h: 'page', mono: true, grow: true, f: function (p) { return esc(p.p); } }, { h: 'pv', r: true, mono: true, f: function (p) { return N(p.n); } }, { h: 'w/w', r: true, f: function (p) { return delta(p.n, prev[p.p]); } }], (d.pages7 || []).slice(0, 30)) + '</div><div><div class="card" style="margin:0"><h2>Sources <span>7d</span></h2>' + tbl([{ h: 'source', grow: true, f: function (p) { return esc(p.s); } }, { h: 'pv', r: true, mono: true, f: function (p) { return N(p.n); } }, { h: 'w/w', r: true, f: function (p) { return delta(p.n, sprev[p.s]); } }], (d.src7 || []).slice(0, 15)) + '</div><div class="card"><h2>Pages that print money <span>exchange clicks by page · 7d</span></h2>' + bars(d.clicksPage7 || [], 'p', 'n') + '</div><div class="card"><h2>Countries <span>7d</span></h2>' + bars((d.cc7 || []).slice(0, 12).map(function (x) { return { html: flag(x.cc), n: x.n }; }), 'html', 'n') + '</div></div></div>';
   } });
 
+  // ---------- GROWTH / AI TRAFFIC ----------
+  // What assistants READ against what they SEND (owner 2026-09-14: "pretvori ovo u broj koji pratis"). Both halves
+  // existed on separate endpoints with no view: crawler hits by user-agent, and pageviews whose referrer is an
+  // assistant. /api/admin/aiseo returns the pair plus `gap` — every path either side knows about. The gap table is
+  // the point of this view: on the day it shipped /coin/btc/ had been crawled 4,857 times in 30 days and had sent 7
+  // visits, while /heatmap was crawled 505 times and sent 353.
+  VIEWS['growth/ai'] = { render: function (el) {
+    var st = { d: 30 }; recall('growth/ai', st, ['d']);
+    function paint() {
+      J('/api/admin/aiseo?days=' + st.d).then(function (d) {
+        d = d || {};
+        var chips = '<div class="chips" id="aiD">' + [7, 30, 90].map(function (n) { return '<span class="chip' + (st.d === n ? ' on' : '') + '" data-d="' + n + '">' + n + ' days</span>'; }).join('') + '</div>';
+        var byDay = (d.byDay || []).slice().sort(function (a, b) { return a.day < b.day ? -1 : 1; });
+        var tiles = '<div class="grid g4">'
+          + tile((d.sharePct || 0) + '%', 'of all pageviews came from an assistant', d.sharePct ? '' : 'dim', N(d.aiVisits || 0) + ' visits in ' + st.d + ' days')
+          + tile(d.vsSearchPct == null ? '—' : (d.vsSearchPct + '%'), 'of what search engines send', 'dim', 'search sent ' + N(d.searchVisits || 0))
+          + tile(N(d.crawlTotal || 0), 'AI crawler hits', 'dim', 'pages read by a bot, not a person')
+          + tile((d.bySrc || [])[0] ? esc(d.bySrc[0].src) : '—', 'assistant sending the most', 'dim', (d.bySrc || [])[0] ? N(d.bySrc[0].n) + ' of ' + N(d.aiVisits || 0) : '')
+          + '</div>';
+        // read vs cited, the only table that says where the work is
+        var gap = (d.gap || []).map(function (r) {
+          var read = +r.crawled || 0, vis = +r.visits || 0;
+          var verdict = (read >= 500 && vis < 20) ? '<span class="badge red">read, never cited</span>'
+            : (vis > 0 && read > 0 && read / vis <= 8) ? '<span class="badge lime">converts</span>'
+            : (vis > 0) ? '<span class="badge">some of both</span>'
+            : (read >= 100) ? '<span class="badge amber">read, nothing back</span>' : '';
+          return { path: r.path, crawled: read, visits: vis, per: vis ? Math.round(read / vis) : null, verdict: verdict };
+        });
+        el.innerHTML = chips + tiles
+          + card('Assistant visits per day', spark(byDay.map(function (x) { return { day: x.day, v: x.visits }; }), 'v') + '<div class="line" style="margin-top:6px">' + byDay.length + ' days · a referrer an assistant set, so it undercounts: a user who reads the answer and never clicks leaves no row</div>')
+          + '<div class="grid g2">'
+          + card('Which assistant', bars(d.bySrc || [], 'src', 'n'), 'by referrer, ' + st.d + ' days')
+          + card('Which crawler', bars((d.byBot || []).slice(0, 12), 'bot', 'n'), 'by user-agent · bingbot feeds Copilot, chatgpt-user is a live fetch during someone&#39;s question')
+          + '</div>'
+          + card('Read against cited', tbl([
+              { h: 'page', mono: true, grow: true, f: function (r) { return esc(r.path); } },
+              { h: 'crawled', r: true, mono: true, f: function (r) { return N(r.crawled); } },
+              { h: 'visits', r: true, mono: true, f: function (r) { return r.visits ? N(r.visits) : '<span class="meta">0</span>'; } },
+              { h: 'reads per visit', r: true, mono: true, f: function (r) { return r.per == null ? '<span class="meta">—</span>' : N(r.per); } },
+              { h: '', r: true, f: function (r) { return r.verdict; } },
+            ], gap, 'nothing recorded yet'), 'every page a bot read or an assistant sent someone to · ' + st.d + ' days')
+          + card('Where they land', tbl([
+              { h: 'landing page', mono: true, grow: true, f: function (r) { return esc(r.path); } },
+              { h: 'visits', r: true, mono: true, f: function (r) { return N(r.n); } },
+            ], d.byLanding || []), 'the first page of an assistant-referred visit');
+        var ch = document.getElementById('aiD');
+        if (ch) ch.addEventListener('click', function (ev) { var c = ev.target.closest('[data-d]'); if (!c) return; st.d = +c.getAttribute('data-d'); remember('growth/ai', st, ['d']); paint(); });
+        stamp();
+      }).catch(function () { el.innerHTML = failHtml('could not load'); });
+    }
+    paint(); every(300000, paint);
+  } };
   // ---------- GROWTH / GUESTS ----------
   // Who trades without an account and whether the activation card (mp-auth.js: first winning close, liquidation or third
   // close; max 3 times, 7 days apart; kill switch ops:cfg.guestNudge) turns them into accounts. Data: /api/admin/guests.
@@ -1649,7 +1701,10 @@
         + card('XP promos', '<div id="xpList"></div><div class="bar" style="margin-top:8px"><button class="btn" id="xpAdd">Add promo</button><button class="btn lime" id="xpSave">Save promos</button><span class="stat" id="xpSt"></span></div><div class="line" style="margin-top:8px;font-size:12px">A promo grants bonus XP when a user CLOSES a qualifying trade in its window. Start sets the window from now for the chosen hours; Pause keeps it but stops it. Reaches the homepage within ~15s of Save.</div>', 'bonus XP for qualifying paper trades');
       wireTogs(el); hints(); ['sAmount', 'sCooldown', 'sPerDay', 'sCap'].forEach(function (id) { $(id).oninput = hints; }); promos(); prem(pm.list || pm.granted, pm.paid);
       (function bybitUi() { // Bybit volume board: report upload + the joined view (2026-09-13)
-        var st = $('bvStatus'); if (!st) return; var fmt = function (v) { return '$' + Math.round(+v || 0).toLocaleString('en-US'); };
+        var st = $('bvStatus'); if (!st) return; var bvCol = '';
+        // volumes in a real export are small decimals ($9.23), not round millions — rounding them to whole dollars
+        // printed the season's only trader as "$9" and everyone else as "$0". Show cents below $1,000.
+        var fmt = function (v) { v = +v || 0; return '$' + (v > 0 && v < 1000 ? v.toFixed(2) : Math.round(v).toLocaleString('en-US')); };
         function load() { J('/api/admin/bybitvol').then(function (d) { if (!d || d.error) { st.textContent = 'could not load'; return; } var up = d.upload;
           st.innerHTML = (up ? ('report: <b>' + up.n + '</b> UIDs, uploaded ' + new Date(up.ts).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' + (up.final ? ' · <b>FINAL</b>' : ' · not final')) : 'no report for this season yet') + ' · registered UIDs: <b>' + (d.registered || 0) + '</b> · on the board: <b>' + (d.board || []).length + '</b> · in the report but registered by nobody: <b>' + (d.unmatched || []).length + '</b>' + (d.paid ? ' · <b>paid</b>' : '');
           var hidden = (d.matched || []).filter(function (m) { return m.e2e || !m.listed; });
@@ -1659,28 +1714,45 @@
         load();
         $('bvFile').onchange = function () { var f = this.files && this.files[0]; if (!f) return; var rd = new FileReader(); rd.onload = function () { $('bvText').value = String(rd.result || ''); setStat('bvSt', f.name + ' loaded — press Preview'); }; rd.readAsText(f); };
         // Preview is the safety gate: it prints what the parser UNDERSTOOD, not just what it accepted.
+        // Every column the file has, as chips, so the owner can name the volume column himself when the export changes
+        // shape. Chips, never a <select>. The chosen one is sent as `col` on the next Preview and Upload.
+        function colChips(d) {
+          var cols = d.cols || []; if (!cols.length) return '';
+          return '<div class="line" style="margin-top:6px">Volume column: ' + cols.map(function (c) {
+            var on = bvCol ? (c.name === bvCol) : !!(d.volCol && d.volCol.name === c.name);
+            return '<button class="btn' + (on ? ' lime' : '') + '" data-bvcol="' + esc(c.name) + '" style="padding:2px 8px;font-size:11px;margin:2px 3px 0 0">' + esc(c.name || '(unnamed)') + '</button>';
+          }).join('') + '</div>';
+        }
         function diagHtml(d, rows, n) {
           if (!d) return '';
+          if (d.error === 'no_volume_column') return '<div class="line"><span class="badge red">no volume column</span> This file has a header, but none of its columns reads as trading volume, so nothing was parsed — it is never guessed at. Pick the column below and press Preview again.</div>' + colChips(d);
           var head = '<div class="line">Read as <b>' + esc(d.sep === 'tab' ? 'tab-separated' : d.sep === ';' ? 'semicolon-separated' : d.sep === '|' ? 'pipe-separated' : 'comma-separated') + '</b>'
-            + (d.volCol ? ' · volume from the column named <b>' + esc(d.volCol.name) + '</b>' : ' · no header, volume taken from the number beside each UID')
+            + (d.volCol ? ' · volume from the column named <b>' + esc(d.volCol.name) + '</b>' + (d.picked ? ' (you picked it)' : '') : ' · no header, volume taken from the number beside each UID')
             + (d.uidCol ? ' · UID from <b>' + esc(d.uidCol.name) + '</b>' : '')
             + ' · <b>' + N(n) + '</b> UIDs · total volume <b>' + fmt(d.total || 0) + '</b></div>';
+          // "31 accounts, 30 of them have not traded" is the answer, not an empty board — say it before the upload.
+          var zero = (d.zeroN > 0) ? '<div class="line' + (d.zeroN >= (d.rows || n) ? ' down' : '') + '" style="margin-top:4px"><span class="badge' + (d.zeroN >= (d.rows || n) ? ' red' : ' amber') + '">' + N(d.zeroN) + ' of ' + N(d.rows || n) + ' at zero volume</span> ' + (d.zeroN >= (d.rows || n) ? 'nobody in this file has traded yet — uploading it leaves the board empty' : 'they are registrations, not rankings, and stay off the public board') + '</div>' : '';
           var skipped = (d.skippedN || 0) ? '<div class="line" style="margin-top:4px"><span class="badge amber">' + N(d.skippedN) + ' line' + (d.skippedN > 1 ? 's' : '') + ' skipped</span> ' + (d.skipped || []).map(function (x) { return 'line ' + x.line + ': ' + esc(x.why) + (x.text ? ' <span class="mono meta">' + esc(x.text) + '</span>' : ''); }).join(' · ') + ((d.skippedN > (d.skipped || []).length) ? ' · …' : '') + '</div>' : '<div class="line up" style="margin-top:4px">every line was read</div>';
           var sample = '<div class="line" style="margin-top:4px">' + (rows || []).slice(0, 12).map(function (r) { return '<span class="mono">' + esc(r.uid) + '</span> → ' + fmt(r.vol); }).join(' · ') + (n > 12 ? ' …' : '') + '</div>';
-          return head + skipped + sample;
+          return head + zero + skipped + sample + colChips(d);
         }
-        $('bvPreview').onclick = function () { post('/api/admin/bybitvol', { text: $('bvText').value, preview: true }).then(function (j) {
+        $('bvTable').addEventListener('click', function (ev) {
+          var b = ev.target.closest && ev.target.closest('[data-bvcol]'); if (!b) return;
+          bvCol = b.getAttribute('data-bvcol'); setStat('bvSt', 'reading volume from "' + bvCol + '" — press Preview');
+          $('bvPreview').click();
+        });
+        $('bvPreview').onclick = function () { post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol }).then(function (j) {
           setStat('bvSt', j && j.ok ? (j.n + ' UIDs parsed' + ((j.diag && j.diag.skippedN) ? ' · ' + j.diag.skippedN + ' skipped' : '')) : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok && !(j.diag && j.diag.skippedN)));
           $('bvTable').innerHTML = (j && j.ok) ? diagHtml(j.diag, j.rows, j.n) : ((j && j.diag) ? diagHtml(j.diag, [], 0) : '<div class="line">nothing could be read from that text</div>');
         }); };
         $('bvUpload').onclick = function () {
           // check the text first so the confirm can name what is about to be dropped — the owner should never find out
           // about a skipped line after the table has already been replaced
-          post('/api/admin/bybitvol', { text: $('bvText').value, preview: true }).then(function (pv) {
+          post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol }).then(function (pv) {
             if (!pv || !pv.ok) { setStat('bvSt', (pv && (pv.hint || pv.error)) || 'nothing could be read', false); $('bvTable').innerHTML = (pv && pv.diag) ? diagHtml(pv.diag, [], 0) : ''; return; }
             var d = pv.diag || {}, warn = (d.skippedN ? d.skippedN + ' line' + (d.skippedN > 1 ? 's' : '') + ' will be DROPPED (open Preview to see which).' + String.fromCharCode(10) + String.fromCharCode(10) : '');
             if (!confirm(warn + 'Replace this season\'s Bybit volume report with ' + pv.n + ' UIDs, total volume ' + fmt(d.total || 0) + '?' + ($('bvFinal').checked ? String.fromCharCode(10) + 'Marked FINAL — the $200 pays out from this file.' : ''))) return;
-            post('/api/admin/bybitvol', { text: $('bvText').value, final: $('bvFinal').checked }).then(function (j) { setStat('bvSt', j && j.ok ? ('uploaded: ' + j.n + ' UIDs, ' + (j.snapshot && j.snapshot.n) + ' on the board') : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok)); load(); });
+            post('/api/admin/bybitvol', { text: $('bvText').value, final: $('bvFinal').checked, col: bvCol }).then(function (j) { setStat('bvSt', j && j.ok ? ('uploaded: ' + j.n + ' UIDs, ' + (j.snapshot && j.snapshot.n) + ' on the board') : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok)); load(); });
           });
         };
         $('bvClear').onclick = function () { if (!confirm('Clear this season\'s report? The board goes empty until the next upload.')) return; post('/api/admin/bybitvol', { clear: true }).then(function () { setStat('bvSt', 'cleared'); load(); }); };

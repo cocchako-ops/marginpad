@@ -61,7 +61,9 @@ for (const d of CALCS) {
 if (has('liquidations')) {
   const b = [block('Liquidation maps by coin', 'Live per-coin heatmaps built from our own collector feed.', MAPS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-map')])),
     block('Liquidation calculators by coin', '', CALCS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-calculator')])),
-    block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
+    block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))),
+    // the one-question pages (2026-09-14) — an orphan page is one an assistant never finds a route to
+    block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
   if (inject(rel('liquidations'), null, b)) n++;
 }
 // 4) the exchanges page lists every head-to-head and every "best for" page
