@@ -9975,6 +9975,7 @@ const VAULT_ITEMS = [
   { id: 'midas', name: 'Midas', tier: 'legendary', ticks: 7000, cents: 799, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
   { id: 'leviathan', name: 'Leviathan', tier: 'legendary', ticks: 7000, cents: 499, desc: 'Something bioluminescent moving in water far too deep to see the bottom of' },
   { id: 'emperor', name: 'Emperor', tier: 'legendary', ticks: 7000, cents: 549, desc: 'Carved imperial jade with gold inlay running through every vein' },
+  { id: 'regalia', name: 'Regalia', tier: 'legendary', ticks: 7000, cents: 549, desc: 'A house crest: a cut ruby set in gold at the crown, dark wings folded down both sides, and a battle ribbon across the foot' },
   { id: 'realtrader', name: 'Real Trader', tier: 'mythic', cents: 1999, desc: 'The apex of the Vault: profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
   { id: 'eclipse', name: 'Eclipse', tier: 'legendary', ticks: 5000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1, forever' },
   // ---- NATIONS (2026-09-05, owner): 20 country frames, $1.99 each, balance only (no Ticks price — identity items,
@@ -12668,7 +12669,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'e1d1b830';
+const ASSET_V = '23a605de';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

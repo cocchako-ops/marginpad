@@ -15,7 +15,7 @@ const TABS = ['frames', 'nations', 'tickets', 'backgrounds', 'supply', 'earned']
 // The CURRENT drop, so the contact sheet shows exactly what is new. Move this with every drop (it is the same list as
 // NEW_IDS on the Vault page) — otherwise the sheet keeps proving last month's work and the new items go unlooked-at.
 const NEW = {
-  frame: ['supernova'],
+  frame: ['supernova', 'regalia'], // 'owner' (MP One) is not a catalogue item — it is granted, so the probe would report it missing
   bg: ['bg_tape', 'bg_girder', 'bg_smoke', 'bg_vaultdoor', 'bg_packice', 'bg_terrace', 'bg_lava', 'bg_reactor', 'bg_titan', 'bg_stormsea'],
 };
 
