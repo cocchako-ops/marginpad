@@ -1963,9 +1963,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.9848484848484849,
-  "hit": 65,
-  "missing": 1
+  "cover": 1,
+  "hit": 66,
+  "missing": 0
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
