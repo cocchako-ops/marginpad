@@ -412,7 +412,7 @@
       + '<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>'
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=1e448736', CHAT_CSS = '/assets/mp-trade.css?v=ea372819', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=b07797e4', CHAT_CSS = '/assets/mp-trade.css?v=ea372819', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
     function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=ea372819"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
@@ -423,9 +423,44 @@
       if (window.mpOpenChat || document.querySelector('script[src*="/assets/home.js"]')) { cb(); return; }
       chatCss(); chatMarkup();
       if (!chatLoading) { chatLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = CHAT_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
-      chatLoading.then(function () { setTimeout(cb, 30); });
+      // identity first: chat asks who you are the moment it opens, and on a page without mp-auth that answer was
+      // always "nobody" — the member got the sign-in gate with their own session in the cookie jar.
+      chatLoading.then(function () { ensureAuth(function () { setTimeout(cb, 30); }); });
     }
     window.mpEnsureChat = ensureChat;
+    // Clicking a name in chat opens that trader's card — but the card lives in mp-profile.js, which only 3 of the ~400
+    // pages that carry the nav actually load (2026-09-13, owner: "kliknem na bilo čiji username i ništa se ne dešava,
+    // to ne sme ni na jednoj stranici"). Chat is injected everywhere, so the card has to follow it: pull the bundle on
+    // the first click, exactly like chat pulls mp-trade.js. The bento homepage has its own inline card (lbOpenProfile)
+    // and must never get a second one, which is why that is checked first.
+    // A SIGNED-IN MEMBER MUST BE RECOGNISED ON EVERY PAGE (2026-09-13). 755 of the 848 pages that carry this nav never
+    // loaded mp-auth.js, so on them a member was treated as a guest: chat opened its sign-in gate instead of the room,
+    // there was no account menu, no toasts, no partner ordering. Measured on /10x-liquidation-calculator/: mpAuth.me()
+    // false and no mp-auth-change ever fired, while /vault/ (which ships the bundle) resolved the session fine.
+    // It is pulled LAZILY, never eagerly on an SEO page for a guest: the mp_li cookie (set at sign-in, readable from
+    // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
+    // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
+    // ships it is untouched.
+    var AUTH_JS = '/assets/mp-auth.js?v=23a605de', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=23a605de"]'); } catch (e) { return false; } }
+    function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
+    function ensureAuth(cb) {
+      if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
+      if (!authLoading) { authLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = AUTH_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      authLoading.then(function () { if (cb) setTimeout(cb, 20); });
+    }
+    window.mpEnsureAuth = ensureAuth;
+    // a browser that holds a session gets it resolved on every page, after load so it never competes with first paint
+    if (liCookie() && !window.mpAuth && !hasAuthTag()) {
+      if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
+      else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
+    }
+    var PROF_JS = '/assets/mp-profile.js?v=ab5000e7', profLoading = null;
+    window.mpEnsureProfile = function (cb) {
+      if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
+      if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      profLoading.then(function () { setTimeout(cb, 20); });
+    };
     if (chatWanted()) { try { chatCss(); chatMarkup(); document.addEventListener('click', function (e) { var f = e.target.closest && e.target.closest('#chatFab'); if (!f || window.mpOpenChat) return; e.preventDefault(); e.stopImmediatePropagation(); ensureChat(function () { if (window.mpOpenChat) window.mpOpenChat(); else { var f2 = document.getElementById('chatFab'); if (f2) f2.click(); } }); }, true); } catch (e) {} }
     // Trades → the live My-Trades drawer (mp-trade.js / home.js) · Chat → the page's chat widget.
     document.addEventListener('click', function (e) {
