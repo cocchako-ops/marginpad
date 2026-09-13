@@ -692,8 +692,7 @@ h1 b{color:var(--lime)}
   $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
     if(curBoard==='gold'){el.textContent='Gold members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
-    if(curBoard==='bybit'){var up=D.bybitUpdated?new Date(D.bybitUpdated):null,rp=D.bybitReport||{};
-      el.textContent='Powered by Bybit \u00b7 real trading volume on Bybit, from our affiliate report \u00b7 '+(up?'last report '+up.toLocaleDateString([],{month:'short',day:'numeric'})+' '+up.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(rp.final?' (final)':''):'no report yet this season')+' \u00b7 '+int(rp.listed||0)+' Bybit accounts opened through MarginPad can compete \u00b7 prizes from the season of '+new Date(D.bybitPaidFrom||0).toISOString().slice(0,10)+': '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');return;}
+    if(curBoard==='bybit'){el.textContent='';return;} /* no note under the Bybit board (owner 2026-09-13): the banner, the prize preview and the registration box say it all */
     el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
   /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */
   var BYL=null;

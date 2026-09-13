@@ -70,11 +70,10 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid — long over,
       return { seen, on: on && on.getAttribute('data-board'), head: (document.querySelector('#tbl .tr.th') || {}).textContent || '', empty: (document.querySelector('#tbl .empty') || {}).textContent || '', rowsIn: document.getElementById('tbl').classList.contains('in'), note: (document.getElementById('bdNote') || {}).textContent || '', box: !document.getElementById('bybox').hidden, boxTxt: (document.getElementById('bybox') || {}).textContent || '', twClass: tw.className, full: a && c ? Math.abs(a.getBoundingClientRect().width - c.getBoundingClientRect().width) < 2 : null };
     });
     ok(sw.full === true, 'the Open Bybit button spans the registration card edge to edge');
-    ok(/accounts opened through MarginPad can compete/.test(sw.note) && !/UIDs registered/.test(sw.note), 'note counts Bybit accounts opened through MarginPad (allowlist), not "registered"');
     ok(sw.on === 'bybit' && (sw.head ? (/Bybit volume/i.test(sw.head) && !/trades|P&L/i.test(sw.head)) : !!sw.empty), 'Bybit board selected; the only value column is volume, or the empty state (header: "' + sw.head.trim().replace(/\s+/g, ' ') + '")');
     ok(sw.seen.some(c => /sw-l|sw-r/.test(c)) && !/sw-l|sw-r/.test(sw.twClass), 'the table slid (class toggled and cleared: ' + sw.seen.join(' > ') + ')');
     ok(sw.rowsIn || !!sw.empty, 'rows settled in or the empty state shows');
-    ok(/Powered by Bybit/.test(sw.note) && /2026-09-14/.test(sw.note) && /\$100/.test(sw.note) && !/margin (×|x) leverage/i.test(sw.note), 'note: powered by Bybit, report-based, prizes from 2026-09-14');
+    ok(sw.note.trim()==='', 'no note under the Bybit board (owner: removed)');
     ok(sw.box && /UID/.test(sw.boxTxt) && /opened through MarginPad/i.test(sw.boxTxt) && /Register UID/.test(sw.boxTxt), 'registration box shown to the member, states the rule (' + sw.boxTxt.trim().replace(/\s+/g, ' ').slice(0, 80) + '…)');
     const reach = await page.evaluate(() => { const i = document.getElementById('byUid'); if (!i) return 'no-input'; const r = i.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return el === i ? 'ok' : 'covered'; });
     ok(reach === 'ok', 'UID input reachable on desktop (' + reach + ')');
