@@ -11110,6 +11110,22 @@ async function bybitRegistrations(env) { // Bybit UID → {uid, name, ts, e2e}: 
   } catch (e) {}
   return map;
 }
+// Every /bybitlink ATTEMPT — registered, unlinked, or refused — goes to the OpsLog ring 'bylog' (500 rows, no TTL) and is
+// read by mp-ops › Money › Bybit UIDs (owner 2026-09-13: "hoću tačno da mi piše ko je prijavljen, ko je pokušao"). The
+// refusals are the point: `uid_not_ours` means the reader opened Bybit outside our link (the one support question this
+// board generates), `uid_taken` means two accounts claim one UID. Registrations themselves live in uprefs — this ring is
+// the attempt HISTORY, which nothing else keeps.
+async function bybitLinkLog(env, request, row) {
+  try {
+    const cf = (request && request.cf) || {};
+    await opslogPush(env, 'bylog', {
+      ts: Date.now(), cc: cf.country || '',
+      ip: String((request && (request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip'))) || '').slice(0, 45),
+      un: ((request && getCookie(request, 'mp_un')) || '').slice(0, 24),
+      ...row
+    }, 500);
+  } catch (e) {}
+}
 async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no test accounts), matched: everything the report hit, unmatched, upload, registered}
   const up = await bybitUpload(env, ws); const reg = await bybitRegistrations(env); const allow = await bybitUidSet(env);
   const rows = [], matched = [], unmatched = [];
@@ -14481,11 +14497,13 @@ async function handleReward(url, request, env) {
     const uid9 = String(acct).replace(/^u:/, ''); const allow9 = await bybitUidSet(env);
     if (request.method === 'POST') {
       const buid = String(b.uid == null ? b.buid : b.uid || '').trim();
-      if (buid && !/^[0-9]{5,15}$/.test(buid)) return jr({ error: 'bad_uid' }, 400);
-      if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) return jr({ error: 'uid_not_ours', ref: BYBIT_REF_URL, hint: 'This Bybit UID was not opened through MarginPad. Open a Bybit account with our link, then link that UID.' }, 403);
-      if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct); if (others.length) return jr({ error: 'uid_taken' }, 409); } catch (e) {} }
+      const bylog = (err) => bybitLinkLog(env, request, { uid: uid9, buid, err: err || '', ok: err ? 0 : 1 }); // every attempt, refused or not → mp-ops › Money › Bybit UIDs
+      if (buid && !/^[0-9]{5,15}$/.test(buid)) { await bylog('bad_uid'); return jr({ error: 'bad_uid' }, 400); }
+      if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) { await bylog('uid_not_ours'); return jr({ error: 'uid_not_ours', ref: BYBIT_REF_URL, hint: 'This Bybit UID was not opened through MarginPad. Open a Bybit account with our link, then link that UID.' }, 403); }
+      if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct); if (others.length) { await bylog('uid_taken'); return jr({ error: 'uid_taken' }, 409); } } catch (e) {} }
       const r9 = await usersDO(env, '/bybitlink', { uid: uid9, buid });
-      if (!r9 || r9.error) return jr({ error: (r9 && r9.error) || 'unavailable' }, r9 && r9.error === 'uid_taken' ? 409 : 503);
+      if (!r9 || r9.error) { await bylog((r9 && r9.error) || 'unavailable'); return jr({ error: (r9 && r9.error) || 'unavailable' }, r9 && r9.error === 'uid_taken' ? 409 : 503); }
+      await bylog('');
       try { await evPush(env, request, 'bybitlink', buid ? 'linked Bybit UID for the volume board' : 'unlinked Bybit UID', '/season/'); } catch (e) {}
       return jr({ ok: true, uid: buid, eligible: !!buid });
     }
@@ -15824,6 +15842,32 @@ export default {
       }
       const b = await bybitVolBoard(env, ws); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:bybit:' + ws)); } catch (e) {}
       return J({ ws, we: ws + LB_PERIOD, upload: b.upload, registered: b.registered, matched: b.matched, unmatched: b.unmatched, board: b.rows.map(r => ({ rank: r.rank, who: r.name, uid: r.uid, buid: r.buid, vol: r.vol })), paid: paidFlag });
+    }
+    // WHO REGISTERED A BYBIT UID, AND WHO TRIED (owner 2026-09-13) → mp-ops › Money › Bybit UIDs.
+    // Joins three sources the board already keeps: the registrations themselves (uprefs bybit_uid, plus UIDs a payout has
+    // gone to), the affiliate allowlist (KV bybit:uids — the same list that gates withdrawals), and this season's volume
+    // report. `attempts` is the OpsLog ring written by bybitLinkLog: the refusals exist nowhere else.
+    if (url.pathname === '/api/admin/bybitlinks' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
+      const e2eOn = url.searchParams.get('e2e') === '1';
+      const reg = await bybitRegistrations(env), allow = await bybitUidSet(env), up = await bybitUpload(env, ws);
+      const volOf = new Map(); for (const r of (up && up.rows) || []) volOf.set(String(r.uid), +r.vol || 0);
+      const registered = [...reg.entries()].map(([buid, w]) => ({
+        buid, uid: w.uid, name: w.name, ts: w.ts, e2e: !!w.e2e,
+        listed: allow.has(buid),                       // on the affiliate list = the account really came through our link
+        source: w.ts ? 'registered' : 'payout',        // ts 0 = never registered on /season/, we know the UID from a payout
+        vol: volOf.has(buid) ? volOf.get(buid) : null, // null = this UID is not in the current report at all
+      })).filter(r => e2eOn || !r.e2e).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      let attempts = [];
+      try { const rr = await ringRead(env, ['bylog'], { n: 300 }); attempts = ((rr.rings && rr.rings.bylog) || []).filter(x => x && (e2eOn || !/^e2e/i.test(String(x.un || '')))); } catch (e) {}
+      const names = {}; try { const need = [...new Set(attempts.map(a => a.uid).filter(Boolean))].slice(0, 120); if (need.length) { const pr = await resolveProfiles(env, need.map(u => 'u:' + u)); for (const k in pr) names[k] = pr[k].username || ''; } } catch (e) {} // resolveProfiles wants 'u:<uid>' keys, the ring stores the bare uid
+      attempts = attempts.map(a => ({ ...a, name: names[a.uid] || a.un || '', listed: a.buid ? allow.has(String(a.buid)) : null }));
+      const refused = attempts.filter(a => a.err);
+      return J({
+        ws, we: ws + LB_PERIOD, listed: allow.size, reportN: (up && (up.rows || []).length) || 0, reportTs: (up && up.ts) || 0, reportFinal: !!(up && up.final),
+        registered, attempts,
+        counts: { registered: registered.length, eligible: registered.filter(r => r.listed).length, inReport: registered.filter(r => r.vol != null).length, attempts: attempts.length, refused: refused.length, refusedUsers: new Set(refused.map(a => a.uid)).size },
+      });
     }
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }

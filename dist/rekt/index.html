@@ -125,17 +125,12 @@
   .rkt-tape{max-height:calc(100vh - 330px);min-height:430px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2c3540 transparent}
   .rkt-r{display:grid;grid-template-columns:66px 82px minmax(64px,1fr) 100px 104px 118px;gap:8px;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.045);font-size:13px;position:relative}
   .rkt-r:hover{background:rgba(255,255,255,.03)}
+  .rkt-r[data-sym]{cursor:pointer} /* the row opens the ticket window (where the venues are) */
   .rkt-t{font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3);font-variant-numeric:tabular-nums}
   .rkt-ex{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--lqink2);background:rgba(255,255,255,.05);border:1px solid var(--lqline);border-radius:6px;padding:2px 7px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:fit-content;text-transform:uppercase}
   .rkt-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:var(--lqink);text-decoration:none}
 .rkt-symw{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden}
-.rkt-go{display:inline-flex;gap:4px;flex:0 0 auto}
-.rkt-goa,.tk-goa{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1;padding:3px 6px;border-radius:5px;border:1px solid;text-decoration:none;white-space:nowrap;opacity:.85;transition:opacity .12s}
-.rkt-goa:hover,.tk-goa:hover{opacity:1}
-.rkt-goa.by,.tk-goa.by{color:#f7a600;border-color:rgba(247,166,0,.5);background:rgba(247,166,0,.08)}
-.rkt-goa.mo,.tk-goa.mo{color:#b79cff;border-color:rgba(138,92,255,.55);background:rgba(138,92,255,.10)}
-.tk-go{display:inline-flex;gap:4px;flex:0 0 auto;margin-left:auto;align-self:center}
-@media(max-width:560px){.rkt-go{display:none}} /* the feed row stays one line on a phone; the ticket cards keep the chips */
+/* the per-row Bybit/Moon chips were removed 2026-09-13 — the venues live inside the scanned ticket (.rkm-vens) */
   .rkt-sym:hover{color:#c2f64a}
   .rkt-side{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.05em;border-radius:6px;padding:3px 8px;width:fit-content;white-space:nowrap}
   .rkt-side.l{color:#ff8a80;background:rgba(255,90,77,.12);border:1px solid rgba(255,90,77,.3)}
@@ -365,6 +360,17 @@
   .rkm-grid .v{font-family:'Space Mono',monospace;font-size:13.5px;font-weight:700;color:var(--lqink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .rkm-cta{display:block;text-align:center;background:#c2f64a;color:#0a0b0d;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:14px;border-radius:11px;text-decoration:none;transition:.15s}
   .rkm-cta:hover{background:#d6f78a}.rkm-cta b{font-weight:700}
+  /* venue list inside the scanned ticket: the row's own exchange keeps the lime button above, these are the alternatives */
+  .rkm-vens-l{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--lqink3);margin:14px 0 7px}
+  .rkm-vens{display:grid;gap:5px}
+  .rkm-ven{display:flex;align-items:center;gap:9px;padding:7px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.09);border-left:3px solid var(--vc,#c2f64a);background:rgba(255,255,255,.025);text-decoration:none;transition:border-color .14s,background .14s}
+  .rkm-ven:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.2)}
+  .rkm-ven:hover .rkm-ven-go{transform:translateX(3px)}
+  .rkm-ven-d{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--vc,#c2f64a);box-shadow:0 0 9px -1px var(--vc,#c2f64a)}
+  .rkm-ven-n{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;color:var(--lqink)}
+  .rkm-ven-p{flex:1;min-width:0;text-align:right;font-size:11px;color:var(--lqink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rkm-ven-go{flex:0 0 auto;margin-left:auto;color:var(--vc,#c2f64a);font-weight:800;font-size:13px;transition:transform .18s} /* margin-left:auto so a venue with no perk line still puts the arrow on the right edge */
+  .rkm-ven.off{opacity:.5;filter:saturate(.35)}
   .rkm-share{display:block;width:100%;margin-top:9px;background:rgba(255,255,255,.04);color:var(--lqink2);border:1px solid var(--lqline);border-radius:11px;padding:12px;font-family:'Space Mono',monospace;font-size:12.5px;cursor:pointer;transition:.15s}
   .rkm-share:hover{border-color:rgba(255,255,255,.22);color:var(--lqink)}
   .rkm.long .rkm-dot,.rkm.short .rkm-dot{background:#ff5a4d;box-shadow:0 0 9px #ff5a4d}
@@ -701,16 +707,32 @@
     if(ex==='gate')return 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103';
     return 'https://www.bybit.com/trade/usdt/'+s+'USDT?ref=LZKBERJ';
   }
-  // Bybit + Moon on EVERY row (owner 2026-09-13: "iz rekt-a hoću da linkovi vode na bybit i moon gde može, ne samo binance"):
-  // the pair name keeps the row's own venue; two chips open the same pair on Bybit (our ref) and Moon's offer page.
-  // Bybit is hidden where it cannot onboard the reader (US/CA — window.mpEx.blocked, the same rule the partner cards follow).
-  function goChips(sym,cls){
-    var s=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),out='';
-    var cc='';try{cc=window.mpEx&&window.mpEx.ccNow?window.mpEx.ccNow():'';}catch(_){}
-    var byOk=true;try{if(window.mpEx&&window.mpEx.blocked&&window.mpEx.blocked('Bybit',cc))byOk=false;}catch(_){}
-    if(byOk)out+='<a class="'+cls+' by" data-mpex="Bybit" href="https://www.bybit.com/trade/usdt/'+s+'USDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" title="Trade '+s+' on Bybit →">Bybit</a>';
-    out+='<a class="'+cls+' mo" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored" title="Trade '+s+' on Moon — 24/7 markets →">Moon</a>';
-    return out;
+  // THE VENUE LIST LIVES INSIDE THE SCANNED TICKET (owner 2026-09-13). Until now every feed row carried its own Bybit and
+  // Moon chip, which turned a one-glance row into a three-link decision. The chips are gone from the rows; the ticket the
+  // barcode opens — where the reader has already stopped to look — now lists the venues, with the row's own exchange
+  // keeping the primary button exactly as it did. Partner data comes from window.mpEx and NOWHERE else (one source of
+  // truth for ref links, colours and country order); mp-auth is deferred, so a missing mpEx just leaves the primary
+  // button alone instead of throwing. Blocked venues (Bybit/Binance in the US) go last, dimmed and labelled.
+  function venueRows(sym,own){
+    var E=null;try{E=window.mpEx;}catch(_){ }
+    if(!E||!E.P||!E.rank||!E.url)return '';
+    var s=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    var cc='';try{cc=E.ccNow?E.ccNow():'';}catch(_){}
+    var ownName=affName(own),list=[];
+    E.rank(cc).forEach(function(n){
+      if(n===ownName)return; // the row's own venue is the primary button above this list
+      var p=E.P[n];if(!p)return;
+      var off=false;try{off=!!(E.blocked&&E.blocked(n,cc));}catch(_){}
+      list.push({n:n,url:E.url(n,s),c:p.c||'#c2f64a',perk:p.perk||'',off:off});
+    });
+    list.sort(function(a,b){return (a.off?1:0)-(b.off?1:0);});
+    var region='';try{region=(E.region&&E.region(cc))||'';}catch(_){}
+    return list.slice(0,5).map(function(v){ // five keeps the ticket window short enough that the Share button stays near the fold
+      var note=v.off?('not available'+(region?' in '+region:'')):v.perk;
+      return '<a class="rkm-ven'+(v.off?' off':'')+'" data-mpex="'+esc(v.n)+'" href="'+v.url+'" target="_blank" rel="noopener sponsored" style="--vc:'+v.c+'">'
+        +'<span class="rkm-ven-d"></span><span class="rkm-ven-n">'+esc(v.n)+'</span>'
+        +(note?'<span class="rkm-ven-p">'+esc(note)+'</span>':'')+'<span class="rkm-ven-go">→</span></a>';
+    }).join('');
   }
   function row(e){
     var lng=e.side==='long_liquidated';
@@ -723,7 +745,7 @@
     return '<div class="'+cls+'" data-side="'+(lng?'long':'short')+'" data-n="'+e.notional+'" data-sym="'+esc(e.symbol)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-share="'+shareTxt+'"><div class="tk-paper">'
       +'<div class="tk-stub" title="Tap to share this liquidation"><span class="tk-dir">'+(lng?'LONG':'SHORT')+'</span><span class="tk-arrow">'+(lng?'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 5l8 13H4z"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 19 4 6h16z"/></svg>')+'</span><span class="tk-rekt">REKT</span></div>'
       +'<div class="tk-body">'
-        +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span><span class="tk-go">'+goChips(e.symbol,'tk-goa')+'</span></div>'
+        +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span></div>'
         +'<div class="tk-sub">@ <b>$'+px(e.price)+'</b></div>'
         +'<div class="tk-amt">'+mark+'<span class="d">$</span>'+num+(unit?'<span class="u">'+unit+'</span>':'')+'</div>'
         +'<div class="tk-foot">'
@@ -829,8 +851,13 @@
   function tRow(e,fresh){var lng=e.side==='long_liquidated',n=+e.notional;
     var d=new Date(e.ts),tm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
     var el=document.createElement('div');el.className='rkt-r'+(n>=1e6?' mega':n>=1e5?' big':'')+(fresh?' fresh':'');
+    // the same data the ticket card carries, so a desktop row opens the SAME ticket window (tkData reads these attributes).
+    // Without this the window — which is now where the venues live — was reachable only from the phone feed's barcode.
+    el.setAttribute('data-sym',e.symbol);el.setAttribute('data-side',lng?'long':'short');el.setAttribute('data-n',n);
+    el.setAttribute('data-px',e.price);el.setAttribute('data-exch',String(e.exchange).toUpperCase());el.setAttribute('data-ts',e.ts);
+    el.title='Open this ticket';
     var w=Math.min(100,Math.round(n/1e6*100)); // notional bar: full width = $1M
-    el.innerHTML='<span class="rkt-t">'+tm+'</span><span class="rkt-ex">'+esc(e.exchange)+'</span><span class="rkt-symw"><a class="rkt-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="rkt-go">'+goChips(e.symbol,'rkt-goa')+'</span></span><span class="rkt-side '+(lng?'l':'s')+'">'+(lng?'LONG REKT':'SHORT REKT')+'</span><span class="rkt-px">$'+px(e.price)+'</span><span class="rkt-n">$'+money(n)+'</span>'+(w>3?'<i class="rkt-nb" style="width:'+w+'%"></i>':'');
+    el.innerHTML='<span class="rkt-t">'+tm+'</span><span class="rkt-ex">'+esc(e.exchange)+'</span><span class="rkt-symw"><a class="rkt-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a></span><span class="rkt-side '+(lng?'l':'s')+'">'+(lng?'LONG REKT':'SHORT REKT')+'</span><span class="rkt-px">$'+px(e.price)+'</span><span class="rkt-n">$'+money(n)+'</span>'+(w>3?'<i class="rkt-nb" style="width:'+w+'%"></i>':'');
     return el;}
   function deskAgg(e){var n=+e.notional;
     sessEx[e.exchange]=(sessEx[e.exchange]||0)+n;
@@ -968,8 +995,11 @@
       '<div><div class="l">Direction</div><div class="v">'+(lng?'Long force-closed':'Short force-closed')+'</div></div>'+
       '<div><div class="l">Notional wiped</div><div class="v">$'+money(d.not)+'</div></div>'+
       '<div><div class="l">Receipt №</div><div class="v">'+String(d.ts).slice(-6)+'</div></div>';
-    var cta=document.getElementById('rkmCta');cta.href=affLink(d.exch,d.sym);
+    var cta=document.getElementById('rkmCta');cta.href=affLink(d.exch,d.sym);cta.setAttribute('data-mpex',affName(d.exch));
     document.getElementById('rkmCtaSym').textContent=d.sym;document.getElementById('rkmCtaEx').textContent=d.exch;
+    var vb=document.getElementById('rkmVens'),vh=venueRows(d.sym,d.exch); // the other venues, in this reader's country order
+    if(vb){vb.innerHTML=vh;vb.hidden=!vh;}
+    var vl=document.getElementById('rkmVensL');if(vl)vl.hidden=!vh;
     var card=m.querySelector('.rkm-card');if(card)card.scrollTop=0;
     m.hidden=false;lockScroll();
   }
@@ -989,7 +1019,15 @@
     if(stub){var tk2=stub.closest('.tk');if(tk2)shareLiq(tkData(tk2));return;}
   }
   feed.addEventListener('click',onTkClick);
-  /* (the desktop ticket split was replaced by the liquidation terminal — its delegation is gone with it; the mobile #rkFeed keeps ticket scan/share) */
+  /* (the desktop ticket split was replaced by the liquidation terminal — its delegation is gone with it; the mobile #rkFeed keeps ticket scan/share)
+     Desktop terminal row → the same ticket window (2026-09-13). A click on the pair name still opens that exchange; anywhere
+     else on the row opens the ticket, which is where the venue list lives now. Document-level delegation: the tape re-renders
+     its rows constantly and lives in another scope. */
+  document.addEventListener('click',function(ev){
+    if(ev.target.closest&&ev.target.closest('a'))return;
+    var r=ev.target.closest&&ev.target.closest('.rkt-r');
+    if(r&&r.getAttribute('data-sym'))openModal(tkData(r));
+  });
   var shareBtn=document.getElementById('rkShare');
   if(shareBtn)shareBtn.addEventListener('click',function(){
     var tot=(document.getElementById('rkTot')||{}).textContent||'$0';
@@ -1088,6 +1126,8 @@
     <div class="rkm-amt-l">notional force-closed</div>
     <div class="rkm-grid" id="rkmGrid"></div>
     <a class="rkm-cta" id="rkmCta" href="#" target="_blank" rel="noopener sponsored">Trade <b id="rkmCtaSym">—</b> on <span id="rkmCtaEx">—</span> →</a>
+    <div class="rkm-vens-l" id="rkmVensL" hidden>or trade the same pair on</div>
+    <div class="rkm-vens" id="rkmVens" hidden></div>
     <button class="rkm-share" id="rkmShare" type="button">Share this ticket</button>
   </div>
 </div>
@@ -1166,6 +1206,9 @@
 document.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest&&ev.target.closest('a[href*="ref=LZKBERJ"],a[href*="ref=MAOZM9DS"],a[href*="ref=96160298"],a[href*="ref=VHP8AYKY"],a[data-ex]');if(!a)return;try{
 var ex=a.getAttribute('data-ex')||(/binance/i.test(a.href)?'Binance':/bybit/i.test(a.href)?'Bybit':/okx/i.test(a.href)?'OKX':/kucoin/i.test(a.href)?'KuCoin':'exchange');
 if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}
+/* a link carrying data-mpex is already counted by mp-auth's delegated partner handler — sending our own beacon too counted
+   one click TWICE in the money numbers (every ticket pair name has both). gtag above still fires for the Ads conversion. */
+if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>

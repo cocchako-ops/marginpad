@@ -49,7 +49,7 @@
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
-    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'shop', title: 'Shop' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
@@ -594,6 +594,48 @@
       + '<div class="grid g3" style="margin-top:12px"><div class="card" style="margin:0"><h2>Traffic sources</h2>' + bars(d.sources || [], 'k', 'n') + '</div><div class="card" style="margin:0"><h2>Campaigns <span>&amp;c= tags</span></h2>' + bars(d.campaigns || [], 'k', 'n') + '</div><div class="card" style="margin:0"><h2>Referred countries</h2>' + bars((d.countries || []).map(function (x) { return { html: flag(x.k), n: x.n }; }), 'html', 'n') + '</div></div>'
       + card('Affiliates', tbl([{ h: 'affiliate', f: function (a) { return userLink(a.username, a.email); } }, { h: 'clicks', r: true, mono: true, f: function (a) { return N(a.clicks); } }, { h: 'sign-ups', r: true, mono: true, f: function (a) { return N(a.invited); } }, { h: 'active', r: true, mono: true, f: function (a) { return N(a.qualified); } }, { h: 'pending', r: true, mono: true, f: function (a) { return N(a.pending); } }, { h: 'conv', r: true, mono: true, f: function (a) { return (a.conv != null ? Math.round(+a.conv * (a.conv <= 1 ? 100 : 1)) + '%' : '—'); } }, { h: 'last', mono: true, f: function (a) { return a.lastTs ? ago(a.lastTs) + ' ago' : '—'; } }], (d.affiliates || []).slice().sort(function (a, b) { return (b.clicks || 0) - (a.clicks || 0); })), 'click an affiliate for the full profile')
       + card('Recent activity', (d.recent || []).slice(0, 30).map(function (r) { return '<div class="row"><span class="who">' + userLink(r.who) + '</span><span class="grow">' + esc(r.t || '') + (r.inv ? ' · ' + esc(r.inv) : '') + ' ' + flag(r.cc) + '</span><span class="meta">' + ago(r.ts) + ' ago</span></div>'; }).join('') || '<div class="empty">quiet</div>');
+  } });
+
+  // ---------- MONEY / BYBIT UIDs ----------
+  // Who registered a Bybit UID for the volume board, and who TRIED and was refused (owner 2026-09-13). /api/admin/bybitlinks
+  // joins the registrations (uprefs bybit_uid + UIDs a payout already went to), the affiliate allowlist that decides
+  // eligibility, and this season's uploaded volume report; `attempts` is the OpsLog ring the /bybitlink route writes —
+  // a refusal exists nowhere else, and "uid_not_ours" is the one support question this board generates.
+  simple('money/bybit', { url: '/api/admin/bybitlinks', every: 90000, html: function (d) {
+    var c = d.counts || {}, reg = d.registered || [], att = d.attempts || [];
+    var ERR = { '': 'registered', uid_not_ours: 'UID not opened through our link', uid_taken: 'UID already on another account', bad_uid: 'not a valid UID', unavailable: 'server error' };
+    var fmtVol = function (v) { return v == null ? '<span class="meta">not in report</span>' : '<span class="mono">$' + Math.round(v).toLocaleString('en-US') + '</span>'; };
+    var eligible = function (r) { return r.listed ? '<span class="badge ok">eligible</span>' : '<span class="badge amber">not on the list</span>'; };
+    var refused = att.filter(function (a) { return a.err; });
+    return '<div class="grid g4">'
+      + tile(N(c.registered), 'UIDs registered', c.registered ? '' : 'dim', c.eligible === c.registered ? 'all on the affiliate list' : N(c.eligible) + ' on the affiliate list')
+      + tile(N(c.inReport), 'of them in this report', 'dim', d.reportN ? N(d.reportN) + ' UIDs in the report · ' + (d.reportFinal ? 'FINAL' : 'not final') : 'no report uploaded yet')
+      + tile(N(c.refused), 'refused attempts', c.refused ? 'amber' : 'dim', c.refusedUsers ? N(c.refusedUsers) + ' different members' : 'nobody was refused')
+      + tile(N(d.listed), 'UIDs on the affiliate list', 'dim', 'the allowlist that also gates withdrawals')
+      + '</div>'
+      + card('Registered UIDs', tbl([
+        { h: 'member', f: function (r) { return (r.name ? userLink(r.name) : '<span class="mono meta">' + esc(String(r.uid || '').slice(0, 8)) + '</span>') + (r.e2e ? ' <span class="meta">test</span>' : ''); } }, // a payout-derived row can have no username; userLink would call that account "visitor"
+        { h: 'bybit uid', mono: true, f: function (r) { return esc(r.buid); } },
+        { h: 'eligible', f: eligible },
+        { h: 'volume this season', r: true, f: function (r) { return fmtVol(r.vol); } },
+        { h: 'how', f: function (r) { return r.source === 'payout' ? '<span class="meta">from a payout</span>' : 'registered on /season/'; } },
+        { h: 'when', mono: true, f: function (r) { return r.ts ? agoT(r.ts) + ' ago' : '<span class="meta">—</span>'; } }
+      ], reg, 'nobody has registered a Bybit UID yet'),
+        N(reg.length) + ' registered · newest first',
+        '<a href="#settings/rewards">upload the volume report</a>')
+      + card('Attempts', tbl([
+        { h: 'member', f: function (a) { return a.name ? userLink(a.name) : '<span class="mono meta">' + esc(String(a.uid || '').slice(0, 8)) + '</span>'; } }, // an attempt always comes from a signed-in account; userLink would print "visitor" for a deleted/renamed one
+        { h: 'uid tried', mono: true, f: function (a) { return a.buid ? esc(a.buid) : '<span class="meta">unlinked</span>'; } },
+        { h: 'result', f: function (a) { return a.err ? '<span class="badge red">' + esc(ERR[a.err] || a.err) + '</span>' : '<span class="badge ok">' + (a.buid ? 'registered' : 'unlinked') + '</span>'; } },
+        { h: 'on the list', f: function (a) { return a.listed == null ? '<span class="meta">—</span>' : (a.listed ? 'yes' : 'no'); } },
+        { h: 'from', f: function (a) { return flag(a.cc) + ' <span class="mono meta">' + esc(a.ip || '') + '</span>'; } },
+        { h: 'when', mono: true, f: function (a) { return agoT(a.ts) + ' ago'; } }
+      ], att, 'no attempts recorded yet'),
+        N(att.length) + ' attempts kept (newest 500)' + (refused.length ? ' · ' + N(refused.length) + ' refused' : ''),
+        '')
+      + card('What the refusals mean', '<div class="line"><b>UID not opened through our link</b> — the UID is not in the affiliate list, so Bybit does not report that account to us. The member has to open a NEW Bybit account through our link; an existing account cannot be attached afterwards. If they insist they did use our link, the list may simply be stale: refresh it on <a href="#money/withdrawals">Withdrawals</a>.</div>'
+        + '<div class="line"><b>UID already on another account</b> — two MarginPad accounts claim one Bybit UID. The earliest registration keeps it.</div>'
+        + '<div class="line">The allowlist here is the same one that gates withdrawals, so a member who can withdraw to a UID is also eligible for this board.</div>', 'read before answering a support ticket about the Bybit board');
   } });
 
   // ---------- MONEY / SHOP ----------
@@ -1563,7 +1605,7 @@
         + '<div class="grid g2">' + card('Claim economics', num('sAmount', c.amountUsd, 'Amount per claim ($)', '', 0.01) + num('sCooldown', c.cooldownS, 'Cooldown (seconds)', '', 30) + num('sPerDay', c.perDayUsd, 'Daily cap per address ($)', '', 0.5) + num('sCap', c.capUsd, 'Global daily budget ($)', '', 1) + num('sWelcome', c.welcomeUsd != null ? c.welcomeUsd : 0.5, 'Sign-up welcome bonus ($)', 'one-time, credited on registration · 0 = off', 0.05) + '<div class="line" id="sHints" style="margin-top:8px;font-size:12px"></div>')
         + card('Withdrawals and anti-abuse', num('sMinWd', c.minWdUsd, 'Minimum withdrawal ($)', '', 0.5) + num('sMinClaimsWd', c.minClaimsToWd || 0, 'Min claims before withdrawal', '0 = no requirement') + num('sIpCap', c.ipCap, 'Max new accounts / IP / day') + num('sDidCap', c.didCap || 0, 'Max accounts / device', 'mp_did cookie · 0 = only flagged, not blocked') + tog('sOnchain', c.requireOnchain !== false, 'Require on-chain wallet', 'must have BNB-chain activity') + '<div class="line" style="margin-top:8px;font-size:12px">Withdrawals are also gated by the Bybit UID allowlist (see <a href="#money/withdrawals">Withdrawals</a>).</div>') + '</div>'
         + card('Season prizes', '<div class="line" style="margin-bottom:6px">top 5 per board, paid automatically at season end · one account can win several boards</div>' + LB.map(function (b) { return '<div class="fr"><label>' + b[1] + '<small>1st to 5th ($)</small></label><span class="nums">' + [0, 1, 2, 3, 4].map(function (i) { return '<input class="in" type="number" min="0" step="1" id="' + b[0] + i + '" value="' + (+b[2][i] || 0) + '">'; }).join('') + '</span></div>'; }).join(''), '14-day seasons · shown on /rewards and Telegram')
-        + card('Bybit volume board — powered by Bybit', '<div class="line" style="margin-bottom:6px">Real Bybit volume from the affiliate report. Paste the export (or pick the file): lines with a Bybit UID and a volume; a header row naming the UID and volume columns is understood. Each upload replaces this season\'s table. Only members who registered that UID on /season/ appear. Tick <b>final</b> after the season ends — the $200 pays only from a final report.</div>'
+        + card('Bybit volume board — powered by Bybit', '<div class="line" style="margin-bottom:6px">Real Bybit volume from the affiliate report. Paste the export (or pick the file): lines with a Bybit UID and a volume; a header row naming the UID and volume columns is understood. Each upload replaces this season\'s table. Only members who registered that UID on /season/ appear — see <a href="#money/bybit">Money › Bybit UIDs</a> for who registered and who tried. Tick <b>final</b> after the season ends — the $200 pays only from a final report.</div>'
           + '<div id="bvStatus" class="line mono" style="margin-bottom:6px">loading…</div>'
           + '<textarea class="in" id="bvText" rows="6" placeholder="UID,volume&#10;12345678,1234567.89"></textarea>'
           + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'

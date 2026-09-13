@@ -25,13 +25,32 @@ const J = [{ id: String(now - 60000) + '_1', sym: 'BTC', side: 'long', lev: 10, 
     const hrefs = () => page.evaluate(() => [...document.querySelectorAll('a[href]')].map(a => a.href));
     // rekt
     await page.goto(O + '/rekt/?cb=' + now, { waitUntil: 'networkidle2', timeout: 60000 }); await new Promise(r => setTimeout(r, 6000));
-    let hs = await hrefs(); let bad = audit(hs); const rekt = await page.evaluate(() => ({ rows: document.querySelectorAll('.rkt-r').length, by: document.querySelectorAll('.rkt-go .by').length, mo: document.querySelectorAll('.rkt-go .mo').length, tk: document.querySelectorAll('.tk').length, tkby: document.querySelectorAll('.tk-go .by').length, tkmo: document.querySelectorAll('.tk-go .mo').length, ex: hs => 0 }));
+    let hs = await hrefs(); let bad = audit(hs);
+    // 2026-09-13: the per-row Bybit/Moon chips are GONE — the venue list moved inside the ticket window the barcode (phone)
+    // or the row itself (desktop) opens. Assert both: the rows are clean, and the window lists venues that carry our codes.
+    const rekt = await page.evaluate(() => ({ rows: document.querySelectorAll('.rkt-r').length, chips: document.querySelectorAll('.rkt-go, .tk-go, .rkt-goa, .tk-goa').length, withData: document.querySelectorAll('.rkt-r[data-sym]').length }));
     ok(hs.filter(h => EXH.test(h)).length > 5, '/rekt/: exchange links present (' + hs.filter(h => EXH.test(h)).length + ')');
     ok(bad.length === 0, '/rekt/: every exchange link carries our code' + (bad.length ? ' — bad: ' + bad.slice(0, 3).join(' ') : ''));
-    ok(rekt.rows > 0 && rekt.by === rekt.rows && rekt.mo === rekt.rows, '/rekt/: every feed row has a Bybit and a Moon chip (' + rekt.rows + ' rows, ' + rekt.by + '/' + rekt.mo + ')');
-    ok(rekt.tk === 0 || (rekt.tkby === rekt.tk && rekt.tkmo === rekt.tk), '/rekt/: every ticket card has both chips (' + rekt.tk + ' cards)');
-    const oneLine = await page.evaluate(() => { const r = document.querySelector('.rkt-r'); if (!r) return true; const h = r.getBoundingClientRect().height; return h < 44; });
-    ok(oneLine, '/rekt/: feed row still one line with the chips');
+    ok(rekt.rows > 0 && rekt.chips === 0, '/rekt/: no venue chips left on the feed rows (' + rekt.rows + ' rows, ' + rekt.chips + ' chips)');
+    ok(rekt.withData === rekt.rows, '/rekt/: every terminal row can open its ticket (' + rekt.withData + '/' + rekt.rows + ')');
+    const oneLine = await page.evaluate(() => { const r = document.querySelector('.rkt-r'); if (!r) return true; return r.getBoundingClientRect().height < 44; });
+    ok(oneLine, '/rekt/: feed row still one line');
+    // open the ticket window from a desktop row and read its venue list
+    await page.evaluate(() => { const r = document.querySelector('.rkt-r[data-sym]'); if (r) r.click(); }); await new Promise(r => setTimeout(r, 900));
+    const modal = await page.evaluate(() => {
+      const m = document.getElementById('rkModal'); if (!m || m.hidden) return { open: false };
+      const vs = [...m.querySelectorAll('.rkm-ven')];
+      const cta = m.querySelector('.rkm-cta');
+      const reach = (el) => { const r = el.getBoundingClientRect(); const c = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!(c && (c === el || el.contains(c))); };
+      return { open: true, n: vs.length, hrefs: vs.map(a => a.href).concat(cta ? [cta.href] : []), tracked: vs.filter(a => a.getAttribute('data-mpex')).length, ctaTracked: !!(cta && cta.getAttribute('data-mpex')), names: vs.map(a => (a.querySelector('.rkm-ven-n') || {}).textContent || ''), off: vs.map(a => a.classList.contains('off')), reach: vs.length ? reach(vs[0]) : false };
+    });
+    ok(modal.open, '/rekt/: a terminal row opens the ticket window');
+    ok(modal.n >= 3, '/rekt/ ticket window: the venue list is there (' + modal.n + ' venues)');
+    ok(modal.reach, '/rekt/ ticket window: the first venue row is actually clickable (elementFromPoint)');
+    ok(modal.tracked === modal.n && modal.ctaTracked, '/rekt/ ticket window: every venue link is money-click tracked (' + modal.tracked + '/' + modal.n + ', cta ' + modal.ctaTracked + ')');
+    ok(audit(modal.hrefs || []).length === 0, '/rekt/ ticket window: every venue link carries our code' + (audit(modal.hrefs || []).length ? ' — bad: ' + audit(modal.hrefs).slice(0, 3).join(' ') : ''));
+    ok((modal.names || []).every((n, i) => !modal.off[i] || i >= modal.names.length - modal.off.filter(Boolean).length), '/rekt/ ticket window: unavailable venues sort last');
+    await page.evaluate(() => { const x = document.getElementById('rkmClose'); if (x) x.click(); });
     // screener coin sheet
     await page.goto(O + '/screener?cb=' + now, { waitUntil: 'networkidle2', timeout: 60000 }); await new Promise(r => setTimeout(r, 4000));
     await page.evaluate(() => { const r = document.querySelector('[data-sym], .scr-row, tr[data-s]'); if (r) r.click(); }); await new Promise(r => setTimeout(r, 1500));
@@ -51,12 +70,19 @@ const J = [{ id: String(now - 60000) + '_1', sym: 'BTC', side: 'long', lev: 10, 
     ok(hs.filter(h => EXH.test(h)).length > 0 && bad.length === 0, '/calculators: exchange links carry our code (' + hs.filter(h => EXH.test(h)).length + ')' + (bad.length ? ' — bad: ' + bad.slice(0, 3).join(' ') : ''));
     // /go interstitial fallbacks
     for (const ex of ['binance', 'bybit', 'mexc']) { const t = await (await fetch(O + '/go?ex=' + ex + '&sym=SOL')).text(); const rule = CODE.find(r => r[0].test(ex + '.com')); ok(rule && rule[1].test(t), '/go?ex=' + ex + ' web fallback carries our code'); }
-    // US reader on /rekt/: Moon chip only
+    // US reader: inside the ticket window, the venues that cannot onboard them are dimmed, labelled and last
     const us = await browser.createBrowserContext(); const p2 = await us.newPage(); await p2.setViewport({ width: 1366, height: 900 });
     await p2.evaluateOnNewDocument(() => { try { localStorage.setItem('mp_cc', JSON.stringify({ cc: 'US', ts: Date.now() })); } catch (e) {} });
     await p2.goto(O + '/rekt/?cb=' + now, { waitUntil: 'networkidle2', timeout: 60000 }); await new Promise(r => setTimeout(r, 6000));
-    const usr = await p2.evaluate(() => ({ rows: document.querySelectorAll('.rkt-r').length, by: document.querySelectorAll('.rkt-go .by').length, mo: document.querySelectorAll('.rkt-go .mo').length }));
-    ok(usr.rows > 0 && usr.by === 0 && usr.mo === usr.rows, 'US reader on /rekt/: Moon chip on every row, no Bybit (' + JSON.stringify(usr) + ')');
+    await p2.evaluate(() => { const r = document.querySelector('.rkt-r[data-sym]'); if (r) r.click(); }); await new Promise(r => setTimeout(r, 900));
+    const usr = await p2.evaluate(() => {
+      const m = document.getElementById('rkModal'); if (!m || m.hidden) return { open: false };
+      const vs = [...m.querySelectorAll('.rkm-ven')];
+      return { open: true, n: vs.length, first: (vs[0] && (vs[0].querySelector('.rkm-ven-n') || {}).textContent) || '', byOff: vs.filter(a => /Bybit|Binance/.test(a.textContent) && a.classList.contains('off')).length, byAny: vs.filter(a => /Bybit|Binance/.test(a.textContent)).length, na: vs.filter(a => /not available/i.test(a.textContent)).length };
+    });
+    ok(usr.open && usr.n >= 3, 'US reader on /rekt/: the ticket window lists venues (' + usr.n + ')');
+    ok(usr.byAny === 0 || (usr.byOff === usr.byAny && usr.na >= usr.byOff), 'US reader on /rekt/: Bybit/Binance shown dimmed and labelled, never as a plain option (' + JSON.stringify(usr) + ')');
+    ok(!/Bybit|Binance/.test(usr.first || ''), 'US reader on /rekt/: a US-friendly venue is first (' + usr.first + ')');
     await us.close(); await ctx.close();
   });
   console.log(`\n${pass} passed, ${fail} failed`);

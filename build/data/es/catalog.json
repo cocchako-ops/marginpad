@@ -1,12 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-13T13:01:53.418Z",
+  "generated": "2026-09-13T14:24:27.048Z",
   "pages": 369,
-  "occurrences": 22736,
-  "unique": 12824,
-  "words": 237588,
-  "untranslated": 1,
-  "untranslatedWords": 25
+  "occurrences": 22737,
+  "unique": 12825,
+  "words": 237594,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-09-13T14:24:35.592Z"
  },
  "items": {
   "-1NAT9wpkg": {
@@ -130840,6 +130841,18 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "8bNZbzyLY9": {
+   "en": "or trade the same pair on",
+   "es": "o negocia el mismo par en",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 6
   },
   "mCHraFDbkR": {
    "en": "Share this ticket",
