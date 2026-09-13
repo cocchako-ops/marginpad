@@ -90,6 +90,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var a=+document.getElementById('apr').value/100,f=+document.getElementById('freq').value,amt=+document.getElementById('amt').value;var r=document.getElementById('res');if(!(a>=0)){r.innerHTML='';return;}var apy=Math.pow(1+a/f,f)-1;r.innerHTML='<div class="rrow big"><span class="k">APY (effective annual yield)</span><span class="v up">'+(apy*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">On '+amt.toLocaleString()+' USD / year</span><span class="v up">+'+(amt*apy).toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Compounding adds</span><span class="v">+'+((apy-a)*100).toFixed(2)+'% vs simple APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=f86b4d7f"></script>
+<script defer src="/assets/mp-nav.js?v=cd251d63"></script>
 </body>
 </html>

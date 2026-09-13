@@ -77,6 +77,33 @@ withBrowser(async b => {
     if (!okScale || !okFit || !okOuter) fail++;
     console.log((okScale && okFit && okOuter ? '  ok   ' : '  FAIL ') + x.id.padEnd(11) + ' scale ' + x.fs + ' · band reaches ' + x.reach + 'px into a ' + x.pad + 'px padding' + (okOuter ? ' · outer ring off here' : ' · OUTER RING STILL ON (reads as a stray line)'));
   });
-  console.log(String.fromCharCode(10) + (rows.length - bright) + ' frames readable, ' + bright + ' too bright · ' + (fail - bright) + ' picker problems');
+
+  // ---- the phone: the ornament must fit the screen, not be clipped by it ---------------------------------------
+  // A 390px phone leaves ~18px beside the card; the full-size ornament reaches 25px, so it was cut off at both edges
+  // (the owner photographed exactly this). --fs drops on narrow screens; this asserts the result rather than the rule.
+  await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await new Promise(r => setTimeout(r, 700));
+  await p.evaluate(() => { if (window.mpEnsureProfile) window.mpEnsureProfile(function () { if (window.mpOpenProfile) window.mpOpenProfile('chako'); }); });
+  await new Promise(r => setTimeout(r, 3500));
+  await p.evaluate(() => { const m = document.querySelector('.lbm'); if (m) { m.hidden = false; m.style.background = '#07080b'; } });
+  const phone = await p.evaluate(() => {
+    const out = [];
+    for (const f of ['owner', 'regalia', 'supernova']) {
+      const c = document.querySelector('.lbm .lbm-card'); if (!c) { out.push({ f, missing: true, modal: !!document.querySelector('.lbm'), hidden: (document.querySelector('.lbm')||{}).hidden }); break; }
+      c.className = 'lbm-card frame-' + f;
+      const r = c.getBoundingClientRect();
+      const reach = Math.max(Math.abs(parseFloat(getComputedStyle(c, '::before').inset || getComputedStyle(c, '::before').top) || 0), Math.abs(parseFloat(getComputedStyle(c, '::after').inset || getComputedStyle(c, '::after').top) || 0));
+      out.push({ f, room: Math.round(Math.min(r.left, innerWidth - r.right)), reach: +reach.toFixed(1) });
+    }
+    return out;
+  });
+  console.log(String.fromCharCode(10) + 'phone (390px), ornament vs the space beside the card:');
+  phone.forEach(x => {
+    if (x.missing) { fail++; console.log('  FAIL ' + x.f + ': card not found ' + JSON.stringify(x)); return; }
+    const good = x.reach <= x.room + 0.5;
+    if (!good) fail++;
+    console.log((good ? '  ok   ' : '  FAIL ') + x.f.padEnd(11) + ' reaches ' + x.reach + 'px into ' + x.room + 'px of room' + (good ? '' : ' — CLIPPED BY THE SCREEN'));
+  });
+  console.log(String.fromCharCode(10) + (rows.length - bright) + ' frames readable, ' + bright + ' too bright · ' + (fail - bright) + ' layout problems');
   process.exitCode = fail ? 1 : 0;
 });
