@@ -12,11 +12,11 @@ const { withBrowser, newPage } = require('./e2e-browser');
 const BASE = process.argv[2] || 'https://marginpad.io';
 const OUT = path.join(__dirname, 'vault-shots');
 const TABS = ['frames', 'nations', 'tickets', 'backgrounds', 'supply', 'earned'];
-// The 2026-09-05 drop, so the contact sheet shows exactly what is new.
+// The CURRENT drop, so the contact sheet shows exactly what is new. Move this with every drop (it is the same list as
+// NEW_IDS on the Vault page) — otherwise the sheet keeps proving last month's work and the new items go unlooked-at.
 const NEW = {
-  frame: ['sandstone', 'arctic', 'copper', 'neonoir', 'bamboo', 'rust', 'venom', 'magnetar', 'koi', 'tungsten', 'leviathan', 'emperor'],
-  tsk: ['tkt_kraft', 'tkt_blueprint', 'tkt_terminal', 'tkt_boarding', 'tkt_frost', 'tkt_neon', 'tkt_platinum'],
-  bg: ['bg_dunes', 'bg_static', 'bg_circuit', 'bg_waves', 'bg_matrix', 'bg_city', 'bg_orbit'],
+  frame: ['supernova'],
+  bg: ['bg_tape', 'bg_girder', 'bg_smoke', 'bg_vaultdoor', 'bg_packice', 'bg_terrace', 'bg_lava', 'bg_reactor', 'bg_titan', 'bg_stormsea'],
 };
 
 (async () => {

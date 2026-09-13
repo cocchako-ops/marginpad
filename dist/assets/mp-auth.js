@@ -706,6 +706,24 @@
     + '.lbm-card.bg-bg_matrix{background:linear-gradient(180deg,rgba(46,189,133,.34),transparent 42%) 12% 0/2px 100% no-repeat,linear-gradient(180deg,transparent 12%,rgba(46,189,133,.28),transparent 58%) 27% 0/2px 100% no-repeat,linear-gradient(180deg,transparent 30%,rgba(46,189,133,.3),transparent 78%) 44% 0/2px 100% no-repeat,linear-gradient(180deg,rgba(46,189,133,.2),transparent 34%) 61% 0/2px 100% no-repeat,linear-gradient(180deg,transparent 20%,rgba(46,189,133,.26),transparent 66%) 78% 0/2px 100% no-repeat,linear-gradient(180deg,transparent 44%,rgba(46,189,133,.22),transparent 92%) 91% 0/2px 100% no-repeat,repeating-linear-gradient(180deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px),linear-gradient(180deg,#060d09,#0a0b0d)}'
     + '.lbm-card.bg-bg_city{background:radial-gradient(1.7px 1.7px at 13% 74%,rgba(255,214,140,.85),transparent 60%),radial-gradient(1.7px 1.7px at 18% 84%,rgba(255,206,128,.65),transparent 60%),radial-gradient(1.7px 1.7px at 31% 68%,rgba(255,214,140,.75),transparent 60%),radial-gradient(1.7px 1.7px at 36% 88%,rgba(255,200,120,.55),transparent 60%),radial-gradient(1.7px 1.7px at 54% 64%,rgba(255,214,140,.8),transparent 60%),radial-gradient(1.7px 1.7px at 60% 82%,rgba(255,200,120,.6),transparent 60%),radial-gradient(1.7px 1.7px at 76% 72%,rgba(255,214,140,.7),transparent 60%),radial-gradient(1.7px 1.7px at 83% 90%,rgba(255,200,120,.5),transparent 60%),linear-gradient(90deg,transparent 0 8%,#0b1018 8% 22%,transparent 22% 27%,#080c13 27% 44%,transparent 44% 49%,#0d131c 49% 66%,transparent 66% 71%,#070b11 71% 88%,transparent 88% 93%,#0a0f17 93%) left bottom/100% 52% no-repeat,linear-gradient(180deg,#16233a,#0d1424 55%,#0a0b0d)}'
     + '.lbm-card.bg-bg_orbit{background:radial-gradient(1.4px 1.4px at 18% 14%,rgba(255,255,255,.7),transparent 60%),radial-gradient(1.1px 1.1px at 46% 9%,rgba(220,232,255,.6),transparent 60%),radial-gradient(1.3px 1.3px at 74% 17%,rgba(255,255,255,.65),transparent 60%),radial-gradient(1px 1px at 88% 8%,rgba(220,232,255,.5),transparent 60%),radial-gradient(1px 1px at 62% 26%,rgba(255,255,255,.4),transparent 60%),radial-gradient(1.6px 1.6px at 26% 88%,rgba(255,206,140,.75),transparent 62%),radial-gradient(1.5px 1.5px at 44% 93%,rgba(255,214,150,.6),transparent 62%),radial-gradient(1.5px 1.5px at 63% 90%,rgba(255,200,130,.55),transparent 62%),radial-gradient(1.4px 1.4px at 79% 95%,rgba(255,210,140,.45),transparent 62%),radial-gradient(150% 150% at 50% 190%,#0a1622 0 86%,rgba(140,205,255,.9) 86% 87.4%,rgba(80,160,245,.32) 87.4% 90%,rgba(40,105,195,.1) 90% 94%,transparent 95%),linear-gradient(180deg,#04060c,#080a10)}'
+    // ---- backgrounds, drop 2026-09-13 -------------------------------------------------------------------------------
+    + '.lbm-card.bg-bg_tape{background:repeating-linear-gradient(180deg,rgba(255,255,255,.045) 0 1px,transparent 1px 13px),repeating-linear-gradient(90deg,rgba(190,205,225,.16) 0 1px,transparent 1px 7px) 0 0/100% 34% no-repeat,repeating-linear-gradient(90deg,rgba(190,205,225,.12) 0 1px,transparent 1px 9px) 0 62%/100% 26% no-repeat,linear-gradient(180deg,#141821,#0c0f15)}'
+    + '.lbm-card.bg-bg_girder{background:linear-gradient(62deg,transparent 0 18%,rgba(150,166,188,.22) 18% 23%,transparent 23% 100%),linear-gradient(-62deg,transparent 0 18%,rgba(150,166,188,.22) 18% 23%,transparent 23% 100%),linear-gradient(62deg,transparent 0 62%,rgba(120,136,158,.16) 62% 66%,transparent 66%),radial-gradient(2px 2px at 21% 30%,rgba(215,228,245,.5),transparent 60%),radial-gradient(2px 2px at 79% 70%,rgba(215,228,245,.42),transparent 60%),radial-gradient(2px 2px at 50% 50%,rgba(215,228,245,.46),transparent 60%),linear-gradient(180deg,#12161d,#0a0d12)}'
+    + '.lbm-card.bg-bg_smoke{background:radial-gradient(52% 46% at 28% 96%,rgba(176,186,200,.20),transparent 72%),radial-gradient(40% 52% at 58% 78%,rgba(150,162,178,.16),transparent 74%),radial-gradient(34% 40% at 82% 96%,rgba(190,198,210,.13),transparent 72%),radial-gradient(30% 26% at 44% 44%,rgba(205,212,224,.10),transparent 76%),linear-gradient(180deg,#0b0d11,#131720)}'
+    + '.lbm-card.bg-bg_vaultdoor{background:radial-gradient(circle at 50% 52%,transparent 0 13%,rgba(206,222,244,.55) 13% 14.6%,transparent 14.6% 21%,rgba(188,204,228,.45) 21% 22.6%,transparent 22.6% 30%,rgba(170,186,212,.36) 30% 31.6%,transparent 31.6% 40%,rgba(152,168,196,.28) 40% 41.6%,transparent 41.2%),radial-gradient(2.4px 2.4px at 50% 36%,rgba(226,236,250,.75),transparent 62%),radial-gradient(2.4px 2.4px at 61% 52%,rgba(226,236,250,.6),transparent 62%),radial-gradient(2.4px 2.4px at 50% 68%,rgba(226,236,250,.6),transparent 62%),radial-gradient(2.4px 2.4px at 39% 52%,rgba(226,236,250,.6),transparent 62%),linear-gradient(90deg,transparent 0 49.4%,rgba(255,214,120,.5) 49.4% 50.6%,transparent 50.6%),linear-gradient(180deg,#1a1e26,#0e1116)}'
+    + '.lbm-card.bg-bg_packice{background:linear-gradient(74deg,transparent 0 31%,rgba(8,14,22,.85) 31% 33%,transparent 33%),linear-gradient(-58deg,transparent 0 54%,rgba(8,14,22,.8) 54% 55.6%,transparent 55.6%),linear-gradient(96deg,transparent 0 72%,rgba(8,14,22,.75) 72% 73.4%,transparent 73.4%),linear-gradient(12deg,transparent 0 44%,rgba(4,8,14,.7) 44% 45.2%,transparent 45.2%),radial-gradient(70% 54% at 34% 26%,rgba(176,206,228,.30),transparent 72%),radial-gradient(56% 44% at 76% 74%,rgba(150,184,210,.22),transparent 74%),linear-gradient(160deg,#1b2a38,#152330 46%,#0d1822)}'
+    + '.lbm-card.bg-bg_terrace{background:linear-gradient(180deg,transparent 0 54%,rgba(150,206,226,.30) 54% 62%,transparent 62% 64%,rgba(140,198,220,.26) 64% 73%,transparent 73% 75%,rgba(128,188,214,.22) 75% 85%,transparent 85% 87%,rgba(116,178,208,.18) 87% 100%),linear-gradient(90deg,rgba(255,255,255,.10),transparent 40%),radial-gradient(60% 36% at 50% 8%,rgba(255,196,140,.28),transparent 72%),linear-gradient(180deg,#1b2430,#111821 52%,#0b1016)}'
+    + '.lbm-card.bg-bg_lava{background:linear-gradient(64deg,transparent 0 27%,rgba(255,132,28,.85) 27% 28.6%,rgba(255,74,10,.35) 28.6% 31%,transparent 31%),linear-gradient(-46deg,transparent 0 58%,rgba(255,150,40,.8) 58% 59.4%,rgba(255,90,16,.3) 59.4% 62%,transparent 62%),linear-gradient(108deg,transparent 0 76%,rgba(255,112,20,.7) 76% 77.3%,transparent 77.3%),radial-gradient(44% 34% at 30% 30%,rgba(255,110,20,.22),transparent 74%),radial-gradient(38% 30% at 72% 72%,rgba(255,80,10,.18),transparent 74%),linear-gradient(180deg,#15100e,#0a0807)}'
+    + '.lbm-card.bg-bg_reactor{background:radial-gradient(34% 30% at 50% 74%,rgba(150,240,255,.75),rgba(60,170,235,.32) 44%,transparent 72%),radial-gradient(62% 52% at 50% 84%,rgba(40,130,210,.28),transparent 76%),repeating-linear-gradient(180deg,rgba(255,255,255,.04) 0 1px,transparent 1px 9px),linear-gradient(180deg,#03121e,#062338 58%,#041826)}'
+    + '.lbm-card.bg-bg_titan{background:radial-gradient(1.4px 1.4px at 14% 12%,rgba(255,255,255,.7),transparent 60%),radial-gradient(1.1px 1.1px at 38% 7%,rgba(225,236,255,.55),transparent 60%),radial-gradient(1.3px 1.3px at 68% 15%,rgba(255,255,255,.6),transparent 60%),radial-gradient(1px 1px at 88% 9%,rgba(225,236,255,.45),transparent 60%),linear-gradient(96deg,transparent 0 8%,rgba(226,206,168,.42) 8% 9.6%,transparent 9.6% 11%,rgba(206,186,150,.3) 11% 12.2%,transparent 12.2%) 0 44%/100% 26% no-repeat,radial-gradient(64% 58% at 50% 108%,#c9a86f 0 52%,#a8854d 52% 74%,#6f5630 74% 88%,transparent 89%),linear-gradient(180deg,#05070e,#0a0d16)}'
+    + '.lbm-card.bg-bg_stormsea{background:radial-gradient(38% 26% at 62% 6%,rgba(198,222,255,.35),transparent 72%),linear-gradient(198deg,transparent 0 30%,rgba(226,240,255,.85) 30% 31.4%,transparent 31.4% 34%,rgba(226,240,255,.5) 34% 35%,transparent 35%) 58% 0/26% 46% no-repeat,linear-gradient(180deg,transparent 0 58%,rgba(150,190,225,.26) 58% 62%,transparent 62% 68%,rgba(126,168,206,.22) 68% 73%,transparent 73% 80%,rgba(104,146,186,.18) 80% 86%,transparent 86%),linear-gradient(180deg,#121c2a,#0b1320 56%,#060a11)}'
+    // ---- APEX / Supernova (2026-09-13). The STRUCTURE is here; the MOTION is driven from JS (see the supernova block at
+    // the tail of this file) because the owner runs Windows with animation effects off, which silences @keyframes but not
+    // element.animate() / a rAF loop. --nvA (ring angle), --nvP (0-1 pulse) and --nvF (flare drift) are written per frame.
+    + '.lbm-card.frame-supernova,.mpa-fr-sw.frame-supernova{position:relative;border-color:transparent;background-clip:padding-box;box-shadow:0 0 0 1px rgba(255,226,150,calc(.35 + .45*var(--nvP,.5))),0 0 calc(26px + 34px*var(--nvP,.5)) calc(-14px + 10px*var(--nvP,.5)) rgba(255,150,60,calc(.4 + .5*var(--nvP,.5))),0 0 calc(54px + 60px*var(--nvP,.5)) calc(-6px + 8px*var(--nvP,.5)) rgba(120,90,255,calc(.2 + .35*var(--nvP,.5))),inset 0 0 40px -20px rgba(255,206,120,.6)}'
+    + '.lbm-card.frame-supernova::after,.mpa-fr-sw.frame-supernova::after{content:"";position:absolute;inset:-3px;border-radius:inherit;padding:3px;pointer-events:none;z-index:7;background:conic-gradient(from var(--nvA,0deg),#2b0140,#7a3cff 8%,#25d3ff 19%,#a9ffea 27%,#fff6c8 35%,#ffb62e 44%,#ff4d2a 54%,#ff2ea8 66%,#7a3cff 78%,#1b0a40 90%,#2b0140);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;filter:saturate(1.35) brightness(calc(.9 + .35*var(--nvP,.5)))}'
+    + '.lbm-card.frame-supernova::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:6;opacity:calc(.45 + .45*var(--nvP,.5));background:radial-gradient(46% 38% at calc(50% + 14%*var(--nvF,0)) 50%,rgba(255,240,200,.35),rgba(255,150,60,.14) 48%,transparent 74%),radial-gradient(2.4px 2.4px at 16% 26%,rgba(255,245,214,.9),transparent 60%),radial-gradient(2px 2px at 82% 34%,rgba(180,220,255,.85),transparent 60%),radial-gradient(2.2px 2.2px at 68% 78%,rgba(255,200,120,.85),transparent 60%),radial-gradient(1.8px 1.8px at 26% 82%,rgba(215,180,255,.8),transparent 60%)}'
+    + '.mpa-fr-sw.frame-supernova{--nvP:.7}'
     + '@media(prefers-reduced-motion:reduce){.mp-progold{animation:none;background-position:30% center}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -2721,6 +2739,41 @@
       var need = false;
       for (var r = 0; r < recs.length && !need; r++) { var m = recs[r]; if (m.type === 'attributes') need = true; else if (m.addedNodes && m.addedNodes.length) need = true; }
       if (need) sweep();
+    });
+    var boot = function () { try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {} sweep(); };
+    if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
+  } catch (e) {}
+})();
+
+/* SUPERNOVA — the apex frame's motion (2026-09-13). CSS @keyframes are invisible on the owner's Windows (animation
+   effects off => prefers-reduced-motion: reduce), and this frame IS its motion, so a rAF loop writes the three custom
+   properties the rules above read: --nvA (the plasma ring's angle), --nvP (0-1 core pulse) and --nvF (flare drift).
+   The loop only exists while a .frame-supernova is in the document, stops with the tab hidden, and is picked up by a
+   MutationObserver, so no caller has to know about it. window.mpNovaSweep() re-scans after a manual DOM swap. */
+(function () {
+  try {
+    var els = [], raf = 0, t0 = 0;
+    function frame(ts) {
+      raf = 0;
+      if (!els.length) return;
+      if (!t0) t0 = ts;
+      var t = (ts - t0) / 1000;
+      var ang = (t * 15) % 360;                        // one full turn of the ring every 24 s
+      var p = 0.5 + 0.5 * Math.sin(t * 2.6);           // core pulse, ~2.4 s in and out
+      var f = Math.sin(t * 0.7);                       // slow flare drift across the card
+      var a = ang.toFixed(1) + 'deg', ps = p.toFixed(3), fs = f.toFixed(3);
+      for (var i = 0; i < els.length; i++) { var e = els[i]; e.style.setProperty('--nvA', a); e.style.setProperty('--nvP', ps); e.style.setProperty('--nvF', fs); }
+      if (!document.hidden) raf = requestAnimationFrame(frame);
+    }
+    function run() { if (!raf && els.length && !document.hidden) raf = requestAnimationFrame(frame); }
+    function sweep() {
+      try { els = [].slice.call(document.querySelectorAll('.frame-supernova')); } catch (e) { els = []; }
+      if (els.length) run(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }
+    window.mpNovaSweep = sweep;
+    document.addEventListener('visibilitychange', function () { if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = 0; } } else run(); });
+    var mo = new MutationObserver(function (recs) {
+      for (var r = 0; r < recs.length; r++) { var m = recs[r]; if (m.type === 'attributes' || (m.addedNodes && m.addedNodes.length) || (m.removedNodes && m.removedNodes.length)) { sweep(); return; } }
     });
     var boot = function () { try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {} sweep(); };
     if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);

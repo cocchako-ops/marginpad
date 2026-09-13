@@ -660,7 +660,26 @@
           + tile(N(d.grants), 'items owned', 'dim', N(d.buyers) + ' owners') + tile(USD((d.durableCents || 0) / 100), 'cash on the durable ledger', 'dim', d.durableSince ? 'since ' + dt(d.durableSince).slice(0, 10) : 'starts with the next purchase') + tile(N(d.refunds || 0), 'refunds', d.refunds ? 'amber' : 'dim', 'failed grants, money returned') + tile(N((d.feed || []).filter(function (f) { return f.src === 'gift'; }).length), 'gifts', 'dim') + '</div>'
           + card('Every purchase and grant', '<div class="bar"><div class="chips" style="margin:0">' + FILT.map(function (x) { return '<span class="chip ' + (S.f === x[0] ? 'on' : '') + '" data-f="' + x[0] + '">' + x[1] + '</span>'; }).join('') + '</div><input class="in" id="shq" placeholder="search user, item, gifter" value="' + esc(S.q) + '"></div><div id="shList"></div>', '<span id="shCount"></span>', 'newest first · cash rows since 2026-09-04 are the durable ledger; older cash rows are Analytics Engine history')
           + '<div class="grid g2">' + card('By item', bars((d.items || []).slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 14).map(function (i) { return { l: i.name + (i.tier ? ' · ' + i.tier : '') + ' (' + (SRCN[i.src] || i.src) + ')', n: i.n }; }), 'l', 'n'), 'all time, per source') + card('Top spenders', bars((d.topSpenders || []).map(function (s) { return { html: s.un ? userLink(s.un) : '<span class="mono meta">' + esc(String(s.uid).slice(0, 8)) + '</span>', n: s.cents }; }), 'html', 'n', function (v) { return USD(v / 100); }), 'cash, from the rows above') + '</div>'
+          + '<div id="shTicks"></div>' // the Ticks purchase book loads on its own (below) — a separate durable table, not part of /api/admin/shop
           + fold('Catalogue', tbl([{ h: 'item', f: function (c) { return '<b>' + esc(c.name) + '</b> <span class="mono meta">' + esc(c.id) + '</span>'; } }, { h: 'kind', f: function (c) { return esc(KINDN[c.kind] || c.kind); } }, { h: 'tier', f: function (c) { return esc(c.tier || ''); } }, { h: 'price', r: true, mono: true, f: function (c) { return [c.cents ? USD(c.cents / 100) : '', c.xp ? N(c.xp) + ' XP' : '', c.ticks ? N(c.ticks) + ' ticks' : ''].filter(Boolean).join(' / ') || (c.earn ? 'earn: ' + esc(c.earn) : 'free'); } }, { h: 'sold', r: true, mono: true, f: function (c) { return N((d.items || []).filter(function (i) { return i.item === c.id; }).reduce(function (s, i) { return s + i.n; }, 0)); } }, { h: 'until', mono: true, f: function (c) { return esc(c.until || ''); } }], d.catalogue || []), (d.catalogue || []).length + ' items');
+        // Ticks bought with real money (2026-09-13, owner: "da mogu da ispratim ko je šta kupio i koliko ticks"). Its own
+        // durable table in the UserStore, keyed by the payment ref, so a crypto IPN retry can never show as two sales.
+        J('/api/admin/tickbuys').then(function (t) {
+          var box = $('shTicks'); if (!box) return; var rows = (t && t.rows) || [], tot = (t && t.totals) || {};
+          box.innerHTML = card('Ticks bought with money', '<div class="grid g4" style="margin-bottom:10px">'
+            + tile(N(tot.ticks || 0), 'Ticks sold', tot.ticks ? '' : 'dim', N(tot.n || 0) + ' purchases')
+            + tile(USD((tot.cents || 0) / 100), 'taken for them', tot.cents ? '' : 'dim')
+            + tile(N((t && t.byBuyer || []).length), 'buyers', 'dim')
+            + tile(rows.filter(function (r) { return r.via === 'crypto'; }).length + ' / ' + rows.filter(function (r) { return r.via === 'balance'; }).length, 'crypto / balance', 'dim', 'how they paid')
+            + '</div>'
+            + tbl([{ h: 'member', f: function (r) { return r.name ? userLink(r.name) : '<span class="mono meta">' + esc(String(r.uid || '').slice(0, 8)) + '</span>'; } },
+              { h: 'pack', f: function (r) { return esc(String(r.pack || '').replace(/^tp_/, '')); } },
+              { h: 'ticks', r: true, mono: true, f: function (r) { return N(r.ticks); } },
+              { h: 'paid', r: true, mono: true, f: function (r) { return USD((r.cents || 0) / 100); } },
+              { h: 'via', f: function (r) { return r.via === 'crypto' ? '<span class="badge amber">crypto' + (r.cur ? ' ' + esc(r.cur) : '') + '</span>' : '<span class="badge">balance</span>'; } },
+              { h: 'when', mono: true, f: function (r) { return agoT(r.ts) + ' ago'; } }], rows, 'nobody has bought Ticks yet'),
+            N(rows.length) + ' purchases · newest first');
+        }).catch(function () { var box = $('shTicks'); if (box) box.innerHTML = card('Ticks bought with money', '<div class="line">could not load the Ticks book</div>'); });
         paintList();
         el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { S.f = c.getAttribute('data-f'); el.querySelectorAll('[data-f]').forEach(function (x) { x.classList.toggle('on', x === c); }); paintList(); }; });
         var q = $('shq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { S.q = q.value.trim().toLowerCase(); paintList(); }, 250); }; }

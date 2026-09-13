@@ -90,7 +90,7 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .xpbar{height:6px;border-radius:4px;background:#191d24;overflow:hidden}
 .xpbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--lvc,#5c6b7a),var(--lime));width:0;transition:width .7s cubic-bezier(.2,.7,.2,1)}
 .xpnum{display:flex;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
-.tickrow{display:flex;align-items:flex-end;gap:13px;padding-top:2px}
+.tickrow{display:flex;align-items:flex-end;gap:13px;padding-top:2px;flex-wrap:wrap}
 .tickbig{font-family:'Space Mono',monospace;font-weight:700;font-size:34px;line-height:.95;color:var(--lime);letter-spacing:-.02em}
 .tickbig small{font-size:14px;margin-left:3px;color:#7f9a4a}
 .tickcap{font-size:11.5px;color:var(--dim);line-height:1.4;padding-bottom:3px}
@@ -166,6 +166,33 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .fcard[data-tier="legendary"]{--tc:#ffd75a}
 .fcard[data-tier="mythic"]{--tc:#ff5ad0}
 .fcard[data-tier="nation"]{--tc:#c2f64a}
+.fcard[data-tier="apex"]{--tc:#ff9d3c}
+.tier.apex{color:#ffc46a;border-color:#8a4a12;background:linear-gradient(90deg,rgba(255,120,40,.16),rgba(150,80,255,.16))}
+/* compact top-up: one button in the Ticks row, the bundles live in a sheet so the Vault page stays about cosmetics */
+.tickbuy{margin-left:auto;flex:0 0 auto;background:rgba(194,246,74,.10);color:#c2f64a;border:1px solid rgba(194,246,74,.45);border-radius:9px;padding:6px 12px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .14s,border-color .14s}
+.tickbuy:hover{background:rgba(194,246,74,.2);border-color:#c2f64a}
+.tkb{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,6,9,.76);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.tkb[hidden]{display:none}
+.tkb-card{position:relative;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#15181f,#0c0e13);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px 20px 18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.85)}
+.tkb-x{position:absolute;top:10px;right:10px;background:none;border:0;color:#c2f64a;font-size:19px;font-weight:700;cursor:pointer;line-height:1;padding:4px 8px}
+.tkb-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.5px;margin:0 0 4px}
+.tkb-s{font-size:12.5px;color:var(--dim);line-height:1.5;margin-bottom:14px}
+.tkb-p{display:grid;gap:8px}
+.tkb-i{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 13px;background:rgba(255,255,255,.025)}
+.tkb-i.best{border-color:rgba(194,246,74,.45);background:rgba(194,246,74,.05)}
+.tkb-t{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.tkb-n{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:#e9ecef}
+.tkb-a{font-family:'Space Mono',monospace;font-size:13px;color:#c2f64a}
+.tkb-pr{margin-left:auto;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#e9ecef}
+.tkb-d{font-size:11.5px;color:var(--dim);margin:3px 0 8px;line-height:1.45}
+.tkb-b{display:flex;gap:7px}
+.tkb-b button{flex:1;border-radius:9px;padding:8px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e9ecef;transition:.14s}
+.tkb-b button:hover:not(:disabled){border-color:rgba(255,255,255,.35)}
+.tkb-b button.lime{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
+.tkb-b button:disabled{opacity:.45;cursor:not-allowed}
+.tkb-f{font-size:11.5px;color:var(--dim);line-height:1.55;margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px}
+.tkb-st{font-family:'Space Mono',monospace;font-size:12px;color:#c2f64a;min-height:16px;margin-top:8px}
+.tkb-st.bad{color:#ff8a80}
 .fcard.tryon{border-color:var(--lime);box-shadow:0 0 0 1px rgba(194,246,74,.5),0 0 26px -10px rgba(194,246,74,.6)}
 /* name + price on one line; the price IS the buy control, so no separate button row in the resting state */
 .tryhit{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
@@ -293,7 +320,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What are Ticks on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Ticks are the currency of The Vault, MarginPad\u2019s cosmetics shop. They cannot be bought with money at any price \u2014 every Tick is earned by using the site, which is what makes a Tick-priced frame worth wearing. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend."}},{"@type":"Question","name":"How do you earn Ticks?","acceptedAnswer":{"@type":"Answer","text":"Seven sources, each capped per day so none can be farmed: the daily check-in (up to 40, scaling with your streak), closing a trade that had a stop-loss set before it was opened (up to 24), claiming daily missions (up to 20), finishing Academy lessons (up to 30), winning duels (up to 30), talking in the community chat (up to 16) and simply closing a paper trade (up to 8). Doing absolutely everything in one day tops out at 168."}},{"@type":"Question","name":"Can you buy Ticks with real money?","acceptedAnswer":{"@type":"Answer","text":"No. There is no purchase path for Ticks anywhere in the product, by design. Some Vault items can be bought outright with your rewards balance instead, but the Ticks themselves are only ever earned."}},{"@type":"Question","name":"What can you spend Ticks on?","acceptedAnswer":{"@type":"Answer","text":"Two things: cosmetics in The Vault \u2014 profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 7,000 for legendary \u2014 and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot."}},{"@type":"Question","name":"Does spending Ticks affect your level?","acceptedAnswer":{"@type":"Answer","text":"No, and that is the point of having them. Levels come from XP, which is never deducted for anything. Before Ticks existed, buying a frame or losing a duel spent XP and could cost you a level along with your level frames and rewards access."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What are Ticks on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Ticks are the currency of The Vault, MarginPad\u2019s cosmetics shop. Most Ticks are earned by using the site; small top-up packs can also be bought. The frames on the earned shelf carry no price at all and can never be bought. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend."}},{"@type":"Question","name":"How do you earn Ticks?","acceptedAnswer":{"@type":"Answer","text":"Seven sources, each capped per day so none can be farmed: the daily check-in (up to 40, scaling with your streak), closing a trade that had a stop-loss set before it was opened (up to 24), claiming daily missions (up to 20), finishing Academy lessons (up to 30), winning duels (up to 30), talking in the community chat (up to 16) and simply closing a paper trade (up to 8). Doing absolutely everything in one day tops out at 168."}},{"@type":"Question","name":"Can you buy Ticks with real money?","acceptedAnswer":{"@type":"Answer","text":"Yes, since September 2026. Three small packs (500, 1,500 and 4,000 Ticks) are sold for crypto or from your rewards balance, priced so that a pack never works out cheaper than buying the same item outright — topping up shortens the grind, it does not skip it. Frames on the earned shelf have no price and stay unbuyable."}},{"@type":"Question","name":"What can you spend Ticks on?","acceptedAnswer":{"@type":"Answer","text":"Two things: cosmetics in The Vault \u2014 profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 9,000 for the apex tier \u2014 and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot."}},{"@type":"Question","name":"Does spending Ticks affect your level?","acceptedAnswer":{"@type":"Answer","text":"No, and that is the point of having them. Levels come from XP, which is never deducted for anything. Before Ticks existed, buying a frame or losing a duel spent XP and could cost you a level along with your level frames and rewards access."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"The Vault","item":"https://marginpad.io/vault/"}]}</script>
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
@@ -323,7 +350,8 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       </div>
       <div class="tickrow">
         <span class="tickbig" id="aTicks">0<small>T</small></span>
-        <span class="tickcap" id="aTickCap">Ticks are earned, never sold. Spend them on anything in the Vault.</span>
+        <span class="tickcap" id="aTickCap">Earn Ticks by using the site, or top up. Spend them on anything in the Vault.</span>
+        <button type="button" class="tickbuy" id="aTickBuy">Buy Ticks</button>
       </div>
       <div class="acct-foot" id="aFoot"></div>
     </div>
@@ -444,12 +472,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
 
   <section data-vsec="ticks" hidden>
   <h2>How Ticks work</h2>
-  <div class="h2s">Ticks are the Vault&#39;s currency. They cannot be bought with money at any price &mdash; every one is earned, which is what makes a Tick-priced frame worth wearing.</div>
+  <div class="h2s">Ticks are the Vault&#39;s currency. Earn them by using the site, or top up with a small pack &mdash; but the frames on the earned shelf carry no price at all and can never be bought.</div>
   <div class="tk-grid" id="tkGrid"></div>
   <h2>Where they go</h2>
   <div class="h2s">Two sinks, both yours to choose.</div>
   <div class="tk-grid">
-    <div class="tk-card"><b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T.</span></div>
+    <div class="tk-card"><b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T, apex 9,000 T.</span></div>
     <div class="tk-card"><b>Duel stakes</b><span>Wager Ticks head to head. Winner takes the pot; a tie returns both stakes. Duels used to stake XP, which meant losing one could cost you a level &mdash; Ticks cannot.</span></div>
   </div>
   <p class="note" style="margin-top:18px">XP and Ticks are different things on purpose. XP only ever goes up and decides your level; Ticks are what you spend. Nothing you buy here can ever cost you a rank.</p>
@@ -460,7 +488,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <footer><span>© 2026 MarginPad · Not financial advice</span><span><a href="/rewards/">Rewards</a> · <a href="/levels/">Levels</a> · <a href="/paper-trade">Paper Trade</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span></footer>
 </div>
 <script src="/assets/mp-nav.js?v=c328e597" defer></script>
-<script src="/assets/mp-auth.js?v=f35913f5" defer></script>
+<script src="/assets/mp-auth.js?v=e1d1b830" defer></script>
 <script>
 (function(){
   var LEVELS=[
@@ -510,8 +538,8 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     nat_et:1,nat_ao:1,nat_sg:1,nat_it:1,nat_ma:1,nat_kw:1,nat_al:1,nat_fr:1,nat_lk:1,nat_ke:1,nat_ro:1,nat_jp:1,nat_au:1,nat_qa:1,nat_bw:1,nat_ye:1,nat_np:1,nat_eg:1,nat_mr:1,nat_ee:1,nat_dz:1,nat_ar:1,nat_mx:1,nat_kr:1,nat_gh:1,nat_sa:1,nat_il:1,nat_se:1,nat_cn:1,nat_ge:1,
     sandstone:1,arctic:1,copper:1,neonoir:1,bamboo:1,rust:1,venom:1,magnetar:1,koi:1,tungsten:1,leviathan:1,emperor:1,
     tkt_kraft:1,tkt_blueprint:1,tkt_terminal:1,tkt_boarding:1,tkt_frost:1,tkt_neon:1,tkt_platinum:1,
-    bg_dunes:1,bg_static:1,bg_circuit:1,bg_waves:1,bg_matrix:1,bg_city:1,bg_orbit:1,
-    shield3:1,surge72:1};
+    bg_tape:1,bg_girder:1,bg_smoke:1,bg_vaultdoor:1,bg_packice:1,bg_terrace:1,bg_lava:1,bg_reactor:1,bg_titan:1,bg_stormsea:1,
+    supernova:1};
   // The wishlist is one item, not a list. A list of twenty things you might want is a spreadsheet; one
   // thing you are saving for is a goal, and the wallet can show honest progress toward exactly one.
   function wishGet(){try{return localStorage.getItem('mp_vault_wish')||'';}catch(e){return '';}}
@@ -559,7 +587,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     document.getElementById('aXpNow').textContent=fmt(xp)+' XP';
     document.getElementById('aXpNext').textContent=nxt?(fmt(nxt.min-xp)+' to '+nxt.name):'top of the ladder';
     document.getElementById('aTicks').innerHTML=fmt(+ST.ticks||0)+'<small>T</small>';
-    var w=wishGet(),wi=w?itemById(w):null,cap='Ticks are earned, never sold. Spend them on anything in the Vault.';
+    var w=wishGet(),wi=w?itemById(w):null,cap='Earn Ticks by using the site, or top up. Spend them on anything in the Vault.';
     if(wi&&(ST.owned||[]).indexOf(w)<0&&wi.ticks){
       var short=wi.ticks-(+ST.ticks||0);
       cap=short>0?('Saving for '+wi.name+' — '+fmt(short)+' T to go.'):(wi.name+' is within reach now.');
@@ -738,7 +766,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   }
   // One ordering function for every gallery. Rarest-first is the default because a shop that opens on its
   // cheapest goods reads like a clearance rack, and the flagship frames are the reason to visit.
-  var TIER_RANK={mythic:0,legendary:1,epic:2,nation:2,rare:3,common:4};
+  var TIER_RANK={mythic:0,apex:0,legendary:1,epic:2,nation:2,rare:3,common:4};
   function sortMode(){var s=document.getElementById('vsort');return s?s.value:'tier';}
   function sortItems(a){
     var m=sortMode(),v=a.slice();
@@ -882,6 +910,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   function load(){
     fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       ST=d;
+      window.__vaultState=d; // the Buy-Ticks sheet (its own IIFE at the end of the page) reads the balance from here
       document.getElementById('signin').hidden=!!d.signedIn;
       if(d.signedIn){
       }
@@ -1012,8 +1041,76 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     if(SECS.indexOf(init)<0){try{init=localStorage.getItem('mp_vault_tab')||'';}catch(e){}}
     show(init);
   })();
+  window.__vaultReload=load; // the Buy-Ticks sheet refreshes the page's own state after a successful top-up
   load();
   setTimeout(load,2500); /* mpAuth resolves the session async — second pass picks up the username for previews */
+})();
+</script>
+<div class="tkb" id="tkbSheet" hidden>
+  <div class="tkb-card" role="dialog" aria-modal="true" aria-label="Buy Ticks">
+    <button class="tkb-x" id="tkbX" type="button" aria-label="Close">&#10005;</button>
+    <h2 class="tkb-h">Top up your Ticks</h2>
+    <div class="tkb-s" id="tkbSub">Pay with crypto, or straight from your rewards balance.</div>
+    <div class="tkb-p" id="tkbPacks"></div>
+    <div class="tkb-st" id="tkbSt"></div>
+    <div class="tkb-f" id="tkbFoot"></div>
+  </div>
+</div>
+<script>
+/* Buy Ticks (2026-09-13, owner: "nek na vault stranici samo ima negde dugme buy ticks with crypto i onda tu bundles,
+   nemoj da zauzimas mnogo mesta"). One button in the Ticks row; the packs live in this sheet. Two ways to pay: the
+   rewards balance (instant, server debits and grants in one call) or crypto (a NOWPayments invoice; the IPN grants). */
+(function(){
+  var sheet=document.getElementById('tkbSheet');if(!sheet)return;
+  var btn=document.getElementById('aTickBuy'),box=document.getElementById('tkbPacks'),st=document.getElementById('tkbSt'),foot=document.getElementById('tkbFoot'),sub=document.getElementById('tkbSub');
+  var PACKS=null,busy=false;
+  function n(v){return (+v||0).toLocaleString('en-US');}
+  function say(m,bad){st.textContent=m||'';st.className='tkb-st'+(bad?' bad':'');}
+  function bal(){return +((window.__vaultState&&window.__vaultState.balance)||0);}
+  function render(){
+    if(!PACKS){box.innerHTML='<div class="tkb-d">Loading…</div>';return;}
+    if(!PACKS.packs||!PACKS.packs.length){box.innerHTML='<div class="tkb-d">Top-ups are closed right now.</div>';return;}
+    var best=PACKS.packs.reduce(function(a,b){return b.per1k<a.per1k?b:a;});
+    box.innerHTML=PACKS.packs.map(function(p){
+      var afford=bal()*100>=p.cents;
+      return '<div class="tkb-i'+(p.id===best.id?' best':'')+'">'
+        +'<div class="tkb-t"><span class="tkb-n">'+p.name+'</span><span class="tkb-a">'+n(p.ticks)+' T</span><span class="tkb-pr">$'+(p.cents/100).toFixed(2)+'</span></div>'
+        +'<div class="tkb-d">'+p.desc+'</div>'
+        +'<div class="tkb-b">'
+        +(PACKS.crypto?'<button data-crypto="'+p.id+'">Pay with crypto</button>':'')
+        +'<button class="lime" data-bal="'+p.id+'"'+(afford?'':' disabled title="Your rewards balance is $'+bal().toFixed(2)+'"')+'>Use balance</button>'
+        +'</div></div>';
+    }).join('');
+    sub.textContent='Ticks buy anything in the Vault, and they never expire. Your balance: $'+bal().toFixed(2)+'.';
+    foot.innerHTML='Earned Ticks and bought Ticks are the same Ticks. The frames on the <b>earned</b> shelf stay earned — they have no price at all and cannot be bought at any amount.';
+  }
+  function load(){
+    fetch('/api/ticks/packs').then(function(r){return r.json();}).then(function(d){PACKS=d;render();}).catch(function(){box.innerHTML='<div class="tkb-d">Could not load the packs. Try again in a moment.</div>';});
+  }
+  function open(){ sheet.hidden=false; say(''); render(); if(!PACKS)load(); }
+  function close(){ sheet.hidden=true; }
+  if(btn)btn.addEventListener('click',open);
+  document.getElementById('tkbX').addEventListener('click',close);
+  sheet.addEventListener('click',function(e){if(e.target===sheet)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!sheet.hidden)close();});
+  box.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('button[data-bal],button[data-crypto]');
+    if(!b||busy)return;
+    var pack=b.getAttribute('data-bal')||b.getAttribute('data-crypto'),crypto=!!b.getAttribute('data-crypto');
+    busy=true;b.disabled=true;say(crypto?'Creating your invoice…':'Charging your balance…');
+    fetch(crypto?'/api/ticks/checkout':'/api/ticks/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:pack})})
+      .then(function(r){return r.json();}).then(function(d){
+        busy=false;b.disabled=false;
+        if(d&&d.invoice_url){say('Opening the payment page…');location.href=d.invoice_url;return;}
+        if(d&&d.ok){
+          say('Done — '+n(d.granted)+' Ticks added.');
+          if(window.__vaultReload)window.__vaultReload();
+          return;
+        }
+        var e2=(d&&d.error)||'failed';
+        say(e2==='login_required'?'Sign in first.':(e2==='insufficient'||e2==='no_account')?'Your rewards balance is too small for that pack.':e2==='in_progress'?'That purchase is already going through.':e2==='unconfigured'?'Crypto payments are off right now.':'Could not complete that ('+e2+').',true);
+      }).catch(function(){busy=false;b.disabled=false;say('Network error — nothing was charged.',true);});
+  });
 })();
 </script>
 </body></html>

@@ -9712,6 +9712,21 @@ async function handleNowpayIpn(request, env) {
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
+    } else if (/^ticks_[a-z0-9]{2,20}_[a-z0-9]{4,40}$/i.test(orderId)) {
+      // Tick pack paid in crypto. The grant is idempotent in the DO itself (tickbuy PRIMARY KEY on the payment ref), so an
+      // IPN retry or a duplicate delivery can never hand out the Ticks twice — the KV mark below is only a fast path.
+      const mp = /^ticks_([a-z0-9]{2,20})_([a-z0-9]{4,40})$/i.exec(orderId);
+      const pk = tickPack('tp_' + mp[1]), uid = mp[2], payId = String(data.payment_id || data.id || '');
+      if (pk) {
+        const ref = 'np:' + (payId || orderId + ':' + Date.now());
+        const g = await usersDO(env, '/ticksbuy', { uid, ref, ticks: pk.ticks, cents: pk.cents, via: 'crypto', pack: pk.id, cur: String(data.pay_currency || '').toUpperCase() });
+        if (g && g.ok && !g.dup) {
+          if (payId) { try { await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 }); } catch (e) {} }
+          try { const dk = 'shop:usd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + pk.cents)); } catch (e) {}
+          try { await evPush(env, null, 'sale', pk.ticks + ' Ticks ($' + (data.price_amount || (pk.cents / 100).toFixed(2)) + ')', '/vault/'); } catch (e) {}
+          await tgAdmin(env, '<b>Ticks bought</b> — ' + pk.name + ' · ' + pk.ticks.toLocaleString('en-US') + ' T for $' + (data.price_amount || (pk.cents / 100).toFixed(2)) + '\nUser <code>' + uid + '</code>' + (data.pay_currency ? ' · paid in ' + String(data.pay_currency).toUpperCase() : ''), { kind: 'ticks sold', sev: 'info' });
+        }
+      } else { await tgAdmin(env, '<b>NOWPayments</b> Ticks order with an unknown pack — <code>' + orderId + '</code>'); }
     } else {
       await tgAdmin(env, '<b>NOWPayments</b> ' + status + ' — order <code>' + orderId + '</code> $' + (data.price_amount || '?'));
     }
@@ -9885,6 +9900,29 @@ const TICK_SOURCES = [
   { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T — a season-end "Claim all" must fit in one day
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
+
+// ---- TICK PACKS (2026-09-13, owner: "nemamo opciju da korisnik kupi Ticks pravim novcem ... nek bude pristupačno ali
+// da ne narušava ostalu ekonomiju"). This REVERSES the 2026-08-19 rule that Ticks could never be bought; the thing that
+// still proves you played is the `earn:` shelf, which has no price of any kind and cannot be bought at any price.
+// THE ECONOMY GUARD IS MECHANICAL, not a promise. Two invariants, asserted by tickPacks() at read time:
+//   1. No pack may price Ticks below TICK_FLOOR_C per 1,000. The floor is derived from the season pass, the only thing
+//      that has BOTH a Ticks price and a cash price: 2,500 T / $2.99 → $1.196 per 1,000. Under that floor a member
+//      could buy Ticks and get the pass cheaper than the pass, and every Ticks price on the site would become a lie.
+//   2. At the best pack rate a legendary (7,000 T) must still cost MORE than its own cash price, so money never buys a
+//      frame faster through Ticks than through the front door. At $1.25/1,000 that is $8.75 against $2.49-$7.99. True.
+// Sizes are deliberately small: the biggest pack is under half a legendary, so a card cannot skip the grind, only
+// shorten it. An active trader earns 60-90 Ticks a day, so the packs read as roughly a week, three weeks, and a month.
+const TICK_FLOOR_C = 120; // cents per 1,000 Ticks — the floor, from the pass's own two prices
+const TICK_PACKS_RAW = [
+  { id: 'tp_pocket', name: 'Pocket', ticks: 500, cents: 79, desc: 'A common skin, or most of the way to a ticket stub' },
+  { id: 'tp_stack', name: 'Stack', ticks: 1500, cents: 199, desc: 'A rare frame with change left over' },
+  { id: 'tp_crate', name: 'Crate', ticks: 4000, cents: 499, desc: 'An epic frame, or the season pass and a common' },
+];
+function tickPacks() { // the floor is enforced HERE: a pack that undercuts it is DROPPED, whatever the table says
+  return TICK_PACKS_RAW.filter(p => p.ticks > 0 && p.cents > 0 && (p.cents / p.ticks) * 1000 >= TICK_FLOOR_C)
+    .map(p => ({ ...p, per1k: Math.round((p.cents / p.ticks) * 1000) }));
+}
+function tickPack(id) { return tickPacks().find(p => p.id === id) || null; }
 
 const VAULT_ITEMS = [
   // ---- frames, buyable with Ticks (earned) and/or the rewards balance (real money) ----------------
@@ -10062,6 +10100,21 @@ const VAULT_ITEMS = [
   { id: 'bg_city', name: 'Skyline', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'A dark city block with the windows of the people still working' },
   { id: 'bg_orbit', name: 'Low Orbit', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 279, desc: 'The night side of the planet, its atmosphere lit on the rim, cities burning below' },
   { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'mythic', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
+  // Drop 2026-09-13 (owner: "generiši još 10ak pozadina"). Same ladder as everything else — 3 common, 3 rare, 2 epic, 2 legendary.
+  { id: 'bg_tape', name: 'Ticker Tape', kind: 'bg', tier: 'common', ticks: 300, desc: 'Printed paper tape, row after row of prices nobody reads twice' },
+  { id: 'bg_girder', name: 'Girders', kind: 'bg', tier: 'common', ticks: 300, desc: 'Steel lattice crossing overhead, rivets catching the work light' },
+  { id: 'bg_smoke', name: 'Slow Smoke', kind: 'bg', tier: 'common', ticks: 300, desc: 'Charcoal smoke turning over in a room with one lamp left on' },
+  { id: 'bg_vaultdoor', name: 'Vault Door', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Concentric steel rings and bolt heads, one seam lit from inside' },
+  { id: 'bg_packice', name: 'Pack Ice', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Frozen plates cracked apart, black water in every fracture' },
+  { id: 'bg_terrace', name: 'Terraces', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Flooded rice steps stacked up a hillside, each one holding the sky' },
+  { id: 'bg_lava', name: 'Lava Field', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'Black crust split by molten seams still moving underneath' },
+  { id: 'bg_reactor', name: 'Reactor Pool', kind: 'bg', tier: 'epic', ticks: 3000, cents: 149, desc: 'Cherenkov blue glowing up from the bottom of very deep water' },
+  { id: 'bg_titan', name: 'Titan Rise', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 279, desc: 'A ringed giant coming up over the dead horizon of its own moon' },
+  { id: 'bg_stormsea', name: 'Storm Sea', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 299, desc: 'Black water under a sky that keeps opening, one wave lit from above' },
+  // ---- APEX: one frame, one window. A tier of its own above legendary, and the first cosmetic whose motion is driven by
+  // the Web Animations API instead of @keyframes, so it is visible even with system animation effects switched off.
+  // On sale for twenty days from the drop; after `until` both buy routes refuse it and it never comes back at this price.
+  { id: 'supernova', name: 'Supernova', tier: 'apex', ticks: 9000, cents: 699, until: '2026-10-03', desc: 'A star in the act of going off: a plasma ring turning around your card, a core that flares, and light thrown out past the edge. Twenty days only' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
   { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
@@ -12615,7 +12668,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'f35913f5';
+const ASSET_V = 'e1d1b830';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -14834,6 +14887,48 @@ export default {
         : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
       try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
+    }
+    // ---- TICK PACKS (2026-09-13): buy Ticks with the rewards balance or with crypto. The packs themselves and the
+    // floor that stops them undercutting the pass live in tickPacks(); everything below just moves money and grants.
+    if (url.pathname === '/api/ticks/packs') { // the packs themselves. The caller's Ticks and balance already come with
+      // the Vault's own state (/api/auth/shop/state), so this stays a pure catalogue read with nothing per-user in it.
+      return J({ packs: tickPacks(), floorPer1k: TICK_FLOOR_C, crypto: !!env.NOWPAY_API_KEY });
+    }
+    if (url.pathname === '/api/ticks/buy' && request.method === 'POST') { // pay a pack straight from the rewards balance — no invoice, instant, same shape as /api/premium/paybalance
+      let tb = {}; try { tb = await request.json(); } catch (e) {}
+      const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
+      if (!u || !u.id) return J({ error: 'login_required' }, 401);
+      const pk = tickPack(String(tb.pack || '')); if (!pk) return J({ error: 'bad_pack' }, 400);
+      const uid = String(u.id);
+      let deb = null;
+      // `once` is the ledger DO's own idempotency window: the same account buying the same pack again inside 90 s is a
+      // double tap, not a second purchase. The DO is single-threaded, so unlike a KV lock this actually holds.
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: pk.cents, item: pk.id, once: 90 }) })); deb = await r.json(); } catch (e) { deb = null; }
+      if (!deb || !deb.ok) return J({ error: deb && deb.error === 'dup' ? 'in_progress' : (deb && deb.error) || 'ledger_unavailable', balance: deb && deb.balance != null ? +deb.balance / 100 : undefined }, deb && deb.error === 'insufficient' ? 402 : deb && deb.error === 'dup' ? 429 : 503);
+      const g = await usersDO(env, '/ticksbuy', { uid, ref: 'bal:' + uid + ':' + Date.now(), ticks: pk.ticks, cents: pk.cents, via: 'balance', pack: pk.id });
+      if (!g || !g.ok) { // the money left the ledger but the Ticks did not land — put it back, never silently keep it
+        try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: pk.cents, item: pk.id }) })); } catch (e) {}
+        return J({ error: 'grant_failed', refunded: true }, 503);
+      }
+      try { await evPush(env, request, 'shopbuy', pk.id + ' — ' + pk.ticks + ' Ticks ($' + (pk.cents / 100).toFixed(2) + ')', '/vault/'); } catch (e) {}
+      try { const dk = 'shop:usd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + pk.cents)); } catch (e) {}
+      try { await tgAdmin(env, '<b>Ticks bought</b> @' + (u.username || uid.slice(0, 8)) + ' · ' + pk.name + ' · ' + pk.ticks.toLocaleString('en-US') + ' T for $' + (pk.cents / 100).toFixed(2) + ' (balance)', { kind: 'ticks sold', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, ticks: g.ticks, balance: deb.balance != null ? +deb.balance / 100 : null, granted: pk.ticks });
+    }
+    if (url.pathname === '/api/ticks/checkout' && request.method === 'POST') { // crypto: a NOWPayments invoice for one pack; the IPN grants the Ticks
+      let tc = {}; try { tc = await request.json(); } catch (e) {}
+      const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
+      if (!u || !u.id) return J({ error: 'login_required' }, 401);
+      const pk = tickPack(String(tc.pack || '')); if (!pk) return J({ error: 'bad_pack' }, 400);
+      if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
+      // order_id carries the pack AND the account, because the IPN gets nothing else back from NOWPayments.
+      const body = { price_amount: +(pk.cents / 100).toFixed(2), price_currency: 'usd', order_id: 'ticks_' + pk.id.replace(/^tp_/, '') + '_' + u.id, order_description: 'MarginPad — ' + pk.ticks.toLocaleString('en-US') + ' Ticks (' + pk.name + ')', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/vault/?ticks=ok', cancel_url: 'https://marginpad.io/vault/' };
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', pk.ticks + ' Ticks $' + (pk.cents / 100).toFixed(2), '/vault/'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+      return J({ error: 'invoice_failed' }, 502);
+    }
+    if (url.pathname === '/api/admin/tickbuys' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // who bought Ticks, when, how many, paid how — the durable book, not a ring
+      const out = await usersDO(env, '/tickbuys', { n: Math.min(500, Math.max(1, +url.searchParams.get('n') || 200)), e2e: url.searchParams.get('e2e') === '1' });
+      return J(out || { error: 'unavailable' }, out && out.error ? 503 : 200);
     }
     if (url.pathname === '/api/admin/setrole' && request.method === 'POST' && (await adminCookieOk(request, env))) { // background role mark: {username, role} — 'gm' enables chat admin commands, '' clears. Cookie-only (grants power).
       let bs = {}; try { bs = await request.json(); } catch (e) {}
@@ -19375,6 +19470,10 @@ export class UserStore {
     for (const col of ['ticks INTEGER DEFAULT 0', 'ticks_life INTEGER DEFAULT 0', 'ticks_seed INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
     try { s.exec('CREATE TABLE IF NOT EXISTS tickday(user_id TEXT, day TEXT, src TEXT, n INTEGER, PRIMARY KEY(user_id,day,src))'); } catch (e) {} // per-source daily caps, same anti-farm shape as xpday
     try { s.exec('CREATE TABLE IF NOT EXISTS ticklog(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); } catch (e) {} // the readable story behind the number
+    // DURABLE Ticks purchase book (2026-09-13, owner: "da mogu da ispratim ko je šta kupio i koliko ticks"). ticklog is
+    // trimmed to 60 rows per user and mixes every source, so it can never answer "who paid for Ticks". `ref` is the
+    // PRIMARY KEY and is the payment id for crypto, so an IPN retry inserts nothing and the grant cannot double.
+    try { s.exec('CREATE TABLE IF NOT EXISTS tickbuy(ref TEXT PRIMARY KEY, ts INTEGER, user_id TEXT, pack TEXT, ticks INTEGER, cents INTEGER, via TEXT, cur TEXT)'); } catch (e) {}
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
@@ -22711,6 +22810,27 @@ export class UserStore {
  const ticks = this.rows('SELECT ts, src, amt, note FROM ticklog WHERE user_id=? ORDER BY id DESC LIMIT 25', uid);
  return this.j({ user: { id: uid, username: u.username, ticks: +u.ticks || 0 }, duels, ticks });
  }
+    if (path === '/ticksbuy') { // a PAID Tick pack: write the book row first (PRIMARY KEY ref = the idempotency), then grant
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''), ref = String((b && b.ref) || '').slice(0, 80);
+      const ticks = Math.max(1, Math.min(50000, Math.round(+(b && b.ticks) || 0))), cents = Math.max(0, Math.round(+(b && b.cents) || 0));
+      if (!uid || !ref) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      // INSERT first: if this ref was already paid the insert throws / changes nothing and we return dup WITHOUT granting.
+      try { sql.exec('INSERT INTO tickbuy(ref,ts,user_id,pack,ticks,cents,via,cur) VALUES(?,?,?,?,?,?,?,?)', ref, Date.now(), uid, String((b && b.pack) || '').slice(0, 24), ticks, cents, String((b && b.via) || '').slice(0, 12), String((b && b.cur) || '').slice(0, 12)); }
+      catch (e) { return this.j({ ok: true, dup: true, ticks: this._tickBal(uid) }); }
+      // no dayCap: this is bought, not earned, so it must never be silently clipped by an earning cap
+      this._grantTicks(uid, 'buy', ticks, { note: 'Bought ' + ticks + ' Ticks' + (cents ? ' for $' + (cents / 100).toFixed(2) : '') });
+      return this.j({ ok: true, ticks: this._tickBal(uid), granted: ticks });
+    }
+    if (path === '/tickbuys') { // ops: the purchase book, newest first, with usernames resolved
+      const n = Math.min(500, Math.max(1, Math.round(+(b && b.n) || 200)));
+      let rows = [];
+      try { rows = this.rows('SELECT t.ref, t.ts, t.user_id uid, t.pack, t.ticks, t.cents, t.via, t.cur, u.username name FROM tickbuy t LEFT JOIN users u ON u.id=t.user_id ORDER BY t.ts DESC LIMIT ?', n); } catch (e) {}
+      if (!(b && b.e2e)) rows = rows.filter(r => !/^e2e_/i.test(String(r.name || '')));
+      const tot = rows.reduce((a, r) => ({ ticks: a.ticks + (+r.ticks || 0), cents: a.cents + (+r.cents || 0) }), { ticks: 0, cents: 0 });
+      const buyers = {}; rows.forEach(r => { const k = r.name || r.uid; (buyers[k] = buyers[k] || { name: r.name || '', uid: r.uid, n: 0, ticks: 0, cents: 0 }); buyers[k].n++; buyers[k].ticks += +r.ticks || 0; buyers[k].cents += +r.cents || 0; });
+      return this.j({ rows, totals: { n: rows.length, ...tot }, byBuyer: Object.values(buyers).sort((x, y) => y.cents - x.cents) });
+    }
  if (path === '/ticks/adjust') { // ops: manual Ticks credit/debit (a duel refund the owner promised, a support goodwill) — logged in ticklog like every other movement
  const q = String((b && b.username) || (b && b.uid) || '').trim().toLowerCase().replace(/^u:/, '');
  const amt = Math.round(+(b && b.amt) || 0); const note = String((b && b.note) || 'Manual adjustment').slice(0, 60);

@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-13T14:24:27.048Z",
+  "generated": "2026-09-13T15:29:12.846Z",
   "pages": 369,
-  "occurrences": 22737,
-  "unique": 12825,
-  "words": 237594,
+  "occurrences": 22742,
+  "unique": 12828,
+  "words": 237663,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-13T14:24:35.592Z"
+  "merged": "2026-09-13T15:29:12.978Z"
  },
  "items": {
   "-1NAT9wpkg": {
@@ -5792,7 +5792,7 @@
     "/",
     "/news/"
    ],
-   "n": 14,
+   "n": 15,
    "w": 1
   },
   "mUVihjlrWt": {
@@ -134837,9 +134837,9 @@
    "n": 1,
    "w": 27
   },
-  "2tSQ-Us-wj": {
-   "en": "<b>Ticks are earned, never bought</b>Calls, goals and the pass pay Ticks. The Vault spends them. Money only ever moves one way: from the boards to your rewards balance.",
-   "es": "<b>Los Ticks se ganan, nunca se compran</b>Los pronósticos, los objetivos y el pase pagan Ticks. The Vault los gasta. El dinero solo se mueve en una dirección: de las tablas a tu saldo de recompensas.",
+  "NZeu3m9co2": {
+   "en": "<b>Ticks are mostly earned</b>Calls, goals and the pass pay Ticks, and the Vault spends them. You can top up with a small pack, but prize money still only moves one way: from the boards to your rewards balance.",
+   "es": "<b>Los Ticks se ganan casi siempre</b>Los pronósticos, los objetivos y el pase pagan Ticks, y la Bóveda los gasta. Puedes recargar con un paquete pequeño, pero el dinero de los premios sigue moviéndose en un solo sentido: de las tablas a tu saldo de recompensas.",
    "kind": [
     "html"
    ],
@@ -134847,7 +134847,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 29
+   "w": 38
   },
   "IqrNViEGpH": {
    "en": "Season days",
@@ -149237,9 +149237,9 @@
    "n": 1,
    "w": 1
   },
-  "xMeYOJN-uQ": {
-   "en": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Ticks are earned, never sold. Spend them on anything in the Vault.</span>",
-   "es": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Los Ticks se ganan, nunca se venden. Gástalos en cualquier cosa de The Vault.</span>",
+  "7BLHz_YxNS": {
+   "en": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Earn Ticks by using the site, or top up. Spend them on anything in the Vault.</span>",
+   "es": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Gana Ticks usando el sitio, o recarga. Gástalos en lo que quieras de la Bóveda.</span>",
    "kind": [
     "html"
    ],
@@ -149247,7 +149247,20 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 12
+   "w": 16
+  },
+  "Uja66H3i2b": {
+   "en": "Buy Ticks",
+   "es": "Comprar Ticks",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/vault/"
+   ],
+   "n": 2,
+   "w": 2
   },
   "du7HYMm25j": {
    "en": "Recent",
@@ -149729,9 +149742,9 @@
    "n": 1,
    "w": 10
   },
-  "1_jvyDU1b5": {
-   "en": "Ticks are the Vault&#39;s currency. They cannot be bought with money at any price &mdash; every one is earned, which is what makes a Tick-priced frame worth wearing.",
-   "es": "Los Ticks son la moneda de The Vault. No se pueden comprar con dinero a ningún precio &mdash; cada uno se gana, y eso es lo que hace que valga la pena llevar un marco pagado con Ticks.",
+  "oYPvWUN2Cd": {
+   "en": "Ticks are the Vault&#39;s currency. Earn them by using the site, or top up with a small pack &mdash; but the frames on the earned shelf carry no price at all and can never be bought.",
+   "es": "Los Ticks son la moneda de la Bóveda. Gánalos usando el sitio, o recarga con un paquete pequeño &mdash; pero los marcos del estante ganado no tienen precio alguno y nunca se pueden comprar.",
    "kind": [
     "html"
    ],
@@ -149739,7 +149752,7 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 26
+   "w": 34
   },
   "F6c6vW6UFj": {
    "en": "Where they go",
@@ -149765,9 +149778,9 @@
    "n": 1,
    "w": 6
   },
-  "W9XDry7R2G": {
-   "en": "<b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T.</span>",
-   "es": "<b>The Vault</b><span>Marcos, skins de tickets y fondos de tarjeta. Común 300 T, raro 1,200 T, épico 3,000 T, legendario 7,000 T.</span>",
+  "JstGVIq-AF": {
+   "en": "<b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T, apex 9,000 T.</span>",
+   "es": "<b>La Bóveda</b><span>Marcos, skins de tickets y fondos de tarjeta. Común 300 T, raro 1,200 T, épico 3,000 T, legendario 7,000 T, apex 9,000 T.</span>",
    "kind": [
     "html"
    ],
@@ -149775,7 +149788,7 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 20
+   "w": 23
   },
   "SvFOg9yQnN": {
    "en": "<b>Duel stakes</b><span>Wager Ticks head to head. Winner takes the pot; a tie returns both stakes. Duels used to stake XP, which meant losing one could cost you a level &mdash; Ticks cannot.</span>",
@@ -149824,6 +149837,30 @@
    ],
    "n": 1,
    "w": 11
+  },
+  "ko6Y0skMO5": {
+   "en": "Top up your Ticks",
+   "es": "Recarga tus Ticks",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/vault/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "e2A8e6urmn": {
+   "en": "Pay with crypto, or straight from your rewards balance.",
+   "es": "Paga con cripto, o directamente desde tu saldo de recompensas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/vault/"
+   ],
+   "n": 1,
+   "w": 9
   },
   "SrKRAgk52P": {
    "en": "Your account",
@@ -149909,9 +149946,9 @@
    "n": 1,
    "w": 5
   },
-  "zGR5m-dWwk": {
-   "en": "Ticks are the currency of The Vault, MarginPad’s cosmetics shop. They cannot be bought with money at any price — every Tick is earned by using the site, which is what makes a Tick-priced frame worth wearing. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend.",
-   "es": "Los Ticks son la moneda de The Vault, la tienda de cosméticos de MarginPad. No se pueden comprar con dinero a ningún precio — cada Tick se gana usando el sitio, y eso es lo que hace que valga la pena llevar un marco pagado con Ticks. Son independientes del XP: el XP solo sube y determina tu nivel, mientras que los Ticks son lo que gastas.",
+  "b4gR0uKCVm": {
+   "en": "Ticks are the currency of The Vault, MarginPad’s cosmetics shop. Most Ticks are earned by using the site; small top-up packs can also be bought. The frames on the earned shelf carry no price at all and can never be bought. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend.",
+   "es": "Los Ticks son la moneda de La Bóveda, la tienda de cosméticos de MarginPad. La mayoría de los Ticks se ganan usando el sitio; también se pueden comprar paquetes pequeños de recarga. Los marcos del estante ganado no tienen precio alguno y nunca se pueden comprar. Son independientes del XP: el XP solo sube y decide tu nivel, mientras que los Ticks son lo que gastas.",
    "kind": [
     "ld"
    ],
@@ -149919,7 +149956,7 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 55
+   "w": 61
   },
   "fG64bhMUsE": {
    "en": "How do you earn Ticks?",
@@ -149957,9 +149994,9 @@
    "n": 1,
    "w": 7
   },
-  "Mm7IDUzODv": {
-   "en": "No. There is no purchase path for Ticks anywhere in the product, by design. Some Vault items can be bought outright with your rewards balance instead, but the Ticks themselves are only ever earned.",
-   "es": "No. No existe ninguna forma de comprar Ticks en ningún lugar del producto, por diseño. Algunos artículos de The Vault sí se pueden comprar directamente con tu saldo de recompensas, pero los Ticks en sí solo se ganan.",
+  "K8jkzDfBr8": {
+   "en": "Yes, since September 2026. Three small packs (500, 1,500 and 4,000 Ticks) are sold for crypto or from your rewards balance, priced so that a pack never works out cheaper than buying the same item outright — topping up shortens the grind, it does not skip it. Frames on the earned shelf have no price and stay unbuyable.",
+   "es": "Sí, desde septiembre de 2026. Se venden tres paquetes pequeños (500, 1,500 y 4,000 Ticks) por cripto o desde tu saldo de recompensas, con un precio tal que un paquete nunca sale más barato que comprar el mismo artículo directamente: recargar acorta el esfuerzo, no lo salta. Los marcos del estante ganado no tienen precio y siguen sin poder comprarse.",
    "kind": [
     "ld"
    ],
@@ -149967,7 +150004,7 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 34
+   "w": 56
   },
   "QXsAmd5Z6n": {
    "en": "What can you spend Ticks on?",
@@ -149981,9 +150018,9 @@
    "n": 1,
    "w": 6
   },
-  "3q_8DlUkK4": {
-   "en": "Two things: cosmetics in The Vault — profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 7,000 for legendary — and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot.",
-   "es": "En dos cosas: cosméticos en The Vault — marcos de perfil, skins de tickets y fondos de tarjeta, con precios desde 300 Ticks para lo común hasta 7,000 para lo legendario — y apuestas de duelo, donde apuestas Ticks cara a cara contra otro trader y el ganador se lleva el bote.",
+  "jilCGK87BR": {
+   "en": "Two things: cosmetics in The Vault — profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 9,000 for the apex tier — and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot.",
+   "es": "Dos cosas: cosméticos en La Bóveda — marcos de perfil, skins de tickets y fondos de tarjeta, desde 300 Ticks para los comunes hasta 9,000 para el nivel apex — y apuestas de duelo, donde apuestas Ticks cara a cara contra otro trader y el ganador se lleva el bote.",
    "kind": [
     "ld"
    ],
@@ -149991,7 +150028,7 @@
     "/vault/"
    ],
    "n": 1,
-   "w": 42
+   "w": 44
   },
   "x1zATkJQ75": {
    "en": "Does spending Ticks affect your level?",
