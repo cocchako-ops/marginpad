@@ -1174,12 +1174,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       /* WHERE THAT MONEY WOULD NOT HAVE GONE (owner 2026-09-10). The panel already itemises what the round trip
          cost; this says where the same trade is cheaper and links straight to the pair. Only for readers MEXC can
          actually onboard - mpEx.blocked() keeps it away from the US, the same rule the partner cards follow. The
-         numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. */
+         numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. It sits HERE, at the foot of the breakdown,
+         because that is where the reader is already looking at what the round trip cost (owner 2026-09-13:
+         "ne na tiketu, vec unutar svakog fee prozora"). */
+      +feeMexc(e)
       +'</div>';}
-  /* MEXC line on EVERY closed ticket, win or loss (owner 2026-09-13: "Mexc fee reklama treba da bude na svakom tiketu, gubitnom
-     ili dobitnom") \u2014 it used to sit only inside the fee-breakdown popover, which opens on a tap and only exists when the row
-     carries a fee rate. Now closedCard prints it under the times on every closed row; a row without a stamped rate is costed
-     at the default crypto taker rate. Still never for US readers (mpEx.blocked) and never when the trade already ran at MEXC's rate. */
+  /* The MEXC comparison, rendered at the foot of the FEE WINDOW (owner 2026-09-13: not on the ticket,
+     inside every fee window). It is the same money the breakdown above it itemises, shown where the reader
+     is already reading the cost. A row without a stamped fee rate is costed
+     at the default crypto taker rate. Never for US readers (mpEx.blocked), never when the trade ran at MEXC's rate. */
   function feeMexc(e){ try{
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
@@ -1229,7 +1232,6 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div>'
-      +feeMexc(e) /* on EVERY closed ticket, win or loss (owner 2026-09-13); MIRROR in mp-trade.js */
       +((_i===_glIdx&&window.mpGoLive)?window.mpGoLive(e):'') /* newest winning close only: one dismissible line to the same pair on a venue that fits this reader (mp-auth.js owns it; MIRROR in mp-trade.js) */
       +'</div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}

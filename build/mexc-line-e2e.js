@@ -1,6 +1,7 @@
-/* MEXC fee line on EVERY closed ticket, win or loss (owner 2026-09-13). Seeds a guest journal with one winning and one
-   losing closed trade (one without a stamped fee rate), opens My Trades on /paper-trade and asserts each closed card
-   carries exactly one .fb-mx line, and none of it for a US reader (mp_cc=US).   node build/mexc-line-e2e.js            */
+/* The MEXC fee comparison lives inside the FEE WINDOW, in every one of them (owner 2026-09-13: not on the ticket).
+   Seeds a guest journal with a win, a loss and a row with no stamped fee rate, opens My Trades on /paper-trade, taps
+   Fees on each closed ticket and asserts the window carries exactly one .fb-mx line, that the ticket itself carries
+   none, and that a US reader gets no line at all.                              node build/mexc-line-e2e.js          */
 'use strict';
 const { withBrowser } = require('./e2e-browser.js');
 const O = process.env.MP_ORIGIN || 'https://marginpad.io';
@@ -17,7 +18,7 @@ const J = [
     for (const cc of ['DE', 'US']) {
       const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
       await page.setViewport({ width: 1366, height: 900 });
-      await page.evaluateOnNewDocument((j, cc) => { try { localStorage.setItem('mp_journal', JSON.stringify(j)); localStorage.setItem('mp_cc', JSON.stringify({ cc: cc, ts: Date.now() })); } catch (e) {} }, J, cc);
+      await page.evaluateOnNewDocument((j, cc) => { try { localStorage.setItem('mp_journal', JSON.stringify(j)); localStorage.setItem('mp_cc', JSON.stringify({ cc: cc, ts: Date.now() })); localStorage.setItem('mp_grad_fw', '1'); } catch (e) {} }, J, cc); // mp_grad_fw: the first-win celebration would sit over the drawer and make the reachability check meaningless
       await page.goto(O + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 60000 });
       await new Promise(r => setTimeout(r, 2500));
       const r = await page.evaluate(async () => {
@@ -27,18 +28,38 @@ const J = [
         await new Promise(r => setTimeout(r, 1200));
         const cards = [...document.querySelectorAll('#jrDrawer .pp')];
         const closed = cards.filter(c => c.querySelector('.pp-res'));
-        const per = closed.map(c => ({ sym: (c.querySelector('.pp-sym') || {}).textContent, res: (c.querySelector('.pp-res') || {}).textContent, mx: c.querySelectorAll('.fb-mx').length, inPop: c.querySelectorAll('.pp-feebd .fb-mx').length, vis: (() => { const a = c.querySelector('.fb-mx'); if (!a) return false; const b = a.getBoundingClientRect(); return b.width > 0 && b.height > 0; })(), txt: ((c.querySelector('.fb-mx b') || {}).textContent || '').slice(0, 80) }));
+        const per = [];
+        for (const c of closed) {
+          const onCard = [...c.querySelectorAll('.fb-mx')].filter(a => !a.closest('.pp-feebd')).length; // OUTSIDE the window: must be zero
+          const feeBtn = c.querySelector('.pp-fee');
+          if (feeBtn) { feeBtn.click(); await new Promise(r => setTimeout(r, 320)); }
+          const pop = c.querySelector('.pp-feebd');
+          const open = !!(pop && pop.classList.contains('on'));
+          if (pop) { pop.scrollIntoView({ block: 'center' }); await new Promise(r => setTimeout(r, 220)); } // elementFromPoint answers null outside the viewport, and the drawer scrolls
+          const a = pop ? pop.querySelector('.fb-mx') : null;
+          const b = a ? a.getBoundingClientRect() : null;
+          const hitEl = b ? document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2) : null;
+          per.push({ sym: (c.querySelector('.pp-sym') || {}).textContent, res: (c.querySelector('.pp-res') || {}).textContent,
+            hasWindow: !!pop, windowOpened: open, onCard: onCard, inPop: pop ? pop.querySelectorAll('.fb-mx').length : 0,
+            vis: !!(b && b.width > 0 && b.height > 0), hit: !!(hitEl && a && a.contains(hitEl)), href: a ? a.getAttribute('href') || '' : '', txt: ((pop && pop.querySelector('.fb-mx b') || {}).textContent || '').slice(0, 80) });
+        }
         const cc = (() => { try { return window.mpEx && window.mpEx.ccNow ? window.mpEx.ccNow() : null; } catch (e) { return null; } })();
         return { cards: cards.length, closed: closed.length, per, cc };
       });
       console.log(cc, JSON.stringify(r));
       if (cc === 'DE') {
         ok(r.closed === 3, 'three closed tickets rendered (' + r.closed + ')');
-        ok(r.per.every(p => p.mx === 1), 'every closed ticket carries exactly one MEXC line (win, loss, and the row without a fee rate)');
-        ok(r.per.every(p => p.inPop === 0), 'the line sits on the card, not inside the fee popover');
-        ok(r.per.every(p => /MEXC/.test(p.txt) && /\$\d/.test(p.txt)), 'each line names MEXC and prints a dollar amount');
+        ok(r.per.every(p => p.onCard === 0), 'no MEXC line on the ticket itself (owner: it does not belong there)');
+        const withWin = r.per.filter(p => p.hasWindow);
+        ok(withWin.length >= 2, 'the tickets that carry a fee rate have a fee window (' + withWin.length + ' of ' + r.per.length + '; a row with no stamped rate has no breakdown to show)');
+        ok(withWin.every(p => p.windowOpened), 'tapping Fees opens that window');
+        ok(withWin.every(p => p.inPop === 1), 'every fee window carries exactly one MEXC line, win and loss alike');
+        ok(withWin.every(p => p.vis), 'the line is actually visible inside the open window');
+        ok(withWin.every(p => /MEXC/.test(p.txt) && /\$\d/.test(p.txt)), 'each line names MEXC and prints a dollar amount');
+        ok(withWin.every(p => p.hit), 'the line is clickable where it sits, not covered by anything');
+        ok(withWin.every(p => /mexc\.com/.test(p.href) && /inviteCode=/.test(p.href)), 'and it carries our referral code');
       } else {
-        ok(r.closed === 3 && r.per.every(p => p.mx === 0), 'US reader: no MEXC line on any ticket (partner rule)');
+        ok(r.closed === 3 && r.per.every(p => p.inPop === 0 && p.onCard === 0), 'US reader: no MEXC line anywhere, window or ticket (partner rule)');
       }
       await ctx.close();
     }

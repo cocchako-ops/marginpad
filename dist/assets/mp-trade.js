@@ -142,10 +142,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       /* WHERE THAT MONEY WOULD NOT HAVE GONE (owner 2026-09-10). The panel already itemises what the round trip
          cost; this says where the same trade is cheaper and links straight to the pair. Only for readers MEXC can
          actually onboard - mpEx.blocked() keeps it away from the US, the same rule the partner cards follow. The
-         numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. */
+         numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. It sits HERE, at the foot of the breakdown,
+         because that is where the reader is already looking at what the round trip cost (owner 2026-09-13:
+         "ne na tiketu, vec unutar svakog fee prozora"). */
+      +feeMexc(e)
       +'</div>';}
-  /* MEXC line on EVERY closed ticket, win or loss (owner 2026-09-13) — MIRROR of home.js feeMexc: out of the popover, onto the card;
-     a row without a stamped rate is costed at the default crypto taker rate; never for US readers, never when the trade ran at MEXC's rate. */
+  /* MIRROR of home.js feeMexc — the MEXC comparison at the foot of the FEE WINDOW (owner 2026-09-13). A row without a
+     stamped rate is costed at the default crypto taker rate; never for US readers, never when the trade ran at MEXC's rate. */
   function feeMexc(e){ try{
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
@@ -194,7 +197,6 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div>'
-      +feeMexc(e) /* on EVERY closed ticket, win or loss (owner 2026-09-13); MIRROR of home.js */
       +((_i===_glIdx&&window.mpGoLive)?window.mpGoLive(e):'') /* MIRROR of home.js closedCard: newest winning close gets one dismissible line to the same pair (mp-auth.js owns it) */
       +'</div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
