@@ -11070,16 +11070,16 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
     matched.push(row); if (!row.e2e && row.listed) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
-  return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size };
+  return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
 }
 async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volume only) → KV, and the /lb edge copy is dropped
   const b = await bybitVolBoard(env, ws);
-  const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => ({ rank: r.rank, who: r.name, vol: r.vol })), n: b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered };
+  const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => ({ rank: r.rank, who: r.name, vol: r.vol })), n: b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0 };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 60 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v8')); } catch (e) {}
   return snap;
 }
-async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0 }; }
+async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0 }; }
 async function payBybitPrizes(env) { // */10 cron: every ENDED season from BYBIT_LB_START whose report is FINAL and not yet paid
   if (!env.STATS || !env.REWARDS || !env.USERS) return;
   const now = Date.now(), thisWs = lbPeriodStart(now); const cfg = await rewardCfg(env);
@@ -14485,7 +14485,7 @@ async function handleReward(url, request, env) {
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h — a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
-          topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0 } });
+          topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }

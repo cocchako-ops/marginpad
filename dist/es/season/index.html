@@ -191,48 +191,64 @@ h1 b{color:var(--lime)}
 .opt .p{grid-column:2;grid-row:1/3;align-self:center;font:800 20px 'Space Mono',monospace;color:var(--pro);letter-spacing:-.02em;white-space:nowrap;padding-left:12px;border-left:1px dashed rgba(199,146,255,.3)}
 .code{display:flex;gap:7px}.code input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0}.code input:focus{border-color:var(--pro)}
 /* board switcher: five cards, one selected */
-/* six cards (Bybit volume joined 2026-09-13); redesigned the same day (owner: "kartice mnogo više cool, slajdovanje mnogo više cool") */
-.bsw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:14px}
-.bs{position:relative;text-align:left;background:#0a0d11;border:1px solid var(--line2);border-radius:16px;padding:13px 13px 12px;cursor:pointer;color:inherit;min-width:0;overflow:hidden;isolation:isolate;transition:border-color .22s,transform .22s cubic-bezier(.2,.8,.2,1),background .22s,box-shadow .22s;--c:#ffd75a}
-.bs::before{content:"";position:absolute;inset:-40% -20% auto -20%;height:120%;background:radial-gradient(60% 55% at 50% 0%,color-mix(in srgb,var(--c) 26%,transparent),transparent 70%);opacity:0;transition:opacity .28s;z-index:-1;pointer-events:none}
-.bs::after{content:"";position:absolute;left:12px;right:12px;top:0;height:2px;border-radius:0 0 4px 4px;background:var(--c);opacity:0;transform:scaleX(.4);transition:opacity .22s,transform .3s cubic-bezier(.2,.8,.2,1)}
-.bs:hover{border-color:rgba(255,255,255,.2);transform:translateY(-2px)}
-.bs:hover::before{opacity:.55}
-/* selected card: glow inside the card + a ring, never a drop shadow below it (the old 0 16px 36px shadow fell under the table card and read as a cut edge — owner 2026-09-06, twice) */
-.bs.on{border-color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 16%,#0a0d11),#0a0d11 70%);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 34%,transparent),inset 0 1px 0 color-mix(in srgb,var(--c) 40%,transparent);transform:translateY(-2px)}
-.bs.on::before{opacity:1}.bs.on::after{opacity:1;transform:scaleX(1)}
-.bs .ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:9px;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-.bs.on .ic{transform:scale(1.08)}
-.bs .ic svg{width:17px;height:17px}
-/* the Bybit card: the partner's full wordmark instead of an icon, navy ground, orange glow */
-.bs.bybit{--c:#f7a600;background:linear-gradient(180deg,#12162a,#0a0d11 80%)}
-.bs.bybit.on{background:linear-gradient(180deg,#1a1f38,#0b0e16 75%)}
-.bs .pb{font:800 8.5px 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--c);opacity:.85;margin-bottom:5px}
-.bs .logo{height:22px;width:auto;display:block;color:#fff;margin:2px 0 9px}
-.bs .logo svg{height:22px;width:auto;display:block}
+/* board switcher v3 (owner 2026-09-13: "kartice mnogooo bolje", Bybit first) — six cards, one selected; glow lives INSIDE the card, never a drop shadow under it */
+.bsw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.bs{position:relative;text-align:left;background:#0b0e13;border:1px solid var(--line2);border-radius:18px;padding:14px 14px 13px;cursor:pointer;color:inherit;min-width:0;min-height:156px;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transition:border-color .22s,transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s;--c:#ffd75a}
+.bs::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%);opacity:.55;transition:opacity .26s;z-index:-1}
+.bs .wm{position:absolute;right:-12px;bottom:-14px;width:92px;height:92px;color:var(--c);opacity:.07;transform:rotate(-12deg);transition:opacity .26s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:-1}
+.bs .wm svg{width:100%;height:100%}
+.bs .top{display:flex;align-items:center;gap:8px;min-width:0}
+.bs .ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);flex:0 0 auto;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 35%,transparent)}
+.bs .ic svg{width:16px;height:16px}
+.bs .big{margin-top:auto;padding-top:10px;font:800 24px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;color:#fff}
+.bs .big small{display:block;margin-top:4px;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.bs .ld{margin-top:9px;display:flex;align-items:center;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap;min-width:0}
+.bs .ld i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:5px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);font-weight:800;font-size:9.5px;flex:0 0 auto}
+.bs .ld span{overflow:hidden;text-overflow:ellipsis;min-width:0}.bs .ld b{color:#e9e7df;margin-left:auto;flex:0 0 auto}
+.bs .you{margin-top:6px;font:700 10px 'Space Mono',monospace;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bs .you.in{color:var(--c)}
+.bs:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line2));transform:translateY(-3px)}
+.bs:hover::before{opacity:.9}.bs:hover .wm{opacity:.13;transform:rotate(-6deg) scale(1.06)}
+.bs.on{border-color:var(--c);transform:translateY(-3px);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent),0 0 34px -10px color-mix(in srgb,var(--c) 70%,transparent),inset 0 1px 0 color-mix(in srgb,var(--c) 45%,transparent)}
+.bs.on::before{opacity:1}.bs.on .wm{opacity:.16;transform:rotate(-4deg) scale(1.1)}
+.bs .chk{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--c);color:#0a0b0d;display:flex;align-items:center;justify-content:center;transform:scale(0);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.bs.on .chk{transform:scale(1)}.bs .chk svg{width:11px;height:11px}
+/* the Bybit card: the partner's full wordmark, navy ground, orange glow, and the plain words */
+.bs.bybit{--c:#f7a600;background:linear-gradient(160deg,#141a33,#0b0e13 70%)}
+.bs .pb{font:800 8.5px 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--c)}
+.bs .logo{height:24px;display:block;color:#fff;margin:6px 0 0}.bs .logo svg{height:24px;width:auto;display:block}
 .bybit-logo{color:#fff}
-.bs .rk5{position:absolute;right:10px;top:10px;font:800 9px 'Space Mono',monospace;letter-spacing:.1em;color:var(--c);opacity:.8}
+.bs .tagv{display:inline-block;align-self:flex-start;margin-top:8px;font:700 8.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#0a0b0d;background:var(--c);border-radius:6px;padding:3px 7px;white-space:nowrap}
+@media(min-width:721px) and (max-width:1100px){.bsw{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* switching: the table slides in from the side of the card you picked, rows settle one after another */
 .tw{transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1)}
 .tw.sw-l{opacity:0;transform:translateX(-22px)}.tw.sw-r{opacity:0;transform:translateX(22px)}
 .tbl .tr{opacity:0;transform:translateY(6px);transition:opacity .32s ease calc(var(--i,0)*38ms),transform .32s cubic-bezier(.2,.8,.2,1) calc(var(--i,0)*38ms)}
 .tbl.in .tr,.tbl .tr.th{opacity:1;transform:none}
-/* Bybit board: link box under the table */
-.bybox{margin-top:12px;border:1px solid rgba(247,166,0,.35);border-radius:14px;padding:12px 14px;background:linear-gradient(120deg,rgba(247,166,0,.10),rgba(247,166,0,.02));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center}
-.bybox .t{font:800 13.5px 'Bricolage Grotesque',sans-serif;color:#fff}.bybox .d{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.4}
-.bybox .f{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.bybox input{width:150px;max-width:100%;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:9px 11px;color:#fff;font:700 13px 'Space Mono',monospace;letter-spacing:.04em;outline:0}.bybox input:focus{border-color:#f7a600}
-.bybox .btn{background:#f7a600;color:#0a0b0d;border:0;border-radius:10px;padding:9px 13px;font:800 12px 'Space Mono',monospace;cursor:pointer;white-space:nowrap}.bybox .btn[disabled]{opacity:.5;cursor:default}
-.bybox .btn.ghost{background:transparent;color:#f7a600;border:1px solid rgba(247,166,0,.5)}
-.bybox .ok{display:inline-flex;align-items:center;gap:6px;font:700 11px 'Space Mono',monospace;color:#2ebd85;border:1px solid rgba(46,189,133,.45);border-radius:999px;padding:4px 10px;white-space:nowrap}
-.bybox .no{font:700 11px 'Space Mono',monospace;color:#ffb347;white-space:nowrap}
-.bybox .msg{grid-column:1/-1;font-size:11.5px;color:var(--dim)}.bybox .msg.err{color:#ff8a80}.bybox .msg.good{color:#2ebd85}
-@media(max-width:560px){.bybox{grid-template-columns:1fr}.bybox .f{justify-content:flex-start}}
+/* Bybit board: the banner above the table, the prize preview while the report is empty, the registration box */
+.bybanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;margin:0 0 8px;border-radius:12px;background:linear-gradient(90deg,rgba(247,166,0,.16),rgba(247,166,0,.03));border:1px solid rgba(247,166,0,.35)}
+.bybanner .l{display:flex;align-items:center;gap:10px;font:800 13px 'Bricolage Grotesque',sans-serif;color:#fff;letter-spacing:-.01em;white-space:nowrap}.bybanner .l svg{height:18px;width:auto;color:#fff;flex:0 0 auto}
+.bybanner .r{font:700 11px 'Space Mono',monospace;color:#f7a600;white-space:nowrap}.bybanner .r b{font-size:14px;margin-right:4px}
+.pzprev{width:100%;padding:4px 0 2px}.pzh{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:6px 6px 8px}
+.pzl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:0 6px}
+.pzc{border:1px solid var(--line2);border-radius:12px;padding:10px 8px;text-align:center;background:#0b0e13;min-width:0}
+.pzc i{display:block;font:700 10px 'Space Mono',monospace;font-style:normal;color:var(--faint)}.pzc b{display:block;margin-top:4px;font:800 20px 'Bricolage Grotesque',sans-serif;color:#fff;letter-spacing:-.02em}.pzc span{display:block;margin-top:2px;font:600 9px 'Space Mono',monospace;color:var(--dim);min-height:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pzc.r1{border-color:rgba(247,166,0,.6);background:linear-gradient(180deg,rgba(247,166,0,.16),#0b0e13)}.pzc.r1 b{color:#f7a600;font-size:24px}.pzc.r2{border-color:rgba(207,214,223,.4)}.pzc.r3{border-color:rgba(209,154,102,.45)}
+.pzprev .empty{padding-top:12px}
+.bybox2{margin-top:12px;border:1px solid rgba(247,166,0,.35);border-radius:16px;padding:14px 14px 0;background:linear-gradient(140deg,rgba(247,166,0,.12),rgba(247,166,0,.02) 60%);overflow:hidden}
+.bybox2 .bh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.bybox2 .pill{font:800 9px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#f7a600}
+.bybox2 .st{font:700 10px 'Space Mono',monospace;border-radius:999px;padding:4px 9px;border:1px solid;white-space:nowrap}.bybox2 .st.ok{color:#2ebd85;border-color:rgba(46,189,133,.5)}.bybox2 .st.no{color:#ffb347;border-color:rgba(255,179,71,.5)}.bybox2 .st.wait{color:var(--dim);border-color:var(--line2)}
+.bybox2 .bt{font:800 15px 'Bricolage Grotesque',sans-serif;color:#fff;letter-spacing:-.01em}.bybox2 .bd{margin-top:3px;font-size:12px;color:var(--dim);line-height:1.45;max-width:72ch}
+.bybox2 .bf{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.bybox2 input{flex:1 1 160px;min-width:0;max-width:260px;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 13px 'Space Mono',monospace;letter-spacing:.04em;outline:0}.bybox2 input:focus{border-color:#f7a600}
+.bybox2 .btn{background:#f7a600;color:#0a0b0d;border:0;border-radius:10px;padding:10px 14px;font:800 12px 'Space Mono',monospace;cursor:pointer;white-space:nowrap}.bybox2 .btn[disabled]{opacity:.5;cursor:default}.bybox2 .btn.ghost{background:transparent;color:#f7a600;border:1px solid rgba(247,166,0,.5)}
+.bybox2 .uidv{font:700 12px 'Space Mono',monospace;color:#fff;background:rgba(255,255,255,.06);border-radius:10px;padding:9px 12px}
+.bybox2 .msg{margin-top:8px;font-size:11.5px;color:var(--dim);min-height:0}.bybox2 .msg.err{color:#ff8a80}.bybox2 .msg.good{color:#2ebd85}
+.byfull{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px -15px -1px;padding:13px 14px;border-top:1px solid rgba(247,166,0,.3);background:linear-gradient(90deg,#f7a600,#ffbf3a);color:#0a0b0d;text-decoration:none;font:700 12.5px 'Familjen Grotesk',system-ui,sans-serif;transition:filter .2s}
+.byfull b{font:800 12px 'Space Mono',monospace;white-space:nowrap}.byfull:hover{filter:brightness(1.06)}
+@media(max-width:560px){.bybanner,.pzprev{max-width:calc(100vw - 62px)}.bybanner .l{white-space:normal}.pzl{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:0 2px}.pzc{padding:8px 4px;border-radius:10px}.pzc b{font-size:15px}.pzc.r1 b{font-size:17px}.pzc span{font-size:8px}.pzprev .empty{white-space:normal}.bybox2 .bh{align-items:flex-start}}
 .bs .nm{font:800 13.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bs .pz{margin-top:2px;font:700 11px 'Space Mono',monospace;color:var(--c);white-space:nowrap}
-.bs .ld{margin-top:8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap}.bs .ld span{overflow:hidden;text-overflow:ellipsis}.bs .ld b{color:#e9e7df}
-.bs .you{margin-top:4px;font:700 10.5px 'Space Mono',monospace;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bs .you.in{color:var(--c)}
-.bs.on::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#0a0d11;border-right:1px solid var(--c);border-bottom:1px solid var(--c)}
+.bs.on::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#0b0e13;border-right:1px solid var(--c);border-bottom:1px solid var(--c)}
 /* board table: fixed columns, never wraps, scrolls in its own box */
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin-top:6px}
 .tbl{min-width:100%;width:max-content}
@@ -289,7 +305,7 @@ h1 b{color:var(--lime)}
 /* toast */
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
-@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(6,minmax(150px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
+@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(6,minmax(176px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
 @media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(40,112px)}.road::before,.road .fill{left:46px}}
 </style>
 </head>
@@ -638,22 +654,30 @@ h1 b{color:var(--lime)}
   /* ---- boards: five cards to choose, one fixed-column table ---- */
   var IC={green:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',roe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',wr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',xp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>',gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z"/><path d="M6 20h12"/></svg>'};
   var BOARDS=[
+    {k:'bybit',key:'topBybit',name:'Bybit volume',c:'#f7a600',cols:'36px minmax(140px,1fr) 132px 56px',head:['#','Trader','Bybit volume','pays'],cells:function(r){return [volF(r.vol)];},lead:function(r){return volF(r.vol);}},
     {k:'green',key:'topGreen',name:'Green days',c:'#2ebd85',cols:'36px minmax(140px,1fr) 78px 64px 84px 96px 56px',head:['#','Trader','green','red','trades','season P&L','pays'],cells:function(r){return [r.days+' green',r.red+' red',int(r.trades)+' tr',money(r.pnl)];},lead:function(r){return r.days+' green';}},
     {k:'roe',key:'top',name:'Highest ROE',c:'#c2f64a',cols:'36px minmax(140px,1fr) 88px 120px 96px 56px',head:['#','Trader','best ROE','trade','P&L','pays'],cells:function(r){return [pct(r.roe),'<span class="tag '+(r.side==='short'?'s':'l')+'">'+esc(String(r.symbol||'').toUpperCase())+' '+(r.side==='short'?'Short':'Long')+'</span>',money(r.pnl)];},lead:function(r){return pct(r.roe);}},
     {k:'wr',key:'topWr',name:'Win rate',c:'#57c7f7',cols:'36px minmax(140px,1fr) 78px 104px 76px 56px',head:['#','Trader','win rate','record','score','pays'],cells:function(r){return [r.wr+'%',r.w+'W · '+r.l+'L',String(r.score)];},lead:function(r){return r.wr+'%';}},
     {k:'xp',key:'topXp',name:'Season XP',c:'#c792ff',cols:'36px minmax(140px,1fr) 110px 56px',head:['#','Trader','season XP','pays'],cells:function(r){return [int(r.xp)+' XP'];},lead:function(r){return int(r.xp)+' XP';}},
-    {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#','Trader','points','record','pays'],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}},
-    {k:'bybit',key:'topBybit',name:'Bybit volume',c:'#f7a600',cols:'36px minmax(140px,1fr) 132px 56px',head:['#','Trader','Bybit volume','pays'],cells:function(r){return [volF(r.vol)];},lead:function(r){return volF(r.vol);}}];
+    {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#','Trader','points','record','pays'],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}}];
   function volF(v){v=+v||0;return '$'+(v>=1e9?(v/1e9).toFixed(2)+'B':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'k':Math.round(v));} // traded volume: unsigned, compact
   var BYBIT_SVG='<svg class="bybit-logo" viewBox="0 0 13547 4513" role="img" aria-label="Bybit" xmlns="http://www.w3.org/2000/svg"><g id="Bybit_x0020_Logo.cdr"> <polygon fill="#f7a600" points="9655,3480 9655,-1 10355,-1 10355,3480 "/> <path fill="currentColor" d="M1500 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="4732,3086 4732,4514 4037,4514 4037,3086 2960,1033 3720,1033 4389,2436 5049,1033 5809,1033 "/> <path fill="currentColor" d="M7793 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="12610,1639 12610,4514 11911,4514 11911,1639 10974,1639 10974,1033 13547,1033 13547,1639 "/> </g></svg>'; /* official Bybit wordmark (Wikimedia Commons file Bybit_Logo.svg), navy recoloured to currentColor for the dark card */
-  var curBoard='green';
+  IC.bybit='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg>';
+  var curBoard='bybit'; /* the partner board opens first (owner 2026-09-13) */
   function paintBoards(){var D=LB;if(!D)return;var pz=D.boardPrizes||{},m=me(),nm=(m&&m.username||'').toLowerCase();
     $('bsw').innerHTML=BOARDS.map(function(b){var rows=D[b.key]||[],p=pz[b.k]||[],tot=p.reduce(function(a,c){return a+c;},0),ld=rows[0],mine=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];
-      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'">'+(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div>':'<div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div>')+'<div class="pz">'+(tot?'$'+tot+' to the top 5':'title · Gold only')+'</div><div class="ld">'+(ld?'<span title="'+esc(ld.who)+'">1. '+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>—</b>')+'</div><div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' · $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
+      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'">'
+        +'<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></span>'
+        +'<div class="wm">'+(IC[b.k]||'')+'</div>'
+        +(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
+        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold only</small>')+'</div>'
+        +'<div class="ld"><i>1</i>'+(ld?'<span title="'+esc(ld.who)+'">'+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>\u2014</b>')+'</div>'
+        +'<div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' \u00b7 $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
     var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
     var head='<div class="tr th" style="grid-template-columns:'+B.cols+'">'+B.head.map(function(h,i){return '<div'+(i>=2?' style="text-align:right"':'')+'>'+h+'</div>';}).join('')+'</div>';
-    var body=rows.length?rows.slice(0,10).map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(i+1)+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):'<div class="empty">'+(curBoard==='bybit'?'The board fills from Bybit\'s report after the first upload of the season. Register your Bybit UID below so your volume counts.':'Nobody qualifies yet this season. The rules below say what it takes.')+'</div>';
-    $('tbl').innerHTML=head+body;
+    var body=rows.length?rows.slice(0,10).map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(i+1)+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):(curBoard==='bybit'?'<div class="pzprev"><div class="pzh">Prize preview \u2014 how the $'+prizes.reduce(function(a,c){return a+c;},0)+' splits</div><div class="pzl">'+prizes.map(function(pv,i){return '<div class="pzc r'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+pv+'</b><span>'+(i===0?'highest volume':'')+'</span></div>';}).join('')+'</div><div class="empty">The board fills from Bybit\'s report after the first upload of the season. Register your Bybit UID below so your volume counts.</div></div>':'<div class="empty">Nobody qualifies yet this season. The rules below say what it takes.</div>');
+    var banner=curBoard==='bybit'?'<div class="bybanner"><div class="l">'+BYBIT_SVG+'<span>Bybit volume based leaderboard</span></div><div class="r"><b>$'+prizes.reduce(function(a,c){return a+c;},0)+'</b>prize pool \u00b7 top 5 paid</div></div>':'';
+    $('tbl').innerHTML=banner+head+body;
     (function(){var tb=$('tbl');tb.classList.remove('in');requestAnimationFrame(function(){requestAnimationFrame(function(){tb.classList.add('in');});});})();
     paintNote(D,prizes);paintBybox(D);
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
@@ -667,23 +691,26 @@ h1 b{color:var(--lime)}
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
     if(curBoard==='gold'){el.textContent='Gold members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
     if(curBoard==='bybit'){var up=D.bybitUpdated?new Date(D.bybitUpdated):null,rp=D.bybitReport||{};
-      el.textContent='Powered by Bybit \u00b7 real trading volume on Bybit, from our affiliate report \u00b7 '+(up?'last report '+up.toLocaleDateString([],{month:'short',day:'numeric'})+' '+up.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(rp.final?' (final)':''):'no report yet this season')+' \u00b7 '+int(rp.registered||0)+' UIDs registered \u00b7 prizes from the season of '+new Date(D.bybitPaidFrom||0).toISOString().slice(0,10)+': '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');return;}
+      el.textContent='Powered by Bybit \u00b7 real trading volume on Bybit, from our affiliate report \u00b7 '+(up?'last report '+up.toLocaleDateString([],{month:'short',day:'numeric'})+' '+up.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(rp.final?' (final)':''):'no report yet this season')+' \u00b7 '+int(rp.listed||0)+' Bybit accounts opened through MarginPad can compete \u00b7 prizes from the season of '+new Date(D.bybitPaidFrom||0).toISOString().slice(0,10)+': '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');return;}
     el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
   /* Bybit board: only a Bybit account opened through MarginPad competes — the member links that UID here (checked against the affiliate list; one UID, one account) */
   var BYL=null;
   function paintBybox(D){var box=$('bybox');if(!box)return;if(curBoard!=='bybit'){box.hidden=true;return;}box.hidden=false;var m=me();
-    if(!m){box.innerHTML='<div class="bybox"><div><div class="t">Only Bybit accounts opened through MarginPad compete</div><div class="d">Sign in, then link the UID of your Bybit account. No Bybit account yet? Open one with our link \u2014 that is the account that counts.</div></div><div class="f"><a class="btn ghost" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored">Open a Bybit account \u2192</a><button type="button" class="btn" data-auth-open>Sign in</button></div></div>';return;}
-    if(!BYL){box.innerHTML='<div class="bybox"><div><div class="t">Checking your Bybit link\u2026</div></div></div>';J('/api/reward/bybitlink').then(function(d){BYL=d||{};paintBybox(D);});return;}
+    var full='<a class="byfull" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored"><span>No Bybit account through MarginPad yet? Open one with our link \u2014 that is the account that counts.</span><b>Open Bybit \u2192</b></a>';
+    var head=function(st,stTxt){return '<div class="bh"><span class="pill">Bybit volume board \u00b7 registration</span><span class="st '+st+'">'+stTxt+'</span></div>';};
+    if(!m){box.innerHTML='<div class="bybox2">'+head('wait','not registered')+'<div class="bt">Register the Bybit account you opened through MarginPad</div><div class="bd">Sign in, then enter that account\'s UID. It is checked against our affiliate list \u2014 one Bybit UID, one MarginPad account. From then on your Bybit volume counts toward the $200.</div><div class="bf"><button type="button" class="btn" data-auth-open>Sign in to register</button></div>'+full+'</div>';return;}
+    if(!BYL){box.innerHTML='<div class="bybox2">'+head('wait','checking\u2026')+'<div class="bt">Checking your Bybit registration\u2026</div></div>';J('/api/reward/bybitlink').then(function(d){BYL=d||{};paintBybox(D);});return;}
     var el=BYL.eligible,uid=BYL.uid||'';
-    box.innerHTML='<div class="bybox"><div><div class="t">'+(el?'You are in \u2014 your Bybit account is registered':(uid?'This Bybit UID is not on our list':'Only Bybit accounts opened through MarginPad compete'))+'</div>'
-      +'<div class="d">'+(el?'Bybit UID <b>'+esc(uid)+'</b> is linked to this account'+(BYL.source==='payout'?' (from your payout)':'')+'. Your Bybit trading volume this season counts toward the $200.':(uid?'UID <b>'+esc(uid)+'</b> was not opened with our link, so it cannot compete. Open a Bybit account with our link and link that UID.':'Paste the UID of the Bybit account you opened with our link. Not opened through us yet? Open one first \u2014 it takes a minute.'))+'</div></div>'
-      +'<div class="f">'+(el?'<span class="ok">\u2713 eligible</span><button type="button" class="btn ghost" id="byUnlink">Unlink</button>':'<input id="byUid" inputmode="numeric" placeholder="Bybit UID" maxlength="15" value="'+esc(uid)+'"><button type="button" class="btn" id="byLink">Register UID</button><a class="btn ghost" data-mpex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener sponsored">Open Bybit \u2192</a>')+'</div><div class="msg" id="byMsg"></div></div>';
+    box.innerHTML='<div class="bybox2">'+head(el?'ok':(uid?'no':'wait'),el?'\u2713 registered':(uid?'not on our list':'not registered'))
+      +'<div class="bt">'+(el?'You are in \u2014 your Bybit account is registered':(uid?'This Bybit UID was not opened through MarginPad':'Register the Bybit account you opened through MarginPad'))+'</div>'
+      +'<div class="bd">'+(el?'Bybit UID <b>'+esc(uid)+'</b> is tied to this account'+(BYL.source==='payout'?' (from your payout)':'')+'. Your Bybit trading volume this season counts toward the $200 \u2014 the board refreshes with each report.':(uid?'UID <b>'+esc(uid)+'</b> is not on our affiliate list, so it cannot compete. Open a Bybit account with our link below and register that UID instead.':'Enter the UID of the Bybit account you opened with our link. It is checked against our affiliate list \u2014 one Bybit UID, one MarginPad account.'))+'</div>'
+      +'<div class="bf">'+(el?'<span class="uidv">UID '+esc(uid)+'</span><button type="button" class="btn ghost" id="byUnlink">Unlink</button>':'<input id="byUid" inputmode="numeric" placeholder="Bybit UID" maxlength="15" value="'+esc(uid)+'"><button type="button" class="btn" id="byLink">Register UID</button>')+'</div><div class="msg" id="byMsg"></div>'+full+'</div>';
     var lb=$('byLink'),ub=$('byUnlink');
     if(lb)lb.addEventListener('click',function(){var v=String(($('byUid')||{}).value||'').trim();if(!/^[0-9]{5,15}$/.test(v)){$('byMsg').className='msg err';$('byMsg').textContent='A Bybit UID is 5 to 15 digits.';return;}lb.disabled=true;
       fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(d){lb.disabled=false;
         if(d&&d.ok){BYL=null;toast('<b>Registered.</b> Your Bybit volume counts from the next report');paintBybox(D);loadLB();return;}
-        var E={uid_not_ours:'This UID was not opened through MarginPad. Open a Bybit account with our link, then link that one.',uid_taken:'This Bybit UID is already linked to another MarginPad account.',bad_uid:'A Bybit UID is 5 to 15 digits.',login_required:'Sign in first.'};
-        $('byMsg').className='msg err';$('byMsg').textContent=E[d&&d.error]||'Could not link right now. Try again in a minute.';}).catch(function(){lb.disabled=false;$('byMsg').className='msg err';$('byMsg').textContent='Network error.';});});
+        var E={uid_not_ours:'This UID was not opened through MarginPad. Open a Bybit account with our link below, then register that one.',uid_taken:'This Bybit UID is already registered on another MarginPad account.',bad_uid:'A Bybit UID is 5 to 15 digits.',login_required:'Sign in first.'};
+        $('byMsg').className='msg err';$('byMsg').textContent=E[d&&d.error]||'Could not register right now. Try again in a minute.';}).catch(function(){lb.disabled=false;$('byMsg').className='msg err';$('byMsg').textContent='Network error.';});});
     if(ub)ub.addEventListener('click',function(){ub.disabled=true;fetch('/api/reward/bybitlink',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:''})}).then(function(){BYL=null;paintBybox(D);loadLB();});});}
 
   /* ---- floor ---- */
