@@ -2693,3 +2693,36 @@
 })();
 /* site-wide scrollbar (owner 2026-09-13: "scroll bar nije crne boje, napravi da bude cool") -- desktop pointers only; phones keep the native overlay bar. Dark track, slim inset thumb, lime on hover; also every inner scroll box (tables, drawers, chat). */
 (function(){try{if(document.getElementById("mpsb-css"))return;var st=document.createElement("style");st.id="mpsb-css";st.textContent="@media(min-width:981px) and (pointer:fine){html{scrollbar-width:thin;scrollbar-color:#2a3140 #0a0b0d}*{scrollbar-width:thin;scrollbar-color:#2a3140 transparent}::-webkit-scrollbar{width:10px;height:10px}html::-webkit-scrollbar-track{background:#0a0b0d}::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:8px}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#2e3644,#1e242c);background-clip:padding-box;border-radius:8px;border:2px solid transparent}::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#c2f64a,#8fbf2a);background-clip:padding-box}::-webkit-scrollbar-corner{background:#0a0b0d}}";(document.head||document.documentElement).appendChild(st);}catch(e){}})();
+
+/* BREATHING notification marks (owner 2026-09-13: "profil ikona (glow) i chat (plava tačka) da dišu, da trepere"). Driven by the
+   Web Animations API, NOT CSS @keyframes: the owner's Windows has animation effects off (prefers-reduced-motion), which
+   silences keyframes but not element.animate(). One pulse for the profile dot (.mpa-trig-dot), one for the lit ring on the
+   profile trigger (.mpa-unread) and one for the chat FAB dot (.ctfab-dot, created by home.js / mp-trade.js). Marks are
+   picked up by a MutationObserver, so no caller needs to know about this; a removed mark takes its animation with it. */
+(function () {
+  try {
+    var live = new WeakMap();
+    function pulse(el, kind) {
+      if (!el || !el.animate || live.has(el)) return;
+      var kf, opt = { duration: 1600, iterations: Infinity, easing: 'ease-in-out' };
+      if (kind === 'ring') kf = [{ boxShadow: '0 0 0 1px rgba(194,246,74,.55),0 0 16px -2px rgba(194,246,74,.6)' }, { boxShadow: '0 0 0 2px rgba(194,246,74,.95),0 0 22px 2px rgba(194,246,74,.95)' }, { boxShadow: '0 0 0 1px rgba(194,246,74,.55),0 0 16px -2px rgba(194,246,74,.6)' }];
+      else kf = [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.5)', opacity: .55 }, { transform: 'scale(1)', opacity: 1 }];
+      try { live.set(el, el.animate(kf, opt)); } catch (e) {}
+    }
+    function stop(el) { var a = live.get(el); if (a) { try { a.cancel(); } catch (e) {} live.delete(el); } }
+    function sweep() {
+      var i, dots = document.querySelectorAll('.mpa-trig-dot, .ctfab-dot');
+      for (i = 0; i < dots.length; i++) pulse(dots[i], 'dot');
+      var trig = document.querySelectorAll('[data-auth-open]');
+      for (i = 0; i < trig.length; i++) { if (trig[i].classList.contains('mpa-unread')) pulse(trig[i], 'ring'); else stop(trig[i]); }
+    }
+    window.mpBreatheSweep = sweep;
+    var mo = new MutationObserver(function (recs) {
+      var need = false;
+      for (var r = 0; r < recs.length && !need; r++) { var m = recs[r]; if (m.type === 'attributes') need = true; else if (m.addedNodes && m.addedNodes.length) need = true; }
+      if (need) sweep();
+    });
+    var boot = function () { try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {} sweep(); };
+    if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
+  } catch (e) {}
+})();
