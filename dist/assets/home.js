@@ -1238,12 +1238,34 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
          numbers match what /exchanges already publishes: 0% maker, about 0.02% taker on futures. It sits HERE, at the foot of the breakdown,
          because that is where the reader is already looking at what the round trip cost (owner 2026-09-13:
          "ne na tiketu, vec unutar svakog fee prozora"). */
-      +feeMexc(e)
+      +feeMxSlot(e)
       +'</div>';}
   /* The MEXC comparison, rendered at the foot of the FEE WINDOW (owner 2026-09-13: not on the ticket,
      inside every fee window). It is the same money the breakdown above it itemises, shown where the reader
      is already reading the cost. A row without a stamped fee rate is costed
      at the default crypto taker rate. Never for US readers (mpEx.blocked), never when the trade ran at MEXC's rate. */
+  /* The MEXC line is a SLOT filled when the fee window OPENS, never at render (owner 2026-09-14: "na nekim tiketima
+     se ne pojavljuje"). window.mpEx lives in the deferred mp-auth.js and window.mpAssetClass is filled after the
+     Bybit symbol fetch, so at first paint both are usually missing and the line was dropped for the life of that
+     card. The slot carries the numbers it needs, so filling it needs no journal lookup, and an open that still finds
+     nothing leaves data-done off and tries again next time. MIRROR in the other bundle. */
+  function feeMxSlot(e){ try{
+    var a=function(k,v){return ' data-'+k+'="'+String(v==null?'':v).replace(/"/g,'&quot;')+'"';};
+    return '<div class="fb-mxs" data-mxs'+a('sym',e&&e.sym||'')+a('fr',+e.feeRate||0)+a('qty',+e.qty||0)
+      +a('en',+e.entry||0)+a('ex',(e.exit!=null?+e.exit:''))+a('mg',+e.margin||0)+a('lev',+e.lev||0)
+      +a('fv',e.feeVenue||'')+a('fu',+e.fund||0)+'></div>';
+  }catch(_){return '';} }
+  function feeMxFill(root){ try{
+    if(!root)return;
+    var ns=root.querySelectorAll?root.querySelectorAll('[data-mxs]'):[];
+    for(var i=0;i<ns.length;i++){ var n=ns[i]; if(n.getAttribute('data-done'))continue;
+      var d=n.dataset||{};
+      var e={sym:d.sym,feeRate:+d.fr||0,qty:+d.qty||0,entry:+d.en||0,exit:(d.ex===''?null:+d.ex),
+        margin:+d.mg||0,lev:+d.lev||0,feeVenue:d.fv||'',fund:+d.fu||0};
+      var h=feeMexc(e);
+      if(h){n.innerHTML=h;n.setAttribute('data-done','1');}
+    }
+  }catch(_){} }
   function feeMexc(e){ try{
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
@@ -1255,7 +1277,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _rt=(+e.feeRate>0?+e.feeRate:0.00055),_mxT=(window.mpFeeVenues&&window.mpFeeVenues.mexc&&+window.mpFeeVenues.mexc.t>0)?+window.mpFeeVenues.mexc.t/100:0.0002;
     var _legs=(+b.fo||0)+(+b.fc||0);
     if(!(_legs>0)){var _q=+e.qty||0,_en=+e.entry||0,_ex=(e.exit!=null?+e.exit:_en);if(!(_q>0)&&+e.margin>0&&_en>0)_q=(+e.margin*((+e.lev>0)?+e.lev:1))/_en;_legs=_q*(_en+_ex)*_rt;}
-    var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0.005))return '';
+    /* MEXC futures lists crypto only — an AAPL or EURUSD ticket has a fee window but no MEXC pair to point at, and
+       the link would 404. Everything else shows, win or loss, down to a saving of one cent (owner 2026-09-14). */
+    if(window.mpAssetClass&&window.mpAssetClass(sym)!=='crypto')return '';
+    var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
       +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','instead of')+' '+feeF(_legs)+' \u2014 '+MT('jFeeMxC','you keep')+' '+feeF(_save)+'</b>'
       +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
@@ -1270,7 +1295,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         var bd=card.querySelector('.pp-feebd');if(!bd)return;
         var was=bd.classList.contains('on');
         try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){o.classList.remove('on');});}catch(_){}
-        if(!was)bd.classList.add('on');
+        if(!was){bd.classList.add('on');try{feeMxFill(bd);}catch(_){}}
         return;}
       try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){if(!o.contains(ev.target))o.classList.remove('on');});}catch(_){}
     },true);}

@@ -1690,7 +1690,11 @@
           + '<div id="bvStatus" class="line mono" style="margin-bottom:6px">loading…</div>'
           + '<div class="line" style="margin:8px 0 4px"><b>Two ways in.</b> Pick the file Bybit gave you, or type the lines yourself below — one <span class="mono">UID volume</span> per line. Either way, press <b>Preview</b> first: it shows exactly which columns were read and which lines were dropped, and changes nothing.</div>'
           + '<textarea class="in" id="bvText" rows="6" placeholder="580090490,1234567.89&#10;579447222,98765.40&#10;&#10;(a header row is understood, and so are tabs or semicolons)"></textarea>'
-          + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'
+          + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><span class="meta" style="font-size:12px">or type the pairs one at a time below</span></div>'
+          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add. Each pair joins the list below; a UID you add twice keeps the newer number, and a hand-typed pair always beats the same UID in the file.</div>'
+          + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="bvUid" placeholder="Bybit UID" inputmode="numeric" autocomplete="off" style="flex:0 1 170px"><input class="in" id="bvVol" placeholder="Volume in USD" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="bvAdd">Add</button><span class="stat" id="bvAddSt"></span></div>'
+          + '<div id="bvManual" style="margin-top:8px"></div>'
+          + '<div class="bar" style="margin-top:12px;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'
           + '<div id="bvTable" style="margin-top:8px"></div>')
         + card('Pause message', '<textarea class="in" id="sPause" rows="2" maxlength="300" placeholder="shown to users when claims are off, e.g. Back tomorrow at 09:00 UTC - the daily budget refills then.">' + esc(c.pauseMsg || '') + '</textarea><div class="bar" style="margin-top:10px"><button class="btn lime" id="sSave">Save reward config</button><span class="stat" id="sSt"></span></div>', 'the Save button writes everything above in one go')
         + '<div class="grid g2">' + card('Site announcement', '<div class="fr"><label>Severity</label><select class="in" id="annLevel" style="width:auto;font-family:inherit;text-align:left">' + [['', 'Off - no banner'], ['fix', 'Fix / small bug - green'], ['blocker', 'Blocker - orange'], ['severe', 'Severe - red']].map(function (o) { return '<option value="' + o[0] + '"' + ((an.level || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div><textarea class="in" id="annMsg" rows="2" maxlength="300" placeholder="e.g. We are aware of an issue with withdrawals and are fixing it now." style="margin-top:8px">' + esc(an.msg || '') + '</textarea><div id="annPrev" class="annprev" hidden></div><div class="bar" style="margin-top:8px"><button class="btn" id="annSave">Publish banner</button><span class="stat" id="annSt"></span><span class="meta" id="annCnt" style="font-size:11px"></span></div>', 'banner every visitor sees · for outages · the preview below the text is what they get')
@@ -1701,7 +1705,7 @@
         + card('XP promos', '<div id="xpList"></div><div class="bar" style="margin-top:8px"><button class="btn" id="xpAdd">Add promo</button><button class="btn lime" id="xpSave">Save promos</button><span class="stat" id="xpSt"></span></div><div class="line" style="margin-top:8px;font-size:12px">A promo grants bonus XP when a user CLOSES a qualifying trade in its window. Start sets the window from now for the chosen hours; Pause keeps it but stops it. Reaches the homepage within ~15s of Save.</div>', 'bonus XP for qualifying paper trades');
       wireTogs(el); hints(); ['sAmount', 'sCooldown', 'sPerDay', 'sCap'].forEach(function (id) { $(id).oninput = hints; }); promos(); prem(pm.list || pm.granted, pm.paid);
       (function bybitUi() { // Bybit volume board: report upload + the joined view (2026-09-13)
-        var st = $('bvStatus'); if (!st) return; var bvCol = '';
+        var st = $('bvStatus'); if (!st) return; var bvCol = '', bvMan = [];   // bvMan = the hand-typed pairs, kept apart from the pasted export
         // volumes in a real export are small decimals ($9.23), not round millions — rounding them to whole dollars
         // printed the season's only trader as "$9" and everyone else as "$0". Show cents below $1,000.
         var fmt = function (v) { v = +v || 0; return '$' + (v > 0 && v < 1000 ? v.toFixed(2) : Math.round(v).toLocaleString('en-US')); };
@@ -1712,6 +1716,37 @@
             + (hidden.length ? '<div class="line" style="margin-top:6px">hidden from the public board: ' + hidden.map(function (m) { return esc(m.name || m.uid) + ' (' + (m.e2e ? 'test account' : 'UID not on the withdrawal list') + ')'; }).join(', ') + '</div>' : '')
             + ((d.unmatched || []).length ? '<div class="line" style="margin-top:6px">in the report, registered by nobody: <span class="mono">' + d.unmatched.slice(0, 60).map(function (u) { return esc(u.uid); }).join(' ') + (d.unmatched.length > 60 ? ' …' : '') + '</span></div>' : ''); }); }
         load();
+        // The hand-typed pairs. They are sent as `manual` and merged on top of the file by the worker — never pasted
+        // into the textarea, because a two-cell line under an 18-column header has fewer cells than the header and
+        // bybitParseReport drops it (correctly) as malformed.
+        function manText() { return bvMan.map(function (r) { return r.uid + ',' + r.vol; }).join(String.fromCharCode(10)); }
+        function manPaint() {
+          var w = $('bvManual'); if (!w) return;
+          if (!bvMan.length) { w.innerHTML = ''; return; }
+          var tot = bvMan.reduce(function (a, r) { return a + (+r.vol || 0); }, 0);
+          w.innerHTML = '<div class="line" style="margin-bottom:4px">' + N(bvMan.length) + ' typed by hand · total ' + fmt(tot)
+            + ' <button class="btn sm" id="bvManClr">Clear the list</button></div>'
+            + '<div class="chips">' + bvMan.map(function (r, i) {
+              return '<span class="chip on" data-rm="' + i + '" title="click to remove"><span class="mono">' + esc(r.uid) + '</span> ' + fmt(r.vol) + ' &times;</span>';
+            }).join('') + '</div>';
+          var c = $('bvManClr'); if (c) c.onclick = function () { bvMan = []; manPaint(); setStat('bvAddSt', 'list cleared'); };
+          w.querySelectorAll('[data-rm]').forEach(function (b) { b.onclick = function () { bvMan.splice(+b.getAttribute('data-rm'), 1); manPaint(); }; });
+        }
+        function bvAdd() {
+          var uEl = $('bvUid'), vEl = $('bvVol');
+          var uid = String(uEl.value || '').replace(/[^0-9]/g, '');
+          var raw = String(vEl.value || '').replace(/[$\s,]/g, '');
+          if (!/^[0-9]{5,15}$/.test(uid)) { setStat('bvAddSt', 'a Bybit UID is 5 to 15 digits', false); uEl.focus(); return; }
+          var m = /^([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/.exec(raw);
+          if (!m) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return; }
+          var vol = +m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1);
+          var at = -1; bvMan.forEach(function (r, i) { if (r.uid === uid) at = i; });
+          if (at >= 0) { bvMan[at].vol = vol; setStat('bvAddSt', uid + ' updated to ' + fmt(vol)); }
+          else { bvMan.push({ uid: uid, vol: vol }); setStat('bvAddSt', 'added ' + uid + ' · ' + fmt(vol)); }
+          uEl.value = ''; vEl.value = ''; uEl.focus(); manPaint();
+        }
+        $('bvAdd').onclick = bvAdd;
+        ['bvUid', 'bvVol'].forEach(function (id) { $(id).onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); bvAdd(); } }; });
         $('bvFile').onchange = function () { var f = this.files && this.files[0]; if (!f) return; var rd = new FileReader(); rd.onload = function () { $('bvText').value = String(rd.result || ''); setStat('bvSt', f.name + ' loaded — press Preview'); }; rd.readAsText(f); };
         // Preview is the safety gate: it prints what the parser UNDERSTOOD, not just what it accepted.
         // Every column the file has, as chips, so the owner can name the volume column himself when the export changes
@@ -1727,9 +1762,11 @@
           if (!d) return '';
           if (d.error === 'no_volume_column') return '<div class="line"><span class="badge red">no volume column</span> This file has a header, but none of its columns reads as trading volume, so nothing was parsed — it is never guessed at. Pick the column below and press Preview again.</div>' + colChips(d);
           var head = '<div class="line">Read as <b>' + esc(d.sep === 'tab' ? 'tab-separated' : d.sep === ';' ? 'semicolon-separated' : d.sep === '|' ? 'pipe-separated' : 'comma-separated') + '</b>'
-            + (d.volCol ? ' · volume from the column named <b>' + esc(d.volCol.name) + '</b>' + (d.picked ? ' (you picked it)' : '') : ' · no header, volume taken from the number beside each UID')
+            + (d.volCol ? ' · volume from the column named <b>' + esc(d.volCol.name) + '</b>' + (d.picked ? ' (you picked it)' : '') : (d.lines ? ' · no header, volume taken from the number beside each UID' : ' · typed by hand, no file'))
             + (d.uidCol ? ' · UID from <b>' + esc(d.uidCol.name) + '</b>' : '')
-            + ' · <b>' + N(n) + '</b> UIDs · total volume <b>' + fmt(d.total || 0) + '</b></div>';
+            + ' · <b>' + N(n) + '</b> UIDs · total volume <b>' + fmt(d.total || 0) + '</b>'
+            + (d.manual ? ' · <span class="badge lime">' + N(d.manual) + ' typed by hand</span>' : '')
+            + ((d.manualSkipped || 0) ? ' · <span class="badge amber">' + N(d.manualSkipped) + ' typed line(s) unreadable</span>' : '') + '</div>';
           // "31 accounts, 30 of them have not traded" is the answer, not an empty board — say it before the upload.
           var zero = (d.zeroN > 0) ? '<div class="line' + (d.zeroN >= (d.rows || n) ? ' down' : '') + '" style="margin-top:4px"><span class="badge' + (d.zeroN >= (d.rows || n) ? ' red' : ' amber') + '">' + N(d.zeroN) + ' of ' + N(d.rows || n) + ' at zero volume</span> ' + (d.zeroN >= (d.rows || n) ? 'nobody in this file has traded yet — uploading it leaves the board empty' : 'they are registrations, not rankings, and stay off the public board') + '</div>' : '';
           var skipped = (d.skippedN || 0) ? '<div class="line" style="margin-top:4px"><span class="badge amber">' + N(d.skippedN) + ' line' + (d.skippedN > 1 ? 's' : '') + ' skipped</span> ' + (d.skipped || []).map(function (x) { return 'line ' + x.line + ': ' + esc(x.why) + (x.text ? ' <span class="mono meta">' + esc(x.text) + '</span>' : ''); }).join(' · ') + ((d.skippedN > (d.skipped || []).length) ? ' · …' : '') + '</div>' : '<div class="line up" style="margin-top:4px">every line was read</div>';
@@ -1741,18 +1778,18 @@
           bvCol = b.getAttribute('data-bvcol'); setStat('bvSt', 'reading volume from "' + bvCol + '" — press Preview');
           $('bvPreview').click();
         });
-        $('bvPreview').onclick = function () { post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol }).then(function (j) {
+        $('bvPreview').onclick = function () { post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol, manual: manText() }).then(function (j) {
           setStat('bvSt', j && j.ok ? (j.n + ' UIDs parsed' + ((j.diag && j.diag.skippedN) ? ' · ' + j.diag.skippedN + ' skipped' : '')) : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok && !(j.diag && j.diag.skippedN)));
           $('bvTable').innerHTML = (j && j.ok) ? diagHtml(j.diag, j.rows, j.n) : ((j && j.diag) ? diagHtml(j.diag, [], 0) : '<div class="line">nothing could be read from that text</div>');
         }); };
         $('bvUpload').onclick = function () {
           // check the text first so the confirm can name what is about to be dropped — the owner should never find out
           // about a skipped line after the table has already been replaced
-          post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol }).then(function (pv) {
+          post('/api/admin/bybitvol', { text: $('bvText').value, preview: true, col: bvCol, manual: manText() }).then(function (pv) {
             if (!pv || !pv.ok) { setStat('bvSt', (pv && (pv.hint || pv.error)) || 'nothing could be read', false); $('bvTable').innerHTML = (pv && pv.diag) ? diagHtml(pv.diag, [], 0) : ''; return; }
             var d = pv.diag || {}, warn = (d.skippedN ? d.skippedN + ' line' + (d.skippedN > 1 ? 's' : '') + ' will be DROPPED (open Preview to see which).' + String.fromCharCode(10) + String.fromCharCode(10) : '');
             if (!confirm(warn + 'Replace this season\'s Bybit volume report with ' + pv.n + ' UIDs, total volume ' + fmt(d.total || 0) + '?' + ($('bvFinal').checked ? String.fromCharCode(10) + 'Marked FINAL — the $200 pays out from this file.' : ''))) return;
-            post('/api/admin/bybitvol', { text: $('bvText').value, final: $('bvFinal').checked, col: bvCol }).then(function (j) { setStat('bvSt', j && j.ok ? ('uploaded: ' + j.n + ' UIDs, ' + (j.snapshot && j.snapshot.n) + ' on the board') : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok)); load(); });
+            post('/api/admin/bybitvol', { text: $('bvText').value, final: $('bvFinal').checked, col: bvCol, manual: manText() }).then(function (j) { setStat('bvSt', j && j.ok ? ('uploaded: ' + j.n + ' UIDs, ' + (j.snapshot && j.snapshot.n) + ' on the board') : ((j && (j.hint || j.error)) || 'error'), !!(j && j.ok)); load(); });
           });
         };
         $('bvClear').onclick = function () { if (!confirm('Clear this season\'s report? The board goes empty until the next upload.')) return; post('/api/admin/bybitvol', { clear: true }).then(function () { setStat('bvSt', 'cleared'); load(); }); };

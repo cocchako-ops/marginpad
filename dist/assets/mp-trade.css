@@ -272,6 +272,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .fb-mx b{display:block;font:800 11.5px 'Familjen Grotesk',system-ui,sans-serif;color:#0ac2d6}
 .fb-mx span{display:block;margin-top:2px;font:600 10.5px 'Familjen Grotesk',system-ui,sans-serif;color:#9aa3ad;line-height:1.4}
 .fb-mx:hover{border-color:#0ac2d6}
+.fb-mxs:empty{display:none}  /* the slot is filled when the fee window opens; empty it must take no space */
 
 /* premium gold ticket — base-scope overrides so the gold P&L / left stripe / Paper Trade win on every viewport (the earlier rules landed inside a media block) */
 .pp.pp-gold{border-left-color:#f0c35a!important;}.pp.pp-gold .pp-sym,.pp.pp-gold .pp-pnl .big{color:#f5cf6a!important;}.pp.pp-gold .pp-btns .pt{color:#1a1400!important;background:linear-gradient(180deg,#ffe08a,#efb63a)!important;border:1px solid #f0c35a!important;font-weight:800!important;}.pp.pp-gold .pp-btns .ch{color:#f0c35a!important;border-color:rgba(240,195,90,.5)!important;}.pp.pp-gold .pp-btns .ed{color:#e0b85a!important;border-color:rgba(240,195,90,.4)!important;}
