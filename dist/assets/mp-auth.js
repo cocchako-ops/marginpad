@@ -2421,7 +2421,7 @@
     Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: '4% off fees with code MARGINPAD', code: 'MARGINPAD' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
-    OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: function (s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }, perk: 'pro tools' },
+    OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing — the join page attributes (2026-09-13) */, perk: 'pro tools' },
     Gate: { c: '#3361ff', no: 'US', ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103', deep: function (s) { return 'https://www.gate.com/futures/USDT/' + s + '_USDT?ref=VFIWB10KUG'; }, perk: 'early listings' },
     KuCoin: { c: '#23af91', no: 'US', ref: 'https://www.kucoin.com/r/rf/VHP8AYKY', deep: function (s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }, perk: 'altcoins' },
     Kraken: { c: '#7b5cff', no: '', ref: 'https://invite.kraken.com/JDNW/guj2tf28', deep: null, perk: 'regulated' },

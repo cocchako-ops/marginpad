@@ -12457,7 +12457,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'cbe7dfde';
+const ASSET_V = 'b2cdcbbd';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18840,9 +18840,10 @@ function handleExchangeGo(url) {
   const sym = String(url.searchParams.get('sym') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'BTC';
   const CFG = {
     // web = correct pair page (always the fallback). scheme/host/pkg = the app deep link (best-effort per app).
-    binance: { name: 'Binance', web: 'https://www.binance.com/en/futures/' + sym + 'USDT', scheme: 'bnc', host: 'app.binance.com/futures/' + sym + 'USDT', pkg: 'com.binance.dev' },
-    bybit: { name: 'Bybit', web: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT', scheme: 'bybitapp', host: 'open/route/trade?symbol=' + sym + 'USDT', pkg: 'com.bybit.app' },
-    mexc: { name: 'MEXC', web: 'https://www.mexc.com/futures/' + sym + '_USDT', scheme: 'mexc', host: 'futures/' + sym + '_USDT', pkg: 'com.mexc.mexctrade' },
+    // web fallbacks carry our referral codes (2026-09-13, owner: "do the pair links earn commission?") — same codes as window.mpEx
+    binance: { name: 'Binance', web: 'https://www.binance.com/en/futures/' + sym + 'USDT?ref=MAOZM9DS', scheme: 'bnc', host: 'app.binance.com/futures/' + sym + 'USDT', pkg: 'com.binance.dev' },
+    bybit: { name: 'Bybit', web: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT?ref=LZKBERJ', scheme: 'bybitapp', host: 'open/route/trade?symbol=' + sym + 'USDT', pkg: 'com.bybit.app' },
+    mexc: { name: 'MEXC', web: 'https://futures.mexc.com/exchange/' + sym + '_USDT?inviteCode=GND4jI97o0', scheme: 'mexc', host: 'futures/' + sym + '_USDT', pkg: 'com.mexc.mexctrade' },
   };
   if (ex === 'moon') return new Response('', { status: 302, headers: { location: 'https://moon.com/?offer=marginpad', 'cache-control': 'no-store' } }); // no public app scheme — straight to the ref link
   if (ex === 'hyperliquid') return new Response('', { status: 302, headers: { location: 'https://app.hyperliquid.xyz/join/MARGINPAD', 'cache-control': 'no-store' } }); // the referral rides on /join only — a /trade deep link would lose it
