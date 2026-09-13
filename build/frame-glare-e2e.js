@@ -46,11 +46,37 @@ withBrowser(async b => {
     rows.push({ f, ...m });
   }
   rows.sort((a, b2) => b2.mean - a.mean);
-  let fail = 0;
+  let fail = 0, bright = 0;
   const base = rows.find(r => r.f === 'default');
   console.log('ground luminance behind the card text (white text needs this LOW). default =', base.mean);
   console.log('frame'.padEnd(14), 'mean', ' peak', ' %>150');
-  rows.forEach(r => { const bad = r.mean > base.mean + 14; if (bad) fail++; console.log((bad ? '  FAIL ' : '  ok   ') + r.f.padEnd(14), String(r.mean).padStart(5), String(r.peak).padStart(5), String(r.brightPct).padStart(6) + (bad ? '   washes the text out' : '')); });
-  console.log(String.fromCharCode(10) + (rows.length - fail) + ' frames readable, ' + fail + ' too bright');
+  rows.forEach(r => { const bad = r.mean > base.mean + 14; if (bad) { fail++; bright++; } console.log((bad ? '  FAIL ' : '  ok   ') + r.f.padEnd(14), String(r.mean).padStart(5), String(r.peak).padStart(5), String(r.brightPct).padStart(6) + (bad ? '   washes the text out' : '')); });
+
+  // ---- the picker: ornament must be sized to the thumbnail and stay inside its tile ----------------------------
+  // The frame classes are shared between the profile card and the Vault picker thumbnail (.prev.lbm-card.frame-x),
+  // so a fixed-px band sized for a 380x468 card spills over the neighbouring tiles. Every length scales with --fs.
+  const pick = await p.evaluate(() => {
+    const out = [];
+    for (const id of ['regalia', 'supernova']) {
+      const c = document.querySelector('.fcard[data-item="' + id + '"]') || document.querySelector('.fcard .prev.frame-' + id + '')?.closest('.fcard');
+      if (!c) { out.push({ id, found: false }); continue; }
+      c.scrollIntoView({ block: 'center' });
+      const prev = c.querySelector('.prev'); if (!prev) { out.push({ id, found: false }); continue; }
+      const pad = parseFloat(getComputedStyle(c).paddingTop) || 0;
+      const fsv = parseFloat(getComputedStyle(prev).getPropertyValue('--fs')) || 1;
+      const reach = Math.abs(parseFloat(getComputedStyle(prev, '::after').inset || getComputedStyle(prev, '::after').top) || 0);
+      const outer = getComputedStyle(prev, '::before').content;
+      out.push({ id, found: true, fs: fsv, reach: +reach.toFixed(2), pad, outerOff: outer === 'none' });
+    }
+    return out;
+  });
+  console.log(String.fromCharCode(10) + 'picker thumbnails:');
+  pick.forEach(x => {
+    if (!x.found) { fail++; console.log('  FAIL ' + x.id + ': no picker card'); return; }
+    const okScale = x.fs < 0.6, okFit = x.reach <= x.pad + 0.5, okOuter = x.outerOff;
+    if (!okScale || !okFit || !okOuter) fail++;
+    console.log((okScale && okFit && okOuter ? '  ok   ' : '  FAIL ') + x.id.padEnd(11) + ' scale ' + x.fs + ' · band reaches ' + x.reach + 'px into a ' + x.pad + 'px padding' + (okOuter ? ' · outer ring off here' : ' · OUTER RING STILL ON (reads as a stray line)'));
+  });
+  console.log(String.fromCharCode(10) + (rows.length - bright) + ' frames readable, ' + bright + ' too bright · ' + (fail - bright) + ' picker problems');
   process.exitCode = fail ? 1 : 0;
 });
