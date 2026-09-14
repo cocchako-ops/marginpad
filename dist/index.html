@@ -96,15 +96,21 @@
   /* ================= live background (desktop only) ================= */
   .bgfx{display:none;}
   @media(min-width:941px){
+    /* body carries an opaque --bg, and a z-index:-1 layer paints BELOW block backgrounds - so the
+       aurora was being painted over by the page itself. The ground colour moves up to html, which
+       paints first, and body gets out of the way. Same tone, nothing else moves. (2026-09-14) */
+    html{background:var(--bg);}
+    body{background:transparent;}
     .bgfx{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
     .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
-    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);animation:au1 46s ease-in-out infinite alternate;}
-    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);animation:au2 58s ease-in-out infinite alternate;}
-    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);animation:au1 70s ease-in-out infinite alternate-reverse;}
+    /* the drift is driven by the rAF loop at the foot of this page, not by @keyframes: the owner's
+       Windows has animation effects off, which silences every @keyframes on his machine. */
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);transform:translate(calc(9vw * var(--d1,0)),calc(7vh * var(--d1,0)));}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);transform:translate(calc(-8vw * var(--d2,0)),calc(-6vh * var(--d2,0)));}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);transform:translate(calc(-7vw * var(--d3,0)),calc(6vh * var(--d3,0)));}
     #bgline{position:absolute;inset:0;width:100%;height:100%;}
   }
-  @keyframes au1{from{transform:translate(0,0);}to{transform:translate(9vw,7vh);}}
-  @keyframes au2{from{transform:translate(0,0);}to{transform:translate(-8vw,-6vh);}}
+  /* au1 / au2 keyframes retired 2026-09-14 - the drift is on the rAF loop now, see the bgfx script. */
 
   /* ================= header — same as the live homepage ================= */
   header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:var(--bg);contain:paint;border-bottom:1px solid var(--line);} /* opaque, no blur (2026-09-12): mp-nav.js already forces body>header to a solid #0a0b0d, so the translucent + backdrop-filter pair here was dead code that only cost GPU; the member card must never show through the stuck block */
@@ -930,10 +936,10 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </style>
 
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 </head>
 <body>
 
@@ -2091,6 +2097,19 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   (function(){
     if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
     var cv=document.getElementById('bgline');if(!cv)return;
+    /* three slow sines, one per blob, written as custom properties on .bgfx. A tick every 120 ms is
+       plenty for a 46-second drift and costs nothing beside the canvas that is already redrawing. */
+    (function(){
+      var fx=document.querySelector('.bgfx'); if(!fx)return;
+      var t0=Date.now();
+      setInterval(function(){
+        if(document.hidden)return;
+        var t=(Date.now()-t0)/1000;
+        fx.style.setProperty('--d1',(0.5+0.5*Math.sin(t/46*Math.PI*2)).toFixed(4));
+        fx.style.setProperty('--d2',(0.5+0.5*Math.sin(t/58*Math.PI*2+1.7)).toFixed(4));
+        fx.style.setProperty('--d3',(0.5+0.5*Math.sin(t/70*Math.PI*2+3.1)).toFixed(4));
+      },120);
+    })();
     var g=cv.getContext('2d'),W=0,H=0;
     function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
     size();var rs;addEventListener('resize',function(){clearTimeout(rs);rs=setTimeout(size,200);});
