@@ -5,8 +5,8 @@
      API: an open carries a cid; the same cid again returns the SAME position (idempotent), the journal holds one open
      SYNC: a client-synced local twin of a server-filled open (same cid, or the old-bundle heuristic: same symbol/side/leverage, margin
            within 5%, within 90 s) is dropped; a different symbol, a different size or an unrelated cid is kept
-     BROWSER: the Paper Trade terminal as a signed-in member with /api/trade/open delayed 3 s by request interception — exactly the
-           condition that used to double the trade — ends with ONE open position (the server one) in localStorage and on the server,
+     BROWSER: the Paper Trade terminal as a signed-in member with /api/trade/open delayed 3 s by request interception - exactly the
+           condition that used to double the trade - ends with ONE open position (the server one) in localStorage and on the server,
            and the button reads "Opening…" while it waits
    Uses a throwaway member (POST /api/admin/e2euser) and removes it at the end. Run: node build/open-dup-e2e.js */
 const fs = require('fs'), path = require('path');
@@ -79,6 +79,6 @@ const opens = async () => { const j = (await fetch(ORIGIN + '/api/admin/journal?
   // ---- cleanup
   try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}
   try { await post('/api/admin/activity?purge=' + encodeURIComponent(TAG)); } catch (e) {}
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

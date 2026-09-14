@@ -12,15 +12,15 @@
     {
      "h": "The discretion tax",
      "v": "sysloop",
-     "p": "Every discretionary decision is a chance for tilt, FOMO and hindsight to leak in. A system — fixed rules for setup, entry, exit and size — removes the decision at the moment of maximum emotion. Most traders do not need better instincts; they need fewer opportunities to use them."
+     "p": "Every discretionary decision is a chance for tilt, FOMO and hindsight to leak in. A system - fixed rules for setup, entry, exit and size - removes the decision at the moment of maximum emotion. Most traders do not need better instincts; they need fewer opportunities to use them."
     },
     {
      "h": "Rules make results measurable",
      "p": "If your entries are moods, your journal reviews are astrology. If your entries are rules, every trade is a data point: THIS setup, taken THIS way, produces THIS expectancy. Only rule-based trading can actually be improved, because only it can be measured."
     },
     {
-     "h": "Discretion has a place — at the design desk",
-     "p": "The skill does not disappear; it moves. You use judgement to DESIGN and REVIEW the rules — weekly, calmly, away from live prices. The machine (or the checklist) executes. Judgement at the desk, discipline at the trigger."
+     "h": "Discretion has a place - at the design desk",
+     "p": "The skill does not disappear; it moves. You use judgement to DESIGN and REVIEW the rules - weekly, calmly, away from live prices. The machine (or the checklist) executes. Judgement at the desk, discipline at the trigger."
     }
    ],
    "quiz": [
@@ -38,7 +38,7 @@
      "q": "Mood-based entries make your journal…",
      "o": [
       "More fun",
-      "Unmeasurable — you cannot improve what you cannot compare",
+      "Unmeasurable - you cannot improve what you cannot compare",
       "Shorter",
       "Perfect"
      ],
@@ -48,7 +48,7 @@
      "q": "In systematic trading, human judgement belongs…",
      "o": [
       "At the live trigger",
-      "At the design desk — building and reviewing rules",
+      "At the design desk - building and reviewing rules",
       "Nowhere",
       "In chat rooms"
      ],
@@ -62,15 +62,15 @@
    "cards": [
     {
      "h": "The cheapest question in trading",
-     "p": "Before risking a cent — or even paper time — you can ask history: had I traded these exact rules for the last year, what would have happened? That is a backtest. It will not promise the future, but it executes rules with zero hindsight and zero mercy."
+     "p": "Before risking a cent - or even paper time - you can ask history: had I traded these exact rules for the last year, what would have happened? That is a backtest. It will not promise the future, but it executes rules with zero hindsight and zero mercy."
     },
     {
      "h": "What a backtest actually tells you",
-     "p": "Not \\u201cthis will make money\\u201d — rather: the strategy's PROFILE. Win rate, average R, worst losing streak, deepest drawdown, how many trades per month. You already know from r10 that these numbers, with sizing, decide survival. The backtest hands them to you in minutes."
+     "p": "Not \\u201cthis will make money\\u201d - rather: the strategy's PROFILE. Win rate, average R, worst losing streak, deepest drawdown, how many trades per month. You already know from r10 that these numbers, with sizing, decide survival. The backtest hands them to you in minutes."
     },
     {
      "h": "Respect its limits",
-     "p": "Backtests assume fills at historical prices — real spread, slippage and funding will be worse. Treat backtest results as the OPTIMISTIC ceiling, subtract costs mentally, and only trust profiles that survive that haircut with room to spare."
+     "p": "Backtests assume fills at historical prices - real spread, slippage and funding will be worse. Treat backtest results as the OPTIMISTIC ceiling, subtract costs mentally, and only trust profiles that survive that haircut with room to spare."
     }
    ],
    "quiz": [
@@ -88,7 +88,7 @@
      "q": "Backtest results versus live results are usually…",
      "o": [
       "Identical",
-      "Optimistic — real costs (slippage, fees, funding) make live worse",
+      "Optimistic - real costs (slippage, fees, funding) make live worse",
       "Pessimistic",
       "Random"
      ],
@@ -106,7 +106,7 @@
     }
    ],
    "try": {
-    "p": "Run your first real backtest — EMA cross or RSI rules on live-quality data, one click, full stats.",
+    "p": "Run your first real backtest - EMA cross or RSI rules on live-quality data, one click, full stats.",
     "label": "Strategy Backtester →",
     "href": "/crypto-backtester/"
    }
@@ -118,7 +118,7 @@
     {
      "h": "The perfect backtest that never works",
      "v": "overfit",
-     "p": "Tune a strategy's parameters long enough and it will fit the past PERFECTLY — because it has memorised the noise, not learned the signal. That is overfitting: the more beautiful the backtest curve after heavy tuning, the more suspicious you should be."
+     "p": "Tune a strategy's parameters long enough and it will fit the past PERFECTLY - because it has memorised the noise, not learned the signal. That is overfitting: the more beautiful the backtest curve after heavy tuning, the more suspicious you should be."
     },
     {
      "h": "Symptoms",
@@ -168,7 +168,7 @@
    "cards": [
     {
      "h": "Never grade on the training data",
-     "p": "The fix for overfitting is discipline in testing: design and tune your rules on ONE slice of history (in-sample), then run them UNTOUCHED on a slice they have never seen (out-of-sample). Only the out-of-sample result counts — it is the closest thing to the future you can buy."
+     "p": "The fix for overfitting is discipline in testing: design and tune your rules on ONE slice of history (in-sample), then run them UNTOUCHED on a slice they have never seen (out-of-sample). Only the out-of-sample result counts - it is the closest thing to the future you can buy."
     },
     {
      "h": "Walk-forward: repeat the honesty",
@@ -176,7 +176,7 @@
     },
     {
      "h": "Paper trading is the final out-of-sample",
-     "p": "After the tests, run the system on live prices with fake money — the one dataset that cannot be peeked at: the present. If backtest, out-of-sample AND paper agree, you have something. If they disagree, believe the most live one."
+     "p": "After the tests, run the system on live prices with fake money - the one dataset that cannot be peeked at: the present. If backtest, out-of-sample AND paper agree, you have something. If they disagree, believe the most live one."
     }
    ],
    "quiz": [
@@ -204,7 +204,7 @@
      "q": "Paper trading serves as…",
      "o": [
       "A waste of time",
-      "The final out-of-sample test — the present cannot be peeked at",
+      "The final out-of-sample test - the present cannot be peeked at",
       "Marketing",
       "A tax shelter"
      ],
@@ -226,7 +226,7 @@
     },
     {
      "h": "Test the machine like a strategy",
-     "p": "A bot can lose money two ways: bad rules or bad code. Test them separately — rules in the backtester, code against a paper-trading API where a bug costs nothing. Only after both survive do real funds enter the picture, small first."
+     "p": "A bot can lose money two ways: bad rules or bad code. Test them separately - rules in the backtester, code against a paper-trading API where a bug costs nothing. Only after both survive do real funds enter the picture, small first."
     }
    ],
    "quiz": [
@@ -262,7 +262,7 @@
     }
    ],
    "try": {
-    "p": "MarginPad has a free paper-trading REST API built exactly for this — test a bot with zero risk.",
+    "p": "MarginPad has a free paper-trading REST API built exactly for this - test a bot with zero risk.",
     "label": "Bot API Docs →",
     "href": "/trading-api/"
    }
@@ -274,11 +274,11 @@
     {
      "h": "Automation is not abandonment",
      "v": "checklist",
-     "p": "A running system needs a dashboard and a leash: daily checks that fills match intentions, that risk per trade is what you set, that the market regime still resembles the one it was built for. Silent drift — in costs, in volatility, in your own rule-following — kills slowly."
+     "p": "A running system needs a dashboard and a leash: daily checks that fills match intentions, that risk per trade is what you set, that the market regime still resembles the one it was built for. Silent drift - in costs, in volatility, in your own rule-following - kills slowly."
     },
     {
      "h": "Define death in advance",
-     "p": "Before deploying, write the kill criteria: a maximum drawdown (say 15%), a losing streak beyond backtest-worst, or a regime break. Hit any of them and the system STOPS — no renegotiation with hope. You learned this personally in r6; machines deserve the same discipline."
+     "p": "Before deploying, write the kill criteria: a maximum drawdown (say 15%), a losing streak beyond backtest-worst, or a regime break. Hit any of them and the system STOPS - no renegotiation with hope. You learned this personally in r6; machines deserve the same discipline."
     },
     {
      "h": "Incidents will happen",
@@ -290,7 +290,7 @@
      "q": "Kill criteria should be defined…",
      "o": [
       "After the drawdown",
-      "Before deployment — and honoured without renegotiation",
+      "Before deployment - and honoured without renegotiation",
       "Never",
       "By the exchange"
      ],
@@ -325,15 +325,15 @@
     {
      "h": "Edges are seasonal",
      "v": "cycle",
-     "p": "No single system works forever — trends end, volatility regimes flip, crowds adapt. Professionals run a small PORTFOLIO of uncorrelated systems: a trend-follower, a mean-reverter, perhaps a funding harvester. When one sleeps, another usually eats."
+     "p": "No single system works forever - trends end, volatility regimes flip, crowds adapt. Professionals run a small PORTFOLIO of uncorrelated systems: a trend-follower, a mean-reverter, perhaps a funding harvester. When one sleeps, another usually eats."
     },
     {
      "h": "Retiring a system",
-     "p": "The hardest skill: shutting down a strategy you love. The criteria are the same kill rules from s6, plus one more — if the structural reason it worked has disappeared (a fee change, a regime shift, everyone doing it), retire it while it still has dignity. Track record is history, not entitlement."
+     "p": "The hardest skill: shutting down a strategy you love. The criteria are the same kill rules from s6, plus one more - if the structural reason it worked has disappeared (a fee change, a regime shift, everyone doing it), retire it while it still has dignity. Track record is history, not entitlement."
     },
     {
      "h": "The craft, complete",
-     "p": "Look at the arc: mechanics (courses 1-2), survival (3), reading the tape (4-5)… and now process that runs without your moods. Whether you automate or stay manual, the destination is the same: a written, measured, reviewed edge — and a trader calm enough to follow it."
+     "p": "Look at the arc: mechanics (courses 1-2), survival (3), reading the tape (4-5)… and now process that runs without your moods. Whether you automate or stay manual, the destination is the same: a written, measured, reviewed edge - and a trader calm enough to follow it."
     }
    ],
    "quiz": [
@@ -341,7 +341,7 @@
      "q": "Professionals run multiple systems because…",
      "o": [
       "More is fancier",
-      "Edges are seasonal — uncorrelated systems smooth the equity curve",
+      "Edges are seasonal - uncorrelated systems smooth the equity curve",
       "Exchanges require it",
       "Bots get lonely"
      ],
@@ -369,7 +369,7 @@
     }
    ],
    "try": {
-    "p": "The full loop is yours now — run it where mistakes are free, and let the levels track the road.",
+    "p": "The full loop is yours now - run it where mistakes are free, and let the levels track the road.",
     "label": "Paper Trade →",
     "href": "/paper-trade"
    }

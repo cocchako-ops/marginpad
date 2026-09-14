@@ -98,6 +98,6 @@ const WATCH = () => {
     try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}
   }
   const bad = out.filter(l => l.slice(0, 4) === 'FAIL').length;
-  console.log('\nUID ' + uidE + ' — pass ' + (out.length - bad) + ' fail ' + bad);
+  console.log('\nUID ' + uidE + ' - pass ' + (out.length - bad) + ' fail ' + bad);
   process.exit(bad ? 1 : 0);
 })();

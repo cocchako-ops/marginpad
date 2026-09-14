@@ -93,7 +93,7 @@ function simulate(cfg) {
       if (f.hoursEx) { const h = new Date(b[i].time * 1000).getUTCHours(); if (f.hoursEx.includes(h)) continue; }
       if (f.maxExt) { const ext = Math.abs(b[i].close - st.line[i]) / st.atr[i]; if (ext > f.maxExt) continue; }
       if (f.flipBodyMax) { if (Math.abs(b[i].close - b[i].open) / st.atr[i] > f.flipBodyMax) continue; }
-      if (open) { // engine: a new flip abandons the tracked one (opposite flip) — already handled by flipBack exit, but same-dir can't happen
+      if (open) { // engine: a new flip abandons the tracked one (opposite flip) - already handled by flipBack exit, but same-dir can't happen
         continue;
       }
       const atr = st.atr[i], sigPx = b[i].close;

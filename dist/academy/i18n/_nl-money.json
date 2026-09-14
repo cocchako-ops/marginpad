@@ -17,11 +17,11 @@
     },
     {
      "h": "Tien omhoog, tien omlaag, niet gelijk",
-     "p": "Begin met $100. Tel er 10% bij op en je hebt $110. Trek er nu 10% af — maar 10% van $110 is $11, niet $10. Je eindigt op $99. De winst werd gemeten tegen $100 en het verlies tegen $110, dus ze heffen elkaar niet op. Draai de volgorde om en je komt weer op $99 uit: $100 omlaag naar $90, dan $9 omhoog."
+     "p": "Begin met $100. Tel er 10% bij op en je hebt $110. Trek er nu 10% af - maar 10% van $110 is $11, niet $10. Je eindigt op $99. De winst werd gemeten tegen $100 en het verlies tegen $110, dus ze heffen elkaar niet op. Draai de volgorde om en je komt weer op $99 uit: $100 omlaag naar $90, dan $9 omhoog."
     },
     {
      "h": "Procentuele veranderingen vermenigvuldigen",
-     "p": "Er is een kortere weg. Een winst van 10% is vermenigvuldigen met 1.10; een verlies van 10% is vermenigvuldigen met 0.90. Doe allebei en je krijgt 1.10 maal 0.90, wat 0.99 is — een nettoverlies van 1%. Rijg zo een hele maand aan trades aan elkaar, en de vermenigvuldiging, niet de optelling, is wat je account werkelijk deed."
+     "p": "Er is een kortere weg. Een winst van 10% is vermenigvuldigen met 1.10; een verlies van 10% is vermenigvuldigen met 0.90. Doe allebei en je krijgt 1.10 maal 0.90, wat 0.99 is - een nettoverlies van 1%. Rijg zo een hele maand aan trades aan elkaar, en de vermenigvuldiging, niet de optelling, is wat je account werkelijk deed."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Verliezen graven een dieper gat",
-     "p": "Verlies 50% van $1,000 en je hebt $500. Om terug te komen op $1,000 moet je er $500 bij doen — en $500 is 100% van wat je nog hebt. Een verlies van 50% heeft een winst van 100% nodig om ongedaan te maken. Het verlies en de reparatie zijn niet even groot, en dat zijn ze nooit."
+     "p": "Verlies 50% van $1,000 en je hebt $500. Om terug te komen op $1,000 moet je er $500 bij doen - en $500 is 100% van wat je nog hebt. Een verlies van 50% heeft een winst van 100% nodig om ongedaan te maken. Het verlies en de reparatie zijn niet even groot, en dat zijn ze nooit."
     },
     {
      "h": "De hersteltabel",
-     "p": "Loop hetzelfde rekenwerk de schaal af. 10% omlaag heeft ongeveer 11% terug nodig. 20% omlaag heeft 25% nodig. Een derde omlaag heeft 50% nodig. 50% omlaag heeft 100% nodig. 80% omlaag laat $200 van $1,000 over, dus je hebt $800 bovenop $200 nodig — dat is 400%. 90% omlaag heeft 900% nodig. De curve buigt niet zachtjes. Hij gaat verticaal."
+     "p": "Loop hetzelfde rekenwerk de schaal af. 10% omlaag heeft ongeveer 11% terug nodig. 20% omlaag heeft 25% nodig. Een derde omlaag heeft 50% nodig. 50% omlaag heeft 100% nodig. 80% omlaag laat $200 van $1,000 over, dus je hebt $800 bovenop $200 nodig - dat is 400%. 90% omlaag heeft 900% nodig. De curve buigt niet zachtjes. Hij gaat verticaal."
     },
     {
      "h": "Bewijs het zelf",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Wat dit aan jou verandert",
-     "p": "Daarom letten professionals meer op drawdown — hoe ver een account onder zijn hoogste punt is gezakt — dan op rendement. Een reeks kleine verliezen is overleefbaar rekenwerk. Eén groot verlies is een ander soort probleem. Alles na deze kaart, van positiegrootte tot stop-losses, bestaat om losse verliezen klein genoeg te houden dat herstel gewoon blijft."
+     "p": "Daarom letten professionals meer op drawdown - hoe ver een account onder zijn hoogste punt is gezakt - dan op rendement. Een reeks kleine verliezen is overleefbaar rekenwerk. Eén groot verlies is een ander soort probleem. Alles na deze kaart, van positiegrootte tot stop-losses, bestaat om losse verliezen klein genoeg te houden dat herstel gewoon blijft."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Drie getallen maken een uitkomst",
-     "p": "Winst en verlies — P&L — komt uit precies drie getallen: de prijs waarop je instapte, de prijs waarop je uitstapte, en hoeveel eenheden je hield. Verder komt er niets in de berekening. Voor een long, een weddenschap dat de prijs stijgt, is P&L de uitstapprijs min de entryprijs, maal het aantal eenheden."
+     "p": "Winst en verlies - P&L - komt uit precies drie getallen: de prijs waarop je instapte, de prijs waarop je uitstapte, en hoeveel eenheden je hield. Verder komt er niets in de berekening. Voor een long, een weddenschap dat de prijs stijgt, is P&L de uitstapprijs min de entryprijs, maal het aantal eenheden."
     },
     {
      "h": "Een long, uitgerekend",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "De beweging kies je niet",
-     "p": "Jij bepaalt niet of Bitcoin vandaag 2% beweegt. Je bepaalt precies één getal: hoe groot je positie is. Al het andere — richting, timing, volatiliteit — is een gok of een cadeau. Positiegrootte is de enige invoer in de hele berekening die volledig van jou is, en dat maakt het de echte beslissing die je neemt."
+     "p": "Jij bepaalt niet of Bitcoin vandaag 2% beweegt. Je bepaalt precies één getal: hoe groot je positie is. Al het andere - richting, timing, volatiliteit - is een gok of een cadeau. Positiegrootte is de enige invoer in de hele berekening die volledig van jou is, en dat maakt het de echte beslissing die je neemt."
     },
     {
      "h": "Dezelfde beweging, elke uitkomst die je wilt",
@@ -214,15 +214,15 @@
     },
     {
      "h": "De grootte volgt uit de stop",
-     "p": "Nu loopt het rekenwerk achteruit. Je wilt ETH kopen op $2,000 met een stop-loss op $1,960 — een order die de trade sluit als de prijs daar komt. De afstand is $40 per munt. Je riskeert in totaal $10, dus delen: $10 gedeeld door $40 is 0.25 ETH. Dat is je grootte, een positie van $500."
+     "p": "Nu loopt het rekenwerk achteruit. Je wilt ETH kopen op $2,000 met een stop-loss op $1,960 - een order die de trade sluit als de prijs daar komt. De afstand is $40 per munt. Je riskeert in totaal $10, dus delen: $10 gedeeld door $40 is 0.25 ETH. Dat is je grootte, een positie van $500."
     },
     {
      "h": "Bredere stop, kleinere grootte",
-     "p": "Verander één ding. Zet de stop in plaats daarvan op $1,900, een afstand van $100 per munt. Het risico blijft $10, dus de grootte wordt $10 gedeeld door $100, oftewel 0.1 ETH — een positie van $200. De stop maakte de trade niet veiliger of riskanter. Hij veranderde hoeveel munten je bij hetzelfde vaste risico mag houden."
+     "p": "Verander één ding. Zet de stop in plaats daarvan op $1,900, een afstand van $100 per munt. Het risico blijft $10, dus de grootte wordt $10 gedeeld door $100, oftewel 0.1 ETH - een positie van $200. De stop maakte de trade niet veiliger of riskanter. Hij veranderde hoeveel munten je bij hetzelfde vaste risico mag houden."
     },
     {
      "h": "Waarom 1% en niet 10%",
-     "p": "Bij 1% risico kosten tien verliezen op rij je ongeveer 10% van het account, en de hersteltabel zegt dat een gat van 10% ruwweg 11% nodig heeft om te repareren. Bij 10% risico laten diezelfde tien verliezen ongeveer een derde over van waar je begon — een gat dat zo'n 187% nodig heeft om eruit te klimmen. Dezelfde trades, dezelfde vaardigheid, ander rekenwerk."
+     "p": "Bij 1% risico kosten tien verliezen op rij je ongeveer 10% van het account, en de hersteltabel zegt dat een gat van 10% ruwweg 11% nodig heeft om te repareren. Bij 10% risico laten diezelfde tien verliezen ongeveer een derde over van waar je begon - een gat dat zo'n 187% nodig heeft om eruit te klimmen. Dezelfde trades, dezelfde vaardigheid, ander rekenwerk."
     }
    ],
    "quiz": [
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Kosten worden berekend over het notioneel",
-     "p": "Een futures-fee is een percentage van de hele positiewaarde — het notioneel — en niet van het geld dat je inlegde. Open een positie van $6,000 en een taker-fee van 0.055% kost $3.30. Sluit hem en je betaalt opnieuw. De fee vraagt nooit hoeveel van je eigen geld er achter de trade zit. Hij ziet alleen de positiegrootte."
+     "p": "Een futures-fee is een percentage van de hele positiewaarde - het notioneel - en niet van het geld dat je inlegde. Open een positie van $6,000 en een taker-fee van 0.055% kost $3.30. Sluit hem en je betaalt opnieuw. De fee vraagt nooit hoeveel van je eigen geld er achter de trade zit. Hij ziet alleen de positiegrootte."
     },
     {
      "h": "Hefboom vermenigvuldigt de fee",
-     "p": "Hefboom laat een klein deel van je geld — de marge — een grotere positie beheren. Op 20x heeft een positie van $6,000 $300 marge nodig. De fee van $3.30 is 0.055% van de positie maar 1.1% van jouw $300. Heen en terug, in en uit, is dat 2.2% van je marge weg voordat de prijs ook maar bewogen heeft."
+     "p": "Hefboom laat een klein deel van je geld - de marge - een grotere positie beheren. Op 20x heeft een positie van $6,000 $300 marge nodig. De fee van $3.30 is 0.055% van de positie maar 1.1% van jouw $300. Heen en terug, in en uit, is dat 2.2% van je marge weg voordat de prijs ook maar bewogen heeft."
     },
     {
      "h": "Spread en slippage kosten ook",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Het hele ding, één keer",
-     "p": "Account $1,000. Risico 1%, dus $10. Entry ETH op $2,000, stop $1,960, afstand $40. De grootte is $10 gedeeld door $40, oftewel 0.25 ETH — een positie van $500. Doel $2,120 geeft $120 per munt, dus 0.25 munt maakt $30. Dat is 3R. De kosten heen en terug van 0.11% over $500 komen op $0.55, klein naast $30."
+     "p": "Account $1,000. Risico 1%, dus $10. Entry ETH op $2,000, stop $1,960, afstand $40. De grootte is $10 gedeeld door $40, oftewel 0.25 ETH - een positie van $500. Doel $2,120 geeft $120 per munt, dus 0.25 munt maakt $30. Dat is 3R. De kosten heen en terug van 0.11% over $500 komen op $0.55, klein naast $30."
     },
     {
      "h": "Het rekenwerk voorspelt niets",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Je hebt nu de hele berekening. Open de calculators en draai je eigen getallen — account, risico, stopafstand — tot het rekenwerk voor je grootte vanzelf gaat.",
+    "p": "Je hebt nu de hele berekening. Open de calculators en draai je eigen getallen - account, risico, stopafstand - tot het rekenwerk voor je grootte vanzelf gaat.",
     "label": "Open Calculators →"
    }
   }

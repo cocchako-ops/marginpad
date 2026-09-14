@@ -1,9 +1,9 @@
 // Limit orders E2E (2026-09-05). An order is a LEVEL, not a side: below the market it is a classic limit, above it
 // a breakout entry ("buy IF it gets to 83.80"). Both must fill, and both must fill AT the level.
-//   SERVER — place / list / cancel, the refusals that remain (wrong-side SL/TP, absurd price, one-way mode), and
+//   SERVER - place / list / cancel, the refusals that remain (wrong-side SL/TP, absurd price, one-way mode), and
 //   DETERMINISTIC fills in both directions: /api/admin/porders?run=1&px=SYM:price injects the price the fill engine
 //   sees, so the exact fill math is proven without waiting for the market to move.
-//   BROWSER — the Paper Trade terminal at 390px, the /charts quick trade and the mobile chart window: the
+//   BROWSER - the Paper Trade terminal at 390px, the /charts quick trade and the mobile chart window: the
 //   Market|Limit switch is reachable, the limit field appears, the hint states which way the market must move, a
 //   guest order is placed, shows in My Trades > Orders, and cancels.
 const fs = require('fs');
@@ -59,7 +59,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
   chk('order appears in the list', (l.body.orders || []).some(o => o.id === oid), { n: (l.body.orders || []).length });
   chk('a level below the market is stamped dir=down', (l.body.orders || []).filter(o => o.id === oid)[0].dir === 'down', { dir: (l.body.orders || []).filter(o => o.id === oid)[0].dir });
 
-  // An UPWARD level must fill when the market RISES through it — the case the first cut refused outright.
+  // An UPWARD level must fill when the market RISES through it - the case the first cut refused outright.
   const upCross = Math.round(px * 1.08); // above the order's own level (px*1.05): the market travelled through it
   const runUp = await admin('/api/admin/porders?run=1&nokl=1&uid=' + UID + '&px=BTC:' + upCross);
   const upFill = (runUp.filled || []).filter(f => f.id === upId)[0];
@@ -141,7 +141,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
     await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
     const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
     await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
-    await new Promise(r => setTimeout(r, 6000)); // let the live price arrive — the wrong-side hint needs it
+    await new Promise(r => setTimeout(r, 6000)); // let the live price arrive - the wrong-side hint needs it
 
     // REACHABILITY, not existence: elementFromPoint at the centre, in the default page state, no scrolling tricks.
     const sw = await page.evaluate(() => {
@@ -273,7 +273,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
   // The fill above is a REAL position in the production journal. Left open it would sit in active_srv forever and
   // the */10 sweep would price it on every run. Close it and cancel anything still resting.
   // (The injected fill price is one the market never printed, so the position often opens with its TP already
-  //  crossed and the normal SL/TP sweep settles it before we get here — `already_closed` is that, and it is proof
+  //  crossed and the normal SL/TP sweep settles it before we get here - `already_closed` is that, and it is proof
   //  the filled position joined the sweep like any other. Anything still open we close ourselves.)
   if (pos) { const c = await trade('/close', { id: pos.id }); chk('cleanup: test position closed (or already settled by the SL/TP sweep)', c.status === 200 ? !c.body.error : (c.body.error === 'already_closed' || c.body.error === 'not_found'), c.body && (c.body.error || 'ok')); }
   const leftover = await trade('/orders');
@@ -285,6 +285,6 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
 
   console.log(out.join('\n'));
   const p = out.filter(x => x[0] === 'P').length, f = out.filter(x => x[0] === 'F').length;
-  console.log('\nUID ' + UID + ' — pass ' + p + ' fail ' + f);
+  console.log('\nUID ' + UID + ' - pass ' + p + ' fail ' + f);
   if (f) process.exit(1);
 })().catch(e => { console.error(e); console.log(out.join('\n')); process.exit(1); });

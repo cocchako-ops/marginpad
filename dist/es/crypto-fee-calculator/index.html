@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>Calculadora de Comisiones Cripto — Costos Maker vs Taker | MarginPad</title>
+<title>Calculadora de Comisiones Cripto - Costos Maker vs Taker | MarginPad</title>
 <meta name="description" content="Calculadora gratuita de comisiones cripto: el tamaño de posición y las tasas maker/taker convertidos en el costo exacto de ida y vuelta, y cuánto ahorran las órdenes límite al mes." />
 <meta name="keywords" content="crypto fee calculator, maker taker fees, trading fee calculator" />
 <link rel="canonical" href="https://marginpad.io/es/crypto-fee-calculator/" />
@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-fee-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-fee-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Calculadora de Comisiones Cripto — Costos Maker vs Taker | MarginPad" />
+<meta property="og:title" content="Calculadora de Comisiones Cripto - Costos Maker vs Taker | MarginPad" />
 <meta property="og:description" content="Calculadora gratuita de comisiones cripto: el tamaño de posición y las tasas maker/taker convertidos en el costo exacto de ida y vuelta, y cuánto ahorran las órdenes límite al mes." />
 <meta property="og:url" content="https://marginpad.io/es/crypto-fee-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/crypto-fee-calculator.jpg" />
@@ -68,8 +68,8 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora de Comisiones Cripto","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/es/crypto-fee-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Comisiones Cripto","item":"https://marginpad.io/es/crypto-fee-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Por qué las comisiones maker son más bajas?","acceptedAnswer":{"@type":"Answer","text":"Las órdenes límite pendientes aportan la liquidez que hace utilizable el libro de órdenes, así que los exchanges las premian con comisiones más bajas o rebates; las órdenes a mercado consumen liquidez y pagan por la inmediatez."}},{"@type":"Question","name":"¿Dependen las comisiones del apalancamiento?","acceptedAnswer":{"@type":"Answer","text":"Las comisiones se aplican sobre el valor de la posición (margen por apalancamiento), así que subir el apalancamiento con el mismo margen aumenta la factura de comisiones proporcionalmente."}},{"@type":"Question","name":"¿Qué otros costos existen?","acceptedAnswer":{"@type":"Answer","text":"Los perpetuos intercambian funding cada 8 horas, y las órdenes a mercado pagan slippage. Las calculadoras de punto de equilibrio y de costo de funding calculan el viaje redondo completo."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Comisiones Cripto — Costos Maker vs Taker","url":"https://marginpad.io/es/crypto-fee-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-fee-calculator.jpg" />
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Comisiones Cripto - Costos Maker vs Taker","url":"https://marginpad.io/es/crypto-fee-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-fee-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -82,19 +82,19 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="calc"><div class="cgrid"><div class="f"><label for="pos">Tamaño de posición (USD)</label><input id="pos" type="number" inputmode="decimal" value="10000"></div><div class="f"><label for="taker">Comisión taker %</label><input id="taker" type="number" inputmode="decimal" value="0.055" step="0.001"></div><div class="f"><label for="maker">Comisión maker %</label><input id="maker" type="number" inputmode="decimal" value="0.02" step="0.001"></div><div class="f"><label for="trades">Operaciones por mes</label><input id="trades" type="number" inputmode="decimal" value="40"></div></div><div class="res" id="res"></div></div>
 <h2>Cómo se calcula</h2>
 <div class="frm">viaje redondo = 2 &times; posición &times; comisión% &nbsp;|&nbsp; mensual = viaje redondo &times; operaciones</div>
-<p>La diferencia entre las comisiones <strong>maker</strong> (órdenes límite pendientes) y <strong>taker</strong> (órdenes a mercado) parece minúscula por operación y enorme al año — un trader activo con posiciones de $10k puede entregarle al exchange una suma de cuatro cifras al año solo por impaciencia.</p>
+<p>La diferencia entre las comisiones <strong>maker</strong> (órdenes límite pendientes) y <strong>taker</strong> (órdenes a mercado) parece minúscula por operación y enorme al año - un trader activo con posiciones de $10k puede entregarle al exchange una suma de cuatro cifras al año solo por impaciencia.</p>
 <h2>Ejemplo resuelto</h2>
-<div class="ex">Posición de $10,000, 0.055% taker vs 0.02% maker, 40 operaciones/mes: el taker cuesta <b>$440/mes</b>, el maker <b>$160</b> — las órdenes límite ahorran <b>$3,360 al año</b>.</div>
+<div class="ex">Posición de $10,000, 0.055% taker vs 0.02% maker, 40 operaciones/mes: el taker cuesta <b>$440/mes</b>, el maker <b>$160</b> - las órdenes límite ahorran <b>$3,360 al año</b>.</div>
 <h2>FAQ</h2>
 <div class="faq"><details><summary>¿Por qué las comisiones maker son más bajas?</summary><p>Las órdenes límite pendientes aportan la liquidez que hace utilizable el libro de órdenes, así que los exchanges las premian con comisiones más bajas o rebates; las órdenes a mercado consumen liquidez y pagan por la inmediatez.</p></details><details><summary>¿Dependen las comisiones del apalancamiento?</summary><p>Las comisiones se aplican sobre el valor de la posición (margen por apalancamiento), así que subir el apalancamiento con el mismo margen aumenta la factura de comisiones proporcionalmente.</p></details><details><summary>¿Qué otros costos existen?</summary><p>Los perpetuos intercambian funding cada 8 horas, y las órdenes a mercado pagan slippage. Las calculadoras de punto de equilibrio y de costo de funding calculan el viaje redondo completo.</p></details></div>
 <h2>Herramientas relacionadas</h2>
 <div class="rel"><a href="/es/crypto-break-even-calculator/">Calculadora de punto de equilibrio</a><a href="/es/crypto-funding-cost-calculator/">Costo de funding</a><a href="/es/exchanges/">Comparar exchanges</a><a href="/es/crypto-profit-calculator/">Calculadora de beneficio</a></div>
 <div class="mprail"><div class="mprail-t">OPÉRALO DE VERDAD</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futuros &middot; hasta 100x &middot; liquidez profunda</span><i>&rarr;</i></a> <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Predice si sube o baja &middot; mercados 24/7</span><i>&rarr;</i></a></div>
-<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa — no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
+<p class="note">Gratis, sin registro, funciona por completo en tu navegador. Herramienta educativa - no es asesoría financiera. Practica la estrategia sin riesgo en el <a href="/es/paper-trade" style="color:var(--lime)">terminal de paper trading de MarginPad</a> antes de arriesgar dinero real.</p>
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,t=+document.getElementById('taker').value/100,m=+document.getElementById('maker').value/100,n=+document.getElementById('trades').value;var r=document.getElementById('res');if(!(p>0)){r.innerHTML='';return;}var rtT=2*p*t,rtM=2*p*m,moT=rtT*n,moM=rtM*n;r.innerHTML='<div class="rrow"><span class="k">Round trip as taker</span><span class="v dn">-'+rtT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Round trip as maker</span><span class="v">-'+rtM.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Monthly cost ('+n+' trades, taker)</span><span class="v dn">-'+moT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Limit orders save</span><span class="v up">+'+(moT-moM).toFixed(2)+' USD / month</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

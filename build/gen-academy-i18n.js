@@ -5,9 +5,9 @@
 
    Source of truth for course ORDER and lesson MECHANICS is the inline #acadData in
    dist/academy/index.html. Translations only carry text: the page merges each pack onto a pristine
-   EN structure, and it does that per-lesson with a STRICT shape check —
+   EN structure, and it does that per-lesson with a STRICT shape check -
      tl.cards.length === L.cards.length   and   tl.quiz[i].o.length === q.o.length
-   — so a translated lesson with the wrong number of cards or options is silently dropped and the
+   - so a translated lesson with the wrong number of cards or options is silently dropped and the
    user reads that lesson in English. That failure is invisible in production, which is why this
    script validates shape against EN and refuses to write a bundle that would lose a lesson.
 
@@ -46,18 +46,18 @@ function checkCourse(lang, cid, tc) {
     const t = tl[L.id];
     if (!t) { errs.push(L.id + ': missing (falls back to English)'); return; }
     if (!t.cards || t.cards.length !== L.cards.length)
-      errs.push(L.id + ': ' + ((t.cards || []).length) + ' cards, EN has ' + L.cards.length + ' — WHOLE LESSON DROPPED');
+      errs.push(L.id + ': ' + ((t.cards || []).length) + ' cards, EN has ' + L.cards.length + ' - WHOLE LESSON DROPPED');
     if (!t.quiz || t.quiz.length !== L.quiz.length)
-      errs.push(L.id + ': ' + ((t.quiz || []).length) + ' quiz questions, EN has ' + L.quiz.length + ' — quiz stays English');
+      errs.push(L.id + ': ' + ((t.quiz || []).length) + ' quiz questions, EN has ' + L.quiz.length + ' - quiz stays English');
     else L.quiz.forEach((q, i) => {
       const to = t.quiz[i] && t.quiz[i].o;
-      if (to && to.length !== q.o.length) errs.push(L.id + ' q' + (i + 1) + ': ' + to.length + ' options, EN has ' + q.o.length + ' — options stay English');
+      if (to && to.length !== q.o.length) errs.push(L.id + ' q' + (i + 1) + ': ' + to.length + ' options, EN has ' + q.o.length + ' - options stay English');
     });
     L.cards.forEach((cd, i) => {
       if (cd.act && t.cards[i] && !t.cards[i].prompt) errs.push(L.id + ' card' + (i + 1) + ': exercise prompt not translated');
     });
   });
-  (tc.lessons || []).forEach(L => { if (!en.lessons.some(x => x.id === L.id)) errs.push(L.id + ': not in EN — ignored'); });
+  (tc.lessons || []).forEach(L => { if (!en.lessons.some(x => x.id === L.id)) errs.push(L.id + ': not in EN - ignored'); });
   return errs;
 }
 
@@ -81,7 +81,7 @@ for (const lang of LANGS) {
     const f = path.join(I18N, '_' + lang + '-' + cid + '.json');
     if (!fs.existsSync(f)) { missing.push(cid); continue; }
     let tc;
-    try { tc = read(f); } catch (e) { console.error('  ' + lang + '/' + cid + ': INVALID JSON — ' + e.message); problems++; continue; }
+    try { tc = read(f); } catch (e) { console.error('  ' + lang + '/' + cid + ': INVALID JSON - ' + e.message); problems++; continue; }
     const errs = checkCourse(lang, cid, tc);
     if (errs.length) { problems++; console.error('  ' + lang + '/' + cid + ':'); errs.forEach(e => console.error('    - ' + e)); }
     courses.push(tc);
@@ -113,5 +113,5 @@ for (const lang of LANGS) {
   );
 }
 
-console.log(problems ? '\n' + problems + ' course file(s) with shape problems — fix before deploying.' : '\nAll translation packs match the EN structure.');
+console.log(problems ? '\n' + problems + ' course file(s) with shape problems - fix before deploying.' : '\nAll translation packs match the EN structure.');
 process.exit(problems && CHECK_ONLY ? 1 : 0);

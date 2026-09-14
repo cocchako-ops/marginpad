@@ -15,7 +15,7 @@
   body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 70%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 70%);opacity:.30;pointer-events:none;z-index:0;}
   .wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px;}
   /* installed PWA (home-screen app): keep content clear of the iOS status bar / notch */
-  /* notch handling lives ONLY on the sticky header (below) — adding it to the body too double-counted the inset and made the header look oversized in the installed PWA */
+  /* notch handling lives ONLY on the sticky header (below) - adding it to the body too double-counted the inset and made the header look oversized in the installed PWA */
   /* ---- install (add to home screen) prompt ---- */
   .pwa-banner{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:90;display:flex;align-items:center;gap:12px;background:rgba(17,20,25,.94);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--line-bright);border-radius:16px;padding:12px 14px;box-shadow:0 16px 50px rgba(0,0,0,.6);animation:pwaUp .4s cubic-bezier(.2,.7,.2,1);}
   @keyframes pwaUp{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
@@ -67,7 +67,7 @@
   .hero h1 em{font-style:normal;color:var(--lime);background:linear-gradient(100deg,var(--lime) 25%,#b9c1ca 50%,var(--lime) 75%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4.5s linear infinite;}
   @keyframes shimmer{to{background-position:-220% center;}}
   .hero .sub{margin-top:20px;max-width:600px;color:var(--ink-dim);font-size:18px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .15s both;}
-  .hero .meta{display:none;}/* removed per request — was the real-time/calculators/free/isolated pills */
+  .hero .meta{display:none;}/* removed per request - was the real-time/calculators/free/isolated pills */
   .hero .meta>span{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.07em;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:20px;padding:7px 14px;transition:border-color .18s;}
   .hero .meta>span:hover{border-color:var(--ink-faint);}
   .hero .meta b{color:#c2f64a;font-weight:700;}
@@ -233,7 +233,7 @@
   input[type="number"]{width:100%;background:linear-gradient(180deg,var(--panel-2),var(--bg));border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:16px;padding:13px 15px;border-radius:11px;transition:border-color .15s,box-shadow .15s,background .15s;outline:none;}
   input[type="number"]:hover{border-color:var(--ink-faint);}
   input[type="number"]:focus{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.16),0 8px 22px -12px rgba(194,246,74,.45);background:linear-gradient(180deg,var(--panel-2),var(--panel));}
-  /* calculator polish — same theme, just more alive */
+  /* calculator polish - same theme, just more alive */
   .input-line input[type="number"]:hover{border-color:rgba(194,246,74,.42);}
   #liqEx,#planEx{width:100%;background:linear-gradient(180deg,var(--panel-2),var(--bg));border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:15px;padding:13px 38px 13px 15px;border-radius:11px;outline:none;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;transition:border-color .15s,box-shadow .15s;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="%239aa3ad" stroke-width="2"><path d="M2 4l4 4 4-4"/></svg>');background-repeat:no-repeat;background-position:right 13px center;}
   #planEx{font-size:13px;padding:9px 34px 9px 12px;border-radius:9px;}
@@ -261,7 +261,7 @@
   #planSym:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(255,255,255,.12);}
   #planSym option{background:var(--panel);color:var(--ink);}
   /* ---- Paper Trade panel (redesigned) ---- */
-  #plan.panel.active{display:block;} /* the terminal (.ptt) manages its own 2-col layout — don't put it in the panel's calculator grid */
+  #plan.panel.active{display:block;} /* the terminal (.ptt) manages its own 2-col layout - don't put it in the panel's calculator grid */
   .pt2-head{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:20px;margin-bottom:18px;}
   .pt2-head small{font-family:'Familjen Grotesk',sans-serif;font-weight:400;font-size:13px;color:var(--ink-faint);}
   .pt2-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;}
@@ -276,7 +276,7 @@
   .pt2-side button[data-side="short"].on{background:rgba(255,98,88,.16);border-color:#ff6258;color:#ff7b72;}
   /* Order type: Market fills now, Limit waits for your level (2026-09-05).
      A sliding segment rather than two buttons that light up: the thumb GLIDES between the two, so the control
-     reads as one switch with a position instead of a pair of toggles. Transform transition, not @keyframes —
+     reads as one switch with a position instead of a pair of toggles. Transform transition, not @keyframes -
      the owner's Windows has animation effects off, which kills @keyframes but leaves transitions running. */
   .pt2-otype{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:12px;background:#0a0d11;border:1px solid var(--line);border-radius:12px;padding:4px;isolation:isolate;}
   .pt2-otype::before{content:'';position:absolute;z-index:0;top:4px;left:4px;bottom:4px;width:calc(50% - 6px);border-radius:9px;background:linear-gradient(180deg,rgba(194,246,74,.17),rgba(194,246,74,.05));border:1px solid rgba(194,246,74,.42);box-shadow:0 0 18px rgba(194,246,74,.13),inset 0 1px 0 rgba(255,255,255,.07);transition:transform .26s cubic-bezier(.4,0,.2,1);}
@@ -320,7 +320,7 @@
   .ptt-dl-tp{color:#2ebd85;}
   .ptt-dl-tag{position:absolute;right:6px;top:0;height:14px;display:flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:currentColor;background:#0a0d11;border:1px solid currentColor;border-radius:5px;padding:0 7px;white-space:nowrap;}
   .ptt-dl-tag b{font-weight:700;}
-  /* chart-top now FLOATS over the chart (no own row) — symbol chip + a clickable timeframe pill that opens a dropdown */
+  /* chart-top now FLOATS over the chart (no own row) - symbol chip + a clickable timeframe pill that opens a dropdown */
   .ptt-chart-top{position:absolute;top:8px;left:8px;z-index:6;display:inline-flex;align-items:stretch;gap:0;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:linear-gradient(180deg,rgba(30,37,47,.9),rgba(19,24,31,.9));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 16px -6px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.07);}
   .ptt-chart-top>*{pointer-events:auto;}
   .ptt-tfwrap{position:relative;display:flex;align-items:stretch;border-left:1px solid rgba(255,255,255,.09);}
@@ -346,7 +346,7 @@
   .ptt-tf button.on{background:rgba(255,255,255,.13);color:#fff;}
   /* compact floating symbol chip */
   .ptt-chart-top .pt2-sym{font-size:11.5px;font-weight:700;padding:5px 23px 5px 9px;border-radius:8px;background-color:rgba(13,16,20,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);background-position:right 8px center;background-size:9px;}
-  /* symbol + timeframe = ONE glassy toolbar chip (sym is lime | tf is light, hairline divider between) — premium look, same tiny footprint */
+  /* symbol + timeframe = ONE glassy toolbar chip (sym is lime | tf is light, hairline divider between) - premium look, same tiny footprint */
   .ptt-chart-top .csel-trigger{background:none;border:none;border-radius:8px 0 0 8px;padding:4px 8px 4px 9px;font-size:11.5px;gap:4px;box-shadow:none;color:#c2f64a;text-shadow:0 0 8px rgba(194,246,74,.35);transition:background .13s,color .13s;}
   .ptt-chart-top .csel-trigger:hover{color:#d7ff70;background:rgba(255,255,255,.05);}
   .ptt-chart-top .csel-trigger.open{box-shadow:none;color:#c2f64a;background:rgba(194,246,74,.10);}
@@ -431,7 +431,7 @@
 .pp-ic-del:hover{color:#ff6258;border-color:rgba(255,98,88,.5);background:rgba(255,98,88,.08);}
   .pp-btns .ch:hover{color:#5fe7b6;border-color:#34d99a;background:rgba(46,189,133,.1);}
   .pp-empty{color:var(--ink-faint);font-size:13px;text-align:center;padding:22px 10px;}
-  /* roomier terminal (Moon-style) — bigger right panel, more whitespace */
+  /* roomier terminal (Moon-style) - bigger right panel, more whitespace */
   .ptt{grid-template-columns:1.22fr 1fr;gap:18px;}
   .ptt-side{gap:20px;}
   .ptt-form{padding:24px;}
@@ -454,7 +454,7 @@
   .ptt-stats>div:last-child{border-bottom:none;}
   .ptt-stats span{color:var(--ink-faint);}
   .ptt-stats b{color:#fff;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;}
-  /* the round-trip fee turns amber once it eats 5%+ of the stake — a fact about the size chosen, not a warning box */
+  /* the round-trip fee turns amber once it eats 5%+ of the stake - a fact about the size chosen, not a warning box */
   .ptt-stats b#planFee.hot{color:#ffb347;}
   .ptt-pos{padding:22px;}
   .ptt-pos-h{margin-bottom:16px;}
@@ -465,7 +465,7 @@
   .pp-meta{font-size:11.5px;line-height:1.95;margin-bottom:13px;}
   .pp-btns button{padding:9px 0;font-size:11.5px;}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}.ptt-form,.ptt-pos{padding:18px;}}
-  /* Paper Trade is a terminal — ONLY this product's card widens, as a bordered box centred in the viewport,
+  /* Paper Trade is a terminal - ONLY this product's card widens, as a bordered box centred in the viewport,
      hugging its content with ~0.5cm padding (no full-bleed). margin-centred (not transform) so the rise animation
      doesn't override the centring. 50% = half the .wrap content box; min(47vw,740px) = half the card width. */
   body[data-prod="plan"] .card{width:min(94vw,1480px);margin-left:calc(50% - min(47vw,740px));margin-top:17px;padding:19px;border-radius:16px;}
@@ -489,7 +489,7 @@
   @media(max-width:980px){body[data-prod="plan"] .card{width:auto;margin-left:0;border-radius:0 var(--r) var(--r) var(--r);padding:20px;}}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}body[data-prod="plan"] .ptt-chart{height:350px;min-height:350px;}}
   .ptt-mytrades svg{flex:0 0 auto;}
-  /* dedicated /paper-trade page (desktop ≥881px): FIT-SCREEN like /charts — a huge chart fills the viewport, the trade-open panel sits on the right. No page scroll, no footer. (Mobile /paper-trade is untouched.) */
+  /* dedicated /paper-trade page (desktop ≥881px): FIT-SCREEN like /charts - a huge chart fills the viewport, the trade-open panel sits on the right. No page scroll, no footer. (Mobile /paper-trade is untouched.) */
   @media(min-width:881px){
     body.paper-page{overflow:hidden;}
     body.paper-page .wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;padding-bottom:0;max-width:none;}
@@ -503,7 +503,7 @@
     body.paper-page .ptt-chart{height:auto!important;min-height:0!important;}
     body.paper-page .ptt-side{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;padding-right:2px;}
   }
-  /* "last trade" torn ticket — sits between the order form and My Trades */
+  /* "last trade" torn ticket - sits between the order form and My Trades */
   .pt-tickets{display:flex;flex-direction:column;gap:8px;margin:2px 0;}
 /* Road to Bronze (2026-09-06): signed-in accounts under 500 XP see how far the first rung is and what pays, right
    under the button that earns it. In-flow in the plan column, own row, never an overlay. Rendered by mp-auth.js. */
@@ -537,7 +537,7 @@
   .ptl-dir{font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.04em;}
   .ptl-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.ptl-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
   .ptl-lev{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:#ffd75a;background:rgba(255,215,90,.13);border:1px solid rgba(255,215,90,.35);padding:2px 7px;border-radius:5px;}
-/* desktop receipt-tear on full close: the ticket splits into two interlocking pieces at the perforation —
+/* desktop receipt-tear on full close: the ticket splits into two interlocking pieces at the perforation -
    the bottom stub physically falls away, the top receipt flies to My Trades */
 .mpcs-tearwrap{z-index:120;pointer-events:none;}
 .mpcs-tearwrap .mpcs-frag{box-shadow:0 14px 40px rgba(0,0,0,.45);will-change:transform,opacity;}
@@ -573,7 +573,7 @@
   .ptl-close:active{transform:translateY(1px);}
   .ptl-mt{color:#c2f64a;border-color:rgba(194,246,74,.5);text-decoration:none;}
   .ptl-mt:hover{color:#d4f87a;border-color:#c2f64a;}
-  /* black & white marketing balloon — sits just above-right of the Paper Trade tab (in the empty hero space)
+  /* black & white marketing balloon - sits just above-right of the Paper Trade tab (in the empty hero space)
      with a hand-drawn arrow pointing down at it. Position is set by JS relative to the tab. */
   .prodnav{position:relative;}
   .pp-btns .pp-share{flex:0 0 40px;display:inline-flex;align-items:center;justify-content:center;}
@@ -620,12 +620,12 @@
   .jr-result.pos{color:var(--up);}.jr-result.neg{color:var(--red);}
   .jr-empty{color:var(--ink-faint);text-align:center;padding:34px 0;font-size:14px;}
   /* ---- journal drawer (side panel) ---- */
-  .jr-backdrop{position:fixed;inset:0;background:transparent;z-index:60;pointer-events:none;} /* desktop: let clicks/scroll pass through to the page behind — only the drawer panel itself captures input. Mobile re-enables it below. */
+  .jr-backdrop{position:fixed;inset:0;background:transparent;z-index:60;pointer-events:none;} /* desktop: let clicks/scroll pass through to the page behind - only the drawer panel itself captures input. Mobile re-enables it below. */
   /* PC: keep the header "My Trades" button above the backdrop so re-clicking it closes the drawer (X also closes; outside-click does not) */
   html.jr-open #jrOpen{position:relative;z-index:62;}
   .jr-drawer{position:fixed;top:0;right:0;height:100%;width:404px;max-width:92vw;background:linear-gradient(180deg,#0d0f12,#0a0b0d);border-left:1px solid var(--line-bright);z-index:61;display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top)) 20px 30px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-shadow:-24px 0 70px rgba(0,0,0,.6);animation:jrIn .28s cubic-bezier(.2,.7,.2,1);}
   /* Mobile: fully lock the page behind the drawer with the position:fixed technique (bulletproof on iOS) so
-     finger-scrolling the drawer — even an empty one — never moves the site. On PC the page stays scrollable;
+     finger-scrolling the drawer - even an empty one - never moves the site. On PC the page stays scrollable;
      the drawer keeps its own scroll via overscroll-behavior:contain + a wheel guard, so the site only scrolls
      when the pointer is NOT over the drawer. */
   html.jr-lock,html.jr-lock body{height:100%;overflow:hidden;}
@@ -638,10 +638,10 @@
   .jr-x:hover{color:#d6f78a;transform:scale(1.12);}
   .jr-grab{display:none;}
   @media(max-width:720px){
-    .jr-backdrop{background:rgba(5,6,8,.96);pointer-events:auto;}   /* mobile: full-screen drawer — keep the backdrop blocking + tap-to-close */
+    .jr-backdrop{background:rgba(5,6,8,.96);pointer-events:auto;}   /* mobile: full-screen drawer - keep the backdrop blocking + tap-to-close */
     .jr-drawer{width:100%;max-width:none;border-left:none;box-shadow:none;padding-bottom:calc(14px + env(safe-area-inset-bottom));}
     @keyframes jrIn{from{transform:translateY(26px);opacity:0;}to{transform:none;opacity:1;}}
-    .jr-grab{display:none!important;}                          /* no Back bar — a green ✕ in the corner closes it */
+    .jr-grab{display:none!important;}                          /* no Back bar - a green ✕ in the corner closes it */
     .jr-x{display:block;font-size:25px;line-height:1;color:#34d99a;padding:3px 7px;border-radius:9px;}
     .jr-x:active{background:rgba(46,189,133,.14);}
     /* mobile smoothness (PC is fine): GPU-layer the scroll container + layout containment per ticket so the
@@ -811,7 +811,7 @@
 
   /* exchanges comparison menu */
   .exchanges{margin:0 0 40px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
-/* Market Pulse — live Coinglass widget (mobile-first) */
+/* Market Pulse - live Coinglass widget (mobile-first) */
 .mpulse{margin:6px 0 18px;animation:panelIn .45s cubic-bezier(.2,.7,.2,1) both;}
 .mp-head{display:flex;align-items:center;gap:8px;margin:0 0 10px;}
 .mp-dot{width:8px;height:8px;border-radius:50%;background:#2ebd85;box-shadow:0 0 7px #2ebd85;animation:mpDot 1.8s ease-in-out infinite;flex:0 0 auto;}
@@ -843,7 +843,7 @@
 .mp-top-bar .l{background:var(--up);}.mp-top-bar .s{background:var(--red);}
 .mp-top-v{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-dim);font-weight:700;width:56px;text-align:right;flex:0 0 auto;}
 .mp-load{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);padding:16px;text-align:center;}
-/* Derivatives board — live Coinglass coin cards (mobile-first) */
+/* Derivatives board - live Coinglass coin cards (mobile-first) */
 .derivsec{margin:30px 0 38px;animation:rise .8s cubic-bezier(.2,.7,.2,1) both;}
 .db-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .db-head h2{margin:0;}
@@ -940,7 +940,7 @@
   .tvbox{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;overflow:hidden;height:540px;}
   @media(max-width:560px){.tvbox{height:420px;}}
   .tvbox .tradingview-widget-container,.tvbox .tradingview-widget-container__widget{height:100%;width:100%;}
-  /* self-promo "advert" for our own Charts workspace — replaces the old TradingView embed, same 540px footprint */
+  /* self-promo "advert" for our own Charts workspace - replaces the old TradingView embed, same 540px footprint */
   .chads{position:relative;display:block;height:540px;border-radius:14px;overflow:hidden;border:1px solid rgba(63,216,230,.32);background:radial-gradient(130% 95% at 82% 4%,#11262d,#0b0e12 58%);text-decoration:none;color:var(--ink);box-shadow:0 24px 60px -30px rgba(0,0,0,.8);transition:transform .18s,box-shadow .18s,border-color .18s;}
   .chads:hover{transform:translateY(-2px);border-color:rgba(63,216,230,.6);box-shadow:0 30px 72px -28px rgba(0,0,0,.85),0 0 44px -18px rgba(63,216,230,.55);}
   .chads-bg{position:absolute;inset:0;opacity:.6;background-image:linear-gradient(rgba(63,216,230,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(63,216,230,.05) 1px,transparent 1px);background-size:36px 36px;}
@@ -958,7 +958,7 @@
   .tools{margin:0 0 40px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
   /* smoothness: skip rendering/layout of the far below-fold sections until they're scrolled near (auto = remembers real size, no re-jump) */
   .tools,.league,.content2,footer{content-visibility:auto;contain-intrinsic-size:auto 520px;}
-  /* extend the same off-screen render-skip to the mid below-fold sections (Market Pulse, exchanges, deriv board, heatmap teaser) — big layout/paint saving on weak phones */
+  /* extend the same off-screen render-skip to the mid below-fold sections (Market Pulse, exchanges, deriv board, heatmap teaser) - big layout/paint saving on weak phones */
   .mpulse,.exchanges,.derivsec,.mteaser{content-visibility:auto;contain-intrinsic-size:auto 420px;}
   .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   @media(max-width:720px){.tools-grid{grid-template-columns:1fr;}}
@@ -996,7 +996,7 @@
   .lg-roe.up{color:#2ebd85;}.lg-roe.dn{color:#ff6258;}
   .lg-prize{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#ffd75a;width:30px;text-align:right;}
 /* Top-ROE ticket (2026-08-20). Icon-only on purpose: a text button did not fit next to long usernames.
-   No @keyframes anywhere here — the owner runs Windows with animations off, so keyframes are invisible to him;
+   No @keyframes anywhere here - the owner runs Windows with animations off, so keyframes are invisible to him;
    the open/close is a plain DOM insert and the hover uses a transition. */
 .lg-tk{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:7px;background:rgba(255,255,255,.04);color:#8b95a1;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
 .lg-tk:hover{color:#c2f64a;border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.10);}
@@ -1039,11 +1039,11 @@
   /* live chat */
   #chatFab[hidden],#chatBox[hidden],.ct-gate[hidden],.ct-msgs[hidden],.ct-form[hidden]{display:none!important;}
   #chatFab{position:fixed;bottom:72px;right:20px;z-index:50;display:inline-flex;align-items:center;gap:7px;background:#fff;color:#0a0b0d;border:none;border-radius:999px;padding:12px 18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:transform .15s;}
-  /* desktop My Trades — black pill sitting above the chat bubble (moved out of the header) */
+  /* desktop My Trades - black pill sitting above the chat bubble (moved out of the header) */
   #jrFab{display:none;position:fixed;bottom:20px;right:20px;z-index:50;align-items:center;gap:7px;background:#0a0b0d;color:#fff;border:1px solid var(--line-bright);border-radius:999px;padding:12px 18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:transform .15s;}
   #jrFab:hover{transform:translateY(-2px);border-color:var(--lime,#c2f64a);}
   @media(min-width:721px){#jrFab{display:inline-flex;}.brand .hjr{display:none!important;}}
-  /* on the /charts workspace the corner Chat + My Trades pills crowd the board — hide them there only (My Trades stays in the header) */
+  /* on the /charts workspace the corner Chat + My Trades pills crowd the board - hide them there only (My Trades stays in the header) */
   body.charts-page #jrFab,body.charts-page #chatFab{display:none!important;}
   #chatFab:hover{transform:translateY(-2px);}
   /* new-message signal (chat closed) */
@@ -1064,7 +1064,7 @@
   .ct-gate p{color:var(--ink-dim);font-size:14px;margin:0;line-height:1.5;}
   .ct-gate input,.ct-form input{background:var(--bg);border:1px solid var(--line-bright);border-radius:10px;padding:11px 13px;color:var(--ink);font-size:16px;font-family:inherit;width:100%;box-sizing:border-box;}
   .ct-gate button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;padding:11px;font-weight:700;font-family:'Space Mono',monospace;font-size:13px;cursor:pointer;}
-  /* room selector — a compact chip that sits in the chat header, right of "Trader Chat" */
+  /* room selector - a compact chip that sits in the chat header, right of "Trader Chat" */
   .ct-roomsel{position:relative;flex:none;}
   .ct-roomsel[hidden]{display:none!important;}
   .ct-roombtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:8px;padding:4px 8px 4px 6px;color:var(--ink);font:700 12px 'Space Mono',monospace;cursor:pointer;transition:border-color .15s,background .15s;}
@@ -1095,8 +1095,8 @@
   .ct-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
   .ct-msg{font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;}
 /* Send time, raised in front of the name so it reads as sitting above it without costing the row
-   an extra line — the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
-.ct-msg{position:relative;}/* The send time is its own line ABOVE the name, flush with the left edge — but absolutely positioned, so it paints into the 8px gap the message list already leaves between rows and costs the row no height. Because it is out of flow, the username still starts at the very left of the line. */
+   an extra line - the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
+.ct-msg{position:relative;}/* The send time is its own line ABOVE the name, flush with the left edge - but absolutely positioned, so it paints into the 8px gap the message list already leaves between rows and costs the row no height. Because it is out of flow, the username still starts at the very left of the line. */
 .ct-time{position:absolute;left:0;top:-8px;font:600 8.5px 'Space Mono',ui-monospace,monospace;color:#5a626b;line-height:8px;letter-spacing:.03em;white-space:nowrap;pointer-events:none;}
   .ct-msg b{font-weight:700;margin-right:5px;}
   .ct-user{cursor:pointer;}.ct-user:hover{text-decoration:underline;}
@@ -1207,13 +1207,13 @@
   .hnav .csel-trigger:hover::before{opacity:1;}
   .hnav .csel-trigger.open{border-color:#34d99a;box-shadow:0 0 0 3px rgba(46,189,133,.18);}
   .hnav .csel-chev{color:#34d99a;}
-  /* desktop: make language + sign-in icon-only too (same as mobile — just a globe and a profile icon) */
+  /* desktop: make language + sign-in icon-only too (same as mobile - just a globe and a profile icon) */
   /* desktop header matches the homepage: "Sign in" text + native EN language select (icon-only block removed) */
   .hnav .csel-panel{min-width:170px;right:0;left:auto;}
   @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.mpcs-tearwrap.tearing .mpcs-bot{animation:mpStubFall .58s cubic-bezier(.45,.02,.75,.35) forwards !important;}.mpcs-tearwrap.tearing .mpcs-top{animation:mpTopFly .6s .18s cubic-bezier(.55,.06,.7,.2) forwards !important;}.pt-last.justopened{animation:ptOpenPop .36s cubic-bezier(.2,.85,.25,1),ptOpenGlow .95s ease-out !important;}.pt2-open.cooldown::after{animation:ptCooldown 1s linear forwards !important;}.pt2-open.cd-nudge{animation:ptNudge .34s ease !important;}.grain{display:none;}}
-  /* MOBILE: kill the live/animated background entirely — static, plain, cheap. Big perf win on phones. */
+  /* MOBILE: kill the live/animated background entirely - static, plain, cheap. Big perf win on phones. */
   @media (max-width:760px){
-    /* WEAK-PHONE GPU RESCUE: 32 backdrop-filter:blur + a full-viewport aurora blur overwhelm old WebViews' compositor (Chrome <80 / in-app browsers) and FREEZE the page. Kill every blur on mobile — the #1 cause of "site won't open" on weak phones. */
+    /* WEAK-PHONE GPU RESCUE: 32 backdrop-filter:blur + a full-viewport aurora blur overwhelm old WebViews' compositor (Chrome <80 / in-app browsers) and FREEZE the page. Kill every blur on mobile - the #1 cause of "site won't open" on weak phones. */
     *{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
     .aurora,.grain{display:none !important;}
     #bgchart{display:none !important;}
@@ -1250,7 +1250,7 @@
   .prod[data-prod="heat"].active .pi{color:#ff7b72;}
   .prod[data-prod="plan"].active{border-color:rgba(46,189,133,.8);box-shadow:inset 0 0 0 1px rgba(46,189,133,.4),0 18px 46px -22px rgba(46,189,133,.55);}
   .prod[data-prod="plan"].active .pi{color:#34d99a;}
-  /* Paper Trade tab: subtle green tint when inactive — no promo pulse */
+  /* Paper Trade tab: subtle green tint when inactive - no promo pulse */
   .prod[data-prod="plan"]:not(.active){border-color:rgba(46,189,133,.32);}
   .prod[data-prod="plan"]:not(.active) .pi{color:#34d99a;}
   .prod[data-prod="swap"].active{border-color:rgba(106,163,255,.8);box-shadow:inset 0 0 0 1px rgba(106,163,255,.4),0 18px 46px -22px rgba(106,163,255,.55);}
@@ -1275,7 +1275,7 @@
   .cws-title{display:inline-flex;align-items:center;gap:8px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--ink);}
   .cws-title svg{color:#3fd8e6;}
   .cws-hint{font-family:'Space Mono',monospace;font-size:11px;color:#c2f64a;text-shadow:0 0 9px rgba(194,246,74,.5);letter-spacing:.02em;}
-  /* dedicated /charts page: FIT-SCREEN workspace — a left collapsible sidebar holds ALL controls, the board fills the rest. No page scroll, no footer. Ctrl+wheel on the board grows the working area. */
+  /* dedicated /charts page: FIT-SCREEN workspace - a left collapsible sidebar holds ALL controls, the board fills the rest. No page scroll, no footer. Ctrl+wheel on the board grows the working area. */
   body.charts-page .aurora,body.charts-page #bgchart,body.charts-page .grain{display:none!important;}
   body.charts-page .wrap{max-width:none;}
   body.charts-page footer{display:none!important;}
@@ -1289,10 +1289,10 @@
     /* .wrap = a flex column filling the viewport → chartspace auto-fills below the header (no magic offset, never scrolls) */
     body.charts-page .wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;padding-bottom:0;}
     body.charts-page #chartspace{flex:1 1 auto;min-height:0;width:auto;margin:6px 0 0;display:flex!important;align-items:stretch;gap:10px;position:relative;overflow:hidden;}
-    /* sidebar OVERLAYS the board (absolute) — opening/closing never moves the charts */
+    /* sidebar OVERLAYS the board (absolute) - opening/closing never moves the charts */
     body.charts-page .cws-bar{position:absolute;left:0;top:0;bottom:0;z-index:25;width:216px;flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:9px;margin:0;overflow-y:auto;overflow-x:hidden;background:linear-gradient(180deg,rgba(14,17,22,.97),rgba(10,12,16,.97));backdrop-filter:blur(6px);border:1px solid #1c2025;border-radius:14px;padding:11px 10px;transition:transform .22s cubic-bezier(.2,.7,.2,1),opacity .16s ease;scrollbar-width:thin;box-shadow:18px 0 50px -22px rgba(0,0,0,.9);}
     body.charts-page.cws-side-off .cws-bar{transform:translateX(-112%);opacity:0;pointer-events:none;}
-    /* Hide button — neon lime, prominent */
+    /* Hide button - neon lime, prominent */
     body.charts-page .cws-side-x{display:inline-flex;align-items:center;justify-content:center;width:100%;flex:0 0 auto;background:linear-gradient(180deg,rgba(194,246,74,.16),rgba(194,246,74,.05));border:1px solid rgba(194,246,74,.55);color:#c2f64a;font-family:'Space Mono',monospace;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border-radius:10px;padding:9px;cursor:pointer;text-shadow:0 0 10px rgba(194,246,74,.6);box-shadow:0 0 16px -6px rgba(194,246,74,.5);}
     body.charts-page .cws-side-x:hover{background:linear-gradient(180deg,rgba(194,246,74,.26),rgba(194,246,74,.08));box-shadow:0 0 22px -4px rgba(194,246,74,.7);}
     /* new sidebar widgets: chart-bg toggle / watchlist / top-signals */
@@ -1391,7 +1391,7 @@
   /* note drag-and-drop targeting */
   .cws-board.note-dragging .cwin{outline:2px dashed rgba(63,216,230,.4);outline-offset:-2px;}
   .cws-board.note-dragging .cwin.drop-hover{outline:2px solid #3fd8e6;outline-offset:-2px;box-shadow:0 0 0 3px rgba(63,216,230,.28),0 22px 50px -18px rgba(0,0,0,.8);}
-  /* drop target is the window HEADER only (so the chart body stays clear) — highlight + hint live there */
+  /* drop target is the window HEADER only (so the chart body stays clear) - highlight + hint live there */
   .cws-board.note-dragging .cwin .cwin-head{outline:1px dashed rgba(63,216,230,.4);outline-offset:-3px;}
   .cws-board.note-dragging .cwin.drop-hover .cwin-head{background:linear-gradient(180deg,#13343c,#0f2a30);outline:2px solid #3fd8e6;outline-offset:-2px;}
   .cws-board.note-dragging .cwin.drop-hover .cwin-head::after{content:"Drop to pin";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(63,216,230,.16);color:#3fd8e6;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;z-index:6;pointer-events:none;}
@@ -1408,7 +1408,7 @@
   .cws-preset{-webkit-appearance:none;appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239aa3ad' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
   .cwin.front{border-color:#3a4654;box-shadow:0 26px 60px -16px rgba(0,0,0,.85),0 0 0 1px rgba(63,216,230,.25);}
   .cwin.dragging{transition:none;will-change:left,top;}
-  .cwin-head{display:flex;align-items:center;gap:7px;row-gap:5px;padding:8px 9px;background:linear-gradient(180deg,#1e252e,#151b22);border-bottom:1px solid #232b35;cursor:grab;flex-wrap:wrap;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.035);} /* wrap instead of clipping — a narrow window used to CUT the symbol pill + low-TF buttons out of the header (UX audit) */
+  .cwin-head{display:flex;align-items:center;gap:7px;row-gap:5px;padding:8px 9px;background:linear-gradient(180deg,#1e252e,#151b22);border-bottom:1px solid #232b35;cursor:grab;flex-wrap:wrap;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.035);} /* wrap instead of clipping - a narrow window used to CUT the symbol pill + low-TF buttons out of the header (UX audit) */
   .cwin-head:active{cursor:grabbing;}
   .cwin-grip{flex-shrink:0;color:#5c656f;display:inline-flex;}
   .cwin-sym{flex-shrink:0;border:1px solid #2f3742;border-radius:8px;color:#c2f64a;text-shadow:0 0 10px rgba(194,246,74,.45);font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.05em;padding:6px 21px 6px 11px;cursor:pointer;outline:none;transition:border-color .14s,box-shadow .14s,background .14s;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23c2f64a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center/9px,linear-gradient(180deg,#141a21,#0b0e13);}
@@ -1541,7 +1541,7 @@
   .cwin-notes-btn svg{flex-shrink:0;}
   .cwin-notes-n{font-size:9.5px;font-weight:700;}
   .cwin-notes-n:empty{display:none;}
-  .cwin-cd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;color:#c2f64a;letter-spacing:.03em;min-width:38px;text-align:center;}/* candle-close countdown chip (2026-07-30), header next to the TF buttons. Brand lime = raw #c2f64a — NOT var(--lime), which is #ffffff (white) in the app-shell :root, misleadingly named. */
+  .cwin-cd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;color:#c2f64a;letter-spacing:.03em;min-width:38px;text-align:center;}/* candle-close countdown chip (2026-07-30), header next to the TF buttons. Brand lime = raw #c2f64a - NOT var(--lime), which is #ffffff (white) in the app-shell :root, misleadingly named. */
   .cwin-cd.stale{color:#5c656f;}/* no data → muted grey (not dim lime), so '--:--' clearly reads as inactive */
   .cwin-cd:empty{display:none;}
   .mfc-pl-cd{font-family:'Space Mono',monospace;font-size:9.5px;color:#c2f64a;letter-spacing:.02em;}
@@ -1554,7 +1554,7 @@
   .cwin-sep{width:1px;height:16px;background:#2b323b;margin:0 2px;flex:0 0 auto;}
   .cwin-del.sel{border-color:#ff6258;color:#ff6258;}
   .drawing.dr-select .cwin-draw{cursor:default!important;}
-  /* dropdown pickers: [tool▾] [color▾] [style▾] — panels open below the bar so the row itself never wraps */
+  /* dropdown pickers: [tool▾] [color▾] [style▾] - panels open below the bar so the row itself never wraps */
   .cwin-pick{gap:4px;padding:0 7px;}
   .cwin-pick .car{font-size:7px;color:#7f8893;line-height:1;}
   .cwin-pick.on .car,.cwin-pick.open .car{color:inherit;}
@@ -1578,7 +1578,7 @@
   .cwin-clear{color:#ff8a80;}
   .cwin-color{width:16px;height:16px;border-radius:50%;border:2px solid #11161c;cursor:pointer;box-shadow:0 0 0 1px #2b323b;}
   .cwin-color.on{border-color:#fff;}
-  /* sticky notes — dark grey paper, text colour picker (white / green / red) */
+  /* sticky notes - dark grey paper, text colour picker (white / green / red) */
   .cwin-num{flex-shrink:0;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;background:rgba(63,216,230,.14);color:#3fd8e6;border:1px solid rgba(63,216,230,.4);border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
   #cwsSync.on{background:rgba(63,216,230,.16);border-color:rgba(63,216,230,.55);color:#3fd8e6;}
   .cws-tiles{display:inline-flex;gap:6px;vertical-align:middle;}
@@ -1722,10 +1722,10 @@
   ::-webkit-scrollbar-thumb{background:#262d37;border-radius:8px;border:2px solid #0a0b0d;}
   ::-webkit-scrollbar-thumb:hover{background:#36404c;}
   html{scrollbar-color:#262d37 #0a0b0d;scrollbar-width:thin;}
-  /* sticky header — transparent over the hero, blurred full-bleed bar once scrolled */
+  /* sticky header - transparent over the hero, blurred full-bleed bar once scrolled */
   header{position:sticky;top:0;z-index:40;transition:padding .25s ease;}
   header::after{content:'';position:absolute;top:0;left:calc(50% - 50vw);width:100vw;height:100%;z-index:-1;background:rgba(10,11,13,.92);-webkit-backdrop-filter:blur(9px) saturate(1.2);backdrop-filter:blur(9px) saturate(1.2);border-bottom:1px solid var(--line-bright);opacity:0;transition:opacity .28s ease;}
-  /* header height stays CONSTANT on scroll — only the backdrop fades in. Previously the padding shrank when
+  /* header height stays CONSTANT on scroll - only the backdrop fades in. Previously the padding shrank when
      scrolled, which shifted the TradingView ticker-tape below it and made the header shake/jitter whenever the
      scroll position hovered around the threshold (scroll down then back up). */
   body.scrolled header::after{opacity:1;}
@@ -1772,7 +1772,7 @@
   .prod .pnew{box-shadow:0 0 0 0 rgba(194,246,74,.5);animation:newpulse 2.4s ease-out infinite;}
   @keyframes newpulse{0%{box-shadow:0 0 0 0 rgba(194,246,74,.45);}70%{box-shadow:0 0 0 6px rgba(194,246,74,0);}100%{box-shadow:0 0 0 0 rgba(194,246,74,0);}}
   @media(prefers-reduced-motion:reduce){.prod .pnew{animation:none;}}
-  /* Paper Trade live price — styled to match the Liquidation Calculator result number (.result-main .rvalue) */
+  /* Paper Trade live price - styled to match the Liquidation Calculator result number (.result-main .rvalue) */
   .ptt-form .pt2-px-v{font-family:'Bricolage Grotesque',sans-serif !important;font-weight:800;font-size:clamp(36px,4vw,52px);letter-spacing:-.03em;line-height:1;white-space:nowrap;transition:color .2s ease,transform .25s cubic-bezier(.2,.7,.2,1),text-shadow .25s ease;cursor:default;transform-origin:left center;}
   .ptt-form .pt2-px-v.up{color:#2ebd85;filter:drop-shadow(0 2px 18px rgba(46,189,133,.18));}
   .ptt-form .pt2-px-v.down{color:#ff6258;filter:drop-shadow(0 2px 18px rgba(255,98,88,.18));}
@@ -1786,7 +1786,7 @@
   /* chart header live price: a touch bolder for consistency */
   .ptt-cpx b{font-size:13.5px;font-weight:700;}
   /* ===== 15 low-effort upgrades ===== */
-  /* 1. tabular numerals — live numbers stop jittering in width */
+  /* 1. tabular numerals - live numbers stop jittering in width */
   .result-main .rvalue,.ptt-form .pt2-px-v,.hp-price,.hp-chg,.pp-pnl .big,.pp-pnl .roe,.jr-stat .v,.ptt-cpx,.pt2-px-chg,.ptt-stats b,.pt2-px-v{font-variant-numeric:tabular-nums;}
   /* 2. animated live label */
   .live-lbl{display:inline-flex;align-items:center;gap:6px;}
@@ -1841,7 +1841,7 @@
   .pp-empty{display:flex;flex-direction:column;align-items:center;gap:11px;color:var(--ink-faint);}
   .pp-empty svg{opacity:.45;}
   /* 14. subtle grain texture for depth */
-  /* (removed body::after fixed mix-blend-mode noise — it forced a full repaint on every scroll frame; the .grain layer already provides texture without a blend mode) */
+  /* (removed body::after fixed mix-blend-mode noise - it forced a full repaint on every scroll frame; the .grain layer already provides texture without a blend mode) */
   /* 15. result change pulse */
   .rvalue.changed,.pt2-px-v.changed{animation:numpop .42s cubic-bezier(.2,.7,.2,1);}
   @keyframes numpop{0%{transform:scale(1);}35%{transform:scale(1.05);}100%{transform:scale(1);}}
@@ -1869,7 +1869,7 @@
   .tickflash-up{animation:tfUp .55s ease-out;}
   .tickflash-dn{animation:tfDn .55s ease-out;}
   @media(prefers-reduced-motion:reduce){.tickflash-up,.tickflash-dn{animation:none;}}
-  /* #3 product tabs — stronger active lift + colored icon glow */
+  /* #3 product tabs - stronger active lift + colored icon glow */
   .prod.active{transform:translateY(-3px);}
   .prod.active .pi{filter:drop-shadow(0 0 9px currentColor);transition:filter .25s;}
   .prod.active .pt b{letter-spacing:-.01em;}
@@ -1882,7 +1882,7 @@
   .hlink:hover svg,.heat-btn:hover svg,.foot-bot:hover svg,.totop:hover svg{transform:scale(1.14);}
   .heat-btn,.hlink{transition:transform .16s,color .16s,border-color .16s,background .16s;}
   .heat-btn:active,.hlink:active{transform:translateY(1px);}
-  /* #7 section cohesion — faint brand glow behind each section heading */
+  /* #7 section cohesion - faint brand glow behind each section heading */
   .sec-head,.exchanges>h2,.content2>h2{position:relative;}
   .sec-head::after{content:'';position:absolute;left:-14px;top:-34px;width:200px;height:96px;border-radius:50%;
     background:radial-gradient(closest-side,rgba(194,246,74,.09),transparent 72%);pointer-events:none;z-index:-1;}
@@ -1949,7 +1949,7 @@
   @media (max-width:380px){.hero .meta>span.metahide{display:none;}}
 
   /* ===== Mobile space/flow reorg (2026-06) ===== */
-  /* 1. hide the hero pitch on phones — get straight to the tools (H1 stays in DOM for SEO) */
+  /* 1. hide the hero pitch on phones - get straight to the tools (H1 stays in DOM for SEO) */
   @media (max-width:600px){
     .hero{display:none;}
     .prodnav{margin-top:6px;}
@@ -1976,7 +1976,7 @@
     .heat-stats{font-size:11px;}
     .heat-disc,.heat-note{font-size:11px;line-height:1.5;}
   }
-  /* 3. paper trade: lighter — short chart so the trade form is reachable without long scrolling */
+  /* 3. paper trade: lighter - short chart so the trade form is reachable without long scrolling */
   @media (max-width:880px){
     body[data-prod="plan"] .ptt-chart{height:300px;}
   }
@@ -2085,7 +2085,7 @@
     .ptt-top-l::-webkit-scrollbar{display:none;}
     .ptt-top-l>*{flex:0 0 auto;}
     .ptt-cpx{flex:1 1 100%;text-align:left;font-size:12px;}
-    /* emphasise Signals — it's a cool feature: lime accent + gentle pulse when off */
+    /* emphasise Signals - it's a cool feature: lime accent + gentle pulse when off */
     .ptt-sig:not(.on){color:#c2f64a;border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.08);animation:sigTease 2.6s ease-in-out infinite;}
     .ptt-sig:not(.on) svg{color:#c2f64a;}
     @keyframes sigTease{0%,100%{box-shadow:0 0 0 0 rgba(194,246,74,0);}50%{box-shadow:0 0 12px -3px rgba(194,246,74,.6);}}
@@ -2117,7 +2117,7 @@
   }
 
   /* ============================================================
-     HERO REDESIGN — "Live Terminal" (desktop showpiece)
+     HERO REDESIGN - "Live Terminal" (desktop showpiece)
      ============================================================ */
   .hero{padding:48px 0 44px;position:relative;z-index:1;}
   .hero-copy{min-width:0;}
@@ -2140,8 +2140,8 @@
   .hero-note{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-faint);}
   @media(max-width:880px){.hero h1{font-size:clamp(40px,9vw,64px);}}
   @media(prefers-reduced-motion:reduce){.hero h1 em{animation:none;background-position:0;}.hero h1 em::after{animation:none;transform:scaleX(1);}}
-  /* weekly paper-trade leaderboard — pinned in the left margin on wide screens, a toggle pill on smaller ones */
-  /* Leaders widget retired — markup removed; weekly board now lives in chat (/leaderboard) + Telegram */
+  /* weekly paper-trade leaderboard - pinned in the left margin on wide screens, a toggle pill on smaller ones */
+  /* Leaders widget retired - markup removed; weekly board now lives in chat (/leaderboard) + Telegram */
   /* ===== Mobile "Browse" full-screen navigator ===== */
   .browse{position:fixed;inset:0;z-index:60;}
   .browse[hidden]{display:none;}
@@ -2160,7 +2160,7 @@
   .browse-scroll::-webkit-scrollbar-thumb:hover{background:#2c3540;}
   .browse-sec{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);margin:20px 6px 9px;}
   .browse-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px 16px;margin-bottom:9px;cursor:pointer;color:var(--ink);text-decoration:none;transition:transform .12s,background .12s;-webkit-appearance:none;appearance:none;font:inherit;box-sizing:border-box;overflow:visible;}
-  .browse-ic svg,.browse-row svg{overflow:visible;}  /* the Paper Trade target icon was getting clipped on the <button> row — keep strokes from being cropped */
+  .browse-ic svg,.browse-row svg{overflow:visible;}  /* the Paper Trade target icon was getting clipped on the <button> row - keep strokes from being cropped */
   .browse-row.browse-soon{opacity:.5;cursor:default;pointer-events:none;}
   .browse-row:active{transform:scale(.985);background:var(--panel-2);}
   .browse-ic{flex-shrink:0;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
@@ -2205,7 +2205,7 @@
   .browse-nores{color:var(--ink-faint);text-align:center;padding:24px 0;font-size:14px;}
   /* mobile declutter: the 8-card product grid is replaced by Browse + the hero CTA */
   @media(max-width:680px){.prodnav{display:none!important;}}
-  /* P2 — mobile only: pull live markets (Trending) right under the trade panel; desktop order untouched */
+  /* P2 - mobile only: pull live markets (Trending) right under the trade panel; desktop order untouched */
   @media(max-width:680px){
     .wrap{display:flex;flex-direction:column;}
     .wrap>header{order:-5;}
@@ -2213,14 +2213,14 @@
     .wrap>.mpulse{order:-2;margin:18px 0 0;}
     .wrap>.hotpairs{order:-2;margin-top:20px;}
     .hotpairs .sec-sub{display:none;}
-    /* P3 — heatmap teaser sits right after live markets */
-    .wrap>.mteaser{display:none;} /* liquidation heatmap is coming-soon — hide the mobile teaser */
-    /* P3 — lean the affiliate block: keep the exchange grid + the referral disclosure, drop the verbose copy */
+    /* P3 - heatmap teaser sits right after live markets */
+    .wrap>.mteaser{display:none;} /* liquidation heatmap is coming-soon - hide the mobile teaser */
+    /* P3 - lean the affiliate block: keep the exchange grid + the referral disclosure, drop the verbose copy */
     .exchanges .exsub,.exchanges p:last-of-type{display:none;}
     .exchanges{margin-top:18px;}
-    /* P3 — cut the mobile fluff (kept on desktop + for SEO): TradingView embed, recommended-tools, calculator marketing wall */
+    /* P3 - cut the mobile fluff (kept on desktop + for SEO): TradingView embed, recommended-tools, calculator marketing wall */
     .wrap>.tvsec,.wrap>.tools,.wrap>.content2{display:none!important;}
-    /* When a tool is open, show ONLY that tool — hide the landing + marketing sections so nav opens a clean single screen */
+    /* When a tool is open, show ONLY that tool - hide the landing + marketing sections so nav opens a clean single screen */
     body[data-prod="plan"] .hero,body[data-prod="plan"] .wrap>.hotpairs,body[data-prod="plan"] .wrap>.mteaser,body[data-prod="plan"] .wrap>.exchanges,body[data-prod="plan"] .wrap>.league,
     body[data-prod="heat"] .hero,body[data-prod="heat"] .wrap>.hotpairs,body[data-prod="heat"] .wrap>.mteaser,body[data-prod="heat"] .wrap>.exchanges,body[data-prod="heat"] .wrap>.league,
     body[data-prod="swap"] .hero,body[data-prod="swap"] .wrap>.hotpairs,body[data-prod="swap"] .wrap>.mteaser,body[data-prod="swap"] .wrap>.exchanges,body[data-prod="swap"] .wrap>.league{display:none!important;}
@@ -2244,7 +2244,7 @@
   }
   /* ---- Market Screener ---- */
   .scrwrap{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;}
-  /* ===== Screener — dense live market cards (trading-terminal style, MarginPad neon) ===== */
+  /* ===== Screener - dense live market cards (trading-terminal style, MarginPad neon) ===== */
   .scr-filters{display:flex;gap:7px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
   .scr-filters::-webkit-scrollbar{display:none;}
   .scr-filters button{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink-dim);background:var(--panel);border:1px solid var(--line-bright);border-radius:999px;padding:8px 15px;cursor:pointer;transition:.13s;white-space:nowrap;}
@@ -2263,7 +2263,7 @@
   .scr-meta .mchip i{font-style:normal;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;font-size:9.5px;}
   .scr-meta .mchip b{color:#fff;font-weight:700;}
   .scr-meta .mchip b.up{color:var(--up);}.scr-meta .mchip b.dn{color:var(--red);}
-  .scr-list{display:flex;flex-direction:column;gap:9px;min-height:82vh;} /* reserve space while rows load — the late fill was a CLS 0.4 layout jump on mobile (perf audit 2026-07-14) */
+  .scr-list{display:flex;flex-direction:column;gap:9px;min-height:82vh;} /* reserve space while rows load - the late fill was a CLS 0.4 layout jump on mobile (perf audit 2026-07-14) */
   .scr-loading{padding:34px;text-align:center;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:13px;border:1px solid var(--line-bright);border-radius:14px;}
   .scr-row{display:flex;align-items:stretch;gap:11px;width:100%;text-align:left;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:14px;padding:11px;cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s;color:var(--ink);}
   .scr-row:hover{border-color:rgba(194,246,74,.4);transform:translateY(-1px);box-shadow:0 12px 26px -16px rgba(0,0,0,.7);}
@@ -2320,7 +2320,7 @@
     .scr-line2{gap:5px;}
     .scr-vd{font-size:9px;padding:2px 6px;}
     .scr-tag{font-size:9px;padding:2px 5px;}
-    /* the 7 metric chips become an aligned 3-column grid (label left / value right) — no more ragged wrapping */
+    /* the 7 metric chips become an aligned 3-column grid (label left / value right) - no more ragged wrapping */
     .scr-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
     .scr-box{justify-content:space-between;align-items:center;padding:5px 7px;border-radius:8px;gap:4px;min-width:0;}
     .scr-box i{font-size:8px;flex:0 0 auto;}
@@ -2428,16 +2428,16 @@
   .grad-card svg{color:#5c656f;flex-shrink:0;}
   .grad-later{background:none;border:none;color:#7f8893;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;padding:4px;}
   .grad-later:hover{color:#cdd3da;}
-  /* mobile "living terminal" — live ticker + one-tap paper-trade panel (replaces the calculator-first landing) */
+  /* mobile "living terminal" - live ticker + one-tap paper-trade panel (replaces the calculator-first landing) */
   @media(max-width:680px){
     .hero-actions{display:none;}            /* the trade panel IS the action on mobile */
-    /* the quick-trade widget belongs only on the landing — hide it once a tool is open */
+    /* the quick-trade widget belongs only on the landing - hide it once a tool is open */
     body[data-prod="plan"] .mteaser,body[data-prod="heat"] .mteaser,body[data-prod="swap"] .mteaser,body[data-prod="charts"] .mteaser,body.paper-page .mteaser,body.charts-page .mteaser{display:none!important;}
-    /* tabular figures so every digit owns a fixed slot — the live price never shifts as it ticks */
+    /* tabular figures so every digit owns a fixed slot - the live price never shifts as it ticks */
     /* when the last-trade ticket renders into #mtpPnl, give it room below the CTA */
     @keyframes mtJrPulse{0%,100%{box-shadow:0 0 0 1px rgba(194,246,74,.5),0 6px 18px -4px rgba(194,246,74,.75);}50%{box-shadow:0 0 0 1px rgba(194,246,74,.9),0 9px 26px -2px rgba(194,246,74,1);}}
-    /* mini liquidation chart above the trade panel — price line + liq line + blurred danger/safe zones */
-    /* see-through blurred danger(red)/safe(green) zones split at the liquidation line — candles still show through */
+    /* mini liquidation chart above the trade panel - price line + liq line + blurred danger/safe zones */
+    /* see-through blurred danger(red)/safe(green) zones split at the liquidation line - candles still show through */
     .mtc-zones{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;border-radius:18px;}
     .mtc-z{position:absolute;left:0;right:0;background:rgba(255,59,59,.15);-webkit-backdrop-filter:blur(.5px);backdrop-filter:blur(.5px);box-shadow:inset 0 0 45px rgba(255,59,59,.13);}
     .mtc-tag{position:absolute;top:8px;left:10px;z-index:4;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;color:var(--ink-dim);background:rgba(8,10,13,.62);padding:2px 7px;border-radius:6px;pointer-events:none;letter-spacing:.02em;}
@@ -2447,7 +2447,7 @@
 
 /* ══════════ from app/index.html line 2339 (id="mp-desktop-refresh") ══════════ */
 /* ============================================================
-   DESKTOP DESIGN REFRESH — applies at >=721px ONLY.
+   DESKTOP DESIGN REFRESH - applies at >=721px ONLY.
    Mobile (<=680px "living terminal") is intentionally untouched.
    Goal: more breathing room, clearer zones, sharper legibility.
    ============================================================ */
@@ -2508,7 +2508,7 @@
   /* Demo-trade floating window (mirrors the paper-trade opener) */
   .mfc-tradebtn{color:#0a0b0d!important;background:#c2f64a!important;border-color:#c2f64a!important;font-weight:800;}
   .mfc-trw{width:min(340px,92vw);}
-  /* v3: WINDOWED demo trade — compact centered modal over a dimmed backdrop; nothing scrolls through */
+  /* v3: WINDOWED demo trade - compact centered modal over a dimmed backdrop; nothing scrolls through */
   .mfc-trbd{position:absolute;inset:0;z-index:40;background:rgba(4,6,9,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:10px;touch-action:none;}
   .mfc-trwin{width:min(330px,94vw);max-height:calc(100% - 14px);display:flex;flex-direction:column;background:linear-gradient(180deg,#12161f,#0b0d12);border:1px solid #2c3540;border-radius:16px;box-shadow:0 30px 70px -25px rgba(0,0,0,.9);overflow:hidden;touch-action:auto;}
   .mfc-trf-h{display:flex;align-items:center;justify-content:space-between;padding:9px 9px 9px 13px;border-bottom:1px solid #1e2530;flex:0 0 auto;}
@@ -2609,7 +2609,7 @@
   @keyframes mfcRotPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
 
 /* ══════════ UX pass (2026-07) ══════════ */
-/* bottom-nav Trades badge — open-position count */
+/* bottom-nav Trades badge - open-position count */
 .mobnav [data-mn="journal"]{position:relative}
 .mn-badge{position:absolute;top:-3px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#2ebd85;color:#04110b;font:700 9.5px/15px 'Space Mono',monospace;text-align:center;box-shadow:0 0 8px rgba(46,189,133,.55)}
 /* screener: keep the sort chips reachable while scrolling 200 rows (mobile) */
@@ -2649,7 +2649,7 @@
 .mpss-f input:focus{border-color:#c2f64a}
 .mpss-hint{font-size:11.5px;color:#5c656f;margin:2px 0 12px}
 .mpss-warn{font-size:12.5px;color:#ffb347;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.35);border-radius:9px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
-/* ══════════ Where to trade — 2026-07 redesign: symmetric zones, calm accents, uniform CTA ══════════ */
+/* ══════════ Where to trade - 2026-07 redesign: symmetric zones, calm accents, uniform CTA ══════════ */
 .excard{gap:10px;padding:16px 16px 14px}
 .excard::before{width:0}                                   /* the mixed brand-color left bars read as chaos (white for OKX looked broken) */
 .excard:hover{border-color:rgba(194,246,74,.45);box-shadow:0 16px 40px -22px rgba(0,0,0,.85)}
@@ -2674,13 +2674,13 @@
   .exbonus{min-height:47px}.exbonus span{-webkit-line-clamp:3}
   .exgo{padding:9px 0;font-size:11px}
 }
-/* fix: the HOT badge squeezed the exchange name ("Bi…") — with a badge the chip drops its label; on phones the badge floats on the card edge */
+/* fix: the HOT badge squeezed the exchange name ("Bi…") - with a badge the chip drops its label; on phones the badge floats on the card edge */
 .exbadge-in~.exlev-chip span{display:none}
 @media(max-width:680px){
   .excard{overflow:visible}
   .exbadge-in{position:absolute;top:-9px;right:10px;padding:2px 7px;font-size:8.5px;box-shadow:0 2px 10px -2px rgba(255,61,61,.7)}
 }
-/* longest name (Crypto.com) still clipped — 1px smaller name + tighter chip fits every brand on both layouts */
+/* longest name (Crypto.com) still clipped - 1px smaller name + tighter chip fits every brand on both layouts */
 .exname{font-size:17px}
 @media(max-width:680px){.exname{font-size:13.5px}.exmark{width:20px;height:20px;font-size:11px}}
 .exname{letter-spacing:-.015em}
@@ -2693,7 +2693,7 @@
 .mfc-back h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:4px 0 0;color:#e9e7df}
 .mfc-back p{color:#9aa3ad;font-size:13.5px;margin:0 0 10px;max-width:280px;line-height:1.5}
 .mfc-back-x{background:none;border:1px solid #2c3540;color:#9aa3ad;border-radius:11px;padding:11px 20px;font:inherit;font-size:13px;cursor:pointer}
-/* calculator Long — properly GREEN when selected (owner: "nije dovoljno zeleno") */
+/* calculator Long - properly GREEN when selected (owner: "nije dovoljno zeleno") */
 .seg button.on[data-side="long"]{background:rgba(46,189,133,.28)!important;border-color:#2ebd85!important;color:#4ff0b0!important;box-shadow:0 0 16px -5px rgba(46,189,133,.75),inset 0 0 0 1px rgba(46,189,133,.55)!important;text-shadow:0 0 12px rgba(46,189,133,.5)}
 
 /* screener additions: search, setup/watchlist filters, top-picks strip, row stars */
@@ -2731,10 +2731,10 @@
 
 /* Paper Trade: the plan card's right column runs under the bottom-right corner, so the floating pills were
    physically covering the CTA and a position card's Close button (real-browser audit: elementFromPoint at
-   CLOSE's center hit #jrFab). Dock them bottom-LEFT on this route — the left column's underside is free. */
+   CLOSE's center hit #jrFab). Dock them bottom-LEFT on this route - the left column's underside is free. */
 body[data-prod="plan"] #chatFab,body[data-prod="plan"] #jrFab{right:auto;left:20px;}
 body[data-prod="plan"] #chatBox{right:auto;left:20px;}
-/* charts: explicit dark background under the transparent LWC canvas — with no container bg the plot area could
+/* charts: explicit dark background under the transparent LWC canvas - with no container bg the plot area could
    render WHITE inside the dark app on some mobile paths (UX audit, mobile paper-trade). */
 #ptChart,.mfc-chart{background:#0a0d11;}
 /* ===== screener: mode switcher (Perp | On-chain) + on-chain pool rows ===== */
@@ -2764,7 +2764,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 
 .pp-times{margin-top:7px;font-family:'Space Mono',monospace;font-size:9.5px;color:#5c656f;letter-spacing:.02em}
 
-/* ticket legibility pass (owner: faint gray was hard to read) — brighten every faint element on .pp tickets */
+/* ticket legibility pass (owner: faint gray was hard to read) - brighten every faint element on .pp tickets */
 .pp-meta>div span{color:#c2cad2 !important}
 .pp-foot{color:#aab4be !important}
 .pp-times{color:#aab4be !important;font-size:10px}
@@ -2816,7 +2816,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .fb-mx:hover{border-color:#0ac2d6}
 .fb-mxs:empty{display:none}  /* the slot is filled when the fee window opens; empty it must take no space */
 
-/* premium gold ticket — base-scope overrides so the gold P&L / left stripe / Paper Trade win on every viewport (the earlier rules landed inside a media block) */
+/* premium gold ticket - base-scope overrides so the gold P&L / left stripe / Paper Trade win on every viewport (the earlier rules landed inside a media block) */
 .pp.pp-gold{border-left-color:#f0c35a!important;}.pp.pp-gold .pp-sym,.pp.pp-gold .pp-pnl .big{color:#f5cf6a!important;}.pp.pp-gold .pp-btns .pt{color:#1a1400!important;background:linear-gradient(180deg,#ffe08a,#efb63a)!important;border:1px solid #f0c35a!important;font-weight:800!important;}.pp.pp-gold .pp-btns .ch{color:#f0c35a!important;border-color:rgba(240,195,90,.5)!important;}.pp.pp-gold .pp-btns .ed{color:#e0b85a!important;border-color:rgba(240,195,90,.4)!important;}
 
 .pt2-px{position:relative;}
@@ -2862,7 +2862,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .ctsg-post{width:100%;padding:9px 0;border-radius:9px;border:none;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:13px;cursor:pointer}
 .ctsg-err{color:#ff8a80;font-size:11.5px;margin-top:6px;min-height:14px}
 
-/* ══ Vault ticket skins (tsk-*) — journal .pp cards + shared-ticket viewer .mptk-card ══ */
+/* ══ Vault ticket skins (tsk-*) - journal .pp cards + shared-ticket viewer .mptk-card ══ */
 .pp.tsk-tkt_noir{background:linear-gradient(180deg,#101014,#0a0a0d);border-color:#3a3f4a;box-shadow:inset 0 1px 0 rgba(200,210,255,.14)}
 .pp.tsk-tkt_holo{border-color:#7fb6ff;background:linear-gradient(135deg,rgba(127,214,255,.08),rgba(199,146,255,.09) 45%,rgba(46,189,133,.08));box-shadow:0 0 22px -10px rgba(150,180,255,.5)}
 .pp.tsk-tkt_aurum{border-color:#c98f1b;background:linear-gradient(180deg,rgba(255,215,90,.12),rgba(22,17,8,.92));box-shadow:0 0 26px -10px rgba(255,200,60,.55),inset 0 1px 0 rgba(255,225,140,.28)}
@@ -2881,7 +2881,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .ptt-recent{display:flex;flex-direction:column;gap:9px;justify-content:center;align-items:center;padding:10px 1px;min-width:42px;border-radius:12px;background:linear-gradient(180deg,rgba(23,29,37,.85),rgba(16,20,26,.9));border:1px solid #232a34;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 4px 14px -8px rgba(0,0,0,.8);}
 .ptt-recent::before,.ptt-recent::after{content:"";flex:0 0 auto;width:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(194,246,74,.55),transparent);box-shadow:0 0 9px rgba(194,246,74,.35);}
 .ptt-recent[hidden]{display:none;}
-/* uniform round symbols (owner 2026-08-16): every badge is a 33px circle — coin images as-is, text/glyph badges on a NEUTRAL dark circle; hover/active = circular ring+glow (tight, never clipped by the rail) */
+/* uniform round symbols (owner 2026-08-16): every badge is a 33px circle - coin images as-is, text/glyph badges on a NEUTRAL dark circle; hover/active = circular ring+glow (tight, never clipped by the rail) */
 .ptr-b{position:relative;width:33px;height:33px;background:transparent;border:none;box-shadow:none;padding:0;border-radius:50%;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font:800 9.5px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:#d7dce2;transition:transform .15s,box-shadow .15s;user-select:none;}
 .ptr-b img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}/* round-clip: circular coin icons are untouched (transparent corners), square tiles (SOL) become clean circles */
 .ptr-b.nc{background:radial-gradient(circle at 35% 30%,#1c232d,#141a22);border:1px solid rgba(255,255,255,.11);}
@@ -2903,7 +2903,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 }
 
 /* MOBILE BATTERY/HEAT (audit 2026-08-16): 26 backdrop-filter blurs composite continuously over the live canvas on
-   mobile GPUs — a top heat source. The blurred elements all carry ~90%-opaque rgba backgrounds, so killing the blur
+   mobile GPUs - a top heat source. The blurred elements all carry ~90%-opaque rgba backgrounds, so killing the blur
    is visually near-identical. Desktop keeps the glass look. */
 @media(max-width:880px){
   *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}
@@ -2954,10 +2954,10 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 
 /* touch devices: no double-tap zoom anywhere in the app shell (pinch outside the charts is cancelled in home.js __mpNoZoom) */
 @media (hover:none) and (pointer:coarse){html,body{touch-action:manipulation;}}
-/* mobile: the candle-close countdown chip (tickCd, inline top-right) used to overlap the floating toolbar on phones — pin it bottom-left above the time axis */
+/* mobile: the candle-close countdown chip (tickCd, inline top-right) used to overlap the floating toolbar on phones - pin it bottom-left above the time axis */
 @media (max-width:600px){body[data-prod="plan"] #ptChart .pt-cd{top:auto!important;left:8px!important;right:auto!important;bottom:36px!important;}}
 
-/* phone tap targets in the terminal header (measured 2026-09-12 at 390px: coin selector 52x21, asset class 69x21, timeframe 45x23 — under the 24px thumb minimum) */
+/* phone tap targets in the terminal header (measured 2026-09-12 at 390px: coin selector 52x21, asset class 69x21, timeframe 45x23 - under the 24px thumb minimum) */
 @media(max-width:720px){.ptt-chart-top .csel-trigger,.pt2-class,#ptTfBtn{min-height:32px;}}
 
 /* ── chat message actions (2026-09-14): the long-press sheet and the reaction chips ───────────────────────────── */

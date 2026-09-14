@@ -1,4 +1,4 @@
-// PHASE 2 — Estimated liquidation clusters (a MODEL, labelled as such in the UI).
+// PHASE 2 - Estimated liquidation clusters (a MODEL, labelled as such in the UI).
 // Polls Open Interest per symbol, and on every positive OI change distributes the new notional across an
 // assumed leverage distribution to estimate where future liquidations cluster. Clusters decay over time and
 // are CONSUMED when price trades through them. All model parameters live in config.js.

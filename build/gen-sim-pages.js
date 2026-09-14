@@ -1,4 +1,4 @@
-/* Trading-simulator SEO pages (stock / forex / index) — EN at /<slug>/ + 12 translated variants at
+/* Trading-simulator SEO pages (stock / forex / index) - EN at /<slug>/ + 12 translated variants at
    /<lang>/<slug>/ with hreflang. Content from build/data/sim-i18n.js. Run: node build/gen-sim-pages.js
    Then run the post-processors (or full build) for gtag/metrica/sentry/charset, add to sitemap, deploy. */
 const fs = require('fs');
@@ -35,7 +35,7 @@ const lp = (lang, slug) => (lang ? `/${lang}/${slug}/` : `/${slug}/`); // lang-a
 
 const CSS = `<style>
   /* Top CTA (2026-08-20, owner): paid traffic lands here, reads a headline plus five lines of copy and leaves
-     before it ever reaches the hero buttons. This puts the one action we want above everything else — on a
+     before it ever reaches the hero buttons. This puts the one action we want above everything else - on a
      390px phone the hero button sat at y=371; this sits at the very top of the content. */
   .simtop{display:block;margin:0 0 20px}
   .simtop .btn{display:block;width:100%;max-width:400px;text-align:center;padding:15px 22px;font-size:15.5px;text-decoration:none}
@@ -109,7 +109,7 @@ ${hreflang(realSlug)}
 <link rel="stylesheet" href="/assets/lab.css" />
 ${CSS.replace('.sgrid{display:grid;gap:10px', '.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(' + GRIDMIN[kind] + ',1fr));gap:10px')}
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":${J(P.metaTitle.replace(/^Free\s+/, '').replace(/ —.*$/, ''))},"applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"${url}","description":${J(P.metaDesc)},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":${J(P.metaTitle.replace(/^Free\s+/, '').replace(/ -.*$/, ''))},"applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"${url}","description":${J(P.metaDesc)},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/${lang ? lang + '/' : ''}"},{"@type":"ListItem","position":2,"name":${J(P.h1)},"item":"${url}"}]}

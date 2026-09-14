@@ -47,7 +47,7 @@
      "q": "En una tendencia alcista, el precio cae por debajo del mínimo anterior. Eso significa…",
      "o": [
       "Que ha empezado una tendencia bajista, seguro",
-      "Nada — solo los máximos definen la tendencia",
+      "Nada - solo los máximos definen la tendencia",
       "Que la secuencia alcista se ha roto",
       "Que la tendencia se ha vuelto más fuerte"
      ]
@@ -97,7 +97,7 @@
     {
      "q": "El precio rompe tu línea y la vuelves a dibujar más plana. Eso es…",
      "o": [
-      "Buena práctica — los gráficos evolucionan",
+      "Buena práctica - los gráficos evolucionan",
       "Ajustar la línea a lo que quieres",
       "Obligatorio cuando falla el tercer toque",
       "Cómo gestionan el riesgo los profesionales"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Una multitud, no un láser",
-     "p": "El soporte no es un precio. Es una banda donde aparecieron suficientes compradores como para frenar la caída — a veces en $100.00, a veces en $99.40, a veces tras un pinchazo hasta $98.80. Dibujar una línea de un píxel y esperar que el precio la respete al centavo es una forma habitual de que te saquen de una idea que estaba bien."
+     "p": "El soporte no es un precio. Es una banda donde aparecieron suficientes compradores como para frenar la caída - a veces en $100.00, a veces en $99.40, a veces tras un pinchazo hasta $98.80. Dibujar una línea de un píxel y esperar que el precio la respete al centavo es una forma habitual de que te saquen de una idea que estaba bien."
     },
     {
      "h": "Deja que las mechas marquen los bordes",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Demuéstralo con un toque",
-     "prompt": "Toca en cualquier punto dentro de la zona de soporte — la banda donde se agrupan los mínimos.",
+     "prompt": "Toca en cualquier punto dentro de la zona de soporte - la banda donde se agrupan los mínimos.",
      "p": "Un solo toque. Aquí no hay un píxel correcto, y esa es exactamente la lección."
     },
     {
@@ -152,7 +152,7 @@
       "Tu nivel estaba simplemente mal",
       "Ha empezado una nueva tendencia bajista",
       "El soporte ya se ha vuelto resistencia",
-      "Normal — el nivel es una zona, no una línea"
+      "Normal - el nivel es una zona, no una línea"
      ]
     }
    ]
@@ -200,7 +200,7 @@
     {
      "q": "Un nivel ha aguantado cuatro veces. Al quinto toque…",
      "o": [
-      "Tiene que aguantar — cuatro toques lo confirman",
+      "Tiene que aguantar - cuatro toques lo confirman",
       "Se convierte automáticamente en línea de tendencia",
       "Puede fallar sin ningún aviso",
       "Garantiza un breakout a tu favor"
@@ -289,7 +289,7 @@
     {
      "q": "Un nivel se rompe con un volumen inusualmente bajo. Deberías…",
      "o": [
-      "Tomártelo a la ligera — participó poca gente",
+      "Tomártelo a la ligera - participó poca gente",
       "Darlo por confirmado, el volumen es ruido",
       "Dar por garantizado un giro",
       "Doblar la posición para pillar el movimiento"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Jugar el juego equivocado sale caro",
-     "p": "Aplica reglas de tendencia dentro de un rango y comprarás cada empuje en el borde de arriba y venderás cada purga en el de abajo — comprar caro y vender barato en bucle, pagando comisiones en cada vuelta. Aplica reglas de rango a un mercado en tendencia y te pasarás la vida poniéndote short contra la fuerza. Nombrar el estado antes de actuar no son deberes opcionales."
+     "p": "Aplica reglas de tendencia dentro de un rango y comprarás cada empuje en el borde de arriba y venderás cada purga en el de abajo - comprar caro y vender barato en bucle, pagando comisiones en cada vuelta. Aplica reglas de rango a un mercado en tendencia y te pasarás la vida poniéndote short contra la fuerza. Nombrar el estado antes de actuar no son deberes opcionales."
     },
     {
      "h": "Los rangos se estrechan antes de acabar",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Nombra la tendencia, marca dos niveles",
-     "p": "Di la secuencia en voz alta: máximos más altos y mínimos más altos, el espejo de eso, o ninguna de las dos, que significa rango. Luego marca exactamente dos zonas horizontales — la más cercana por encima del precio y la más cercana por debajo. Dos. Si has dibujado seis líneas, has construido un gráfico que te dará la razón hagas lo que hagas."
+     "p": "Di la secuencia en voz alta: máximos más altos y mínimos más altos, el espejo de eso, o ninguna de las dos, que significa rango. Luego marca exactamente dos zonas horizontales - la más cercana por encima del precio y la más cercana por debajo. Dos. Si has dibujado seis líneas, has construido un gráfico que te dará la razón hagas lo que hagas."
     },
     {
      "h": "Termina la frase y para",
@@ -426,7 +426,7 @@
     },
     {
      "h": "La mayoría de los gráficos no merecen opinión",
-     "p": "El resultado honesto de esta rutina, la mayoría de las veces, es nada. Ninguna tendencia clara, ningún nivel cerca, nada concreto en lo que estar equivocado. Eso es un resultado, no un fracaso — la rutina es un filtro, y un filtro que nunca rechaza nada no está filtrando. Cierra el gráfico y mira otro símbolo."
+     "p": "El resultado honesto de esta rutina, la mayoría de las veces, es nada. Ninguna tendencia clara, ningún nivel cerca, nada concreto en lo que estar equivocado. Eso es un resultado, no un fracaso - la rutina es un filtro, y un filtro que nunca rechaza nada no está filtrando. Cierra el gráfico y mira otro símbolo."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Todas las que puedas encontrar",
       "Seis, una por marco temporal",
-      "Dos — la más cercana arriba y abajo",
+      "Dos - la más cercana arriba y abajo",
       "Ninguna, bastan las líneas de tendencia"
      ]
     },

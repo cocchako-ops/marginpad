@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>¿Qué es la liquidación en el trading de criptomonedas (y cómo evitarla) — MarginPad</title>
+<title>¿Qué es la liquidación en el trading de criptomonedas (y cómo evitarla) - MarginPad</title>
 <meta name="description" content="La liquidación explicada de forma simple: qué es, por qué la causa el apalancamiento, qué pasa realmente cuando te liquidan, y siete formas prácticas de asegurarte de que nunca te pase." />
 <meta name="keywords" content="what is liquidation in crypto, crypto liquidation explained, how does liquidation work, avoid liquidation crypto, leverage liquidation, liquidation price crypto futures" />
 <link rel="canonical" href="https://marginpad.io/es/blog/what-is-liquidation-in-crypto/" />
@@ -45,7 +45,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué significa ser liquidado en cripto?","acceptedAnswer":{"@type":"Answer","text":"Significa que el exchange cerró por la fuerza tu posición apalancada porque tus pérdidas consumieron el margen que la respaldaba. La posición se cierra a mercado, pierdes ese margen, y normalmente se cobra además una comisión de liquidación."}},{"@type":"Question","name":"¿A qué porcentaje te liquidan?","acceptedAnswer":{"@type":"Answer","text":"Aproximadamente 1 dividido entre tu apalancamiento, menos un pequeño margen de mantenimiento. Una posición a 10x se liquida después de un movimiento en contra de cerca del 9-10%, a 25x después de cerca del 4%, y a 100x después de cerca del 1%. A mayor apalancamiento, un movimiento mucho más pequeño te elimina."}},{"@type":"Question","name":"¿Puedes perder más que tu margen al ser liquidado?","acceptedAnswer":{"@type":"Answer","text":"Con margen aislado, normalmente no: tu pérdida está limitada al margen asignado a esa posición. Con margen cruzado, todo tu saldo respalda la operación, así que una sola posición mala puede vaciar la cuenta completa. Los fondos de seguro y el auto-deleveraging cubren los casos raros en los que la liquidación no puede ejecutarse a tiempo."}},{"@type":"Question","name":"¿Cómo evito que me liquiden?","acceptedAnswer":{"@type":"Answer","text":"Usa menos apalancamiento, pon siempre un stop-loss por dentro de tu precio de liquidación, dimensiona cada operación para arriesgar solo 1-2% de tu cuenta, mantén un colchón de margen, prefiere el margen aislado, reduce el apalancamiento antes de eventos económicos importantes, y revisa tu precio de liquidación exacto antes de cada operación."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Qué es la liquidación","item":"https://marginpad.io/es/blog/what-is-liquidation-in-crypto/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -90,31 +90,31 @@
 <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14px">
 <thead><tr><th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em">Apalancamiento</th><th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em">Movimiento que te liquida</th></tr></thead>
 <tbody>
-<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>5×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">~20% — difícil de alcanzar por accidente</td></tr>
-<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>10×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">~10% — sobrevivible con un stop</td></tr>
-<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>25×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ffd75a">~4% — una sola vela</td></tr>
-<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>100×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72">~1% — ruido normal del mercado</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>5×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">~20% - difícil de alcanzar por accidente</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>10×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a">~10% - sobrevivible con un stop</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>25×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ffd75a">~4% - una sola vela</td></tr>
+<tr><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"><strong>100×</strong></td><td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72">~1% - ruido normal del mercado</td></tr>
 </tbody></table>
 <p>Como las criptomonedas suelen moverse 1–3% en el día, una posición a 100× puede ser liquidada por un movimiento que la mayoría ni siquiera notaría. Esa es la trampa detrás de los grandes números de apalancamiento que anuncian los exchanges. Conoce la relación completa en <a href="/es/blog/crypto-leverage-explained/">el apalancamiento en cripto explicado</a>.</p>
 
 <h2>Qué pasa realmente cuando te liquidan</h2>
-<p>La liquidación no es una salida suave en tu precio de liquidación. El exchange cierra tu posición con una <strong>orden a mercado</strong>, tomando el precio que haya disponible, y cobra una <strong>comisión de liquidación</strong> encima. En mercados rápidos, esa ejecución puede ser peor que el nivel mismo. Peor aún, tu orden forzada empuja el precio más en la misma dirección —un long liquidado se convierte en una venta a mercado— lo que puede desencadenar la liquidación del <em>siguiente</em> trader, y del siguiente. Esa reacción en cadena es una <a href="/es/blog/liquidation-cascade-explained/">cascada de liquidaciones</a>, y por eso las velas violentas se agrupan donde se acumula el apalancamiento. Un <strong>long</strong> se liquida cuando el precio baja; un <strong>short</strong> cuando el precio sube, y como un squeeze no tiene techo, los shorts pueden ser liquidados por movimientos mucho más grandes y rápidos.</p>
+<p>La liquidación no es una salida suave en tu precio de liquidación. El exchange cierra tu posición con una <strong>orden a mercado</strong>, tomando el precio que haya disponible, y cobra una <strong>comisión de liquidación</strong> encima. En mercados rápidos, esa ejecución puede ser peor que el nivel mismo. Peor aún, tu orden forzada empuja el precio más en la misma dirección -un long liquidado se convierte en una venta a mercado- lo que puede desencadenar la liquidación del <em>siguiente</em> trader, y del siguiente. Esa reacción en cadena es una <a href="/es/blog/liquidation-cascade-explained/">cascada de liquidaciones</a>, y por eso las velas violentas se agrupan donde se acumula el apalancamiento. Un <strong>long</strong> se liquida cuando el precio baja; un <strong>short</strong> cuando el precio sube, y como un squeeze no tiene techo, los shorts pueden ser liquidados por movimientos mucho más grandes y rápidos.</p>
 
 <h2>Siete formas de evitar la liquidación</h2>
 <ul>
-<li><strong>1. Usa menos apalancamiento.</strong> Con diferencia, la palanca más grande. Bajar de 100× a 10× lleva la liquidación de ~1% de distancia a ~10% — un perfil de supervivencia completamente distinto.</li>
+<li><strong>1. Usa menos apalancamiento.</strong> Con diferencia, la palanca más grande. Bajar de 100× a 10× lleva la liquidación de ~1% de distancia a ~10% - un perfil de supervivencia completamente distinto.</li>
 <li><strong>2. Pon siempre un stop-loss por dentro de tu liquidación.</strong> Un stop te cierra a un precio que <em>tú</em> eliges, con margen restante, antes de que el exchange lo haga por ti a uno peor.</li>
 <li><strong>3. Dimensiona por riesgo.</strong> Arriesga una porción fija y pequeña (1–2%) de tu cuenta por operación, para que una racha perdedora no te acabe. La <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> hace las cuentas.</li>
 <li><strong>4. Mantén un colchón de margen.</strong> No apuestes todo tu margen; el saldo de reserva deja que la posición respire ante el ruido normal en vez de morir en una mecha.</li>
-<li><strong>5. Prefiere el margen aislado.</strong> Encierra el riesgo en una sola posición en vez de todo tu saldo — mira <a href="/es/blog/cross-vs-isolated-margin/">margen cruzado vs. aislado</a>.</li>
+<li><strong>5. Prefiere el margen aislado.</strong> Encierra el riesgo en una sola posición en vez de todo tu saldo - mira <a href="/es/blog/cross-vs-isolated-margin/">margen cruzado vs. aislado</a>.</li>
 <li><strong>6. Reduce el apalancamiento antes de volatilidad programada.</strong> El FOMC y el CPI en el <a href="/es/calendar/">calendario económico</a> suelen disparar el precio varios puntos porcentuales en segundos.</li>
 <li><strong>7. Conoce tu número antes de cada operación.</strong> Confirma tu precio de liquidación exacto con la <a href="/es/calculators?c=liq">calculadora de liquidación</a> y asegúrate de que tu stop quede cómodamente por dentro.</li>
 </ul>
 
 <h2>Míralo suceder con datos en vivo</h2>
-<p>The concept sticks once you watch it in real time. MarginPad&apos;s <a href="/es/liquidations/">live liquidations feed</a> shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page — <a href="/es/liquidations/">BTC</a>, <a href="/es/liquidations/">ETH</a>, <a href="/es/liquidations/">SOL</a> — with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href="/es/paper-trade">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.</p>
+<p>The concept sticks once you watch it in real time. MarginPad&apos;s <a href="/es/liquidations/">live liquidations feed</a> shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href="/es/liquidations/">BTC</a>, <a href="/es/liquidations/">ETH</a>, <a href="/es/liquidations/">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href="/es/paper-trade">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.</p>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -141,6 +141,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

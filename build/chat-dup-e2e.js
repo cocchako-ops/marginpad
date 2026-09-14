@@ -3,14 +3,14 @@
    Measured cause: home.js never exported window.mpOpenChat, so mp-nav's bottom-bar Chat (window.mpEnsureChat) pulled mp-trade.js on
    top of the app shell. That bundle bound a SECOND, local-only add() to #planSave (every open after a Chat tap filed a twin next to
    the server position: 70 twin drops in 7 days, all mobile) and wired a SECOND chat (the room selector came and went depending on
-   which copy rendered). The Premium room entry also depended on window._mpPrem, filled by the /api/auth/xp poll — often after the
+   which copy rendered). The Premium room entry also depended on window._mpPrem, filled by the /api/auth/xp poll - often after the
    chat was opened, so the selector was skipped and never rebuilt.
    Proves on production:
      1. mobile /paper-trade as a member: mpOpenChat exists before any tap; the bottom-bar Chat opens the chat in place WITHOUT loading
         mp-trade.js; one chat box; one Open click = exactly ONE position (server id), ONE /api/trade/open request
      2. a limit refusal (rate_limited) never becomes a local open
      3. Premium member: the chat opened the instant the FAB exists (before the xp poll answers) still grows the room selector with the
-        Premium entry within 6 s — app shell (home.js chat) AND homepage (mp-trade.js chat)
+        Premium entry within 6 s - app shell (home.js chat) AND homepage (mp-trade.js chat)
    Throwaway member via POST /api/admin/e2euser (+ a temporary Premium grant), removed at the end. Run: node build/chat-dup-e2e.js */
 const fs = require('fs'), path = require('path');
 const { withBrowser } = require('./e2e-browser');
@@ -72,7 +72,7 @@ const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, 
         await page.setCookie(...cookies); await page.setRequestInterception(true); tagReq(page);
         const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 140)));
         await page.goto(ORIGIN + P.url + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
-        // open the chat the instant the FAB is clickable and the member is known — usually before _mpPrem is a boolean
+        // open the chat the instant the FAB is clickable and the member is known - usually before _mpPrem is a boolean
         let st = null; for (let w = 0; w < 80; w++) { st = await page.evaluate(() => { const f = document.getElementById('chatFab'); const me = window.mpAuth && window.mpAuth.me && window.mpAuth.me(); if (!f || !me) return null; const premBefore = typeof window._mpPrem; f.click(); return { premBefore, open: !!(document.getElementById('chatBox') && !document.getElementById('chatBox').hidden) }; }); if (st) break; await sleep(150); }
         chk(P.label + ': chat opened as a member', !!(st && st.open), st);
         let sel = null; for (let w = 0; w < 40; w++) { await sleep(300); sel = await page.evaluate(() => { const s = document.querySelector('.ct-roomsel'); if (!s) return null; return { items: Array.prototype.map.call(s.querySelectorAll('[data-room]'), b => b.getAttribute('data-room')), prem: window._mpPrem }; }); if (sel && sel.items.indexOf('PREMIUM') >= 0) break; }

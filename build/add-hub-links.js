@@ -1,6 +1,6 @@
 /* Hub links for pages that nothing linked to (2026-09-02). A crawl of dist found 190 indexable pages with ZERO inbound
    <a href> from any other page: every per-coin liquidation map and calculator beyond the majors, every head-to-head and
-   "best exchange for" page, the 12 translated hubs (/de/liquidations/ ...) and ~80 blog translations — all reachable only
+   "best exchange for" page, the 12 translated hubs (/de/liquidations/ ...) and ~80 blog translations - all reachable only
    through hreflang or the sitemap. Idempotent walk-and-patch (marker data-hublinks); the link lists are derived from
    what exists in dist, so a new coin/comparison/translation joins automatically on the next build.
    Runs in build.js after the exchange rail: node build/add-hub-links.js */
@@ -62,7 +62,7 @@ if (has('liquidations')) {
   const b = [block('Liquidation maps by coin', 'Live per-coin heatmaps built from our own collector feed.', MAPS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-map')])),
     block('Liquidation calculators by coin', '', CALCS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-calculator')])),
     block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))),
-    // the one-question pages (2026-09-14) — an orphan page is one an assistant never finds a route to
+    // the one-question pages (2026-09-14) - an orphan page is one an assistant never finds a route to
     block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
   if (inject(rel('liquidations'), null, b)) n++;
 }

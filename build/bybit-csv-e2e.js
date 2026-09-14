@@ -1,5 +1,5 @@
 /* The Bybit report parser decides $200 of prize money, so it is tested against the shapes a real affiliate export
-   arrives in — and against the shapes that used to make it guess. Runs the PRODUCTION function, sliced out of
+   arrives in - and against the shapes that used to make it guess. Runs the PRODUCTION function, sliced out of
    src/worker.js (no port, no drift).                                            node build/bybit-csv-e2e.js         */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -74,7 +74,7 @@ ok(r.diag.total === 6000 && r.diag.rows === 3, 'the diagnostics carry the row co
 
 // ---- the REAL affiliate export (2026-09-14) -------------------------------------------------------------------------
 // "Clients_0_All_<affiliateId>_<from>_<to>.csv". The volume column is called TradingAmount, and the fourth column,
-// Source, holds the AFFILIATE ID — which the first version of this read as everyone's volume (all 31 accounts tied at
+// Source, holds the AFFILIATE ID - which the first version of this read as everyone's volume (all 31 accounts tied at
 // 162,071). Anything money-ish that is not volume is beside it: Deposits Amount, Fee Profit, Commissions, Tradfi Amount.
 const REAL_HEAD = 'UID,VIP Level,User engagement,Joined BYBIT,Source,Remarks,KYC(Lv.),Coin,First-Time Deposited,Deposits Amount,TradingAmount,TakerAmount,MakerAmount,Interest,Fee Profit,Commissions,Tradfi Amount,Rebate Coin';
 r = bybitParseReport(REAL_HEAD

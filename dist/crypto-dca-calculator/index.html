@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>DCA Calculator — Average Entry Across Buys | MarginPad</title>
+<title>DCA Calculator - Average Entry Across Buys | MarginPad</title>
 <meta name="description" content="Free DCA calculator: enter multiple buys (price and amount) and get your true average entry, total coins and the break-even for the whole stack." />
 <meta name="keywords" content="dca calculator crypto, average entry calculator, dollar cost average bitcoin" />
 <link rel="canonical" href="https://marginpad.io/crypto-dca-calculator/" />
@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-dca-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-dca-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="DCA Calculator — Average Entry Across Buys | MarginPad" />
+<meta property="og:title" content="DCA Calculator - Average Entry Across Buys | MarginPad" />
 <meta property="og:description" content="Free DCA calculator: enter multiple buys (price and amount) and get your true average entry, total coins and the break-even for the whole stack." />
 <meta property="og:url" content="https://marginpad.io/crypto-dca-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/crypto-dca-calculator.jpg" />
@@ -67,9 +67,9 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto DCA Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-dca-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto DCA Calculator","item":"https://marginpad.io/crypto-dca-calculator/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is DCA better than buying at once?","acceptedAnswer":{"@type":"Answer","text":"Lump-sum wins slightly more often in rising markets, but DCA removes the timing decision and matches how income arrives — for volatile assets the discipline is usually worth the small expected-value gap."}},{"@type":"Question","name":"Does DCA work for averaging down a loser?","acceptedAnswer":{"@type":"Answer","text":"Only when the original thesis still holds and total size stays inside the risk plan. Averaging down without a limit is how small losses become account-enders."}},{"@type":"Question","name":"How often should buys happen?","acceptedAnswer":{"@type":"Answer","text":"Weekly vs monthly differences are minor; consistency through a bear market matters more than frequency."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"DCA Calculator — Average Entry Across Buys","url":"https://marginpad.io/crypto-dca-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-dca-calculator.jpg" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is DCA better than buying at once?","acceptedAnswer":{"@type":"Answer","text":"Lump-sum wins slightly more often in rising markets, but DCA removes the timing decision and matches how income arrives - for volatile assets the discipline is usually worth the small expected-value gap."}},{"@type":"Question","name":"Does DCA work for averaging down a loser?","acceptedAnswer":{"@type":"Answer","text":"Only when the original thesis still holds and total size stays inside the risk plan. Averaging down without a limit is how small losses become account-enders."}},{"@type":"Question","name":"How often should buys happen?","acceptedAnswer":{"@type":"Answer","text":"Weekly vs monthly differences are minor; consistency through a bear market matters more than frequency."}}]}</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"DCA Calculator - Average Entry Across Buys","url":"https://marginpad.io/crypto-dca-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-dca-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -78,24 +78,24 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <body>
 <div class="wrap">
 <h1>Crypto DCA Calculator</h1>
-<p class="sub">Multiple buys, one honest number — the average entry your whole stack breaks even at.</p>
+<p class="sub">Multiple buys, one honest number - the average entry your whole stack breaks even at.</p>
 <div class="calc"><div class="cgrid"><div class="f"><label for="p1">Buy 1 price</label><input id="p1" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="a1">Buy 1 amount (USD)</label><input id="a1" type="number" inputmode="decimal" value="500"></div><div class="f"><label for="p2">Buy 2 price</label><input id="p2" type="number" inputmode="decimal" value="52000"></div><div class="f"><label for="a2">Buy 2 amount (USD)</label><input id="a2" type="number" inputmode="decimal" value="500"></div><div class="f"><label for="p3">Buy 3 price</label><input id="p3" type="number" inputmode="decimal" value="0"></div><div class="f"><label for="a3">Buy 3 amount (USD)</label><input id="a3" type="number" inputmode="decimal" value="0"></div><div class="f"><label for="p4">Buy 4 price</label><input id="p4" type="number" inputmode="decimal" value="0"></div><div class="f"><label for="a4">Buy 4 amount (USD)</label><input id="a4" type="number" inputmode="decimal" value="0"></div></div><div class="res" id="res"></div></div>
 <h2>How it is calculated</h2>
 <div class="frm">average entry = total spent / total coins bought</div>
-<p>The average entry is a <strong>harmonic</strong> mean, not arithmetic — equal dollar buys automatically purchase more coins at lower prices, which is the quiet advantage of DCA over lump-sum timing.</p>
+<p>The average entry is a <strong>harmonic</strong> mean, not arithmetic - equal dollar buys automatically purchase more coins at lower prices, which is the quiet advantage of DCA over lump-sum timing.</p>
 <h2>Worked example</h2>
 <div class="ex">$500 at <b>$60,000</b> plus $500 at <b>$52,000</b> = 0.01795 BTC for $1,000 → average entry <b>$55,714</b>, below the $56,000 midpoint because the cheaper buy bought more coins.</div>
 <h2>FAQ</h2>
-<div class="faq"><details><summary>Is DCA better than buying at once?</summary><p>Lump-sum wins slightly more often in rising markets, but DCA removes the timing decision and matches how income arrives — for volatile assets the discipline is usually worth the small expected-value gap.</p></details><details><summary>Does DCA work for averaging down a loser?</summary><p>Only when the original thesis still holds and total size stays inside the risk plan. Averaging down without a limit is how small losses become account-enders.</p></details><details><summary>How often should buys happen?</summary><p>Weekly vs monthly differences are minor; consistency through a bear market matters more than frequency.</p></details></div>
+<div class="faq"><details><summary>Is DCA better than buying at once?</summary><p>Lump-sum wins slightly more often in rising markets, but DCA removes the timing decision and matches how income arrives - for volatile assets the discipline is usually worth the small expected-value gap.</p></details><details><summary>Does DCA work for averaging down a loser?</summary><p>Only when the original thesis still holds and total size stays inside the risk plan. Averaging down without a limit is how small losses become account-enders.</p></details><details><summary>How often should buys happen?</summary><p>Weekly vs monthly differences are minor; consistency through a bear market matters more than frequency.</p></details></div>
 <h2>Related tools</h2>
 <div class="rel"><a href="/crypto-roi-calculator/">ROI calculator</a><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/spot/">Demo Spot (practice)</a><a href="/bitcoin-cycle/">Bitcoin cycle</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
-<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var r=document.getElementById('res');var tot=0,qty=0;for(var i=1;i<=4;i++){var p=+document.getElementById('p'+i).value,a=+document.getElementById('a'+i).value;if(p>0&&a>0){tot+=a;qty+=a/p;}}if(!(qty>0)){r.innerHTML='';return;}var avg=tot/qty;r.innerHTML='<div class="rrow"><span class="k">Total invested</span><span class="v">'+tot.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Total coins</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow big"><span class="k">Average entry (break-even)</span><span class="v">'+avg.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

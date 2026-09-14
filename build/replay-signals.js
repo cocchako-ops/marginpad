@@ -1,4 +1,4 @@
-// Replay v2 — executes the PRODUCTION functions themselves: _sanitizeSigBars + _supertrend are extracted
+// Replay v2 - executes the PRODUCTION functions themselves: _sanitizeSigBars + _supertrend are extracted
 // from src/worker.js by source-slicing and eval'd (zero porting). The 1-line flip decision is additionally
 // asserted VERBATIM against the production source so the transcribed state machine cannot silently drift.
 const fs = require('fs'), https = require('https');
@@ -24,7 +24,7 @@ const mustExist = [
   "if (flip && (!state || state.bar !== bar || force)) {",
   "const closed = (last && last.time >= curStart) ? bars.slice(0, -1) : bars;",
 ];
-for (const lit of mustExist) { if (!src.includes(lit)) throw new Error('PRODUCTION DRIFT — literal missing: ' + lit); }
+for (const lit of mustExist) { if (!src.includes(lit)) throw new Error('PRODUCTION DRIFT - literal missing: ' + lit); }
 console.log('flip-decision literals verified verbatim in production source ✓');
 
 function get(u) { return new Promise((res, rej) => { https.get(u, r => { let d = ''; r.on('data', c => d += c); r.on('end', () => { try { res(JSON.parse(d)); } catch (e) { rej(e); } }); }).on('error', rej); }); }

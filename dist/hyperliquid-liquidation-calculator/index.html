@@ -19,7 +19,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>Hyperliquid Liquidation Calculator — Real HL Margin Formula | MarginPad</title>
+<title>Hyperliquid Liquidation Calculator - Real HL Margin Formula | MarginPad</title>
 <meta name="description" content="Free Hyperliquid liquidation price calculator using Hyperliquid's actual margining: maintenance margin = 1/(2 x max leverage) per asset and the official liquidation formula from the HL docs. Long and short, any leverage, plus fees (0.015%/0.045%) and hourly funding notes. No sign-up." />
 <meta name="keywords" content="hyperliquid liquidation calculator, hyperliquid liquidation price, hyperliquid margin calculator, hyperliquid maintenance margin, hyperliquid position calculator" />
 <link rel="canonical" href="https://marginpad.io/hyperliquid-liquidation-calculator/" />
@@ -28,11 +28,11 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/hyperliquid-liquidation-calculator/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/hyperliquid-liquidation-calculator/" />
-<meta property="og:title" content="Hyperliquid Liquidation Calculator — Real HL Margin Formula" />
+<meta property="og:title" content="Hyperliquid Liquidation Calculator - Real HL Margin Formula" />
 <meta property="og:description" content="Uses Hyperliquid's actual margining: maintenance margin = 1/(2 x max leverage) and the official liquidation formula. Free, no sign-up." />
 <meta property="og:image" content="https://marginpad.io/assets/og/hyperliquid-liquidation-calculator.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Hyperliquid Liquidation Calculator — Real HL Margin Formula" />
+<meta name="twitter:title" content="Hyperliquid Liquidation Calculator - Real HL Margin Formula" />
 <meta name="twitter:description" content="Uses Hyperliquid's actual margining: maintenance margin = 1/(2 x max leverage) and the official liquidation formula. Free, no sign-up." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/hyperliquid-liquidation-calculator.jpg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -74,10 +74,10 @@
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Hyperliquid Liquidation Calculator","item":"https://marginpad.io/hyperliquid-liquidation-calculator/"}]}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is Hyperliquid's liquidation price calculated?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid liquidates when account equity falls below the maintenance margin, which is half of the initial margin required at the asset's MAXIMUM leverage — i.e. maintenance margin fraction = 1/(2 x max leverage). The docs' formula is liq_price = price - side x margin_available / position_size / (1 - l x side), where l = 1/(2 x max leverage) and margin_available = isolated margin - maintenance margin required. This calculator implements that formula exactly."}},{"@type":"Question","name":"Why does Hyperliquid liquidation differ from Binance or Bybit?","acceptedAnswer":{"@type":"Answer","text":"CEXes use tiered maintenance margin rates set per position size (e.g. 0.4-0.5% on BTC at retail sizes). Hyperliquid derives maintenance margin from the asset's max leverage instead: 1/(2 x max leverage) — e.g. 1.25% on a 40x asset, 2.5% on a 20x asset, up to 16.7% on a 3x asset. At the same user leverage, your liquidation can sit meaningfully further or closer than on a CEX depending on the asset."}},{"@type":"Question","name":"What are Hyperliquid's fees and funding?","acceptedAnswer":{"@type":"Answer","text":"Base tier fees are 0.015% maker and 0.045% taker (volume tiers reduce them). Funding is exchanged EVERY HOUR, not every 8 hours like most CEXes — an 0.01% hourly rate compounds to roughly 87.6% annualized, so funding matters much more for positions held days."}},{"@type":"Question","name":"Is this calculator free?","acceptedAnswer":{"@type":"Answer","text":"Yes — free, instant, no sign-up, and the math runs entirely in your browser. You can also practice Hyperliquid-style leverage risk-free in MarginPad's paper trading terminal."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is Hyperliquid's liquidation price calculated?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid liquidates when account equity falls below the maintenance margin, which is half of the initial margin required at the asset's MAXIMUM leverage - i.e. maintenance margin fraction = 1/(2 x max leverage). The docs' formula is liq_price = price - side x margin_available / position_size / (1 - l x side), where l = 1/(2 x max leverage) and margin_available = isolated margin - maintenance margin required. This calculator implements that formula exactly."}},{"@type":"Question","name":"Why does Hyperliquid liquidation differ from Binance or Bybit?","acceptedAnswer":{"@type":"Answer","text":"CEXes use tiered maintenance margin rates set per position size (e.g. 0.4-0.5% on BTC at retail sizes). Hyperliquid derives maintenance margin from the asset's max leverage instead: 1/(2 x max leverage) - e.g. 1.25% on a 40x asset, 2.5% on a 20x asset, up to 16.7% on a 3x asset. At the same user leverage, your liquidation can sit meaningfully further or closer than on a CEX depending on the asset."}},{"@type":"Question","name":"What are Hyperliquid's fees and funding?","acceptedAnswer":{"@type":"Answer","text":"Base tier fees are 0.015% maker and 0.045% taker (volume tiers reduce them). Funding is exchanged EVERY HOUR, not every 8 hours like most CEXes - an 0.01% hourly rate compounds to roughly 87.6% annualized, so funding matters much more for positions held days."}},{"@type":"Question","name":"Is this calculator free?","acceptedAnswer":{"@type":"Answer","text":"Yes - free, instant, no sign-up, and the math runs entirely in your browser. You can also practice Hyperliquid-style leverage risk-free in MarginPad's paper trading terminal."}}]}
 </script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -108,7 +108,7 @@
 .mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
 .mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
 @media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Liquidation Calculator — Real HL Margin Formula","url":"https://marginpad.io/hyperliquid-liquidation-calculator/","dateModified":"2026-09-11T11:39:32.518Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Liquidation Calculator - Real HL Margin Formula","url":"https://marginpad.io/hyperliquid-liquidation-calculator/","dateModified":"2026-09-11T11:39:32.518Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
@@ -120,7 +120,7 @@
   <section class="hero">
     <span class="eyebrow">Free calculator · real HL formula</span>
     <h1>Hyperliquid Liquidation Calculator</h1>
-    <p class="sub">The only calculator built on Hyperliquid&#39;s actual margining: maintenance margin is <b>1/(2 &times; max leverage)</b> of the asset — not a CEX-style tier table — and the liquidation price comes from the exact formula in the HL docs. Free, instant, no sign-up.</p>
+    <p class="sub">The only calculator built on Hyperliquid&#39;s actual margining: maintenance margin is <b>1/(2 &times; max leverage)</b> of the asset - not a CEX-style tier table - and the liquidation price comes from the exact formula in the HL docs. Free, instant, no sign-up.</p>
   </section>
 
   <div class="calc">
@@ -128,15 +128,15 @@
       <div class="cf"><label>Entry price (USD)</label><input id="hEntry" type="number" inputmode="decimal" value="60000" min="0" step="any" /></div>
       <div class="cf"><label>Margin (USDC)</label><input id="hMargin" type="number" inputmode="decimal" value="1000" min="0" step="any" /></div>
       <div class="cf"><label>Your leverage</label><input id="hLev" type="number" inputmode="decimal" value="10" min="1" max="40" step="any" /></div>
-      <div class="cf"><label>Asset max leverage (sets maint. margin)</label><select id="hMax"><option value="40" selected>40x — BTC, ETH class (mm 1.25%)</option><option value="25">25x (mm 2%)</option><option value="20">20x — SOL, HYPE class (mm 2.5%)</option><option value="10">10x — mid alts (mm 5%)</option><option value="5">5x — small alts (mm 10%)</option><option value="3">3x — thin longtail (mm 16.7%)</option></select></div>
+      <div class="cf"><label>Asset max leverage (sets maint. margin)</label><select id="hMax"><option value="40" selected>40x - BTC, ETH class (mm 1.25%)</option><option value="25">25x (mm 2%)</option><option value="20">20x - SOL, HYPE class (mm 2.5%)</option><option value="10">10x - mid alts (mm 5%)</option><option value="5">5x - small alts (mm 10%)</option><option value="3">3x - thin longtail (mm 16.7%)</option></select></div>
       <div class="cf"><label>Side</label><div class="side"><button id="hLong" class="lon on" type="button">LONG</button><button id="hShort" class="sho" type="button">SHORT</button></div></div>
     </div>
     <div class="res">
-      <div class="r"><label>Liquidation price</label><b class="liq" id="rLiq">—</b></div>
-      <div class="r"><label>Distance to liquidation</label><b class="d" id="rDist">—</b></div>
-      <div class="r"><label>Position size</label><b id="rNtl">—</b></div>
-      <div class="r"><label>Maintenance margin</label><b id="rMM">—</b></div>
-      <div class="r"><label>Round-trip taker fees</label><b id="rFee">—</b></div>
+      <div class="r"><label>Liquidation price</label><b class="liq" id="rLiq">-</b></div>
+      <div class="r"><label>Distance to liquidation</label><b class="d" id="rDist">-</b></div>
+      <div class="r"><label>Position size</label><b id="rNtl">-</b></div>
+      <div class="r"><label>Maintenance margin</label><b id="rMM">-</b></div>
+      <div class="r"><label>Round-trip taker fees</label><b id="rFee">-</b></div>
     </div>
     <p class="note" id="rWarn" style="margin:14px 0 0;font-size:12.5px;color:var(--faint)"></p>
   </div>
@@ -144,8 +144,8 @@
   <h2>The formula this page uses</h2>
   <div class="prose">
     <p>From the Hyperliquid docs: <code>liq_price = price − side &times; margin_available / position_size / (1 − l &times; side)</code>, where <code>l = 1 / (2 &times; max_leverage)</code> and, for an isolated position, <code>margin_available = isolated_margin − l &times; notional</code>. <code>side</code> is +1 for longs and −1 for shorts.</p>
-    <p>The key difference from CEXes: on Binance or Bybit the maintenance margin rate is a tier table by position size (roughly 0.4-0.5% on BTC at retail sizes). On Hyperliquid it is a constant per asset, derived from that asset&#39;s <b>maximum</b> leverage — half the initial margin at max leverage. A 40x-max asset carries 1.25% maintenance margin at every position size a retail trader will reach; a 3x-max longtail asset carries 16.7%.</p>
-    <p>Worked example: long BTC at $60,000 with $1,000 margin at 10x (notional $10,000, max leverage 40x, l = 0.0125). Margin available = 1000 − 0.0125 &times; 10.000 = $875. Position size = 0.16667 BTC. Liquidation = 60000 − 875 / 0.16667 / (1 − 0.0125) = <b>$54,684</b> — an 8.86% drop. The naive CEX-style formula would put it near $54,300; the difference is the maintenance margin Hyperliquid keeps in reserve.</p>
+    <p>The key difference from CEXes: on Binance or Bybit the maintenance margin rate is a tier table by position size (roughly 0.4-0.5% on BTC at retail sizes). On Hyperliquid it is a constant per asset, derived from that asset&#39;s <b>maximum</b> leverage - half the initial margin at max leverage. A 40x-max asset carries 1.25% maintenance margin at every position size a retail trader will reach; a 3x-max longtail asset carries 16.7%.</p>
+    <p>Worked example: long BTC at $60,000 with $1,000 margin at 10x (notional $10,000, max leverage 40x, l = 0.0125). Margin available = 1000 − 0.0125 &times; 10.000 = $875. Position size = 0.16667 BTC. Liquidation = 60000 − 875 / 0.16667 / (1 − 0.0125) = <b>$54,684</b> - an 8.86% drop. The naive CEX-style formula would put it near $54,300; the difference is the maintenance margin Hyperliquid keeps in reserve.</p>
   </div>
 
   <h2>Maintenance margin by asset class</h2>
@@ -160,41 +160,41 @@
       <tr><td>3x</td><td>16.7%</td><td>thin longtail listings</td></tr>
     </tbody>
   </table></div>
-  <p class="muted">Hyperliquid also applies margin tiers on very large positions for some assets — for institutional-size positions the maintenance requirement can rise. Fees: 0.015% maker / 0.045% taker at the base tier; funding settles <b>every hour</b> (vs 8h on most CEXes), so an 0.01%/h rate is ~87.6% annualized.</p>
+  <p class="muted">Hyperliquid also applies margin tiers on very large positions for some assets - for institutional-size positions the maintenance requirement can rise. Fees: 0.015% maker / 0.045% taker at the base tier; funding settles <b>every hour</b> (vs 8h on most CEXes), so an 0.01%/h rate is ~87.6% annualized.</p>
 
   <h2>Frequently asked questions</h2>
   <div class="faq">
     <div class="qa"><h3>How is Hyperliquid&#39;s liquidation price calculated?</h3><p>Liquidation triggers when equity falls below maintenance margin = 1/(2 &times; max leverage) of notional. This calculator implements the exact docs formula, including the (1 − l &times; side) divisor most calculators skip.</p></div>
-    <div class="qa"><h3>Why does it differ from Binance or Bybit?</h3><p>CEXes tier maintenance margin by position size; Hyperliquid derives it from the asset&#39;s max leverage. Same user leverage, different liquidation distance — especially on alts where HL&#39;s maintenance margin is much higher than a CEX tier-1.</p></div>
-    <div class="qa"><h3>What about fees and funding?</h3><p>Base fees 0.015% maker / 0.045% taker. Funding is hourly — roughly 8&times; more settlement events than a CEX — which compounds meaningfully on positions held for days.</p></div>
-    <div class="qa"><h3>Is this calculator free?</h3><p>Yes — free, no sign-up, all math in your browser. Practice the same mechanics risk-free in the <a href="/paper-trade">paper trading terminal</a>, or watch <a href="/hyperliquid-whales/">real Hyperliquid whale positions</a> with their exact liquidation prices.</p></div>
+    <div class="qa"><h3>Why does it differ from Binance or Bybit?</h3><p>CEXes tier maintenance margin by position size; Hyperliquid derives it from the asset&#39;s max leverage. Same user leverage, different liquidation distance - especially on alts where HL&#39;s maintenance margin is much higher than a CEX tier-1.</p></div>
+    <div class="qa"><h3>What about fees and funding?</h3><p>Base fees 0.015% maker / 0.045% taker. Funding is hourly - roughly 8&times; more settlement events than a CEX - which compounds meaningfully on positions held for days.</p></div>
+    <div class="qa"><h3>Is this calculator free?</h3><p>Yes - free, no sign-up, all math in your browser. Practice the same mechanics risk-free in the <a href="/paper-trade">paper trading terminal</a>, or watch <a href="/hyperliquid-whales/">real Hyperliquid whale positions</a> with their exact liquidation prices.</p></div>
   </div>
 
-  <p class="note" style="margin-top:30px">Related: <a href="/hyperliquid-whales/">Hyperliquid whale tracker</a> · <a href="/calculators">All calculators</a> · <a href="/bybit-liquidation-calculator/">Bybit liquidation calculator</a> · <a href="/blog/how-to-avoid-liquidation/">How to avoid liquidation</a>. Educational tool — verify with Hyperliquid&#39;s own preview before trading. Not financial advice.</p>
+  <p class="note" style="margin-top:30px">Related: <a href="/hyperliquid-whales/">Hyperliquid whale tracker</a> · <a href="/calculators">All calculators</a> · <a href="/bybit-liquidation-calculator/">Bybit liquidation calculator</a> · <a href="/blog/how-to-avoid-liquidation/">How to avoid liquidation</a>. Educational tool - verify with Hyperliquid&#39;s own preview before trading. Not financial advice.</p>
 </div>
 
 
 <div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
 <div class="mp-hl-e"><i></i>THE VENUE THIS CALCULATOR MODELS</div>
 <div class="mp-hl-row">
-<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid &mdash; perps <b>on-chain</b>, with a fee discount from us.</div><p class="mp-hl-w">These maintenance-margin and fee numbers are Hyperliquid&rsquo;s own. Open the account with our code and every trade you size here costs 4% less in fees.</p></div>
+<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid - perps <b>on-chain</b>, with a fee discount from us.</div><p class="mp-hl-w">These maintenance-margin and fee numbers are Hyperliquid&rsquo;s own. Open the account with our code and every trade you size here costs 4% less in fees.</p></div>
 <div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>off trading fees<br>for referred accounts</span></div><div class="mp-hl-code"><span>use code</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a></div>
 </div>
-<p class="mp-hl-d">Referral link &mdash; MarginPad may earn a commission if you open an account. The 4% fee discount is Hyperliquid&rsquo;s referral discount; you never pay more than you would going direct. Not available to US persons under Hyperliquid&rsquo;s terms.</p>
+<p class="mp-hl-d">Referral link - MarginPad may earn a commission if you open an account. The 4% fee discount is Hyperliquid&rsquo;s referral discount; you never pay more than you would going direct. Not available to US persons under Hyperliquid&rsquo;s terms.</p>
 </div>
 <script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
-/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) — Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
+/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) - Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
 function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
 var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
 if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
 var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
-<div class="mp-xr"><div class="mp-xr-t">THE VENUES THESE NUMBERS ASSUME</div><p class="mp-xr-w">Maintenance margin, fee tiers and funding intervals differ per exchange &mdash; these are the ones this calculator is modelled on.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
+<div class="mp-xr"><div class="mp-xr-t">THE VENUES THESE NUMBERS ASSUME</div><p class="mp-xr-w">Maintenance margin, fee tiers and funding intervals differ per exchange - these are the ones this calculator is modelled on.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
 <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
 <nav class="hublinks" data-hublinks aria-label="Liquidation calculators for other coins"><h2>Liquidation calculators for other coins</h2><div class="hl"><a href="/100x-liquidation-calculator/">100X</a><a href="/10x-liquidation-calculator/">10X</a><a href="/20x-liquidation-calculator/">20X</a><a href="/25x-liquidation-calculator/">25X</a><a href="/50x-liquidation-calculator/">50X</a><a href="/5x-liquidation-calculator/">5X</a><a href="/aave-liquidation-calculator/">AAVE</a><a href="/ada-liquidation-calculator/">ADA</a><a href="/algo-liquidation-calculator/">ALGO</a><a href="/ape-liquidation-calculator/">APE</a><a href="/apt-liquidation-calculator/">APT</a><a href="/arb-liquidation-calculator/">ARB</a><a href="/atom-liquidation-calculator/">ATOM</a><a href="/avax-liquidation-calculator/">AVAX</a><a href="/axs-liquidation-calculator/">AXS</a><a href="/bch-liquidation-calculator/">BCH</a><a href="/binance-liquidation-calculator/">BINANCE</a><a href="/bitget-liquidation-calculator/">BITGET</a><a href="/bnb-liquidation-calculator/">BNB</a><a href="/bonk-liquidation-calculator/">BONK</a><a href="/btc-liquidation-calculator/">BTC</a><a href="/bybit-liquidation-calculator/">BYBIT</a><a href="/crv-liquidation-calculator/">CRV</a><a href="/doge-liquidation-calculator/">DOGE</a><a href="/dot-liquidation-calculator/">DOT</a><a href="/ena-liquidation-calculator/">ENA</a><a href="/ens-liquidation-calculator/">ENS</a><a href="/etc-liquidation-calculator/">ETC</a><a href="/eth-liquidation-calculator/">ETH</a><a href="/fet-liquidation-calculator/">FET</a><a href="/fil-liquidation-calculator/">FIL</a><a href="/floki-liquidation-calculator/">FLOKI</a><a href="/gala-liquidation-calculator/">GALA</a><a href="/gate-liquidation-calculator/">GATE</a><a href="/grt-liquidation-calculator/">GRT</a><a href="/hbar-liquidation-calculator/">HBAR</a><a href="/hype-liquidation-calculator/">HYPE</a><a href="/icp-liquidation-calculator/">ICP</a><a href="/imx-liquidation-calculator/">IMX</a><a href="/inj-liquidation-calculator/">INJ</a><a href="/jup-liquidation-calculator/">JUP</a><a href="/kas-liquidation-calculator/">KAS</a><a href="/kraken-liquidation-calculator/">KRAKEN</a><a href="/kucoin-liquidation-calculator/">KUCOIN</a><a href="/link-liquidation-calculator/">LINK</a><a href="/ltc-liquidation-calculator/">LTC</a><a href="/mana-liquidation-calculator/">MANA</a><a href="/matic-liquidation-calculator/">MATIC</a><a href="/mexc-liquidation-calculator/">MEXC</a><a href="/mkr-liquidation-calculator/">MKR</a><a href="/near-liquidation-calculator/">NEAR</a><a href="/okx-liquidation-calculator/">OKX</a><a href="/ondo-liquidation-calculator/">ONDO</a><a href="/op-liquidation-calculator/">OP</a><a href="/ordi-liquidation-calculator/">ORDI</a><a href="/pepe-liquidation-calculator/">PEPE</a><a href="/rndr-liquidation-calculator/">RNDR</a><a href="/rune-liquidation-calculator/">RUNE</a><a href="/sand-liquidation-calculator/">SAND</a><a href="/sei-liquidation-calculator/">SEI</a><a href="/shib-liquidation-calculator/">SHIB</a><a href="/sol-liquidation-calculator/">SOL</a><a href="/stx-liquidation-calculator/">STX</a><a href="/sui-liquidation-calculator/">SUI</a><a href="/tao-liquidation-calculator/">TAO</a><a href="/tia-liquidation-calculator/">TIA</a><a href="/ton-liquidation-calculator/">TON</a><a href="/trx-liquidation-calculator/">TRX</a><a href="/uni-liquidation-calculator/">UNI</a><a href="/wif-liquidation-calculator/">WIF</a><a href="/wld-liquidation-calculator/">WLD</a><a href="/xlm-liquidation-calculator/">XLM</a><a href="/xmr-liquidation-calculator/">XMR</a><a href="/xrp-liquidation-calculator/">XRP</a><a href="/zec-liquidation-calculator/">ZEC</a></div></nav>
 
 <nav class="hublinks" data-hublinks aria-label="Related"><h2>Related</h2><div class="hl"><a href="/calculators">All calculators</a><a href="/paper-trade">Practice with paper trading</a></div></nav>
 <footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
-  <div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools — calculators, liquidation data, paper trading. No sign-up.</p></div>
+  <div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools - calculators, liquidation data, paper trading. No sign-up.</p></div>
   <div><h4>Hyperliquid</h4><a href="/hyperliquid-whales/">Whale tracker</a><a href="/hyperliquid-liquidation-calculator/">Liquidation calculator</a><a href="/rekt/">Live liquidations</a></div>
   <div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/calculators">Calculators</a><a href="/heatmap">Heatmap</a><a href="/tools/">Tools</a></div>
 </div><div class="bottom">© MarginPad · Practice platform, not financial advice · marginpad.io</div></div></footer>
@@ -203,12 +203,12 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
 (function(){
   var E=function(id){return document.getElementById(id);};
   var side=1;
-  function fmt(x,d){if(!isFinite(x))return '—';return x.toLocaleString('en-US',{maximumFractionDigits:d==null?2:d});}
+  function fmt(x,d){if(!isFinite(x))return '-';return x.toLocaleString('en-US',{maximumFractionDigits:d==null?2:d});}
   function calc(){
     var p=+E('hEntry').value, m=+E('hMargin').value, L=+E('hLev').value, mx=+E('hMax').value;
     var warn='';
-    if(!(p>0)||!(m>0)||!(L>0)){E('rLiq').textContent='—';return;}
-    if(L>mx){warn='Your leverage exceeds this asset’s max ('+mx+'x) — Hyperliquid would not open this position. Showing math anyway.';}
+    if(!(p>0)||!(m>0)||!(L>0)){E('rLiq').textContent='-';return;}
+    if(L>mx){warn='Your leverage exceeds this asset’s max ('+mx+'x) - Hyperliquid would not open this position. Showing math anyway.';}
     var l=1/(2*mx);
     var ntl=m*L, sz=ntl/p;
     var mm=l*ntl;
@@ -231,6 +231,6 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   calc();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

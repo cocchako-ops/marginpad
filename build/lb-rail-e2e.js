@@ -1,4 +1,4 @@
-// lb-rail-e2e.js — the homepage leaderboard rails + the Gold Room (2026-09-05).
+// lb-rail-e2e.js - the homepage leaderboard rails + the Gold Room (2026-09-05).
 // The failure this guards against: both pickers were flex rows that made the CARD wider with every board added,
 // until the strip ran off the right edge of a phone. Every check here is geometry, not existence.
 //   node build/lb-rail-e2e.js
@@ -6,7 +6,7 @@ const { withBrowser, newPage } = require('./e2e-browser.js');
 const path = require('path'), fs = require('fs');
 const OUT = path.join(__dirname, 'pt-shots'); fs.mkdirSync(OUT, { recursive: true });
 const wait = ms => new Promise(r => setTimeout(r, ms));
-let bad = 0; const ok = (n, c, d) => { console.log((c ? '  OK   ' : '  FAIL ') + n + (d ? ' — ' + d : '')); if (!c) bad++; };
+let bad = 0; const ok = (n, c, d) => { console.log((c ? '  OK   ' : '  FAIL ') + n + (d ? ' - ' + d : '')); if (!c) bad++; };
 const UA_MOBILE = require('./e2e-browser.js').UA_MOBILE;
 
 (async () => {

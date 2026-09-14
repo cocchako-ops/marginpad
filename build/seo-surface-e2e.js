@@ -1,10 +1,10 @@
-// The SEO / AI-discovery surface (2026-09-14) — owner: "jel ima jos nesto ... nesto sto takodje nikad
+// The SEO / AI-discovery surface (2026-09-14) - owner: "jel ima jos nesto ... nesto sto takodje nikad
 // nije pomenuto nigde?"
 //
 // This is the audit that found the gaps, kept as a test so they cannot come back. The expensive one it
 // exists for: robots.txt had a blanket `Disallow: /api/`, so all EIGHTEEN endpoints llms.txt tells an
-// assistant to fetch mid-answer were unreadable to bingbot — 71% of the crawling we actually get, and
-// what feeds Copilot — while only three named AI bots could reach them.
+// assistant to fetch mid-answer were unreadable to bingbot - 71% of the crawling we actually get, and
+// what feeds Copilot - while only three named AI bots could reach them.
 //
 //   node build/seo-surface-e2e.js
 const fs = require('fs');
@@ -61,7 +61,7 @@ function robots(txt) {
   ok(rss.s === 200 && /xml/.test(rss.ct), 'RSS serves as XML (' + rss.s + ', ' + rss.ct + ')');
   ok((rss.t.match(/<item>/g) || []).length >= 20, 'with ' + (rss.t.match(/<item>/g) || []).length + ' items');
   ok(/<atom:link[^>]+rel="self"/.test(rss.t), 'and declares itself (rel=self)');
-  ok(!/\|\s*MarginPad<\/title>|—\s*MarginPad<\/title>/.test(rss.t), 'item titles are not suffixed with the site name');
+  ok(!/\|\s*MarginPad<\/title>|-\s*MarginPad<\/title>/.test(rss.t), 'item titles are not suffixed with the site name');
   { const d = (rss.t.match(/<pubDate>([^<]+)<\/pubDate>/) || [])[1];
     ok(d && !isNaN(new Date(d)), 'every item carries a real date (' + d + ')'); }
   const jf = await get('/feed.json');
@@ -96,7 +96,7 @@ function robots(txt) {
   console.log('\nthe AI layer says what we can prove');
   for (const f of ['/llms.txt', '/llms-full.txt']) {
     const t = (await get(f)).t;
-    ok(/SERVER-side/.test(t), f + ' states that fills happen server-side — the reason a number here is worth citing');
+    ok(/SERVER-side/.test(t), f + ' states that fills happen server-side - the reason a number here is worth citing');
     ok(/trading competition/i.test(t), f + ' names the competition');
     ok(/Last updated:\s*\d{4}-\d{2}-\d{2}/.test(t), f + ' carries a date');
   }

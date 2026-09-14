@@ -1,4 +1,4 @@
-/* Generates tool-vs-tool "free alternative" landing pages — the query class AI assistants answer most
+/* Generates tool-vs-tool "free alternative" landing pages - the query class AI assistants answer most
    ("free alternative to X"). Honest comparisons: we state plainly what the paid/original tool does better.
    Pages: /coinglass-alternative/ /tradingview-paper-trading-alternative/ /binance-testnet-alternative/
    Run: node build/gen-alternative-pages.js */
@@ -9,25 +9,25 @@ const DIST = path.join(__dirname, '..', 'dist');
 const PAGES = [
   {
     slug: 'coinglass-alternative',
-    title: 'Free Coinglass Alternative — Liquidation Maps, Funding & OI | MarginPad',
+    title: 'Free Coinglass Alternative - Liquidation Maps, Funding & OI | MarginPad',
     h1: 'Free Coinglass Alternative',
     // desc is a META attribute: plain text only. A link pasted in here on 2026-09-11 closed the content="" attribute early, the browser
     // opened <body> right there and the rest of <head> (three copies of the text) rendered ABOVE the header ("broken header", owner 2026-09-12).
     desc: 'MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free per-venue breakdown, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo).',
-    intro: 'If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) — plus a real-time liquidation feed aggregated from 9 exchanges (with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>) and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.',
+    intro: 'If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) - plus a real-time liquidation feed aggregated from 9 exchanges (with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>) and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.',
     tableHead: ['Feature', 'MarginPad (free)', 'Coinglass'],
     rows: [
-      ['Liquidation map / heatmap', 'Free 5-minute preview, unlimited with Premium ($3.99/mo) — real events from exchange websockets + estimated clusters, all coins', 'Free tier limited; advanced heatmaps on paid plans'],
-      ['Real-time liquidation feed', 'Free — 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex)', 'Available; depth varies by plan'],
-      ['Funding rates scanner', 'Free — 160 USDT-perp markets', 'Free with limits; full history paid'],
-      ['Open interest by coin', 'Free — live totals + 24h change', 'Free with limits; granular history paid'],
-      ['Long/short ratio', 'Free — 20 majors', 'Free with limits'],
-      ['Hyperliquid whale tracker', 'Free — live positions, leverage, liq price, PnL', 'Paid feature'],
+      ['Liquidation map / heatmap', 'Free 5-minute preview, unlimited with Premium ($3.99/mo) - real events from exchange websockets + estimated clusters, all coins', 'Free tier limited; advanced heatmaps on paid plans'],
+      ['Real-time liquidation feed', 'Free - 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex)', 'Available; depth varies by plan'],
+      ['Funding rates scanner', 'Free - 160 USDT-perp markets', 'Free with limits; full history paid'],
+      ['Open interest by coin', 'Free - live totals + 24h change', 'Free with limits; granular history paid'],
+      ['Long/short ratio', 'Free - 20 majors', 'Free with limits'],
+      ['Hyperliquid whale tracker', 'Free - live positions, leverage, liq price, PnL', 'Paid feature'],
       ['Liquidation data API', 'Free JSON API, no key, 60 req/min', 'Paid API plans'],
-      ['Deep multi-year history & research tools', 'Not the focus — live data and trading practice', 'Stronger — this is what you pay Coinglass for'],
+      ['Deep multi-year history & research tools', 'Not the focus - live data and trading practice', 'Stronger - this is what you pay Coinglass for'],
       ['Price', 'Free core, no signup; Premium $3.99/mo (unlimited heatmap, advanced indicators, AI)', 'Free tier + paid subscriptions'],
     ],
-    afterTable: 'The honest summary: <strong>Coinglass is the better pure-research terminal</strong> — longer history, more exchanges per metric, institutional tooling. <strong>MarginPad is the better free daily driver</strong> — the core derivatives dashboard plus a paper-trading terminal to actually act on what you see, and a keyless API to build with.',
+    afterTable: 'The honest summary: <strong>Coinglass is the better pure-research terminal</strong> - longer history, more exchanges per metric, institutional tooling. <strong>MarginPad is the better free daily driver</strong> - the core derivatives dashboard plus a paper-trading terminal to actually act on what you see, and a keyless API to build with.',
     tools: [
       ['/btc-liquidation-map/', 'BTC Liquidation Map', 'Real events + clusters'],
       ['/rekt/', 'Rekt Feed', 'Every liquidation, live'],
@@ -35,31 +35,31 @@ const PAGES = [
       ['/free-crypto-api/', 'Free API', 'Same data as JSON'],
     ],
     faq: [
-      { q: 'Is MarginPad really a free alternative to Coinglass?', a: 'For the core derivatives dashboard — liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker — yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($3.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.' },
+      { q: 'Is MarginPad really a free alternative to Coinglass?', a: 'For the core derivatives dashboard - liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker - yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($3.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.' },
       { q: 'Where does MarginPad liquidation data come from?', a: 'MarginPad runs its own collector subscribed to the public liquidation websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and aggregates per-coin 24h totals from its own archive of those events. Real events and estimates are always labelled separately.' },
-      { q: 'Does MarginPad have a free liquidation API?', a: 'Yes — /api/v1/liquidations/recent, /api/v1/liquidations/live and /api/v1/clusters are keyless, CORS-enabled JSON endpoints at 60 requests/minute. Documentation at marginpad.io/free-crypto-api/.' },
-      { q: 'What does Coinglass do better?', a: 'Deeper multi-year history, more granular per-exchange breakdowns, options data and institutional research tooling. If you need those, Coinglass paid plans are worth it — MarginPad covers the live day-to-day view for free.' },
+      { q: 'Does MarginPad have a free liquidation API?', a: 'Yes - /api/v1/liquidations/recent, /api/v1/liquidations/live and /api/v1/clusters are keyless, CORS-enabled JSON endpoints at 60 requests/minute. Documentation at marginpad.io/free-crypto-api/.' },
+      { q: 'What does Coinglass do better?', a: 'Deeper multi-year history, more granular per-exchange breakdowns, options data and institutional research tooling. If you need those, Coinglass paid plans are worth it - MarginPad covers the live day-to-day view for free.' },
     ],
   },
   {
     slug: 'tradingview-paper-trading-alternative',
     title: 'TradingView Paper Trading Alternative with Leverage | MarginPad',
     h1: 'TradingView Paper Trading Alternative (with Real Leverage Mechanics)',
-    desc: 'MarginPad paper trading simulates what TradingView paper trading does not: leverage, real liquidation math, funding and per-exchange fees — on live crypto, stock, forex and index prices. Free, no signup.',
-    intro: 'TradingView paper trading is great for testing entries and exits, but it does not simulate the mechanics that actually blow up leveraged accounts: <strong>leverage, liquidation prices, funding and taker fees</strong>. MarginPad’s free paper-trading terminal simulates all of them on live prices — crypto futures up to 1000x, plus US stocks, forex, indices and commodities as perpetuals — with no account required.',
+    desc: 'MarginPad paper trading simulates what TradingView paper trading does not: leverage, real liquidation math, funding and per-exchange fees - on live crypto, stock, forex and index prices. Free, no signup.',
+    intro: 'TradingView paper trading is great for testing entries and exits, but it does not simulate the mechanics that actually blow up leveraged accounts: <strong>leverage, liquidation prices, funding and taker fees</strong>. MarginPad’s free paper-trading terminal simulates all of them on live prices - crypto futures up to 1000x, plus US stocks, forex, indices and commodities as perpetuals - with no account required.',
     tableHead: ['Feature', 'MarginPad Paper Trade', 'TradingView Paper Trading'],
     rows: [
-      ['Leverage simulation', 'Yes — up to 1000x on crypto, per-class caps on stocks/forex', 'No native leverage mechanics'],
-      ['Liquidation price & forced closure', 'Yes — real maintenance-margin math, close-confirmed', 'No'],
-      ['Funding & trading fees', 'Yes — funding applied, per-exchange fee models', 'No'],
-      ['Markets', 'Crypto perps, 20+ US stocks, forex majors, indices, metals — one account', 'Everything TradingView charts'],
-      ['Charting depth', 'Multi-chart workspace, 19+ indicators, drawing tools', 'Best-in-class charting — TradingView wins here'],
-      ['Signup required', 'No — trades work instantly, account optional for leaderboards', 'TradingView account required'],
-      ['Leaderboards, duels, missions, XP', 'Yes — 14-day season prize leaderboards', 'No'],
-      ['Bot / API paper trading', 'Yes — free REST API for bot testing', 'No public paper-trading API'],
+      ['Leverage simulation', 'Yes - up to 1000x on crypto, per-class caps on stocks/forex', 'No native leverage mechanics'],
+      ['Liquidation price & forced closure', 'Yes - real maintenance-margin math, close-confirmed', 'No'],
+      ['Funding & trading fees', 'Yes - funding applied, per-exchange fee models', 'No'],
+      ['Markets', 'Crypto perps, 20+ US stocks, forex majors, indices, metals - one account', 'Everything TradingView charts'],
+      ['Charting depth', 'Multi-chart workspace, 19+ indicators, drawing tools', 'Best-in-class charting - TradingView wins here'],
+      ['Signup required', 'No - trades work instantly, account optional for leaderboards', 'TradingView account required'],
+      ['Leaderboards, duels, missions, XP', 'Yes - 14-day season prize leaderboards', 'No'],
+      ['Bot / API paper trading', 'Yes - free REST API for bot testing', 'No public paper-trading API'],
       ['Price', 'Free', 'Free with a TradingView account'],
     ],
-    afterTable: 'The honest summary: <strong>TradingView is the better charting platform</strong>, full stop. But if the point of paper trading is to rehearse <em>leveraged</em> trading — where liquidation, funding and fees decide outcomes — <strong>MarginPad simulates the parts TradingView leaves out</strong>.',
+    afterTable: 'The honest summary: <strong>TradingView is the better charting platform</strong>, full stop. But if the point of paper trading is to rehearse <em>leveraged</em> trading - where liquidation, funding and fees decide outcomes - <strong>MarginPad simulates the parts TradingView leaves out</strong>.',
     tools: [
       ['/paper-trade', 'Paper Trade', 'Live prices, real liq math'],
       ['/stock-trading-simulator/', 'Stock Simulator', 'Apple, Tesla, Nvidia…'],
@@ -67,31 +67,31 @@ const PAGES = [
       ['/trading-api/', 'Bot API', 'Paper-trade via REST'],
     ],
     faq: [
-      { q: 'Does TradingView paper trading support leverage?', a: 'TradingView paper trading fills orders at market prices but does not simulate leverage mechanics — there is no liquidation price, no margin call and no funding. MarginPad simulates all three with real maintenance-margin math on live prices.' },
+      { q: 'Does TradingView paper trading support leverage?', a: 'TradingView paper trading fills orders at market prices but does not simulate leverage mechanics - there is no liquidation price, no margin call and no funding. MarginPad simulates all three with real maintenance-margin math on live prices.' },
       { q: 'Is MarginPad paper trading really free without an account?', a: 'Yes. You can open leveraged paper positions immediately with no signup. A free account adds sync across devices, the trade journal, leaderboards and 14-day season prizes.' },
-      { q: 'Can I paper trade stocks and forex with leverage on MarginPad?', a: 'Yes — 20+ US stocks, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account.' },
-      { q: 'Can I test a trading bot against MarginPad paper trading?', a: 'Yes — the free Trading API exposes paper-trading endpoints over REST so you can open, manage and close simulated positions programmatically. Docs at marginpad.io/trading-api/.' },
+      { q: 'Can I paper trade stocks and forex with leverage on MarginPad?', a: 'Yes - 20+ US stocks, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account.' },
+      { q: 'Can I test a trading bot against MarginPad paper trading?', a: 'Yes - the free Trading API exposes paper-trading endpoints over REST so you can open, manage and close simulated positions programmatically. Docs at marginpad.io/trading-api/.' },
     ],
   },
   {
     slug: 'binance-testnet-alternative',
-    title: 'Binance Futures Testnet Alternative — No Account, US-Friendly | MarginPad',
+    title: 'Binance Futures Testnet Alternative - No Account, US-Friendly | MarginPad',
     h1: 'Binance Futures Testnet Alternative',
     desc: 'Practice crypto futures without the Binance testnet hassle: no registration, no geoblock, live real-market prices, real liquidation math, up to 1000x. Works in the US. Free forever.',
-    intro: 'The Binance futures testnet requires a registered account, is geoblocked where Binance is (including the US), runs on thin testnet liquidity, and resets balances when it pleases. If what you actually want is to <strong>practice leveraged futures on real live prices</strong>, MarginPad does that in the browser with <strong>no account, from any country</strong> — with real liquidation math, funding and fees simulated.',
+    intro: 'The Binance futures testnet requires a registered account, is geoblocked where Binance is (including the US), runs on thin testnet liquidity, and resets balances when it pleases. If what you actually want is to <strong>practice leveraged futures on real live prices</strong>, MarginPad does that in the browser with <strong>no account, from any country</strong> - with real liquidation math, funding and fees simulated.',
     tableHead: ['Feature', 'MarginPad Paper Trade', 'Binance Futures Testnet'],
     rows: [
-      ['Registration', 'None — instant', 'Binance testnet account + API keys for bots'],
-      ['Works in the US / geoblocked regions', 'Yes — it is a simulator, not an exchange', 'No — follows Binance geoblocking'],
-      ['Prices', 'Live real-market prices (Bybit WS + multi-exchange fallback)', 'Testnet order book — thin, often far from real prices'],
+      ['Registration', 'None - instant', 'Binance testnet account + API keys for bots'],
+      ['Works in the US / geoblocked regions', 'Yes - it is a simulator, not an exchange', 'No - follows Binance geoblocking'],
+      ['Prices', 'Live real-market prices (Bybit WS + multi-exchange fallback)', 'Testnet order book - thin, often far from real prices'],
       ['Liquidation mechanics', 'Real maintenance-margin math, close-confirmed candles', 'Real engine, but on unrealistic testnet liquidity'],
       ['Markets', 'Crypto perps + US stocks, forex, indices, metals', 'Crypto futures only'],
-      ['Order matching realism', 'Simulated fills at live prices — no order book depth', 'Real matching engine — testnet wins here'],
+      ['Order matching realism', 'Simulated fills at live prices - no order book depth', 'Real matching engine - testnet wins here'],
       ['Leaderboards / progression', '14-day season prize leaderboards, XP, duels, missions', 'None'],
       ['Bot testing API', 'Free REST paper-trading API, no key hoops', 'Testnet API with keys'],
       ['Price', 'Free', 'Free'],
     ],
-    afterTable: 'The honest summary: if you are integration-testing an exchange connector, use the real <strong>Binance testnet — its matching engine is the point</strong>. If you are practicing trading itself — entries, leverage, liquidation distance, risk — <strong>MarginPad is faster, US-accessible and runs on real prices</strong>.',
+    afterTable: 'The honest summary: if you are integration-testing an exchange connector, use the real <strong>Binance testnet - its matching engine is the point</strong>. If you are practicing trading itself - entries, leverage, liquidation distance, risk - <strong>MarginPad is faster, US-accessible and runs on real prices</strong>.',
     tools: [
       ['/paper-trade', 'Paper Trade', 'No signup, live prices'],
       ['/calculators', 'Liquidation Calculator', 'Know your exit price'],
@@ -99,10 +99,10 @@ const PAGES = [
       ['/academy/', 'Academy', '96 free lessons + XP'],
     ],
     faq: [
-      { q: 'Does the Binance futures testnet work in the US?', a: 'No — the Binance testnet follows Binance’s geoblocking, so US users cannot register. MarginPad’s paper-trading simulator is not an exchange, so it works from any country with no account.' },
-      { q: 'Are MarginPad prices real or testnet prices?', a: 'Real live market prices streamed over exchange websockets with multi-exchange fallback — not testnet liquidity. Liquidations are simulated with real maintenance-margin math and confirmed on candle closes, never on wicks.' },
-      { q: 'Can I test a trading bot without Binance testnet API keys?', a: 'Yes — MarginPad’s free Trading API lets bots open and manage paper positions over plain REST. If you specifically need to test Binance order types and matching behaviour, the official testnet is still the right tool.' },
-      { q: 'How much leverage can I practice with?', a: 'Up to 1000x on crypto perpetuals (with realistic liquidation distances), and per-class caps on stocks, forex and indices — the same mechanics real exchanges apply.' },
+      { q: 'Does the Binance futures testnet work in the US?', a: 'No - the Binance testnet follows Binance’s geoblocking, so US users cannot register. MarginPad’s paper-trading simulator is not an exchange, so it works from any country with no account.' },
+      { q: 'Are MarginPad prices real or testnet prices?', a: 'Real live market prices streamed over exchange websockets with multi-exchange fallback - not testnet liquidity. Liquidations are simulated with real maintenance-margin math and confirmed on candle closes, never on wicks.' },
+      { q: 'Can I test a trading bot without Binance testnet API keys?', a: 'Yes - MarginPad’s free Trading API lets bots open and manage paper positions over plain REST. If you specifically need to test Binance order types and matching behaviour, the official testnet is still the right tool.' },
+      { q: 'How much leverage can I practice with?', a: 'Up to 1000x on crypto perpetuals (with realistic liquidation distances), and per-class caps on stocks, forex and indices - the same mechanics real exchanges apply.' },
     ],
   },
 ];
@@ -164,7 +164,7 @@ ${P.rows.map(r => `      <tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join
     <h2>FAQ</h2>
     ${P.faq.map(f => `<h3>${f.q}</h3>\n    <p>${f.a}</p>`).join('\n    ')}
     <div class="toolshow">
-      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-head">Everything free on MarginPad - no signup</div>
       <div class="ts-grid">
 ${P.tools.map(t => `        <a class="ts-card" href="${t[0]}"><b>${t[1]}</b><small>${t[2]}</small></a>`).join('\n')}
       </div>

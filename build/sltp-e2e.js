@@ -1,7 +1,7 @@
 /* SL/TP sheet E2E (2026-09-10).
    Owner: "when I try to set TP or SL on a live ticket, maybe it is set in the background but nothing on the
    ticket says so." Measured from his OWN account before the fix: three saves that day reached the server as
-   "SL off / TP off" — sl:null, tp:null. Nothing was set in the background either; the level never left the form.
+   "SL off / TP off" - sl:null, tp:null. Nothing was set in the background either; the level never left the form.
    Cause: the price field was <input type="number">, which hands back an EMPTY string for content the browser
    considers invalid and silently drops a decimal comma ("105,50" became 10550, a price 100x wrong). An empty row
    is read as a deleted level, so pressing Save quietly wiped instead of setting.
@@ -65,7 +65,7 @@ const uid = 'e2eslt' + Math.random().toString(36).slice(2, 6);
         return { ticket: ((el && el.innerText) || '').replace(/\s+/g, ' ').match(/TP[^·]{0,14}/) ? ((el.innerText).replace(/\s+/g, ' ').match(/TP[^·]{0,14}/) || [''])[0] : '', tp: row.tp, stop: row.stop, warn: (w && !w.hidden) ? w.textContent.trim().slice(0, 80) : '', open: !!document.querySelector('.mpss.on') };
       });
 
-      // 1. a decimal COMMA — the separator on most of our audience's keyboards
+      // 1. a decimal COMMA - the separator on most of our audience's keyboards
       let el = await openSheet('tp'); await page.keyboard.type('105,50'); await save();
       let st = await state();
       chk('a price typed with a comma is saved as 105.5, not 10550', st.tp === 105.5, st);
@@ -107,6 +107,6 @@ const uid = 'e2eslt' + Math.random().toString(36).slice(2, 6);
     try { await fetch(ORIGIN + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid, op: 'rm' }) }); } catch (e) {}
   }
   const bad = out.filter(l => l.slice(0, 4) === 'FAIL').length;
-  console.log('\nUID ' + uid + ' — pass ' + (out.length - bad) + ' fail ' + bad);
+  console.log('\nUID ' + uid + ' - pass ' + (out.length - bad) + ' fail ' + bad);
   process.exit(bad ? 1 : 0);
 })();

@@ -24,7 +24,7 @@ const DRY = process.argv.includes('--dry');
 
 const have = new Set();
 try { for (const f of fs.readdirSync(OGDIR)) if (f.endsWith('.jpg')) have.add(f.slice(0, -4)); } catch (e) {}
-if (!have.size) { console.error('no cards in dist/assets/og — run node build/gen-og-images.js first'); process.exit(1); }
+if (!have.size) { console.error('no cards in dist/assets/og - run node build/gen-og-images.js first'); process.exit(1); }
 
 const slugOf = rel => rel.replace(/^\/+|\/+$/g, '').replace(/\//g, '-') || 'home';
 

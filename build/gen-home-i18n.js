@@ -17,7 +17,7 @@ const LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id',
 // technical attribute values that must NEVER be translated (they'd break OG/locale/robots/twitter)
 const ATTR_SKIP = new Set([
   'website', 'en_US', 'summary_large_image', 'index,follow,max-image-preview:large',
-  'MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations', // og:title dup — title already localized by gen-i18n-pages
+  'MarginPad - Free Crypto Futures Terminal, Paper Trade & Liquidations', // og:title dup - title already localized by gen-i18n-pages
 ]);
 
 const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -41,7 +41,7 @@ for (const lang of LANGS) {
     // 1) full text-node replacement: >  k  < → > v <
     const reT = new RegExp('>(\\s*)' + needle(k) + '(\\s*)<', 'g');
     html = html.replace(reT, (m, p1, p2) => { txt++; return '>' + p1 + escText(v) + p2 + '<'; });
-    // 2) attribute value replacement (UI labels, keywords, descriptions) — skip technical values
+    // 2) attribute value replacement (UI labels, keywords, descriptions) - skip technical values
     if (!ATTR_SKIP.has(k)) {
       const an = reEsc(k).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
       const reA = new RegExp('="' + an + '"', 'g');
@@ -52,4 +52,4 @@ for (const lang of LANGS) {
   grand += txt + att;
   console.log(`${lang}: ${txt} text nodes + ${att} attrs translated`);
 }
-console.log('done — total replacements:', grand);
+console.log('done - total replacements:', grand);

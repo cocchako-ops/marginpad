@@ -1,4 +1,4 @@
-# MarginPad — Spanish translation brief (read fully before translating a chunk)
+# MarginPad - Spanish translation brief (read fully before translating a chunk)
 
 You are translating the text of **marginpad.io**, a free crypto-futures tools site (calculators, a paper-trading
 terminal, charts, a liquidation feed, an academy, a rewards layer, a bot API) into **Spanish**. Readers are
@@ -32,7 +32,7 @@ Each chunk is a JSON array of items: `{ "id", "ctx", "kind", "en", "es": "" }`.
 6. Spanish punctuation and accents: ¿…? ¡…! and proper tildes. Keep “ ” for quotes. Use the en dash and
    em dash as the English does.
 7. Titles (`kind: title`) should stay short (≤ 65 characters when possible) and keep the " | MarginPad" or
-   " — MarginPad" suffix if present. Meta descriptions (`ld`, `attr`) ≤ 160 characters where the English is.
+   " - MarginPad" suffix if present. Meta descriptions (`ld`, `attr`) ≤ 160 characters where the English is.
 8. Buttons, labels, nav items and table headers must stay **short** (about the same length as the English).
 9. Translate meaning, not words: "game over" → "se acabó"; "nail every number" → "clava cada número" or
    "calcula cada número al detalle"; idioms get a Spanish idiom or plain wording. "actual price" is

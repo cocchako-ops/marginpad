@@ -9,7 +9,7 @@
    "cards": [
     {
      "h": "Trading searah arus, bukan melawannya",
-     "p": "Tren adalah rangkaian high dan low yang makin tinggi (naik) atau makin rendah (turun). Trading melawan tren kuat karena sesuatu tampak \"ketinggian\" atau \"kemurahan\" adalah donasi. Tren tidak selalu benar — tapi lebih sering benar dibanding perasaanmu tentangnya."
+     "p": "Tren adalah rangkaian high dan low yang makin tinggi (naik) atau makin rendah (turun). Trading melawan tren kuat karena sesuatu tampak \"ketinggian\" atau \"kemurahan\" adalah donasi. Tren tidak selalu benar - tapi lebih sering benar dibanding perasaanmu tentangnya."
     },
     {
      "h": "Temukan zona permintaan",
@@ -18,7 +18,7 @@
     },
     {
      "h": "Konfluens mengalahkan sinyal tunggal mana pun",
-     "p": "Satu level tak banyak berarti. Level yang bertepatan dengan garis tren, angka bulat, dan high sebelumnya adalah konfluens — beberapa alasan independen menunjuk zona yang sama. Profesional menunggu konfluens; pemula bertindak pada garis pertama yang mereka gambar."
+     "p": "Satu level tak banyak berarti. Level yang bertepatan dengan garis tren, angka bulat, dan high sebelumnya adalah konfluens - beberapa alasan independen menunjuk zona yang sama. Profesional menunggu konfluens; pemula bertindak pada garis pertama yang mereka gambar."
     }
    ],
    "quiz": [
@@ -61,15 +61,15 @@
    "cards": [
     {
      "h": "Yang sebenarnya ditunjukkan MA",
-     "p": "Moving average menggambar rata-rata harga tutup N candle terakhir — ingatan terkini pasar dalam satu garis mulus. Harga di atas MA yang menanjak = tren sehat; harga menggergaji MA datar berarti tak ada tren dan alat tren cuma menghasilkan noise."
+     "p": "Moving average menggambar rata-rata harga tutup N candle terakhir - ingatan terkini pasar dalam satu garis mulus. Harga di atas MA yang menanjak = tren sehat; harga menggergaji MA datar berarti tak ada tren dan alat tren cuma menghasilkan noise."
     },
     {
      "h": "EMA vs SMA dan pasangan terkenalnya",
-     "p": "MA sederhana (SMA) menimbang semua candle sama; MA eksponensial (EMA) bereaksi lebih cepat pada harga terbaru. Setelan yang ditonton semua orang: EMA 9/21 untuk momentum jangka pendek, SMA 50/200 untuk gambaran besar. Mereka bekerja sebagian KARENA semua menonton — zona yang mewujudkan dirinya sendiri."
+     "p": "MA sederhana (SMA) menimbang semua candle sama; MA eksponensial (EMA) bereaksi lebih cepat pada harga terbaru. Setelan yang ditonton semua orang: EMA 9/21 untuk momentum jangka pendek, SMA 50/200 untuk gambaran besar. Mereka bekerja sebagian KARENA semua menonton - zona yang mewujudkan dirinya sendiri."
     },
     {
      "h": "Persilangan: sinyal dan keterlambatan",
-     "p": "Saat 50 melintasi 200 ke atas (golden cross), tren naik yang mapan terkonfirmasi; kebalikannya (death cross) mengonfirmasi tren turun. Perhatikan kata konfirmasi — MA terlambat karena konstruksinya. Mereka bilang dari sisi mana kamu trading, bukan momen persis untuk klik."
+     "p": "Saat 50 melintasi 200 ke atas (golden cross), tren naik yang mapan terkonfirmasi; kebalikannya (death cross) mengonfirmasi tren turun. Perhatikan kata konfirmasi - MA terlambat karena konstruksinya. Mereka bilang dari sisi mana kamu trading, bukan momen persis untuk klik."
     }
    ],
    "quiz": [
@@ -77,7 +77,7 @@
      "q": "Moving average menunjukkan…",
      "o": [
       "Harga yang pasar harapkan dalam waktu dekat",
-      "Rata-rata harga tutup terbaru — tren yang dihaluskan",
+      "Rata-rata harga tutup terbaru - tren yang dihaluskan",
       "Volume trading",
       "Cadangan exchange"
      ]
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "Yang diukur RSI",
-     "p": "RSI memampatkan 14 candle terakhir untung vs rugi ke skala 0-100. Di atas 70 pasar disebut overbought, di bawah 30 oversold. Dia mengukur KECEPATAN pergerakan, bukan kebenarannya — pasar bisa overbought dan terus naik berminggu-minggu."
+     "p": "RSI memampatkan 14 candle terakhir untung vs rugi ke skala 0-100. Di atas 70 pasar disebut overbought, di bawah 30 oversold. Dia mengukur KECEPATAN pergerakan, bukan kebenarannya - pasar bisa overbought dan terus naik berminggu-minggu."
     },
     {
      "h": "Kesalahan pemula",
@@ -116,7 +116,7 @@
     },
     {
      "h": "Divergensi: trik yang berguna",
-     "p": "Saat harga mencetak high baru tapi RSI mencetak high lebih rendah, momentum meredup di bawah permukaan — itu divergensi bearish, bendera hati-hati dini (bukan tombol jual). Kebalikannya di low adalah divergensi bullish. Divergensi plus level kunci plus konfluens — nah itu baru setup."
+     "p": "Saat harga mencetak high baru tapi RSI mencetak high lebih rendah, momentum meredup di bawah permukaan - itu divergensi bearish, bendera hati-hati dini (bukan tombol jual). Kebalikannya di low adalah divergensi bullish. Divergensi plus level kunci plus konfluens - nah itu baru setup."
     }
    ],
    "quiz": [
@@ -142,7 +142,7 @@
      "q": "Sendirian, satu bacaan indikator adalah…",
      "o": [
       "Strategi lengkap dengan sendirinya bagi kebanyakan trader",
-      "Lemah — butuh konfluens dengan level dan tren",
+      "Lemah - butuh konfluens dengan level dan tren",
       "Ilegal ditradingkan",
       "Hanya untuk profesional"
      ]
@@ -155,15 +155,15 @@
    "cards": [
     {
      "h": "Open interest: uang dalam permainan",
-     "p": "Open interest (OI) menghitung total nilai posisi futures yang sedang terbuka. OI naik dengan harga naik = uang baru membeli pergerakan (sehat). Harga naik dengan OI TURUN = short menutup, bukan permintaan baru — pergerakan yang kemungkinan mandek. OI memberitahu SIAPA menggerakkan pergerakan."
+     "p": "Open interest (OI) menghitung total nilai posisi futures yang sedang terbuka. OI naik dengan harga naik = uang baru membeli pergerakan (sehat). Harga naik dengan OI TURUN = short menutup, bukan permintaan baru - pergerakan yang kemungkinan mandek. OI memberitahu SIAPA menggerakkan pergerakan."
     },
     {
      "h": "Rasio long/short",
-     "p": "Rasio long/short menunjukkan kerumunan di sisi mana. Bacaan ekstrem itu kontrarian: saat hampir semua sudah long, pembeli tersisa sedikit — dan danau harga likuidasi menunggu di bawah, siap mengipasi pergerakan berlawanan."
+     "p": "Rasio long/short menunjukkan kerumunan di sisi mana. Bacaan ekstrem itu kontrarian: saat hampir semua sudah long, pembeli tersisa sedikit - dan danau harga likuidasi menunggu di bawah, siap mengipasi pergerakan berlawanan."
     },
     {
      "h": "Susunan tiga sinyal",
-     "p": "Setup derivatif keyakinan tinggi menumpuk tiga hal: rasio long/short berat sebelah + OI naik + funding dibayar sisi yang penuh. Itulah kerumunan ber-leverage, tumbuh, dan membayar untuk bertahan — pegas terkokang. Satu sinyal sendirian lemah; bersama-sama mereka adalah kartu terbuka pasar."
+     "p": "Setup derivatif keyakinan tinggi menumpuk tiga hal: rasio long/short berat sebelah + OI naik + funding dibayar sisi yang penuh. Itulah kerumunan ber-leverage, tumbuh, dan membayar untuk bertahan - pegas terkokang. Satu sinyal sendirian lemah; bersama-sama mereka adalah kartu terbuka pasar."
     }
    ],
    "quiz": [
@@ -171,7 +171,7 @@
      "q": "Harga naik saat open interest turun biasanya berarti…",
      "o": [
       "Pembelian baru yang kuat dari para institusi besar",
-      "Short menutup — pergerakannya bisa kehabisan bahan bakar",
+      "Short menutup - pergerakannya bisa kehabisan bahan bakar",
       "Breakout terjamin",
       "Tidak ada apa-apa"
      ]
@@ -180,7 +180,7 @@
      "q": "Rasio long/short ekstrem berat sebelah adalah…",
      "o": [
       "Sinyal yang andal untuk bergabung dengan mayoritas",
-      "Peringatan kontrarian — kerumunan itu bahan bakar",
+      "Peringatan kontrarian - kerumunan itu bahan bakar",
       "Bukti pasar sehat",
       "Noise acak"
      ]
@@ -196,7 +196,7 @@
     }
    ],
    "try": {
-    "p": "Cek rasio long/short dan open interest live — sisi mana yang penuh sekarang?",
+    "p": "Cek rasio long/short dan open interest live - sisi mana yang penuh sekarang?",
     "label": "Rasio Long/Short →"
    }
   },
@@ -206,15 +206,15 @@
    "cards": [
     {
      "h": "Mekanisme domino",
-     "p": "Saat harga menyentuh level likuidasi trader ber-leverage, exchange menjual paksa posisinya di harga pasar. Jualan itu mendorong harga turun — ke gerombolan harga likuidasi BERIKUTNYA, memicu jual paksa lagi. Tonton domino di bawah: satu pemicu, rantai keluar paksa."
+     "p": "Saat harga menyentuh level likuidasi trader ber-leverage, exchange menjual paksa posisinya di harga pasar. Jualan itu mendorong harga turun - ke gerombolan harga likuidasi BERIKUTNYA, memicu jual paksa lagi. Tonton domino di bawah: satu pemicu, rantai keluar paksa."
     },
     {
      "h": "Kenapa harga memburu level tertentu",
-     "p": "Harga likuidasi menggerombol di tempat yang bisa ditebak — tepat di luar angka bulat dan support jelas, tempat kerumunan trader serupa membuka posisi serupa. Pemain besar bisa melihat gerombolan itu. Sumbu yang menembus level, memicu gerombolan, lalu langsung berbalik — itu mekanismenya sedang bekerja."
+     "p": "Harga likuidasi menggerombol di tempat yang bisa ditebak - tepat di luar angka bulat dan support jelas, tempat kerumunan trader serupa membuka posisi serupa. Pemain besar bisa melihat gerombolan itu. Sumbu yang menembus level, memicu gerombolan, lalu langsung berbalik - itu mekanismenya sedang bekerja."
     },
     {
      "h": "Memantau bahan bakarnya",
-     "p": "Feed likuidasi live menunjukkan kaskade saat terjadi — semburan long yang dipaksa tutup menandai dasar kapitulasi lebih andal dari kebanyakan indikator. Untuk trade-mu sendiri, pelajarannya defensif: taruh harga likuidasimu di luar jangkauan perburuan rutin, atau lebih baik lagi, ukur supaya likuidasi mustahil."
+     "p": "Feed likuidasi live menunjukkan kaskade saat terjadi - semburan long yang dipaksa tutup menandai dasar kapitulasi lebih andal dari kebanyakan indikator. Untuk trade-mu sendiri, pelajarannya defensif: taruh harga likuidasimu di luar jangkauan perburuan rutin, atau lebih baik lagi, ukur supaya likuidasi mustahil."
     }
    ],
    "quiz": [
@@ -247,7 +247,7 @@
     }
    ],
    "try": {
-    "p": "Tonton likuidasi paksa mengalir live di Rekt — saksikan mekanisme kaskade dengan matamu sendiri.",
+    "p": "Tonton likuidasi paksa mengalir live di Rekt - saksikan mekanisme kaskade dengan matamu sendiri.",
     "label": "Buka Rekt →"
    }
   },
@@ -257,15 +257,15 @@
    "cards": [
     {
      "h": "Kripto mentradingkan dolar dan suku bunga",
-     "p": "Bitcoin adalah aset risiko yang peka likuiditas: saat suku bunga tampak akan turun, uang mengalir ke risiko dan kripto naik; \"lebih tinggi lebih lama\" melakukan sebaliknya. Karena itu angka inflasi AS bisa menggerakkan Bitcoin dalam sedetik — algoritma langsung menghargai ulang seluruh jalur suku bunga."
+     "p": "Bitcoin adalah aset risiko yang peka likuiditas: saat suku bunga tampak akan turun, uang mengalir ke risiko dan kripto naik; \"lebih tinggi lebih lama\" melakukan sebaliknya. Karena itu angka inflasi AS bisa menggerakkan Bitcoin dalam sedetik - algoritma langsung menghargai ulang seluruh jalur suku bunga."
     },
     {
      "h": "Acara yang penting",
-     "p": "Segelintir rilis terjadwal menggerakkan jam-jam terbesar kripto: keputusan suku bunga Fed (FOMC), angka inflasi CPI dan PCE, serta laporan pekerjaan NFP. Semuanya ada di kalender berminggu-minggu sebelumnya — terkejut oleh salah satunya adalah pilihan. Di bawah: seperti apa 12:30 UTC di hari CPI."
+     "p": "Segelintir rilis terjadwal menggerakkan jam-jam terbesar kripto: keputusan suku bunga Fed (FOMC), angka inflasi CPI dan PCE, serta laporan pekerjaan NFP. Semuanya ada di kalender berminggu-minggu sebelumnya - terkejut oleh salah satunya adalah pilihan. Di bawah: seperti apa 12:30 UTC di hari CPI."
     },
     {
      "h": "Risiko acara adalah soal ukuran",
-     "p": "Kamu tak bisa menebak angkanya, tapi bisa bertahan darinya: ketahui jam rilis dan ukur supaya sumbu instan 2-3% tak bisa melikuidasimu. Candle pertama setelah rilis sering tipuan — profesional membiarkannya bermain alih-alih mengejar di spread terburuk hari itu."
+     "p": "Kamu tak bisa menebak angkanya, tapi bisa bertahan darinya: ketahui jam rilis dan ukur supaya sumbu instan 2-3% tak bisa melikuidasimu. Candle pertama setelah rilis sering tipuan - profesional membiarkannya bermain alih-alih mengejar di spread terburuk hari itu."
     }
    ],
    "quiz": [
@@ -307,7 +307,7 @@
     }
    ],
    "try": {
-    "p": "Buka kalender ekonomi dan temukan tanggal FOMC atau CPI berikutnya — pasang pengingat sebelum angkanya keluar.",
+    "p": "Buka kalender ekonomi dan temukan tanggal FOMC atau CPI berikutnya - pasang pengingat sebelum angkanya keluar.",
     "label": "Kalender Ekonomi →"
    }
   },
@@ -317,15 +317,15 @@
    "cards": [
     {
      "h": "Apa sebenarnya pola itu",
-     "p": "Segitiga, bendera, range — di bawah setiap pola bernama ada satu fakta fisik: volatilitas MEMAMPAT saat pembeli dan penjual mencapai kesepakatan sementara, lalu MENGEMBANG saat satu sisi menang. Namanya kurang penting dibanding mengenali kompresi, karena ekspansi menyusul setelahnya."
+     "p": "Segitiga, bendera, range - di bawah setiap pola bernama ada satu fakta fisik: volatilitas MEMAMPAT saat pembeli dan penjual mencapai kesepakatan sementara, lalu MENGEMBANG saat satu sisi menang. Namanya kurang penting dibanding mengenali kompresi, karena ekspansi menyusul setelahnya."
     },
     {
      "h": "Pola adalah probabilitas, bukan janji",
-     "p": "Segitiga tak tahu ke arah mana dia akan jebol. Pola sedikit memiringkan peluang dan — lebih berguna — memberi level invalidasi bersih: masuk saat jebol, stop di luar sisi berlawanan. Struktur R:R adalah hadiah sesungguhnya, bukan ramalan."
+     "p": "Segitiga tak tahu ke arah mana dia akan jebol. Pola sedikit memiringkan peluang dan - lebih berguna - memberi level invalidasi bersih: masuk saat jebol, stop di luar sisi berlawanan. Struktur R:R adalah hadiah sesungguhnya, bukan ramalan."
     },
     {
      "h": "Jebakannya: halusinasi pola",
-     "p": "Tatap cukup lama dan chart mana pun menumbuhkan pola seperti awan menumbuhkan wajah. Jangkar pola pada konteks yang sudah kamu punya — tren, level kunci, volume saat jebol. Bendera buku teks melawan tren besar dan tanpa level cuma sebuah bentuk."
+     "p": "Tatap cukup lama dan chart mana pun menumbuhkan pola seperti awan menumbuhkan wajah. Jangkar pola pada konteks yang sudah kamu punya - tren, level kunci, volume saat jebol. Bendera buku teks melawan tren besar dan tanpa level cuma sebuah bentuk."
     }
    ],
    "quiz": [
@@ -364,15 +364,15 @@
    "cards": [
     {
      "h": "Tiga peta satu wilayah",
-     "p": "Chart harian menentukan CUACA (tren dan level kunci), 4 jam menentukan SETUP (struktur terbentuk di level itu), 15 menit menentukan PEMICU (entry dan stop presisi). Satu pasar, tiga ketinggian — kebingungan lahir saat kamu mentradingkan pemicu tanpa cuaca."
+     "p": "Chart harian menentukan CUACA (tren dan level kunci), 4 jam menentukan SETUP (struktur terbentuk di level itu), 15 menit menentukan PEMICU (entry dan stop presisi). Satu pasar, tiga ketinggian - kebingungan lahir saat kamu mentradingkan pemicu tanpa cuaca."
     },
     {
      "h": "Ritual atas-ke-bawah",
-     "p": "Selalu urutan ini: harian dulu (sisi mana yang boleh kutradingkan?), lalu 4H (adakah setup terbentuk di level penting?), lalu timeframe kecil (entry persis, invalidasi persis). Membalik urutan — menemukan chart 5 menit yang seru dan mengarang cerita — begitulah donasi lawan-tren terjadi."
+     "p": "Selalu urutan ini: harian dulu (sisi mana yang boleh kutradingkan?), lalu 4H (adakah setup terbentuk di level penting?), lalu timeframe kecil (entry persis, invalidasi persis). Membalik urutan - menemukan chart 5 menit yang seru dan mengarang cerita - begitulah donasi lawan-tren terjadi."
     },
     {
      "h": "Konflik diselesaikan KE ATAS",
-     "p": "Saat timeframe berselisih, yang besar menang. 15 menit bullish di dalam harian bearish adalah pantulan untuk dijual, bukan pembalikan untuk dinikahi. Patahnya struktur merambat ke atas pelan-pelan — hormati peta besar sampai dia benar-benar berubah."
+     "p": "Saat timeframe berselisih, yang besar menang. 15 menit bullish di dalam harian bearish adalah pantulan untuk dijual, bukan pembalikan untuk dinikahi. Patahnya struktur merambat ke atas pelan-pelan - hormati peta besar sampai dia benar-benar berubah."
     }
    ],
    "quiz": [
@@ -411,15 +411,15 @@
    "cards": [
     {
      "h": "Daftar isi pasar",
-     "p": "Dominasi Bitcoin (BTC.D) adalah porsi Bitcoin dari total market cap kripto. Dominasi naik: uang memilih BTC — altcoin berdarah bahkan di pasar hijau. Dominasi turun dengan harga naik: selera risiko meluber keluar — tanda tangan klasik alt season."
+     "p": "Dominasi Bitcoin (BTC.D) adalah porsi Bitcoin dari total market cap kripto. Dominasi naik: uang memilih BTC - altcoin berdarah bahkan di pasar hijau. Dominasi turun dengan harga naik: selera risiko meluber keluar - tanda tangan klasik alt season."
     },
     {
      "h": "Siklus rotasi",
-     "p": "Likuiditas biasanya berkaskade: ke BTC dulu, lalu ETH, lalu kapitalisasi besar, lalu ekor panjang alt kecil — tiap gelombang lebih berisiko dari sebelumnya. Saat microcap terbang vertikal, siklusnya sudah larut. Chart dominasi menunjukkan kamu di bab mana."
+     "p": "Likuiditas biasanya berkaskade: ke BTC dulu, lalu ETH, lalu kapitalisasi besar, lalu ekor panjang alt kecil - tiap gelombang lebih berisiko dari sebelumnya. Saat microcap terbang vertikal, siklusnya sudah larut. Chart dominasi menunjukkan kamu di bab mana."
     },
     {
      "h": "Tradingkan arusnya, bukan cuma perahunya",
-     "p": "Long altcoin sebenarnya dua taruhan: koinnya DAN arus dominasi. Setup alt kuat melawan BTC.D yang naik adalah berenang melawan arus. Cek arusnya sebelum trade — cuma satu chart tambahan dan dia membingkai ulang segalanya."
+     "p": "Long altcoin sebenarnya dua taruhan: koinnya DAN arus dominasi. Setup alt kuat melawan BTC.D yang naik adalah berenang melawan arus. Cek arusnya sebelum trade - cuma satu chart tambahan dan dia membingkai ulang segalanya."
     }
    ],
    "quiz": [
@@ -427,7 +427,7 @@
      "q": "Dominasi BTC naik berarti…",
      "o": [
       "Alt mengungguli Bitcoin di setiap kenaikan",
-      "Uang memilih Bitcoin — alt berdarah",
+      "Uang memilih Bitcoin - alt berdarah",
       "Tidak ada apa-apa",
       "Stablecoin runtuh"
      ]
@@ -445,7 +445,7 @@
      "q": "Long altcoin saat dominasi naik adalah…",
      "o": [
       "Dua taruhan searah yang saling memperkuat",
-      "Berenang melawan arus — arusnya melawan trade-mu",
+      "Berenang melawan arus - arusnya melawan trade-mu",
       "Bebas risiko",
       "Permainan standar"
      ]
@@ -458,15 +458,15 @@
    "cards": [
     {
      "h": "Struk harian Wall Street",
-     "p": "Sejak ETF spot Bitcoin AS diluncurkan 2024, permintaan institusi jadi terukur: setiap arus masuk memaksa dana membeli BTC asli, setiap arus keluar memaksa menjual — dilaporkan harian. Ini jendela terjernih yang pernah kripto miliki ke uang besar yang lambat."
+     "p": "Sejak ETF spot Bitcoin AS diluncurkan 2024, permintaan institusi jadi terukur: setiap arus masuk memaksa dana membeli BTC asli, setiap arus keluar memaksa menjual - dilaporkan harian. Ini jendela terjernih yang pernah kripto miliki ke uang besar yang lambat."
     },
     {
      "h": "Permintaan spot vs buih leverage",
-     "p": "Reli yang ditenagai arus masuk ETF mengambil koin asli dari pasar — bahan bakar awet. Reli dengan arus keluar dan funding melonjak adalah leverage mengangkat beban sendiri — jenis yang berkaskade (m5). Arus memberitahu di reli mana kamu berdiri."
+     "p": "Reli yang ditenagai arus masuk ETF mengambil koin asli dari pasar - bahan bakar awet. Reli dengan arus keluar dan funding melonjak adalah leverage mengangkat beban sendiri - jenis yang berkaskade (m5). Arus memberitahu di reli mana kamu berdiri."
     },
     {
      "h": "Tren, bukan detik",
-     "p": "Satu hari merah arus tak berarti banyak; rentetan berminggu-minggu adalah rezim. Gabungkan tren arus dengan funding dan open interest untuk gambaran lengkap siapa yang menyetir — pola pikir tiga sinyal yang sama dari m4, kini dengan lapisan institusi."
+     "p": "Satu hari merah arus tak berarti banyak; rentetan berminggu-minggu adalah rezim. Gabungkan tren arus dengan funding dan open interest untuk gambaran lengkap siapa yang menyetir - pola pikir tiga sinyal yang sama dari m4, kini dengan lapisan institusi."
     }
    ],
    "quiz": [
@@ -483,7 +483,7 @@
      "q": "Reli dengan arus keluar ETF dan funding melonjak ditenagai oleh…",
      "o": [
       "Institusi besar yang mengakumulasi jangka panjang",
-      "Leverage — buih yang rawan kaskade",
+      "Leverage - buih yang rawan kaskade",
       "Miner",
       "Pemerintah"
      ]
@@ -505,11 +505,11 @@
    "cards": [
     {
      "h": "Mengukur denyut kerumunan",
-     "p": "Pengukur sentimen seperti indeks Fear & Greed memampatkan volatilitas, momentum, keramaian sosial, dan dominasi jadi satu angka. Dia termometer emosi — berguna justru karena kerumunan paling salah di titik emosi ekstremnya."
+     "p": "Pengukur sentimen seperti indeks Fear & Greed memampatkan volatilitas, momentum, keramaian sosial, dan dominasi jadi satu angka. Dia termometer emosi - berguna justru karena kerumunan paling salah di titik emosi ekstremnya."
     },
     {
      "h": "Ekstrem adalah sinyal, tengah adalah noise",
-     "p": "Bacaan 55 tak memberitahu apa-apa. Greed ekstrem bilang yang telat sedang menumpuk dengan leverage — cek funding dan rasio long/short untuk konfirmasi. Fear ekstrem menandai zona kapitulasi tempat penjual paksa habis dan pembeli sabar mulai."
+     "p": "Bacaan 55 tak memberitahu apa-apa. Greed ekstrem bilang yang telat sedang menumpuk dengan leverage - cek funding dan rasio long/short untuk konfirmasi. Fear ekstrem menandai zona kapitulasi tempat penjual paksa habis dan pembeli sabar mulai."
     },
     {
      "h": "Pakai sebagai rem, bukan mesin",
@@ -530,7 +530,7 @@
      "q": "Greed ekstrem plus funding tinggi menunjukkan…",
      "o": [
       "Entry aman dengan persetujuan pasar yang luas",
-      "Long ber-leverage yang telat — risiko squeeze tinggi",
+      "Long ber-leverage yang telat - risiko squeeze tinggi",
       "Risiko rendah",
       "Beli lebih banyak"
      ]
@@ -546,7 +546,7 @@
     }
    ],
    "try": {
-    "p": "Cek di mana emosi pasar berada sekarang — Fear & Greed live dengan riwayat.",
+    "p": "Cek di mana emosi pasar berada sekarang - Fear & Greed live dengan riwayat.",
     "label": "Indeks Fear & Greed →"
    }
   },
@@ -556,15 +556,15 @@
    "cards": [
     {
      "h": "Satu halaman, semua lapisan",
-     "p": "Tesis menumpuk semua yang kursus ini ajarkan dalam satu paragraf: tren dan level timeframe besar (m1, m8), pola atau struktur (m7), positioning derivatif — funding, OI, long/short (m4, l5), kalender makro (m6), dan arus atau sentimen sebagai lapisan rezim (m10, m11)."
+     "p": "Tesis menumpuk semua yang kursus ini ajarkan dalam satu paragraf: tren dan level timeframe besar (m1, m8), pola atau struktur (m7), positioning derivatif - funding, OI, long/short (m4, l5), kalender makro (m6), dan arus atau sentimen sebagai lapisan rezim (m10, m11)."
     },
     {
      "h": "Lalu separuh tentang risiko",
-     "p": "Separuh kedua adalah Kursus 3: invalidasi persis, R:R minimal 2, ukuran dari aturan 1-2%, parsial terencana, dan pemeriksaan acara. Tesis tanpa separuh risiko adalah opini pasar — opini itu gratis dan paling mahal harganya."
+     "p": "Separuh kedua adalah Kursus 3: invalidasi persis, R:R minimal 2, ukuran dari aturan 1-2%, parsial terencana, dan pemeriksaan acara. Tesis tanpa separuh risiko adalah opini pasar - opini itu gratis dan paling mahal harganya."
     },
     {
      "h": "Tulis, eksekusi, nilai",
-     "p": "Tulis tesis SEBELUM entry, eksekusi seperti tertulis, lalu nilai PROSESNYA di jurnal — bukan hasilnya. Kerugian yang dieksekusi sempurna adalah trade bagus; kemenangan beruntung yang merusak rencana adalah trade buruk yang menagih nanti. Putaran ini, diulang, adalah seluruh keahliannya."
+     "p": "Tulis tesis SEBELUM entry, eksekusi seperti tertulis, lalu nilai PROSESNYA di jurnal - bukan hasilnya. Kerugian yang dieksekusi sempurna adalah trade bagus; kemenangan beruntung yang merusak rencana adalah trade buruk yang menagih nanti. Putaran ini, diulang, adalah seluruh keahliannya."
     }
    ],
    "quiz": [
@@ -580,8 +580,8 @@
     {
      "q": "Tesis tanpa invalidasi dan ukuran adalah…",
      "o": [
-      "Efisien — lebih sedikit waktu untuk berkas",
-      "Cuma opini — jenis yang mahal",
+      "Efisien - lebih sedikit waktu untuk berkas",
+      "Cuma opini - jenis yang mahal",
       "Profesional",
       "Lengkap"
      ]
@@ -589,8 +589,8 @@
     {
      "q": "Kamu harus menilai trade-mu dari…",
      "o": [
-      "Hasil saja — cuma profit yang dihitung",
-      "Proses — apakah rencananya diikuti?",
+      "Hasil saja - cuma profit yang dihitung",
+      "Proses - apakah rencananya diikuti?",
       "Tangkapan layar",
       "Perasaan"
      ]
@@ -606,7 +606,7 @@
     }
    ],
    "try": {
-    "p": "Tulis satu tesis lengkap untuk koin mana pun dan eksekusi sebagai paper trade — putaran penuh, risiko nol.",
+    "p": "Tulis satu tesis lengkap untuk koin mana pun dan eksekusi sebagai paper trade - putaran penuh, risiko nol.",
     "label": "Paper Trade →"
    }
   }

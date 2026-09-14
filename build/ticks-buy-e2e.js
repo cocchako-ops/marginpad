@@ -63,7 +63,7 @@ const uid = 'e2e' + Date.now().toString(36);
   // ---- the book the owner reads ----------------------------------------------------------------------------------
   const book = await j(await fetch(O + '/api/admin/tickbuys?e2e=1&n=50', { headers: { 'x-admin-key': K } }));
   const mine = (book.rows || []).filter(r => r.uid === uid);
-  ok(mine.length === 1, 'exactly one row in the purchase book — the retry did not add a second (' + mine.length + ')');
+  ok(mine.length === 1, 'exactly one row in the purchase book - the retry did not add a second (' + mine.length + ')');
   ok(mine[0] && mine[0].ticks === pk.ticks && mine[0].cents === pk.cents && mine[0].via === 'balance', 'the row carries who, how many and how much (' + JSON.stringify(mine[0] || null).slice(0, 110) + ')');
   const pub = await j(await fetch(O + '/api/admin/tickbuys?n=50', { headers: { 'x-admin-key': K } }));
   ok(!(pub.rows || []).some(r => r.uid === uid), 'test rows are hidden from the default view the owner sees');

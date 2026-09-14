@@ -9,12 +9,12 @@
    "cards": [
     {
      "h": "Arriesga una porción, nunca el pastel",
-     "p": "Los profesionales dimensionan sus posiciones para que un trade perdedor cueste una parte pequeña y fija de la cuenta — normalmente el 1-2%. Observa lo que tu nivel de riesgo hace con tu supervivencia.",
+     "p": "Los profesionales dimensionan sus posiciones para que un trade perdedor cueste una parte pequeña y fija de la cuenta - normalmente el 1-2%. Observa lo que tu nivel de riesgo hace con tu supervivencia.",
      "prompt": "Baja tu riesgo por trade hasta que puedas sobrevivir al menos a 30 pérdidas seguidas."
     },
     {
      "h": "Dimensiona desde el stop, no desde la codicia",
-     "p": "El orden correcto: elige dónde el trade queda invalidado (tu nivel de stop-loss), mide la distancia entre la entrada y el stop, y luego dimensiona la posición para que esa distancia equivalga a tu 1-2% de riesgo. El tamaño es un RESULTADO del cálculo — nunca el punto de partida."
+     "p": "El orden correcto: elige dónde el trade queda invalidado (tu nivel de stop-loss), mide la distancia entre la entrada y el stop, y luego dimensiona la posición para que esa distancia equivalga a tu 1-2% de riesgo. El tamaño es un RESULTADO del cálculo - nunca el punto de partida."
     },
     {
      "h": "El apalancamiento es una herramienta, el tamaño es la decisión",
@@ -51,7 +51,7 @@
     }
    ],
    "try": {
-    "p": "Dimensiona un trade real: cuenta, % de riesgo, entrada y stop — la calculadora te devuelve el tamaño exacto de la posición.",
+    "p": "Dimensiona un trade real: cuenta, % de riesgo, entrada y stop - la calculadora te devuelve el tamaño exacto de la posición.",
     "label": "Calculadora de tamaño de posición →"
    }
   },
@@ -61,7 +61,7 @@
    "cards": [
     {
      "h": "El stop va donde muere la idea",
-     "p": "El stop-loss pertenece al precio donde tu tesis de trading queda demostrada como errónea — por debajo del soporte que compraste, más allá del nivel que invalida el setup. Colocarlo en «el máximo dolor que puedo tolerar» es hacerlo al revés: al mercado no le importa ni conoce tu umbral de dolor."
+     "p": "El stop-loss pertenece al precio donde tu tesis de trading queda demostrada como errónea - por debajo del soporte que compraste, más allá del nivel que invalida el setup. Colocarlo en «el máximo dolor que puedo tolerar» es hacerlo al revés: al mercado no le importa ni conoce tu umbral de dolor."
     },
     {
      "h": "Demuéstralo: coloca el stop",
@@ -70,11 +70,11 @@
     },
     {
      "h": "La caza de stops es real, el pánico por ella no",
-     "p": "El precio a menudo atraviesa con mechas los niveles obvios, activa los stops agrupados y luego se da la vuelta. La solución no es quitar tu stop (eso convierte una pérdida pequeña en una liquidación) — es colocar los stops más allá de los números redondos obvios y dimensionar para que un stop-out sea aburrido, no devastador."
+     "p": "El precio a menudo atraviesa con mechas los niveles obvios, activa los stops agrupados y luego se da la vuelta. La solución no es quitar tu stop (eso convierte una pérdida pequeña en una liquidación) - es colocar los stops más allá de los números redondos obvios y dimensionar para que un stop-out sea aburrido, no devastador."
     },
     {
      "h": "Take-profit: decide mientras estás cuerdo",
-     "p": "Una orden de take-profit asegura la ganancia automáticamente. Decide la salida antes de entrar, mientras eres objetivo — porque después de entrar te conviertes en la persona menos objetiva mirando ese gráfico. Los take-profits parciales (cerrar, por ejemplo, la mitad en el primer objetivo) son un compromiso legítimo."
+     "p": "Una orden de take-profit asegura la ganancia automáticamente. Decide la salida antes de entrar, mientras eres objetivo - porque después de entrar te conviertes en la persona menos objetiva mirando ese gráfico. Los take-profits parciales (cerrar, por ejemplo, la mitad en el primer objetivo) son un compromiso legítimo."
     }
    ],
    "quiz": [
@@ -84,7 +84,7 @@
       "Donde perder dolería demasiado",
       "Donde la idea del trade queda demostrada como errónea",
       "Lo más cerca posible de la entrada",
-      "En ninguna parte — los stops son para cobardes"
+      "En ninguna parte - los stops son para cobardes"
      ]
     },
     {
@@ -107,25 +107,25 @@
     }
    ],
    "try": {
-    "p": "Abre una posición de práctica y ponle un SL y un TP reales — practica el ritual completo con riesgo cero.",
+    "p": "Abre una posición de práctica y ponle un SL y un TP reales - practica el ritual completo con riesgo cero.",
     "label": "Paper Trade →"
    }
   },
   {
    "id": "r3",
-   "t": "Riesgo:beneficio — equivocarse de forma rentable",
+   "t": "Riesgo:beneficio - equivocarse de forma rentable",
    "cards": [
     {
      "h": "El ratio que perdona errores",
-     "p": "El riesgo:beneficio compara lo que arriesgas con lo que aspiras a ganar. Arriesgar $50 para ganar $150 es 1:3. A 1:3, ganar solo 3 trades de cada 10 te deja en beneficio — la imagen de abajo son esos diez trades. El ratio te compra el derecho a equivocarte la mayoría de las veces."
+     "p": "El riesgo:beneficio compara lo que arriesgas con lo que aspiras a ganar. Arriesgar $50 para ganar $150 es 1:3. A 1:3, ganar solo 3 trades de cada 10 te deja en beneficio - la imagen de abajo son esos diez trades. El ratio te compra el derecho a equivocarte la mayoría de las veces."
     },
     {
      "h": "La tasa de acierto y el R/R se compensan",
-     "p": "Las estrategias con alta tasa de acierto suelen tener ganancias pequeñas; las de R/R alto pierden a menudo pero ganan a lo grande. Ambas funcionan; ninguna funciona con una mala combinación (tasa de acierto baja Y R/R bajo — el estado por defecto de un principiante impulsivo). Ten claro a qué juego juega tu estrategia."
+     "p": "Las estrategias con alta tasa de acierto suelen tener ganancias pequeñas; las de R/R alto pierden a menudo pero ganan a lo grande. Ambas funcionan; ninguna funciona con una mala combinación (tasa de acierto baja Y R/R bajo - el estado por defecto de un principiante impulsivo). Ten claro a qué juego juega tu estrategia."
     },
     {
      "h": "Esperanza matemática: el único número que decide",
-     "p": "Esperanza = (tasa de acierto × ganancia media) − (tasa de pérdida × pérdida media). Positiva significa que el enfoque gana dinero a lo largo de muchos trades; negativa significa que ningún tamaño de posición puede salvarlo. Un solo trade no significa nada — la esperanza se mide a lo largo de docenas."
+     "p": "Esperanza = (tasa de acierto × ganancia media) − (tasa de pérdida × pérdida media). Positiva significa que el enfoque gana dinero a lo largo de muchos trades; negativa significa que ningún tamaño de posición puede salvarlo. Un solo trade no significa nada - la esperanza se mide a lo largo de docenas."
     }
    ],
    "quiz": [
@@ -151,14 +151,14 @@
      "q": "¿Cuántos trades hacen falta para juzgar una estrategia?",
      "o": [
       "Uno bueno",
-      "Docenas — la esperanza es estadística",
+      "Docenas - la esperanza es estadística",
       "Dos",
       "No se puede medir de ninguna manera"
      ]
     }
    ],
    "try": {
-    "p": "Introduce tu tasa de acierto y tu R/R en la calculadora de riesgo de ruina — mira lo que dicen las matemáticas sobre tus probabilidades de supervivencia.",
+    "p": "Introduce tu tasa de acierto y tu R/R en la calculadora de riesgo de ruina - mira lo que dicen las matemáticas sobre tus probabilidades de supervivencia.",
     "label": "Calculadora de riesgo de ruina →"
    }
   },
@@ -168,16 +168,16 @@
    "cards": [
     {
      "h": "Las pérdidas pesan más que las ganancias",
-     "p": "Pierde un 10% y necesitas un 11% para recuperarte. Esta asimetría no es material de póster motivacional — es aritmética, y es la razón por la que preservar el capital gana a perseguir beneficios.",
+     "p": "Pierde un 10% y necesitas un 11% para recuperarte. Esta asimetría no es material de póster motivacional - es aritmética, y es la razón por la que preservar el capital gana a perseguir beneficios.",
      "prompt": "Arrastra la pérdida más abajo y observa lo que exige la recuperación. Encuentra la pérdida en la que necesitas +100% solo para volver al punto de partida."
     },
     {
      "h": "Las rachas son normales, la ruina es opcional",
-     "p": "Incluso una estrategia que gana el 60% de las veces tendrá rachas de 5 pérdidas con regularidad — eso es probabilidad, no fracaso. Que una racha normal acabe con tu cuenta depende por completo del tamaño que arriesgaste por trade. Dimensionar bien convierte la varianza en ruido; sobredimensionar la convierte en ruina."
+     "p": "Incluso una estrategia que gana el 60% de las veces tendrá rachas de 5 pérdidas con regularidad - eso es probabilidad, no fracaso. Que una racha normal acabe con tu cuenta depende por completo del tamaño que arriesgaste por trade. Dimensionar bien convierte la varianza en ruido; sobredimensionar la convierte en ruina."
     },
     {
      "h": "La trampa de la remontada",
-     "p": "Después de una pérdida, el impulso es AUMENTAR el tamaño para recuperarlo rápido. Eso es exactamente al revés: más tamaño después de perder significa que tus peores decisiones reciben tus apuestas más grandes. Los profesionales hacen lo contrario — reducen tamaño en drawdown y lo suben cuando rinden bien."
+     "p": "Después de una pérdida, el impulso es AUMENTAR el tamaño para recuperarlo rápido. Eso es exactamente al revés: más tamaño después de perder significa que tus peores decisiones reciben tus apuestas más grandes. Los profesionales hacen lo contrario - reducen tamaño en drawdown y lo suben cuando rinden bien."
     }
    ],
    "quiz": [
@@ -216,15 +216,15 @@
    "cards": [
     {
      "h": "Revenge trading",
-     "p": "El trade más caro en la historia de cualquier principiante es el que se abre 90 segundos después de una pérdida dolorosa — sobredimensionado, sin plan, impulsado por la necesidad de recuperarlo todo. Ponle nombre al patrón ahora y adopta la regla profesional: después de un stop-out, ningún trade nuevo hasta que exista un plan por escrito."
+     "p": "El trade más caro en la historia de cualquier principiante es el que se abre 90 segundos después de una pérdida dolorosa - sobredimensionado, sin plan, impulsado por la necesidad de recuperarlo todo. Ponle nombre al patrón ahora y adopta la regla profesional: después de un stop-out, ningún trade nuevo hasta que exista un plan por escrito."
     },
     {
      "h": "El FOMO compra el techo",
-     "p": "Una moneda que ya sube un 30% hoy parece la más segura de comprar — todos están de acuerdo, el gráfico lo confirma. Pero entrar en un movimiento vertical significa que tu stop queda lejos, tu R/R es terrible y eres la liquidez de salida de los que compraron antes. Los grandes trades suelen sentirse incómodos en la entrada, no obvios."
+     "p": "Una moneda que ya sube un 30% hoy parece la más segura de comprar - todos están de acuerdo, el gráfico lo confirma. Pero entrar en un movimiento vertical significa que tu stop queda lejos, tu R/R es terrible y eres la liquidez de salida de los que compraron antes. Los grandes trades suelen sentirse incómodos en la entrada, no obvios."
     },
     {
      "h": "El diario es un espejo",
-     "p": "Un diario de trading — cada entrada, salida, tamaño y motivo — convierte sensaciones vagas en patrones visibles: mis trades de domingo por la noche siempre pierden, siempre corto las ganancias demasiado pronto. No es glamuroso y es la herramienta de automejora más rápida que existe en el trading. Los trades con dinero ficticio también cuentan."
+     "p": "Un diario de trading - cada entrada, salida, tamaño y motivo - convierte sensaciones vagas en patrones visibles: mis trades de domingo por la noche siempre pierden, siempre corto las ganancias demasiado pronto. No es glamuroso y es la herramienta de automejora más rápida que existe en el trading. Los trades con dinero ficticio también cuentan."
     }
    ],
    "quiz": [
@@ -257,7 +257,7 @@
     }
    ],
    "try": {
-    "p": "Tus trades de práctica ya alimentan un diario con analítica gratis — mira tu tasa de acierto, tus rachas y tus hábitos.",
+    "p": "Tus trades de práctica ya alimentan un diario con analítica gratis - mira tu tasa de acierto, tus rachas y tus hábitos.",
     "label": "Diario de Trading →"
    }
   },
@@ -267,7 +267,7 @@
    "cards": [
     {
      "h": "Tilt: operar comprometido",
-     "p": "Después de dos o tres pérdidas, la química de tu cerebro cambia — la necesidad de recuperarlo pasa por encima del plan. Los jugadores de póker lo llaman tilt, y lo gestionan de forma estructural, no con fuerza de voluntad: cuando se alcanza un límite, la sesión termina. Sin excepciones, sin un trade más."
+     "p": "Después de dos o tres pérdidas, la química de tu cerebro cambia - la necesidad de recuperarlo pasa por encima del plan. Los jugadores de póker lo llaman tilt, y lo gestionan de forma estructural, no con fuerza de voluntad: cuando se alcanza un límite, la sesión termina. Sin excepciones, sin un trade más."
     },
     {
      "h": "El límite de pérdida diaria",
@@ -275,7 +275,7 @@
     },
     {
      "h": "Hazlo mecánico",
-     "p": "Una regla que debes recordar mientras estás en tilt fallará. Escribe el límite en tu diario, cuéntaselo a alguien, pon una alarma — cualquier cosa que haga que parar sea lo predeterminado y no una elección. La consistencia aquí vale más que cualquier indicador que vayas a aprender."
+     "p": "Una regla que debes recordar mientras estás en tilt fallará. Escribe el límite en tu diario, cuéntaselo a alguien, pon una alarma - cualquier cosa que haga que parar sea lo predeterminado y no una elección. La consistencia aquí vale más que cualquier indicador que vayas a aprender."
     }
    ],
    "quiz": [
@@ -314,15 +314,15 @@
    "cards": [
     {
      "h": "Tres posiciones, un solo trade",
-     "p": "Long en BTC, long en ETH y long en SOL parece diversificado. No lo es: bajo estrés, las correlaciones en cripto se van casi a 1 — todo cae junto. No tienes tres trades; tienes un trade a triple tamaño, con el triple de superficie de liquidación."
+     "p": "Long en BTC, long en ETH y long en SOL parece diversificado. No lo es: bajo estrés, las correlaciones en cripto se van casi a 1 - todo cae junto. No tienes tres trades; tienes un trade a triple tamaño, con el triple de superficie de liquidación."
     },
     {
      "h": "La diversificación real en cripto es rara",
-     "p": "Dentro de cripto, casi todo es una apuesta apalancada sobre la misma marea (Bitcoin y la liquidez global). Algunos pares se descorrelacionan en tiempos de calma — y se recorrelacionan exactamente cuando más duele. Asume correlación = 1 en tus cálculos de riesgo y nunca te llevarás una sorpresa."
+     "p": "Dentro de cripto, casi todo es una apuesta apalancada sobre la misma marea (Bitcoin y la liquidez global). Algunos pares se descorrelacionan en tiempos de calma - y se recorrelacionan exactamente cuando más duele. Asume correlación = 1 en tus cálculos de riesgo y nunca te llevarás una sorpresa."
     },
     {
      "h": "Cuenta tu exposición TOTAL",
-     "p": "Tu regla de riesgo por trade debe aplicarse a la SUMA de las posiciones correlacionadas. Tres longs en majors con 1% de riesgo cada uno es una apuesta del 3% a un solo resultado. O dimensionas cada uno más pequeño, o aceptas y nombras la concentración — pero nunca la llames diversificación."
+     "p": "Tu regla de riesgo por trade debe aplicarse a la SUMA de las posiciones correlacionadas. Tres longs en majors con 1% de riesgo cada uno es una apuesta del 3% a un solo resultado. O dimensionas cada uno más pequeño, o aceptas y nombras la concentración - pero nunca la llames diversificación."
     }
    ],
    "quiz": [
@@ -355,7 +355,7 @@
     }
    ],
    "try": {
-    "p": "Mira lo unidos que se mueven realmente los majors — la matriz de correlación en vivo lo hace visceral.",
+    "p": "Mira lo unidos que se mueven realmente los majors - la matriz de correlación en vivo lo hace visceral.",
     "label": "Matriz de correlación →"
    }
   },
@@ -365,7 +365,7 @@
    "cards": [
     {
      "h": "Tu ventaja vive en unos pocos trades",
-     "p": "Revisa cualquier diario rentable y aparece un patrón: la mayor parte del beneficio vino de una minoría de setups de alta calidad, y la mayoría de las pérdidas del relleno — trades por aburrimiento, casi-setups, entradas de venganza. La mejora de rendimiento más rápida es eliminar el relleno."
+     "p": "Revisa cualquier diario rentable y aparece un patrón: la mayor parte del beneficio vino de una minoría de setups de alta calidad, y la mayoría de las pérdidas del relleno - trades por aburrimiento, casi-setups, entradas de venganza. La mejora de rendimiento más rápida es eliminar el relleno."
     },
     {
      "h": "Define el A+ antes de ver el gráfico",
@@ -373,7 +373,7 @@
     },
     {
      "h": "El aburrimiento sale caro",
-     "p": "El mercado castiga la necesidad de acción. Estar fuera es una posición — a menudo la mejor. Los profesionales describen su trabajo como esperar; los aficionados lo describen como operar. La diferencia se refleja directamente en la matemática de la esperanza que aprendiste en r3."
+     "p": "El mercado castiga la necesidad de acción. Estar fuera es una posición - a menudo la mejor. Los profesionales describen su trabajo como esperar; los aficionados lo describen como operar. La diferencia se refleja directamente en la matemática de la esperanza que aprendiste en r3."
     }
    ],
    "quiz": [
@@ -412,11 +412,11 @@
    "cards": [
     {
      "h": "Las entradas no tienen que ser todo o nada",
-     "p": "Escalar la entrada significa construir la posición por partes — un tercio a mercado, un tercio en un mejor nivel, un tercio en la confirmación. Cambias algo de precisión en el precio medio por flexibilidad, y ningún fill decide el trade por sí solo."
+     "p": "Escalar la entrada significa construir la posición por partes - un tercio a mercado, un tercio en un mejor nivel, un tercio en la confirmación. Cambias algo de precisión en el precio medio por flexibilidad, y ningún fill decide el trade por sí solo."
     },
     {
      "h": "La trampa de la martingala",
-     "p": "Escalar en una tesis GANADORA en niveles planificados es una estrategia. Doblar en un trade PERDEDOR para bajar tu precio medio — la martingala — es como mueren las cuentas: tu tamaño es máximo exactamente cuando más equivocado estás. La diferencia está en si los añadidos se planificaron antes de entrar."
+     "p": "Escalar en una tesis GANADORA en niveles planificados es una estrategia. Doblar en un trade PERDEDOR para bajar tu precio medio - la martingala - es como mueren las cuentas: tu tamaño es máximo exactamente cuando más equivocado estás. La diferencia está en si los añadidos se planificaron antes de entrar."
     },
     {
      "h": "Escalar la salida refleja la entrada",
@@ -459,11 +459,11 @@
    "cards": [
     {
      "h": "La ruina es una probabilidad que puedes calcular",
-     "p": "Dada una tasa de acierto, un R/R y un riesgo por trade, la probabilidad de que tu cuenta llegue alguna vez a un drawdown fatal es calculable — se llama riesgo de ruina. La conclusión brutal: con un riesgo alto por trade, incluso una estrategia genuinamente rentable tiene una probabilidad ALTA de ruina antes de que la ventaja pague."
+     "p": "Dada una tasa de acierto, un R/R y un riesgo por trade, la probabilidad de que tu cuenta llegue alguna vez a un drawdown fatal es calculable - se llama riesgo de ruina. La conclusión brutal: con un riesgo alto por trade, incluso una estrategia genuinamente rentable tiene una probabilidad ALTA de ruina antes de que la ventaja pague."
     },
     {
      "h": "Misma ventaja, destinos distintos",
-     "p": "Una estrategia con 50% de acierto y 1:2 al 2% de riesgo tiene una probabilidad de ruina casi nula. La misma estrategia al 15% de riesgo, con alta probabilidad, se topará tarde o temprano con una racha letal. La estrategia no cambió — solo el tamaño de la apuesta. La supervivencia es una propiedad del tamaño, no de la habilidad."
+     "p": "Una estrategia con 50% de acierto y 1:2 al 2% de riesgo tiene una probabilidad de ruina casi nula. La misma estrategia al 15% de riesgo, con alta probabilidad, se topará tarde o temprano con una racha letal. La estrategia no cambió - solo el tamaño de la apuesta. La supervivencia es una propiedad del tamaño, no de la habilidad."
     },
     {
      "h": "Haz tus propios números",
@@ -500,7 +500,7 @@
     }
    ],
    "try": {
-    "p": "Introduce tu tasa de acierto real y tu R/R en la calculadora y arrastra el deslizador de riesgo — mira cómo se mueven tus probabilidades de ruina.",
+    "p": "Introduce tu tasa de acierto real y tu R/R en la calculadora y arrastra el deslizador de riesgo - mira cómo se mueven tus probabilidades de ruina.",
     "label": "Calculadora de riesgo de ruina →"
    }
   },
@@ -510,7 +510,7 @@
    "cards": [
     {
      "h": "Los pilotos no confían en la memoria. Tú tampoco deberías.",
-     "p": "Bajo estrés, los humanos se saltan pasos — por eso la aviación funciona con checklists. Una checklist pre-trade externaliza tu disciplina: cinco preguntas respondidas por escrito antes de cualquier entrada, todas las veces, especialmente cuando el setup parece urgente."
+     "p": "Bajo estrés, los humanos se saltan pasos - por eso la aviación funciona con checklists. Una checklist pre-trade externaliza tu disciplina: cinco preguntas respondidas por escrito antes de cualquier entrada, todas las veces, especialmente cuando el setup parece urgente."
     },
     {
      "h": "Las cinco preguntas",
@@ -518,7 +518,7 @@
     },
     {
      "h": "La urgencia es la enemiga de la lista",
-     "p": "Los trades que más necesitan la checklist son los que parecen demasiado urgentes para ella — la ruptura vertical, el setup de venganza. Si un trade no puede esperar sesenta segundos por cinco preguntas, no es un trade; es un impulso con un gráfico pegado."
+     "p": "Los trades que más necesitan la checklist son los que parecen demasiado urgentes para ella - la ruptura vertical, el setup de venganza. Si un trade no puede esperar sesenta segundos por cinco preguntas, no es un trade; es un impulso con un gráfico pegado."
     }
    ],
    "quiz": [
@@ -557,15 +557,15 @@
    "cards": [
     {
      "h": "El ritual semanal",
-     "p": "Una vez a la semana, lee cada trade como un entrenador revisando la grabación del partido: ¿la entrada siguió el plan? ¿Y la salida? ¿Qué regla se rompió, y cuánto costó romperla? El objetivo no es flagelarse — es encontrar LA fuga repetida que más te cuesta."
+     "p": "Una vez a la semana, lee cada trade como un entrenador revisando la grabación del partido: ¿la entrada siguió el plan? ¿Y la salida? ¿Qué regla se rompió, y cuánto costó romperla? El objetivo no es flagelarse - es encontrar LA fuga repetida que más te cuesta."
     },
     {
      "h": "Trocea los datos",
-     "p": "Agrupa tus trades: por tipo de setup, por día de la semana, por sesión, por moneda, por estado emocional si lo registras. Las fugas se esconden en los agregados y saltan a la vista en los cortes — los trades de domingo por la noche pierden, un solo setup lo sostiene todo, los longs superan a los shorts 3 a 1."
+     "p": "Agrupa tus trades: por tipo de setup, por día de la semana, por sesión, por moneda, por estado emocional si lo registras. Las fugas se esconden en los agregados y saltan a la vista en los cortes - los trades de domingo por la noche pierden, un solo setup lo sostiene todo, los longs superan a los shorts 3 a 1."
     },
     {
      "h": "Mata una fuga por semana",
-     "p": "No lo arregles todo a la vez. Elige el patrón más caro, escribe una regla en su contra y comprueba la semana siguiente si se cumplió. Componer pequeñas mejoras de proceso es exactamente como componer capital — lento, aburrido e irracionalmente poderoso."
+     "p": "No lo arregles todo a la vez. Elige el patrón más caro, escribe una regla en su contra y comprueba la semana siguiente si se cumplió. Componer pequeñas mejoras de proceso es exactamente como componer capital - lento, aburrido e irracionalmente poderoso."
     }
    ],
    "quiz": [
@@ -598,7 +598,7 @@
     }
    ],
    "try": {
-    "p": "Tus trades de práctica ya alimentan el diario con analítica — ábrelo y encuentra tu patrón más caro.",
+    "p": "Tus trades de práctica ya alimentan el diario con analítica - ábrelo y encuentra tu patrón más caro.",
     "label": "Diario de Trading →"
    }
   }

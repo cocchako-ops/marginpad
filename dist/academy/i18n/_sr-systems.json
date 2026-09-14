@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Porez na diskreciju",
-     "p": "Svaka diskreciona odluka je prilika da se uvuku tilt, FOMO i naknadna pamet. Sistem — fiksna pravila za setap, ulaz, izlaz i veličinu — uklanja odluku u trenutku maksimalne emocije. Većini tradera ne trebaju bolji instinkti; treba im manje prilika da ih koriste."
+     "p": "Svaka diskreciona odluka je prilika da se uvuku tilt, FOMO i naknadna pamet. Sistem - fiksna pravila za setap, ulaz, izlaz i veličinu - uklanja odluku u trenutku maksimalne emocije. Većini tradera ne trebaju bolji instinkti; treba im manje prilika da ih koriste."
     },
     {
      "h": "Pravila čine rezultate merljivim",
      "p": "Ako su ti ulasci raspoloženja, tvoji pregledi dnevnika su astrologija. Ako su ti ulasci pravila, svaki trejd je podatak: OVAJ setap, odigran OVAKO, proizvodi OVO očekivanje. Samo trgovanje po pravilima može stvarno da se poboljša, jer samo ono može da se izmeri."
     },
     {
-     "h": "Diskrecija ima mesto — za radnim stolom",
-     "p": "Veština ne nestaje; seli se. Koristiš procenu da DIZAJNIRAŠ i PREGLEDAŠ pravila — nedeljno, mirno, daleko od živih cena. Mašina (ili kontrolna lista) izvršava. Procena za stolom, disciplina na okidaču."
+     "h": "Diskrecija ima mesto - za radnim stolom",
+     "p": "Veština ne nestaje; seli se. Koristiš procenu da DIZAJNIRAŠ i PREGLEDAŠ pravila - nedeljno, mirno, daleko od živih cena. Mašina (ili kontrolna lista) izvršava. Procena za stolom, disciplina na okidaču."
     }
    ],
    "quiz": [
@@ -34,7 +34,7 @@
      "q": "Ulasci po raspoloženju čine tvoj dnevnik…",
      "o": [
       "Zabavniji za čitanje na kraju nedelje",
-      "Nemerljivim — ne možeš porediti raspoloženja",
+      "Nemerljivim - ne možeš porediti raspoloženja",
       "Kraćim",
       "Savršenim"
      ]
@@ -43,7 +43,7 @@
      "q": "U sistematskom trejdingu, ljudska procena pripada…",
      "o": [
       "Živom okidaču, gde se donose prave odluke",
-      "Radnom stolu — građenju i pregledu pravila",
+      "Radnom stolu - građenju i pregledu pravila",
       "Nigde",
       "Chat sobama"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "Najjeftinije pitanje u trejdingu",
-     "p": "Pre nego što rizikuješ i cent — pa i paper vreme — možeš da pitaš istoriju: da sam trgovao tačno ova pravila prošle godine, šta bi se desilo? To je backtest. Neće obećati budućnost, ali izvršava pravila sa nula naknadne pameti i nula milosti."
+     "p": "Pre nego što rizikuješ i cent - pa i paper vreme - možeš da pitaš istoriju: da sam trgovao tačno ova pravila prošle godine, šta bi se desilo? To je backtest. Neće obećati budućnost, ali izvršava pravila sa nula naknadne pameti i nula milosti."
     },
     {
      "h": "Šta ti backtest zapravo govori",
-     "p": "Ne \"ovo će zaraditi\" — nego PROFIL strategije: win rate, prosečan R, najgora serija gubitaka, najdublji drawdown, koliko trejdova mesečno. Iz r10 već znaš da ti brojevi, uz dimenzionisanje, odlučuju o preživljavanju. Backtest ti ih daje za par minuta."
+     "p": "Ne \"ovo će zaraditi\" - nego PROFIL strategije: win rate, prosečan R, najgora serija gubitaka, najdublji drawdown, koliko trejdova mesečno. Iz r10 već znaš da ti brojevi, uz dimenzionisanje, odlučuju o preživljavanju. Backtest ti ih daje za par minuta."
     },
     {
      "h": "Poštuj njegove granice",
-     "p": "Backtestovi pretpostavljaju izvršenja po istorijskim cenama — pravi spread, slippage i funding biće gori. Tretiraj rezultate backtesta kao OPTIMISTIČAN plafon, mentalno oduzmi troškove i veruj samo profilima koji taj rez prežive sa rezervom."
+     "p": "Backtestovi pretpostavljaju izvršenja po istorijskim cenama - pravi spread, slippage i funding biće gori. Tretiraj rezultate backtesta kao OPTIMISTIČAN plafon, mentalno oduzmi troškove i veruj samo profilima koji taj rez prežive sa rezervom."
     }
    ],
    "quiz": [
@@ -81,7 +81,7 @@
      "q": "Rezultati backtesta naspram živih rezultata su obično…",
      "o": [
       "Identični",
-      "Optimistični — pravi troškovi pogoršaju živo",
+      "Optimistični - pravi troškovi pogoršaju živo",
       "Pesimistični, jer backtestovi potcene dobitke",
       "Nasumični"
      ]
@@ -97,7 +97,7 @@
     }
    ],
    "try": {
-    "p": "Pokreni svoj prvi pravi backtest — EMA cross ili RSI pravila na kvalitetnim podacima, jedan klik, puna statistika.",
+    "p": "Pokreni svoj prvi pravi backtest - EMA cross ili RSI pravila na kvalitetnim podacima, jedan klik, puna statistika.",
     "label": "Backtester Strategija →"
    }
   },
@@ -107,7 +107,7 @@
    "cards": [
     {
      "h": "Savršen backtest koji nikad ne radi",
-     "p": "Štimaj parametre strategije dovoljno dugo i savršeno će se uklopiti u prošlost — jer je zapamtila šum, a ne naučila signal. To je overfitting: što je lepša kriva backtesta posle teškog štimovanja, to sumnjičaviji treba da budeš."
+     "p": "Štimaj parametre strategije dovoljno dugo i savršeno će se uklopiti u prošlost - jer je zapamtila šum, a ne naučila signal. To je overfitting: što je lepša kriva backtesta posle teškog štimovanja, to sumnjičaviji treba da budeš."
     },
     {
      "h": "Simptomi",
@@ -154,7 +154,7 @@
    "cards": [
     {
      "h": "Nikad ne ocenjuj na podacima za trening",
-     "p": "Lek za overfitting je disciplina u testiranju: dizajniraj i štimuj pravila na JEDNOM isečku istorije (in-sample), pa ih pusti NETAKNUTA na isečak koji nikad nisu videla (out-of-sample). Samo out-of-sample rezultat se računa — to je najbliže budućnosti što se može kupiti."
+     "p": "Lek za overfitting je disciplina u testiranju: dizajniraj i štimuj pravila na JEDNOM isečku istorije (in-sample), pa ih pusti NETAKNUTA na isečak koji nikad nisu videla (out-of-sample). Samo out-of-sample rezultat se računa - to je najbliže budućnosti što se može kupiti."
     },
     {
      "h": "Walk-forward: ponovi poštenje",
@@ -162,7 +162,7 @@
     },
     {
      "h": "Paper trading je poslednji out-of-sample",
-     "p": "Posle testova, pusti sistem na živim cenama sa lažnim novcem — jedini skup podataka u koji se ne može zaviriti: sadašnjost. Ako se backtest, out-of-sample I paper slažu, imaš nešto. Ako se ne slažu, veruj najživljem."
+     "p": "Posle testova, pusti sistem na živim cenama sa lažnim novcem - jedini skup podataka u koji se ne može zaviriti: sadašnjost. Ako se backtest, out-of-sample I paper slažu, imaš nešto. Ako se ne slažu, veruj najživljem."
     }
    ],
    "quiz": [
@@ -209,7 +209,7 @@
     },
     {
      "h": "Testiraj mašinu kao strategiju",
-     "p": "Bot može da izgubi novac na dva načina: loša pravila ili loš kod. Testiraj ih odvojeno — pravila u backtesteru, kod na paper-trading API-ju gde bag ne košta ništa. Tek kad oba prežive, ulazi pravi novac — prvo mali."
+     "p": "Bot može da izgubi novac na dva načina: loša pravila ili loš kod. Testiraj ih odvojeno - pravila u backtesteru, kod na paper-trading API-ju gde bag ne košta ništa. Tek kad oba prežive, ulazi pravi novac - prvo mali."
     }
    ],
    "quiz": [
@@ -242,7 +242,7 @@
     }
    ],
    "try": {
-    "p": "MarginPad ima besplatan paper-trading REST API napravljen tačno za ovo — testiraj bota sa nula rizika.",
+    "p": "MarginPad ima besplatan paper-trading REST API napravljen tačno za ovo - testiraj bota sa nula rizika.",
     "label": "Bot API Dokumentacija →"
    }
   },
@@ -252,15 +252,15 @@
    "cards": [
     {
      "h": "Automatizacija nije napuštanje",
-     "p": "Sistemu koji radi trebaju kontrolna tabla i povodac: dnevne provere da se izvršenja poklapaju sa namerama, da je rizik po trejdu onaj koji si postavio, da tržišni režim još liči na onaj za koji je pravljen. Tihi drift — u troškovima, u volatilnosti, u tvom sopstvenom praćenju pravila — ubija polako."
+     "p": "Sistemu koji radi trebaju kontrolna tabla i povodac: dnevne provere da se izvršenja poklapaju sa namerama, da je rizik po trejdu onaj koji si postavio, da tržišni režim još liči na onaj za koji je pravljen. Tihi drift - u troškovima, u volatilnosti, u tvom sopstvenom praćenju pravila - ubija polako."
     },
     {
      "h": "Definiši smrt unapred",
-     "p": "Pre puštanja, napiši kriterijume gašenja: maksimalan drawdown (recimo 15%), seriju gubitaka goru od najgore u backtestu, ili lom režima. Udari bilo koji od njih i sistem STAJE — nema pregovaranja sa nadom. To si lično naučio u r6; mašine zaslužuju istu disciplinu."
+     "p": "Pre puštanja, napiši kriterijume gašenja: maksimalan drawdown (recimo 15%), seriju gubitaka goru od najgore u backtestu, ili lom režima. Udari bilo koji od njih i sistem STAJE - nema pregovaranja sa nadom. To si lično naučio u r6; mašine zaslužuju istu disciplinu."
     },
     {
      "h": "Incidenti će se dešavati",
-     "p": "Menjačnice padaju, API-ji pucaju na timeout, pogrešan config duplira veličinu. Pretpostavi incidente, pa će te iznenaditi samo blago: limiti pozicija na nivou menjačnice, alarmi na svako izvršenje, i ručni glavni STOP koji možeš da pritisneš s telefona. Dosadan inženjering — tako izgleda bezbednost."
+     "p": "Menjačnice padaju, API-ji pucaju na timeout, pogrešan config duplira veličinu. Pretpostavi incidente, pa će te iznenaditi samo blago: limiti pozicija na nivou menjačnice, alarmi na svako izvršenje, i ručni glavni STOP koji možeš da pritisneš s telefona. Dosadan inženjering - tako izgleda bezbednost."
     }
    ],
    "quiz": [
@@ -268,7 +268,7 @@
      "q": "Kriterijumi gašenja treba da se definišu…",
      "o": [
       "Tek posle prvog ozbiljnijeg drawdowna",
-      "Pre puštanja — i poštuju bez pregovaranja",
+      "Pre puštanja - i poštuju bez pregovaranja",
       "Nikad",
       "Od strane menjačnice"
      ]
@@ -299,15 +299,15 @@
    "cards": [
     {
      "h": "Prednosti su sezonske",
-     "p": "Nijedan sistem ne radi zauvek — trendovi se završavaju, režimi volatilnosti se okreću, mase se prilagođavaju. Profesionalci vode mali PORTFOLIO nekorelisanih sistema: pratilac trenda, vraćač na prosek, možda žetelac fundinga. Kad jedan spava, drugi obično jede."
+     "p": "Nijedan sistem ne radi zauvek - trendovi se završavaju, režimi volatilnosti se okreću, mase se prilagođavaju. Profesionalci vode mali PORTFOLIO nekorelisanih sistema: pratilac trenda, vraćač na prosek, možda žetelac fundinga. Kad jedan spava, drugi obično jede."
     },
     {
      "h": "Penzionisanje sistema",
-     "p": "Najteža veština: ugasiti strategiju koju voliš. Kriterijumi su ista pravila gašenja iz s6, plus jedno — ako je strukturni razlog zašto je radila nestao (promena provizija, promena režima, svi to rade), penzioniši je dok još ima dostojanstvo. Istorija rezultata je istorija, ne pravo."
+     "p": "Najteža veština: ugasiti strategiju koju voliš. Kriterijumi su ista pravila gašenja iz s6, plus jedno - ako je strukturni razlog zašto je radila nestao (promena provizija, promena režima, svi to rade), penzioniši je dok još ima dostojanstvo. Istorija rezultata je istorija, ne pravo."
     },
     {
      "h": "Zanat, kompletan",
-     "p": "Pogledaj luk: mehanika (kursevi 1-2), preživljavanje (3), čitanje trake (4-5)… i sada proces koji radi bez tvojih raspoloženja. Bilo da automatizuješ ili ostaneš ručno, destinacija je ista: napisana, izmerena, pregledana prednost — i trader dovoljno smiren da je prati."
+     "p": "Pogledaj luk: mehanika (kursevi 1-2), preživljavanje (3), čitanje trake (4-5)… i sada proces koji radi bez tvojih raspoloženja. Bilo da automatizuješ ili ostaneš ručno, destinacija je ista: napisana, izmerena, pregledana prednost - i trader dovoljno smiren da je prati."
     }
    ],
    "quiz": [
@@ -340,7 +340,7 @@
     }
    ],
    "try": {
-    "p": "Cela petlja je sada tvoja — vozi je tamo gde su greške besplatne, i neka nivoi prate put.",
+    "p": "Cela petlja je sada tvoja - vozi je tamo gde su greške besplatne, i neka nivoi prate put.",
     "label": "Paper Trade →"
    }
   }

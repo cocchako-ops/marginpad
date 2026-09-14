@@ -47,7 +47,7 @@
      "q": "In een uptrend zakt de prijs onder de vorige bodem. Dat betekent…",
      "o": [
       "Er is zeker een downtrend begonnen",
-      "Niets — alleen toppen bepalen een trend",
+      "Niets - alleen toppen bepalen een trend",
       "De reeks van de uptrend is gebroken",
       "De trend is sterker geworden"
      ]
@@ -97,7 +97,7 @@
     {
      "q": "De prijs breekt je trendlijn, dus teken je hem vlakker opnieuw. Dat is…",
      "o": [
-      "Goede praktijk — grafieken blijven veranderen",
+      "Goede praktijk - grafieken blijven veranderen",
       "De lijn passend maken aan wat jij wilt",
       "Verplicht zodra het derde raakpunt faalt",
       "Hoe professionals open risico beheren"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Een menigte, geen laser",
-     "p": "Steun is niet één prijs. Het is een band waar genoeg kopers opdoken om de daling te stoppen — soms op $100.00, soms op $99.40, soms na een steek omlaag naar $98.80. Een lijn van één pixel tekenen en verwachten dat de prijs hem tot op de cent respecteert, is een gangbare manier om uit een idee geschud te worden dat prima was."
+     "p": "Steun is niet één prijs. Het is een band waar genoeg kopers opdoken om de daling te stoppen - soms op $100.00, soms op $99.40, soms na een steek omlaag naar $98.80. Een lijn van één pixel tekenen en verwachten dat de prijs hem tot op de cent respecteert, is een gangbare manier om uit een idee geschud te worden dat prima was."
     },
     {
      "h": "Laat de wieken de randen bepalen",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Bewijs het met één tik",
-     "prompt": "Tik ergens binnen de steunzone — de band waar de bodems zich verzamelen.",
+     "prompt": "Tik ergens binnen de steunzone - de band waar de bodems zich verzamelen.",
      "p": "Eén tik. Er is hier geen enkele juiste pixel, en dat is precies de les."
     },
     {
@@ -152,7 +152,7 @@
       "Je niveau was gewoon fout",
       "Er is een nieuwe downtrend begonnen",
       "Steun is nu weerstand geworden",
-      "Normaal — het niveau is een zone, geen lijn"
+      "Normaal - het niveau is een zone, geen lijn"
      ]
     }
    ]
@@ -200,7 +200,7 @@
     {
      "q": "Een niveau hield vier keer stand. Bij het vijfde raakpunt…",
      "o": [
-      "Moet het houden — vier raakpunten bevestigen het",
+      "Moet het houden - vier raakpunten bevestigen het",
       "Verandert het vanzelf in een trendlijn",
       "Kan het zonder enige waarschuwing falen",
       "Garandeert het een breakout in jouw voordeel"
@@ -289,7 +289,7 @@
     {
      "q": "Een niveau breekt op ongewoon laag volume. Je moet…",
      "o": [
-      "Het licht opvatten — er deden weinig mensen mee",
+      "Het licht opvatten - er deden weinig mensen mee",
       "Het als bevestigd zien, volume is ruis",
       "Aannemen dat een omkeer nu gegarandeerd is",
       "De positie verdubbelen om de beweging te pakken"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Het verkeerde spel spelen is duur",
-     "p": "Pas trendregels toe binnen een range en je koopt elke duw aan de bovenrand en verkoopt elke spoeling aan de onderkant — hoog kopen en laag verkopen, keer op keer, en elke ronde kosten betalen. Pas rangeregels toe op een markt met trend en je blijft in kracht shorten. De toestand benoemen voordat je handelt is geen vrijblijvend huiswerk."
+     "p": "Pas trendregels toe binnen een range en je koopt elke duw aan de bovenrand en verkoopt elke spoeling aan de onderkant - hoog kopen en laag verkopen, keer op keer, en elke ronde kosten betalen. Pas rangeregels toe op een markt met trend en je blijft in kracht shorten. De toestand benoemen voordat je handelt is geen vrijblijvend huiswerk."
     },
     {
      "h": "Ranges worden strakker voordat ze eindigen",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Benoem de trend, markeer twee niveaus",
-     "p": "Zeg de reeks hardop: hogere toppen en hogere bodems, de spiegel daarvan, of geen van beide, wat een range betekent. Markeer dan precies twee horizontale zones — de dichtstbijzijnde boven de prijs en de dichtstbijzijnde eronder. Twee. Heb je zes lijnen getekend, dan heb je een grafiek gebouwd die het eens is met wat je hierna ook besluit."
+     "p": "Zeg de reeks hardop: hogere toppen en hogere bodems, de spiegel daarvan, of geen van beide, wat een range betekent. Markeer dan precies twee horizontale zones - de dichtstbijzijnde boven de prijs en de dichtstbijzijnde eronder. Twee. Heb je zes lijnen getekend, dan heb je een grafiek gebouwd die het eens is met wat je hierna ook besluit."
     },
     {
      "h": "Maak de zin af, en stop dan",
@@ -426,7 +426,7 @@
     },
     {
      "h": "De meeste grafieken verdienen geen mening",
-     "p": "De eerlijke uitkomst van deze routine is meestal: niets. Geen duidelijke trend, geen niveau in de buurt, niets specifieks om fout over te zitten. Dat is een resultaat en geen mislukking — de routine is een filter, en een filter dat nooit iets afwijst, filtert niet. Sluit de grafiek en kijk naar een ander symbool."
+     "p": "De eerlijke uitkomst van deze routine is meestal: niets. Geen duidelijke trend, geen niveau in de buurt, niets specifieks om fout over te zitten. Dat is een resultaat en geen mislukking - de routine is een filter, en een filter dat nooit iets afwijst, filtert niet. Sluit de grafiek en kijk naar een ander symbool."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Zoveel als je er kunt vinden",
       "Zes, één per timeframe",
-      "Twee — dichtstbij boven en eronder",
+      "Twee - dichtstbij boven en eronder",
       "Geen, trendlijnen zijn genoeg"
      ]
     },

@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Una posición es una apuesta abierta",
-     "p": "Antes de operar estás fuera del mercado: no tienes nada y nada puede pasarte. En el momento en que compras o vendes, tienes una posición — una apuesta abierta con una dirección y un tamaño. Sigue abierta, ganando y perdiendo con cada movimiento del precio, hasta que la cierras. Los traders dicen «estoy en posición» igual que tú dirías «tengo dinero puesto en esto»."
+     "p": "Antes de operar estás fuera del mercado: no tienes nada y nada puede pasarte. En el momento en que compras o vendes, tienes una posición - una apuesta abierta con una dirección y un tamaño. Sigue abierta, ganando y perdiendo con cada movimiento del precio, hasta que la cierras. Los traders dicen «estoy en posición» igual que tú dirías «tengo dinero puesto en esto»."
     },
     {
      "h": "Long significa que lo quieres más arriba",
-     "p": "Ir en long significa que ganas cuando el precio sube. Compras Bitcoin a $60,000, vendes a $63,000 y has ganado $3,000 por moneda — eso es un long. No hay nada prestado ni nada exótico; es comprar, con un nombre. Casi todo el mundo empieza aquí, porque encaja con cómo ya pensamos sobre poseer cosas. «Long BTC» significa simplemente: estoy posicionado para que el precio suba."
+     "p": "Ir en long significa que ganas cuando el precio sube. Compras Bitcoin a $60,000, vendes a $63,000 y has ganado $3,000 por moneda - eso es un long. No hay nada prestado ni nada exótico; es comprar, con un nombre. Casi todo el mundo empieza aquí, porque encaja con cómo ya pensamos sobre poseer cosas. «Long BTC» significa simplemente: estoy posicionado para que el precio suba."
     },
     {
      "h": "El short gana cuando el precio cae",
-     "p": "Un short es el espejo. Vendes primero a un precio alto y recompras más tarde a uno más bajo, y la diferencia es tuya. Abres short a $60,000, recompras a $57,000 y te quedas $3,000 por moneda mientras el mercado caía. En futuros no cambia de manos ninguna moneda — tienes un contrato que te paga cuando el precio baja. Así es como los traders ganan dinero en un mercado que cae."
+     "p": "Un short es el espejo. Vendes primero a un precio alto y recompras más tarde a uno más bajo, y la diferencia es tuya. Abres short a $60,000, recompras a $57,000 y te quedas $3,000 por moneda mientras el mercado caía. En futuros no cambia de manos ninguna moneda - tienes un contrato que te paga cuando el precio baja. Así es como los traders ganan dinero en un mercado que cae."
     },
     {
      "h": "El tamaño termina la frase",
@@ -44,7 +44,7 @@
      ]
     },
     {
-     "q": "Los dos están en long en BTC — uno con $200, otro con $2,000. Un movimiento del 1% vale:",
+     "q": "Los dos están en long en BTC - uno con $200, otro con $2,000. Un movimiento del 1% vale:",
      "o": [
       "$2 y $20",
       "$2 para cada uno",
@@ -60,15 +60,15 @@
    "cards": [
     {
      "h": "Bull y bear son dirección",
-     "p": "Un bull market (mercado alcista) es un tramo largo de precios subiendo; un bear market (mercado bajista) es un tramo largo de precios cayendo. Los animales vienen de cómo atacan: el toro lanza los cuernos hacia arriba, el oso baja la zarpa. Si te declaras bullish esperas subidas; bearish, bajadas. Son palabras lentas — describen meses, no esta tarde."
+     "p": "Un bull market (mercado alcista) es un tramo largo de precios subiendo; un bear market (mercado bajista) es un tramo largo de precios cayendo. Los animales vienen de cómo atacan: el toro lanza los cuernos hacia arriba, el oso baja la zarpa. Si te declaras bullish esperas subidas; bearish, bajadas. Son palabras lentas - describen meses, no esta tarde."
     },
     {
      "h": "Pump y dump son velocidad",
-     "p": "Un pump es una subida rápida; un dump, una caída rápida. Ninguno de los dos dice nada sobre el porqué. Cuidado, eso sí: «pump and dump» como frase única nombra un esquema — un grupo compra en silencio una moneda pequeña, la promociona a gritos y luego vende a los compradores que atrajo. La subida es real, y la salida es suya, no tuya."
+     "p": "Un pump es una subida rápida; un dump, una caída rápida. Ninguno de los dos dice nada sobre el porqué. Cuidado, eso sí: «pump and dump» como frase única nombra un esquema - un grupo compra en silencio una moneda pequeña, la promociona a gritos y luego vende a los compradores que atrajo. La subida es real, y la salida es suya, no tuya."
     },
     {
      "h": "Corrección, crack y la diferencia",
-     "p": "La convención habitual: una caída de alrededor del 10% desde un máximo reciente se llama corrección, y una caída del 20% o más es un mercado bajista. Un crack (crash) no es un tamaño, es una velocidad — la mayor parte de la caída llegando en horas o días. En cripto un día del 10% es normal, así que la gente usa estas palabras a la ligera. Pide el número, no el sustantivo."
+     "p": "La convención habitual: una caída de alrededor del 10% desde un máximo reciente se llama corrección, y una caída del 20% o más es un mercado bajista. Un crack (crash) no es un tamaño, es una velocidad - la mayor parte de la caída llegando en horas o días. En cripto un día del 10% es normal, así que la gente usa estas palabras a la ligera. Pide el número, no el sustantivo."
     },
     {
      "h": "Estas palabras describen, nunca predicen",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "El margen es tu dinero dentro",
-     "p": "El margen es el efectivo que pones para mantener una posición. El nocional es el tamaño completo que esa posición controla. Pones $100 de margen para controlar $1,000 de Bitcoin: $100 es tu margen, $1,000 es tu nocional. Cada comisión, cada ganancia y cada pérdida se calculan sobre el nocional y luego aterrizan en tu margen — que es exactamente por lo que los porcentajes pequeños se sienten enormes."
+     "p": "El margen es el efectivo que pones para mantener una posición. El nocional es el tamaño completo que esa posición controla. Pones $100 de margen para controlar $1,000 de Bitcoin: $100 es tu margen, $1,000 es tu nocional. Cada comisión, cada ganancia y cada pérdida se calculan sobre el nocional y luego aterrizan en tu margen - que es exactamente por lo que los porcentajes pequeños se sienten enormes."
     },
     {
      "h": "El apalancamiento es la proporción",
@@ -119,7 +119,7 @@
     },
     {
      "h": "La liquidación es la salida forzosa",
-     "p": "Tus pérdidas salen de tu margen. Cuando la pérdida se ha comido casi todo, el exchange cierra la posición por ti, porque la parte prestada hay que protegerla. Eso es la liquidación. No es un aviso — es el final de esa posición, al precio que el mercado tenga en ese momento. A 10x, un movimiento de alrededor del 10% en tu contra basta."
+     "p": "Tus pérdidas salen de tu margen. Cuando la pérdida se ha comido casi todo, el exchange cierra la posición por ti, porque la parte prestada hay que protegerla. Eso es la liquidación. No es un aviso - es el final de esa posición, al precio que el mercado tenga en ese momento. A 10x, un movimiento de alrededor del 10% en tu contra basta."
     },
     {
      "h": "Cuál está en ganancia",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Orden market: velocidad antes que precio",
-     "p": "Una orden market dice: toma el precio que haya disponible ahora mismo. Se ejecuta al instante — la ejecución, el fill, es el momento en que tu orden se convierte de verdad en una posición — porque acepta lo que el otro lado está pidiendo. Siempre entras. No siempre obtienes el precio que viste. Úsala cuando estar dentro importa más que ser preciso."
+     "p": "Una orden market dice: toma el precio que haya disponible ahora mismo. Se ejecuta al instante - la ejecución, el fill, es el momento en que tu orden se convierte de verdad en una posición - porque acepta lo que el otro lado está pidiendo. Siempre entras. No siempre obtienes el precio que viste. Úsala cuando estar dentro importa más que ser preciso."
     },
     {
      "h": "Orden limit: precio antes que velocidad",
@@ -171,7 +171,7 @@
     },
     {
      "h": "Un stop es un disparador",
-     "p": "Un stop todavía no es una orden — es una instrucción que se convierte en una cuando el precio toca un nivel que tú elegiste. Un stop-loss se sitúa por debajo de una posición long y la cierra si el precio cae hasta ahí, limitando el daño. Un take-profit hace lo mismo en el lado ganador. Ninguno garantiza el precio exacto: una vez disparados, normalmente se ejecutan a mercado."
+     "p": "Un stop todavía no es una orden - es una instrucción que se convierte en una cuando el precio toca un nivel que tú elegiste. Un stop-loss se sitúa por debajo de una posición long y la cierra si el precio cae hasta ahí, limitando el daño. Un take-profit hace lo mismo en el lado ganador. Ninguno garantiza el precio exacto: una vez disparados, normalmente se ejecutan a mercado."
     },
     {
      "h": "Spread y slippage",
@@ -214,7 +214,7 @@
    "cards": [
     {
      "h": "FOMO y FUD",
-     "p": "FOMO es fear of missing out, el miedo a quedarse fuera: el tirón de comprar porque ya está subiendo sin ti. FUD es fear, uncertainty and doubt — miedo, incertidumbre y duda: el tirón de vender porque algo suena mal. Las dos nombran una emoción, no un hecho sobre el mercado. Y las dos se usan como acusación — llamar FUD a tu prudencia es una forma de que dejes de pensar."
+     "p": "FOMO es fear of missing out, el miedo a quedarse fuera: el tirón de comprar porque ya está subiendo sin ti. FUD es fear, uncertainty and doubt - miedo, incertidumbre y duda: el tirón de vender porque algo suena mal. Las dos nombran una emoción, no un hecho sobre el mercado. Y las dos se usan como acusación - llamar FUD a tu prudencia es una forma de que dejes de pensar."
     },
     {
      "h": "HODL, paper hands, diamond hands",
@@ -222,11 +222,11 @@
     },
     {
      "h": "Ballenas y retail",
-     "p": "Una ballena es un tenedor lo bastante grande como para que su propia compra o venta mueva el precio. Retail significa todos los pequeños — tú, casi con seguridad, y no hay nada insultante en ello. Lo útil es la asimetría: una ballena tiene que planear su salida, porque el tamaño no puede irse en silencio, mientras que tú puedes estar fuera en un clic."
+     "p": "Una ballena es un tenedor lo bastante grande como para que su propia compra o venta mueva el precio. Retail significa todos los pequeños - tú, casi con seguridad, y no hay nada insultante en ello. Lo útil es la asimetría: una ballena tiene que planear su salida, porque el tamaño no puede irse en silencio, mientras que tú puedes estar fuera en un clic."
     },
     {
      "h": "Capitulación, y quién usa la palabra",
-     "p": "La capitulación es el momento en que los tenedores dejan de esperar y venden a cualquier precio: volumen pesado, una caída violenta y luego agotamiento. Solo se identifica después. Ese es el límite honesto de todas las palabras de esta lección — describen bien el sentimiento de la multitud y no predicen nada. Cuando alguien usa una para decirte qué hacer ahora, pregunta qué posición tiene."
+     "p": "La capitulación es el momento en que los tenedores dejan de esperar y venden a cualquier precio: volumen pesado, una caída violenta y luego agotamiento. Solo se identifica después. Ese es el límite honesto de todas las palabras de esta lección - describen bien el sentimiento de la multitud y no predicen nada. Cuando alguien usa una para decirte qué hacer ahora, pregunta qué posición tiene."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
    "cards": [
     {
      "h": "El soporte y la resistencia son zonas",
-     "p": "El soporte es una zona de precio donde la compra ha aparecido repetidamente y ha frenado una caída. La resistencia es donde la venta ha frenado repetidamente una subida. Son zonas, no líneas — un nivel en $60,000 significa en realidad algo entre $59,800 y $60,200. Importan porque suficientes traders los miran y actúan ahí, que es también exactamente por lo que acaban rompiéndose."
+     "p": "El soporte es una zona de precio donde la compra ha aparecido repetidamente y ha frenado una caída. La resistencia es donde la venta ha frenado repetidamente una subida. Son zonas, no líneas - un nivel en $60,000 significa en realidad algo entre $59,800 y $60,200. Importan porque suficientes traders los miran y actúan ahí, que es también exactamente por lo que acaban rompiéndose."
     },
     {
      "h": "Tendencia y rango",
@@ -277,7 +277,7 @@
     },
     {
      "h": "Cada nivel necesita un marco temporal",
-     "p": "Un marco temporal es cuánto tiempo cubre una vela — 5 minutos, 4 horas, un día. Un soporte dibujado en un gráfico de 5 minutos es invisible en el diario. El mismo mercado puede estar en tendencia bajista en 5 minutos y alcista en el diario, y las dos frases son verdad. Cuando alguien dice «la tendencia», la palabra que falta es en qué marco temporal."
+     "p": "Un marco temporal es cuánto tiempo cubre una vela - 5 minutos, 4 horas, un día. Un soporte dibujado en un gráfico de 5 minutos es invisible en el diario. El mismo mercado puede estar en tendencia bajista en 5 minutos y alcista en el diario, y las dos frases son verdad. Cuando alguien dice «la tendencia», la palabra que falta es en qué marco temporal."
     }
    ],
    "quiz": [
@@ -316,11 +316,11 @@
    "cards": [
     {
      "h": "El volumen cuenta, la liquidez absorbe",
-     "p": "El volumen es cuánto se negoció realmente durante un período — un hecho sobre el pasado. La liquidez es cuánto hay esperando ahora mismo en el libro de órdenes — un hecho sobre el presente. Una moneda puede tener un día de volumen enorme y seguir siendo delgada, de modo que una venta de $50,000 la baja varios puntos porcentuales. El volumen te dice el interés; la liquidez te dice si puedes salir."
+     "p": "El volumen es cuánto se negoció realmente durante un período - un hecho sobre el pasado. La liquidez es cuánto hay esperando ahora mismo en el libro de órdenes - un hecho sobre el presente. Una moneda puede tener un día de volumen enorme y seguir siendo delgada, de modo que una venta de $50,000 la baja varios puntos porcentuales. El volumen te dice el interés; la liquidez te dice si puedes salir."
     },
     {
      "h": "La volatilidad mide movimiento, no dirección",
-     "p": "La volatilidad es cuánto se mueve el precio, en cualquier dirección. Una moneda que oscila un 5% al día es cinco veces más volátil que una que oscila un 1%, sean esos días de subida o de bajada. Por eso el apalancamiento importa aquí: tu distancia a la liquidación es fija, y la volatilidad decide con qué frecuencia el precio recorre esa distancia. Volatilidad alta no es malo — es más rápido, en los dos sentidos."
+     "p": "La volatilidad es cuánto se mueve el precio, en cualquier dirección. Una moneda que oscila un 5% al día es cinco veces más volátil que una que oscila un 1%, sean esos días de subida o de bajada. Por eso el apalancamiento importa aquí: tu distancia a la liquidación es fija, y la volatilidad decide con qué frecuencia el precio recorre esa distancia. Volatilidad alta no es malo - es más rápido, en los dos sentidos."
     },
     {
      "h": "El market cap no es dinero invertido",
@@ -354,7 +354,7 @@
      "q": "«Más compradores que vendedores» es:",
      "o": [
       "Cómo ocurre toda subida de precio",
-      "Imposible — toda operación tiene ambos",
+      "Imposible - toda operación tiene ambos",
       "Otra forma de decir volumen alto",
       "Una medida de la profundidad del libro"
      ]
@@ -367,7 +367,7 @@
    "cards": [
     {
      "h": "Shill y ape",
-     "p": "Hacer shill es promocionar una moneda que ya tienes ante gente que te la comprará. La palabra se dice casi siempre en broma, y ese es el truco — hace que un conflicto de intereses suene a personalidad. Hacer ape es comprar en grande sin investigar nada, disfrazado de valentía. Las dos palabras hacen que un error caro suene a estilo de vida."
+     "p": "Hacer shill es promocionar una moneda que ya tienes ante gente que te la comprará. La palabra se dice casi siempre en broma, y ese es el truco - hace que un conflicto de intereses suene a personalidad. Hacer ape es comprar en grande sin investigar nada, disfrazado de valentía. Las dos palabras hacen que un error caro suene a estilo de vida."
     },
     {
      "h": "Rug pull, moon, 100x",

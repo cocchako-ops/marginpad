@@ -1,54 +1,54 @@
 {
   "id": "stories",
   "name": "Handelsverhalen",
-  "sub": "Kies je trade — interactieve scenario's",
+  "sub": "Kies je trade - interactieve scenario's",
   "lessons": [
     {
       "id": "st1",
       "t": "Je eerste 100×",
       "cards": [
-        { "h": "Vrijdagavond, $100", "p": "Je hebt $100 oefengeld en een grafiek die alleen maar omhoog gaat. De hefboomschuif gloeit: 100×. Op 100× beheerst jouw $100 voor $10.000 aan BTC, en je brein maakt meteen het prettige sommetje — 1% jouw kant op en je geld is binnen minuten verdubbeld. Over het andere sommetje zegt de schuif niets." },
-        { "h": "Het andere sommetje", "p": "Op 100× heeft de exchange bijna geen beweging tegen je nodig voordat je margin weg is. Rond de −1% — één routineschommeling — en de positie wordt geliquideerd. Geen verlies dat je kunt uitzitten: gewist. BTC beweegt meer dan 1% terwijl jij koffie zet." },
-        { "h": "Je doet het toch", "p": "Long BTC, 100×, $100. Zes glorieuze minuten sta je $54 in de plus en geef je het in gedachten al uit. Dan tikt één gewone rode candle — een dipje van 1,2%, niets dramatisch — je liquidatieprijs aan. Positie weg. Tien minuten later herstelt de grafiek en sluit de dag groen. Je had gelijk over de richting. Je bent alles toch kwijt." },
-        { "h": "Wat je echt gedood heeft", "p": "Niet de richting — de omvang. Op 10× was diezelfde dip een lelijke maar overleefbare terugval. Op 100× was het de dood. Hefboom maakt je niet vaker correct; hij verkort hoe lang je je kunt veroorloven ongelijk te hebben. En elke trade heeft ruimte nodig om even ongelijk te hebben." },
-        { "h": "De herkansing", "p": "Zelfde setup, take twee: 10× met een stop op −1,5%. De dip tikt je eruit voor −$15. Vervelend. Je stapt weer in op het herstel en pakt de echte beweging. Kleine verliezen zijn de kaartjes die je koopt voor de trades die ertoe doen — dat is het hele spel." }
+        { "h": "Vrijdagavond, $100", "p": "Je hebt $100 oefengeld en een grafiek die alleen maar omhoog gaat. De hefboomschuif gloeit: 100×. Op 100× beheerst jouw $100 voor $10.000 aan BTC, en je brein maakt meteen het prettige sommetje - 1% jouw kant op en je geld is binnen minuten verdubbeld. Over het andere sommetje zegt de schuif niets." },
+        { "h": "Het andere sommetje", "p": "Op 100× heeft de exchange bijna geen beweging tegen je nodig voordat je margin weg is. Rond de −1% - één routineschommeling - en de positie wordt geliquideerd. Geen verlies dat je kunt uitzitten: gewist. BTC beweegt meer dan 1% terwijl jij koffie zet." },
+        { "h": "Je doet het toch", "p": "Long BTC, 100×, $100. Zes glorieuze minuten sta je $54 in de plus en geef je het in gedachten al uit. Dan tikt één gewone rode candle - een dipje van 1,2%, niets dramatisch - je liquidatieprijs aan. Positie weg. Tien minuten later herstelt de grafiek en sluit de dag groen. Je had gelijk over de richting. Je bent alles toch kwijt." },
+        { "h": "Wat je echt gedood heeft", "p": "Niet de richting - de omvang. Op 10× was diezelfde dip een lelijke maar overleefbare terugval. Op 100× was het de dood. Hefboom maakt je niet vaker correct; hij verkort hoe lang je je kunt veroorloven ongelijk te hebben. En elke trade heeft ruimte nodig om even ongelijk te hebben." },
+        { "h": "De herkansing", "p": "Zelfde setup, take twee: 10× met een stop op −1,5%. De dip tikt je eruit voor −$15. Vervelend. Je stapt weer in op het herstel en pakt de echte beweging. Kleine verliezen zijn de kaartjes die je koopt voor de trades die ertoe doen - dat is het hele spel." }
       ],
       "quiz": [
         { "q": "Bij 100× hefboom, hoeveel beweging tegen je in liquideert de positie ongeveer?", "o": ["~50%", "~10%", "~1%", "Hij kan niet geliquideerd worden"] },
         { "q": "In het verhaal sloot BTC de dag groen. Waarom stierf de trade dan toch?", "o": ["De exchange speelde vals", "De positie was te groot om een routinedip te overleven", "De stop-loss stond te krap", "Pure pech die niemand kon vermijden"] },
-        { "q": "Wat verkort hefboom in werkelijkheid?", "o": ["De tijd die winnen kost", "Hoe lang je je kunt veroorloven ongelijk te hebben", "De kosten van de exchange", "Niets — hij vermenigvuldigt alleen winst"] }
+        { "q": "Wat verkort hefboom in werkelijkheid?", "o": ["De tijd die winnen kost", "Hoe lang je je kunt veroorloven ongelijk te hebben", "De kosten van de exchange", "Niets - hij vermenigvuldigt alleen winst"] }
       ]
     },
     {
       "id": "st2",
       "t": "De wraaktrade",
       "cards": [
-        { "h": "Uitgestopt", "p": "Je SOL-short raakt zijn stop. −$40, precies volgens het boekje — een klein, gecontroleerd, gepland verlies. Je P&L is prima. Je ego niet. Een stem in je hoofd kondigt aan dat de markt je $40 schuldig is, en hij zegt het op een zeer overtuigende toon." },
-        { "h": "De markt is je niets schuldig", "p": "Wraaktraden is de duurste gewoonte in hefboomhandel. De volgende trade wordt groter gemaakt 'om het sneller terug te winnen', direct ingestapt 'voor hij wegloopt', en voorbij de stop vastgehouden 'omdat hij MOET draaien'. Drie geschonden regels in één klik — volledig aangedreven door een gevoel." },
-        { "h": "Kijk het gebeuren", "p": "Dubbele omvang, geen plan, meteen weer erin. De markt weet niet dat je bestaat, dus hij doet gewoon door waar hij mee bezig was — en −$40 wordt binnen een uur −$130. Nu wil de stem een derde trade, opnieuw groter. Rekeningen sterven zelden aan één slechte trade. Ze sterven aan één slechte trade die gewroken werd." },
-        { "h": "De professionele reactie", "p": "Uitgestopt worden is het systeem dat werkt. Je betaalde $40 om te leren dat je ongelijk had — goedkope informatie. De professionele zet na een verlies is agressief saai: loop weg, leg het vast, en kom terug wanneer de volgende echte setup zich op zijn eigen moment aandient. Vlak staan is ook een positie." },
-        { "h": "De 24-uursregel", "p": "Een simpele zekering: twee verliezen op rij en je bent klaar voor die dag. Niet omdat je de derde niet kunt winnen — maar omdat degene die trade nummer drie kiest niet degene is die het plan schreef. Bescherm de rekening tegen die vent." }
+        { "h": "Uitgestopt", "p": "Je SOL-short raakt zijn stop. −$40, precies volgens het boekje - een klein, gecontroleerd, gepland verlies. Je P&L is prima. Je ego niet. Een stem in je hoofd kondigt aan dat de markt je $40 schuldig is, en hij zegt het op een zeer overtuigende toon." },
+        { "h": "De markt is je niets schuldig", "p": "Wraaktraden is de duurste gewoonte in hefboomhandel. De volgende trade wordt groter gemaakt 'om het sneller terug te winnen', direct ingestapt 'voor hij wegloopt', en voorbij de stop vastgehouden 'omdat hij MOET draaien'. Drie geschonden regels in één klik - volledig aangedreven door een gevoel." },
+        { "h": "Kijk het gebeuren", "p": "Dubbele omvang, geen plan, meteen weer erin. De markt weet niet dat je bestaat, dus hij doet gewoon door waar hij mee bezig was - en −$40 wordt binnen een uur −$130. Nu wil de stem een derde trade, opnieuw groter. Rekeningen sterven zelden aan één slechte trade. Ze sterven aan één slechte trade die gewroken werd." },
+        { "h": "De professionele reactie", "p": "Uitgestopt worden is het systeem dat werkt. Je betaalde $40 om te leren dat je ongelijk had - goedkope informatie. De professionele zet na een verlies is agressief saai: loop weg, leg het vast, en kom terug wanneer de volgende echte setup zich op zijn eigen moment aandient. Vlak staan is ook een positie." },
+        { "h": "De 24-uursregel", "p": "Een simpele zekering: twee verliezen op rij en je bent klaar voor die dag. Niet omdat je de derde niet kunt winnen - maar omdat degene die trade nummer drie kiest niet degene is die het plan schreef. Bescherm de rekening tegen die vent." }
       ],
       "quiz": [
-        { "q": "Je stop is net geraakt voor een klein gepland verlies. Wat is er werkelijk gebeurd?", "o": ["Het systeem faalde", "Het systeem werkte — je betaalde een kleine, bekende prijs voor ongelijk hebben", "De markt richtte zich persoonlijk op jouw stop", "Je had de stop moeten weghalen"] },
-        { "q": "Wat maakt een wraaktrade zo gevaarlijk?", "o": ["Hij zit meestal in de verkeerde coin", "Hij is groter, gehaast en ongepland — geschonden regels gedreven door emotie", "De kosten zijn hoger na een verlies", "Exchanges markeren je account"] },
-        { "q": "De gedisciplineerde zet na twee verliezen op rij:", "o": ["De omvang verdubbelen om sneller te herstellen", "Overstappen op een coin die je nooit hebt gehandeld", "Stoppen voor die dag — terugkomen met het plan, niet met het gevoel", "Stops weghalen zodat je niet uitgestopt kunt worden"] }
+        { "q": "Je stop is net geraakt voor een klein gepland verlies. Wat is er werkelijk gebeurd?", "o": ["Het systeem faalde", "Het systeem werkte - je betaalde een kleine, bekende prijs voor ongelijk hebben", "De markt richtte zich persoonlijk op jouw stop", "Je had de stop moeten weghalen"] },
+        { "q": "Wat maakt een wraaktrade zo gevaarlijk?", "o": ["Hij zit meestal in de verkeerde coin", "Hij is groter, gehaast en ongepland - geschonden regels gedreven door emotie", "De kosten zijn hoger na een verlies", "Exchanges markeren je account"] },
+        { "q": "De gedisciplineerde zet na twee verliezen op rij:", "o": ["De omvang verdubbelen om sneller te herstellen", "Overstappen op een coin die je nooit hebt gehandeld", "Stoppen voor die dag - terugkomen met het plan, niet met het gevoel", "Stops weghalen zodat je niet uitgestopt kunt worden"] }
       ]
     },
     {
       "id": "st3",
       "t": "De FOMO-candle",
       "cards": [
-        { "h": "De raket", "p": "Een meme-coin staat 38% hoger in een uur. De chat staat in brand, iemand post een screenshot van een 40×-winst, en de candle blijft groeien alsof hij je persoonlijk beledigt omdat je er niet in zit. Dit is FOMO — de angst iets te missen — en het heeft meer rekeningen leeggehaald dan welke crash ook." },
+        { "h": "De raket", "p": "Een meme-coin staat 38% hoger in een uur. De chat staat in brand, iemand post een screenshot van een 40×-winst, en de candle blijft groeien alsof hij je persoonlijk beledigt omdat je er niet in zit. Dit is FOMO - de angst iets te missen - en het heeft meer rekeningen leeggehaald dan welke crash ook." },
         { "h": "Wie verkoopt jou de top", "p": "De mechaniek die niemand screenshot: om jou op +38% te laten kopen, moet iemand die op +5% kocht aan jou verkopen. Late kopers zijn de uitstapliquiditeit van vroege kopers. Hoe luider de hype, hoe dichter je waarschijnlijk bij degene bent die als laatste de zak vasthoudt." },
-        { "h": "De achtervolging", "p": "Je koopt de top van de candle omdat hij 'duidelijk hoger wil'. Hij stijgt nog 4% — genie! — dan vertrekt het vroege geld en zakt hij 22% in elf minuten. Jouw instap is nu de bovenste wick op de grafiek. Jij hebt deze trade niet ontdekt. Deze trade heeft jou ontdekt." },
-        { "h": "Achtervolgen versus wachten", "p": "Discipline is niet 'raak nooit iets aan dat beweegt'. Het is: beweging gemist? Dan is hij weg — en morgen is er altijd een volgende. Een echt sterke coin trekt terug, bouwt een basis, en biedt een echte instap met een verstandige plek voor een stop. Trekt hij nooit terug, dan heb je niets verloren." },
-        { "h": "De screener, niet de chat", "p": "Vind bewegers met data, niet met adrenaline — de screener scoort momentum voordat de chat begint te schreeuwen. Op een terugval instappen in een sterke coin met een plan is handelen. Instappen in een verticale candle omdat vreemden opgewonden zijn is doneren." }
+        { "h": "De achtervolging", "p": "Je koopt de top van de candle omdat hij 'duidelijk hoger wil'. Hij stijgt nog 4% - genie! - dan vertrekt het vroege geld en zakt hij 22% in elf minuten. Jouw instap is nu de bovenste wick op de grafiek. Jij hebt deze trade niet ontdekt. Deze trade heeft jou ontdekt." },
+        { "h": "Achtervolgen versus wachten", "p": "Discipline is niet 'raak nooit iets aan dat beweegt'. Het is: beweging gemist? Dan is hij weg - en morgen is er altijd een volgende. Een echt sterke coin trekt terug, bouwt een basis, en biedt een echte instap met een verstandige plek voor een stop. Trekt hij nooit terug, dan heb je niets verloren." },
+        { "h": "De screener, niet de chat", "p": "Vind bewegers met data, niet met adrenaline - de screener scoort momentum voordat de chat begint te schreeuwen. Op een terugval instappen in een sterke coin met een plan is handelen. Instappen in een verticale candle omdat vreemden opgewonden zijn is doneren." }
       ],
       "quiz": [
-        { "q": "Je koopt een coin die al 38% hoger staat in een uur — van wie koop je dan hoogstwaarschijnlijk?", "o": ["Van de exchange", "Van vroege kopers die winst nemen — jij bent hun uitgang", "Van market makers die posities openen", "Van niemand — nieuwe coins worden op verzoek gemaakt"] },
+        { "q": "Je koopt een coin die al 38% hoger staat in een uur - van wie koop je dan hoogstwaarschijnlijk?", "o": ["Van de exchange", "Van vroege kopers die winst nemen - jij bent hun uitgang", "Van market makers die posities openen", "Van niemand - nieuwe coins worden op verzoek gemaakt"] },
         { "q": "Waar betaalde de trader in het verhaal eigenlijk voor?", "o": ["Een degelijke uitbraakinstap", "De opwinding van anderen, en dan op de top", "Vroege informatie", "Een scalp met weinig risico"] },
-        { "q": "Je hebt een grote beweging gemist. De gedisciplineerde reactie is:", "o": ["Erachteraan voordat hij hoger gaat", "Accepteren dat hij weg is — wacht op een terugval of de volgende setup", "In plaats daarvan een willekeurige andere coin kopen", "De hefboom verhogen zodat een kleinere beweging betaalt als de grote"] }
+        { "q": "Je hebt een grote beweging gemist. De gedisciplineerde reactie is:", "o": ["Erachteraan voordat hij hoger gaat", "Accepteren dat hij weg is - wacht op een terugval of de volgende setup", "In plaats daarvan een willekeurige andere coin kopen", "De hefboom verhogen zodat een kleinere beweging betaalt als de grote"] }
       ]
     },
     {
@@ -56,62 +56,62 @@
       "t": "Nieuwsavond",
       "cards": [
         { "h": "Eén minuut tot de FOMC", "p": "Je grafiek is vlak, opgerold, stil. Over zestig seconden spreekt de Fed, en jij hebt een briljant idee: raad de richting, hefboom omhoog, in seconden rijk. De halve markt had hetzelfde briljante idee. Dat is precies het probleem." },
-        { "h": "Wat nieuwscandles doen", "p": "Nieuwscandles kiezen geen richting — ze kiezen ze allebei. Een hevige wick omhoog én omlaag binnen dezelfde minuut is routine: de prijs schiet 2% de ene kant op, klapt 3% de andere kant op, en gaat dan liggen. Longs én shorts worden op de wicks uitgestopt of geliquideerd nog voordat de 'echte' beweging begint." },
-        { "h": "De muntworp die het niet is", "p": "Zelfs goed raden kan je fataal worden — het pad telt. Op 25× tikt de wick de verkeerde kant op je liquidatie aan voordat de goede kant uitbetaalt. Je voorspelde de bestemming en stierf onderweg. Nieuws raden met hefboom is een muntworp waarbij je aan beide kanten kunt verliezen." },
+        { "h": "Wat nieuwscandles doen", "p": "Nieuwscandles kiezen geen richting - ze kiezen ze allebei. Een hevige wick omhoog én omlaag binnen dezelfde minuut is routine: de prijs schiet 2% de ene kant op, klapt 3% de andere kant op, en gaat dan liggen. Longs én shorts worden op de wicks uitgestopt of geliquideerd nog voordat de 'echte' beweging begint." },
+        { "h": "De muntworp die het niet is", "p": "Zelfs goed raden kan je fataal worden - het pad telt. Op 25× tikt de wick de verkeerde kant op je liquidatie aan voordat de goede kant uitbetaalt. Je voorspelde de bestemming en stierf onderweg. Nieuws raden met hefboom is een muntworp waarbij je aan beide kanten kunt verliezen." },
         { "h": "Wat profs doen om 8:29", "p": "Meestal niets. Vlak het cijfer in, of piepkleine omvang met brede stops. Daarna handelen ze het NA: zodra de spike is uitgeraasd en één richting 15–30 minuten standhoudt, is dat een echte trend met een overleefbare instap. De economische kalender bestaat zodat dit je nooit overvalt." },
         { "h": "Je pre-flightcheck", "p": "Vraag jezelf voor elke hefboominstap: staat er de komende uren een rode-vlag-gebeurtenis op de agenda? De MarginPad-kalender markeert elke FOMC, CPI en NFP. Dertig seconden checken is beter dan de bijzondere ervaring van gelijk hebben over de Fed en tóch geliquideerd worden." }
       ],
       "quiz": [
         { "q": "Waarom verliezen traders aan BEIDE kanten vaak op een nieuwscandle?", "o": ["Exchanges bevriezen de handel", "De prijs wickt hevig beide kanten op voordat hij gaat liggen", "Nieuws is altijd ingeprijsd", "Kosten verdrievoudigen tijdens nieuws"] },
         { "q": "Je raadde het Fed-besluit goed en werd toch geliquideerd. Hoe kan dat?", "o": ["Onmogelijk als de richting klopte", "De wick de verkeerde kant op raakte je liquidatie voordat de beweging uitbetaalde", "De exchange draaide je positie om", "Slippage keerde je richting om"] },
-        { "q": "De veiligere manier om een grote geplande gebeurtenis te handelen:", "o": ["Maximale hefboom één minuut van tevoren", "Wacht tot de spike is uitgeraasd en handel de richting die standhoudt", "Open tegelijk een long en een short op 100×", "Handel een coin die het nieuws niet kan raken — die is er altijd"] }
+        { "q": "De veiligere manier om een grote geplande gebeurtenis te handelen:", "o": ["Maximale hefboom één minuut van tevoren", "Wacht tot de spike is uitgeraasd en handel de richting die standhoudt", "Open tegelijk een long en een short op 100×", "Handel een coin die het nieuws niet kan raken - die is er altijd"] }
       ]
     },
     {
       "id": "st5",
       "t": "De volle boot",
       "cards": [
-        { "h": "Gratis geld, iedereen is het eens", "p": "Iedereen die je volgt zit long. De chat zit long. De funding staat op +0,19% per 8 uur — longs zitten zo vol dat ze shorts betalen om er alleen maar in te blijven. Jij leest dat als vertrouwen. De markt leest het als een passagierslijst." },
-        { "h": "Wat funding eigenlijk is", "p": "Funding is de drukmeter van de markt. Positief betekent dat longs shorts betalen — de boot helt over naar long. Extreme funding betekent dat de trade VOL zit, en volle trades hebben allemaal hetzelfde probleem: iedereen die wilde kopen heeft al gekocht. Wie is er nog over om de prijs omhoog te duwen?" },
-        { "h": "De squeeze", "p": "De prijs stokt. De longs met de hoogste hefboom vervelen zich, worden dan nerveus, en worden dan geliquideerd door een klein dipje. Hun gedwongen verkopen verdiept de dip, wat de volgende laag liquideert — een long squeeze. Een volle boot wordt niet verlaten. Hij wordt leeggemaakt, op volgorde van hefboom." },
-        { "h": "Huur betalen voor een geparkeerde auto", "p": "Ondertussen betaalde jouw 'gratis geld'-long ongeveer 0,6% per dag aan funding om louter te bestaan. Twee weken zijwaartse prijs is ongeveer −8% voordat de markt überhaupt bewoog. Extreme funding waarschuwt niet alleen voor squeezes — hij stuurt je stilletjes de rekening voor de overtuiging van de massa." },
-        { "h": "De meter aflezen", "p": "Check de funding voordat je in een populaire trade stapt — /funding toont elke coin. Milde funding: prima. Extreme funding: je bent laat bij een volle boot en de ticketprijs stijgt. De beste trades voelen meestal eenzaam, niet populair." }
+        { "h": "Gratis geld, iedereen is het eens", "p": "Iedereen die je volgt zit long. De chat zit long. De funding staat op +0,19% per 8 uur - longs zitten zo vol dat ze shorts betalen om er alleen maar in te blijven. Jij leest dat als vertrouwen. De markt leest het als een passagierslijst." },
+        { "h": "Wat funding eigenlijk is", "p": "Funding is de drukmeter van de markt. Positief betekent dat longs shorts betalen - de boot helt over naar long. Extreme funding betekent dat de trade VOL zit, en volle trades hebben allemaal hetzelfde probleem: iedereen die wilde kopen heeft al gekocht. Wie is er nog over om de prijs omhoog te duwen?" },
+        { "h": "De squeeze", "p": "De prijs stokt. De longs met de hoogste hefboom vervelen zich, worden dan nerveus, en worden dan geliquideerd door een klein dipje. Hun gedwongen verkopen verdiept de dip, wat de volgende laag liquideert - een long squeeze. Een volle boot wordt niet verlaten. Hij wordt leeggemaakt, op volgorde van hefboom." },
+        { "h": "Huur betalen voor een geparkeerde auto", "p": "Ondertussen betaalde jouw 'gratis geld'-long ongeveer 0,6% per dag aan funding om louter te bestaan. Twee weken zijwaartse prijs is ongeveer −8% voordat de markt überhaupt bewoog. Extreme funding waarschuwt niet alleen voor squeezes - hij stuurt je stilletjes de rekening voor de overtuiging van de massa." },
+        { "h": "De meter aflezen", "p": "Check de funding voordat je in een populaire trade stapt - /funding toont elke coin. Milde funding: prima. Extreme funding: je bent laat bij een volle boot en de ticketprijs stijgt. De beste trades voelen meestal eenzaam, niet populair." }
       ],
       "quiz": [
         { "q": "Aanhoudend hoge positieve funding betekent:", "o": ["De coin is fundamenteel sterk", "Longs zitten vol en betalen shorts om erin te blijven", "Shorts staan op het punt geliquideerd te worden", "De exchange is bullish"] },
         { "q": "Wat drijft een long squeeze aan?", "o": ["Alleen nieuwsgebeurtenissen", "Geliquideerde longs die gedwongen verkopen, wat de volgende laag liquideert", "Whales die accumuleren", "Exchanges die liquiditeit weghalen"] },
-        { "q": "Je houdt een long door 2 weken zijwaartse prijs bij 0,19%/8u funding. Je P&L is ruwweg:", "o": ["Vlak — de prijs bewoog niet", "Ongeveer 8% lager, alleen al door funding", "Hoger — funding betaalt longs", "Alleen de instapkosten lager"] }
+        { "q": "Je houdt een long door 2 weken zijwaartse prijs bij 0,19%/8u funding. Je P&L is ruwweg:", "o": ["Vlak - de prijs bewoog niet", "Ongeveer 8% lager, alleen al door funding", "Hoger - funding betaalt longs", "Alleen de instapkosten lager"] }
       ]
     },
     {
       "id": "st6",
       "t": "De schuivende stop",
       "cards": [
-        { "h": "Heel even dan", "p": "Je ETH-long staat 1% van zijn stop, en je krijgt een idee — het slechtste idee in trading, verkleed als een redelijk idee: 'Ik schuif de stop een stukje omlaag. Hij gaat zo draaien.' Die stop is geplaatst door een rustig persoon met een plan. Hij staat op het punt verschoven te worden door een nerveus persoon met een verlies." },
-        { "h": "Wat een stop werkelijk is", "p": "Een stop-loss is de prijs waarop je trade-idee officieel fout is — gekozen VOORDAT je instapte, toen je nog kon denken. Hem verschuiven is geen aanpassing van de trade. Het is verklaren 'ik weiger ongelijk te hebben', de duurste zin in de markten." },
-        { "h": "Het schuiven", "p": "Je verschuift hem één keer: −2% wordt −4%. De prijs blijft dalen, en nu zou −4% 'een idiote plek zijn om uit te stappen'. Dan −7%. Je kijkt niet meer naar de grafiek — en zo weet je dat het mis is. Een gepland verlies van $20 is nu een gijzeling van $140, en de markt onderhandelt niet." },
-        { "h": "Snel ongelijk hebben is goedkoop", "p": "De hele edge van een stop is dat hij ongelijk hebben GOEDKOOP en SNEL maakt. Elke verschuiving verandert een goedkoop snel verlies in een duur traag verlies — en leert je brein dat plannen optioneel zijn. Eén gerespecteerde stop is meer waard dan tien gelukkige ontsnappingen, want die kun je herhalen." },
-        { "h": "Maak het mechanisch", "p": "Zet SL/TP op het moment dat je opent — de site zeurt er niet voor niets over. Daarna één regel: de stop beweegt alleen in jouw voordeel. Omhoog achter een winnende long — mag, dat zet winst vast. Omlaag achter een verliezende — nooit. Die ene regel overleeft elke markt." }
+        { "h": "Heel even dan", "p": "Je ETH-long staat 1% van zijn stop, en je krijgt een idee - het slechtste idee in trading, verkleed als een redelijk idee: 'Ik schuif de stop een stukje omlaag. Hij gaat zo draaien.' Die stop is geplaatst door een rustig persoon met een plan. Hij staat op het punt verschoven te worden door een nerveus persoon met een verlies." },
+        { "h": "Wat een stop werkelijk is", "p": "Een stop-loss is de prijs waarop je trade-idee officieel fout is - gekozen VOORDAT je instapte, toen je nog kon denken. Hem verschuiven is geen aanpassing van de trade. Het is verklaren 'ik weiger ongelijk te hebben', de duurste zin in de markten." },
+        { "h": "Het schuiven", "p": "Je verschuift hem één keer: −2% wordt −4%. De prijs blijft dalen, en nu zou −4% 'een idiote plek zijn om uit te stappen'. Dan −7%. Je kijkt niet meer naar de grafiek - en zo weet je dat het mis is. Een gepland verlies van $20 is nu een gijzeling van $140, en de markt onderhandelt niet." },
+        { "h": "Snel ongelijk hebben is goedkoop", "p": "De hele edge van een stop is dat hij ongelijk hebben GOEDKOOP en SNEL maakt. Elke verschuiving verandert een goedkoop snel verlies in een duur traag verlies - en leert je brein dat plannen optioneel zijn. Eén gerespecteerde stop is meer waard dan tien gelukkige ontsnappingen, want die kun je herhalen." },
+        { "h": "Maak het mechanisch", "p": "Zet SL/TP op het moment dat je opent - de site zeurt er niet voor niets over. Daarna één regel: de stop beweegt alleen in jouw voordeel. Omhoog achter een winnende long - mag, dat zet winst vast. Omlaag achter een verliezende - nooit. Die ene regel overleeft elke markt." }
       ],
       "quiz": [
-        { "q": "Een stop-loss kun je het best begrijpen als:", "o": ["De kostentrigger van de exchange", "De prijs waarop je idee onjuist blijkt — vooraf bepaald", "Een suggestie", "Een manier om winst te garanderen"] },
-        { "q": "Waarom is een stop wegschuiven van de prijs zo destructief?", "o": ["Het verhoogt de kosten", "Het verandert een klein gepland verlies in een open verlies — en traint je plannen los te laten", "Exchanges bestraffen het", "Het sluit de positie direct"] },
-        { "q": "De enige richting waarin een stop ooit zou moeten bewegen:", "o": ["Weg van de prijs, om niet geraakt te worden", "In jouw voordeel — winst vastzetten achter een winnaar", "Stops zouden helemaal niet moeten bewegen", "Welke kant de chat ook op leunt"] }
+        { "q": "Een stop-loss kun je het best begrijpen als:", "o": ["De kostentrigger van de exchange", "De prijs waarop je idee onjuist blijkt - vooraf bepaald", "Een suggestie", "Een manier om winst te garanderen"] },
+        { "q": "Waarom is een stop wegschuiven van de prijs zo destructief?", "o": ["Het verhoogt de kosten", "Het verandert een klein gepland verlies in een open verlies - en traint je plannen los te laten", "Exchanges bestraffen het", "Het sluit de positie direct"] },
+        { "q": "De enige richting waarin een stop ooit zou moeten bewegen:", "o": ["Weg van de prijs, om niet geraakt te worden", "In jouw voordeel - winst vastzetten achter een winnaar", "Stops zouden helemaal niet moeten bewegen", "Welke kant de chat ook op leunt"] }
       ]
     },
     {
       "id": "st7",
       "t": "De schaduw van de whale",
       "cards": [
-        { "h": "De short van $14 miljoen", "p": "De whale-tracker licht op: een wallet opende zojuist een BTC-short van $14.000.000. Je vinger zweeft. Iemand die $14 miljoen inzet weet toch zeker iets? Hem kopiëren kost één klik. Hem begrijpen kost iets langer — en dat verschil is jouw rekening." },
-        { "h": "Wat je niet kunt zien", "p": "Je ziet ÉÉN positie, niet het hele boek. Die short van $14 miljoen dekt misschien een spotpositie van $40 miljoen af — de whale verdient of BTC nu stijgt of daalt. Ze kunnen ook een beweging van 20% de verkeerde kant op overleven en rustig bijkopen. Jij, op 20×, overleeft er ongeveer 4%. Op papier dezelfde trade. In werkelijkheid een compleet andere." },
+        { "h": "De short van $14 miljoen", "p": "De whale-tracker licht op: een wallet opende zojuist een BTC-short van $14.000.000. Je vinger zweeft. Iemand die $14 miljoen inzet weet toch zeker iets? Hem kopiëren kost één klik. Hem begrijpen kost iets langer - en dat verschil is jouw rekening." },
+        { "h": "Wat je niet kunt zien", "p": "Je ziet ÉÉN positie, niet het hele boek. Die short van $14 miljoen dekt misschien een spotpositie van $40 miljoen af - de whale verdient of BTC nu stijgt of daalt. Ze kunnen ook een beweging van 20% de verkeerde kant op overleven en rustig bijkopen. Jij, op 20×, overleeft er ongeveer 4%. Op papier dezelfde trade. In werkelijkheid een compleet andere." },
         { "h": "De kopie", "p": "Je short. BTC pumpt 6%. De whale voegt $10 miljoen toe alsof het een afrondingsverschil is en stapt uiteindelijk vlak uit. Jij werd op dag één geliquideerd, tijdens een beweging die in hun P&L nauwelijks te zien was. Je kopieerde de instap. De wallet erachter kon je niet kopiëren." },
-        { "h": "Whales zijn weer, geen navigatie", "p": "Whale-posities zijn context, geen instructies. Zware shorts die zich opstapelen bij een niveau vertellen je waar groot geld weerstand ziet — dat is echt bruikbaar. Maar hun instap is niet jouw instap, want hun risico is niet jouw risico. Kijk naar het weer. Laat het niet rijden." },
-        { "h": "Steel het proces, niet de positie", "p": "Het enige dat het waard is om van whales te kopiëren: ze bepalen hun omvang zo dat ze ongelijk kunnen hebben en toch blijven bestaan. Doe dat op $100-schaal — kleine omvang, brede ruimte, een stop die je respecteert — en je hebt het enige deel gekopieerd dat hun ooit geld opleverde." }
+        { "h": "Whales zijn weer, geen navigatie", "p": "Whale-posities zijn context, geen instructies. Zware shorts die zich opstapelen bij een niveau vertellen je waar groot geld weerstand ziet - dat is echt bruikbaar. Maar hun instap is niet jouw instap, want hun risico is niet jouw risico. Kijk naar het weer. Laat het niet rijden." },
+        { "h": "Steel het proces, niet de positie", "p": "Het enige dat het waard is om van whales te kopiëren: ze bepalen hun omvang zo dat ze ongelijk kunnen hebben en toch blijven bestaan. Doe dat op $100-schaal - kleine omvang, brede ruimte, een stop die je respecteert - en je hebt het enige deel gekopieerd dat hun ooit geld opleverde." }
       ],
       "quiz": [
-        { "q": "Waarom kan een 'verliezende' positie van een whale voor hen toch een goede trade zijn?", "o": ["Whales verliezen nooit", "Hij dekt mogelijk een grotere positie af — ze verdienen hoe dan ook", "Exchanges betalen whales terug", "Interne kortingen op kosten"] },
-        { "q": "Je kopieert de short van een whale op 20× en BTC pumpt 6%. Meest waarschijnlijke afloop?", "o": ["Allebei prima — het is dezelfde trade", "De whale koopt bij en overleeft; jij wordt geliquideerd", "Jullie worden samen geliquideerd", "Jij wint, want jouw positie is kleiner"] },
+        { "q": "Waarom kan een 'verliezende' positie van een whale voor hen toch een goede trade zijn?", "o": ["Whales verliezen nooit", "Hij dekt mogelijk een grotere positie af - ze verdienen hoe dan ook", "Exchanges betalen whales terug", "Interne kortingen op kosten"] },
+        { "q": "Je kopieert de short van een whale op 20× en BTC pumpt 6%. Meest waarschijnlijke afloop?", "o": ["Allebei prima - het is dezelfde trade", "De whale koopt bij en overleeft; jij wordt geliquideerd", "Jullie worden samen geliquideerd", "Jij wint, want jouw positie is kleiner"] },
         { "q": "De whale-gewoonte die je werkelijk kunt kopiëren is:", "o": ["Hun instapprijs", "Hun positiegrootte in dollars", "Zo groot instappen dat je ongelijk kunt hebben en blijft bestaan", "Hun exacte hefboom"] }
       ]
     },
@@ -119,16 +119,16 @@
       "id": "st8",
       "t": "Eén goede trade",
       "cards": [
-        { "h": "Niets te doen", "p": "Dinsdag. Geen setup. De oude jij zou er een 'vinden' — verveling is een machine die posities opent. De nieuwe jij checkt de screener, ziet niets dat de moeite waard is, en klapt de laptop dicht. Dat is ook een trade: je bent zojuist long gegaan op geduld, en geduld wordt nooit geliquideerd." },
+        { "h": "Niets te doen", "p": "Dinsdag. Geen setup. De oude jij zou er een 'vinden' - verveling is een machine die posities opent. De nieuwe jij checkt de screener, ziet niets dat de moeite waard is, en klapt de laptop dicht. Dat is ook een trade: je bent zojuist long gegaan op geduld, en geduld wordt nooit geliquideerd." },
         { "h": "Woensdag: de setup komt", "p": "SOL trekt terug naar een niveau dat je al dagen volgt. Funding neutraal, kalender 48 uur schoon. Pre-flight: instap, stop op −2%, doel op +5%, omvang klein genoeg dat ongelijk hebben 1% van de rekening kost. Elk vakje afgevinkt VOORDAT de knop wordt aangeraakt." },
-        { "h": "Het saaie middenstuk", "p": "De instap wordt gevuld. De prijs zakt richting je stop en je voelt de oude kriebel om hem te verzetten. Je doet het niet — ongelijk hebben kost hier 1%, precies zoals ontworpen. Hij draait. Bij TP1 neem je de helft eraf en schuif je de stop naar instap. De rest van de trade is nu gratis. Niemand screenshot dit deel. Dit deel is het werk." },
-        { "h": "De uitstap", "p": "TP2 wordt geraakt. Ongeveer +4% op de rekening — geen adrenaline, geen ererondje, geen versnelde hartslag. Een plan, uitgevoerd terwijl je gevoelens voelde en ze negeerde. Doe dit honderd keer en variantie doet er niet meer toe: het proces is de edge. Eén goede trade, herhaald, is een carrière." },
-        { "h": "Je hebt alle schurken ontmoet", "p": "De 100×-held. De wraaktrader. De FOMO-jager. De nieuwsgokker. De volle boot. De schuivende stop. De schaduw van de whale. Het was allemaal dezelfde persoon — iemand zonder plan, die het lievelingskostje van de markt tegenkwam. Jij hebt nu een plan. Oefen het hier tot het saai is. Dan is het van jou." }
+        { "h": "Het saaie middenstuk", "p": "De instap wordt gevuld. De prijs zakt richting je stop en je voelt de oude kriebel om hem te verzetten. Je doet het niet - ongelijk hebben kost hier 1%, precies zoals ontworpen. Hij draait. Bij TP1 neem je de helft eraf en schuif je de stop naar instap. De rest van de trade is nu gratis. Niemand screenshot dit deel. Dit deel is het werk." },
+        { "h": "De uitstap", "p": "TP2 wordt geraakt. Ongeveer +4% op de rekening - geen adrenaline, geen ererondje, geen versnelde hartslag. Een plan, uitgevoerd terwijl je gevoelens voelde en ze negeerde. Doe dit honderd keer en variantie doet er niet meer toe: het proces is de edge. Eén goede trade, herhaald, is een carrière." },
+        { "h": "Je hebt alle schurken ontmoet", "p": "De 100×-held. De wraaktrader. De FOMO-jager. De nieuwsgokker. De volle boot. De schuivende stop. De schaduw van de whale. Het was allemaal dezelfde persoon - iemand zonder plan, die het lievelingskostje van de markt tegenkwam. Jij hebt nu een plan. Oefen het hier tot het saai is. Dan is het van jou." }
       ],
       "quiz": [
-        { "q": "'Vandaag geen setup.' De gedisciplineerde actie is:", "o": ["Toch iets verhandelbaars zoeken — activiteit is vooruitgang", "Niets doen — geduld is een positie", "Een kleine willekeurige trade openen om scherp te blijven", "De hefboom verhogen zodat een zwakke setup betaalt als een sterke"] },
+        { "q": "'Vandaag geen setup.' De gedisciplineerde actie is:", "o": ["Toch iets verhandelbaars zoeken - activiteit is vooruitgang", "Niets doen - geduld is een positie", "Een kleine willekeurige trade openen om scherp te blijven", "De hefboom verhogen zodat een zwakke setup betaalt als een sterke"] },
         { "q": "Bij TP1 nam de trader de helft eraf en schoof de stop naar instap. Waarom?", "o": ["Om de positie te verdubbelen", "Om winst vast te zetten en de rest van de trade risicovrij te maken", "Omdat het trade-idee fout was", "Om de hefboom te verhogen"] },
-        { "q": "Wat was in dit verhaal de werkelijke edge?", "o": ["Een geheime indicator", "Geluk", "Een herhaalbaar proces — geplande instap, afgemeten risico, gerespecteerde stop, genomen winst", "Hoge hefboom op het juiste moment"] }
+        { "q": "Wat was in dit verhaal de werkelijke edge?", "o": ["Een geheime indicator", "Geluk", "Een herhaalbaar proces - geplande instap, afgemeten risico, gerespecteerde stop, genomen winst", "Hoge hefboom op het juiste moment"] }
       ]
     }
   ]

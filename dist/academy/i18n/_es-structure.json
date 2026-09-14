@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "El precio se mueve hacia las órdenes",
-     "p": "Los grandes jugadores no pueden llenar posiciones grandes donde el libro está vacío — necesitan órdenes en reposo contra las cuales operar. Los clústeres de stop-loss y liquidaciones SON esas órdenes en reposo. Por eso el precio tan a menudo atraviesa con un pico un nivel obvio, se llena ahí y revierte: fue de compras."
+     "p": "Los grandes jugadores no pueden llenar posiciones grandes donde el libro está vacío - necesitan órdenes en reposo contra las cuales operar. Los clústeres de stop-loss y liquidaciones SON esas órdenes en reposo. Por eso el precio tan a menudo atraviesa con un pico un nivel obvio, se llena ahí y revierte: fue de compras."
     },
     {
      "h": "Tus stops son la entrada de otro",
-     "p": "Tu stop-loss debajo del soporte es una orden de venta esperando a ejecutarse. Mil traders colocándolo en el mismo lugar obvio crean un pool de vendedores garantizados — el sitio perfecto para que un comprador grande absorba. No es una conspiración; es simplemente cómo se llena el tamaño grande."
+     "p": "Tu stop-loss debajo del soporte es una orden de venta esperando a ejecutarse. Mil traders colocándolo en el mismo lugar obvio crean un pool de vendedores garantizados - el sitio perfecto para que un comprador grande absorba. No es una conspiración; es simplemente cómo se llena el tamaño grande."
     },
     {
      "h": "Operarlo, no temerlo",
-     "p": "No puedes evitar el juego, pero sí dejar de ser el blanco más fácil: coloca tus invalidaciones más allá de los pools obvios, espera el barrido y reversa en los niveles limpios, y trata una mecha que atraviesa un nivel y lo recupera al instante como información — alguien acaba de llenarse."
+     "p": "No puedes evitar el juego, pero sí dejar de ser el blanco más fácil: coloca tus invalidaciones más allá de los pools obvios, espera el barrido y reversa en los niveles limpios, y trata una mecha que atraviesa un nivel y lo recupera al instante como información - alguien acaba de llenarse."
     }
    ],
    "quiz": [
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "El lateral es donde se escribe la historia",
-     "p": "Las tendencias son el resultado; los rangos son la causa. En un rango, los grandes jugadores construyen (acumulan) o descargan (distribuyen) posiciones en silencio sin mover el precio en su contra. La dirección del breakout suele decidirse mucho antes de que ocurra — dentro del rango."
+     "p": "Las tendencias son el resultado; los rangos son la causa. En un rango, los grandes jugadores construyen (acumulan) o descargan (distribuyen) posiciones en silencio sin mover el precio en su contra. La dirección del breakout suele decidirse mucho antes de que ocurra - dentro del rango."
     },
     {
      "h": "Leer el rango",
-     "p": "Observa cómo se comporta el precio en los bordes del rango: sondeos repetidos por debajo del mínimo que se recuperan rápido (barridos hacia la demanda) apuntan a acumulación; rallies que fallan en el máximo con volumen decreciente apuntan a distribución. El medio del rango es ruido — los bordes son la pista."
+     "p": "Observa cómo se comporta el precio en los bordes del rango: sondeos repetidos por debajo del mínimo que se recuperan rápido (barridos hacia la demanda) apuntan a acumulación; rallies que fallan en el máximo con volumen decreciente apuntan a distribución. El medio del rango es ruido - los bordes son la pista."
     },
     {
      "h": "El spring y la trampa",
-     "p": "El final clásico: un breakout falso EN CONTRA de la dirección real — el spring — que barre los stops, llena el tamaño final del gran jugador y revierte hacia el movimiento verdadero. Si aprendes a esperar la trampa, la trampa se convierte en tu entrada en lugar de tu salida."
+     "p": "El final clásico: un breakout falso EN CONTRA de la dirección real - el spring - que barre los stops, llena el tamaño final del gran jugador y revierte hacia el movimiento verdadero. Si aprendes a esperar la trampa, la trampa se convierte en tu entrada en lugar de tu salida."
     }
    ],
    "quiz": [
@@ -103,7 +103,7 @@
    "cards": [
     {
      "h": "Huecos en la subasta",
-     "p": "Cuando el precio se mueve con violencia en una dirección, se salta niveles — ahí apenas hubo operaciones. Esa zona fina es un desequilibrio (a menudo llamado fair value gap). Los mercados suelen revisitar estas zonas más tarde, porque los precios sin operar son asuntos pendientes para la subasta."
+     "p": "Cuando el precio se mueve con violencia en una dirección, se salta niveles - ahí apenas hubo operaciones. Esa zona fina es un desequilibrio (a menudo llamado fair value gap). Los mercados suelen revisitar estas zonas más tarde, porque los precios sin operar son asuntos pendientes para la subasta."
     },
     {
      "h": "Por qué ocurren las revisitas",
@@ -111,7 +111,7 @@
     },
     {
      "h": "Usar los desequilibrios con honestidad",
-     "p": "Un desequilibrio es una zona CANDIDATA para entradas en la dirección de la tendencia — nunca una garantía. Apílalo con estructura: un desequilibrio que se solapa con un nivel de soporte y la tendencia del marco temporal superior es un setup real; un gap solitario en un gráfico de 1 minuto es ruido con un nombre elegante."
+     "p": "Un desequilibrio es una zona CANDIDATA para entradas en la dirección de la tendencia - nunca una garantía. Apílalo con estructura: un desequilibrio que se solapa con un nivel de soporte y la tendencia del marco temporal superior es un setup real; un gap solitario en un gráfico de 1 minuto es ruido con un nombre elegante."
     }
    ],
    "quiz": [
@@ -154,11 +154,11 @@
     },
     {
      "h": "Aceptación y rechazo",
-     "p": "El precio que entra en un nodo de alto volumen tiende a frenarse y a moverse lateralmente — ahí se hizo mucho negocio, y vuelve a atraer operaciones. El precio que entra en un nodo de bajo volumen tiende a atravesarlo rápido — nadie quiso operar ahí antes, y nadie quiere ahora. Esto explica muchos movimientos rápidos mejor que cualquier indicador."
+     "p": "El precio que entra en un nodo de alto volumen tiende a frenarse y a moverse lateralmente - ahí se hizo mucho negocio, y vuelve a atraer operaciones. El precio que entra en un nodo de bajo volumen tiende a atravesarlo rápido - nadie quiso operar ahí antes, y nadie quiere ahora. Esto explica muchos movimientos rápidos mejor que cualquier indicador."
     },
     {
      "h": "Uso práctico",
-     "p": "Marca el nodo de mayor volumen del rango reciente (el point of control). Por encima de él, las caídas hacia el nodo suelen encontrar compradores; por debajo, los rallies hacia él suelen encontrar vendedores. Combínalo con tus niveles de m1 — cuando un nodo de volumen y un nivel estructural coinciden, has encontrado una zona real."
+     "p": "Marca el nodo de mayor volumen del rango reciente (el point of control). Por encima de él, las caídas hacia el nodo suelen encontrar compradores; por debajo, los rallies hacia él suelen encontrar vendedores. Combínalo con tus niveles de m1 - cuando un nodo de volumen y un nivel estructural coinciden, has encontrado una zona real."
     }
    ],
    "quiz": [
@@ -197,11 +197,11 @@
    "cards": [
     {
      "h": "Qué son los niveles fib",
-     "p": "Los retrocesos de Fibonacci marcan fracciones fijas de un movimiento previo — 38.2%, 50%, 61.8%. No hay ninguna ley física que obligue al precio a respetarlos. Y aun así, a menudo se respetan. ¿Por qué? Porque millones de traders dibujan los mismos niveles y actúan sobre ellos — un espejo que se cumple a sí mismo."
+     "p": "Los retrocesos de Fibonacci marcan fracciones fijas de un movimiento previo - 38.2%, 50%, 61.8%. No hay ninguna ley física que obligue al precio a respetarlos. Y aun así, a menudo se respetan. ¿Por qué? Porque millones de traders dibujan los mismos niveles y actúan sobre ellos - un espejo que se cumple a sí mismo."
     },
     {
      "h": "La forma honesta de usarlos",
-     "p": "Trata los fibs como un MAPA de dónde otros traders esperan reacciones, no como la gravedad. El retroceso del 61.8% en una tendencia alcista es una zona de compra popular — lo que la convierte en una zona real, creas lo que creas sobre la matemática. Lo autocumplido sigue cumpliéndose."
+     "p": "Trata los fibs como un MAPA de dónde otros traders esperan reacciones, no como la gravedad. El retroceso del 61.8% en una tendencia alcista es una zona de compra popular - lo que la convierte en una zona real, creas lo que creas sobre la matemática. Lo autocumplido sigue cumpliéndose."
     },
     {
      "h": "Confluencia, otra vez",
@@ -244,7 +244,7 @@
    "cards": [
     {
      "h": "No todo lo verde es igual",
-     "p": "Cuando el mercado rebota, algunas monedas se recuperan hasta nuevos máximos mientras otras apenas despegan de sus mínimos. Esa diferencia — la fuerza relativa — es una de las ventajas más duraderas del trading: lo que se negó a caer en la tormenta suele liderar la recuperación."
+     "p": "Cuando el mercado rebota, algunas monedas se recuperan hasta nuevos máximos mientras otras apenas despegan de sus mínimos. Esa diferencia - la fuerza relativa - es una de las ventajas más duraderas del trading: lo que se negó a caer en la tormenta suele liderar la recuperación."
     },
     {
      "h": "Medirla de forma simple",
@@ -252,7 +252,7 @@
     },
     {
      "h": "Fuerte y con la marea",
-     "p": "Combínalo con m9: en un mercado risk-on con la dominancia cayendo, ir long en las alts relativamente más fuertes es pescar donde están los peces — tendencia, marea y fuerza alineadas. Ir long en la moneda más débil porque está barata es exactamente el trade opuesto con una etiqueta de descuento."
+     "p": "Combínalo con m9: en un mercado risk-on con la dominancia cayendo, ir long en las alts relativamente más fuertes es pescar donde están los peces - tendencia, marea y fuerza alineadas. Ir long en la moneda más débil porque está barata es exactamente el trade opuesto con una etiqueta de descuento."
     }
    ],
    "quiz": [
@@ -291,11 +291,11 @@
    "cards": [
     {
      "h": "La volatilidad se agrupa",
-     "p": "Los mercados alternan entre regímenes: largos tramos de rangos estrechos y tranquilos, y estallidos de expansión violenta. La volatilidad se agrupa — la calma sigue a la calma, la tormenta sigue a la tormenta — hasta que el régimen se rompe. La misma estrategia no puede tratar ambos mundos igual."
+     "p": "Los mercados alternan entre regímenes: largos tramos de rangos estrechos y tranquilos, y estallidos de expansión violenta. La volatilidad se agrupa - la calma sigue a la calma, la tormenta sigue a la tormenta - hasta que el régimen se rompe. La misma estrategia no puede tratar ambos mundos igual."
     },
     {
      "h": "Adaptar tamaño y stops",
-     "p": "En un régimen de tormenta, un stop que era sensato la semana pasada ahora queda dentro del ruido — y tu tamaño debe reducirse para mantener el riesgo constante (mayor distancia de stop × menor tamaño = el mismo 1% de riesgo). En regímenes de calma total, los trades de breakout mueren una y otra vez mientras la reversión a la media prospera."
+     "p": "En un régimen de tormenta, un stop que era sensato la semana pasada ahora queda dentro del ruido - y tu tamaño debe reducirse para mantener el riesgo constante (mayor distancia de stop × menor tamaño = el mismo 1% de riesgo). En regímenes de calma total, los trades de breakout mueren una y otra vez mientras la reversión a la media prospera."
     },
     {
      "h": "El chequeo de régimen",
@@ -307,7 +307,7 @@
      "q": "La volatilidad tiende a…",
      "o": [
       "Ser completamente aleatoria cada día",
-      "Agruparse — la calma sigue a la calma",
+      "Agruparse - la calma sigue a la calma",
       "Solo subir",
       "Solo bajar"
      ]
@@ -338,15 +338,15 @@
    "cards": [
     {
      "h": "De herramientas a sistema",
-     "p": "Ahora tienes muchas lentes: estructura, liquidez, rangos, desequilibrios, nodos de volumen, fibs, fuerza relativa, regímenes — más todo lo de los cursos 1-4. Un profesional no las usa todas en todas partes; define un STACK fijo que debe alinearse antes de que exista un trade."
+     "p": "Ahora tienes muchas lentes: estructura, liquidez, rangos, desequilibrios, nodos de volumen, fibs, fuerza relativa, regímenes - más todo lo de los cursos 1-4. Un profesional no las usa todas en todas partes; define un STACK fijo que debe alinearse antes de que exista un trade."
     },
     {
      "h": "Construye tu stack",
-     "p": "Stack de ejemplo: tendencia del marco temporal superior + un nivel estructural + un nodo de volumen que coincide + posicionamiento no saturado en tu contra + ningún evento rojo del calendario dentro de la ventana. Cinco chequeos. Tu stack puede ser distinto — lo que importa es que esté ESCRITO y fijo, para que cada trade sea comparable en el diario."
+     "p": "Stack de ejemplo: tendencia del marco temporal superior + un nivel estructural + un nodo de volumen que coincide + posicionamiento no saturado en tu contra + ningún evento rojo del calendario dentro de la ventana. Cinco chequeos. Tu stack puede ser distinto - lo que importa es que esté ESCRITO y fijo, para que cada trade sea comparable en el diario."
     },
     {
      "h": "Menos trades, con más peso",
-     "p": "Un stack de verdad filtra sin piedad: la mayoría de los días no producen nada, y ese es el diseño. Los trades que pasan llevan varias razones independientes — que es exactamente lo que hace honesto su R:R. Este es el puente entre saber cosas y tener una ventaja."
+     "p": "Un stack de verdad filtra sin piedad: la mayoría de los días no producen nada, y ese es el diseño. Los trades que pasan llevan varias razones independientes - que es exactamente lo que hace honesto su R:R. Este es el puente entre saber cosas y tener una ventaja."
     }
    ],
    "quiz": [
@@ -379,7 +379,7 @@
     }
    ],
    "try": {
-    "p": "Abre el espacio de gráficos y marca UN stack completo en cualquier moneda: tendencia, nivel, nodo de volumen, y revisa el posicionamiento. No hace falta operar — solo la lectura.",
+    "p": "Abre el espacio de gráficos y marca UN stack completo en cualquier moneda: tendencia, nivel, nodo de volumen, y revisa el posicionamiento. No hace falta operar - solo la lectura.",
     "label": "Abrir Charts →"
    }
   }

@@ -1,4 +1,4 @@
-/* Re-stamps the ?v= content hash on EVERY reference to the shared bundles — across app/index.html + all of dist/**.html
+/* Re-stamps the ?v= content hash on EVERY reference to the shared bundles - across app/index.html + all of dist/**.html
    (the app-shell dist/app.html, homepage, language homepages, every standalone page), the dynamic loaders inside
    home.js, and the one mp-nav.js injection in src/worker.js. The bundles themselves are edited in place (they ARE the
    source); this only busts the cache-bust query so browsers pick up the new bytes.
@@ -6,7 +6,7 @@
    2026-09-05: generalised from home.css/home.js to EVERY hand-edited bundle (mp-nav, mp-auth, mp-trade, mp-charts,
    mp-mcharts, mp-heatmap, mp-screener, mp-profile, mp-calc, pwa-nav, sentry, i18n, lightweight-charts). Why: the service
    worker serves ?v= URLs stale-while-revalidate (instant on repeat loads) but unversioned JS/CSS NETWORK-first (so a
-   hotfix lands on the next load) — which made every repeat load of /paper-trade wait on ~125 KB gz of mp-* bundles.
+   hotfix lands on the next load) - which made every repeat load of /paper-trade wait on ~125 KB gz of mp-* bundles.
    Each bundle gets its OWN hash, so touching mp-auth.js does not invalidate home.js for everyone.
 
    Order matters: the loaders inside home.js are stamped FIRST (they change home.js's bytes), then the home hash is
@@ -24,7 +24,7 @@ const hashOf = (buf) => crypto.createHash('sha256').update(buf).digest('hex').sl
 const esc = (s) => s.replace(/[.]/g, '\\.');
 function writeIfChanged(f, next) { const cur = fs.readFileSync(f, 'utf8'); if (cur === next) return false; const tmp = f + '.tmp'; fs.writeFileSync(tmp, Buffer.from(next, 'utf8')); fs.renameSync(tmp, f); return true; }
 
-// 1) hashes for the independent bundles (content only — they do not reference each other)
+// 1) hashes for the independent bundles (content only - they do not reference each other)
 const ver = {};
 for (const b of BUNDLES) { const f = path.join(A, b); if (fs.existsSync(f)) ver[b] = hashOf(fs.readFileSync(f)); }
 
@@ -67,15 +67,15 @@ for (const f of files) {
   if (out !== h) { fs.writeFileSync(f, out); stamped++; }
 }
 // 5) the SAME version, written into the worker, so /api/announce can tell an open tab that it is running old code.
-// A tab left open across a deploy keeps its bundles forever (nothing reloads on its own) — that is how three rounds
+// A tab left open across a deploy keeps its bundles forever (nothing reloads on its own) - that is how three rounds
 // of fixes to the winning-ticket line stayed invisible to the owner on 2026-09-10.
 try {
   const wp = fs.readFileSync(workerPath, 'utf8');
   const RE_AV = /(const ASSET_V = ')[a-f0-9]*(')/;
-  const avNow = ver['mp-auth.js'] || vHome; // mp-auth compares against its own ?v= — stamp the same thing it will read
+  const avNow = ver['mp-auth.js'] || vHome; // mp-auth compares against its own ?v= - stamp the same thing it will read
   if (RE_AV.test(wp)) { const nw = wp.replace(RE_AV, (m, a1, b1) => a1 + avNow + b1); if (nw !== wp) fs.writeFileSync(workerPath, nw); }
-  else console.log('  (no ASSET_V constant in worker.js — the stale-tab notice will not update)');
+  else console.log('  (no ASSET_V constant in worker.js - the stale-tab notice will not update)');
 } catch (e) {}
-console.log('home assets v=' + vHome + ' — stamped ' + stamped + ' of ' + referencing + ' referencing file(s) (' + files.length + ' html scanned)'
+console.log('home assets v=' + vHome + ' - stamped ' + stamped + ' of ' + referencing + ' referencing file(s) (' + files.length + ' html scanned)'
   + (loadersStamped ? '; home.js loaders re-stamped' : '') + (workerStamped ? '; worker.js mp-nav injection re-stamped' : ''));
 console.log('bundle versions: ' + Object.keys(ver).map(b => b + '=' + ver[b]).join(' '));

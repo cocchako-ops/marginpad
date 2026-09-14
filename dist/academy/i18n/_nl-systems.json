@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "De discretiebelasting",
-     "p": "Elke discretionaire beslissing is een kans voor tilt, FOMO en wijsheid achteraf om binnen te sijpelen. Een systeem — vaste regels voor setup, entry, exit en grootte — verwijdert de beslissing op het moment van maximale emotie. De meeste traders hebben geen betere instincten nodig; ze hebben minder kansen nodig om ze te gebruiken."
+     "p": "Elke discretionaire beslissing is een kans voor tilt, FOMO en wijsheid achteraf om binnen te sijpelen. Een systeem - vaste regels voor setup, entry, exit en grootte - verwijdert de beslissing op het moment van maximale emotie. De meeste traders hebben geen betere instincten nodig; ze hebben minder kansen nodig om ze te gebruiken."
     },
     {
      "h": "Regels maken resultaten meetbaar",
      "p": "Zijn je entries stemmingen, dan zijn je journalreviews astrologie. Zijn je entries regels, dan is elke trade een datapunt: DEZE setup, ZO gespeeld, levert DEZE verwachtingswaarde. Alleen regelgebaseerde trading kan echt verbeteren, want alleen die kan gemeten worden."
     },
     {
-     "h": "Discretie heeft een plek — aan de tekentafel",
-     "p": "De vaardigheid verdwijnt niet; ze verhuist. Je gebruikt oordeel om de regels te ONTWERPEN en te HERZIEN — wekelijks, kalm, weg van live prijzen. De machine (of de checklist) voert uit. Oordeel aan het bureau, discipline aan de trekker."
+     "h": "Discretie heeft een plek - aan de tekentafel",
+     "p": "De vaardigheid verdwijnt niet; ze verhuist. Je gebruikt oordeel om de regels te ONTWERPEN en te HERZIEN - wekelijks, kalm, weg van live prijzen. De machine (of de checklist) voert uit. Oordeel aan het bureau, discipline aan de trekker."
     }
    ],
    "quiz": [
@@ -34,7 +34,7 @@
      "q": "Stemmingsgebaseerde entries maken je journal…",
      "o": [
       "Veel leuker om terug te lezen aan het eind van de week",
-      "Onmeetbaar — er valt niets te vergelijken",
+      "Onmeetbaar - er valt niets te vergelijken",
       "Korter",
       "Perfect"
      ]
@@ -43,7 +43,7 @@
      "q": "In systematische trading hoort menselijk oordeel…",
      "o": [
       "Aan de live trekker, waar de echte beslissingen vallen",
-      "Aan de tekentafel — regels bouwen en herzien",
+      "Aan de tekentafel - regels bouwen en herzien",
       "Nergens",
       "In chatgroepen"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "De goedkoopste vraag in trading",
-     "p": "Voordat je een cent riskeert — of zelfs papiertijd — kun je de geschiedenis vragen: had ik precies deze regels het afgelopen jaar verhandeld, wat was er gebeurd? Dat is een backtest. Hij belooft de toekomst niet, maar voert regels uit met nul wijsheid achteraf en nul genade."
+     "p": "Voordat je een cent riskeert - of zelfs papiertijd - kun je de geschiedenis vragen: had ik precies deze regels het afgelopen jaar verhandeld, wat was er gebeurd? Dat is een backtest. Hij belooft de toekomst niet, maar voert regels uit met nul wijsheid achteraf en nul genade."
     },
     {
      "h": "Wat een backtest je echt vertelt",
-     "p": "Niet \"dit gaat geld verdienen\" — maar het PROFIEL van de strategie: winrate, gemiddelde R, slechtste verliesreeks, diepste drawdown, hoeveel trades per maand. Je weet uit r10 dat die getallen, samen met grootte, over overleven beslissen. De backtest levert ze in minuten."
+     "p": "Niet \"dit gaat geld verdienen\" - maar het PROFIEL van de strategie: winrate, gemiddelde R, slechtste verliesreeks, diepste drawdown, hoeveel trades per maand. Je weet uit r10 dat die getallen, samen met grootte, over overleven beslissen. De backtest levert ze in minuten."
     },
     {
      "h": "Respecteer zijn grenzen",
-     "p": "Backtests gaan uit van vullingen op historische prijzen — echte spread, slippage en funding zullen slechter zijn. Behandel backtestresultaten als het OPTIMISTISCHE plafond, trek de kosten mentaal af en vertrouw alleen profielen die die knip met ruimte overleven."
+     "p": "Backtests gaan uit van vullingen op historische prijzen - echte spread, slippage en funding zullen slechter zijn. Behandel backtestresultaten als het OPTIMISTISCHE plafond, trek de kosten mentaal af en vertrouw alleen profielen die die knip met ruimte overleven."
     }
    ],
    "quiz": [
@@ -81,7 +81,7 @@
      "q": "Backtestresultaten versus live resultaten zijn meestal…",
      "o": [
       "Identiek",
-      "Optimistisch — echte kosten maken live slechter",
+      "Optimistisch - echte kosten maken live slechter",
       "Pessimistisch, want backtests tellen winsten te laag",
       "Willekeurig"
      ]
@@ -97,7 +97,7 @@
     }
    ],
    "try": {
-    "p": "Draai je eerste echte backtest — EMA-cross- of RSI-regels op kwaliteitsdata, één klik, volledige statistieken.",
+    "p": "Draai je eerste echte backtest - EMA-cross- of RSI-regels op kwaliteitsdata, één klik, volledige statistieken.",
     "label": "Strategie-Backtester →"
    }
   },
@@ -107,7 +107,7 @@
    "cards": [
     {
      "h": "De perfecte backtest die nooit werkt",
-     "p": "Stel de parameters van een strategie lang genoeg bij en ze past PERFECT op het verleden — omdat ze de ruis uit het hoofd leerde, niet het signaal. Dat is overfitting: hoe mooier de backtestcurve na zwaar tunen, hoe achterdochtiger je moet zijn."
+     "p": "Stel de parameters van een strategie lang genoeg bij en ze past PERFECT op het verleden - omdat ze de ruis uit het hoofd leerde, niet het signaal. Dat is overfitting: hoe mooier de backtestcurve na zwaar tunen, hoe achterdochtiger je moet zijn."
     },
     {
      "h": "Symptomen",
@@ -154,7 +154,7 @@
    "cards": [
     {
      "h": "Beoordeel nooit op de trainingsdata",
-     "p": "Het medicijn tegen overfitting is testdiscipline: ontwerp en tune je regels op ÉÉN plak geschiedenis (in-sample), en draai ze dan ONAANGEROERD op een plak die ze nooit zagen (out-of-sample). Alleen het out-of-sample resultaat telt — het is het dichtst bij de toekomst dat je kunt kopen."
+     "p": "Het medicijn tegen overfitting is testdiscipline: ontwerp en tune je regels op ÉÉN plak geschiedenis (in-sample), en draai ze dan ONAANGEROERD op een plak die ze nooit zagen (out-of-sample). Alleen het out-of-sample resultaat telt - het is het dichtst bij de toekomst dat je kunt kopen."
     },
     {
      "h": "Walk-forward: herhaal de eerlijkheid",
@@ -162,7 +162,7 @@
     },
     {
      "h": "Paper trading is de laatste out-of-sample",
-     "p": "Draai na de tests het systeem op live prijzen met nepgeld — de enige dataset waarin niet gegluurd kan worden: het heden. Als backtest, out-of-sample ÉN paper het eens zijn, heb je iets. Zijn ze het oneens, geloof dan de meest levende."
+     "p": "Draai na de tests het systeem op live prijzen met nepgeld - de enige dataset waarin niet gegluurd kan worden: het heden. Als backtest, out-of-sample ÉN paper het eens zijn, heb je iets. Zijn ze het oneens, geloof dan de meest levende."
     }
    ],
    "quiz": [
@@ -209,7 +209,7 @@
     },
     {
      "h": "Test de machine als een strategie",
-     "p": "Een bot kan op twee manieren geld verliezen: slechte regels of slechte code. Test ze apart — de regels in de backtester, de code tegen een paper-trading-API waar een bug niets kost. Pas als beide overleven komt echt geld in beeld, klein eerst."
+     "p": "Een bot kan op twee manieren geld verliezen: slechte regels of slechte code. Test ze apart - de regels in de backtester, de code tegen een paper-trading-API waar een bug niets kost. Pas als beide overleven komt echt geld in beeld, klein eerst."
     }
    ],
    "quiz": [
@@ -242,7 +242,7 @@
     }
    ],
    "try": {
-    "p": "MarginPad heeft een gratis paper-trading REST-API, precies hiervoor gebouwd — test een bot met nul risico.",
+    "p": "MarginPad heeft een gratis paper-trading REST-API, precies hiervoor gebouwd - test een bot met nul risico.",
     "label": "Bot API Docs →"
    }
   },
@@ -252,15 +252,15 @@
    "cards": [
     {
      "h": "Automatisering is geen verwaarlozing",
-     "p": "Een draaiend systeem heeft een dashboard en een riem nodig: dagelijkse checks dat vullingen overeenkomen met intenties, dat het risico per trade is wat je instelde, dat het marktregime nog lijkt op dat waarvoor het gebouwd is. Stille drift — in kosten, in volatiliteit, in je eigen regelnaleving — doodt langzaam."
+     "p": "Een draaiend systeem heeft een dashboard en een riem nodig: dagelijkse checks dat vullingen overeenkomen met intenties, dat het risico per trade is wat je instelde, dat het marktregime nog lijkt op dat waarvoor het gebouwd is. Stille drift - in kosten, in volatiliteit, in je eigen regelnaleving - doodt langzaam."
     },
     {
      "h": "Definieer de dood vooraf",
-     "p": "Schrijf vóór de lancering de stopcriteria op: een maximale drawdown (zeg 15%), een verliesreeks erger dan de slechtste in de backtest, of een regimebreuk. Raak je er één, dan STOPT het systeem — geen heronderhandeling met hoop. Dat leerde je persoonlijk in r6; machines verdienen dezelfde discipline."
+     "p": "Schrijf vóór de lancering de stopcriteria op: een maximale drawdown (zeg 15%), een verliesreeks erger dan de slechtste in de backtest, of een regimebreuk. Raak je er één, dan STOPT het systeem - geen heronderhandeling met hoop. Dat leerde je persoonlijk in r6; machines verdienen dezelfde discipline."
     },
     {
      "h": "Incidenten zullen gebeuren",
-     "p": "Exchanges vallen uit, API's time-outen, een vette-vingerconfig verdubbelt je grootte. Ga uit van incidenten, dan verrassen ze je maar mild: positielimieten op exchange-niveau, alerts op elke vulling, en een handmatige hoofdschakelaar UIT die je vanaf je telefoon kunt indrukken. Saaie techniek — zo ziet veiligheid eruit."
+     "p": "Exchanges vallen uit, API's time-outen, een vette-vingerconfig verdubbelt je grootte. Ga uit van incidenten, dan verrassen ze je maar mild: positielimieten op exchange-niveau, alerts op elke vulling, en een handmatige hoofdschakelaar UIT die je vanaf je telefoon kunt indrukken. Saaie techniek - zo ziet veiligheid eruit."
     }
    ],
    "quiz": [
@@ -268,7 +268,7 @@
      "q": "Stopcriteria moeten gedefinieerd worden…",
      "o": [
       "Direct na de eerste serieuze drawdown op het account",
-      "Vóór de lancering — zonder heronderhandeling",
+      "Vóór de lancering - zonder heronderhandeling",
       "Nooit",
       "Door de exchange"
      ]
@@ -299,15 +299,15 @@
    "cards": [
     {
      "h": "Voordelen zijn seizoensgebonden",
-     "p": "Geen enkel systeem werkt voor altijd — trends eindigen, volatiliteitsregimes kantelen, massa's passen zich aan. Professionals draaien een kleine PORTEFEUILLE van ongecorreleerde systemen: een trendvolger, een mean-reverter, misschien een funding-oogster. Als er één slaapt, eet er meestal een ander."
+     "p": "Geen enkel systeem werkt voor altijd - trends eindigen, volatiliteitsregimes kantelen, massa's passen zich aan. Professionals draaien een kleine PORTEFEUILLE van ongecorreleerde systemen: een trendvolger, een mean-reverter, misschien een funding-oogster. Als er één slaapt, eet er meestal een ander."
     },
     {
      "h": "Een systeem met pensioen sturen",
-     "p": "De moeilijkste vaardigheid: een strategie uitschakelen waar je van houdt. De criteria zijn dezelfde stopregels uit s6, plus één — als de structurele reden waarom hij werkte is verdwenen (een kostenwijziging, een regimeshift, iedereen doet het), pensioneer hem dan terwijl hij nog waardigheid heeft. Trackrecord is geschiedenis, geen recht."
+     "p": "De moeilijkste vaardigheid: een strategie uitschakelen waar je van houdt. De criteria zijn dezelfde stopregels uit s6, plus één - als de structurele reden waarom hij werkte is verdwenen (een kostenwijziging, een regimeshift, iedereen doet het), pensioneer hem dan terwijl hij nog waardigheid heeft. Trackrecord is geschiedenis, geen recht."
     },
     {
      "h": "Het vak, compleet",
-     "p": "Kijk naar de boog: mechanica (cursus 1-2), overleven (3), de tape lezen (4-5)… en nu een proces dat draait zonder jouw stemmingen. Of je automatiseert of handmatig blijft, de bestemming is dezelfde: een geschreven, gemeten, herzien voordeel — en een trader kalm genoeg om het te volgen."
+     "p": "Kijk naar de boog: mechanica (cursus 1-2), overleven (3), de tape lezen (4-5)… en nu een proces dat draait zonder jouw stemmingen. Of je automatiseert of handmatig blijft, de bestemming is dezelfde: een geschreven, gemeten, herzien voordeel - en een trader kalm genoeg om het te volgen."
     }
    ],
    "quiz": [
@@ -315,7 +315,7 @@
      "q": "Professionals draaien meerdere systemen omdat…",
      "o": [
       "Meer systemen oogt altijd chiquer en professioneler",
-      "Voordelen zijn seizoensgebonden — de portefeuille strijkt de curve glad",
+      "Voordelen zijn seizoensgebonden - de portefeuille strijkt de curve glad",
       "Exchanges het vereisen",
       "Bots eenzaam worden"
      ]
@@ -340,7 +340,7 @@
     }
    ],
    "try": {
-    "p": "De volledige lus is nu van jou — draai hem waar fouten gratis zijn, en laat de levels de weg markeren.",
+    "p": "De volledige lus is nu van jou - draai hem waar fouten gratis zijn, en laat de levels de weg markeren.",
     "label": "Paper Trade →"
    }
   }

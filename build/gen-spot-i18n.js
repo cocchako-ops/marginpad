@@ -1,13 +1,13 @@
 /* Demo Spot i18n assembler + validator (2026-09-03).
-     dist/spot/i18n/en.json          — source of truth for every UI string on /spot/ (flat {key: text})
-     dist/spot/i18n/<lang>.json      — translations (hand/AI authored), same keys
-     dist/spot/index.html            — carries the EN dictionary inline in <script type="application/json" id="spotI18n">
+     dist/spot/i18n/en.json          - source of truth for every UI string on /spot/ (flat {key: text})
+     dist/spot/i18n/<lang>.json      - translations (hand/AI authored), same keys
+     dist/spot/index.html            - carries the EN dictionary inline in <script type="application/json" id="spotI18n">
                                        (this script injects it) and fetches /spot/i18n/<lang>.json?v=<hash> for other languages
    What it does:
      1. injects en.json into the page's #spotI18n block;
      2. stamps the pack version (?v=<8-char hash of all packs>) into the page so the edge/browser cache turns over
         exactly when a pack changes;
-     3. validates every pack: valid JSON, same key set as EN (missing keys fall back to English at runtime — reported),
+     3. validates every pack: valid JSON, same key set as EN (missing keys fall back to English at runtime - reported),
         identical {placeholder} set per key, identical HTML tag sequence per key, no emoji, no "</script";
      4. coverage: every L('key') / data-t / data-th / data-tp key used by the page exists in EN; unused EN keys are reported.
    Run: node build/gen-spot-i18n.js   (--check = validate only, no writes; exit 1 on problems) */
@@ -38,7 +38,7 @@ for (const lang of LANGS) {
   let raw = fs.readFileSync(f, 'utf8');
   if (raw.charCodeAt(0) === 0xFEFF) bad(lang + ': BOM at start');
   let P;
-  try { P = JSON.parse(raw); } catch (e) { bad(lang + ': INVALID JSON — ' + e.message); continue; }
+  try { P = JSON.parse(raw); } catch (e) { bad(lang + ': INVALID JSON - ' + e.message); continue; }
   const keys = Object.keys(P);
   const missing = enKeys.filter(k => P[k] == null || String(P[k]).trim() === '');
   const extra = keys.filter(k => EN[k] == null);
@@ -51,7 +51,7 @@ for (const lang of LANGS) {
     if (/<\/script/i.test(P[k])) bad(lang + '/' + k + ': contains </script');
     if (P[k] === EN[k] && /[a-z]{4,}/i.test(EN[k]) && !/^(MarginPad|USDT|SOL|ETH|BNB)/.test(EN[k])) same++;
   }
-  if (extra.length) bad(lang + ': ' + extra.length + ' keys not in EN — ' + extra.slice(0, 5).join(', '));
+  if (extra.length) bad(lang + ': ' + extra.length + ' keys not in EN - ' + extra.slice(0, 5).join(', '));
   if (missing.length) console.log('  ' + lang + ': ' + missing.length + ' missing (English fallback): ' + missing.slice(0, 8).join(', ') + (missing.length > 8 ? '…' : ''));
   packHashes.push(lang + ':' + crypto.createHash('sha1').update(raw).digest('hex').slice(0, 8));
   console.log(lang.padEnd(3) + ' ' + keys.length + '/' + enKeys.length + ' keys' + (missing.length ? ' · ' + missing.length + ' missing' : '') + (same ? ' · ' + same + ' identical to EN' : '') + (ph + tg + em ? ' · PROBLEMS ' + (ph + tg + em) : ' · ok'));
@@ -81,5 +81,5 @@ out = out.replace(/window\.SPOT_I18N_V='\?v=[a-z0-9]+'/, "window.SPOT_I18N_V='?v
 if (!/window\.SPOT_I18N_V='\?v=/.test(out)) bad('page has no SPOT_I18N_V stamp');
 if (!CHECK_ONLY && out !== html) { fs.writeFileSync(PAGE + '.tmp', out); fs.renameSync(PAGE + '.tmp', PAGE); console.log('page updated · packs v=' + ver); }
 else console.log((CHECK_ONLY ? 'check only' : 'page unchanged') + ' · packs v=' + ver);
-console.log(problems ? '\n' + problems + ' problem(s) — fix before deploying.' : '\nAll spot i18n packs match the EN dictionary.');
+console.log(problems ? '\n' + problems + ' problem(s) - fix before deploying.' : '\nAll spot i18n packs match the EN dictionary.');
 process.exit(problems ? 1 : 0);

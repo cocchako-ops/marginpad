@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Harga bergerak menuju order",
-     "p": "Pemain besar tak bisa mengisi posisi besar di tempat order book kosong — mereka butuh order menunggu sebagai lawan transaksi. Gerombolan stop-loss dan likuidasi ADALAH order itu. Karena itulah harga sering menembus level jelas, terisi di sana, lalu berbalik: dia sedang belanja."
+     "p": "Pemain besar tak bisa mengisi posisi besar di tempat order book kosong - mereka butuh order menunggu sebagai lawan transaksi. Gerombolan stop-loss dan likuidasi ADALAH order itu. Karena itulah harga sering menembus level jelas, terisi di sana, lalu berbalik: dia sedang belanja."
     },
     {
      "h": "Stop-mu adalah entry orang lain",
-     "p": "Stop-loss-mu di bawah support adalah order jual yang menunggu terjadi. Seribu trader menaruhnya di titik jelas yang sama menciptakan kolam penjual terjamin — tempat sempurna bagi pembeli besar untuk menyerap. Ini bukan konspirasi; begitulah ukuran besar terisi."
+     "p": "Stop-loss-mu di bawah support adalah order jual yang menunggu terjadi. Seribu trader menaruhnya di titik jelas yang sama menciptakan kolam penjual terjamin - tempat sempurna bagi pembeli besar untuk menyerap. Ini bukan konspirasi; begitulah ukuran besar terisi."
     },
     {
      "h": "Tradingkan, jangan takuti",
-     "p": "Kamu tak bisa menghindari permainannya, tapi bisa berhenti jadi target termudah: taruh invalidasi di luar kolam yang jelas, antisipasi sapu-lalu-balik di level bersih, dan perlakukan sumbu yang menembus level lalu langsung merebutnya kembali sebagai informasi — seseorang baru saja terisi."
+     "p": "Kamu tak bisa menghindari permainannya, tapi bisa berhenti jadi target termudah: taruh invalidasi di luar kolam yang jelas, antisipasi sapu-lalu-balik di level bersih, dan perlakukan sumbu yang menembus level lalu langsung merebutnya kembali sebagai informasi - seseorang baru saja terisi."
     }
    ],
    "quiz": [
@@ -43,7 +43,7 @@
      "q": "Sumbu menembus level lalu langsung direbut kembali menunjukkan…",
      "o": [
       "Levelnya jebol permanen dan tak akan pernah bekerja lagi",
-      "Sapuan likuiditas — seseorang terisi",
+      "Sapuan likuiditas - seseorang terisi",
       "Waktunya panik",
       "Volume rendah"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "Cerita ditulis di gerakan menyamping",
-     "p": "Tren adalah hasil; range adalah sebab. Di dalam range, pemain besar diam-diam membangun (akumulasi) atau membongkar (distribusi) posisi tanpa menggerakkan harga melawan diri sendiri. Arah breakout biasanya diputuskan jauh sebelum terjadi — di dalam range."
+     "p": "Tren adalah hasil; range adalah sebab. Di dalam range, pemain besar diam-diam membangun (akumulasi) atau membongkar (distribusi) posisi tanpa menggerakkan harga melawan diri sendiri. Arah breakout biasanya diputuskan jauh sebelum terjadi - di dalam range."
     },
     {
      "h": "Membaca range",
-     "p": "Perhatikan perilaku harga di tepi: tusukan berulang di bawah low yang cepat pulih (sapuan ke permintaan) mengisyaratkan akumulasi; reli yang gagal di high dengan volume menyusut mengisyaratkan distribusi. Tengah range adalah noise — tepinya adalah petunjuk."
+     "p": "Perhatikan perilaku harga di tepi: tusukan berulang di bawah low yang cepat pulih (sapuan ke permintaan) mengisyaratkan akumulasi; reli yang gagal di high dengan volume menyusut mengisyaratkan distribusi. Tengah range adalah noise - tepinya adalah petunjuk."
     },
     {
      "h": "Spring dan jebakan",
-     "p": "Akhir klasik: breakout palsu MELAWAN arah sesungguhnya — spring — yang menyapu stop, mengisi ukuran terakhir pemain besar, dan berbalik ke pergerakan sejati. Kalau kamu belajar mengantisipasi jebakannya, jebakan jadi entry-mu, bukan exit-mu."
+     "p": "Akhir klasik: breakout palsu MELAWAN arah sesungguhnya - spring - yang menyapu stop, mengisi ukuran terakhir pemain besar, dan berbalik ke pergerakan sejati. Kalau kamu belajar mengantisipasi jebakannya, jebakan jadi entry-mu, bukan exit-mu."
     }
    ],
    "quiz": [
@@ -103,7 +103,7 @@
    "cards": [
     {
      "h": "Lubang di lelang",
-     "p": "Saat harga bergerak liar ke satu arah, dia melompati harga-harga — nyaris tak ada trading di sana. Zona tipis itu adalah imbalance (sering disebut fair value gap). Pasar kerap mengunjunginya lagi nanti, karena harga yang belum ditradingkan adalah urusan lelang yang belum selesai."
+     "p": "Saat harga bergerak liar ke satu arah, dia melompati harga-harga - nyaris tak ada trading di sana. Zona tipis itu adalah imbalance (sering disebut fair value gap). Pasar kerap mengunjunginya lagi nanti, karena harga yang belum ditradingkan adalah urusan lelang yang belum selesai."
     },
     {
      "h": "Kenapa kunjungan ulang terjadi",
@@ -111,7 +111,7 @@
     },
     {
      "h": "Memakai imbalance dengan jujur",
-     "p": "Imbalance adalah zona KANDIDAT untuk entry searah tren — tak pernah jaminan. Tumpuk dengan struktur: imbalance yang bertumpang tindih dengan level support dan tren timeframe besar adalah setup sungguhan; gap sebatang kara di chart 1 menit adalah noise bernama keren."
+     "p": "Imbalance adalah zona KANDIDAT untuk entry searah tren - tak pernah jaminan. Tumpuk dengan struktur: imbalance yang bertumpang tindih dengan level support dan tren timeframe besar adalah setup sungguhan; gap sebatang kara di chart 1 menit adalah noise bernama keren."
     }
    ],
    "quiz": [
@@ -154,11 +154,11 @@
     },
     {
      "h": "Penerimaan dan penolakan",
-     "p": "Harga memasuki node volume tinggi cenderung melambat dan menggergaji — banyak bisnis pernah terjadi di sana dan dia menarik trading lagi. Harga memasuki node volume rendah cenderung menembus cepat — tak ada yang mau trading di sana dulu, sekarang pun tidak. Ini menjelaskan banyak gerakan cepat lebih baik dari indikator mana pun."
+     "p": "Harga memasuki node volume tinggi cenderung melambat dan menggergaji - banyak bisnis pernah terjadi di sana dan dia menarik trading lagi. Harga memasuki node volume rendah cenderung menembus cepat - tak ada yang mau trading di sana dulu, sekarang pun tidak. Ini menjelaskan banyak gerakan cepat lebih baik dari indikator mana pun."
     },
     {
      "h": "Pemakaian praktis",
-     "p": "Tandai node volume tertinggi dari range terkini (point of control). Di atasnya, penurunan ke dalamnya sering menemukan pembeli; di bawahnya, reli ke dalamnya sering menemukan penjual. Padukan dengan level dari m1 — saat node volume dan level struktural sepakat, kamu menemukan zona sungguhan."
+     "p": "Tandai node volume tertinggi dari range terkini (point of control). Di atasnya, penurunan ke dalamnya sering menemukan pembeli; di bawahnya, reli ke dalamnya sering menemukan penjual. Padukan dengan level dari m1 - saat node volume dan level struktural sepakat, kamu menemukan zona sungguhan."
     }
    ],
    "quiz": [
@@ -197,11 +197,11 @@
    "cards": [
     {
      "h": "Apa itu level fib",
-     "p": "Retracement Fibonacci menandai pecahan tetap dari gerakan sebelumnya — 38.2%, 50%, 61.8%. Tak ada hukum fisika yang memaksa harga menghormatinya. Namun sering dihormati juga. Kenapa? Jutaan trader menggambar garis yang sama dan bertindak atasnya — cermin yang mewujudkan dirinya sendiri."
+     "p": "Retracement Fibonacci menandai pecahan tetap dari gerakan sebelumnya - 38.2%, 50%, 61.8%. Tak ada hukum fisika yang memaksa harga menghormatinya. Namun sering dihormati juga. Kenapa? Jutaan trader menggambar garis yang sama dan bertindak atasnya - cermin yang mewujudkan dirinya sendiri."
     },
     {
      "h": "Cara jujur memakainya",
-     "p": "Perlakukan fib sebagai PETA tempat trader lain mengharapkan reaksi, bukan gravitasi. Retracement 61.8% di tren naik adalah zona beli populer — dan itu yang membuatnya zona nyata, apa pun keyakinanmu soal matematikanya. Yang mewujudkan diri sendiri tetap terwujud."
+     "p": "Perlakukan fib sebagai PETA tempat trader lain mengharapkan reaksi, bukan gravitasi. Retracement 61.8% di tren naik adalah zona beli populer - dan itu yang membuatnya zona nyata, apa pun keyakinanmu soal matematikanya. Yang mewujudkan diri sendiri tetap terwujud."
     },
     {
      "h": "Konfluens, lagi",
@@ -244,7 +244,7 @@
    "cards": [
     {
      "h": "Tak semua hijau itu sama",
-     "p": "Saat pasar memantul, sebagian koin pulih ke high baru sementara yang lain nyaris tak beranjak dari low. Perbedaan itu — kekuatan relatif — adalah salah satu keunggulan paling awet di trading: yang menolak jatuh dalam badai biasanya memimpin pemulihan."
+     "p": "Saat pasar memantul, sebagian koin pulih ke high baru sementara yang lain nyaris tak beranjak dari low. Perbedaan itu - kekuatan relatif - adalah salah satu keunggulan paling awet di trading: yang menolak jatuh dalam badai biasanya memimpin pemulihan."
     },
     {
      "h": "Mengukurnya dengan sederhana",
@@ -252,7 +252,7 @@
     },
     {
      "h": "Kuat bersama arus",
-     "p": "Padukan dengan m9: di pasar risk-on dengan dominasi turun, me-long alt yang relatif terkuat adalah memancing di tempat ikannya — tren, arus, dan kekuatan sejajar. Me-long koin terlemah karena \"murah\" adalah trade kebalikannya persis dengan stiker diskon."
+     "p": "Padukan dengan m9: di pasar risk-on dengan dominasi turun, me-long alt yang relatif terkuat adalah memancing di tempat ikannya - tren, arus, dan kekuatan sejajar. Me-long koin terlemah karena \"murah\" adalah trade kebalikannya persis dengan stiker diskon."
     }
    ],
    "quiz": [
@@ -269,7 +269,7 @@
      "q": "Di penurunan pasar, koin yang paling sedikit turun mungkin punya…",
      "o": [
       "Tak ada pembeli",
-      "Pembeli yang membelanya — kekuatan yang layak dicatat",
+      "Pembeli yang membelanya - kekuatan yang layak dicatat",
       "Bug",
       "Hanya likuiditas rendah dan tak ada yang lain"
      ]
@@ -291,11 +291,11 @@
    "cards": [
     {
      "h": "Volatilitas menggerombol",
-     "p": "Pasar berganti-ganti rezim: bentangan panjang range sempit yang sepi dan letusan ekspansi ganas. Volatilitas menggerombol — tenang mengikuti tenang, badai mengikuti badai — sampai rezimnya patah. Strategi yang sama tak bisa memperlakukan dua dunia itu identik."
+     "p": "Pasar berganti-ganti rezim: bentangan panjang range sempit yang sepi dan letusan ekspansi ganas. Volatilitas menggerombol - tenang mengikuti tenang, badai mengikuti badai - sampai rezimnya patah. Strategi yang sama tak bisa memperlakukan dua dunia itu identik."
     },
     {
      "h": "Menyesuaikan ukuran dan stop",
-     "p": "Di rezim badai, stop yang masuk akal minggu lalu kini duduk di dalam noise — dan ukuranmu harus mengecil agar risiko tetap (jarak stop lebih besar × ukuran lebih kecil = risiko 1% yang sama). Di rezim tenang-mati, trade breakout mati berulang kali sementara pembalikan ke rata-rata subur."
+     "p": "Di rezim badai, stop yang masuk akal minggu lalu kini duduk di dalam noise - dan ukuranmu harus mengecil agar risiko tetap (jarak stop lebih besar × ukuran lebih kecil = risiko 1% yang sama). Di rezim tenang-mati, trade breakout mati berulang kali sementara pembalikan ke rata-rata subur."
     },
     {
      "h": "Pemeriksaan rezim",
@@ -307,7 +307,7 @@
      "q": "Volatilitas cenderung…",
      "o": [
       "Sepenuhnya acak hari demi hari tanpa ingatan",
-      "Menggerombol — tenang ikut tenang, badai ikut badai",
+      "Menggerombol - tenang ikut tenang, badai ikut badai",
       "Hanya naik",
       "Hanya turun"
      ]
@@ -338,15 +338,15 @@
    "cards": [
     {
      "h": "Dari alat menjadi sistem",
-     "p": "Kamu kini memegang banyak lensa: struktur, likuiditas, range, imbalance, node volume, fib, kekuatan relatif, rezim — plus semua dari kursus 1-4. Profesional tidak memakai semuanya di mana-mana; dia menetapkan TUMPUKAN tetap yang harus sejajar sebelum sebuah trade ada."
+     "p": "Kamu kini memegang banyak lensa: struktur, likuiditas, range, imbalance, node volume, fib, kekuatan relatif, rezim - plus semua dari kursus 1-4. Profesional tidak memakai semuanya di mana-mana; dia menetapkan TUMPUKAN tetap yang harus sejajar sebelum sebuah trade ada."
     },
     {
      "h": "Bangun tumpukanmu",
-     "p": "Contoh tumpukan: tren timeframe besar + level struktural + node volume yang setuju + positioning tidak menumpuk melawanmu + tak ada acara kalender merah di jendela. Lima pemeriksaan. Punyamu boleh berbeda — yang penting TERTULIS dan tetap, supaya tiap trade sebanding di jurnal."
+     "p": "Contoh tumpukan: tren timeframe besar + level struktural + node volume yang setuju + positioning tidak menumpuk melawanmu + tak ada acara kalender merah di jendela. Lima pemeriksaan. Punyamu boleh berbeda - yang penting TERTULIS dan tetap, supaya tiap trade sebanding di jurnal."
     },
     {
      "h": "Lebih sedikit trade, lebih berbobot",
-     "p": "Tumpukan sungguhan menyaring brutal: kebanyakan hari tak menghasilkan apa-apa, dan itulah desainnya. Trade yang lolos membawa beberapa alasan independen — persis yang membuat R:R-nya jujur. Inilah jembatan dari tahu banyak hal ke punya keunggulan."
+     "p": "Tumpukan sungguhan menyaring brutal: kebanyakan hari tak menghasilkan apa-apa, dan itulah desainnya. Trade yang lolos membawa beberapa alasan independen - persis yang membuat R:R-nya jujur. Inilah jembatan dari tahu banyak hal ke punya keunggulan."
     }
    ],
    "quiz": [
@@ -379,7 +379,7 @@
     }
    ],
    "try": {
-    "p": "Buka workspace chart dan tandai SATU tumpukan lengkap di koin mana pun: tren, level, node volume — dan cek positioning. Tak perlu trade — cukup pembacaannya.",
+    "p": "Buka workspace chart dan tandai SATU tumpukan lengkap di koin mana pun: tren, level, node volume - dan cek positioning. Tak perlu trade - cukup pembacaannya.",
     "label": "Buka Chart →"
    }
   }

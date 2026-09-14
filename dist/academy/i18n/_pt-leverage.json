@@ -9,7 +9,7 @@
    "cards": [
     {
      "h": "Negociar o preço sem possuir moedas",
-     "p": "Um contrato futuro é um acordo que segue o preço de uma moeda. Você nunca possui o Bitcoin — você segura uma posição que ganha ou perde exatamente conforme o preço se move. A versão favorita da cripto é o futuro perpétuo (perp), sem data de vencimento: você o segura enquanto sua margem sobreviver."
+     "p": "Um contrato futuro é um acordo que segue o preço de uma moeda. Você nunca possui o Bitcoin - você segura uma posição que ganha ou perde exatamente conforme o preço se move. A versão favorita da cripto é o futuro perpétuo (perp), sem data de vencimento: você o segura enquanto sua margem sobreviver."
     },
     {
      "h": "Long e short",
@@ -17,7 +17,7 @@
     },
     {
      "h": "Por que os perps dominam a cripto",
-     "p": "Futuros perpétuos são o produto mais negociado da cripto — o volume diário de perps supera de longe o spot. São populares exatamente pelas duas características que os tornam perigosos: alavancagem e a possibilidade de shortar. Tudo neste curso existe por causa do que você aprenderá nas próximas duas lições."
+     "p": "Futuros perpétuos são o produto mais negociado da cripto - o volume diário de perps supera de longe o spot. São populares exatamente pelas duas características que os tornam perigosos: alavancagem e a possibilidade de shortar. Tudo neste curso existe por causa do que você aprenderá nas próximas duas lições."
     }
    ],
    "quiz": [
@@ -25,7 +25,7 @@
      "q": "Ao comprar um futuro perpétuo, você possui…",
      "o": [
       "As moedas em si",
-      "Uma posição que segue o preço — sem moedas",
+      "Uma posição que segue o preço - sem moedas",
       "Uma pequena participação na propriedade da exchange",
       "Uma carteira"
      ]
@@ -56,7 +56,7 @@
    "cards": [
     {
      "h": "Margem e multiplicador",
-     "p": "A alavancagem permite controlar uma posição maior que seu dinheiro. Deposite $100 de margem a 10× e você controla uma posição de $1,000. Cada 1% de movimento do preço ganha ou perde $10 — que é 10% do SEU dinheiro. O multiplicador vale para perdas exatamente como para ganhos."
+     "p": "A alavancagem permite controlar uma posição maior que seu dinheiro. Deposite $100 de margem a 10× e você controla uma posição de $1,000. Cada 1% de movimento do preço ganha ou perde $10 - que é 10% do SEU dinheiro. O multiplicador vale para perdas exatamente como para ganhos."
     },
     {
      "h": "Sinta: arraste a alavancagem",
@@ -65,7 +65,7 @@
     },
     {
      "h": "A matemática honesta do 100×",
-     "p": "A 100×, um movimento de 1% contra você apaga 100% da margem. O Bitcoin se move 1% rotineiramente — várias vezes por dia. Isso não é um crash; é ruído de fundo. Alavancagem alta não melhora uma estratégia — só comprime o tempo até uma oscilação normal te tirar do jogo."
+     "p": "A 100×, um movimento de 1% contra você apaga 100% da margem. O Bitcoin se move 1% rotineiramente - várias vezes por dia. Isso não é um crash; é ruído de fundo. Alavancagem alta não melhora uma estratégia - só comprime o tempo até uma oscilação normal te tirar do jogo."
     }
    ],
    "quiz": [
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "O que é liquidação",
-     "p": "Quando uma posição alavancada perde quase toda a margem, a exchange a fecha à força para se proteger — isso é a liquidação. A posição some, a margem some, e não há recuperação mesmo que o preço volte um segundo depois. É o preço mais importante da sua tela."
+     "p": "Quando uma posição alavancada perde quase toda a margem, a exchange a fecha à força para se proteger - isso é a liquidação. A posição some, a margem some, e não há recuperação mesmo que o preço volte um segundo depois. É o preço mais importante da sua tela."
     },
     {
      "h": "Sua vez: torne-a segura",
@@ -117,7 +117,7 @@
     },
     {
      "h": "O \"vai voltar\" não se aplica aqui",
-     "p": "Um holder de spot pode atravessar uma queda de 30% e esperar anos. Um trader de futuros liquidado não pode — a posição não existe mais. Essa assimetria é A diferença entre spot e alavancagem: o spot pune os impacientes devagar, a alavancagem executa na hora."
+     "p": "Um holder de spot pode atravessar uma queda de 30% e esperar anos. Um trader de futuros liquidado não pode - a posição não existe mais. Essa assimetria é A diferença entre spot e alavancagem: o spot pune os impacientes devagar, a alavancagem executa na hora."
     }
    ],
    "quiz": [
@@ -126,7 +126,7 @@
      "o": [
       "Recebe a posição de volta automaticamente ao mesmo preço",
       "Recebe metade da margem de volta",
-      "Não recebe nada — a posição se foi",
+      "Não recebe nada - a posição se foi",
       "Fica devendo à exchange"
      ]
     },
@@ -150,7 +150,7 @@
     }
    ],
    "try": {
-    "p": "Calcule um preço real de liquidação: entrada, alavancagem, lado — veja exatamente onde a posição morre.",
+    "p": "Calcule um preço real de liquidação: entrada, alavancagem, lado - veja exatamente onde a posição morre.",
     "label": "Calculadora de Liquidação →"
    }
   },
@@ -160,15 +160,15 @@
    "cards": [
     {
      "h": "A fórmula do P&L em palavras simples",
-     "p": "Seu lucro ou prejuízo = tamanho da posição × percentual do movimento do preço. ROE — retorno sobre o capital — é esse P&L medido contra sua margem. Arraste o movimento de preço abaixo e veja os dois números reagirem a 10× com $100 de margem."
+     "p": "Seu lucro ou prejuízo = tamanho da posição × percentual do movimento do preço. ROE - retorno sobre o capital - é esse P&L medido contra sua margem. Arraste o movimento de preço abaixo e veja os dois números reagirem a 10× com $100 de margem."
     },
     {
      "h": "Shortar não é maldade, é ferramenta",
-     "p": "Shortar — lucrar com quedas — parece antinatural no começo. Mas mercados caem mais rápido do que sobem (desce de elevador, sobe de escada), e um trader que só sabe long é cego em metade do mercado. Na conta de papel, pratique os dois até nenhum parecer especial."
+     "p": "Shortar - lucrar com quedas - parece antinatural no começo. Mas mercados caem mais rápido do que sobem (desce de elevador, sobe de escada), e um trader que só sabe long é cego em metade do mercado. Na conta de papel, pratique os dois até nenhum parecer especial."
     },
     {
      "h": "Taxas e funding beliscam sem parar",
-     "p": "Cada abertura e fechamento paga taxa sobre o nocional, e os perpétuos trocam pagamentos periódicos de funding entre longs e shorts (próxima lição). Em alavancagem alta esses custos pequenos se acumulam num vento contrário relevante — mais uma razão silenciosa de os overtraders perderem."
+     "p": "Cada abertura e fechamento paga taxa sobre o nocional, e os perpétuos trocam pagamentos periódicos de funding entre longs e shorts (próxima lição). Em alavancagem alta esses custos pequenos se acumulam num vento contrário relevante - mais uma razão silenciosa de os overtraders perderem."
     }
    ],
    "quiz": [
@@ -196,7 +196,7 @@
       "Apenas a margem que você depositou para o trade",
       "O tamanho nocional completo da posição",
       "Apenas o lucro",
-      "Nada — futuros são grátis"
+      "Nada - futuros são grátis"
      ]
     }
    ]
@@ -211,11 +211,11 @@
     },
     {
      "h": "Funding como termômetro da multidão",
-     "p": "Funding extremamente positivo significa que a multidão está pesadamente long E pagando pelo privilégio — historicamente um alerta, porque trades lotados se desmontam com violência. Funding extremamente negativo marca shorts lotados, combustível para um short squeeze."
+     "p": "Funding extremamente positivo significa que a multidão está pesadamente long E pagando pelo privilégio - historicamente um alerta, porque trades lotados se desmontam com violência. Funding extremamente negativo marca shorts lotados, combustível para um short squeeze."
     },
     {
      "h": "Ele se acumula",
-     "p": "Funding de 0.01% a cada 8 horas parece nada — mas é cerca de 11% ao ano sobre o nocional, e a 10× é um arrasto anualizado de três dígitos sobre a margem. Quem segura posições ignorando o funding descobre o P&L vazando em silêncio."
+     "p": "Funding de 0.01% a cada 8 horas parece nada - mas é cerca de 11% ao ano sobre o nocional, e a 10× é um arrasto anualizado de três dígitos sobre a margem. Quem segura posições ignorando o funding descobre o P&L vazando em silêncio."
     }
    ],
    "quiz": [
@@ -232,7 +232,7 @@
      "q": "Funding extremamente positivo normalmente sinaliza…",
      "o": [
       "Uma alta garantida",
-      "Lado long pesadamente lotado — risco de squeeze",
+      "Lado long pesadamente lotado - risco de squeeze",
       "Um longo período de baixa volatilidade pela frente",
       "Uma queda da exchange"
      ]
@@ -248,7 +248,7 @@
     }
    ],
    "try": {
-    "p": "Veja o funding ao vivo em 160+ pares — encontre a taxa mais extrema agora.",
+    "p": "Veja o funding ao vivo em 160+ pares - encontre a taxa mais extrema agora.",
     "label": "Taxas de Funding →"
    }
   },
@@ -258,11 +258,11 @@
    "cards": [
     {
      "h": "Três ferramentas, três funções",
-     "p": "Uma ordem a mercado executa na hora pelo que o livro oferece — você paga o spread e o eventual slippage. Uma limitada define seu preço e espera. Uma stop dispara quando o preço cruza um nível. A imagem abaixo mostra as três vivendo no livro de ofertas."
+     "p": "Uma ordem a mercado executa na hora pelo que o livro oferece - você paga o spread e o eventual slippage. Uma limitada define seu preço e espera. Uma stop dispara quando o preço cruza um nível. A imagem abaixo mostra as três vivendo no livro de ofertas."
     },
     {
      "h": "Mercado: velocidade por um preço. Limitada: preço por paciência.",
-     "p": "Use ordens a mercado quando entrar ou sair AGORA importa mais que o preço exato — sabendo que o slippage é pior nos movimentos violentos. Entradas profissionais são majoritariamente limitadas: você pode nunca ser executado, mas quando é, é ao seu preço ou melhor, geralmente com taxa menor."
+     "p": "Use ordens a mercado quando entrar ou sair AGORA importa mais que o preço exato - sabendo que o slippage é pior nos movimentos violentos. Entradas profissionais são majoritariamente limitadas: você pode nunca ser executado, mas quando é, é ao seu preço ou melhor, geralmente com taxa menor."
     },
     {
      "h": "Stops: a automação que salva contas",
@@ -305,11 +305,11 @@
    "cards": [
     {
      "h": "Duas formas de sustentar uma posição",
-     "p": "A margem isolada cerca um valor fixo para uma posição — se ela liquidar, você perde só aquela cerca. A margem cruzada deixa TODO o saldo de futuros sustentar cada posição — mais folga antes da liquidação, mas uma explosão pode levar a conta inteira junto."
+     "p": "A margem isolada cerca um valor fixo para uma posição - se ela liquidar, você perde só aquela cerca. A margem cruzada deixa TODO o saldo de futuros sustentar cada posição - mais folga antes da liquidação, mas uma explosão pode levar a conta inteira junto."
     },
     {
      "h": "Quando cada uma faz sentido",
-     "p": "Isolada é o padrão do iniciante e a escolha honesta para trades arriscados: o dano é predefinido. Cruzada serve para carteiras hedgeadas e traders experientes que gerenciam margem ativamente. Usar cruzada para uma posição ruim sobreviver mais tempo não é estratégia — é um funeral maior."
+     "p": "Isolada é o padrão do iniciante e a escolha honesta para trades arriscados: o dano é predefinido. Cruzada serve para carteiras hedgeadas e traders experientes que gerenciam margem ativamente. Usar cruzada para uma posição ruim sobreviver mais tempo não é estratégia - é um funeral maior."
     },
     {
      "h": "Confira antes de clicar",
@@ -339,7 +339,7 @@
      "q": "Usar margem cruzada para adiar um trade perdedor é…",
      "o": [
       "Gestão de risco profissional de alto nível",
-      "Um funeral maior à espera — não uma estratégia",
+      "Um funeral maior à espera - não uma estratégia",
       "Exigência das exchanges",
       "Grátis"
      ]
@@ -352,15 +352,15 @@
    "cards": [
     {
      "h": "Dois preços na mesma tela",
-     "p": "O último preço é a negociação mais recente na SUA exchange. O preço de marcação é uma mistura de valor justo de várias exchanges mais o índice spot. Diferem por centavos em mercados calmos — e de forma relevante nos violentos ou em corretoras finas."
+     "p": "O último preço é a negociação mais recente na SUA exchange. O preço de marcação é uma mistura de valor justo de várias exchanges mais o índice spot. Diferem por centavos em mercados calmos - e de forma relevante nos violentos ou em corretoras finas."
     },
     {
      "h": "Liquidações usam o preço de marcação",
-     "p": "As exchanges liquidam pela MARCAÇÃO, não pelo último. Isso protege você: um pavio manipulado numa única corretora não pode liquidar posições em todo lugar. Também explica a confusão clássica — você pode ser liquidado sem o pavio do seu gráfico tocar seu nível, porque a marcação chegou lá."
+     "p": "As exchanges liquidam pela MARCAÇÃO, não pelo último. Isso protege você: um pavio manipulado numa única corretora não pode liquidar posições em todo lugar. Também explica a confusão clássica - você pode ser liquidado sem o pavio do seu gráfico tocar seu nível, porque a marcação chegou lá."
     },
     {
      "h": "Qual observar",
-     "p": "Decisões de trade: último preço (é onde suas ordens executam). Matemática de sobrevivência: preço de marcação (é o que liquidação e P&L não realizado usam). Plataformas sérias mostram os dois — aprenda onde a sua mostra a marcação e coloque alarmes nela, não no pavio do candle."
+     "p": "Decisões de trade: último preço (é onde suas ordens executam). Matemática de sobrevivência: preço de marcação (é o que liquidação e P&L não realizado usam). Plataformas sérias mostram os dois - aprenda onde a sua mostra a marcação e coloque alarmes nela, não no pavio do candle."
     }
    ],
    "quiz": [
@@ -368,7 +368,7 @@
      "q": "As liquidações são acionadas por…",
      "o": [
       "O último preço negociado na sua exchange",
-      "O preço de marcação — um valor justo multi-exchange",
+      "O preço de marcação - um valor justo multi-exchange",
       "Seu preço de entrada",
       "A abertura do dia"
      ]
@@ -399,7 +399,7 @@
    "cards": [
     {
      "h": "Por que a liq não é exatamente 100 ÷ alavancagem",
-     "p": "A exchange exige um colchão de segurança — a margem de manutenção (geralmente cerca de 0.5% do nocional) — mantido de lado o tempo todo. A liquidação dispara quando seu capital cai ATÉ esse colchão, não a zero. Por isso um long 10x liquida por volta de −9.5%, não exatamente em −10%."
+     "p": "A exchange exige um colchão de segurança - a margem de manutenção (geralmente cerca de 0.5% do nocional) - mantido de lado o tempo todo. A liquidação dispara quando seu capital cai ATÉ esse colchão, não a zero. Por isso um long 10x liquida por volta de −9.5%, não exatamente em −10%."
     },
     {
      "h": "Posições maiores, colchões maiores",
@@ -407,7 +407,7 @@
     },
     {
      "h": "Liquidação parcial",
-     "p": "Em posições grandes, muitas exchanges liquidam em fatias — fechando parte da posição para devolver a margem acima da manutenção, em vez de destruir tudo de uma vez. Útil, mas não conte com isso: quando a liquidação parcial está te salvando, o trade já fracassou."
+     "p": "Em posições grandes, muitas exchanges liquidam em fatias - fechando parte da posição para devolver a margem acima da manutenção, em vez de destruir tudo de uma vez. Útil, mas não conte com isso: quando a liquidação parcial está te salvando, o trade já fracassou."
     }
    ],
    "quiz": [
@@ -415,7 +415,7 @@
      "q": "Um long 10x liquida aproximadamente em…",
      "o": [
       "Exatamente −10%, como sugere a fórmula simples da alavancagem",
-      "Por volta de −9.5% — a margem de manutenção dispara antes",
+      "Por volta de −9.5% - a margem de manutenção dispara antes",
       "−5%",
       "−20%"
      ]
@@ -446,7 +446,7 @@
    "cards": [
     {
      "h": "O trade começa depois da entrada",
-     "p": "Iniciantes são obcecados por entradas; profissionais gerenciam o que vem depois. Uma posição viva é uma série de decisões: a tese ainda vale? a invalidação se moveu? o tamanho ainda está certo? Gerenciar não é mexer à toa — é executar o plano escrito antes da entrada."
+     "p": "Iniciantes são obcecados por entradas; profissionais gerenciam o que vem depois. Uma posição viva é uma série de decisões: a tese ainda vale? a invalidação se moveu? o tamanho ainda está certo? Gerenciar não é mexer à toa - é executar o plano escrito antes da entrada."
     },
     {
      "h": "Fechamento parcial: pague a si mesmo",
@@ -454,7 +454,7 @@
     },
     {
      "h": "Stop no zero a zero: trades grátis, com cuidado",
-     "p": "Quando o preço andou bem a seu favor, mover o stop para a entrada torna o trade livre de risco — psicologicamente impagável. Faça cedo demais e o ruído normal te tira de um bom trade. Dê espaço: zero a zero DEPOIS do primeiro alvo, não no primeiro minuto verde."
+     "p": "Quando o preço andou bem a seu favor, mover o stop para a entrada torna o trade livre de risco - psicologicamente impagável. Faça cedo demais e o ruído normal te tira de um bom trade. Dê espaço: zero a zero DEPOIS do primeiro alvo, não no primeiro minuto verde."
     }
    ],
    "quiz": [
@@ -470,7 +470,7 @@
     {
      "q": "Mover o stop para o zero a zero torna o trade…",
      "o": [
-      "Livre de risco (fora gaps) — mas cedo demais e o ruído te tira",
+      "Livre de risco (fora gaps) - mas cedo demais e o ruído te tira",
       "Garantidamente lucrativo aconteça o que acontecer",
       "Ilegal",
       "Mais alavancado"
@@ -479,7 +479,7 @@
     {
      "q": "A hora certa de gerenciar uma posição é…",
      "o": [
-      "Nunca — sempre configure e esqueça",
+      "Nunca - sempre configure e esqueça",
       "Conforme o plano escrito ANTES da entrada",
       "Sempre que a posição começar a assustar ou empolgar",
       "A cada 30 segundos"
@@ -493,15 +493,15 @@
    "cards": [
     {
      "h": "Mito: mais alavancagem = mais lucro",
-     "p": "O lucro vem do TAMANHO da posição vezes o movimento do preço. A alavancagem só decide quanta margem você deposita para aquele tamanho. Uma posição de $1,000 ganha os mesmos $30 num movimento de 3% seja a 2x ou 50x — a versão 50x só liquida 25 vezes mais cedo."
+     "p": "O lucro vem do TAMANHO da posição vezes o movimento do preço. A alavancagem só decide quanta margem você deposita para aquele tamanho. Uma posição de $1,000 ganha os mesmos $30 num movimento de 3% seja a 2x ou 50x - a versão 50x só liquida 25 vezes mais cedo."
     },
     {
      "h": "Mito: profissionais usam alavancagem máxima",
-     "p": "Mesas profissionais rodam rotineiramente alavancagem efetiva de um dígito. O botão 100x existe porque é lucrativo para as exchanges, não para os usuários. Alavancagem alta é ferramenta de eficiência de liquidez para hedgers e scalpers medidos em segundos — não uma máquina de riqueza."
+     "p": "Mesas profissionais rodam rotineiramente alavancagem efetiva de um dígito. O botão 100x existe porque é lucrativo para as exchanges, não para os usuários. Alavancagem alta é ferramenta de eficiência de liquidez para hedgers e scalpers medidos em segundos - não uma máquina de riqueza."
     },
     {
      "h": "O uso honesto da alavancagem",
-     "p": "A alavancagem permite manter menos capital numa exchange (hackeável, congelável) para a mesma exposição — isso é eficiência de capital. Usada com posições minúsculas, é legítima. Usada para maximizar tamanho, converte volatilidade normal em ruína certa — com cronômetro."
+     "p": "A alavancagem permite manter menos capital numa exchange (hackeável, congelável) para a mesma exposição - isso é eficiência de capital. Usada com posições minúsculas, é legítima. Usada para maximizar tamanho, converte volatilidade normal em ruína certa - com cronômetro."
     }
    ],
    "quiz": [
@@ -509,7 +509,7 @@
      "q": "Dois traders seguram a mesma posição de $1,000: um a 2x, outro a 50x. Um movimento favorável de 3% paga…",
      "o": [
       "Ao trader de 50x vinte e cinco vezes mais dinheiro",
-      "Aos dois os mesmos ~$30 — a alavancagem não mudou o tamanho",
+      "Aos dois os mesmos ~$30 - a alavancagem não mudou o tamanho",
       "Ao trader de 2x mais",
       "Nada a 2x"
      ]
@@ -540,11 +540,11 @@
    "cards": [
     {
      "h": "Cada número, decifrado",
-     "p": "Um ticket de posição mostra: lado e alavancagem (LONG 10x), preço de entrada, preço de marcação, tamanho ou nocional, margem, preço de liquidação, P&L não realizado e ROE. Agora você conhece cada um. Se algum número num ticket vivo te confunde, não aumente o tamanho — decifre primeiro."
+     "p": "Um ticket de posição mostra: lado e alavancagem (LONG 10x), preço de entrada, preço de marcação, tamanho ou nocional, margem, preço de liquidação, P&L não realizado e ROE. Agora você conhece cada um. Se algum número num ticket vivo te confunde, não aumente o tamanho - decifre primeiro."
     },
     {
      "h": "Os dois números que mais importam",
-     "p": "Preço de liquidação (a que distância está a morte?) e tamanho da posição (quanto perco por 1% de movimento?). P&L e ROE são derivados — seguem desses dois. Traders que só olham o número verde/vermelho gerenciam sentimentos; os que olham distância da liq e tamanho gerenciam risco."
+     "p": "Preço de liquidação (a que distância está a morte?) e tamanho da posição (quanto perco por 1% de movimento?). P&L e ROE são derivados - seguem desses dois. Traders que só olham o número verde/vermelho gerenciam sentimentos; os que olham distância da liq e tamanho gerenciam risco."
     },
     {
      "h": "Exercício de formatura",
@@ -581,7 +581,7 @@
     }
    ],
    "try": {
-    "p": "Abra uma posição de papel e leia cada campo do ticket — entrada, tamanho, margem, liq, distância. Dez segundos, zero confusão.",
+    "p": "Abra uma posição de papel e leia cada campo do ticket - entrada, tamanho, margem, liq, distância. Dez segundos, zero confusão.",
     "label": "Paper Trade →"
    }
   }

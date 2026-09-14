@@ -1,4 +1,4 @@
-// load-test.js — A6: staged load test of the UserStore DO hot paths AFTER the A1-A5 optimizations.
+// load-test.js - A6: staged load test of the UserStore DO hot paths AFTER the A1-A5 optimizations.
 // Simulates the steady-state per-user request mix (hash-pull {same:1} + the heavier positions read)
 // at rising concurrency. Mapping: each stream ≈ ~25 simultaneous online users' DO traffic;
 // 100 streams ≈ ~2.5k online ≈ 10-15k DAU peak. SAFETY: aborts a stage if p95 > 3s or errors > 5%.
@@ -42,8 +42,8 @@ function pct(a, p) { if (!a.length) return null; const s = a.slice().sort((x, y)
     console.log(
       String(n).padEnd(6) + String(n).padEnd(9) + ('~' + n * 25).padEnd(9) + String(out.length).padEnd(7) + String(rps).padEnd(6)
       + (pct(all, .5) + 'ms').padEnd(8) + (pct(all, .95) + 'ms').padEnd(8) + (Math.max(...all) + 'ms').padEnd(8)
-      + errPct.toFixed(1).padEnd(7) + (heavy.length ? pct(heavy, .95) + 'ms' : '—'));
-    if (pct(all, .95) > 3000 || errPct > 5) { console.log('SAFETY STOP: p95/err threshold breached at stage ' + n + ' — that is the wall.'); break; }
+      + errPct.toFixed(1).padEnd(7) + (heavy.length ? pct(heavy, .95) + 'ms' : '-'));
+    if (pct(all, .95) > 3000 || errPct > 5) { console.log('SAFETY STOP: p95/err threshold breached at stage ' + n + ' - that is the wall.'); break; }
     await new Promise(r => setTimeout(r, 3000)); // cool-down between stages
   }
   console.log('\nInterpretation: flat p50/p95 across stages = no DO queueing (headroom beyond the top stage).');

@@ -9,7 +9,7 @@
    "cards": [
     {
      "h": "Trgovanje cenom bez posedovanja coina",
-     "p": "Fjučers ugovor je dogovor koji prati cenu coina. Nikad ne poseduješ Bitcoin — držiš poziciju koja dobija ili gubi tačno onako kako se cena pomera. Omiljena kripto verzija je perpetual fjučers (perp), bez roka isteka: možeš ga držati dokle god ti margina preživljava."
+     "p": "Fjučers ugovor je dogovor koji prati cenu coina. Nikad ne poseduješ Bitcoin - držiš poziciju koja dobija ili gubi tačno onako kako se cena pomera. Omiljena kripto verzija je perpetual fjučers (perp), bez roka isteka: možeš ga držati dokle god ti margina preživljava."
     },
     {
      "h": "Long i short",
@@ -17,7 +17,7 @@
     },
     {
      "h": "Zašto perpovi dominiraju kriptom",
-     "p": "Perpetual fjučersi su najtrgovaniji proizvod u kriptu — dnevni perp volumen daleko nadmašuje spot. Popularni su upravo zbog dve osobine koje ih čine opasnim: poluge i mogućnosti shortovanja. Sve u ovom kursu postoji zbog onoga što ćeš naučiti u sledeće dve lekcije."
+     "p": "Perpetual fjučersi su najtrgovaniji proizvod u kriptu - dnevni perp volumen daleko nadmašuje spot. Popularni su upravo zbog dve osobine koje ih čine opasnim: poluge i mogućnosti shortovanja. Sve u ovom kursu postoji zbog onoga što ćeš naučiti u sledeće dve lekcije."
     }
    ],
    "quiz": [
@@ -25,7 +25,7 @@
      "q": "Kad kupiš perpetual fjučers, poseduješ…",
      "o": [
       "Prave coine",
-      "Poziciju koja prati cenu — bez coina",
+      "Poziciju koja prati cenu - bez coina",
       "Mali vlasnički udeo u samoj menjačnici",
       "Novčanik"
      ]
@@ -56,7 +56,7 @@
    "cards": [
     {
      "h": "Margina i množilac",
-     "p": "Poluga ti omogućava da kontrolišeš poziciju veću od svog novca. Uloži $100 margine na 10× poluzi i kontrolišeš poziciju od $1.000. Za svaki 1% pomaka cene, pozicija dobija ili gubi $10 — što je 10% TVOG novca. Množilac važi za gubitke potpuno isto kao za dobitke."
+     "p": "Poluga ti omogućava da kontrolišeš poziciju veću od svog novca. Uloži $100 margine na 10× poluzi i kontrolišeš poziciju od $1.000. Za svaki 1% pomaka cene, pozicija dobija ili gubi $10 - što je 10% TVOG novca. Množilac važi za gubitke potpuno isto kao za dobitke."
     },
     {
      "h": "Oseti: povuci polugu",
@@ -65,7 +65,7 @@
     },
     {
      "h": "Poštena matematika 100×",
-     "p": "Na poluzi 100×, pomak od 1% protiv tebe briše 100% margine. Bitcoin se pomera 1% rutinski — nekoliko puta dnevno. To nije krah tržišta; to je pozadinski šum. Velika poluga ne čini strategiju boljom, samo skraćuje vreme dok te normalno talasanje ne izbaci."
+     "p": "Na poluzi 100×, pomak od 1% protiv tebe briše 100% margine. Bitcoin se pomera 1% rutinski - nekoliko puta dnevno. To nije krah tržišta; to je pozadinski šum. Velika poluga ne čini strategiju boljom, samo skraćuje vreme dok te normalno talasanje ne izbaci."
     }
    ],
    "quiz": [
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "Šta je likvidacija",
-     "p": "Kad pozicija sa polugom izgubi skoro svu marginu, menjačnica je prinudno zatvara da zaštiti sebe — to je likvidacija. Pozicije nema, margine nema, i nema oporavka čak i ako cena odskoči sekund kasnije. To je najvažnija cena na tvom ekranu."
+     "p": "Kad pozicija sa polugom izgubi skoro svu marginu, menjačnica je prinudno zatvara da zaštiti sebe - to je likvidacija. Pozicije nema, margine nema, i nema oporavka čak i ako cena odskoči sekund kasnije. To je najvažnija cena na tvom ekranu."
     },
     {
      "h": "Tvoj red: učini je bezbednom",
@@ -117,7 +117,7 @@
     },
     {
      "h": "\"Vratiće se\" ovde ne važi",
-     "p": "Spot holder može da izdrži pad od 30% i čeka godinama. Likvidirani fjučers trader ne može — pozicija više ne postoji. Ta asimetrija je GLAVNA razlika između spota i poluge: spot kažnjava nestrpljive sporo, poluga ih pogubljuje trenutno."
+     "p": "Spot holder može da izdrži pad od 30% i čeka godinama. Likvidirani fjučers trader ne može - pozicija više ne postoji. Ta asimetrija je GLAVNA razlika između spota i poluge: spot kažnjava nestrpljive sporo, poluga ih pogubljuje trenutno."
     }
    ],
    "quiz": [
@@ -150,7 +150,7 @@
     }
    ],
    "try": {
-    "p": "Izračunaj pravu cenu likvidacije: ulaz, poluga, strana — vidi tačno gde pozicija umire.",
+    "p": "Izračunaj pravu cenu likvidacije: ulaz, poluga, strana - vidi tačno gde pozicija umire.",
     "label": "Kalkulator Likvidacije →"
    }
   },
@@ -160,15 +160,15 @@
    "cards": [
     {
      "h": "P&L formula prostim rečima",
-     "p": "Tvoj profit ili gubitak = veličina pozicije × procenat pomaka cene. ROE — povraćaj na kapital — je taj P&L meren u odnosu na tvoju marginu. Vuci pomak cene ispod i gledaj kako oba broja reaguju na 10× poluzi sa $100 margine."
+     "p": "Tvoj profit ili gubitak = veličina pozicije × procenat pomaka cene. ROE - povraćaj na kapital - je taj P&L meren u odnosu na tvoju marginu. Vuci pomak cene ispod i gledaj kako oba broja reaguju na 10× poluzi sa $100 margine."
     },
     {
      "h": "Shortovanje nije zlo, to je alat",
-     "p": "Shortovanje — profit od padova — na početku deluje neprirodno. Ali tržišta padaju brže nego što rastu (liftom dole, stepenicama gore), a trader koji ume samo long slep je u pola tržišta. Na paper nalogu vežbaj oba dok nijedno ne bude posebno."
+     "p": "Shortovanje - profit od padova - na početku deluje neprirodno. Ali tržišta padaju brže nego što rastu (liftom dole, stepenicama gore), a trader koji ume samo long slep je u pola tržišta. Na paper nalogu vežbaj oba dok nijedno ne bude posebno."
     },
     {
      "h": "Provizije i funding stalno grickaju",
-     "p": "Svako otvaranje i zatvaranje plaća proviziju na notional, a perpetuali razmenjuju periodične funding isplate između longova i shortova (sledeća lekcija). Na velikoj poluzi ti mali troškovi se slažu u ozbiljan čeoni vetar — još jedan tihi razlog zašto pretrgovači gube."
+     "p": "Svako otvaranje i zatvaranje plaća proviziju na notional, a perpetuali razmenjuju periodične funding isplate između longova i shortova (sledeća lekcija). Na velikoj poluzi ti mali troškovi se slažu u ozbiljan čeoni vetar - još jedan tihi razlog zašto pretrgovači gube."
     }
    ],
    "quiz": [
@@ -196,7 +196,7 @@
       "Samo tvoju marginu",
       "Punu notional veličinu pozicije",
       "Samo profit",
-      "Ništa — fjučersi su besplatni"
+      "Ništa - fjučersi su besplatni"
      ]
     }
    ]
@@ -211,11 +211,11 @@
     },
     {
      "h": "Funding kao termometar mase",
-     "p": "Ekstremno pozitivan funding znači da je masa jako long I da plaća za tu privilegiju — istorijski znak upozorenja, jer se nagomilani trejdovi razmršuju nasilno. Ekstremno negativan funding označava nagomilane shortove, gorivo za short squeeze."
+     "p": "Ekstremno pozitivan funding znači da je masa jako long I da plaća za tu privilegiju - istorijski znak upozorenja, jer se nagomilani trejdovi razmršuju nasilno. Ekstremno negativan funding označava nagomilane shortove, gorivo za short squeeze."
     },
     {
      "h": "Slaže se",
-     "p": "Funding od 0,01% na 8 sati zvuči kao ništa — ali to je oko 11% godišnje na notional, a na 10× poluzi to je trocifreni godišnji teret na marginu. Držaoci pozicija koji ignorišu funding otkriju da im P&L tiho curi."
+     "p": "Funding od 0,01% na 8 sati zvuči kao ništa - ali to je oko 11% godišnje na notional, a na 10× poluzi to je trocifreni godišnji teret na marginu. Držaoci pozicija koji ignorišu funding otkriju da im P&L tiho curi."
     }
    ],
    "quiz": [
@@ -232,7 +232,7 @@
      "q": "Ekstremno pozitivan funding obično signalizira…",
      "o": [
       "Garantovan rast",
-      "Jako nagomilanu long stranu — rizik od squeeze-a",
+      "Jako nagomilanu long stranu - rizik od squeeze-a",
       "Dug period niske volatilnosti pred tržištem",
       "Pad menjačnice"
      ]
@@ -248,7 +248,7 @@
     }
    ],
    "try": {
-    "p": "Pogledaj živ funding na 160+ parova — nađi najekstremniju stopu upravo sada.",
+    "p": "Pogledaj živ funding na 160+ parova - nađi najekstremniju stopu upravo sada.",
     "label": "Funding Stope →"
    }
   },
@@ -258,11 +258,11 @@
    "cards": [
     {
      "h": "Tri alata, tri posla",
-     "p": "Market nalog se izvršava odmah po onome što knjiga nudi — plaćaš spread i eventualni slippage. Limit nalog imenuje tvoju cenu i čeka. Stop nalog se aktivira kad cena pređe nivo. Slika ispod pokazuje sva tri kako žive u knjizi naloga."
+     "p": "Market nalog se izvršava odmah po onome što knjiga nudi - plaćaš spread i eventualni slippage. Limit nalog imenuje tvoju cenu i čeka. Stop nalog se aktivira kad cena pređe nivo. Slika ispod pokazuje sva tri kako žive u knjizi naloga."
     },
     {
      "h": "Market: brzina za cenu. Limit: cena za strpljenje.",
-     "p": "Koristi market naloge kad je ući ili izaći ODMAH važnije od tačne cene — znajući da je slippage najgori tokom nasilnih poteza. Profesionalni ulasci su uglavnom limiti: možda se nikad ne izvršiš, ali kad se izvršiš, to je po tvojoj ceni ili boljoj, obično uz nižu proviziju."
+     "p": "Koristi market naloge kad je ući ili izaći ODMAH važnije od tačne cene - znajući da je slippage najgori tokom nasilnih poteza. Profesionalni ulasci su uglavnom limiti: možda se nikad ne izvršiš, ali kad se izvršiš, to je po tvojoj ceni ili boljoj, obično uz nižu proviziju."
     },
     {
      "h": "Stopovi: automatizacija koja spasava naloge",
@@ -305,11 +305,11 @@
    "cards": [
     {
      "h": "Dva načina da pokriješ poziciju",
-     "p": "Isolated margina ograđuje fiksni iznos za jednu poziciju — ako se likvidira, gubiš samo taj zid. Cross margina dozvoljava da CEO fjučers balans pokriva svaku poziciju — više prostora pre likvidacije, ali eksplozija može da odnese ceo nalog."
+     "p": "Isolated margina ograđuje fiksni iznos za jednu poziciju - ako se likvidira, gubiš samo taj zid. Cross margina dozvoljava da CEO fjučers balans pokriva svaku poziciju - više prostora pre likvidacije, ali eksplozija može da odnese ceo nalog."
     },
     {
      "h": "Kad koja ima smisla",
-     "p": "Isolated je početnički standard i pošten izbor za rizične trejdove: šteta je unapred definisana. Cross odgovara hedžovanim knjigama i iskusnim traderima koji aktivno upravljaju marginom. Koristiti cross da loš trejd preživi duže nije strategija — to je veća sahrana."
+     "p": "Isolated je početnički standard i pošten izbor za rizične trejdove: šteta je unapred definisana. Cross odgovara hedžovanim knjigama i iskusnim traderima koji aktivno upravljaju marginom. Koristiti cross da loš trejd preživi duže nije strategija - to je veća sahrana."
     },
     {
      "h": "Proveri pre nego što klikneš",
@@ -352,15 +352,15 @@
    "cards": [
     {
      "h": "Dve cene na istom ekranu",
-     "p": "Poslednja cena je najskoriji trejd na TVOJOJ menjačnici. Mark cena je mešavina fer vrednosti sa više menjačnica plus spot indeks. Razlikuju se za pare u mirnim tržištima — a značajno u nasilnim ili na tankim platformama."
+     "p": "Poslednja cena je najskoriji trejd na TVOJOJ menjačnici. Mark cena je mešavina fer vrednosti sa više menjačnica plus spot indeks. Razlikuju se za pare u mirnim tržištima - a značajno u nasilnim ili na tankim platformama."
     },
     {
      "h": "Likvidacije koriste mark cenu",
-     "p": "Menjačnice likvidiraju po MARK ceni, ne poslednjoj. To te štiti: jedan izmanipulisan fitilj na jednoj platformi ne može da likvidira pozicije svuda. To objašnjava i klasičnu zabunu — možeš biti likvidiran a da fitilj na tvom grafikonu nikad nije dotakao tvoj nivo, jer je mark stigao tamo."
+     "p": "Menjačnice likvidiraju po MARK ceni, ne poslednjoj. To te štiti: jedan izmanipulisan fitilj na jednoj platformi ne može da likvidira pozicije svuda. To objašnjava i klasičnu zabunu - možeš biti likvidiran a da fitilj na tvom grafikonu nikad nije dotakao tvoj nivo, jer je mark stigao tamo."
     },
     {
      "h": "Koju gledati",
-     "p": "Odluke o trejdu: poslednja cena (tu se tvoji nalozi izvršavaju). Matematika preživljavanja: mark cena (nju koriste likvidacija i nerealizovani P&L). Ozbiljne platforme prikazuju obe — nauči gde tvoja prikazuje mark i postavi alarme na nju, ne na fitilj sveće."
+     "p": "Odluke o trejdu: poslednja cena (tu se tvoji nalozi izvršavaju). Matematika preživljavanja: mark cena (nju koriste likvidacija i nerealizovani P&L). Ozbiljne platforme prikazuju obe - nauči gde tvoja prikazuje mark i postavi alarme na nju, ne na fitilj sveće."
     }
    ],
    "quiz": [
@@ -368,7 +368,7 @@
      "q": "Likvidacije okida…",
      "o": [
       "Poslednja trgovana cena na tvojoj menjačnici",
-      "Mark cena — fer vrednost sa više menjačnica",
+      "Mark cena - fer vrednost sa više menjačnica",
       "Tvoja ulazna cena",
       "Dnevno otvaranje"
      ]
@@ -399,7 +399,7 @@
    "cards": [
     {
      "h": "Zašto liq nije tačno 100 ÷ poluga",
-     "p": "Menjačnica zahteva sigurnosni bafer — marginu održavanja (obično oko 0,5% notionala) — koji se drži sa strane sve vreme. Likvidacija se okida kad tvoj kapital padne DO tog bafera, ne do nule. Zato se 10x long likvidira oko −9,5%, a ne tačno na −10%."
+     "p": "Menjačnica zahteva sigurnosni bafer - marginu održavanja (obično oko 0,5% notionala) - koji se drži sa strane sve vreme. Likvidacija se okida kad tvoj kapital padne DO tog bafera, ne do nule. Zato se 10x long likvidira oko −9,5%, a ne tačno na −10%."
     },
     {
      "h": "Veće pozicije, veći baferi",
@@ -407,7 +407,7 @@
     },
     {
      "h": "Parcijalna likvidacija",
-     "p": "Na velikim pozicijama mnoge menjačnice likvidiraju u kriškama — zatvaraju deo pozicije da vrate marginu iznad održavanja, umesto da unište sve odjednom. Korisno, ali se ne oslanjaj: do trenutka kad te parcijalna likvidacija spasava, trejd je već propao."
+     "p": "Na velikim pozicijama mnoge menjačnice likvidiraju u kriškama - zatvaraju deo pozicije da vrate marginu iznad održavanja, umesto da unište sve odjednom. Korisno, ali se ne oslanjaj: do trenutka kad te parcijalna likvidacija spasava, trejd je već propao."
     }
    ],
    "quiz": [
@@ -415,7 +415,7 @@
      "q": "10x long se likvidira otprilike na…",
      "o": [
       "Tačno −10%, kako prosta formula poluge kaže",
-      "Oko −9,5% — margina održavanja se okida prva",
+      "Oko −9,5% - margina održavanja se okida prva",
       "−5%",
       "−20%"
      ]
@@ -446,7 +446,7 @@
    "cards": [
     {
      "h": "Trejd počinje posle ulaska",
-     "p": "Početnici su opsednuti ulascima; profesionalci upravljaju onim što sledi. Živa pozicija je niz odluka: da li teza još važi, da li se invalidacija pomerila, da li je veličina još ispravna? Upravljanje nije čačkanje — to je izvršavanje plana koji si napisao pre ulaska."
+     "p": "Početnici su opsednuti ulascima; profesionalci upravljaju onim što sledi. Živa pozicija je niz odluka: da li teza još važi, da li se invalidacija pomerila, da li je veličina još ispravna? Upravljanje nije čačkanje - to je izvršavanje plana koji si napisao pre ulaska."
     },
     {
      "h": "Parcijalno zatvaranje: isplati sebe",
@@ -454,7 +454,7 @@
     },
     {
      "h": "Breakeven stopovi: besplatni trejdovi, pažljivo",
-     "p": "Kad se cena značajno pomeri u tvoju korist, pomeranje stopa na ulaz čini trejd bezrizičnim — psihološki neprocenjivo. Uradi to prerano i normalan šum te izbaci iz dobrog trejda. Daj mu prostora: breakeven POSLE prvog cilja, ne posle prvog zelenog minuta."
+     "p": "Kad se cena značajno pomeri u tvoju korist, pomeranje stopa na ulaz čini trejd bezrizičnim - psihološki neprocenjivo. Uradi to prerano i normalan šum te izbaci iz dobrog trejda. Daj mu prostora: breakeven POSLE prvog cilja, ne posle prvog zelenog minuta."
     }
    ],
    "quiz": [
@@ -479,7 +479,7 @@
     {
      "q": "Pravo vreme za upravljanje pozicijom je…",
      "o": [
-      "Nikad — uvek postavi i zaboravi",
+      "Nikad - uvek postavi i zaboravi",
       "Po planu napisanom PRE ulaska",
       "Kad god pozicija počne da deluje strašno ili uzbudljivo",
       "Svakih 30 sekundi"
@@ -493,15 +493,15 @@
    "cards": [
     {
      "h": "Mit: veća poluga = veći profit",
-     "p": "Profit dolazi od VELIČINE pozicije puta pomaka cene. Poluga samo odlučuje koliko margine ulažeš za tu veličinu. Pozicija od $1.000 zaradi istih $30 na pomaku od 3% bilo da koristi 2x ili 50x — verzija na 50x se samo likvidira 25 puta ranije."
+     "p": "Profit dolazi od VELIČINE pozicije puta pomaka cene. Poluga samo odlučuje koliko margine ulažeš za tu veličinu. Pozicija od $1.000 zaradi istih $30 na pomaku od 3% bilo da koristi 2x ili 50x - verzija na 50x se samo likvidira 25 puta ranije."
     },
     {
      "h": "Mit: profesionalci koriste maksimalnu polugu",
-     "p": "Profesionalni deskovi rutinski rade sa jednocifrenom efektivnom polugom. Dugme 100x postoji jer je profitabilno za menjačnice, ne za korisnike. Velika poluga je alat likvidnosne efikasnosti za hedžere i skalpere koji se mere sekundama — ne mašina za bogatstvo."
+     "p": "Profesionalni deskovi rutinski rade sa jednocifrenom efektivnom polugom. Dugme 100x postoji jer je profitabilno za menjačnice, ne za korisnike. Velika poluga je alat likvidnosne efikasnosti za hedžere i skalpere koji se mere sekundama - ne mašina za bogatstvo."
     },
     {
      "h": "Pošteno korišćenje poluge",
-     "p": "Poluga ti omogućava da držiš manje kapitala na (hakabilnoj, zamrzljivoj) menjačnici za istu izloženost — to je kapitalna efikasnost. Uz sićušne veličine pozicija je legitimna. Korišćena za maksimiranje veličine, pretvara normalnu volatilnost u sigurnu propast, sa tajmerom."
+     "p": "Poluga ti omogućava da držiš manje kapitala na (hakabilnoj, zamrzljivoj) menjačnici za istu izloženost - to je kapitalna efikasnost. Uz sićušne veličine pozicija je legitimna. Korišćena za maksimiranje veličine, pretvara normalnu volatilnost u sigurnu propast, sa tajmerom."
     }
    ],
    "quiz": [
@@ -540,11 +540,11 @@
    "cards": [
     {
      "h": "Svaki broj, dešifrovan",
-     "p": "Tiket pozicije pokazuje: stranu i polugu (LONG 10x), ulaznu cenu, mark cenu, veličinu ili notional, marginu, cenu likvidacije, nerealizovani P&L i ROE. Sad znaš svaki od njih. Ako te bilo koji broj na živom tiketu zbunjuje, ne dodaji veličinu — prvo ga dešifruj."
+     "p": "Tiket pozicije pokazuje: stranu i polugu (LONG 10x), ulaznu cenu, mark cenu, veličinu ili notional, marginu, cenu likvidacije, nerealizovani P&L i ROE. Sad znaš svaki od njih. Ako te bilo koji broj na živom tiketu zbunjuje, ne dodaji veličinu - prvo ga dešifruj."
     },
     {
      "h": "Dva najvažnija broja",
-     "p": "Cena likvidacije (koliko je smrt daleko?) i veličina pozicije (koliko gubim po 1% pomaka?). P&L i ROE su izlazi — slede iz ta dva ulaza. Traderi koji gledaju samo zeleno/crveni broj upravljaju osećanjima; oni koji gledaju liq razdaljinu i veličinu upravljaju rizikom."
+     "p": "Cena likvidacije (koliko je smrt daleko?) i veličina pozicije (koliko gubim po 1% pomaka?). P&L i ROE su izlazi - slede iz ta dva ulaza. Traderi koji gledaju samo zeleno/crveni broj upravljaju osećanjima; oni koji gledaju liq razdaljinu i veličinu upravljaju rizikom."
     },
     {
      "h": "Vežba za diplomu",
@@ -581,7 +581,7 @@
     }
    ],
    "try": {
-    "p": "Otvori paper poziciju i pročitaj svako polje na tiketu — ulaz, veličina, margina, liq, razdaljina. Deset sekundi, nula zabune.",
+    "p": "Otvori paper poziciju i pročitaj svako polje na tiketu - ulaz, veličina, margina, liq, razdaljina. Deset sekundi, nula zabune.",
     "label": "Paper Trade →"
    }
   }

@@ -17,11 +17,11 @@
     },
     {
      "h": "Sobe dez, desce dez, não empata",
-     "p": "Comece com $100. Some 10% e você tem $110. Agora tire 10% — mas 10% de $110 são $11, não $10. Você termina com $99. O ganho foi medido contra $100 e a perda contra $110, então eles não se cancelam. Inverta a ordem e você cai nos mesmos $99: $100 caindo para $90, depois subindo $9."
+     "p": "Comece com $100. Some 10% e você tem $110. Agora tire 10% - mas 10% de $110 são $11, não $10. Você termina com $99. O ganho foi medido contra $100 e a perda contra $110, então eles não se cancelam. Inverta a ordem e você cai nos mesmos $99: $100 caindo para $90, depois subindo $9."
     },
     {
      "h": "Variações percentuais se multiplicam",
-     "p": "Existe um atalho. Um ganho de 10% é multiplicar por 1.10; uma perda de 10% é multiplicar por 0.90. Faça os dois e você tem 1.10 vezes 0.90, que dá 0.99 — uma perda líquida de 1%. Encadeie um mês inteiro de trades assim e é a multiplicação, não a soma, que descreve o que a sua conta realmente fez."
+     "p": "Existe um atalho. Um ganho de 10% é multiplicar por 1.10; uma perda de 10% é multiplicar por 0.90. Faça os dois e você tem 1.10 vezes 0.90, que dá 0.99 - uma perda líquida de 1%. Encadeie um mês inteiro de trades assim e é a multiplicação, não a soma, que descreve o que a sua conta realmente fez."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Perdas cavam um buraco mais fundo",
-     "p": "Perca 50% de $1,000 e você fica com $500. Para voltar a $1,000 você precisa somar $500 — e $500 são 100% do que sobrou. Uma perda de 50% exige um ganho de 100% para ser desfeita. A perda e o conserto dela não têm o mesmo tamanho, e nunca têm."
+     "p": "Perca 50% de $1,000 e você fica com $500. Para voltar a $1,000 você precisa somar $500 - e $500 são 100% do que sobrou. Uma perda de 50% exige um ganho de 100% para ser desfeita. A perda e o conserto dela não têm o mesmo tamanho, e nunca têm."
     },
     {
      "h": "A tabela de recuperação",
-     "p": "Rode a mesma conta descendo a escala. Cair 10% exige cerca de 11% de volta. Cair 20% exige 25%. Cair um terço exige 50%. Cair 50% exige 100%. Cair 80% deixa $200 de $1,000, então você precisa de $800 em cima de $200 — isso é 400%. Cair 90% exige 900%. A curva não dobra com delicadeza. Ela fica vertical."
+     "p": "Rode a mesma conta descendo a escala. Cair 10% exige cerca de 11% de volta. Cair 20% exige 25%. Cair um terço exige 50%. Cair 50% exige 100%. Cair 80% deixa $200 de $1,000, então você precisa de $800 em cima de $200 - isso é 400%. Cair 90% exige 900%. A curva não dobra com delicadeza. Ela fica vertical."
     },
     {
      "h": "Prove você mesmo",
@@ -73,7 +73,7 @@
     },
     {
      "h": "O que isso muda em você",
-     "p": "É por isso que profissionais acompanham o drawdown — o quanto uma conta caiu abaixo do seu ponto mais alto — mais de perto do que o retorno. Uma sequência de perdas pequenas é aritmética sobrevivível. Uma perda grande é outra categoria de problema. Tudo depois deste card, do tamanho de posição ao stop-loss, existe para manter as perdas individuais pequenas o bastante para que a recuperação continue banal."
+     "p": "É por isso que profissionais acompanham o drawdown - o quanto uma conta caiu abaixo do seu ponto mais alto - mais de perto do que o retorno. Uma sequência de perdas pequenas é aritmética sobrevivível. Uma perda grande é outra categoria de problema. Tudo depois deste card, do tamanho de posição ao stop-loss, existe para manter as perdas individuais pequenas o bastante para que a recuperação continue banal."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Três números fazem um resultado",
-     "p": "Lucro e prejuízo — P&L — vem de exatamente três números: o preço em que você entrou, o preço em que saiu e quantas unidades você segurava. Mais nada entra na conta. Num long, a aposta de que o preço sobe, o P&L é o preço de saída menos o de entrada, multiplicado pelo número de unidades."
+     "p": "Lucro e prejuízo - P&L - vem de exatamente três números: o preço em que você entrou, o preço em que saiu e quantas unidades você segurava. Mais nada entra na conta. Num long, a aposta de que o preço sobe, o P&L é o preço de saída menos o de entrada, multiplicado pelo número de unidades."
     },
     {
      "h": "Um long, na conta",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Você não escolhe o movimento",
-     "p": "Você não controla se o Bitcoin vai andar 2% hoje. Você controla exatamente um número: o tamanho da sua posição. Todo o resto — direção, timing, volatilidade — é chute ou presente. O tamanho da posição é o único dado do cálculo inteiro que é totalmente seu, o que faz dele a decisão de verdade que você está tomando."
+     "p": "Você não controla se o Bitcoin vai andar 2% hoje. Você controla exatamente um número: o tamanho da sua posição. Todo o resto - direção, timing, volatilidade - é chute ou presente. O tamanho da posição é o único dado do cálculo inteiro que é totalmente seu, o que faz dele a decisão de verdade que você está tomando."
     },
     {
      "h": "Mesmo movimento, o resultado que você quiser",
@@ -214,15 +214,15 @@
     },
     {
      "h": "O tamanho vem do stop",
-     "p": "Agora a aritmética corre ao contrário. Você quer comprar ETH a $2,000 com um stop-loss em $1,960 — a ordem que fecha o trade se o preço chegar lá. A distância é $40 por moeda. Você está arriscando $10 no total, então divida: $10 dividido por $40 dá 0.25 ETH. Esse é o seu tamanho, uma posição de $500."
+     "p": "Agora a aritmética corre ao contrário. Você quer comprar ETH a $2,000 com um stop-loss em $1,960 - a ordem que fecha o trade se o preço chegar lá. A distância é $40 por moeda. Você está arriscando $10 no total, então divida: $10 dividido por $40 dá 0.25 ETH. Esse é o seu tamanho, uma posição de $500."
     },
     {
      "h": "Stop mais largo, tamanho menor",
-     "p": "Mude uma coisa só. Coloque o stop em $1,900, uma distância de $100 por moeda. O risco continua $10, então o tamanho vira $10 dividido por $100, ou 0.1 ETH — uma posição de $200. O stop não deixou o trade mais seguro nem mais arriscado. Ele mudou quantas moedas você pode segurar com o mesmo risco fixo."
+     "p": "Mude uma coisa só. Coloque o stop em $1,900, uma distância de $100 por moeda. O risco continua $10, então o tamanho vira $10 dividido por $100, ou 0.1 ETH - uma posição de $200. O stop não deixou o trade mais seguro nem mais arriscado. Ele mudou quantas moedas você pode segurar com o mesmo risco fixo."
     },
     {
      "h": "Por que 1% e não 10%",
-     "p": "Com risco de 1%, dez perdas seguidas custam cerca de 10% da conta, e a tabela de recuperação diz que um buraco de 10% precisa de mais ou menos 11% para ser tapado. Com risco de 10%, as mesmas dez perdas deixam cerca de um terço do que você começou — um buraco que exige uns 187% para sair. Mesmos trades, mesma habilidade, aritmética diferente."
+     "p": "Com risco de 1%, dez perdas seguidas custam cerca de 10% da conta, e a tabela de recuperação diz que um buraco de 10% precisa de mais ou menos 11% para ser tapado. Com risco de 10%, as mesmas dez perdas deixam cerca de um terço do que você começou - um buraco que exige uns 187% para sair. Mesmos trades, mesma habilidade, aritmética diferente."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Retorno-risco antes de entrar",
-     "p": "Pegue o mesmo trade de ETH: entrada $2,000, stop $1,960, então o risco é $40 por moeda. Coloque um take-profit em $2,120 e o retorno é $120 por moeda. Divida $120 por $40 e dá 3. Esse trade oferece três para um, ou 3R. Você consegue calcular isso antes de arriscar qualquer coisa — e deve."
+     "p": "Pegue o mesmo trade de ETH: entrada $2,000, stop $1,960, então o risco é $40 por moeda. Coloque um take-profit em $2,120 e o retorno é $120 por moeda. Divida $120 por $40 e dá 3. Esse trade oferece três para um, ou 3R. Você consegue calcular isso antes de arriscar qualquer coisa - e deve."
     },
     {
      "h": "Por que o R viaja entre contas",
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "As taxas incidem sobre o nocional",
-     "p": "A taxa de futuros é uma porcentagem do valor inteiro da posição — o nocional — e não do dinheiro que você depositou. Abra uma posição de $6,000 e uma taxa taker de 0.055% custa $3.30. Feche e você paga de novo. A taxa nunca pergunta quanto do seu próprio dinheiro está por trás do trade. Ela só enxerga o tamanho da posição."
+     "p": "A taxa de futuros é uma porcentagem do valor inteiro da posição - o nocional - e não do dinheiro que você depositou. Abra uma posição de $6,000 e uma taxa taker de 0.055% custa $3.30. Feche e você paga de novo. A taxa nunca pergunta quanto do seu próprio dinheiro está por trás do trade. Ela só enxerga o tamanho da posição."
     },
     {
      "h": "A alavancagem multiplica a taxa",
-     "p": "A alavancagem deixa uma quantia pequena do seu dinheiro — a margem — controlar uma posição maior. A 20x, uma posição de $6,000 precisa de $300 de margem. Os $3.30 de taxa são 0.055% da posição, mas 1.1% dos seus $300. Ida e volta, entrar e sair, são 2.2% da sua margem que se vão antes de o preço andar um centavo."
+     "p": "A alavancagem deixa uma quantia pequena do seu dinheiro - a margem - controlar uma posição maior. A 20x, uma posição de $6,000 precisa de $300 de margem. Os $3.30 de taxa são 0.055% da posição, mas 1.1% dos seus $300. Ida e volta, entrar e sair, são 2.2% da sua margem que se vão antes de o preço andar um centavo."
     },
     {
      "h": "Spread e slippage também custam",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Tudo junto, uma vez",
-     "p": "Conta de $1,000. Risco de 1%, então $10. Entrada em ETH a $2,000, stop $1,960, distância $40. O tamanho é $10 dividido por $40, ou 0.25 ETH — uma posição de $500. O alvo em $2,120 dá $120 por moeda, então 0.25 moeda faz $30. Isso é 3R. As taxas de ida e volta, 0.11% de $500, dão $0.55, pouco perto de $30."
+     "p": "Conta de $1,000. Risco de 1%, então $10. Entrada em ETH a $2,000, stop $1,960, distância $40. O tamanho é $10 dividido por $40, ou 0.25 ETH - uma posição de $500. O alvo em $2,120 dá $120 por moeda, então 0.25 moeda faz $30. Isso é 3R. As taxas de ida e volta, 0.11% de $500, dão $0.55, pouco perto de $30."
     },
     {
      "h": "A conta não prevê nada",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Agora você tem o cálculo inteiro. Abra as calculadoras e rode seus próprios números — conta, risco, distância do stop — até a conta do tamanho ficar automática.",
+    "p": "Agora você tem o cálculo inteiro. Abra as calculadoras e rode seus próprios números - conta, risco, distância do stop - até a conta do tamanho ficar automática.",
     "label": "Abrir Calculadoras →"
    }
   }

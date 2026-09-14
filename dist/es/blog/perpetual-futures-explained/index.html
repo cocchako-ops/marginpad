@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>¿Qué es un contrato de futuros perpetuos? (Guía sencilla) — MarginPad</title>
+<title>¿Qué es un contrato de futuros perpetuos? (Guía sencilla) - MarginPad</title>
 <meta name="description" content="Los futuros perpetuos explicados de forma sencilla: en qué se diferencian del spot y de los futuros tradicionales, por qué nunca expiran, y el papel del funding." />
 <meta name="keywords" content="what is a perpetual futures contract, perpetual futures explained, perpetual swap, crypto perpetuals, perp trading" />
 <link rel="canonical" href="https://marginpad.io/es/blog/perpetual-futures-explained/" />
@@ -42,10 +42,10 @@
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es un contrato de futuros perpetuos? (Guía simple)","description":"Los futuros perpetuos explicados de forma sencilla: en qué se diferencian del spot y de los futuros tradicionales, por qué nunca expiran, y el papel del funding.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/perpetual-futures-explained/"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un contrato de futuros perpetuos?","acceptedAnswer":{"@type":"Answer","text":"Un futuro perpetuo es un derivado que sigue el precio de un activo pero nunca expira, así que puedes mantener una posición apalancada long o short de forma indefinida. Una tasa de funding mantiene su precio alineado con el spot."}},{"@type":"Question","name":"¿En qué se diferencian los perpetuos del spot?","acceptedAnswer":{"@type":"Answer","text":"En spot eres dueño de la moneda real. Un perpetuo es una apuesta apalancada sobre el precio — nunca llegas a tener el activo subyacente, y puedes abrir un short con la misma facilidad que un long."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un contrato de futuros perpetuos?","acceptedAnswer":{"@type":"Answer","text":"Un futuro perpetuo es un derivado que sigue el precio de un activo pero nunca expira, así que puedes mantener una posición apalancada long o short de forma indefinida. Una tasa de funding mantiene su precio alineado con el spot."}},{"@type":"Question","name":"¿En qué se diferencian los perpetuos del spot?","acceptedAnswer":{"@type":"Answer","text":"En spot eres dueño de la moneda real. Un perpetuo es una apuesta apalancada sobre el precio - nunca llegas a tener el activo subyacente, y puedes abrir un short con la misma facilidad que un long."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Futuros perpetuos","item":"https://marginpad.io/es/blog/perpetual-futures-explained/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -80,18 +80,18 @@
   <article>
     <h1>¿Qué es un contrato de futuros perpetuos? (Guía simple)</h1>
     <div class="meta">Básicos · 5 min de lectura · Actualizado en junio de 2026</div>
-    <p>La mayor parte del trading apalancado en cripto ocurre en <strong>futuros perpetuos</strong> — a menudo llamados "perps". Son el derivado más popular del mundo cripto, aunque muchos traders los usan sin saber realmente cómo funcionan. Aquí va la versión sencilla.</p>
+    <p>La mayor parte del trading apalancado en cripto ocurre en <strong>futuros perpetuos</strong> - a menudo llamados "perps". Son el derivado más popular del mundo cripto, aunque muchos traders los usan sin saber realmente cómo funcionan. Aquí va la versión sencilla.</p>
     <h2>La definición en una frase</h2>
-    <p>Un futuro perpetuo es un contrato que te deja apostar sobre el precio de una moneda — en long o en short, con apalancamiento — y que <strong>nunca expira</strong>. Puedes mantener la posición una hora o un año.</p>
+    <p>Un futuro perpetuo es un contrato que te deja apostar sobre el precio de una moneda - en long o en short, con apalancamiento - y que <strong>nunca expira</strong>. Puedes mantener la posición una hora o un año.</p>
     <h2>En qué se diferencia del spot</h2>
-    <p>Cuando compras en <strong>spot</strong>, eres dueño de la moneda real. Con un perpetuo eres dueño de un <em>contrato</em> que sigue el precio — nunca llegas a tener el activo subyacente. Eso es lo que te permite usar apalancamiento y abrir un short (ganar cuando el precio baja) con la misma facilidad que un long.</p>
+    <p>Cuando compras en <strong>spot</strong>, eres dueño de la moneda real. Con un perpetuo eres dueño de un <em>contrato</em> que sigue el precio - nunca llegas a tener el activo subyacente. Eso es lo que te permite usar apalancamiento y abrir un short (ganar cuando el precio baja) con la misma facilidad que un long.</p>
     <h2>¿Por qué "perpetuo"?</h2>
-    <p>Los futuros tradicionales tienen fecha de vencimiento. Los perpetuos la eliminaron, lo que creó un problema: sin vencimiento, nada obliga a que el precio del contrato coincida con el precio real de spot. La solución es la <strong>tasa de funding</strong> — un pequeño pago que se intercambian longs y shorts cada pocas horas y que empuja el precio del perpetuo de vuelta hacia el spot. Lo explicamos en la <a href="/es/blog/what-is-funding-rate/">guía de la tasa de funding</a>.</p>
+    <p>Los futuros tradicionales tienen fecha de vencimiento. Los perpetuos la eliminaron, lo que creó un problema: sin vencimiento, nada obliga a que el precio del contrato coincida con el precio real de spot. La solución es la <strong>tasa de funding</strong> - un pequeño pago que se intercambian longs y shorts cada pocas horas y que empuja el precio del perpetuo de vuelta hacia el spot. Lo explicamos en la <a href="/es/blog/what-is-funding-rate/">guía de la tasa de funding</a>.</p>
     <h2>El riesgo: la liquidación</h2>
     <p>Como los perpetuos usan apalancamiento, un movimiento en tu contra puede acabar con tu margen y disparar la <a href="/es/blog/what-is-liquidation-in-crypto/">liquidación</a>. Antes de entrar, conoce siempre tu precio de liquidación y calcula el tamaño según el riesgo.</p>
     <div class="callout"><div class="k">Antes de abrir un perpetuo</div><p style="margin-bottom:14px">Revisa tu precio de liquidación y tamaño de posición en segundos.</p><a class="cta" href="/es/calculators?c=liq">Abrir las calculadoras →</a></div>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -118,6 +118,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

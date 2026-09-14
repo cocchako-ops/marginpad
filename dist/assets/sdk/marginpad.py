@@ -1,4 +1,4 @@
-"""MarginPad Bot API client — one file, no dependencies (Python 3.8+).
+"""MarginPad Bot API client - one file, no dependencies (Python 3.8+).
 
     from marginpad import MarginPad
     mp = MarginPad("mpb_...")                      # key from https://marginpad.io/trading-api/

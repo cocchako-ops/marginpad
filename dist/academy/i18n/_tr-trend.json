@@ -13,7 +13,7 @@
     },
     {
      "h": "Düşüş trendi bunun aynadaki hâli",
-     "p": "Düşüş trendi aynı kuralın ters çevrilmişidir. Her sıçrayış bir öncekinden daha alçakta durur. Her düşüş bir öncekinin altına iner. Alçalan tepeler, alçalan dipler. Bunların hiçbiri fiyatın düşmeye devam edeceğini söylemez. Sadece olup biteni tarif eder — üstelik başka birinin aynı grafikte kontrol edip katılabileceği bir biçimde."
+     "p": "Düşüş trendi aynı kuralın ters çevrilmişidir. Her sıçrayış bir öncekinden daha alçakta durur. Her düşüş bir öncekinin altına iner. Alçalan tepeler, alçalan dipler. Bunların hiçbiri fiyatın düşmeye devam edeceğini söylemez. Sadece olup biteni tarif eder - üstelik başka birinin aynı grafikte kontrol edip katılabileceği bir biçimde."
     },
     {
      "h": "Salınımları yüksek sesle adlandır",
@@ -21,7 +21,7 @@
     },
     {
      "h": "Trend ne zaman trend olmaktan çıkar",
-     "p": "Yükseliş trendi dizi bozulunca biter: fiyat bir önceki dibin altında yeni bir dip yapar. Testin tamamı bu. Bu, düşüş trendi başladı demek değildir; fiyat çoğu zaman haftalarca yatay gider. Sadece ona yükseliş trendi deme sebebin ortadan kalktı demektir — ve o sebep üstüne kurulmuş her plan da onunla gitmiştir."
+     "p": "Yükseliş trendi dizi bozulunca biter: fiyat bir önceki dibin altında yeni bir dip yapar. Testin tamamı bu. Bu, düşüş trendi başladı demek değildir; fiyat çoğu zaman haftalarca yatay gider. Sadece ona yükseliş trendi deme sebebin ortadan kalktı demektir - ve o sebep üstüne kurulmuş her plan da onunla gitmiştir."
     }
    ],
    "quiz": [
@@ -47,7 +47,7 @@
      "q": "Yükseliş trendinde fiyat önceki dibin altına indi. Bu…",
      "o": [
       "Kesinlikle düşüş trendi başladı",
-      "Hiçbir şey — trendi tepeler tanımlar",
+      "Hiçbir şey - trendi tepeler tanımlar",
       "Yükseliş trendi dizisi bozuldu",
       "Trend daha da güçlendi"
      ]
@@ -68,7 +68,7 @@
     },
     {
      "h": "Uydurmak için çizmek hiledir",
-     "p": "Her zaman bir çizgi bulabilirsin. Başlangıcı bir mum kaydır, bir derece eğ, işine gelmeyen iki teması yok say — ve her grafik her hikayeyi destekler. Dürüst test şu: çizgiyi pozisyon almadan önce çiz ve fiyat sana katılmadı diye onu asla yeniden çizme. Yerini değiştirdiysen artık elinde çizgi yoktur. Dilek vardır."
+     "p": "Her zaman bir çizgi bulabilirsin. Başlangıcı bir mum kaydır, bir derece eğ, işine gelmeyen iki teması yok say - ve her grafik her hikayeyi destekler. Dürüst test şu: çizgiyi pozisyon almadan önce çiz ve fiyat sana katılmadı diye onu asla yeniden çizme. Yerini değiştirdiysen artık elinde çizgi yoktur. Dilek vardır."
     },
     {
      "h": "Dik çizgiler daha erken kırılır",
@@ -97,7 +97,7 @@
     {
      "q": "Fiyat trend çizgini kırdı, sen de onu daha yatık çizdin. Bu…",
      "o": [
-      "İyi bir alışkanlık — grafikler değişir",
+      "İyi bir alışkanlık - grafikler değişir",
       "Çizgiyi istediğine uydurmaktır",
       "Üçüncü temas tutmayınca zorunludur",
       "Profesyonellerin risk yönetme şekli"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Lazer değil, kalabalık",
-     "p": "Destek tek bir fiyat değildir. Düşüşü durduracak kadar alıcının ortaya çıktığı bir şerittir — bazen $100,00'da, bazen $99,40'ta, bazen $98,80'e inen bir batıştan sonra. Tek piksellik bir çizgi çizip fiyatın ona kuruşu kuruşuna saygı göstermesini beklemek, aslında gayet iyi olan bir fikirden silkelenip atılmanın yaygın yoludur."
+     "p": "Destek tek bir fiyat değildir. Düşüşü durduracak kadar alıcının ortaya çıktığı bir şerittir - bazen $100,00'da, bazen $99,40'ta, bazen $98,80'e inen bir batıştan sonra. Tek piksellik bir çizgi çizip fiyatın ona kuruşu kuruşuna saygı göstermesini beklemek, aslında gayet iyi olan bir fikirden silkelenip atılmanın yaygın yoludur."
     },
     {
      "h": "Kenarları fitiller belirlesin",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Tek dokunuşla kanıtla",
-     "prompt": "Destek bölgesinin içinde herhangi bir yere dokun — diplerin kümelendiği şeride.",
+     "prompt": "Destek bölgesinin içinde herhangi bir yere dokun - diplerin kümelendiği şeride.",
      "p": "Tek dokunuş. Burada tek bir doğru piksel yok; dersin ta kendisi de bu."
     },
     {
@@ -152,7 +152,7 @@
       "Seviyen basitçe yanlıştı",
       "Yeni bir düşüş trendi başladı",
       "Destek artık dirence dönüştü",
-      "Normal — seviye çizgi değil, bölge"
+      "Normal - seviye çizgi değil, bölge"
      ]
     }
    ]
@@ -175,7 +175,7 @@
     },
     {
      "h": "Seviye bir duvar değildir",
-     "p": "Bunların hiçbiri seviyenin tutmasını sağlamaz. Emirler geri çekilir, hava değişir ve fiyatı dört kez durdurmuş bir seviye beşincide hiçbir uyarı vermeden çöker. Seviyenin değeri fiyatın orada durması değildir. Değeri, fikrinin bittiği tek bir kesin fiyatı sana vermesidir — bir plan da zaten bundan yapılır."
+     "p": "Bunların hiçbiri seviyenin tutmasını sağlamaz. Emirler geri çekilir, hava değişir ve fiyatı dört kez durdurmuş bir seviye beşincide hiçbir uyarı vermeden çöker. Seviyenin değeri fiyatın orada durması değildir. Değeri, fikrinin bittiği tek bir kesin fiyatı sana vermesidir - bir plan da zaten bundan yapılır."
     }
    ],
    "quiz": [
@@ -200,7 +200,7 @@
     {
      "q": "Bir seviye dört kez tuttu. Beşinci temasta…",
      "o": [
-      "Tutmak zorunda — dört temas teyit etti",
+      "Tutmak zorunda - dört temas teyit etti",
       "Otomatik olarak trend çizgisine döner",
       "Hiç uyarı vermeden çökebilir",
       "Lehine bir kırılımı garantiler"
@@ -289,7 +289,7 @@
     {
      "q": "Bir seviye alışılmadık düşük hacimle kırıldı. Sen…",
      "o": [
-      "Hafife al — çok az kişi katıldı",
+      "Hafife al - çok az kişi katıldı",
       "Teyitli say, hacim zaten gürültü",
       "Dönüşün garanti olduğunu varsay",
       "Hareketi yakalamak için boyutu katla"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Yanlış oyunu oynamak pahalıdır",
-     "p": "Bant içinde trend kurallarını uygularsan üst kenardaki her atağı alır, alt kenardaki her boşalmayı satarsın — yani sürekli yüksekten alıp düşükten satar, her turda komisyon ödersin. Trendli bir piyasaya bant kurallarını uygularsan da güce karşı short atıp durursun. Hareket etmeden önce hangi hâlde olduğunu adlandırmak isteğe bağlı bir ödev değildir."
+     "p": "Bant içinde trend kurallarını uygularsan üst kenardaki her atağı alır, alt kenardaki her boşalmayı satarsın - yani sürekli yüksekten alıp düşükten satar, her turda komisyon ödersin. Trendli bir piyasaya bant kurallarını uygularsan da güce karşı short atıp durursun. Hareket etmeden önce hangi hâlde olduğunu adlandırmak isteğe bağlı bir ödev değildir."
     },
     {
      "h": "Bantlar bitmeden önce daralır",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Trendi adlandır, iki seviye işaretle",
-     "p": "Diziyi yüksek sesle söyle: yükselen tepeler ve yükselen dipler, bunun aynadaki hâli ya da hiçbiri — ki bu bir yatay bant demektir. Sonra tam olarak iki yatay bölge işaretle: fiyatın üstündeki en yakın olan ve altındaki en yakın olan. İki. Altı çizgi çizdiysen, bundan sonra ne yapmaya karar verirsen ona hak veren bir grafik inşa etmişsin demektir."
+     "p": "Diziyi yüksek sesle söyle: yükselen tepeler ve yükselen dipler, bunun aynadaki hâli ya da hiçbiri - ki bu bir yatay bant demektir. Sonra tam olarak iki yatay bölge işaretle: fiyatın üstündeki en yakın olan ve altındaki en yakın olan. İki. Altı çizgi çizdiysen, bundan sonra ne yapmaya karar verirsen ona hak veren bir grafik inşa etmişsin demektir."
     },
     {
      "h": "Cümleyi tamamla, sonra dur",
@@ -426,7 +426,7 @@
     },
     {
      "h": "Grafiklerin çoğu bir fikri hak etmez",
-     "p": "Bu rutinin dürüst çıktısı çoğu zaman hiçbir şeydir. Net trend yok, yakın seviye yok, hakkında yanılabileceğin belirli bir şey yok. Bu bir başarısızlık değil, bir sonuçtur — rutin bir filtredir ve hiçbir şeyi elemeyen filtre filtrelemiyordur. Grafiği kapat ve başka bir sembole bak."
+     "p": "Bu rutinin dürüst çıktısı çoğu zaman hiçbir şeydir. Net trend yok, yakın seviye yok, hakkında yanılabileceğin belirli bir şey yok. Bu bir başarısızlık değil, bir sonuçtur - rutin bir filtredir ve hiçbir şeyi elemeyen filtre filtrelemiyordur. Grafiği kapat ve başka bir sembole bak."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Bulabildiğin kadar çok",
       "Altı, her zaman dilimine bir",
-      "İki — üstteki ve alttaki en yakın",
+      "İki - üstteki ve alttaki en yakın",
       "Hiç, trend çizgileri yeter"
      ]
     },

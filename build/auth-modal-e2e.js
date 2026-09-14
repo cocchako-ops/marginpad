@@ -1,5 +1,5 @@
 // Sign-in modal E2E (2026-09-07, after the "Network error" regression): the real modal in a real browser, English on
-// /paper-trade and Spanish on /spot/?lang=es — enter an e2e address, Send code, the code step must appear (the request is
+// /paper-trade and Spanish on /spot/?lang=es - enter an e2e address, Send code, the code step must appear (the request is
 // a real POST /api/auth/start against the DO; e2e addresses on marginpad.test never reach a mailbox), a wrong code must be
 // refused with a readable message, no page errors. Run after ANY change to dist/assets/mp-auth.js: node build/auth-modal-e2e.js
 const { withBrowser } = require('D:/part1/money-mission/build/e2e-browser.js');
@@ -27,6 +27,6 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await ctx.close();
     }
   });
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

@@ -1,6 +1,6 @@
 /* THE GOLD ROOM on the bento homepage + the BOARD RAIL (2026-09-05).
    Run against dist/demo-home/index.html (the homepage source of truth), then `node build/gen-home-live.js`.
-   Idempotent: it refuses to run twice (the Gold Room marker aborts it), and every anchor must match EXACTLY once —
+   Idempotent: it refuses to run twice (the Gold Room marker aborts it), and every anchor must match EXACTLY once -
    a drifted anchor throws before anything is written, so a half-applied file is impossible.
 
    WHY THE RAIL: both leaderboard pickers were flex rows of `flex:1` chips with non-wrapping labels, so each new
@@ -12,10 +12,10 @@ const path = require('path');
 const F = path.join(__dirname, '..', 'dist', 'demo-home', 'index.html');
 let s = fs.readFileSync(F, 'utf8');
 const n0 = s.length;
-if (s.indexOf('data-pz="gold"') >= 0) { console.log('gold-room-home: already applied — nothing to do.'); process.exit(0); }
+if (s.indexOf('data-pz="gold"') >= 0) { console.log('gold-room-home: already applied - nothing to do.'); process.exit(0); }
 let n = 0;
 // The replacement MUST go through a function. These strings contain JS source with `$'` in them (e.g.
-// `'<div class="lbpz-pool">$'+b.pool`), and in String.replace a bare `$'` means "everything after the match" —
+// `'<div class="lbpz-pool">$'+b.pool`), and in String.replace a bare `$'` means "everything after the match" -
 // it silently pasted the rest of the document into the file and produced a second </html>. A function replacer
 // is taken literally.
 const rep = (old, nu, label) => {
@@ -29,7 +29,7 @@ const XP_ENTRY = s.match(/ {6}xp:\{name:'Season XP'[^\n]*\n/);
 if (!XP_ENTRY) throw new Error('PZ Season XP entry not found');
 const xpLine = XP_ENTRY[0].replace(/\}\s*$/, '},\n'); // it was the LAST entry, so it carries no trailing comma
 rep(XP_ENTRY[0], xpLine.replace(/\n$/, '\n') +
-  "      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:\"Gold members only. The most WINNING trades of the 14-day season takes it — every closed ticket that finished in profit counts as one win. The same rules the win-rate board is paid on apply, so tiny scalps do not pad it: a win must clear +5% ROE on a real 0.2% price move, on at least $1 of margin, server-settled, and partial closes of one position count once. Reach Gold (12,000 XP) to enter.\"}\n",
+  "      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:\"Gold members only. The most WINNING trades of the 14-day season takes it - every closed ticket that finished in profit counts as one win. The same rules the win-rate board is paid on apply, so tiny scalps do not pad it: a win must clear +5% ROE on a real 0.2% price move, on at least $1 of margin, server-settled, and partial closes of one position count once. Reach Gold (12,000 XP) to enter.\"}\n",
   'PZ gold entry');
 
 /* ---------- 2) prize panel: no prize rows, a TITLE pool and an honest footer while it runs unpaid ---------- */
@@ -37,7 +37,7 @@ rep("var badge=b.live?'<span class=\"lbpz-livebadge\">● Live now</span>':'<spa
   "var badge=b.live?'<span class=\"lbpz-livebadge\">● Live now</span>':'<span class=\"lbpz-lockbadge\"> Next season</span>';\n      if(b.gold&&!b.p.length){rows='<div class=\"lbpz-row p1\"><span class=\"m\">!</span><span class=\"l\">No prizes this season</span><span class=\"v\">$0</span></div>';}",
   'gold prize rows');
 rep("var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');",
-  "var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');\n      if(b.gold&&!b.p.length)foot='This season runs for the title only — <b>prize money starts next season</b> · <b>'+ctd()+'</b>';",
+  "var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');\n      if(b.gold&&!b.p.length)foot='This season runs for the title only - <b>prize money starts next season</b> · <b>'+ctd()+'</b>';",
   'gold footer');
 rep("+'<div class=\"lbpz-pool\">$'+b.pool+'<small>season prize pool</small></div>'",
   "+(b.gold&&!b.p.length?'<div class=\"lbpz-pool\">TITLE<small>no prize pool this season</small></div>':'<div class=\"lbpz-pool\">$'+b.pool+'<small>season prize pool</small></div>')",
@@ -103,8 +103,8 @@ rep("document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListe
   "document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');if(window.mpRailShow)window.mpRailShow(b);",
   'live tab click');
 
-rep("note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'",
-  "note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> — Gold members only, ranked by winning trades. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.')",
+rep("note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season - climb it.'",
+  "note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> - Gold members only, ranked by winning trades. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season - climb it.')",
   'live board note');
 
 rep('    var st=((d&&d.topGreen)||[]).slice(0,15);',
@@ -154,9 +154,9 @@ rep('  function lbEsc(x)', RAIL_JS + '  function lbEsc(x)', 'rail js');
 /* ---------- 7) copy: five boards, and the Gold Room does NOT pay this season ---------- */
 rep('4 boards · win real USDT', '5 boards · win real USDT', 'eyebrow');
 rep('Four boards, bigger prizes', 'Five boards, bigger prizes', 'panel heading');
-rep('Four boards — Green days, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season.', 'Green days, Highest ROE, Win rate and Season XP each pay the top 5 in real USDT every 14-day season. The Gold Room is for Gold members only and runs for the title this season.', 'boards sentence');
-rep('Four season boards — <b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:',
-  '<b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the <b>top 5</b> in real USDT when the 14-day season ends. The new <b>Gold Room</b> is for Gold members only and runs for the title this season — prize money starts next season. Pick your game:',
+rep('Four boards - Green days, Highest ROE, Win rate and Season XP - each pays the top 5 in real USDT every 14-day season.', 'Green days, Highest ROE, Win rate and Season XP each pay the top 5 in real USDT every 14-day season. The Gold Room is for Gold members only and runs for the title this season.', 'boards sentence');
+rep('Four season boards - <b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> - each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:',
+  '<b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the <b>top 5</b> in real USDT when the 14-day season ends. The new <b>Gold Room</b> is for Gold members only and runs for the title this season - prize money starts next season. Pick your game:',
   'intro copy');
 
 /* ---------- write + validate ---------- */

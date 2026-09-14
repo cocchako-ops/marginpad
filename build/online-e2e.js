@@ -5,7 +5,7 @@
           row's "last action"; a member on two devices is ONE person with devs:2 and their username
      API: a real bot key (throwaway e2e member) calling REST shows up under API right now with the endpoint and via:rest; the same
           key through the MCP server shows via:mcp
-     WAVE: 200 injected people (+ a Telegram user + a bot stream) — the endpoint answers under 2 s, groups them by page / source /
+     WAVE: 200 injected people (+ a Telegram user + a bot stream) - the endpoint answers under 2 s, groups them by page / source /
           country, counts the arrivals of the last 5 and 15 minutes with their top source, resolves the stream's account
      BROWSER (mp-ops People > Here now at #people/online/e2e): tiles, the minute strip, grouped bars, the people table capped at 100
           with "show all", the filter box and the Members chip, API + Telegram cards, a heartbeat that lands as a row WITHOUT a poll,
@@ -44,7 +44,7 @@ const findDi = (d, di) => (d.people || []).filter(p => p.di === di.slice(0, 8))[
   await beacon(D1, 't=paper&e=BTC%20long%205x&p=%2Fpaper-trade');
   p1 = await waitFor(async () => { const p = findDi((await on()).body, D1); return p && p.la ? p : null; }, 8, 1000);
   chk('a click beacon becomes the row\'s last action with its time', !!p1 && p1.la === 'paper BTC long 5x' && p1.lats >= p1.first, p1 && { la: p1.la, lats: p1.lats, first: p1.first }); // server stamps on both sides (this machine's clock runs ~10 s ahead of the edge)
-  // the Activity endpoint's here-now list reads the presence row (page from the heartbeat, not from a pageview) — checked BEFORE the wave, which fills it
+  // the Activity endpoint's here-now list reads the presence row (page from the heartbeat, not from a pageview) - checked BEFORE the wave, which fills it
   const A = (await get('/api/admin/activity?h=1&n=500&pv=1&e2e=1&_=' + Date.now())).body;
   const oa = (A.onlineList || []).filter(o => o.p === '/paper-trade' && (A.rows || []).some(r => r.di === D1.slice(0, 8) && r.v === o.v))[0];
   chk('Activity here-now list carries the heartbeat page, the visit start and the last action for the guest', !!oa && oa.first === first1 && /paper BTC/.test(oa.la || ''), oa || { lists: (A.onlineList || []).length, rowsWithDi: (A.rows || []).filter(r => r.di === D1.slice(0, 8)).length });
@@ -153,6 +153,6 @@ const findDi = (d, di) => (d.people || []).filter(p => p.di === di.slice(0, 8))[
   try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}
   for (const q of [TAG, '"di":"e2e']) { try { await post('/api/admin/activity?purge=' + encodeURIComponent(q)); } catch (e) {} }
   const gone = (await on()).body; chk('cleanup: no e2 presence row left', !(gone.people || []).some(p => p.e2) && !((gone.api || {}).keys || []).some(k => k.e2) && !((gone.api || {}).streams || []).some(s => s.e2) && !(gone.tg || []).some(t => t.e2), { n: gone.n, left: (gone.people || []).filter(p => p.e2).map(p => p.di) });
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

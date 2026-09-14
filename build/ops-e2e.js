@@ -1,5 +1,5 @@
 // mp-ops E2E (2026-09-03): renders the admin dashboard and every tab after a deploy, with a short session minted
-// from the ADMIN_KEY (POST /api/stats/session) — no owner password involved. For each tab it asserts: the tab
+// from the ADMIN_KEY (POST /api/stats/session) - no owner password involved. For each tab it asserts: the tab
 // panel is visible, no page errors, no failed admin fetches (4xx/5xx), no "could not load"/"forbidden" placeholder,
 // and takes a screenshot into build/ops-shots/. The session is revoked at the end.
 // Run: node build/ops-e2e.js            (all tabs)

@@ -18,14 +18,14 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>API de MarginPad — datos cripto gratis, Bot API de paper trading, MCP | MarginPad</title>
+<title>API de MarginPad - datos cripto gratis, Bot API de paper trading, MCP | MarginPad</title>
 <meta name="description" content="Todas las API de MarginPad en una sola página: una API gratuita de datos de mercado cripto sin clave (precios, velas, screener, funding, interés abierto, liquidaciones, calendario), una Bot API de paper trading con REST, WebSocket, webhooks, trailing stops y órdenes límite/stop, un servidor MCP remoto con 22 herramientas, OpenAPI 3.1 y clientes de un solo archivo en Python y JS." />
 <meta name="keywords" content="marginpad api, free crypto api, crypto price api no key, paper trading api, trading bot api, crypto liquidation api, funding rate api, mcp server crypto, openapi crypto, crypto calculator api" />
 <link rel="canonical" href="https://marginpad.io/es/api/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/api/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/api/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/api/" />
-<meta property="og:title" content="MarginPad API — datos cripto gratis, Bot API de paper trading, MCP" />
+<meta property="og:title" content="MarginPad API - datos cripto gratis, Bot API de paper trading, MCP" />
 <meta property="og:description" content="Datos de mercado sin clave a 60 peticiones/min (120–600 con una clave gratis), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 22 herramientas, OpenAPI 3.1, clientes en Python y JS." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/api/" />
@@ -81,7 +81,7 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebAPI","name":"API de MarginPad","description":"API gratuita de datos de mercado cripto sin clave (precios, OHLC, screener, funding, interés abierto, liquidaciones, calendario, calculadoras), una Bot API de paper trading (REST, WebSocket, webhooks, órdenes límite/stop, trailing stops) y un servidor MCP remoto con 22 herramientas. OpenAPI 3.1.","url":"https://marginpad.io/es/api/","documentation":"https://marginpad.io/api/openapi.json","termsOfService":"https://marginpad.io/terms/","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <meta name="twitter:image" content="https://marginpad.io/assets/og/api.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:image:width" content="1200" />
@@ -99,15 +99,15 @@
   <div class="crumb"><a href="/es/">Inicio</a> / API</div>
   <article>
     <h1>API de MarginPad</h1>
-    <p class="lead">Todo lo que el sitio sabe, en JSON: precios y velas en vivo, un screener con puntuación, funding, interés abierto, long/short, liquidaciones medidas en nueve exchanges, un calendario económico &mdash; sin clave. Además, una <b>Bot API</b> de paper trading completa para probar un bot de trading con precios reales y dinero simulado, un <b>servidor MCP</b> remoto para que un asistente de IA use todo esto de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo para Python y JavaScript.</p>
+    <p class="lead">Todo lo que el sitio sabe, en JSON: precios y velas en vivo, un screener con puntuación, funding, interés abierto, long/short, liquidaciones medidas en nueve exchanges, un calendario económico - sin clave. Además, una <b>Bot API</b> de paper trading completa para probar un bot de trading con precios reales y dinero simulado, un <b>servidor MCP</b> remoto para que un asistente de IA use todo esto de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo para Python y JavaScript.</p>
     <div class="chips"><span>Datos de mercado sin clave · 60 pet/min</span><span>Clave gratis · 120 pet/min</span><span>Premium · 600 pet/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 23 herramientas</span><span>Bot API 2.4.0</span></div>
 
     <div class="ways">
       <a class="way" href="/es/free-crypto-api/"><b>Datos de mercado</b><strong>API gratuita de datos cripto</strong><span>Precios, velas, screener, funding, OI, long/short, liquidaciones, calendario, Fear &amp; Greed, TVL de DeFi. Sin clave, sin registro.</span><em>Documentación &rarr;</em></a> <a class="way" href="/es/trading-api/"><b>Paper trading</b><strong>Bot API</strong><span>Abrir, cerrar, órdenes límite y stop, trailing stops, webhooks, WebSocket, un informe de trading. Precios reales, dinero simulado.</span><em>Documentación + clave gratis &rarr;</em></a> <a class="way" href="/mcp"><b>Asistentes de IA</b><strong>Servidor MCP remoto</strong><span>23 herramientas para Claude, ChatGPT y Cursor: datos de mercado, calculadoras y tu cuenta de paper trading.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class="way" href="/api/openapi.json"><b>Legible por máquina</b><strong>OpenAPI 3.1 + clientes</strong><span>La especificación completa con esquemas de solicitud y respuesta, y clientes sin dependencias <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Especificación &rarr;</em></a>
     </div>
 
-    <h2 id="data">Datos de mercado — <code>/api/v1/*</code>, sin clave</h2>
-    <p>Cada respuesta viene en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, para que una página del navegador pueda llamarla directamente. <b>60 peticiones por minuto por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (obtenida en <a href="/es/trading-api/">/trading-api/</a>) en las mismas llamadas y se miden contra tu clave en su lugar &mdash; 120 por minuto, 600 con <a href="/es/premium/">Premium</a>. Manual completo con ejemplos: <a href="/es/free-crypto-api/">/free-crypto-api/</a>.</p>
+    <h2 id="data">Datos de mercado - <code>/api/v1/*</code>, sin clave</h2>
+    <p>Cada respuesta viene en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, para que una página del navegador pueda llamarla directamente. <b>60 peticiones por minuto por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (obtenida en <a href="/es/trading-api/">/trading-api/</a>) en las mismas llamadas y se miden contra tu clave en su lugar - 120 por minuto, 600 con <a href="/es/premium/">Premium</a>. Manual completo con ejemplos: <a href="/es/free-crypto-api/">/free-crypto-api/</a>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>Qué obtienes</th></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/price?symbol=BTC</code></td><td>Precio en vivo de una moneda, agregado entre Binance / Bybit / OKX / Gate.</td></tr>
@@ -137,11 +137,11 @@
 curl "https://marginpad.io/api/v1/screener"
 curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;interval=15"   # counts against your key, not your IP</pre>
 
-    <h2 id="bot">Bot API de paper trading — <code>/api/bot/v1/*</code> y <code>/api/bot/v2/*</code></h2>
+    <h2 id="bot">Bot API de paper trading - <code>/api/bot/v1/*</code> y <code>/api/bot/v2/*</code></h2>
     <p>Apunta un bot de trading a precios reales en vivo y liquida cada operación en dólares simulados: margen aislado, apalancamiento hasta 1000&times;, liquidaciones confirmadas en velas de 1 minuto, comisiones taker y funding cobrados como en un exchange real. Inicia sesión con un email y genera una clave en <a href="/es/trading-api/">/trading-api/</a>; las posiciones viven en tu cuenta y cuentan para las tablas de temporada. Las formas de respuesta de <code>v1</code> están congeladas; <code>v2</code> es la misma API dentro del sobre <code>{ ok, data, ts }</code>. Autenticación: <code>X-API-Key</code>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>Qué hace</th></tr>
-      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/price · /klines · /time · /markets</code></td><td>Precio de ejecución, velas, reloj del servidor (con <code>drift_ms</code>) y todos los símbolos operables con su tope de apalancamiento y comisión — los primeros tres no necesitan clave.</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/price · /klines · /time · /markets</code></td><td>Precio de ejecución, velas, reloj del servidor (con <code>drift_ms</code>) y todos los símbolos operables con su tope de apalancamiento y comisión - los primeros tres no necesitan clave.</td></tr>
       <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open</code></td><td>Apertura a mercado al precio en vivo con <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class="tag n">2.3</span> opcionales, <code>client_order_id</code> (reintentos idempotentes) y <code>dry_run</code> <span class="tag n">2.3</span> (calcula el precio, no escribe nada).</td></tr>
       <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/open <i>type: limit | stop</i></code></td><td>Órdenes pendientes que se ejecutan EN tu nivel a partir de velas de 1m mientras el bot está desconectado: una orden límite por debajo del mercado o una entrada stop por encima <span class="tag n">2.3</span>.</td></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/bot/v1/orders</code></td><td>Órdenes pendientes (con <code>type</code>) más las últimas 20 que se ejecutaron, expiraron o se cancelaron.</td></tr>
@@ -162,7 +162,7 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
       <tr><td>Solicitudes por minuto por clave (trading y datos de mercado)</td><td>120</td><td class="hl">600</td></tr>
       <tr><td>Claves API · posiciones abiertas · órdenes pendientes</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td></tr>
       <tr><td>Datos de mercado, WebSocket, MCP, órdenes límite &amp; stop, trailing stops, modificar, dry run, tablas de comisiones por exchange</td><td>incluido</td><td class="hl">incluido</td></tr>
-      <tr><td>Webhooks · lectura de mercado por IA · desgloses de informes</td><td>&mdash;</td><td class="hl">3 webhooks · 50/día · informe completo</td></tr>
+      <tr><td>Webhooks · lectura de mercado por IA · desgloses de informes</td><td>-</td><td class="hl">3 webhooks · 50/día · informe completo</td></tr>
     </table></div>
     <p>La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href="/es/trading-api/">/trading-api/</a>. Cada cambio queda registrado en <a href="/api/changelog">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es 2.4.0.</p>
 
@@ -182,13 +182,13 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
           <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Abre una cuenta en Bybit &rarr;</a>
         </div>
       </div>
-      <span class="gl-note">Enlaces de referido &mdash; MarginPad puede ganar una comisión si abres una cuenta, sin costo para ti; el descuento de Hyperliquid es su propio descuento por referido. Todas las API de esta página siguen siendo gratis de todas formas. Hyperliquid no está disponible para personas de EE. UU. según sus términos.</span>
+      <span class="gl-note">Enlaces de referido - MarginPad puede ganar una comisión si abres una cuenta, sin costo para ti; el descuento de Hyperliquid es su propio descuento por referido. Todas las API de esta página siguen siendo gratis de todas formas. Hyperliquid no está disponible para personas de EE. UU. según sus términos.</span>
     </div>
 
-    <h2 id="mcp">MCP — úsalo desde Claude, ChatGPT o Cursor</h2>
+    <h2 id="mcp">MCP - úsalo desde Claude, ChatGPT o Cursor</h2>
     <p>Agrega <code>https://marginpad.io/mcp</code> como servidor MCP remoto (Streamable HTTP). Las herramientas de datos de mercado no necesitan clave; configura el encabezado <code>X-API-Key</code> para las herramientas de paper trading. <b>23 herramientas:</b> get_price, get_klines, get_markets, get_screener, get_funding, get_open_interest, get_liquidations, get_fear_greed, get_economic_calendar, calc_liquidation, calc_position_size, paper_balance, paper_positions, paper_trades, paper_open, paper_close, paper_sltp, paper_modify_order, paper_fees, paper_report, paper_limit_order, paper_orders, paper_cancel_order.</p>
 
-    <h2 id="sdk">Clientes — un archivo, cero dependencias</h2>
+    <h2 id="sdk">Clientes - un archivo, cero dependencias</h2>
     <p><a href="/assets/sdk/marginpad.py">marginpad.py</a> (Python 3.8+, solo urllib; <code>websockets</code> opcional para el stream) y <a href="/assets/sdk/marginpad.js">marginpad.js</a> (Node 18+ o un navegador). Ambos cubren datos de mercado, todas las llamadas de paper trading, sondeo con ETag, back-off en el 429, el stream por WebSocket y la verificación de firma de los webhooks.</p>
     <pre>from marginpad import MarginPad
 mp = MarginPad("mpb_...")                              # key from /trading-api/
@@ -197,8 +197,8 @@ r = mp.open("BTC", "long", margin_usd=100, leverage=10, trail_pct=1.5,
             client_order_id="sig-1403")                # a retry can never open twice
 print(r["position"]["liq_price"], mp.report()["skill"])</pre>
 
-    <h2 id="calc">Calculadoras — <code>/api/*</code>, JSON plano</h2>
-    <p>Una API JSON pública y gratuita para los cálculos más comunes de futuros de cripto. Sin clave API, sin registro, con CORS habilitado — llámala desde donde quieras.</p>
+    <h2 id="calc">Calculadoras - <code>/api/*</code>, JSON plano</h2>
+    <p>Una API JSON pública y gratuita para los cálculos más comunes de futuros de cripto. Sin clave API, sin registro, con CORS habilitado - llámala desde donde quieras.</p>
     <pre>Base URL   https://marginpad.io/api
 Method     GET
 Auth       none
@@ -208,10 +208,10 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
     <h3>Precio de liquidación</h3>
     <div class="ep"><b>GET</b> /api/liquidation?entry=60000&amp;leverage=10&amp;side=long&amp;mmr=0.5</div>
     <table class="params">
-      <tr><td>entry</td><td>obligatorio — precio de entrada</td></tr>
-      <tr><td>leverage</td><td>obligatorio — múltiplo de apalancamiento (>0)</td></tr>
-      <tr><td>side</td><td>opcional — long (por defecto) o short</td></tr>
-      <tr><td>mmr</td><td>opcional — % de tasa de margen de mantenimiento, por defecto 0.5</td></tr>
+      <tr><td>entry</td><td>obligatorio - precio de entrada</td></tr>
+      <tr><td>leverage</td><td>obligatorio - múltiplo de apalancamiento (>0)</td></tr>
+      <tr><td>side</td><td>opcional - long (por defecto) o short</td></tr>
+      <tr><td>mmr</td><td>opcional - % de tasa de margen de mantenimiento, por defecto 0.5</td></tr>
     </table>
     <pre>{
   "side": "long",
@@ -222,11 +222,11 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
     <h3>Tamaño de posición (por riesgo)</h3>
     <div class="ep"><b>GET</b> /api/position-size?balance=5000&amp;risk=1&amp;entry=60000&amp;stop=58800&amp;leverage=10</div>
     <table class="params">
-      <tr><td>balance</td><td>obligatorio — saldo de la cuenta</td></tr>
-      <tr><td>risk</td><td>obligatorio — % de riesgo por operación</td></tr>
-      <tr><td>entry</td><td>obligatorio — precio de entrada</td></tr>
-      <tr><td>stop</td><td>obligatorio — precio de stop-loss</td></tr>
-      <tr><td>leverage</td><td>opcional — para el margen requerido</td></tr>
+      <tr><td>balance</td><td>obligatorio - saldo de la cuenta</td></tr>
+      <tr><td>risk</td><td>obligatorio - % de riesgo por operación</td></tr>
+      <tr><td>entry</td><td>obligatorio - precio de entrada</td></tr>
+      <tr><td>stop</td><td>obligatorio - precio de stop-loss</td></tr>
+      <tr><td>leverage</td><td>opcional - para el margen requerido</td></tr>
     </table>
     <pre>{ "positionSize": 0.041667, "notional": 2500, "riskAmount": 50, "marginRequired": 250 }</pre>
 
@@ -276,11 +276,11 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
       if (!v || !a || !t) return;
       a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v); a.textContent = 'Open a ' + v + ' account →';
       if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
-      t.innerHTML = 'Bybit does not onboard traders in ' + reg + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
+      t.innerHTML = 'Bybit does not onboard traders in ' + reg + ', so this points at <b>' + v + '</b> instead - a venue that does, with a documented REST API.';
     });
   }, 100);
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

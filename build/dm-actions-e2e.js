@@ -1,5 +1,5 @@
 /* The same three actions on a DIRECT message (owner 2026-09-14: "promena nije u DM chatu uvedena"). DMs are a REST
-   thread in the UserStore, not a WebSocket room, so this is its own storage and its own route — and its own proof
+   thread in the UserStore, not a WebSocket room, so this is its own storage and its own route - and its own proof
    that the rule did not get weaker on the way across: only the sender may edit or delete, only the two people in the
    thread may react at all, and a stranger cannot touch any of it.   node build/dm-actions-e2e.js                  */
 'use strict';

@@ -11,10 +11,10 @@ import { config } from '../../config.js';
 import { log } from '../logger.js';
 
 // OKX edge-blocks some datacenter/region IPs (handshake refused). Two public endpoints exist (default + AWS);
-// we rotate across them on every (re)connect so a block on one edge auto-heals onto the other — no manual change.
+// we rotate across them on every (re)connect so a block on one edge auto-heals onto the other - no manual change.
 const OKX_ENDPOINTS = ['wss://ws.okx.com:8443/ws/v5/public', 'wss://wsaws.okx.com:8443/ws/v5/public'];
 
-// HTTP-CONNECT proxy dispatcher (undici) — same helper Binance uses. NOT for SOCKS.
+// HTTP-CONNECT proxy dispatcher (undici) - same helper Binance uses. NOT for SOCKS.
 function makeProxyAgent(ProxyAgent, u) {
   const url = new URL(u);
   const opts = { uri: url.origin };
@@ -26,7 +26,7 @@ export class OkxCollector extends BaseCollector {
   constructor(opts) {
     super('okx', opts);
     this.silenceMs = 35000;
-    this.staleMs = 6 * 60 * 1000; // OKX streams ALL swaps — a 6-min event gap means a dead subscription
+    this.staleMs = 6 * 60 * 1000; // OKX streams ALL swaps - a 6-min event gap means a dead subscription
     this.ctVal = {};              // instId -> contract value (base units per contract)
     this._epi = 0;                // current endpoint index (sticky)
     this._gotData = false;        // did the CURRENT connection receive any frame?
@@ -49,10 +49,10 @@ export class OkxCollector extends BaseCollector {
 
   async init() {
     // Optional proxy: if OKX_PROXY is set, route this socket (and the REST below) through an allowed-region
-    // HTTP CONNECT proxy — the definitive fix when OKX edge-blocks the server IP. Empty = connect directly.
+    // HTTP CONNECT proxy - the definitive fix when OKX edge-blocks the server IP. Empty = connect directly.
     if (config.okxProxy) {
       try { const { ProxyAgent } = await import('undici'); this._dispatcher = makeProxyAgent(ProxyAgent, config.okxProxy); log.info('[okx] routing via proxy', { proxy: new URL(config.okxProxy).host }); }
-      catch (e) { log.warn('[okx] proxy setup failed (run `npm install` for undici?) — connecting directly', { e: String(e) }); }
+      catch (e) { log.warn('[okx] proxy setup failed (run `npm install` for undici?) - connecting directly', { e: String(e) }); }
     }
     // Load contract values for tracked USDT swaps so we can convert contracts -> base qty.
     try {
@@ -64,7 +64,7 @@ export class OkxCollector extends BaseCollector {
       }
       log.info('[okx] loaded contract values', { count: n });
     } catch (e) {
-      log.warn('[okx] failed to load contract values — notionals may be off until next start', { e: String(e) });
+      log.warn('[okx] failed to load contract values - notionals may be off until next start', { e: String(e) });
     }
   }
 

@@ -1,11 +1,11 @@
 ﻿  const $ = id => document.getElementById(id);
   const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
-  const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '—';
-  const fmtPct = n => isFinite(n) ? (n>=0?'+':'') + n.toFixed(2) + '%' : '—';
-  const fmtCoin = n => isFinite(n) ? n.toLocaleString('en-US',{maximumFractionDigits:6}) : '—';
+  const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '-';
+  const fmtPct = n => isFinite(n) ? (n>=0?'+':'') + n.toFixed(2) + '%' : '-';
+  const fmtCoin = n => isFinite(n) ? n.toLocaleString('en-US',{maximumFractionDigits:6}) : '-';
 
   function animateNum(el, to, fmt){
-    if(!isFinite(to)){ el._cur = NaN; cancelAnimationFrame(el._raf); el.textContent = '—'; return; }
+    if(!isFinite(to)){ el._cur = NaN; cancelAnimationFrame(el._raf); el.textContent = '-'; return; }
     const from = (typeof el._cur === 'number' && isFinite(el._cur)) ? el._cur : to;
     cancelAnimationFrame(el._raf);
     const start = performance.now(), dur = 380;
@@ -16,9 +16,9 @@
     };
     el._raf = requestAnimationFrame(tick);
   }
-  const muted = el => { el.textContent='—'; el.className='rvalue muted'; el._cur=NaN; };
+  const muted = el => { el.textContent='-'; el.className='rvalue muted'; el._cur=NaN; };
 
-  // exchange comparison menu — single source of truth (max leverage = "up to", varies by market/region)
+  // exchange comparison menu - single source of truth (max leverage = "up to", varies by market/region)
   const EXLIST = [
     { name:'Bybit',   href:'https://www.bybit.com/invite?ref=LZKBERJ',                                                              accent:'#f7a600', fg:'#0a0b0d', letter:'B', lev:'100×', tag:'Deep liquidity, fast matching engine', bonus:'Up to 30,000 USDT deposit bonus + 20% off fees' },
     { name:'Binance', href:'https://www.binance.com/register?ref=MAOZM9DS',                                                          accent:'#f0b90b', fg:'#181a20', letter:'B', lev:'125×', tag:'Largest exchange, most trading pairs', badge:'Hot', bonus:'20% off trading fees for life + welcome voucher' },
@@ -26,12 +26,12 @@
     { name:'Bitget',  href:'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', accent:'#00e7d8', fg:'#06231d', letter:'B', lev:'125×', tag:'Copy trading, fast new listings', bonus:'Up to 6,200 USDT welcome pack + 20% off fees' },
     { name:'KuCoin',  href:'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   accent:'#23af91', fg:'#06231d', letter:'K', lev:'100×', tag:'Huge altcoin selection', bonus:'Up to 11,000 USDT in new-user rewards' },
     { name:'Gate',    href:'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', accent:'#3361ff', fg:'#ffffff', letter:'G', lev:'100×', tag:'Thousands of tokens listed', bonus:'Up to 6,666 USDT bonus + 20% off fees' },
-    { name:'Kraken',  href:'https://invite.kraken.com/JDNW/guj2tf28',                                                                accent:'#7b5cff', fg:'#ffffff', letter:'K', lev:'50×',  tag:'Security-first, long track record', bonus:'Up to $200 bonus — sign up & trade' },
+    { name:'Kraken',  href:'https://invite.kraken.com/JDNW/guj2tf28',                                                                accent:'#7b5cff', fg:'#ffffff', letter:'K', lev:'50×',  tag:'Security-first, long track record', bonus:'Up to $200 bonus - sign up & trade' },
     { name:'MEXC',       href:'https://promote.mexc.com/r/GND4jI97o0',                                                               accent:'#0ac2d6', fg:'#06231d', letter:'M', lev:'500×', tag:'High leverage, fast new listings', bonus:'Up to 10,000 USDT futures bonus + $20 gift' },
     { name:'Crypto.com', href:'https://crypto.com/app/sdf5hb6rkv',                                                                   accent:'#0b2e7a', fg:'#ffffff', letter:'C', lev:'100×', tag:'Trusted, easy fiat on-ramp', bonus:'Up to $50 in CRO for new users' }
   ];
   // LANDING-ONLY (2026-08-03): on every tool route (/paper-trade /charts /calculators /screener /heatmap /swap)
-  // home.js hides .exchanges/.hotpairs — populating them was pure wasted work (E2E-proven hidden on all 6).
+  // home.js hides .exchanges/.hotpairs - populating them was pure wasted work (E2E-proven hidden on all 6).
   // Only the direct /app landing state still shows them, and it keeps working.
   const TOOLROUTE = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test(location.pathname);
   const exgrid = TOOLROUTE ? null : document.getElementById('exgrid');
@@ -72,7 +72,7 @@
 
   function calcLiq(){
     const entry=num('liqEntry'), lev=num('liqLev'), mmr=num('liqMmr')/100, out=$('liqOut');
-    if(!isFinite(entry)||!isFinite(lev)||lev<=0||!isFinite(mmr)){ muted(out); $('liqDist').textContent=$('liqMove').textContent=$('liqMargin').textContent='—'; return; }
+    if(!isFinite(entry)||!isFinite(lev)||lev<=0||!isFinite(mmr)){ muted(out); $('liqDist').textContent=$('liqMove').textContent=$('liqMargin').textContent='-'; return; }
     const long=sides.liqSide==='long';
     const liq=long?entry*(1-1/lev+mmr):entry*(1+1/lev-mmr);
     const dist=(liq-entry)/entry*100;
@@ -87,7 +87,7 @@
   function calcCross(){
     const entry=num('crEntry'), qty=num('crQty'), bal=num('crBal'), mmr=num('crMmr')/100, out=$('crOut'), lad=$('crLadder');
     if(!out)return;
-    const clear=()=>{ muted(out); $('crDist').textContent=$('crEffLev').textContent=$('crNotional').textContent='—'; if(lad)lad.innerHTML=''; };
+    const clear=()=>{ muted(out); $('crDist').textContent=$('crEffLev').textContent=$('crNotional').textContent='-'; if(lad)lad.innerHTML=''; };
     if(!isFinite(entry)||entry<=0||!isFinite(qty)||qty<=0||!isFinite(bal)||bal<0||!isFinite(mmr)){ clear(); return; }
     const long=sides.crSide==='long';
     const liqAt=b=>long ? (qty*entry-b)/(qty*(1-mmr)) : (b+qty*entry)/(qty*(1+mmr));
@@ -95,7 +95,7 @@
     const liq=liqAt(bal), covered=long&&liq<=0, dist=(liq-entry)/entry*100;
     if(covered){ out.className='rvalue pos'; cancelAnimationFrame(out._raf); out.textContent='No liquidation'; out._cur=NaN; }
     else { out.className='rvalue '+(dist<0?'neg':'pos'); animateNum(out, liq, v=>'$'+fmtUSD(v)); }
-    $('crDist').textContent=covered?'— fully backed':fmtPct(dist); $('crDist').className='v '+((covered||dist<0)?'neg':'pos');
+    $('crDist').textContent=covered?'- fully backed':fmtPct(dist); $('crDist').className='v '+((covered||dist<0)?'neg':'pos');
     $('crEffLev').textContent=isFinite(effLev)?effLev.toFixed(2)+'×':'∞';
     $('crNotional').textContent='$'+fmtUSD(notional);
     if(lad){ const steps=[0.25,0.5,1,2].map(f=>bal>0?bal*f:notional*0.02*(f*4)).filter(a=>a>0);
@@ -107,30 +107,30 @@
   function calcSize(){
     const bal=num('szBal'), risk=num('szRisk')/100, entry=num('szEntry'), stop=num('szStop'), lev=num('szLev'), out=$('szOut');
     const dist=Math.abs(entry-stop);
-    if(!isFinite(bal)||!isFinite(risk)||!isFinite(entry)||!isFinite(stop)||dist===0){ muted(out); $('szNotional').textContent=$('szRiskAmt').textContent=$('szDist').textContent=$('szMargin').textContent='—'; return; }
+    if(!isFinite(bal)||!isFinite(risk)||!isFinite(entry)||!isFinite(stop)||dist===0){ muted(out); $('szNotional').textContent=$('szRiskAmt').textContent=$('szDist').textContent=$('szMargin').textContent='-'; return; }
     const riskAmt=bal*risk, qty=riskAmt/dist, notional=qty*entry;
     out.className='rvalue'; animateNum(out, qty, v=>fmtCoin(v));
     $('szNotional').textContent='$'+fmtUSD(notional);
     $('szRiskAmt').textContent='$'+fmtUSD(riskAmt);
     $('szDist').textContent=(dist/entry*100).toFixed(2)+'%';
-    $('szMargin').textContent=(isFinite(lev)&&lev>0)?'$'+fmtUSD(notional/lev):'—';
+    $('szMargin').textContent=(isFinite(lev)&&lev>0)?'$'+fmtUSD(notional/lev):'-';
   }
   function calcPnl(){
     const entry=num('pnlEntry'), exit=num('pnlExit'), qty=num('pnlQty'), lev=num('pnlLev'), out=$('pnlOut');
-    if(!isFinite(entry)||!isFinite(exit)||!isFinite(qty)){ muted(out); $('pnlRoi').textContent=$('pnlRoe').textContent=$('pnlNotional').textContent=$('pnlExitVal').textContent='—'; return; }
+    if(!isFinite(entry)||!isFinite(exit)||!isFinite(qty)){ muted(out); $('pnlRoi').textContent=$('pnlRoe').textContent=$('pnlNotional').textContent=$('pnlExitVal').textContent='-'; return; }
     const long=sides.pnlSide==='long';
     const pnl=(long?(exit-entry):(entry-exit))*qty, roi=(long?(exit-entry):(entry-exit))/entry*100, notional=entry*qty;
     out.className='rvalue'+(pnl<0?' neg':' pos'); animateNum(out, pnl, v=>(v>=0?'+$':'−$')+fmtUSD(Math.abs(v)));
     $('pnlRoi').textContent=fmtPct(roi); $('pnlRoi').className='v '+(roi<0?'neg':'pos');
     const roe=(isFinite(lev)&&lev>0)?roi*lev:NaN;
-    $('pnlRoe').textContent=isFinite(roe)?fmtPct(roe):'—'; $('pnlRoe').className='v '+(roe<0?'neg':'pos');
+    $('pnlRoe').textContent=isFinite(roe)?fmtPct(roe):'-'; $('pnlRoe').className='v '+(roe<0?'neg':'pos');
     $('pnlNotional').textContent='$'+fmtUSD(notional);
     $('pnlExitVal').textContent='$'+fmtUSD(exit*qty);
   }
   function calcDca(){
     const out=$('dcaOut'); let cost=0, qty=0;
     for(let i=1;i<=4;i++){ const p=num('dcaP'+i), q=num('dcaQ'+i); if(isFinite(p)&&isFinite(q)&&p>0&&q>0){ cost+=p*q; qty+=q; } }
-    if(qty<=0){ muted(out); $('dcaQty').textContent=$('dcaCost').textContent=$('dcaVal').textContent=$('dcaPnl').textContent='—'; return; }
+    if(qty<=0){ muted(out); $('dcaQty').textContent=$('dcaCost').textContent=$('dcaVal').textContent=$('dcaPnl').textContent='-'; return; }
     const avg=cost/qty; out.className='rvalue'; animateNum(out, avg, v=>'$'+fmtUSD(v));
     $('dcaQty').textContent=fmtCoin(qty);
     $('dcaCost').textContent='$'+fmtUSD(cost);
@@ -140,7 +140,7 @@
       $('dcaVal').textContent='$'+fmtUSD(val);
       $('dcaPnl').textContent=(pnl>=0?'+$':'−$')+fmtUSD(Math.abs(pnl))+'  ('+fmtPct(roi)+')';
       $('dcaPnl').className='v '+(pnl<0?'neg':'pos');
-    } else { $('dcaVal').textContent='—'; $('dcaPnl').textContent='—'; $('dcaPnl').className='v'; }
+    } else { $('dcaVal').textContent='-'; $('dcaPnl').textContent='-'; $('dcaPnl').className='v'; }
   }
   function calcTp(){
     const entry=num('tpEntry'), lev=(isFinite(num('tpLev'))&&num('tpLev')>0)?num('tpLev'):1, qty=num('tpQty'), out=$('tpOut'), body=$('tpLadder');
@@ -154,14 +154,14 @@
     const levels=[25,50,100,200];
     body.innerHTML = levels.map(r=>{
       const px=targetPrice(r), pf=profitAt(px);
-      return '<tr><td>+'+r+'%</td><td><span class="p">$'+fmtUSD(px)+'</span></td><td>'+(isFinite(pf)?'<span class="g">+$'+fmtUSD(pf)+'</span>':'—')+'</td></tr>';
+      return '<tr><td>+'+r+'%</td><td><span class="p">$'+fmtUSD(px)+'</span></td><td>'+(isFinite(pf)?'<span class="g">+$'+fmtUSD(pf)+'</span>':'-')+'</td></tr>';
     }).join('');
   }
 
   function calcRr(){
     const entry=num('rrEntry'), stop=num('rrStop'), tp=num('rrTp'), out=$('rrOut');
     const risk=Math.abs(entry-stop), reward=Math.abs(tp-entry);
-    if(!isFinite(entry)||!isFinite(stop)||!isFinite(tp)||risk===0){ muted(out); $('rrRisk').textContent=$('rrReward').textContent=$('rrBe').textContent='—'; return; }
+    if(!isFinite(entry)||!isFinite(stop)||!isFinite(tp)||risk===0){ muted(out); $('rrRisk').textContent=$('rrReward').textContent=$('rrBe').textContent='-'; return; }
     const ratio=reward/risk, be=risk/(risk+reward)*100;
     out.className='rvalue'; animateNum(out, ratio, v=>v.toFixed(2)+' : 1');
     $('rrRisk').textContent='$'+fmtUSD(risk);
@@ -186,7 +186,7 @@
   document.querySelectorAll('.copybtn').forEach(btn => btn.addEventListener('click', () => {
     const el = document.getElementById(btn.dataset.copy);
     const txt = el ? el.textContent.trim() : '';
-    if (!txt || txt === '—') return;
+    if (!txt || txt === '-') return;
     const done = () => { btn.classList.add('copied'); setTimeout(() => btn.classList.remove('copied'), 1300); };
     if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done).catch(done); }
     else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); done(); }

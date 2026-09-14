@@ -24,15 +24,15 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito — MarginPad</title>
-<meta name="description" content="Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado — gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot." />
+<title>Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito - MarginPad</title>
+<meta name="description" content="Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado - gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot." />
 <meta name="keywords" content="python crypto trading bot, crypto trading bot tutorial, how to build a crypto trading bot, python trading bot, paper trading api python, test trading bot free, crypto bot python code" />
 <link rel="canonical" href="https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/python-crypto-trading-bot-tutorial/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/blog/python-crypto-trading-bot-tutorial/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/" />
 <meta property="og:title" content="Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito" />
-<meta property="og:description" content="Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado — gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot." />
+<meta property="og:description" content="Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado - gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/blog-python-crypto-trading-bot-tutorial.jpg" />
@@ -41,11 +41,11 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito","description":"Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado — gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo creo un bot de trading cripto en Python?","acceptedAnswer":{"@type":"Answer","text":"En el fondo, un bot es un bucle: obtienes un precio en vivo o unas velas, ejecutas la lógica de tu estrategia y colocas una orden cuando se cumple la regla. En Python solo necesitas la librería requests y un endpoint de trading. Empieza con una API de paper trading para que los errores no cuesten nada, y pasa a un exchange real cuando la estrategia esté probada."}},{"@type":"Question","name":"¿Puedo probar gratis un bot de trading en Python?","acceptedAnswer":{"@type":"Answer","text":"Sí. La API REST de paper trading de MarginPad es gratis: inicia sesión con un correo, genera una clave API, y tu bot en Python puede abrir y cerrar posiciones apalancadas a precios reales en vivo con simulación automática de stop-loss, take-profit y liquidación. Sin depósito, sin KYC, 120 peticiones por minuto."}},{"@type":"Question","name":"¿Qué librerías de Python necesito para un bot de trading?","acceptedAnswer":{"@type":"Answer","text":"Para un bot de paper trading casi no necesitas nada: un cliente HTTP tipo requests (o el propio paquete requests) para llamar a la API, y opcionalmente pandas/numpy si calculas tus propios indicadores. Todo en este tutorial funciona solo con requests."}},{"@type":"Question","name":"¿Cuánto tiempo debería probar un bot en simulado antes de pasarlo a real?","acceptedAnswer":{"@type":"Answer","text":"El tiempo suficiente para ver más de una condición de mercado — normalmente al menos 2-4 semanas y más de 30 operaciones que cubran una tendencia, un mercado lateral y un día volátil. Si el bot sobrevive a las tres manteniendo sus reglas de riesgo intactas, tienes evidencia real y no solo una muestra con suerte."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito","description":"Crea un bot de trading cripto funcional en Python y pruébalo con precios reales en vivo y dinero simulado - gratis, sin depósito. Código completo: feed de precios, estrategia de cruce de EMA, apertura/cierre de órdenes y el bucle del bot.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo creo un bot de trading cripto en Python?","acceptedAnswer":{"@type":"Answer","text":"En el fondo, un bot es un bucle: obtienes un precio en vivo o unas velas, ejecutas la lógica de tu estrategia y colocas una orden cuando se cumple la regla. En Python solo necesitas la librería requests y un endpoint de trading. Empieza con una API de paper trading para que los errores no cuesten nada, y pasa a un exchange real cuando la estrategia esté probada."}},{"@type":"Question","name":"¿Puedo probar gratis un bot de trading en Python?","acceptedAnswer":{"@type":"Answer","text":"Sí. La API REST de paper trading de MarginPad es gratis: inicia sesión con un correo, genera una clave API, y tu bot en Python puede abrir y cerrar posiciones apalancadas a precios reales en vivo con simulación automática de stop-loss, take-profit y liquidación. Sin depósito, sin KYC, 120 peticiones por minuto."}},{"@type":"Question","name":"¿Qué librerías de Python necesito para un bot de trading?","acceptedAnswer":{"@type":"Answer","text":"Para un bot de paper trading casi no necesitas nada: un cliente HTTP tipo requests (o el propio paquete requests) para llamar a la API, y opcionalmente pandas/numpy si calculas tus propios indicadores. Todo en este tutorial funciona solo con requests."}},{"@type":"Question","name":"¿Cuánto tiempo debería probar un bot en simulado antes de pasarlo a real?","acceptedAnswer":{"@type":"Answer","text":"El tiempo suficiente para ver más de una condición de mercado - normalmente al menos 2-4 semanas y más de 30 operaciones que cubran una tendencia, un mercado lateral y un día volátil. Si el bot sobrevive a las tres manteniendo sus reglas de riesgo intactas, tienes evidencia real y no solo una muestra con suerte."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bot de trading en Python","item":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -80,14 +80,14 @@
   <article>
     <h1>Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito</h1>
     <div class="meta">Guías · 8 min de lectura · Actualizado en junio de 2026</div>
-    <p>Los bots de trading están por todas partes en 2026, y Python es la forma más fácil de crear uno. La buena noticia: no necesitas un framework sofisticado ni una cuenta con fondos en un exchange para empezar. En este tutorial vas a construir un bot de trading cripto funcional en Python y a probarlo con <strong>precios reales en vivo y dinero simulado</strong> — gratis, sin depósito. <em>(Solo con fines educativos, no es asesoría financiera.)</em></p>
+    <p>Los bots de trading están por todas partes en 2026, y Python es la forma más fácil de crear uno. La buena noticia: no necesitas un framework sofisticado ni una cuenta con fondos en un exchange para empezar. En este tutorial vas a construir un bot de trading cripto funcional en Python y a probarlo con <strong>precios reales en vivo y dinero simulado</strong> - gratis, sin depósito. <em>(Solo con fines educativos, no es asesoría financiera.)</em></p>
     <h2>Qué vas a construir</h2>
-    <p>Un bot de momentum simple: vigila una moneda y, cuando la tendencia de corto plazo gira al alza, abre un long pequeño; cuando gira a la baja, lo cierra. Cada orden va a una <strong>API de paper trading</strong> que se ejecuta al precio real en vivo y simula apalancamiento, stop-loss, take-profit y liquidación — así un fallo de código no te cuesta nada en vez de costarte la cuenta.</p>
-    <h2>Paso 1 — consigue una clave API gratis</h2>
+    <p>Un bot de momentum simple: vigila una moneda y, cuando la tendencia de corto plazo gira al alza, abre un long pequeño; cuando gira a la baja, lo cierra. Cada orden va a una <strong>API de paper trading</strong> que se ejecuta al precio real en vivo y simula apalancamiento, stop-loss, take-profit y liquidación - así un fallo de código no te cuesta nada en vez de costarte la cuenta.</p>
+    <h2>Paso 1 - consigue una clave API gratis</h2>
     <p>Entra en la <a href="/es/trading-api/">API de trading de MarginPad</a>, inicia sesión con un correo (sin contraseña, sin KYC) y genera tu clave. Eso es toda la configuración. Los endpoints de precio y velas no necesitan clave, así que puedes probar uno ahora mismo en tu navegador:</p>
     <pre># live price, no key needed
 curl "https://marginpad.io/api/bot/v1/price?symbol=BTC"</pre>
-    <h2>Paso 2 — el feed de precios en Python</h2>
+    <h2>Paso 2 - el feed de precios en Python</h2>
     <p>Todo funciona con la librería <code>requests</code>. Descarga un precio en vivo y algunas velas para tu señal:</p>
     <pre>import requests
 
@@ -101,7 +101,7 @@ def price(sym="BTC"):
 def closes(sym="BTC", interval="60", n=50):
     k = requests.get(f"{API}/v1/klines", params={"symbol": sym, "interval": interval}).json()
     return [c["close"] for c in k[-n:]]</pre>
-    <h2>Paso 3 — la estrategia (cruce de EMA)</h2>
+    <h2>Paso 3 - la estrategia (cruce de EMA)</h2>
     <p>Una regla de momentum clásica: cuando una media rápida cruza por encima de una lenta, el momentum es alcista. No hacen falta librerías:</p>
     <pre>def ema(vals, period):
     k = 2 / (period + 1)
@@ -114,7 +114,7 @@ def signal(sym="BTC"):
     c = closes(sym)
     fast, slow = ema(c[-9:], 9), ema(c[-21:], 21)
     return "long" if fast > slow else "flat"</pre>
-    <h2>Paso 4 — abrir y cerrar posiciones</h2>
+    <h2>Paso 4 - abrir y cerrar posiciones</h2>
     <p>Ahora conecta la señal a órdenes reales (simuladas). Abre una posición apalancada con un stop-loss y un take-profit opcionales; ciérrala cuando la tendencia gire:</p>
     <pre>def open_long(sym="BTC", usd=50, lev=10):
     p = price(sym)
@@ -128,7 +128,7 @@ def close_all():
 
 def positions():
     return requests.get(f"{API}/v1/positions", headers=H).json()</pre>
-    <h2>Paso 5 — el bucle del bot</h2>
+    <h2>Paso 5 - el bucle del bot</h2>
     <p>Júntalo todo: revisa la señal con una frecuencia fija, abre cuando se vuelve long, cierra cuando queda plano, e imprime tu P&amp;L en vivo.</p>
     <pre>import time
 
@@ -145,12 +145,12 @@ while True:
     pnl = sum(p.get("unrealized_pnl_usd", 0) for p in pos)
     print(f"signal={sig} open={len(pos)} uPnL=${pnl:.2f}")
     time.sleep(60)</pre>
-    <p>Eso es un bot de trading cripto completo y funcional — y nunca toca dinero real. Las posiciones se liquidan exactamente igual que en un exchange real cuando el precio cruza el nivel, y tu stop-loss/take-profit se ejecutan automáticamente.</p>
-    <h2>Paso 6 — mide, luego decide</h2>
-    <p>Déjalo correr varios días en distintas condiciones. Revisa <code>GET /v1/account</code> para tu tasa de acierto y tu P&amp;L realizado, y analiza los resultados en el <a href="/es/trading-journal/">Diario de trading</a>. Compáralo con un <a href="/es/crypto-backtester/">backtest</a> simple — si la prueba en vivo se aparta del backtest, esa diferencia es exactamente lo que un backtest esconde: fallos de código y sobreajuste. Solo financia una cuenta real cuando el bot en simulado se haya demostrado. El flujo completo está en <a href="/es/blog/how-to-test-a-crypto-trading-bot/">cómo probar un bot de trading cripto</a>, y para el enfoque con IA mira <a href="/es/blog/can-ai-trade-crypto-futures/">puede la IA operar futuros cripto</a>.</p>
-    <div class="callout"><div class="k">PRUEBA TU BOT GRATIS</div><p style="margin-bottom:14px">Una API REST de paper trading gratis con precios reales en vivo — simulación de apalancamiento, SL/TP, cierres parciales y liquidación. Consigue una clave API en 30 segundos.</p><a class="cta" href="/es/trading-api/">Obtén tu clave API gratis &rarr;</a></div>
+    <p>Eso es un bot de trading cripto completo y funcional - y nunca toca dinero real. Las posiciones se liquidan exactamente igual que en un exchange real cuando el precio cruza el nivel, y tu stop-loss/take-profit se ejecutan automáticamente.</p>
+    <h2>Paso 6 - mide, luego decide</h2>
+    <p>Déjalo correr varios días en distintas condiciones. Revisa <code>GET /v1/account</code> para tu tasa de acierto y tu P&amp;L realizado, y analiza los resultados en el <a href="/es/trading-journal/">Diario de trading</a>. Compáralo con un <a href="/es/crypto-backtester/">backtest</a> simple - si la prueba en vivo se aparta del backtest, esa diferencia es exactamente lo que un backtest esconde: fallos de código y sobreajuste. Solo financia una cuenta real cuando el bot en simulado se haya demostrado. El flujo completo está en <a href="/es/blog/how-to-test-a-crypto-trading-bot/">cómo probar un bot de trading cripto</a>, y para el enfoque con IA mira <a href="/es/blog/can-ai-trade-crypto-futures/">puede la IA operar futuros cripto</a>.</p>
+    <div class="callout"><div class="k">PRUEBA TU BOT GRATIS</div><p style="margin-bottom:14px">Una API REST de paper trading gratis con precios reales en vivo - simulación de apalancamiento, SL/TP, cierres parciales y liquidación. Consigue una clave API en 30 segundos.</p><a class="cta" href="/es/trading-api/">Obtén tu clave API gratis &rarr;</a></div>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -160,7 +160,7 @@ while True:
 </article>
   <section class="related">
     <h2 class="rel-title">Guías relacionadas</h2>
-    <div class="rel-grid"><a class="rel-card" href="/es/blog/moon-trading-platform-review/"><span class="tag">Guías</span><span class="rel-t">Reseña de Moon (2026): predice si cripto, acciones y forex suben o bajan — 24/7</span></a><a class="rel-card" href="/es/blog/crypto-cost-basis-fifo-lifo-hifo/"><span class="tag">Guías</span><span class="rel-t">Base de costo en cripto: FIFO vs LIFO vs HIFO explicado (2026)</span></a><a class="rel-card" href="/es/blog/crypto-tax-loss-harvesting/"><span class="tag">Guías</span><span class="rel-t">Tax-Loss Harvesting en cripto: la forma legal de reducir tus impuestos (2026)</span></a></div>
+    <div class="rel-grid"><a class="rel-card" href="/es/blog/moon-trading-platform-review/"><span class="tag">Guías</span><span class="rel-t">Reseña de Moon (2026): predice si cripto, acciones y forex suben o bajan - 24/7</span></a><a class="rel-card" href="/es/blog/crypto-cost-basis-fifo-lifo-hifo/"><span class="tag">Guías</span><span class="rel-t">Base de costo en cripto: FIFO vs LIFO vs HIFO explicado (2026)</span></a><a class="rel-card" href="/es/blog/crypto-tax-loss-harvesting/"><span class="tag">Guías</span><span class="rel-t">Tax-Loss Harvesting en cripto: la forma legal de reducir tus impuestos (2026)</span></a></div>
   </section>
   <section class="comments">
     <h2 class="cm-title">Comentarios</h2>
@@ -177,6 +177,6 @@ while True:
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

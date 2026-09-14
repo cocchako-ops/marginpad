@@ -1,11 +1,11 @@
-// build/inject-nations.js — inject build/nations.css (the NATIONS frames source) into dist/assets/mp-auth.js as string-concat lines after the mpaCathedral keyframe (idempotent:
+// build/inject-nations.js - inject build/nations.css (the NATIONS frames source) into dist/assets/mp-auth.js as string-concat lines after the mpaCathedral keyframe (idempotent:
 // replaces an existing NATIONS block). Write bytes to a tmp file + rename (project rule).
 const fs = require('fs'), path = require('path');
 const F = 'D:/part1/money-mission/dist/assets/mp-auth.js';
 const css = fs.readFileSync(path.join(__dirname, 'nations.css'), 'utf8');
 const lines = css.split(/\r?\n/).filter(l => l.trim() && !l.trim().startsWith('/*') && !l.trim().startsWith('an ') && !/^\s*\(/.test(l) && !/^\s*edges,|^\s*keyframe|^\s*the twenty/.test(l)).filter(l => !l.trim().startsWith('/'));
 const body = lines.map(l => "    + '" + l.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'").join('\n');
-const START = '    /* ===== NATIONS (2026-09-05): 20 country frames, $1.99 — generated from scratchpad nations.css by inject.js ===== */';
+const START = '    /* ===== NATIONS (2026-09-05): 20 country frames, $1.99 - generated from scratchpad nations.css by inject.js ===== */';
 const END = '    /* ===== /NATIONS ===== */';
 let src = fs.readFileSync(F, 'utf8');
 const anchor = "    + '@keyframes mpaCathedral{0%,100%{opacity:.8}50%{opacity:1}}'";

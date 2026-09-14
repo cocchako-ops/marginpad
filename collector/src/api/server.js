@@ -18,7 +18,7 @@ function rateLimit(req, res, next) {
 }
 setInterval(() => { const now = Date.now(); for (const [k, v] of hits) if (v.reset < now) hits.delete(k); }, 60000).unref?.();
 
-// ---- freemium SEAM (no paywall yet — just the clean hook) ----
+// ---- freemium SEAM (no paywall yet - just the clean hook) ----
 // Later, gate (a) symbols beyond BTC/ETH, (b) windows > 24h, (c) realtime vs 5-min-delayed behind an API key.
 function gate(req, { window } = {}) {
   const key = req.headers['x-api-key'];
@@ -47,7 +47,7 @@ export function createApiServer({ storage, getStatus, bus }) {
   app.use(rateLimit);
 
   // Histogram source for the chart (aggregated; cache-friendly).
-  // Every read below goes through storage.async — the reader worker thread — so a slow query costs the
+  // Every read below goes through storage.async - the reader worker thread - so a slow query costs the
   // request latency, never the exchange sockets on the main thread.
   app.get('/api/v1/liquidations/recent', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
@@ -74,19 +74,19 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { log.error('live failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
-  // Market-wide recent liquidations (all symbols) — powers the global floating feed on the site.
+  // Market-wide recent liquidations (all symbols) - powers the global floating feed on the site.
   app.get('/api/v1/feed', async (req, res) => {
     const min = parseFloat(req.query.min) || 0;
-    const since = parseInt(req.query.since, 10) || 0; // ms timestamp — backfill mode ("everything since UTC midnight")
+    const since = parseInt(req.query.since, 10) || 0; // ms timestamp - backfill mode ("everything since UTC midnight")
     const cap = since > 0 ? 3000 : 200;               // a history pull may span the whole day; the live poll stays small
     const limit = Math.min(parseInt(req.query.limit, 10) || 30, cap);
     try { const events = await storage.async.feed(min, limit, since); res.set('Cache-Control', since > 0 ? 'public, max-age=30' : 'public, max-age=2'); res.json({ events }); }
     catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
-  // Full-day raw dump for the R2 archive (worker cron, 1 call/day). Gated by EXPORT_KEY (droplet .env —
+  // Full-day raw dump for the R2 archive (worker cron, 1 call/day). Gated by EXPORT_KEY (droplet .env -
   // NOT in the repo, repo is public). Gzip CSV so a ~65k-row day ships as ~1MB. Completed UTC days only:
-  // the archive must be immutable — a partial "today" would get overwritten logic on the worker side instead.
+  // the archive must be immutable - a partial "today" would get overwritten logic on the worker side instead.
   app.get('/api/v1/export', async (req, res) => {
     const key = req.headers['x-export-key'] || '';
     if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) return res.status(403).json({ error: 'forbidden' });
@@ -123,10 +123,10 @@ export function createApiServer({ storage, getStatus, bus }) {
   // Server-Sent Events: push new liquidations to connected browsers for a live feel.
   app.get('/api/v1/liquidations/stream', (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
-    const allSyms = symbol === 'ALL'; // firehose mode (Rekt live push) — every symbol, optional min notional
+    const allSyms = symbol === 'ALL'; // firehose mode (Rekt live push) - every symbol, optional min notional
     if (!allSyms && !validSymbol(symbol)) return res.status(400).end();
     const min = Math.max(0, parseFloat(req.query.min) || 0);
-    // X-Accel-Buffering: nginx fronts this — without it proxy buffering holds SSE events back
+    // X-Accel-Buffering: nginx fronts this - without it proxy buffering holds SSE events back
     res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive', 'Access-Control-Allow-Origin': config.api.corsOrigin, 'X-Accel-Buffering': 'no' });
     res.flushHeaders?.();
     res.write(`event: hello\ndata: ${JSON.stringify({ symbol })}\n\n`);
@@ -136,7 +136,7 @@ export function createApiServer({ storage, getStatus, bus }) {
     req.on('close', () => { clearInterval(ka); bus.off('liq', onLiq); });
   });
 
-  // Phase 2: estimated liquidation clusters (a MODEL — UI must label it as such).
+  // Phase 2: estimated liquidation clusters (a MODEL - UI must label it as such).
   app.get('/api/v1/clusters', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
@@ -147,7 +147,7 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { log.error('clusters failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
-  // Perp tickers from venues that 403-ban Cloudflare's shared edge IPs (Binance, Bitget) — fetched here from the VPS
+  // Perp tickers from venues that 403-ban Cloudflare's shared edge IPs (Binance, Bitget) - fetched here from the VPS
   // (a normal residential/datacenter IP that ISN'T banned) so the site's screener can aggregate them too. Normalized to
   // the screener's shape; cached in-memory ~30s so the upstreams aren't hammered (the Worker also edge-caches this).
   let _perpCache = { ts: 0, data: null };
@@ -195,7 +195,7 @@ export function createApiServer({ storage, getStatus, bus }) {
     res.json(out);
   });
 
-  // ---- Binance REST proxy (2026-07-24) — Cloudflare Workers can't reach Binance (403 on CF egress IPs),
+  // ---- Binance REST proxy (2026-07-24) - Cloudflare Workers can't reach Binance (403 on CF egress IPs),
   // this droplet can. STRICT whitelist of read-only market-data paths + 5s in-memory cache so the worker's
   // edge cache + this cache together keep us far under Binance's 1200 weight/min. No account/trade paths, ever.
   const BNC_ALLOW = /^\/(api\/v3\/(time|ticker\/24hr|ticker\/price|klines|depth|exchangeInfo)|fapi\/v1\/(ticker\/price|ticker\/24hr|premiumIndex|openInterest|klines|fundingRate)|futures\/data\/(openInterestHist|globalLongShortAccountRatio|topLongShortPositionRatio))$/;
@@ -241,7 +241,7 @@ export function createApiServer({ storage, getStatus, bus }) {
   });
 
   // LATAM quotes proxy (2026-09-07): CriptoYa (ARS/BRL per-exchange quotes) answers Cloudflare Workers with
-  // error 1106 and awesomeapi (USD/BRL comercial) rate-limits the shared CF egress — this box reaches both.
+  // error 1106 and awesomeapi (USD/BRL comercial) rate-limits the shared CF egress - this box reaches both.
   // Strict whitelist of read-only paths, 60 s cache for quotes, 300 s for the dollar; the worker adds its own edge
   // cache + KV last-good on top, so the upstreams see a handful of requests per minute at most.
   const CY_ALLOW = /^\/(dolar|usdt\/ars\/1|usdt\/brl\/1|btc\/brl\/1|usdc\/ars\/1)$/;
@@ -278,7 +278,7 @@ export function createApiServer({ storage, getStatus, bus }) {
   // address resolved instantly from here. Same reason /api/v1/latam exists for CriptoYa. Whitelisted to the two
   // read paths the worker needs, cached 45 s in memory, no keys involved.
   // tokens + pools + the pool's CANDLES. The candles were left out on the first pass and it cost every meme its
-  // chart: GT 429s the worker, the worker asked here, and here refused the path — /api/spot/memechart returned
+  // chart: GT 429s the worker, the worker asked here, and here refused the path - /api/spot/memechart returned
   // zero bars for BONK as well as for a coin minted minutes ago (measured 2026-09-10).
   const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?)$/;
   const gtCache = new Map();
@@ -305,7 +305,7 @@ export function createApiServer({ storage, getStatus, bus }) {
     catch (e) { res.status(500).json({ error: 'server' }); }
   });
 
-  // Health — per-exchange socket state, last event, events/min. Check it from your phone.
+  // Health - per-exchange socket state, last event, events/min. Check it from your phone.
   app.get('/api/v1/status', async (req, res) => {
     res.set('Cache-Control', 'no-store');
     const st = getStatus();

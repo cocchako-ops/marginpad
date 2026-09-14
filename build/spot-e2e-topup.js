@@ -57,6 +57,6 @@ const uidE = 'e2etop' + Math.random().toString(36).slice(2, 7);
     try { await fetch(ORIGIN + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: uidE, op: 'rm' }) }); } catch (e) {}
   }
   const bad = out.filter(l => l.slice(0, 4) === 'FAIL').length;
-  console.log('\nUID ' + uidE + ' — pass ' + (out.length - bad) + ' fail ' + bad);
+  console.log('\nUID ' + uidE + ' - pass ' + (out.length - bad) + ' fail ' + bad);
   process.exit(bad ? 1 : 0);
 })();

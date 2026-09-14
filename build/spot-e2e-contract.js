@@ -1,4 +1,4 @@
-// Demo Spot E2E (2026-09-03): buy any token by contract address — lookup (Solana + EVM auto-net), guards (garbage, unknown, major, thin), buy + sell of an unlisted token, and the wallet search card in a real browser.
+// Demo Spot E2E (2026-09-03): buy any token by contract address - lookup (Solana + EVM auto-net), guards (garbage, unknown, major, thin), buy + sell of an unlisted token, and the wallet search card in a real browser.
 const fs = require('fs'); const { withBrowser } = require('D:/part1/money-mission/build/e2e-browser.js');
 const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').split(/\r?\n/)[1].trim();
 const UID = 'spotctr' + Date.now().toString(36).slice(-4); const B = 'https://marginpad.io/api/spot';
@@ -32,7 +32,7 @@ const BONK = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', CAKE = '0x0e09fabb7
     await page.evaluate(() => { document.getElementById('memeQ').value = 'hello'; document.getElementById('memeQ').dispatchEvent(new Event('input')); }); await new Promise(r => setTimeout(r, 300));
     chk('browser: non-address input clears the card', await page.evaluate(() => !document.getElementById('tokRow')));
     // THE CHART. On 2026-09-10 every meme chart on Demo Spot was empty (BONK: zero bars) because GeckoTerminal
-    // refuses our egress and the droplet proxy did not yet cover the candle path — and a hard error skipped the
+    // refuses our egress and the droplet proxy did not yet cover the candle path - and a hard error skipped the
     // fallback entirely. A meme the trader can open must have candles to look at.
     const ch = await page.evaluate(async () => {
       const host = document.getElementById('tmChart');

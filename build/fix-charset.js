@@ -1,9 +1,9 @@
-// fix-charset.js — ensure <meta charset> is the FIRST tag inside <head> on every dist HTML page.
+// fix-charset.js - ensure <meta charset> is the FIRST tag inside <head> on every dist HTML page.
 // WHY (2026-07-23 incident): the Yandex.Metrika + gtag head injections landed BEFORE the charset meta,
 // pushing it past the browser's 1024-byte encoding prescan window. With no charset in the HTTP
 // Content-Type header (Cloudflare assets serve bare "text/html"), browsers fell back to windows-1252
 // → site-wide mojibake (Â·, â€”, zavrÅ¡ena…) on every raw UTF-8 character. Per the HTML spec the
-// charset declaration MUST appear within the first 1024 bytes — so it goes first, always.
+// charset declaration MUST appear within the first 1024 bytes - so it goes first, always.
 // Idempotent; runs over dist/ (incl. demo-home + app.html). Wired into build.js as a late post-processor.
 const fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');

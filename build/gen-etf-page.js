@@ -1,4 +1,4 @@
-/* /etf-flows/ — Bitcoin & Ethereum spot-ETF daily net flows + per-fund AUM via /api/cg/etf (Coinglass /api/etf/*). */
+/* /etf-flows/ - Bitcoin & Ethereum spot-ETF daily net flows + per-fund AUM via /api/cg/etf (Coinglass /api/etf/*). */
 const fs = require('fs');
 const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'etf-flows');
@@ -6,12 +6,12 @@ const OUT = path.join(__dirname, '..', 'dist', 'etf-flows');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 // TEMP 2026-08-21 (owner decision, no-coinglass test period): the page has no data source, so it is
-// HIDDEN — noindex + kept OUT of the sitemap — but NOT deleted; it still resolves with its honest
+// HIDDEN - noindex + kept OUT of the sitemap - but NOT deleted; it still resolves with its honest
 // empty state. Flip to false and rerun to restore indexing the day it has real data again.
 const HIDDEN = true;
 
 const url = 'https://marginpad.io/etf-flows/';
-const title = 'Bitcoin & Ethereum ETF Flows — Daily Spot ETF Inflows & AUM';
+const title = 'Bitcoin & Ethereum ETF Flows - Daily Spot ETF Inflows & AUM';
 const desc = 'Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflows, total assets under management, and a per-fund breakdown (IBIT, FBTC, ETHA and more). Free, no signup, updated daily.';
 const kw = 'bitcoin etf flows, spot bitcoin etf, ethereum etf flows, ibit flows, etf inflows, etf outflows, bitcoin etf aum, spot etf net flow, etha flows';
 
@@ -117,11 +117,11 @@ ${ld}
   <header id="efHead">
     <div class="brand">
       <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+      <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
-      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT - claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
       <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
@@ -132,22 +132,22 @@ ${ld}
     <h1>Bitcoin &amp; Ethereum ETF Flows</h1>
     <p class="lead">Where institutional money is going. Track the daily net inflows and outflows across every US spot Bitcoin and Ethereum ETF, total assets under management, and a live per-fund breakdown (IBIT, FBTC, ETHA and the rest). Persistent inflows = accumulation; sustained outflows = distribution. Free, no signup.</p>
 
-    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>ETF data is <b>refreshing</b> — one moment.</span></div>
+    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>ETF data is <b>refreshing</b> - one moment.</span></div>
 
     <div class="ef-hero">
       <div class="ef-panel btc" id="efBtc">
-        <div class="ef-ph"><span class="ef-dot">₿</span><span class="ef-pt">Bitcoin spot ETFs<small id="efBtcN">— funds</small></span></div>
-        <div class="ef-flow" id="efBtcFlow">—</div>
+        <div class="ef-ph"><span class="ef-dot">₿</span><span class="ef-pt">Bitcoin spot ETFs<small id="efBtcN">- funds</small></span></div>
+        <div class="ef-flow" id="efBtcFlow">-</div>
         <div class="ef-fsub" id="efBtcFsub">net flow · latest session</div>
-        <div class="ef-stats"><div class="ef-stat"><div class="k">Total AUM</div><div class="v" id="efBtcAum">—</div></div><div class="ef-stat"><div class="k">BTC price</div><div class="v" id="efBtcPx">—</div></div></div>
+        <div class="ef-stats"><div class="ef-stat"><div class="k">Total AUM</div><div class="v" id="efBtcAum">-</div></div><div class="ef-stat"><div class="k">BTC price</div><div class="v" id="efBtcPx">-</div></div></div>
         <div class="ef-chart" id="efBtcChart"></div>
         <div class="ef-clab"><span id="efBtcC0"></span><span>daily net flow</span><span id="efBtcC1"></span></div>
       </div>
       <div class="ef-panel eth" id="efEth">
-        <div class="ef-ph"><span class="ef-dot">Ξ</span><span class="ef-pt">Ethereum spot ETFs<small id="efEthN">— funds</small></span></div>
-        <div class="ef-flow" id="efEthFlow">—</div>
+        <div class="ef-ph"><span class="ef-dot">Ξ</span><span class="ef-pt">Ethereum spot ETFs<small id="efEthN">- funds</small></span></div>
+        <div class="ef-flow" id="efEthFlow">-</div>
         <div class="ef-fsub" id="efEthFsub">net flow · latest session</div>
-        <div class="ef-stats"><div class="ef-stat"><div class="k">Total AUM</div><div class="v" id="efEthAum">—</div></div><div class="ef-stat"><div class="k">ETH price</div><div class="v" id="efEthPx">—</div></div></div>
+        <div class="ef-stats"><div class="ef-stat"><div class="k">Total AUM</div><div class="v" id="efEthAum">-</div></div><div class="ef-stat"><div class="k">ETH price</div><div class="v" id="efEthPx">-</div></div></div>
         <div class="ef-chart" id="efEthChart"></div>
         <div class="ef-clab"><span id="efEthC0"></span><span>daily net flow</span><span id="efEthC1"></span></div>
       </div>
@@ -157,18 +157,18 @@ ${ld}
     <div class="ef-list" id="efList"><div class="ef-fsub">Loading funds…</div></div>
 
     <div class="ef-cta">
-      <a class="go" href="/paper-trade">Trade BTC &amp; ETH — free paper trading →</a>
+      <a class="go" href="/paper-trade">Trade BTC &amp; ETH - free paper trading →</a>
       <a href="/bitcoin-cycle/">Bitcoin cycle</a>
       <a href="/funding/">Funding rates</a>
       <a href="/liquidations/">Liquidations</a>
     </div>
 
     <h2>How to read ETF flows</h2>
-    <p>US <strong>spot ETFs</strong> hold real Bitcoin and Ethereum to back their shares, so every dollar of net inflow forces the fund to buy the underlying asset — and every dollar of outflow forces a sale. That makes the daily <strong>net flow</strong> one of the cleanest reads on institutional demand. A run of green (inflow) days signals accumulation and adds persistent buy pressure; a run of red (outflow) days signals distribution. The bars above show the net flow across all funds each trading day; the fund breakdown shows which issuers hold the most.</p>
+    <p>US <strong>spot ETFs</strong> hold real Bitcoin and Ethereum to back their shares, so every dollar of net inflow forces the fund to buy the underlying asset - and every dollar of outflow forces a sale. That makes the daily <strong>net flow</strong> one of the cleanest reads on institutional demand. A run of green (inflow) days signals accumulation and adds persistent buy pressure; a run of red (outflow) days signals distribution. The bars above show the net flow across all funds each trading day; the fund breakdown shows which issuers hold the most.</p>
     <h2>The funds that matter</h2>
     <p>BlackRock’s <strong>IBIT</strong> dominates Bitcoin ETF assets, with Fidelity’s <strong>FBTC</strong>, Grayscale, Bitwise (BITB) and ARK (ARKB) making up most of the rest. On the Ethereum side, BlackRock’s <strong>ETHA</strong> leads. Assets under management (AUM) tells you the total size each fund has accumulated; the daily flow tells you the direction right now. Read flows alongside <a href="/funding/">funding rates</a> and <a href="/liquidations/">liquidations</a> to separate spot-driven demand from leverage-driven moves.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">ETF data aggregated from Coinglass. For information only — not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">ETF data aggregated from Coinglass. For information only - not financial advice.</p>
   </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
@@ -188,7 +188,7 @@ ${ld}
     var fs=document.getElementById(pfx+'Fsub');if(fs)fs.textContent='net flow · '+(x.latestTs?dstr(x.latestTs):'latest session');
     var aEl=document.getElementById(pfx+'Aum');if(aEl)aEl.textContent=aum(x.totalAum);
     var nEl=document.getElementById(pfx+'N');if(nEl)nEl.textContent=(x.list?x.list.length:0)+' funds';
-    var pxEl=document.getElementById(pfx+'Px');if(pxEl)pxEl.textContent=x.latestPrice?('$'+Math.round(x.latestPrice).toLocaleString('en-US')):'—';
+    var pxEl=document.getElementById(pfx+'Px');if(pxEl)pxEl.textContent=x.latestPrice?('$'+Math.round(x.latestPrice).toLocaleString('en-US')):'-';
     var chart=document.getElementById(pfx+'Chart');bars(chart,x.series);
     if(x.series&&x.series.length){var c0=document.getElementById(pfx+'C0'),c1=document.getElementById(pfx+'C1');if(c0)c0.textContent=dstr(x.series[0].t);if(c1)c1.textContent=dstr(x.series[x.series.length-1].t);}
   }
@@ -196,7 +196,7 @@ ${ld}
     var el=document.getElementById('efList');if(!el||!DATA)return;
     var x=DATA[tab==='btc'?'btc':'eth'];if(!x||!x.list){el.innerHTML='<div class="ef-fsub">No fund data.</div>';return;}
     var per={};(x.latestPer||[]).forEach(function(p){per[p.etf_ticker]=+p.flow_usd||0;});
-    el.innerHTML=x.list.map(function(f){var df=per[f.ticker];var cls=df==null?'flat':(df>0?'up':(df<0?'dn':'flat'));var dt=df==null?'—':usd(df);return '<div class="ef-row"><span class="ef-tk">'+esc(f.ticker)+'</span><span class="ef-nm">'+esc(f.name||'')+'</span><span class="ef-aum">'+aum(f.aum)+'</span><span class="ef-df '+cls+'">'+dt+'</span></div>';}).join('');
+    el.innerHTML=x.list.map(function(f){var df=per[f.ticker];var cls=df==null?'flat':(df>0?'up':(df<0?'dn':'flat'));var dt=df==null?'-':usd(df);return '<div class="ef-row"><span class="ef-tk">'+esc(f.ticker)+'</span><span class="ef-nm">'+esc(f.name||'')+'</span><span class="ef-aum">'+aum(f.aum)+'</span><span class="ef-df '+cls+'">'+dt+'</span></div>';}).join('');
   }
   function paint(d){
     DATA=d;

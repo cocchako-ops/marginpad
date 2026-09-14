@@ -1,4 +1,4 @@
-// Haptics E2E (2026-09-14) — owner: "samo za neke bitne klikove a ne za sve moguce ... Pored klikova moze i leverage slajder".
+// Haptics E2E (2026-09-14) - owner: "samo za neke bitne klikove a ne za sve moguce ... Pored klikova moze i leverage slajder".
 //
 // navigator.vibrate cannot be observed from outside the page, so every check here replaces it with a counter and then
 // drives the REAL controls. What has to hold:
@@ -60,7 +60,7 @@ const SPY = () => {
     const ua = await p.evaluate(() => !navigator.userActivation || navigator.userActivation.hasBeenActive);
     ok(ua, 'the page counts as interacted with (the activation gate is open)');
 
-    // the slider — drag it across the ladder at a human pace and count ticks against value changes
+    // the slider - drag it across the ladder at a human pace and count ticks against value changes
     const drag = await p.evaluate(async () => {
       const r = document.getElementById('planLevR'), n = document.getElementById('planLev');
       if (!r || !n) return { err: 'no slider' };
@@ -77,7 +77,7 @@ const SPY = () => {
     });
     ok(!drag.err, 'the leverage slider is on the page');
     ok(drag.ticks > 0, 'dragging the slider buzzes (' + drag.ticks + ' ticks over ' + drag.steps + ' ladder steps, ' + (drag.seen || []).join('/') + '...)');
-    ok(drag.ticks <= drag.steps, 'never more ticks than steps — the drag itself does not buzz');
+    ok(drag.ticks <= drag.steps, 'never more ticks than steps - the drag itself does not buzz');
     ok(drag.pattern === 7, 'the slider uses the short step pattern (' + JSON.stringify(drag.pattern) + ')');
 
     // a value that is not on the ladder: 107 commits as 110, and that snap is confirmed
@@ -94,7 +94,7 @@ const SPY = () => {
     ok(snap.lev === '110', '107 commits as 110 (the ladder)');
     ok(snap.ticks === 1, 'the snap to the ladder buzzes once');
 
-    // a value already on the ladder must NOT buzz — nothing changed
+    // a value already on the ladder must NOT buzz - nothing changed
     const nosnap = await p.evaluate(async () => {
       const n = document.getElementById('planLev');
       n.value = '110'; n.dispatchEvent(new Event('input', { bubbles: true }));
@@ -164,7 +164,7 @@ const SPY = () => {
       return { ms: performance.now() - before, ret: window.mpHaptic('ok') };
     });
     ok(nov.ret === false && e3.length === 0, 'no vibrator: returns false, throws nothing');
-    ok(nov.ms < 60, '2,000 calls with no vibrator cost ' + nov.ms.toFixed(1) + ' ms — nothing is scheduled or loaded');
+    ok(nov.ms < 60, '2,000 calls with no vibrator cost ' + nov.ms.toFixed(1) + ' ms - nothing is scheduled or loaded');
     await p3.close();
   });
 

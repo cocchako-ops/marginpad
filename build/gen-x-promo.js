@@ -31,5 +31,5 @@ const SHOTS = [
     }
   }, { timeoutMs: 120000 });
   fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify({ generated: new Date().toISOString(), shots: SHOTS.map(s => s.name) }));
-  console.log('done — wrote manifest.json (force-add dist/assets/x/manifest.json + the pngs, then npm run deploy)');
+  console.log('done - wrote manifest.json (force-add dist/assets/x/manifest.json + the pngs, then npm run deploy)');
 })();

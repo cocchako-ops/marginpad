@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Die Ermessens-Steuer",
-     "p": "Jede Ermessensentscheidung ist eine Gelegenheit für Tilt, FOMO und Rückschaufehler, sich einzuschleichen. Ein System — feste Regeln für Setup, Einstieg, Ausstieg und Größe — entfernt die Entscheidung im Moment der stärksten Emotion. Die meisten Trader brauchen keine besseren Instinkte; sie brauchen weniger Gelegenheiten, sie zu benutzen."
+     "p": "Jede Ermessensentscheidung ist eine Gelegenheit für Tilt, FOMO und Rückschaufehler, sich einzuschleichen. Ein System - feste Regeln für Setup, Einstieg, Ausstieg und Größe - entfernt die Entscheidung im Moment der stärksten Emotion. Die meisten Trader brauchen keine besseren Instinkte; sie brauchen weniger Gelegenheiten, sie zu benutzen."
     },
     {
      "h": "Regeln machen Ergebnisse messbar",
      "p": "Wenn deine Einstiege Stimmungen sind, sind deine Journal-Auswertungen Astrologie. Wenn deine Einstiege Regeln sind, ist jeder Trade ein Datenpunkt: DIESES Setup, SO gehandelt, erzeugt DIESEN Erwartungswert. Nur regelbasiertes Trading lässt sich wirklich verbessern, weil nur es sich messen lässt."
     },
     {
-     "h": "Ermessen hat seinen Platz — am Reißbrett",
-     "p": "Die Fähigkeit verschwindet nicht; sie zieht um. Du nutzt dein Urteilsvermögen, um die Regeln zu ENTWERFEN und zu ÜBERPRÜFEN — wöchentlich, in Ruhe, fern von Live-Kursen. Die Maschine (oder die Checkliste) führt aus. Urteilsvermögen am Schreibtisch, Disziplin am Abzug."
+     "h": "Ermessen hat seinen Platz - am Reißbrett",
+     "p": "Die Fähigkeit verschwindet nicht; sie zieht um. Du nutzt dein Urteilsvermögen, um die Regeln zu ENTWERFEN und zu ÜBERPRÜFEN - wöchentlich, in Ruhe, fern von Live-Kursen. Die Maschine (oder die Checkliste) führt aus. Urteilsvermögen am Schreibtisch, Disziplin am Abzug."
     }
    ],
    "quiz": [
@@ -34,7 +34,7 @@
      "q": "Stimmungsbasierte Einstiege machen dein Journal…",
      "o": [
       "Deutlich unterhaltsamer zu lesen",
-      "Unmessbar — also nicht verbesserbar",
+      "Unmessbar - also nicht verbesserbar",
       "Kürzer",
       "Perfekt"
      ]
@@ -43,7 +43,7 @@
      "q": "Im systematischen Trading gehört menschliches Urteilsvermögen…",
      "o": [
       "An den Live-Abzug im laufenden Markt",
-      "Ans Reißbrett — Regeln bauen und prüfen",
+      "Ans Reißbrett - Regeln bauen und prüfen",
       "Nirgendwohin",
       "In Chatrooms"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "Die günstigste Frage im Trading",
-     "p": "Bevor du einen Cent riskierst — oder auch nur Paper-Zeit — kannst du die Geschichte fragen: Hätte ich genau diese Regeln im letzten Jahr gehandelt, was wäre passiert? Das ist ein Backtest. Er verspricht keine Zukunft, aber er führt Regeln aus — ohne Rückschau und ohne Gnade."
+     "p": "Bevor du einen Cent riskierst - oder auch nur Paper-Zeit - kannst du die Geschichte fragen: Hätte ich genau diese Regeln im letzten Jahr gehandelt, was wäre passiert? Das ist ein Backtest. Er verspricht keine Zukunft, aber er führt Regeln aus - ohne Rückschau und ohne Gnade."
     },
     {
      "h": "Was ein Backtest dir wirklich sagt",
-     "p": "Nicht „das wird Geld verdienen“ — sondern: das PROFIL der Strategie. Trefferquote, durchschnittliches R, schlimmste Verlustserie, tiefster Drawdown, Trades pro Monat. Du weißt aus r10, dass diese Zahlen zusammen mit der Positionsgröße über das Überleben entscheiden. Der Backtest liefert sie dir in Minuten."
+     "p": "Nicht „das wird Geld verdienen“ - sondern: das PROFIL der Strategie. Trefferquote, durchschnittliches R, schlimmste Verlustserie, tiefster Drawdown, Trades pro Monat. Du weißt aus r10, dass diese Zahlen zusammen mit der Positionsgröße über das Überleben entscheiden. Der Backtest liefert sie dir in Minuten."
     },
     {
      "h": "Respektiere seine Grenzen",
-     "p": "Backtests unterstellen Ausführungen zu historischen Kursen — echter Spread, Slippage und Funding werden schlechter sein. Betrachte Backtest-Ergebnisse als OPTIMISTISCHE Obergrenze, zieh die Kosten gedanklich ab und vertraue nur Profilen, die diesen Abschlag mit Reserve überleben."
+     "p": "Backtests unterstellen Ausführungen zu historischen Kursen - echter Spread, Slippage und Funding werden schlechter sein. Betrachte Backtest-Ergebnisse als OPTIMISTISCHE Obergrenze, zieh die Kosten gedanklich ab und vertraue nur Profilen, die diesen Abschlag mit Reserve überleben."
     }
    ],
    "quiz": [
@@ -81,8 +81,8 @@
      "q": "Backtest-Ergebnisse gegenüber Live-Ergebnissen sind meist…",
      "o": [
       "Identisch",
-      "Optimistisch — echte Kosten machen Live schlechter",
-      "Pessimistisch — live läuft es immer besser",
+      "Optimistisch - echte Kosten machen Live schlechter",
+      "Pessimistisch - live läuft es immer besser",
       "Zufällig"
      ]
     },
@@ -97,7 +97,7 @@
     }
    ],
    "try": {
-    "p": "Fahre deinen ersten echten Backtest — EMA-Cross- oder RSI-Regeln auf Live-Qualitätsdaten, ein Klick, volle Statistik.",
+    "p": "Fahre deinen ersten echten Backtest - EMA-Cross- oder RSI-Regeln auf Live-Qualitätsdaten, ein Klick, volle Statistik.",
     "label": "Strategie-Backtester →"
    }
   },
@@ -107,7 +107,7 @@
    "cards": [
     {
      "h": "Der perfekte Backtest, der nie funktioniert",
-     "p": "Stimm die Parameter einer Strategie lange genug ab, und sie passt PERFEKT zur Vergangenheit — weil sie das Rauschen auswendig gelernt hat, nicht das Signal. Das ist Overfitting: Je schöner die Backtest-Kurve nach viel Feintuning, desto misstrauischer solltest du sein."
+     "p": "Stimm die Parameter einer Strategie lange genug ab, und sie passt PERFEKT zur Vergangenheit - weil sie das Rauschen auswendig gelernt hat, nicht das Signal. Das ist Overfitting: Je schöner die Backtest-Kurve nach viel Feintuning, desto misstrauischer solltest du sein."
     },
     {
      "h": "Symptome",
@@ -154,7 +154,7 @@
    "cards": [
     {
      "h": "Nie auf den Trainingsdaten benoten",
-     "p": "Das Mittel gegen Overfitting ist Testdisziplin: Entwirf und tune deine Regeln auf EINEM Abschnitt der Geschichte (In-Sample), dann lass sie UNVERÄNDERT auf einem Abschnitt laufen, den sie nie gesehen haben (Out-of-Sample). Nur das Out-of-Sample-Ergebnis zählt — es ist das Näheste an der Zukunft, das man kaufen kann."
+     "p": "Das Mittel gegen Overfitting ist Testdisziplin: Entwirf und tune deine Regeln auf EINEM Abschnitt der Geschichte (In-Sample), dann lass sie UNVERÄNDERT auf einem Abschnitt laufen, den sie nie gesehen haben (Out-of-Sample). Nur das Out-of-Sample-Ergebnis zählt - es ist das Näheste an der Zukunft, das man kaufen kann."
     },
     {
      "h": "Walk-Forward: die Ehrlichkeit wiederholen",
@@ -162,7 +162,7 @@
     },
     {
      "h": "Paper Trading ist das finale Out-of-Sample",
-     "p": "Nach den Tests lass das System auf Live-Kursen mit Spielgeld laufen — der eine Datensatz, in den man nicht hineinspicken kann: die Gegenwart. Wenn Backtest, Out-of-Sample UND Paper übereinstimmen, hast du etwas. Wenn sie sich widersprechen, glaub dem lebendigsten."
+     "p": "Nach den Tests lass das System auf Live-Kursen mit Spielgeld laufen - der eine Datensatz, in den man nicht hineinspicken kann: die Gegenwart. Wenn Backtest, Out-of-Sample UND Paper übereinstimmen, hast du etwas. Wenn sie sich widersprechen, glaub dem lebendigsten."
     }
    ],
    "quiz": [
@@ -209,7 +209,7 @@
     },
     {
      "h": "Teste die Maschine wie eine Strategie",
-     "p": "Ein Bot kann auf zwei Arten Geld verlieren: schlechte Regeln oder schlechter Code. Teste sie getrennt — die Regeln im Backtester, den Code gegen eine Paper-Trading-API, wo ein Bug nichts kostet. Erst wenn beide überleben, kommt echtes Geld ins Spiel — zuerst klein."
+     "p": "Ein Bot kann auf zwei Arten Geld verlieren: schlechte Regeln oder schlechter Code. Teste sie getrennt - die Regeln im Backtester, den Code gegen eine Paper-Trading-API, wo ein Bug nichts kostet. Erst wenn beide überleben, kommt echtes Geld ins Spiel - zuerst klein."
     }
    ],
    "quiz": [
@@ -242,7 +242,7 @@
     }
    ],
    "try": {
-    "p": "MarginPad hat genau dafür eine kostenlose Paper-Trading-REST-API — teste einen Bot mit null Risiko.",
+    "p": "MarginPad hat genau dafür eine kostenlose Paper-Trading-REST-API - teste einen Bot mit null Risiko.",
     "label": "Bot-API-Doku →"
    }
   },
@@ -252,15 +252,15 @@
    "cards": [
     {
      "h": "Automatisierung ist kein Verlassen",
-     "p": "Ein laufendes System braucht ein Dashboard und eine Leine: tägliche Checks, dass die Ausführungen den Absichten entsprechen, dass das Risiko pro Trade das ist, was du eingestellt hast, dass das Marktregime noch dem ähnelt, für das es gebaut wurde. Stille Drift — bei Kosten, bei Volatilität, bei deiner eigenen Regeltreue — tötet langsam."
+     "p": "Ein laufendes System braucht ein Dashboard und eine Leine: tägliche Checks, dass die Ausführungen den Absichten entsprechen, dass das Risiko pro Trade das ist, was du eingestellt hast, dass das Marktregime noch dem ähnelt, für das es gebaut wurde. Stille Drift - bei Kosten, bei Volatilität, bei deiner eigenen Regeltreue - tötet langsam."
     },
     {
      "h": "Definiere den Tod im Voraus",
-     "p": "Schreib vor dem Einsatz die Abschaltkriterien auf: ein maximaler Drawdown (etwa 15%), eine Verlustserie jenseits des Backtest-Schlimmsten oder ein Regimebruch. Wird eines davon getroffen, STOPPT das System — kein Nachverhandeln mit der Hoffnung. Das hast du in r6 persönlich gelernt; Maschinen verdienen dieselbe Disziplin."
+     "p": "Schreib vor dem Einsatz die Abschaltkriterien auf: ein maximaler Drawdown (etwa 15%), eine Verlustserie jenseits des Backtest-Schlimmsten oder ein Regimebruch. Wird eines davon getroffen, STOPPT das System - kein Nachverhandeln mit der Hoffnung. Das hast du in r6 persönlich gelernt; Maschinen verdienen dieselbe Disziplin."
     },
     {
      "h": "Zwischenfälle werden passieren",
-     "p": "Börsen fallen aus, APIs laufen in Timeouts, ein Tippfehler in der Config verdoppelt deine Größe. Rechne mit Zwischenfällen, damit sie dich nur mild überraschen: Positionslimits auf Börsenebene, Alerts bei jeder Ausführung und ein manueller Haupt-AUS-Schalter, den du vom Handy drücken kannst. Langweilige Technik — so sieht Sicherheit aus."
+     "p": "Börsen fallen aus, APIs laufen in Timeouts, ein Tippfehler in der Config verdoppelt deine Größe. Rechne mit Zwischenfällen, damit sie dich nur mild überraschen: Positionslimits auf Börsenebene, Alerts bei jeder Ausführung und ein manueller Haupt-AUS-Schalter, den du vom Handy drücken kannst. Langweilige Technik - so sieht Sicherheit aus."
     }
    ],
    "quiz": [
@@ -299,15 +299,15 @@
    "cards": [
     {
      "h": "Vorteile sind saisonal",
-     "p": "Kein einzelnes System funktioniert für immer — Trends enden, Volatilitätsregime kippen, die Masse passt sich an. Profis fahren ein kleines PORTFOLIO unkorrelierter Systeme: einen Trendfolger, einen Mean-Reverter, vielleicht einen Funding-Ernter. Wenn eines schläft, isst meist ein anderes."
+     "p": "Kein einzelnes System funktioniert für immer - Trends enden, Volatilitätsregime kippen, die Masse passt sich an. Profis fahren ein kleines PORTFOLIO unkorrelierter Systeme: einen Trendfolger, einen Mean-Reverter, vielleicht einen Funding-Ernter. Wenn eines schläft, isst meist ein anderes."
     },
     {
      "h": "Ein System in Rente schicken",
-     "p": "Die schwerste Fähigkeit: eine Strategie abzuschalten, die du liebst. Die Kriterien sind dieselben Abschaltregeln aus s6, plus eine — wenn der strukturelle Grund, warum sie funktionierte, verschwunden ist (eine Gebührenänderung, ein Regimewechsel, alle machen es), schick sie in Rente, solange sie noch Würde hat. Ein Track Record ist Geschichte, kein Anspruch."
+     "p": "Die schwerste Fähigkeit: eine Strategie abzuschalten, die du liebst. Die Kriterien sind dieselben Abschaltregeln aus s6, plus eine - wenn der strukturelle Grund, warum sie funktionierte, verschwunden ist (eine Gebührenänderung, ein Regimewechsel, alle machen es), schick sie in Rente, solange sie noch Würde hat. Ein Track Record ist Geschichte, kein Anspruch."
     },
     {
      "h": "Das Handwerk, komplett",
-     "p": "Sieh dir den Bogen an: Mechanik (Kurse 1-2), Überleben (3), das Band lesen (4-5)… und jetzt ein Prozess, der ohne deine Launen läuft. Ob du automatisierst oder manuell bleibst, das Ziel ist dasselbe: ein geschriebener, gemessener, überprüfter Vorteil — und ein Trader, der ruhig genug ist, ihm zu folgen."
+     "p": "Sieh dir den Bogen an: Mechanik (Kurse 1-2), Überleben (3), das Band lesen (4-5)… und jetzt ein Prozess, der ohne deine Launen läuft. Ob du automatisierst oder manuell bleibst, das Ziel ist dasselbe: ein geschriebener, gemessener, überprüfter Vorteil - und ein Trader, der ruhig genug ist, ihm zu folgen."
     }
    ],
    "quiz": [
@@ -340,7 +340,7 @@
     }
    ],
    "try": {
-    "p": "Die volle Schleife gehört jetzt dir — fahre sie dort, wo Fehler gratis sind, und lass die Level den Weg verfolgen.",
+    "p": "Die volle Schleife gehört jetzt dir - fahre sie dort, wo Fehler gratis sind, und lass die Level den Weg verfolgen.",
     "label": "Paper Trade →"
    }
   }

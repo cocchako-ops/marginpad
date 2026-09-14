@@ -21,7 +21,7 @@ const MAX = 50;
 const esc = s => String(s == null ? '' : s)
   .replace(/&(?![a-z#0-9]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const unent = s => String(s || '').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"')
-  .replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').replace(/&hellip;/g, '…');
+  .replace(/-/g, '-').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').replace(/&hellip;/g, '…');
 const meta = (h, re) => { const m = h.match(re); return m ? unent(m[1]).trim() : ''; };
 
 function posts() {
@@ -34,7 +34,7 @@ function posts() {
     if (!fs.existsSync(f)) continue;
     const h = fs.readFileSync(f, 'utf8');
     if (/name="robots" content="[^"]*noindex/.test(h)) continue;
-    // the date the post itself declares, not the file's mtime — a rebuild must not republish the lot
+    // the date the post itself declares, not the file's mtime - a rebuild must not republish the lot
     const pub = meta(h, /"datePublished"\s*:\s*"([^"]+)"/) || meta(h, /<meta property="article:published_time" content="([^"]+)"/);
     const mod = meta(h, /"dateModified"\s*:\s*"([^"]+)"/) || pub;
     const title = meta(h, /<title>([^<]*)<\/title>/).replace(/\s*[|—–-]\s*MarginPad\s*$/, '');
@@ -47,7 +47,7 @@ function posts() {
 }
 
 const p = posts();
-if (!p.length) { console.log('gen-feed: no dated posts found — nothing written'); process.exit(0); }
+if (!p.length) { console.log('gen-feed: no dated posts found - nothing written'); process.exit(0); }
 const newest = p[0].pub;
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>

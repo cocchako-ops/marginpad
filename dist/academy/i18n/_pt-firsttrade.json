@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Um trade são três respostas",
-     "p": "Antes de tocar no ticket de ordem, três perguntas precisam de resposta: qual direção, em que preço você está provado errado e qual o tamanho da posição. Direção sozinha é um chute. Direção mais o preço do erro, mas sem tamanho, está pela metade. Se qualquer uma das três estiver faltando, você ainda não tem um trade — tem um desejo."
+     "p": "Antes de tocar no ticket de ordem, três perguntas precisam de resposta: qual direção, em que preço você está provado errado e qual o tamanho da posição. Direção sozinha é um chute. Direção mais o preço do erro, mas sem tamanho, está pela metade. Se qualquer uma das três estiver faltando, você ainda não tem um trade - tem um desejo."
     },
     {
      "h": "Direção: long ou short",
-     "p": "Long significa lucrar se o preço sobe e perder se ele cai. Short é o espelho: você lucra se ele cai. Nos futuros os dois estão a um clique de distância, e nenhum é o mais seguro. Diga sua direção como uma frase simples — long em BTC — antes de qualquer coisa, porque todos os outros campos do ticket dependem dela."
+     "p": "Long significa lucrar se o preço sobe e perder se ele cai. Short é o espelho: você lucra se ele cai. Nos futuros os dois estão a um clique de distância, e nenhum é o mais seguro. Diga sua direção como uma frase simples - long em BTC - antes de qualquer coisa, porque todos os outros campos do ticket dependem dela."
     },
     {
      "h": "Invalidação: onde você está errado",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Margem, nocional, quantidade",
-     "p": "Três números descrevem uma posição. Quantidade é quanto da moeda você controla, digamos 0.02 BTC. Nocional é essa quantidade em dólares: a $50,000 por BTC, 0.02 BTC é um nocional de $1,000. Margem é o dinheiro efetivamente travado do seu saldo — a 10x de alavancagem nessa posição, $100. Lucro e prejuízo seguem o nocional, nunca a margem."
+     "p": "Três números descrevem uma posição. Quantidade é quanto da moeda você controla, digamos 0.02 BTC. Nocional é essa quantidade em dólares: a $50,000 por BTC, 0.02 BTC é um nocional de $1,000. Margem é o dinheiro efetivamente travado do seu saldo - a 10x de alavancagem nessa posição, $100. Lucro e prejuízo seguem o nocional, nunca a margem."
     },
     {
      "h": "O que a alavancagem realmente muda",
@@ -170,7 +170,7 @@
     },
     {
      "h": "Coloque você mesmo",
-     "prompt": "Isto é um long. Toque onde o stop-loss deve ficar — logo abaixo do fundo.",
+     "prompt": "Isto é um long. Toque onde o stop-loss deve ficar - logo abaixo do fundo.",
      "p": "Antes de confiar no campo, prove que você conhece o nível. Um toque."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "A proporção que suas duas linhas definem",
-     "p": "O seu stop e o seu alvo fixam uma proporção antes de o trade começar. Entrada $50,000, stop $49,000, alvo $52,000 arrisca $1,000 para fazer $2,000 — um retorno-risco de 2:1. A 2:1, acertar um trade em cada três já empata antes das taxas. Isso é aritmética, não promessa. Nada diz que o alvo será atingido. Confira a proporção antes de clicar."
+     "p": "O seu stop e o seu alvo fixam uma proporção antes de o trade começar. Entrada $50,000, stop $49,000, alvo $52,000 arrisca $1,000 para fazer $2,000 - um retorno-risco de 2:1. A 2:1, acertar um trade em cada três já empata antes das taxas. Isso é aritmética, não promessa. Nada diz que o alvo será atingido. Confira a proporção antes de clicar."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Preço de entrada e preço de marcação",
-     "p": "Entrada é o preço médio em que você realmente executou, antes das taxas. O preço de marcação é a referência de valor justo da exchange, usada para valorar a sua posição e para decidir a liquidação — normalmente ancorada num índice mais amplo, e não na última negociação de um livro só. Isso é de propósito: dificulta muito que um preço estranho isolado seja usado contra você."
+     "p": "Entrada é o preço médio em que você realmente executou, antes das taxas. O preço de marcação é a referência de valor justo da exchange, usada para valorar a sua posição e para decidir a liquidação - normalmente ancorada num índice mais amplo, e não na última negociação de um livro só. Isso é de propósito: dificulta muito que um preço estranho isolado seja usado contra você."
     },
     {
      "h": "Não realizado significa que ainda não é seu",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Preenchendo o ticket",
-     "p": "Lado: compra. Tipo de ordem: limitada, preço $50,000, então você paga a taxa maker e aceita que ela pode nunca executar. Tamanho: $2,500 de nocional, alavancagem 10x. Digite $49,000 no campo do stop-loss e $52,000 no do take-profit antes de enviar — esse alvo é 2:1 contra o seu risco. Leia o ticket inteiro em voz alta uma vez e envie."
+     "p": "Lado: compra. Tipo de ordem: limitada, preço $50,000, então você paga a taxa maker e aceita que ela pode nunca executar. Tamanho: $2,500 de nocional, alavancagem 10x. Digite $49,000 no campo do stop-loss e $52,000 no do take-profit antes de enviar - esse alvo é 2:1 contra o seu risco. Leia o ticket inteiro em voz alta uma vez e envie."
     },
     {
      "h": "Depois da execução, não faça nada",

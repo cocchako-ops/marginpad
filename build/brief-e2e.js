@@ -44,7 +44,7 @@ const chk = (n, ok, x) => { out.push((ok ? 'PASS ' : 'FAIL ') + n + (x !== undef
     chk('free member -> 402 with the teaser attached', free.status === 402 && free.body.error === 'premium_required' && free.body.teaser && ('bias' in free.body.teaser), { status: free.status, teaser: free.body.teaser });
     const gr = await fetch(ORIGIN + '/api/admin/premium?add=' + encodeURIComponent(nameB) + '&days=1', { headers: H }).then(jget);
     chk('grant Premium to B for the test (admin)', gr.status === 200, gr.status);
-    // fresh session: premiumFor reads the session user (cached) — mint a new one after the grant
+    // fresh session: premiumFor reads the session user (cached) - mint a new one after the grant
     const sB2 = await post('/api/admin/e2euser', { uid: uidB, op: 'sess' }); tokB = sB2.body.token || tokB;
     await asUser(tokB, '/api/auth/xp', { method: 'POST', body: JSON.stringify({ ack: 1 }) }); // a freshly granted account would otherwise fire the Premium celebration overlay over the brief in the browser leg (test-only artefact)
     const full = await asUser(tokB, '/api/brief');
@@ -61,7 +61,7 @@ const chk = (n, ok, x) => { out.push((ok ? 'PASS ' : 'FAIL ') + n + (x !== undef
     chk('prefs off again (so the cron never mails a test account)', svOff.status === 200 && svOff.body.prefs.push === false, svOff.body.prefs);
 
     // ---- DM notification: seen on opening the thread ----
-    const fo = await asUser(tokA, '/api/lb/follow', { method: 'POST', body: JSON.stringify({ tuid: uidB, tname: nameB }) }); // DMs need a follow (or an earlier thread) between the two — _canDm
+    const fo = await asUser(tokA, '/api/lb/follow', { method: 'POST', body: JSON.stringify({ tuid: uidB, tname: nameB }) }); // DMs need a follow (or an earlier thread) between the two - _canDm
     chk('A follows B (DMs are gated on a connection)', fo.status === 200 && (fo.body.following === true || fo.body.ok), fo.body);
     const dm = await asUser(tokA, '/api/dm/send', { method: 'POST', body: JSON.stringify({ to: nameB, text: 'brief e2e ' + Date.now() }) });
     chk('A sends B a DM', dm.status === 200 && dm.body.ok, dm.body);

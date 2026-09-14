@@ -47,7 +47,7 @@
      "q": "En tendance haussière, le prix passe sous le creux précédent. Ça veut dire…",
      "o": [
       "Qu’une tendance baissière a forcément commencé",
-      "Rien — seuls les sommets définissent une tendance",
+      "Rien - seuls les sommets définissent une tendance",
       "Que la séquence haussière est cassée",
       "Que la tendance s’est renforcée"
      ]
@@ -97,7 +97,7 @@
     {
      "q": "Le prix casse ta ligne de tendance, donc tu la retraces plus plate. C’est…",
      "o": [
-      "Une bonne pratique — les graphiques évoluent",
+      "Une bonne pratique - les graphiques évoluent",
       "Ajuster la ligne à ce que tu veux voir",
       "Obligatoire dès que la troisième touche échoue",
       "La façon dont les pros gèrent le risque ouvert"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Une foule, pas un laser",
-     "p": "Le support n’est pas un prix unique. C’est une bande où assez d’acheteurs se sont présentés pour stopper la baisse — parfois à 100,00 $, parfois à 99,40 $, parfois après une pointe jusqu’à 98,80 $. Tracer une ligne d’un pixel et attendre que le prix la respecte au centime près est une façon classique de se faire sortir d’une idée qui allait très bien."
+     "p": "Le support n’est pas un prix unique. C’est une bande où assez d’acheteurs se sont présentés pour stopper la baisse - parfois à 100,00 $, parfois à 99,40 $, parfois après une pointe jusqu’à 98,80 $. Tracer une ligne d’un pixel et attendre que le prix la respecte au centime près est une façon classique de se faire sortir d’une idée qui allait très bien."
     },
     {
      "h": "Laisse les mèches fixer les bords",
@@ -120,7 +120,7 @@
     {
      "h": "Prouve-le en un seul tap",
      "p": "Un seul tap. Il n’y a pas un pixel correct unique ici, et c’est exactement ça, la leçon.",
-     "prompt": "Tape n’importe où dans la zone de support — la bande où les creux se regroupent."
+     "prompt": "Tape n’importe où dans la zone de support - la bande où les creux se regroupent."
     },
     {
      "h": "Quand une zone est trop large",
@@ -152,7 +152,7 @@
       "Ton niveau était tout simplement faux",
       "Une tendance baissière a commencé",
       "Le support est devenu une résistance",
-      "Normal — le niveau est une zone, pas une ligne"
+      "Normal - le niveau est une zone, pas une ligne"
      ]
     }
    ]
@@ -200,7 +200,7 @@
     {
      "q": "Un niveau a tenu quatre fois. À la cinquième touche, il…",
      "o": [
-      "Doit tenir — quatre touches le confirment",
+      "Doit tenir - quatre touches le confirment",
       "Devient automatiquement une ligne de tendance",
       "Peut céder sans le moindre avertissement",
       "Garantit un breakout en ta faveur"
@@ -289,7 +289,7 @@
     {
      "q": "Un niveau casse sur un volume anormalement faible. Tu devrais…",
      "o": [
-      "Le prendre à la légère — peu de participants",
+      "Le prendre à la légère - peu de participants",
       "Le tenir pour confirmé, le volume est du bruit",
       "Supposer qu’un retournement est garanti",
       "Doubler la position pour prendre le mouvement"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Jouer au mauvais jeu coûte cher",
-     "p": "Applique les règles de tendance dans un range et tu achètes chaque poussée sur le bord haut et vends chaque purge sur le bord bas — acheter haut et vendre bas en boucle, en payant des frais à chaque tour. Applique les règles de range à un marché en tendance et tu passes ton temps à shorter la force. Nommer l’état avant d’agir n’est pas un devoir facultatif."
+     "p": "Applique les règles de tendance dans un range et tu achètes chaque poussée sur le bord haut et vends chaque purge sur le bord bas - acheter haut et vendre bas en boucle, en payant des frais à chaque tour. Applique les règles de range à un marché en tendance et tu passes ton temps à shorter la force. Nommer l’état avant d’agir n’est pas un devoir facultatif."
     },
     {
      "h": "Un range se resserre avant de finir",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Nomme la tendance, marque deux niveaux",
-     "p": "Énonce la séquence à voix haute : sommets plus hauts et creux plus hauts, le miroir de ça, ou ni l’un ni l’autre, ce qui veut dire un range. Puis marque exactement deux zones horizontales — la plus proche au-dessus du prix et la plus proche en dessous. Deux. Si tu as tracé six lignes, tu as fabriqué un graphique qui approuve tout ce que tu décideras de faire ensuite."
+     "p": "Énonce la séquence à voix haute : sommets plus hauts et creux plus hauts, le miroir de ça, ou ni l’un ni l’autre, ce qui veut dire un range. Puis marque exactement deux zones horizontales - la plus proche au-dessus du prix et la plus proche en dessous. Deux. Si tu as tracé six lignes, tu as fabriqué un graphique qui approuve tout ce que tu décideras de faire ensuite."
     },
     {
      "h": "Termine la phrase, puis arrête-toi",
@@ -426,7 +426,7 @@
     },
     {
      "h": "La plupart des graphiques ne méritent aucun avis",
-     "p": "Le résultat honnête de cette routine, la plupart du temps, c’est rien du tout. Pas de tendance claire, pas de niveau proche, rien de précis sur quoi avoir tort. C’est un résultat, pas un échec — la routine est un filtre, et un filtre qui ne rejette jamais rien ne filtre pas. Ferme le graphique et regarde un autre symbole."
+     "p": "Le résultat honnête de cette routine, la plupart du temps, c’est rien du tout. Pas de tendance claire, pas de niveau proche, rien de précis sur quoi avoir tort. C’est un résultat, pas un échec - la routine est un filtre, et un filtre qui ne rejette jamais rien ne filtre pas. Ferme le graphique et regarde un autre symbole."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Autant que tu peux en trouver",
       "Six, une par unité de temps",
-      "Deux — la plus proche au-dessus et en dessous",
+      "Deux - la plus proche au-dessus et en dessous",
       "Aucune, les lignes de tendance suffisent"
      ]
     },

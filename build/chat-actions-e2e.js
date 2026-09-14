@@ -4,7 +4,7 @@
    The point of this suite is the SENSITIVE half, not the happy path: authorship is decided by the session behind the
    socket, so the second member must be unable to edit or delete the first member's message no matter what its UI
    offers, a guest must be unable to react at all, and the raw account id must never reach a browser. The rest checks
-   that the long press does not steal what the row already did — a username still opens a profile, a link is still a
+   that the long press does not steal what the row already did - a username still opens a profile, a link is still a
    link, and a drag still scrolls.                                          node build/chat-actions-e2e.js          */
 'use strict';
 const fs = require('fs');
@@ -57,7 +57,7 @@ const rowOf = (page, text) => page.evaluate((t) => {
 }, text);
 // a real long press: touch down, hold past the threshold, lift
 async function longPress(page, mid) {
-  // scroll, let it settle, THEN hold — and hold the message BODY, because the username is deliberately not pressable
+  // scroll, let it settle, THEN hold - and hold the message BODY, because the username is deliberately not pressable
   const there = await page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); if (!r) return false; r.scrollIntoView({ block: 'center' }); return true; }, mid);
   if (!there) return false;
   await sleep(800);
@@ -146,8 +146,8 @@ async function press(page, mid) {
     const bSheet = await pb.page.evaluate(() => { const s = document.querySelector('.ct-sheet'); return s ? [...s.querySelectorAll('[data-sa]')].map(x => x.getAttribute('data-sa')) : null; });
     ok(bSheet && bSheet.indexOf('edit') < 0 && bSheet.indexOf('del') < 0, 'another member is offered no Edit and no Delete', bSheet);
 
-    // And even if it asks anyway. The page deliberately does NOT expose its socket — handing one to window would let
-    // any script on the page speak as the member — so the forged action is sent from here, over B's own session.
+    // And even if it asks anyway. The page deliberately does NOT expose its socket - handing one to window would let
+    // any script on the page speak as the member - so the forged action is sent from here, over B's own session.
     await pb.page.evaluate(() => document.body.click());
     await forge(sb.token, [{ type: 'del', id: mine.mid }, { type: 'edit', id: mine.mid, t: 'hijacked' }]);
     await sleep(2500);

@@ -14,7 +14,7 @@
 <!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Crypto Economic Calendar Widget — MarginPad</title>
+<title>Crypto Economic Calendar Widget - MarginPad</title>
 <link rel="canonical" href="https://marginpad.io/calendar/">
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/embed/calendar/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/embed/calendar/" />
@@ -40,14 +40,14 @@ body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-seri
 .ft{margin-top:auto;padding-top:8px;font-family:Consolas,monospace;font-size:9.5px;color:#5c6570}
 .ft a{color:#c2f64a;text-decoration:none;font-weight:700}
 </style>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 </head><body>
-<div class="h"><b>Crypto <i>Calendar</i></b><span id="mo">—</span></div>
+<div class="h"><b>Crypto <i>Calendar</i></b><span id="mo">-</span></div>
 <div class="g" id="grid"></div>
 <div class="nx" id="next">Loading…</div>
-<div class="ft">FOMC · CPI · NFP · expiry — <a href="https://marginpad.io/calendar/?utm_source=widget" target="_blank" rel="noopener">marginpad.io</a></div>
+<div class="ft">FOMC · CPI · NFP · expiry - <a href="https://marginpad.io/calendar/?utm_source=widget" target="_blank" rel="noopener">marginpad.io</a></div>
 <script>
 (function(){
   var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d',macro:'#e9e7df'};
@@ -64,8 +64,8 @@ body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-seri
       h+='<span class="'+(i===now.getDate()?'tod ':'')+(top?'i'+(top.impact||1):'')+'">'+i+(top?'<em style="color:'+(TC[top.type]||'#ff9f4d')+'"></em>':'')+'</span>';}
     document.getElementById('grid').innerHTML=h;
     var fut=ev.filter(function(e){return e.ts>Date.now()&&e.impact>=3;})[0]||ev.filter(function(e){return e.ts>Date.now();})[0];
-    document.getElementById('next').innerHTML=fut?('Next: <b>'+String(fut.title).replace(/</g,'&lt;')+'</b> — in '+Math.ceil((fut.ts-Date.now())/86400000)+'d'):'Quiet month ahead.';
+    document.getElementById('next').innerHTML=fut?('Next: <b>'+String(fut.title).replace(/</g,'&lt;')+'</b> - in '+Math.ceil((fut.ts-Date.now())/86400000)+'d'):'Quiet month ahead.';
   }).catch(function(){document.getElementById('next').textContent='';});
 })();
-</script><script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+</script><script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body></html>

@@ -1,14 +1,14 @@
-// test-trading.js — B2: API-level regression suite for the server-side trading engine (/api/trade/*).
+// test-trading.js - B2: API-level regression suite for the server-side trading engine (/api/trade/*).
 // Runs against PRODUCTION with the e2e probe account (same pattern as replay-signals: test the real thing).
 // Covers: validations, open math (slippage/liq/qty), SL/TP side checks, partial split (margin/notional/partial/fund
 // scaling), partial-of-partial, double-close race, fee math to the cent, sub-penny liq precision. Cleans up after itself.
 //   node build/test-trading.js
-const KEY = 'mpadm_43bf150d4778e4f0e72f717f69f82d3acb326e9a'; // local-use only (file lives in a public repo path but key is already used by load-test.js — E3 will rotate)
+const KEY = 'mpadm_43bf150d4778e4f0e72f717f69f82d3acb326e9a'; // local-use only (file lives in a public repo path but key is already used by load-test.js - E3 will rotate)
 const UID = 'e2e-trading-suite';
 const BASE = 'https://marginpad.io/api/trade';
 const q = '?uid=' + UID + '&key=' + KEY;
 let pass = 0, fail = 0;
-function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK  ' + name); } else { fail++; console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); } }
+function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK  ' + name); } else { fail++; console.log('  FAIL ' + name + (detail ? ' - ' + detail : '')); } }
 async function api(path, body) { const r = await fetch(BASE + path + q, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : undefined); return r.json(); }
 const near = (a, b, tol) => Math.abs(a - b) <= (tol || 1e-9);
 
@@ -75,6 +75,6 @@ const near = (a, b, tol) => Math.abs(a - b) <= (tol || 1e-9);
     await api('/close', { id: sh.position.id });
   } else ok('ETH short opened', false, sh.error);
 
-  console.log('\n' + pass + ' passed, ' + fail + ' failed' + (fail ? ' — DO NOT DEPLOY' : ' — trading engine green'));
+  console.log('\n' + pass + ' passed, ' + fail + ' failed' + (fail ? ' - DO NOT DEPLOY' : ' - trading engine green'));
   process.exit(fail ? 1 : 0);
 })();

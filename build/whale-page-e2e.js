@@ -1,8 +1,8 @@
-// The rebuilt Hyperliquid whale page (2026-09-14) — owner: "sad kad otvoris stranicu sve je nabacano
+// The rebuilt Hyperliquid whale page (2026-09-14) - owner: "sad kad otvoris stranicu sve je nabacano
 // i nista se ne vidi lepo ... hocu da bude interaktivno i da bude korisno".
 //
 // Every check is REACHABILITY (elementFromPoint at the element's centre in the default page state),
-// not presence — the bug this suite exists to catch shipped as valid markup: the wallet drawer was
+// not presence - the bug this suite exists to catch shipped as valid markup: the wallet drawer was
 // display:flex under a UA `hidden`, so at 390px it covered the entire page and every row under it was
 // dead to a finger while the DOM looked perfect.
 //

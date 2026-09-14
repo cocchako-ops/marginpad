@@ -1,4 +1,4 @@
-/* MarginPad service worker — web push + a light offline app-shell.
+/* MarginPad service worker - web push + a light offline app-shell.
    Caching policy (conservative, so nothing can go stale):
    - /assets/* GETs → stale-while-revalidate (instant repeat loads; home.css/home.js carry a ?v= hash so
      new versions are new URLs; unversioned assets refresh in the background on every hit)
@@ -20,7 +20,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin !== self.location.origin) return;
   if (url.pathname.indexOf('/api/') === 0 || url.pathname.indexOf('/chat/') === 0) return;
   if (url.pathname.indexOf('/assets/') === 0) {
-    // Versioned bundles (?v=hash) + fonts/images: stale-while-revalidate — a new version is a new URL, so
+    // Versioned bundles (?v=hash) + fonts/images: stale-while-revalidate - a new version is a new URL, so
     // serving from cache can never be wrong. Unversioned JS/CSS (mp-trade.js, i18n.js, …): NETWORK-first with
     // cache fallback, so a hotfix deploy reaches every open browser on the very next load.
     var immutable = url.searchParams.has('v') || /\.(woff2?|png|jpe?g|webp|svg|ico)$/.test(url.pathname);

@@ -1,4 +1,4 @@
-/* /coin/<slug>/ — live per-coin perpetual-futures dashboards (Coinglass data via /api/cg/coin).
+/* /coin/<slug>/ - live per-coin perpetual-futures dashboards (Coinglass data via /api/cg/coin).
    Programmatic SEO + affiliate trade links. Now multilingual: English at /coin/<slug>/ plus
    12 translated variants at /<lang>/coin/<slug>/ (hreflang cross-linked). Translations in
    build/data/coin-i18n.js. Run: node build/gen-coin-dashboard-pages.js (wired into build/build.js) */
@@ -19,24 +19,24 @@ function fill(str, map) { return str.replace(/\{(\w+)\}/g, (m, k) => (k in map ?
 
 // English baseline (token templates), so every language uses the same builder.
 const EN = {
-  titleT: '{SYM} Perpetual Futures — Price, Funding, Open Interest & Liquidations',
+  titleT: '{SYM} Perpetual Futures - Price, Funding, Open Interest & Liquidations',
   descT: 'Live {NAME} ({SYM}) perpetual futures: price, funding rate, open interest, long/short positioning and 24h liquidations. Trade {SYM}USDT on top exchanges. Free, no signup.',
   kwT: '{SYM} perpetual, {NAME} futures, {SYM} funding rate, {SYM} open interest, {SYM} liquidations, {SYM} long short ratio, {SYM}usdt perp',
   navMarkets: 'Markets', navLiq: 'Liquidations', navFunding: 'Funding', navOI: 'Open Interest', navScreener: 'Screener',
   crumbHome: 'Home', crumbCoins: 'Coins',
   h1T: '{NAME} ({SYM}) Perpetual Futures',
-  leadT: 'Live {NAME} perpetual-futures data — price, funding rate, open interest, trader positioning and 24-hour liquidations, aggregated across major exchanges.',
+  leadT: 'Live {NAME} perpetual-futures data - price, funding rate, open interest, trader positioning and 24-hour liquidations, aggregated across major exchanges.',
   cardFunding: 'Funding rate', cardOI: 'Open interest', cardLiqL: '24h liq · longs', cardLiqS: '24h liq · shorts', cardPos: 'Trader positioning · long vs short',
   tradeH: 'Trade {SYM}USDT perpetual',
-  moonLine: 'Call {SYM} up or down on Moon — stocks & forex too, 24/7',
+  moonLine: 'Call {SYM} up or down on Moon - stocks & forex too, 24/7',
   ctaScreener: 'See {SYM} on the screener →', ctaCalc: '{SYM} liquidation calculator', ctaPractice: 'Practice {SYM} risk-free',
   faqQ1: 'What is a {SYM} perpetual future?',
   faqQ2: 'How do you read {SYM} funding, open interest and liquidations together?',
   h2Explained: '{NAME} perpetual futures, explained',
-  pExplained: 'A {SYM} perpetual future (perp) lets you trade {NAME} with leverage and no expiry. The <a href="/funding/">funding rate</a> keeps the perp price tethered to spot — positive funding means {SYM} longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open {SYM} positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged {SYM} traders got force-closed — long liquidations on drops, short liquidations on rallies.',
+  pExplained: 'A {SYM} perpetual future (perp) lets you trade {NAME} with leverage and no expiry. The <a href="/funding/">funding rate</a> keeps the perp price tethered to spot - positive funding means {SYM} longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open {SYM} positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged {SYM} traders got force-closed - long liquidations on drops, short liquidations on rallies.',
   h2How: 'How to use this {SYM} dashboard',
   pHow: 'Read the four numbers together. Heavy positive funding plus lopsided <a href="/long-short/">long positioning</a> and rising open interest is a crowded long setup that can unwind sharply. A spike in long liquidations often marks a local {SYM} bottom; a wave of short liquidations can fuel a squeeze higher. Confirm entries on the <a href="/screener">technical screener</a> and size with the <a href="/{SL}-liquidation-calculator/">{SYM} liquidation calculator</a> so leverage never puts you closer to liquidation than you intend.',
-  footNote: '{SYM} data aggregated across major exchanges (deepest market shown). For information only — not financial advice.',
+  footNote: '{SYM} data aggregated across major exchanges (deepest market shown). For information only - not financial advice.',
   jsLiveData: 'Live data', jsNotAvail: 'Not available for this market yet', jsPos: 'Trader positioning · long vs short', jsPosShort: 'Trader positioning',
   jsLong: 'long', jsShort: 'short', jsMktOverview: 'Market overview', jsRank: 'Rank #', jsMcap: 'Market cap', jsVol: '24h volume', jsAth: 'All-time high', jsCirc: 'Circulating',
 };
@@ -64,7 +64,7 @@ const COINS = [
   { sym: 'SUI', name: 'Sui', blurb: 'Sui is a fast-growing L1 perp with sharp, liquidity-driven moves.' },
   { sym: 'INJ', name: 'Injective', blurb: 'Injective is a high-beta DeFi/derivatives token with active perp markets.' },
   { sym: 'TIA', name: 'Celestia', blurb: 'Celestia is a volatile modular-blockchain token with heavy perp speculation.' },
-  { sym: 'PEPE', name: 'Pepe', blurb: 'Pepe is one of the most traded meme perps — huge volume and violent, sentiment-driven swings.' },
+  { sym: 'PEPE', name: 'Pepe', blurb: 'Pepe is one of the most traded meme perps - huge volume and violent, sentiment-driven swings.' },
   { sym: 'SHIB', name: 'Shiba Inu', blurb: 'Shiba Inu is a high-beta meme perp priced in tiny decimals; leverage here moves fast.' },
   { sym: 'WIF', name: 'dogwifhat', blurb: 'WIF is a leading Solana meme perp with sharp, liquidity-driven moves.' },
   { sym: 'BONK', name: 'Bonk', blurb: 'Bonk is a high-volatility Solana meme perp that swings hard on hype.' },
@@ -86,7 +86,7 @@ const COINS = [
   { sym: 'FET', name: 'Artificial Superintelligence', blurb: 'FET is a leading AI-narrative perp that moves sharply on AI hype cycles.' },
   { sym: 'RENDER', name: 'Render', blurb: 'Render is a GPU-compute AI perp with high beta to the AI narrative.' },
   { sym: 'TAO', name: 'Bittensor', blurb: 'TAO is a high-priced AI perp with large swings and concentrated open interest.' },
-  { sym: 'ICP', name: 'Internet Computer', blurb: 'Internet Computer is a high-volatility large-cap — give liquidation extra room.' },
+  { sym: 'ICP', name: 'Internet Computer', blurb: 'Internet Computer is a high-volatility large-cap - give liquidation extra room.' },
   { sym: 'IMX', name: 'Immutable', blurb: 'Immutable is a gaming-L2 perp that tracks the on-chain gaming narrative.' },
   { sym: 'GALA', name: 'Gala', blurb: 'Gala is a gaming-token perp with sharp, sentiment-led moves.' },
   { sym: 'SAND', name: 'The Sandbox', blurb: 'The Sandbox is a metaverse perp that moves with gaming and NFT sentiment.' },
@@ -270,7 +270,7 @@ ${ld}
 ${lang ? '' : `
     <h2>Trading ${c.name} (${c.sym}) with leverage</h2>
     <p>${c.blurb} When you trade ${c.sym} on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because ${c.name} can move several percent in a session, traders who last keep ${c.sym} leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a ${c.sym} position would be liquidated with the <a href="/calculators?c=liq">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href="/funding-fee-calculator/">funding-fee calculator</a>.</p>
-    <p>The four live numbers above tell you how crowded and leveraged the ${c.sym} market is right now — read them together. Then screen the whole market on the <a href="/screener">futures screener</a>, watch real ${c.sym} liquidations stream in on the <a href="/liquidations/">live liquidations feed</a>, and rehearse any ${c.sym} idea at the live price with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> before you commit real margin.</p>`}
+    <p>The four live numbers above tell you how crowded and leveraged the ${c.sym} market is right now - read them together. Then screen the whole market on the <a href="/screener">futures screener</a>, watch real ${c.sym} liquidations stream in on the <a href="/liquidations/">live liquidations feed</a>, and rehearse any ${c.sym} idea at the live price with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> before you commit real margin.</p>`}
 
     <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">${F(L.footNote)}</p>
   </article>
@@ -284,10 +284,10 @@ ${lang ? '' : `
   var grid=document.getElementById('cdGrid'),sym=grid.getAttribute('data-sym');
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}
-  function fn(f){if(f==null||!isFinite(f))return '—';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}
+  function fn(f){if(f==null||!isFinite(f))return '-';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}
   function render(d){
     var px=document.getElementById('cdPx'),chg=document.getElementById('cdChg');
-    if(!d||d.error||d.price==null){if(px)px.textContent='—';if(chg)chg.textContent='';var cs=grid.querySelectorAll('.cd-v');for(var i=0;i<cs.length;i++){cs[i].className='cd-v';cs[i].textContent='—';}var ls0=document.getElementById('cdLs');if(ls0)ls0.innerHTML='<div class="cd-k">'+L.liveData+'</div><div class="cd-v" style="font-size:13px">'+L.notAvail+'</div>';return;}
+    if(!d||d.error||d.price==null){if(px)px.textContent='-';if(chg)chg.textContent='';var cs=grid.querySelectorAll('.cd-v');for(var i=0;i<cs.length;i++){cs[i].className='cd-v';cs[i].textContent='-';}var ls0=document.getElementById('cdLs');if(ls0)ls0.innerHTML='<div class="cd-k">'+L.liveData+'</div><div class="cd-v" style="font-size:13px">'+L.notAvail+'</div>';return;}
     if(d.price!=null){px.textContent=fpx(d.price);}
     if(d.chg24h!=null){var up=d.chg24h>=0;chg.textContent=(up?'+':'')+d.chg24h.toFixed(2)+'%';chg.className='cd-chg '+(up?'up':'dn');}
     var oiCh=(d.oiChg24h!=null&&isFinite(d.oiChg24h))?(' <small class="'+(d.oiChg24h>=0?'up':'dn')+'">'+(d.oiChg24h>=0?'+':'')+d.oiChg24h.toFixed(1)+'%</small>'):'';
@@ -298,15 +298,15 @@ ${lang ? '' : `
     cards[3].className='cd-v up';cards[3].textContent=bn(d.shortLiq24h);
     var ls=document.getElementById('cdLs'),lp=(d.longPct!=null)?d.longPct:null;
     if(lp!=null){var sp=d.shortPct;ls.innerHTML='<div class="cd-k">'+L.pos+'</div><div class="cd-ls"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="cd-lsl"><span class="l">'+lp+'% '+L.long+'</span><span class="s">'+sp+'% '+L.short+'</span></div>';}
-    else{ls.innerHTML='<div class="cd-k">'+L.posShort+'</div><div class="cd-v">—</div>';}
+    else{ls.innerHTML='<div class="cd-k">'+L.posShort+'</div><div class="cd-v">-</div>';}
   }
   function load(){fetch('/api/cg/coin?symbol='+sym,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
   load();setInterval(load,60000);
-  // CoinGecko market overview — market cap, volume, ATH, supply, multi-window change + 7d sparkline
+  // CoinGecko market overview - market cap, volume, ATH, supply, multi-window change + 7d sparkline
   (function(){
     function bn2(x){x=+x||0;var a=Math.abs(x);if(a>=1e12)return '$'+(x/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
     function nn(x){x=+x||0;var a=Math.abs(x);if(a>=1e12)return (x/1e12).toFixed(2)+'T';if(a>=1e9)return (x/1e9).toFixed(2)+'B';if(a>=1e6)return (x/1e6).toFixed(1)+'M';if(a>=1e3)return (x/1e3).toFixed(1)+'K';return ''+Math.round(x);}
-    function chgCell(w,v){if(v==null||!isFinite(v))return '<div class="cdchg"><div class="w">'+w+'</div><div class="p">—</div></div>';var up=v>=0;return '<div class="cdchg"><div class="w">'+w+'</div><div class="p '+(up?'up':'dn')+'">'+(up?'+':'')+v.toFixed(1)+'%</div></div>';}
+    function chgCell(w,v){if(v==null||!isFinite(v))return '<div class="cdchg"><div class="w">'+w+'</div><div class="p">-</div></div>';var up=v>=0;return '<div class="cdchg"><div class="w">'+w+'</div><div class="p '+(up?'up':'dn')+'">'+(up?'+':'')+v.toFixed(1)+'%</div></div>';}
     function spark(arr){var svg=document.getElementById('cdSpark');if(!svg||!arr||arr.length<2)return;var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr),rg=(mx-mn)||1,n=arr.length,W=100,H=56,pad=3,pts=[];for(var i=0;i<n;i++){var x=(i/(n-1))*W,y=pad+(H-2*pad)*(1-(arr[i]-mn)/rg);pts.push(x.toFixed(2)+','+y.toFixed(2));}var up=arr[n-1]>=arr[0],col=up?'#34d99a':'#ff7b72',d='M'+pts.join(' L'),area=d+(' L'+W+','+H+' L0,'+H+' Z');svg.innerHTML='<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".22"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+area+'" fill="url(#sg)"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" vector-effect="non-scaling-stroke"/>';}
     fetch('/api/gecko/coin?sym='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
       if(!d||d.error||d.mcap==null)return;
@@ -314,7 +314,7 @@ ${lang ? '' : `
       var h=document.getElementById('cdMktH');if(h)h.innerHTML=L.mkt+(d.rank?' <span class="rank">'+L.rank+d.rank+'</span>':'');
       var athPct=(d.athChg!=null&&isFinite(d.athChg))?(' <small class="dn">'+d.athChg.toFixed(0)+'%</small>'):'';
       var supPct=(d.max&&d.circ)?Math.min(100,(d.circ/d.max*100)):null;
-      var athTxt=(d.ath!=null)?('$'+(+d.ath).toLocaleString('en-US',{maximumFractionDigits:d.ath>=1?2:6})):'—';
+      var athTxt=(d.ath!=null)?('$'+(+d.ath).toLocaleString('en-US',{maximumFractionDigits:d.ath>=1?2:6})):'-';
       var st=[[L.mcap,bn2(d.mcap)],[L.vol,bn2(d.vol)],[L.ath,athTxt+athPct],[L.circ,nn(d.circ)+' '+sym+(supPct!=null?'<div class="cdbar"><i style="width:'+supPct.toFixed(0)+'%"></i></div>':'')]];
       var ms=document.getElementById('cdMstat');if(ms)ms.innerHTML=st.map(function(r){return '<div class="cdcard"><div class="cd-k">'+r[0]+'</div><div class="cd-v" style="font-size:16px">'+r[1]+'</div></div>';}).join('');
       var cg=document.getElementById('cdChgs');if(cg)cg.innerHTML=chgCell('1H',d.ch1h)+chgCell('24H',d.ch24h)+chgCell('7D',d.ch7d)+chgCell('30D',d.ch30d);

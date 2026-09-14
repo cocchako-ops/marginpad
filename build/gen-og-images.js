@@ -7,7 +7,7 @@
  * feed tells the person receiving it nothing, so it earns no click. What earns the click is the page's
  * own headline at size plus one concrete thing only that page has.
  *
- * Every card is built from the page's REAL <title> and description — no hand-kept copy to drift — and
+ * Every card is built from the page's REAL <title> and description - no hand-kept copy to drift - and
  * rendered at 1200x630 through the browser we already use for E2E, so the design is plain CSS.
  *
  *   node build/gen-og-images.js            all families
@@ -37,15 +37,15 @@ tpl.setFonts(FONTCSS);
 
 /* ── read the page, not a list we would have to maintain ─────────────────────────────────────────── */
 const rd = p => { try { return fs.readFileSync(p, 'utf8'); } catch (e) { return ''; } };
-const meta = (h, re) => { const m = h.match(re); return m ? m[1].replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').trim() : ''; };
+const meta = (h, re) => { const m = h.match(re); return m ? m[1].replace(/&amp;/g, '&').replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/-/g, '-').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').trim() : ''; };
 const titleOf = h => meta(h, /<title>([^<]*)<\/title>/).replace(/\s*\|\s*MarginPad\s*$/, '').trim();
 const descOf = h => meta(h, /<meta name="description" content="([^"]*)"/);
 
-/* A title like "Bitcoin Liquidation Map — live BTC liquidity levels" carries the subject before the
+/* A title like "Bitcoin Liquidation Map - live BTC liquidity levels" carries the subject before the
    dash and the pitch after it. Split so a card can use the right half in the right place. */
 function split(t) {
   const m = String(t || '').split(/\s+[—–-]\s+/);
-  return { head: (m[0] || '').trim(), tail: m.slice(1).join(' — ').trim() };
+  return { head: (m[0] || '').trim(), tail: m.slice(1).join(' - ').trim() };
 }
 const slugOf = rel => rel.replace(/^\/+|\/+$/g, '').replace(/\//g, '-') || 'home';
 
@@ -77,7 +77,7 @@ function plan(rel, html) {
   if (/-liquidation-calculator\/$/.test(rel)) {
     const lev = (rel.match(/^\/(\d+)x-/) || [])[1];
     const name = s.head.replace(/\s*\([^)]*\)/, '').replace(/\s*Liquidation Calculator.*$/i, '').trim();
-    return { t: 'calc', d: { title: name + ' liquidation calculator', sub: 'Exact liquidation price for any entry, leverage and side — on the exchange you actually trade.',
+    return { t: 'calc', d: { title: name + ' liquidation calculator', sub: 'Exact liquidation price for any entry, leverage and side - on the exchange you actually trade.',
       accent: acc || ACCENT.cyan, eyebrow: lev ? lev + 'x leverage' : 'Liquidation price',
       fields: ['Entry', 'Leverage', 'Side'], vals: ['60,000', (lev || '20') + 'x', 'Long'], outK: 'Liquidation', outV: liqAt(60000, +(lev || 20)) } };
   }
@@ -102,7 +102,7 @@ function plan(rel, html) {
       [/exchange|vs\b|best /i, 'EXCHANGES', ACCENT.blue], [/tax|fee/i, 'COSTS', ACCENT.cyan], [/fomc|cpi|nfp|pce|calendar|macro/i, 'MACRO', ACCENT.gold],
       [/bitcoin|btc|eth|altcoin/i, 'MARKETS', ACCENT.green], [/psycholog|mistake|risk/i, 'RISK', ACCENT.pink]];
     const hit = kinds.find(k => k[0].test(title)) || [null, 'GUIDE', ACCENT.lime];
-    return { t: 'article', d: { title: s.head + (s.tail && s.head.length < 44 ? ' — ' + s.tail : ''), sub: desc, kind: hit[1], accent: hit[2], path: rel } };
+    return { t: 'article', d: { title: s.head + (s.tail && s.head.length < 44 ? ' - ' + s.tail : ''), sub: desc, kind: hit[1], accent: hit[2], path: rel } };
   }
 
   if (/^\/guides\//.test(rel))
@@ -130,16 +130,16 @@ function plan(rel, html) {
     '/season/': ['product', { title: 'Your season', sub: 'Six leaderboards, a 40-tier pass, and prizes every fourteen days.', accent: ACCENT.lime, path: '/season/',
       points: ['Six boards', 'Free entry', '40-tier pass', 'Paid every 14 days'], tag: 'LIVE STANDINGS' }],
     '/vault/': ['product', { title: 'The Vault', sub: 'Frames, backgrounds and ticket skins earned by trading.', accent: ACCENT.violet, path: '/vault/', points: ['Frames', 'Backgrounds', 'Ticket skins'] }],
-    '/rewards/': ['product', { title: 'Earn while you learn to trade', sub: 'A faucet, daily missions and season prizes — paid in real USDT.', accent: ACCENT.green, path: '/rewards/', tag: 'REAL PAYOUTS' }],
+    '/rewards/': ['product', { title: 'Earn while you learn to trade', sub: 'A faucet, daily missions and season prizes - paid in real USDT.', accent: ACCENT.green, path: '/rewards/', tag: 'REAL PAYOUTS' }],
     '/premium/': ['product', { title: 'MarginPad Premium', sub: 'AI chart reads, position alerts, the full Bot API tier.', accent: ACCENT.gold, path: '/premium/', points: ['Ask the AI', 'Position alerts', '600 req/min API', 'Trading report'] }],
     '/academy/': ['product', { title: 'Learn futures properly', sub: '16 courses, 140 lessons, in 13 languages. Free.', accent: ACCENT.blue, path: '/academy/', points: ['16 courses', '140 lessons', '13 languages'], tag: 'FREE' }],
     '/spot/': ['product', { title: 'Demo Spot', sub: 'A whole crypto life, simulated: card, exchange, self-custody wallet, memecoins.', accent: ACCENT.orange, path: '/spot/' }],
     '/trading-api/': ['product', { title: 'Trade MarginPad from your own bot', sub: 'REST, WebSocket and MCP. Python and JavaScript SDKs, zero dependencies.', accent: ACCENT.cyan, path: '/trading-api/', points: ['REST + WS', 'MCP, 23 tools', 'Webhooks', 'Free tier'] }],
-    '/trading-report/': ['product', { title: 'How you actually trade', sub: 'Your real patterns, measured from every close — not a feeling.', accent: ACCENT.violet, path: '/trading-report/' }],
+    '/trading-report/': ['product', { title: 'How you actually trade', sub: 'Your real patterns, measured from every close - not a feeling.', accent: ACCENT.violet, path: '/trading-report/' }],
     '/community/': ['product', { title: 'The MarginPad floor', sub: 'Setups, screenshots and arguments, from people trading the same pairs.', accent: ACCENT.pink, path: '/community/' }],
     '/exchanges/': ['product', { title: 'Crypto futures exchanges, compared properly', sub: 'Fees, leverage, liquidity and what each one actually costs you.', accent: ACCENT.blue, path: '/exchanges/' }],
     '/levels/': ['product', { title: 'Levels and XP', sub: 'Bronze to Legendary, and what each one unlocks.', accent: ACCENT.gold, path: '/levels/' }],
-    '/alerts/': ['product', { title: 'Price and position alerts', sub: 'Push and Telegram, on your levels — not somebody else’s.', accent: ACCENT.orange, path: '/alerts/' }],
+    '/alerts/': ['product', { title: 'Price and position alerts', sub: 'Push and Telegram, on your levels - not somebody else’s.', accent: ACCENT.orange, path: '/alerts/' }],
     '/calendar/': ['live', { title: 'Crypto economic calendar', eyebrow: 'FOMC · CPI · NFP · unlocks', accent: ACCENT.gold, path: '/calendar/' }],
     '/bitcoin-cycle/': ['live', { title: 'Where we are in the Bitcoin cycle', eyebrow: 'Measured in house', accent: ACCENT.gold, path: '/bitcoin-cycle/' }],
     '/news/': ['live', { title: 'Crypto news that moves price', eyebrow: 'Filtered, not firehosed', accent: ACCENT.blue, path: '/news/' }],

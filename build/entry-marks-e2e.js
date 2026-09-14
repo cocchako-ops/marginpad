@@ -1,8 +1,8 @@
 /* Two Paper-Trade terminal controls (owner 2026-09-13, second pass):
-   1. the leverage slider offers ROUND numbers only — whole steps to 10x, then tens (never 107 or 203);
+   1. the leverage slider offers ROUND numbers only - whole steps to 10x, then tens (never 107 or 203);
    2. an entry-style chooser in its OWN control beside the timeframe pill: entries as price LINES, or as a DOT pinned
       to the exact entry price. The first cut used series markers, which are anchored to a BAR and floated up and down
-      with it — "cela poenta je da prikaže tačno gde je bio ulaz". A dot is now a one-point series, so the chart itself
+      with it - "cela poenta je da prikaže tačno gde je bio ulaz". A dot is now a one-point series, so the chart itself
       pins it to (time, price) and it cannot drift.                              node build/entry-marks-e2e.js       */
 'use strict';
 const { withBrowser, newPage } = require('./e2e-browser.js');

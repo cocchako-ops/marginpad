@@ -58,7 +58,7 @@ const ld = (html) => { const m = [...html.matchAll(/<script type="application\/l
         const rows = await page.evaluate(() => ({ rows: document.querySelectorAll('#lvTbl tbody tr').length, best: document.querySelectorAll('#lvBest .bc').length, chips: document.querySelectorAll('#lvChips .chip').length }));
         chk(W + ' ' + kind + ': table rows, best cards and chips rendered', rows.rows >= 3 && rows.best >= 1 && rows.chips >= 2, rows);
         // The "updated N ago" label has to AGREE with the data it is describing. This used to assert that the text
-        // changed within 2.1 s, which only held while the label was counting seconds — the quote is served from a
+        // changed within 2.1 s, which only held while the label was counting seconds - the quote is served from a
         // 60 s cache, so at first paint it is always a minute or more old and the label ticks once a minute. That
         // made the check unpassable rather than flaky (2026-09-14). Comparing it to the inline data's own timestamp
         // tests the thing that matters, and instantly.
@@ -95,6 +95,6 @@ const ld = (html) => { const m = [...html.matchAll(/<script type="application\/l
   });
   console.log(out.join('\n'));
   const fails = out.filter(l => l.startsWith('FAIL')).length;
-  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' — ' + fails + ' FAIL' : ''));
+  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' - ' + fails + ' FAIL' : ''));
   process.exit(fails ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

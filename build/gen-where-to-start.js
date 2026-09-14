@@ -1,4 +1,4 @@
-/* /where-to-start/ — a beginner "academy": a guided 12-lesson path from zero knowledge to a first safe paper trade.
+/* /where-to-start/ - a beginner "academy": a guided 12-lesson path from zero knowledge to a first safe paper trade.
    Each lesson = plain explanation + real-life analogy + key takeaways + a 1-question quiz; completing earns XP, levels and
    badges (localStorage, no login). It links out to our real tools/guides at the right moments, tying the whole site together.
    Multilingual: English at /where-to-start/ + 12 translated variants at /<lang>/where-to-start/ (hreflang). Lesson/badge/UI
@@ -155,7 +155,7 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
 .gl-term span{font-size:13px;color:var(--dim);line-height:1.45}
 .gl-term code{font-family:'Space Mono',monospace;font-size:12px;background:rgba(255,255,255,.06);border-radius:4px;padding:1px 4px}
 .gl-empty{color:var(--faint);font-size:13px;padding:10px 0}
-/* intake — ask what the user wants BEFORE any lessons/quizzes */
+/* intake - ask what the user wants BEFORE any lessons/quizzes */
 .wts-intake{margin:8px 0 4px;animation:fadeUp .4s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .intake-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;line-height:1.15;margin:4px 0 6px}
@@ -199,13 +199,13 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
 .cert-acts{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
 .cert-share{background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;padding:12px 20px;cursor:pointer}
 .cert-cta{background:rgba(63,216,230,.1);border:1px solid rgba(63,216,230,.4);color:var(--cyan);border-radius:11px;font:inherit;font-weight:700;font-size:14px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-/* collapsible tracks — tap the topic header to open its lessons */
+/* collapsible tracks - tap the topic header to open its lessons */
 .trk-head{cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:12px}
 .trk-head:active{opacity:.85}
 .trk-chev{flex:0 0 auto;align-self:center;color:var(--faint);font-size:15px;transition:transform .18s ease;margin-left:2px}
 .trk.closed .trk-chev{transform:rotate(-90deg)}
 .trk.closed .wts-road{display:none}
-/* locked lessons — sequential path: everything past your current lesson is hidden behind a grey padlock */
+/* locked lessons - sequential path: everything past your current lesson is hidden behind a grey padlock */
 .wts-card.locked{opacity:.5;cursor:not-allowed}
 .wts-card.locked:hover{transform:none;border-color:var(--line)}
 .wts-card.locked .wts-cmid small{visibility:hidden}
@@ -267,38 +267,38 @@ function buildPage(lang) {
   const home = lang ? `/${lang}/` : '/';
   const url = `https://marginpad.io/${lang ? lang + '/' : ''}where-to-start/`;
 
-  // English labels for the new (advanced) sections — translation is a documented follow-up.
+  // English labels for the new (advanced) sections - translation is a documented follow-up.
   const X = {
-    basicsName: 'Crypto Basics', basicsBlurb: 'Zero to your first paper trade — money, wallets, exchanges and how trading works.',
+    basicsName: 'Crypto Basics', basicsBlurb: 'Zero to your first paper trade - money, wallets, exchanges and how trading works.',
     optional: 'Optional', tracksH: 'Learning tracks',
     levelWord: { beginner: 'Beginner', core: 'Core', advanced: 'Advanced' },
-    glossaryH: 'Glossary — every term explained', glossarySearch: 'Search terms (e.g. leverage, RSI, funding)…',
+    glossaryH: 'Glossary - every term explained', glossarySearch: 'Search terms (e.g. leverage, RSI, funding)…',
     noMatch: 'No terms match your search.', exampleLabel: 'Example',
-    intakeH: 'What do you want to learn?', intakeSub: "Tell us where you're at and we'll point you to the right place. No test — just pick one.",
+    intakeH: 'What do you want to learn?', intakeSub: "Tell us where you're at and we'll point you to the right place. No test - just pick one.",
     intakeSkip: 'Just let me browse everything', recFor: 'Recommended for you', recAll: 'Browse all tracks',
     recAllSub: 'Start with the basics or jump straight to any topic below.', startTrack: 'Start track →', changeGoal: 'Change',
     quizOptional: 'Quick check', markRead: 'Mark as read ✓',
-    certBtn: 'View your certificate', certH: 'Trading Academy — Complete', certSub: "You finished every lesson. You've built the foundation — now go practice it risk-free.",
+    certBtn: 'View your certificate', certH: 'Trading Academy - Complete', certSub: "You finished every lesson. You've built the foundation - now go practice it risk-free.",
     certShare: 'Share', certCta: 'Practice on Paper Trade →', certCopied: 'Link copied ✓',
-    certShareText: 'I just completed the MarginPad Trading Academy — every lesson on crypto futures: leverage, indicators & risk. Learn it free at https://marginpad.io/where-to-start/'
+    certShareText: 'I just completed the MarginPad Trading Academy - every lesson on crypto futures: leverage, indicators & risk. Learn it free at https://marginpad.io/where-to-start/'
   };
   // First-run intake options → recommended track (no quiz; just understand intent)
   const intakeOpts = [
     { g: 'basics', ic: '', t: "I'm completely new to crypto", s: 'Start from money, wallets and exchanges' },
-    { g: 'fundamentals', ic: '', t: 'I know crypto — teach me trading', s: 'Leverage, margin, liquidation, orders, funding' },
+    { g: 'fundamentals', ic: '', t: 'I know crypto - teach me trading', s: 'Leverage, margin, liquidation, orders, funding' },
     { g: 'indicators', ic: '', t: 'I want to read charts & indicators', s: 'Candles, RSI, MACD, Bollinger and more' },
     { g: 'risk', ic: '', t: 'I want to manage risk & psychology', s: 'Sizing, stops, risk of ruin, the mental game' },
-    { g: 'all', ic: '', t: "Not sure — show me everything", s: 'Browse all tracks and the glossary' }
+    { g: 'all', ic: '', t: "Not sure - show me everything", s: 'Browse all tracks and the glossary' }
   ];
 
-  // Practice missions — "go do it on the REAL site". The academy auto-detects completion from the site's own
+  // Practice missions - "go do it on the REAL site". The academy auto-detects completion from the site's own
   // localStorage state (journal, watchlist, calculator use) when the user returns, awards XP and checks it off.
   const MISSIONS = [
-    { id: 'm_watch', lesson: 'crypto', xp: 20, t: 'Star a coin you want to follow', s: 'Open Trending on the homepage and tap the ★ on any coin — it pins to the front, just for you.', href: home + '#trending', cta: 'Open Trending', det: 'watch' },
+    { id: 'm_watch', lesson: 'crypto', xp: 20, t: 'Star a coin you want to follow', s: 'Open Trending on the homepage and tap the ★ on any coin - it pins to the front, just for you.', href: home + '#trending', cta: 'Open Trending', det: 'watch' },
     { id: 'm_calc', lesson: 'leverage', xp: 25, t: 'Price a liquidation BEFORE trading', s: 'Set your entry and leverage in the liquidation calculator and see exactly where you would be wiped out.', href: '/calculators?c=liq', cta: 'Open the calculator', det: 'calc' },
-    { id: 'm_trade', lesson: 'leverage', xp: 40, t: 'Open your first demo trade', s: 'Paper Trade uses the REAL live price with a fake $100 — feel leverage without risking a cent.', href: '/paper-trade', cta: 'Open Paper Trade', det: 'open' },
-    { id: 'm_sl', lesson: 'risk', xp: 35, t: 'Protect a position with a stop-loss', s: 'In My Trades tap SL/TP on an open position and set a stop-loss — the #1 habit of traders who survive.', href: '/paper-trade', cta: 'Set a stop-loss', det: 'sl' },
-    { id: 'm_close', lesson: 'first', xp: 30, t: 'Close a trade & book the result', s: 'Close any open demo position — try closing only 50% and watch the rest keep running.', href: '/paper-trade', cta: 'Close a trade', det: 'close' },
+    { id: 'm_trade', lesson: 'leverage', xp: 40, t: 'Open your first demo trade', s: 'Paper Trade uses the REAL live price with a fake $100 - feel leverage without risking a cent.', href: '/paper-trade', cta: 'Open Paper Trade', det: 'open' },
+    { id: 'm_sl', lesson: 'risk', xp: 35, t: 'Protect a position with a stop-loss', s: 'In My Trades tap SL/TP on an open position and set a stop-loss - the #1 habit of traders who survive.', href: '/paper-trade', cta: 'Set a stop-loss', det: 'sl' },
+    { id: 'm_close', lesson: 'first', xp: 30, t: 'Close a trade & book the result', s: 'Close any open demo position - try closing only 50% and watch the rest keep running.', href: '/paper-trade', cta: 'Close a trade', det: 'close' },
   ];
 
   // Tracks: Basics (translated, optional) + the 3 advanced tracks (English)
@@ -416,8 +416,8 @@ ${hreflang}
     <button class="wts-certbtn" id="certBtn" type="button">${esc(X.certBtn)}</button>
     <div class="sec-h">${esc(U.badgesH)}</div>
     <div class="wts-badges">${badgeRow}</div>
-    <div class="sec-h">Practice missions — on the real site <span id="misN" style="color:var(--lime)"></span></div>
-    <div class="wts-mis-note">Each mission opens the real tool. When you come back here it is checked off automatically — and you earn XP.</div>
+    <div class="sec-h">Practice missions - on the real site <span id="misN" style="color:var(--lime)"></span></div>
+    <div class="wts-mis-note">Each mission opens the real tool. When you come back here it is checked off automatically - and you earn XP.</div>
     <div class="wts-missions" id="wtsMis"></div>
     <div class="sec-h">${esc(X.tracksH)}</div>
     ${tracksHtml}
@@ -470,22 +470,22 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)chec
 window.addEventListener('focus',function(){checkMissions();});
 // ---- interactive lesson widgets (learn by touching, not just reading) ----
 function widgetHtml(id){
-  if(id==='leverage')return '<div class="wts-widget" data-w="lev"><div class="ww-h">Try it — drag the leverage</div><input type="range" min="1" max="125" step="1" value="10" class="ww-sl" aria-label="Leverage"><div class="ww-out"></div><div class="ww-bar"><i></i></div><div class="ww-cap">The bar is your survival room — watch it vanish as leverage grows.</div></div>';
-  if(id==='risk')return '<div class="wts-widget" data-w="risk"><div class="ww-h">Try it — size a trade like a pro</div><div class="ww-row"><label>Account $<input type="number" inputmode="decimal" class="ww-bal" value="1000"></label><label>Risk %<input type="number" inputmode="decimal" class="ww-rsk" value="1" step="0.5"></label><label>Stop dist. %<input type="number" inputmode="decimal" class="ww-stp" value="5" step="0.5"></label></div><div class="ww-out"></div></div>';
-  if(id==='trading')return '<div class="wts-widget" data-w="side"><div class="ww-h">Try it — long vs short</div><div class="ww-seg"><button type="button" class="on" data-s="long">LONG (bet up)</button><button type="button" data-s="short">SHORT (bet down)</button></div><input type="range" min="-10" max="10" step="1" value="3" class="ww-sl" aria-label="Price move %"><div class="ww-out"></div></div>';
+  if(id==='leverage')return '<div class="wts-widget" data-w="lev"><div class="ww-h">Try it - drag the leverage</div><input type="range" min="1" max="125" step="1" value="10" class="ww-sl" aria-label="Leverage"><div class="ww-out"></div><div class="ww-bar"><i></i></div><div class="ww-cap">The bar is your survival room - watch it vanish as leverage grows.</div></div>';
+  if(id==='risk')return '<div class="wts-widget" data-w="risk"><div class="ww-h">Try it - size a trade like a pro</div><div class="ww-row"><label>Account $<input type="number" inputmode="decimal" class="ww-bal" value="1000"></label><label>Risk %<input type="number" inputmode="decimal" class="ww-rsk" value="1" step="0.5"></label><label>Stop dist. %<input type="number" inputmode="decimal" class="ww-stp" value="5" step="0.5"></label></div><div class="ww-out"></div></div>';
+  if(id==='trading')return '<div class="wts-widget" data-w="side"><div class="ww-h">Try it - long vs short</div><div class="ww-seg"><button type="button" class="on" data-s="long">LONG (bet up)</button><button type="button" data-s="short">SHORT (bet down)</button></div><input type="range" min="-10" max="10" step="1" value="3" class="ww-sl" aria-label="Price move %"><div class="ww-out"></div></div>';
   return '';}
 function wireWidget(root){var w=root.querySelector('.wts-widget');if(!w)return;var kind=w.getAttribute('data-w');
   if(kind==='lev'){var sl=w.querySelector('.ww-sl'),out=w.querySelector('.ww-out'),bar=w.querySelector('.ww-bar i');
-    var upd=function(){var lv=+sl.value,ctrl=100*lv,dist=(1-0.005)/lv*100;var col=dist<3?'#ff6258':(dist<10?'#ffb347':'#2ebd85');out.innerHTML='$100 at <b>'+lv+'×</b> controls <b>$'+ctrl.toLocaleString('en-US')+'</b> — a <b style="color:'+col+'">'+dist.toFixed(dist<10?2:1)+'%</b> move against you = <b style="color:#ff6258">liquidated</b>.';bar.style.width=Math.max(2,Math.min(100,dist*5))+'%';bar.style.background=col;};
+    var upd=function(){var lv=+sl.value,ctrl=100*lv,dist=(1-0.005)/lv*100;var col=dist<3?'#ff6258':(dist<10?'#ffb347':'#2ebd85');out.innerHTML='$100 at <b>'+lv+'×</b> controls <b>$'+ctrl.toLocaleString('en-US')+'</b> - a <b style="color:'+col+'">'+dist.toFixed(dist<10?2:1)+'%</b> move against you = <b style="color:#ff6258">liquidated</b>.';bar.style.width=Math.max(2,Math.min(100,dist*5))+'%';bar.style.background=col;};
     sl.addEventListener('input',upd);upd();}
   if(kind==='risk'){var b=w.querySelector('.ww-bal'),r=w.querySelector('.ww-rsk'),st=w.querySelector('.ww-stp'),out2=w.querySelector('.ww-out');
-    var u2=function(){var bal=+b.value||0,rp=+r.value||0,sp=+st.value||0;if(!(bal>0&&rp>0&&sp>0)){out2.textContent='';return;}var riskD=bal*rp/100,size=riskD/(sp/100);out2.innerHTML='You risk <b>$'+riskD.toFixed(0)+'</b> ('+rp+'% of the account). With the stop '+sp+'% away, the right position size is <b style="color:var(--lime)">$'+size.toLocaleString('en-US',{maximumFractionDigits:0})+'</b> — hit the stop and you lose exactly $'+riskD.toFixed(0)+', never more.';};
+    var u2=function(){var bal=+b.value||0,rp=+r.value||0,sp=+st.value||0;if(!(bal>0&&rp>0&&sp>0)){out2.textContent='';return;}var riskD=bal*rp/100,size=riskD/(sp/100);out2.innerHTML='You risk <b>$'+riskD.toFixed(0)+'</b> ('+rp+'% of the account). With the stop '+sp+'% away, the right position size is <b style="color:var(--lime)">$'+size.toLocaleString('en-US',{maximumFractionDigits:0})+'</b> - hit the stop and you lose exactly $'+riskD.toFixed(0)+', never more.';};
     b.addEventListener('input',u2);r.addEventListener('input',u2);st.addEventListener('input',u2);u2();}
   if(kind==='side'){var seg=w.querySelectorAll('.ww-seg button'),sl3=w.querySelector('.ww-sl'),out3=w.querySelector('.ww-out'),side='long';
     var u3=function(){var mv=+sl3.value,p=side==='long'?mv:-mv;var col=p>=0?'#2ebd85':'#ff6258';out3.innerHTML='Price moves <b>'+(mv>=0?'+':'')+mv+'%</b> → your '+side.toUpperCase()+' makes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p).toFixed(0)+'</b> on $100 (no leverage). With 10× leverage that becomes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p*10).toFixed(0)+'</b>.';};
     for(var si=0;si<seg.length;si++)(function(btn){btn.addEventListener('click',function(){side=btn.getAttribute('data-s');for(var j2=0;j2<seg.length;j2++)seg[j2].classList.toggle('on',seg[j2]===btn);u3();});})(seg[si]);
     sl3.addEventListener('input',u3);u3();}}
-function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first — one step at a time.');return;}var l=L[i],m=qs('#mcard');
+function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first - one step at a time.');return;}var l=L[i],m=qs('#mcard');
   var h='<div class="wts-mh"><span class="mn">'+l.tn+'</span><h2>'+esc(l.t)+'</h2><button class="wts-x" data-close type="button">✕</button></div>';
   if(l.warn)h+='<div class="wts-warn"><b>'+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
   if(l.fig)h+='<div class="wts-fig">'+l.fig+'</div>';
@@ -505,7 +505,7 @@ function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first �
   m.innerHTML=h;qs('#modal').hidden=false;qs('#modal').classList.add('on');document.documentElement.style.overflow='hidden';m.scrollTop=0;
   try{wireWidget(m);}catch(e){}
   var answered=!!S.done[l.id];
-  function award(correct){ // correct: true / false (quiz) or null (mark-read) — all complete the lesson
+  function award(correct){ // correct: true / false (quiz) or null (mark-read) - all complete the lesson
     var fresh=!S.done[l.id];S.done[l.id]=true;var gain=fresh?(correct===true?60:40):0;if(fresh){S.xp+=gain;bumpStreak();save(S);renderStats();}
     var ld=document.getElementById('ld');ld.classList.add('on');document.getElementById('ldx').textContent=fresh?('+'+gain+(correct===true?U.xpNailed:U.xpComplete)):U.alreadyComplete;
     var ni=i+1,nb=document.getElementById('lnext');
@@ -535,7 +535,7 @@ function closeModal(){qs('#modal').classList.remove('on');qs('#modal').hidden=tr
 document.addEventListener('click',function(e){
   var th=e.target.closest&&e.target.closest('.trk-head');if(th){var trk=th.closest('.trk');if(trk)trk.classList.toggle('closed');return;}
   var c=e.target.closest&&e.target.closest('.wts-card');if(!c)return;var ci=+c.getAttribute('data-i');
-  if(c.classList.contains('locked')){toast('Finish the previous lesson first — one step at a time.');return;}
+  if(c.classList.contains('locked')){toast('Finish the previous lesson first - one step at a time.');return;}
   openLesson(ci);});
 // space saver: only the track you are currently ON starts open; tap any topic header to expand it
 (function(){var cur=L[firstIncomplete()]?L[firstIncomplete()].track:null;
@@ -546,13 +546,13 @@ qs('#modal').addEventListener('click',function(e){if(e.target.closest('[data-clo
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
 (function(){var inp=qs('#glSearch');if(!inp)return;var terms=document.querySelectorAll('.gl-term'),catsEls=document.querySelectorAll('.gl-cat'),empty=qs('#glEmpty'),list=qs('#glList');
   inp.addEventListener('input',function(){var q=inp.value.trim().toLowerCase(),any=false;
-    if(list)list.hidden=!q; /* the term list only opens while searching — the academy (missions/lessons) sits right under the box instead of below hundreds of terms */
+    if(list)list.hidden=!q; /* the term list only opens while searching - the academy (missions/lessons) sits right under the box instead of below hundreds of terms */
     if(!q){if(empty)empty.hidden=true;return;}
     for(var i=0;i<terms.length;i++){var show=!q||terms[i].getAttribute('data-s').indexOf(q)>=0;terms[i].style.display=show?'':'none';if(show)any=true;}
     for(var c=0;c<catsEls.length;c++){var sib=catsEls[c].nextElementSibling,vis=false;while(sib&&!sib.classList.contains('gl-cat')){if(sib.classList.contains('gl-term')&&sib.style.display!=='none'){vis=true;break;}sib=sib.nextElementSibling;}catsEls[c].style.display=vis?'':'none';}
     if(empty)empty.hidden=any;});
 })();
-// Intake / "what do you want?" flow — runs BEFORE any lesson or quiz is shown.
+// Intake / "what do you want?" flow - runs BEFORE any lesson or quiz is shown.
 function firstLessonOfTrack(tid){for(var i=0;i<N;i++)if(L[i].track===tid)return i;return 0;}
 function renderRec(goal){
   document.querySelectorAll('.trk').forEach(function(t){t.classList.remove('trk-rec');});

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Estado de MarginPad — Disponibilidad de la API, el almacén de trading y el feed de liquidaciones</title>
+<title>Estado de MarginPad - Disponibilidad de la API, el almacén de trading y el feed de liquidaciones</title>
 <meta name="description" content="Estado en vivo de la Bot API de MarginPad, el almacén de paper trading, el collector de liquidaciones y el feed de precios, con 90 días de uptime muestreado. Sin inicio de sesión." />
 <link rel="canonical" href="https://marginpad.io/es/status/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/status/" />
@@ -113,9 +113,9 @@
     $('ovS').textContent='checked '+new Date(j.ts).toISOString().slice(11,16)+' UTC';
     var h='';
     h+=card(cr&&cr.ok?'ok':'bad','Scheduler',cr&&cr.ok?'alive':'down','last pass '+ago(cr?cr.ageMin:null));
-    h+=card(st?(st.ok?'ok':'bad'):'','Trading store',st?(st.ok?(st.ms+' ms'):'no answer'):'—',st?'round trip, sampled '+ago(st.sampledAgoMin):'');
-    h+=card(co?(co.ok?'ok':'bad'):'','Liquidation collector',co?co.connected+' / '+co.total:'—',co?'sockets connected · up '+(co.uptimeSec?Math.round(co.uptimeSec/3600)+' h':'?'):'');
-    h+=card(px?(px.ok?'ok':'warn'):'','Price feed',px?(px.ageSec!=null?px.ageSec+' s':'live'):'—',px?px.pairs+' pairs · age of the price floor':'');
+    h+=card(st?(st.ok?'ok':'bad'):'','Trading store',st?(st.ok?(st.ms+' ms'):'no answer'):'-',st?'round trip, sampled '+ago(st.sampledAgoMin):'');
+    h+=card(co?(co.ok?'ok':'bad'):'','Liquidation collector',co?co.connected+' / '+co.total:'-',co?'sockets connected · up '+(co.uptimeSec?Math.round(co.uptimeSec/3600)+' h':'?'):'');
+    h+=card(px?(px.ok?'ok':'warn'):'','Price feed',px?(px.ageSec!=null?px.ageSec+' s':'live'):'-',px?px.pairs+' pairs · age of the price floor':'');
     $('cards').innerHTML=h;
     bars($('bStore'),j.days,'store',$('pStore'),$('upStore'));
     bars($('bColl'),j.days,'coll',$('pColl'),$('upColl'));
@@ -125,8 +125,8 @@
   }).catch(function(){$('ovT').textContent='Status endpoint unreachable';$('overall').className='overall bad';});
 })();
 </script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<script defer src="/assets/mp-auth.js?v=1fd60faa"></script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script defer src="/assets/mp-auth.js?v=35f0932a"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

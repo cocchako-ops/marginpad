@@ -1,7 +1,7 @@
 /* The MEXC fee comparison lives inside the FEE WINDOW, in every one of them (owner 2026-09-13: not on the ticket),
    on AS MANY tickets as it can honestly sit (owner 2026-09-14: "svuda da bude, i na dobitnim i na gubitnim, pa makar
    ušteda bila i jedan cent"). The seed covers what real journals hold: a win, a loss, an old row with no stamped
-   rate, a tiny trade whose saving is under half a cent, and a stocks ticket — MEXC futures has no AAPL pair, so that
+   rate, a tiny trade whose saving is under half a cent, and a stocks ticket - MEXC futures has no AAPL pair, so that
    one must NOT get a line or the link would 404. It also proves the line is built when the window OPENS rather than
    at render, which is what made it vanish: window.mpEx ships in the deferred mp-auth.js, so at first paint it is
    usually absent.                                                              node build/mexc-line-e2e.js          */

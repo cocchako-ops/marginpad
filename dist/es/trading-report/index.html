@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Tu Informe de Trading — Cómo Operaste Realmente | MarginPad</title>
+<title>Tu Informe de Trading - Cómo Operaste Realmente | MarginPad</title>
 <meta name="description" content="Un informe medido de tus propias operaciones de paper trading: tasa de acierto por moneda, por apalancamiento y por hora, tiempo medio de posición abierta, y el único número que explica tu mes." />
 <link rel="canonical" href="https://marginpad.io/es/trading-report/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/trading-report/" />
@@ -11,7 +11,7 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/trading-report/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta property="og:title" content="Tu Informe de Trading — MarginPad" />
+<meta property="og:title" content="Tu Informe de Trading - MarginPad" />
 <meta property="og:description" content="Tasa de acierto por moneda, por apalancamiento, por hora. Tiempo medio de posición abierta. Lo que tu mes te costó en realidad." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/trading-report/" />
@@ -104,7 +104,7 @@
   </header>
 
   <h1>Cómo operaste <em>realmente</em></h1>
-  <p class="sub">No es una sensación — es un conteo. Cada número de abajo se mide a partir de tus propias operaciones cerradas, y cada uno lleva el número de operaciones en que se basa. Donde no hay suficientes para leer un patrón, lo dice en vez de adivinar.</p>
+  <p class="sub">No es una sensación - es un conteo. Cada número de abajo se mide a partir de tus propias operaciones cerradas, y cada uno lleva el número de operaciones en que se basa. Donde no hay suficientes para leer un patrón, lo dice en vez de adivinar.</p>
 
   <div class="seg" id="winSeg">
     <button data-d="7">7 días</button>
@@ -114,7 +114,7 @@
   <div class="card" id="gateCard" hidden>
     <div class="gate">
       <h2>Inicia sesión para ver tu informe</h2>
-      <p>Tus operaciones están ligadas a tu cuenta. Iniciar sesión es gratis y solo necesita un correo — sin contraseña, sin depósito.</p>
+      <p>Tus operaciones están ligadas a tu cuenta. Iniciar sesión es gratis y solo necesita un correo - sin contraseña, sin depósito.</p>
       <button class="go" type="button" data-auth-open>Inicia sesión gratis</button>
     </div>
   </div>
@@ -126,7 +126,7 @@
     </div>
 
     <div class="card sk" id="skillCard" hidden>
-      <div class="sk-head"><div><h2>Puntaje de habilidad</h2><div class="sk-sub" id="skSub"></div></div><div class="sk-big"><b id="skScore">—</b><span id="skDelta"></span></div></div>
+      <div class="sk-head"><div><h2>Puntaje de habilidad</h2><div class="sk-sub" id="skSub"></div></div><div class="sk-big"><b id="skScore">-</b><span id="skDelta"></span></div></div>
       <div class="sk-parts" id="skParts"></div>
       <div class="sk-note" id="skNote"></div>
     </div>
@@ -138,7 +138,7 @@
     <div class="card" id="premGate" hidden>
       <div class="gate">
         <h2>El desglose es Premium</h2>
-        <p>Los totales de arriba son tuyos gratis. Qué moneda, qué rango de apalancamiento y qué hora del día te está costando realmente dinero — esa es la parte que cambia cómo operas, y está incluida en Premium.</p>
+        <p>Los totales de arriba son tuyos gratis. Qué moneda, qué rango de apalancamiento y qué hora del día te está costando realmente dinero - esa es la parte que cambia cómo operas, y está incluida en Premium.</p>
         <a class="go" href="/es/premium/">Ver Premium &rarr;</a>
       </div>
     </div>
@@ -183,21 +183,21 @@
       hourCard=document.getElementById('hourCard'), hourBars=document.getElementById('hourBars');
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   function usd(v){v=+v||0;var n=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-$':'$')+n;}
-  function pc(v){return v==null?'—':((v>=0?'+':'')+v+'%');}
+  function pc(v){return v==null?'-':((v>=0?'+':'')+v+'%');}
   function cls(v){return v>0?'up':v<0?'dn':'';}
 
   function tile(v,l,c){return '<div class="tile"><div class="v '+(c||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
   function rows(list,el,label){
     if(!list||!list.length){el.innerHTML='<tr><td colspan="5" style="color:var(--faint)">Nothing closed in this window.</td></tr>';return;}
     el.innerHTML=list.map(function(r){
-      return '<tr><td>'+esc(label?label(r.k):r.k)+'</td><td class="r">'+r.n+'</td><td class="r">'+(r.wr==null?'—':r.wr+'%')+'</td><td class="r '+cls(r.pnl)+'">'+usd(r.pnl)+'</td><td class="r '+cls(r.exp)+'">'+pc(r.exp)+'</td></tr>';
+      return '<tr><td>'+esc(label?label(r.k):r.k)+'</td><td class="r">'+r.n+'</td><td class="r">'+(r.wr==null?'-':r.wr+'%')+'</td><td class="r '+cls(r.pnl)+'">'+usd(r.pnl)+'</td><td class="r '+cls(r.exp)+'">'+pc(r.exp)+'</td></tr>';
     }).join('');
   }
   function drawHours(list){
     var mx=1; list.forEach(function(h){var a=Math.abs(h.pnl||0); if(a>mx)mx=a;});
     hourBars.innerHTML=list.map(function(h){
       var a=Math.abs(h.pnl||0), ht=h.n?Math.max(3,Math.round(a/mx*100)):0;
-      return '<i class="'+(h.pnl>0?'p':h.pnl<0?'l':'')+'" style="height:'+ht+'%" title="'+h.k+':00 UTC — '+h.n+' trades, '+usd(h.pnl)+'"></i>';
+      return '<i class="'+(h.pnl>0?'p':h.pnl<0?'l':'')+'" style="height:'+ht+'%" title="'+h.k+':00 UTC - '+h.n+' trades, '+usd(h.pnl)+'"></i>';
     }).join('');
   }
 
@@ -206,25 +206,25 @@
     var t=d.total||{};
     winNote.textContent='last '+(d.days||30)+' days, '+(t.n||0)+' closed trade'+((t.n||0)===1?'':'s');
     tiles.innerHTML=tile(String(t.n||0),'Closed trades')
-      +tile(t.wr==null?'—':t.wr+'%','Win rate')
+      +tile(t.wr==null?'-':t.wr+'%','Win rate')
       +tile(usd(t.pnl),'Net result',cls(t.pnl))
       +tile(pc(t.exp),'Return on margin risked',cls(t.exp))
       +tile(usd(t.best?t.best.pnl:0),'Best trade','up')
       +tile(usd(t.worst?t.worst.pnl:0),'Worst trade','dn')
       +tile(String(t.liq||0),'Liquidations',(t.liq?'amb':''))
-      +tile(t.holdMedianMin==null?'—':(t.holdMedianMin<60?t.holdMedianMin+'m':t.holdMedianMin<1440?(Math.round(t.holdMedianMin/6)/10)+'h':(Math.round(t.holdMedianMin/144)/10)+'d'),'Median hold');
+      +tile(t.holdMedianMin==null?'-':(t.holdMedianMin<60?t.holdMedianMin+'m':t.holdMedianMin<1440?(Math.round(t.holdMedianMin/6)/10)+'h':(Math.round(t.holdMedianMin/144)/10)+'d'),'Median hold');
 
     (function(){var S=d.skill,card=document.getElementById('skillCard');if(!card)return;if(!S||!S.now){card.hidden=true;return;}
       var now=S.now,wk=S.week||{},pv=S.prev||{},minN=S.minN||8;
       var P={disc:['Discipline','stops set on your closes, minus liquidations'],size:['Sizing','how even your margin per trade is'],pat:['Patience','median time you hold a trade'],edge:['Edge','average return on margin risked']};
       var big=document.getElementById('skScore'),delta=document.getElementById('skDelta'),sub=document.getElementById('skSub'),parts=document.getElementById('skParts'),note=document.getElementById('skNote');
       card.hidden=false;
-      if(now.score==null){big.textContent='—';big.className='thin';delta.textContent='';sub.textContent='Needs '+minN+' closed trades in a window before any habit can be measured; '+(now.n||0)+' so far in the last '+(d.days||30)+' days.';}
+      if(now.score==null){big.textContent='-';big.className='thin';delta.textContent='';sub.textContent='Needs '+minN+' closed trades in a window before any habit can be measured; '+(now.n||0)+' so far in the last '+(d.days||30)+' days.';}
       else{big.textContent=String(now.score);big.className='';sub.textContent='Four habits you can actually change, scored 0-100 from your last '+(d.days||30)+' days ('+now.n+' closed trades, '+now.measured+' of 4 habits measurable).';
         if(wk.score!=null&&pv.score!=null){var df=wk.score-pv.score;delta.textContent=(df>0?'+':'')+df+' vs last week';delta.className=df>0?'up':df<0?'dn':'';}
         else if(wk.score!=null){delta.textContent='this week '+wk.score;delta.className='';}
         else{delta.textContent='';}}
-      parts.innerHTML=Object.keys(P).map(function(k){var q=now.parts[k]||{};var have=q.v!=null;return '<div class="sk-p"><div class="t"><span>'+P[k][0]+'</span><b class="'+(have?'':'thin')+'">'+(have?q.v+' / 25':'—')+'</b></div><div class="bar"><i style="width:'+(have?Math.round(q.v/25*100):0)+'%"></i></div><div class="n">'+(have?'n = '+q.n:(q.n||0)+' of '+minN+' needed')+'</div><div class="d">'+P[k][1]+'</div></div>';}).join('');
+      parts.innerHTML=Object.keys(P).map(function(k){var q=now.parts[k]||{};var have=q.v!=null;return '<div class="sk-p"><div class="t"><span>'+P[k][0]+'</span><b class="'+(have?'':'thin')+'">'+(have?q.v+' / 25':'-')+'</b></div><div class="bar"><i style="width:'+(have?Math.round(q.v/25*100):0)+'%"></i></div><div class="n">'+(have?'n = '+q.n:(q.n||0)+' of '+minN+' needed')+'</div><div class="d">'+P[k][1]+'</div></div>';}).join('');
       note.textContent='A mirror of behaviour, not a prediction. Each habit needs '+minN+' trades in the window to count; the weekly change compares the last 7 days with the 7 before, each on its own trades.';
     })();
     var prem=!!d.premium;
@@ -261,8 +261,8 @@
   try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}
 })();
 </script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<script defer src="/assets/mp-auth.js?v=1fd60faa"></script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script defer src="/assets/mp-auth.js?v=35f0932a"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

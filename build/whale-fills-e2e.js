@@ -1,8 +1,8 @@
-// Whale trade feed (2026-09-14) — owner: "jedan prozor gde izbacuje da je neko kupio 200k BTC long
+// Whale trade feed (2026-09-14) - owner: "jedan prozor gde izbacuje da je neko kupio 200k BTC long
 // po tom i tom leverage u to i to vreme sa vremenskom zonom".
 //
 // The feature IS the aggregation, so this runs the collector's REAL functions over REAL fills pulled
-// from Hyperliquid — a reimplementation in the test would prove nothing. Then it checks the live
+// from Hyperliquid - a reimplementation in the test would prove nothing. Then it checks the live
 // worker endpoint and the page.
 //
 //   node build/whale-fills-e2e.js
@@ -40,13 +40,13 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
   console.log('   ' + total + ' raw fills -> ' + out.length + ' trades over $' + (consts.MIN_TRADE_USD / 1000) + 'k');
 
   ok(out.length > 0, 'the hour produced at least one publishable trade');
-  ok(out.length < total, 'and far fewer trades than fills — this is an aggregate, not a fill dump (' + out.length + ' vs ' + total + ')');
+  ok(out.length < total, 'and far fewer trades than fills - this is an aggregate, not a fill dump (' + out.length + ' vs ' + total + ')');
   ok(out.every(t => t.usd >= consts.MIN_TRADE_USD), 'every published trade clears the floor');
   ok(out.every(t => t.ts > 0 && t.tsEnd >= t.ts), 'every trade carries both ends of its execution');
   ok(out.every(t => t.tsEnd - t.ts >= 0 && t.tsEnd - t.ts < 6 * 3600e3), 'no execution window is absurd');
   ok(out.every(t => t.n >= 1), 'every trade reports how many fills it is made of');
   ok(out.every(t => ['open', 'close', 'flip'].indexOf(t.act) >= 0), 'every trade has a known action', out.find(t => ['open', 'close', 'flip'].indexOf(t.act) < 0));
-  ok(out.every(t => !String(t.sym).startsWith('@')), 'no spot rows — this is a futures feed', out.find(t => String(t.sym).startsWith('@')));
+  ok(out.every(t => !String(t.sym).startsWith('@')), 'no spot rows - this is a futures feed', out.find(t => String(t.sym).startsWith('@')));
   ok(out.every(t => t.px > 0), 'every trade has an average fill price');
 
   // the average price must sit inside the range of the fills it came from
@@ -74,7 +74,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
   { let bad = null; for (let i = 1; i < out.length; i++) if (out[i].ts > out[i - 1].ts) { bad = { i, a: out[i - 1].ts, b: out[i].ts }; break; }
     ok(!bad, 'the feed is newest-first by the clock each row prints', bad); }
 
-  // a fill already counted must never be counted twice — the rotation re-reads overlapping windows
+  // a fill already counted must never be counted twice - the rotation re-reads overlapping windows
   { const before = state.fills.length;
     for (const [u, rows] of Object.entries(raw)) foldFills(u, rows);
     flushLocal(Date.now() + consts.GROUP_MS + 1);
@@ -123,7 +123,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
   { reset({});
     foldFills('0xtest4', [{ coin: '@107', dir: 'Sell', time: Date.now() - 3600e3, px: '80', sz: '100000', closedPnl: '0' }]);
     flushLocal(Date.now());
-    ok(state.fills.length === 0, 'a spot fill is dropped — this is a futures feed');
+    ok(state.fills.length === 0, 'a spot fill is dropped - this is a futures feed');
   }
 
   // ── 2. live surfaces ────────────────────────────────────────────────────────────────────────────

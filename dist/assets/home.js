@@ -24,7 +24,7 @@ window.mpJStore=window.mpJStore||function(a){
   return false;
 };
 ﻿/* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
-   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device - the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
    DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
    unaffected. Shifting the data instead would corrupt every one of those. */
@@ -46,16 +46,16 @@ function mpTzMerge(o){
   return o;
 }
 function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
-/* ── PRICE PRECISION ON THE AXIS — MEASURED, NOT GUESSED (2026-09-05) ────────────────────────────────────────
+/* ── PRICE PRECISION ON THE AXIS - MEASURED, NOT GUESSED (2026-09-05) ────────────────────────────────────────
    Every engine used to pick decimals from price MAGNITUDE ("$10-$1000 -> 3 decimals"). That is a guess about the
-   market's tick size, and it was wrong in both directions: HYPE at 85.64 was drawn as 85.640 — a digit the
-   exchange never quotes, repeated on every label — while a 5-decimal FX pair got cut short.
+   market's tick size, and it was wrong in both directions: HYPE at 85.64 was drawn as 85.640 - a digit the
+   exchange never quotes, repeated on every label - while a 5-decimal FX pair got cut short.
 
    The candles already carry the answer: the decimals a market actually prints ARE its tick size. So read them.
    The 90th percentile rather than the max, because one aggregated/derived close (a daily bar built by averaging
    comes back as 38.153333333333336) would otherwise drag the whole axis to 15 decimals. The magnitude floor
    keeps a quiet window of round prints from under-quoting a market, the ceiling keeps the axis readable.
-   ONE helper for all four chart engines — this is the chart-helper block they all share (mpCreateChart). */
+   ONE helper for all four chart engines - this is the chart-helper block they all share (mpCreateChart). */
 /* Decimals a value REALLY carries = the fewest that reproduce it. Counting the digits in String(v) looks simpler
    and is wrong: Yahoo hands us AAPL as 319.989990234375 and Gate hands us EURUSD as 1.1621150970458984 (float32
    widened to a double), so a string count says "12 decimals" for a market that quotes 2. Asking which rounding
@@ -77,7 +77,7 @@ function mpPricePrec(bars,live){
 // instead of whole dollars, which is the "80.11 / 82.13" granularity rather than "83, 84, 85".
 function mpPriceFmt(bars,live){var n=mpPricePrec(bars,live);return {type:'price',precision:n,minMove:Math.pow(10,-n)};}
 window.mpPriceFmt=mpPriceFmt;window.mpPricePrec=mpPricePrec;
-/* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
+/* MarginPad homepage bundle - extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
 /* TEMP pxtag (until 2026-09-01): identify WHO drives /api/price. __mpPQ(ctx,sym) → query suffix &px=<ctx>&pxw=<0|1>
    appended to every /api/price poll; pxw = is this symbol WS-covered (fresh <15s in __mpWsSeen, marked in emit()).
@@ -86,24 +86,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};
 window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};
 
 /* Is this ticket a Balance-Mode trade? Gold/BAL badge derive from the DURABLE mp_bal_tags map (id->sid), NOT the
-   e.bal field on the journal entry — the server journal sync strips e.bal, so keying the render off it made the
+   e.bal field on the journal entry - the server journal sync strips e.bal, so keying the render off it made the
    gold flicker on/off every re-render (the ticket list rebuilds innerHTML on every price tick). The tag map is
    never stripped, so this is stable across ALL renders. e.bal is still the fast path so a brand-new open is gold
-   instantly. Cached 1.2s to avoid a localStorage parse per ticket per tick. Defined once (guard) — home.js loads
+   instantly. Cached 1.2s to avoid a localStorage parse per ticket per tick. Defined once (guard) - home.js loads
    before mp-trade.js/mp-auth.js. */
 window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return function (e) { if (!e) return false; if (e.bal) return true; if (!e.id) return false; var n = Date.now(); if (!c || n - t > 1200) { try { c = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) { c = {}; } t = n; } return !!c[e.id]; }; })();
 
 /* Season stats reset (owner 2026-08-16): DISPLAYED trading stats restart every 14-day season, starting Mon 2026-08-17
    00:00 UTC (constants mirror worker LB_ANCHOR/LB_PERIOD/SEASON_STATS_EPOCH). Returns the current season start ms, or 0
    before the epoch (0 = filter is a no-op, so nothing changes until the first season boundary). Storage keeps ALL trades
-   (nothing is deleted; server lifetime stats stay intact for ops) — only what the user SEES is season-scoped.
+   (nothing is deleted; server lifetime stats stay intact for ops) - only what the user SEES is season-scoped.
    Progress systems (XP, achievements, graduation funnel, missions) intentionally do NOT use this. Guard: defined once,
    home.js loads before mp-trade.js. */
 window.mpSsnStart = window.mpSsnStart || function () { var A = Date.UTC(2026, 6, 20), n = Date.now(); if (n < Date.UTC(2026, 7, 17)) return 0; return A + Math.floor((n - A) / 1209600000) * 1209600000; };
 /* season display filter for a CLOSED journal entry (open positions always show) */
 window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(); return !s || !e || ((+e.closeTs || +e.ts || 0) >= s); };
 
-;/* extreme-leverage warning — non-blocking, throttled once/6h (mterm defaults to 1000×, so a blocking
+;/* extreme-leverage warning - non-blocking, throttled once/6h (mterm defaults to 1000×, so a blocking
    confirm on every open would kill the one-tap flow the terminal is built around). Fires on lev≥500;
    teaches that the position liquidates ~0.1% from entry (why skyfall/whyme lost big wins instantly). */
 window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.now(),last=+(localStorage.getItem('mp_lev_warned')||0);if(now-last<216e5)return;localStorage.setItem('mp_lev_warned',String(now));
@@ -116,25 +116,25 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   setTimeout(function(){d.style.transition='opacity .4s,transform .4s';d.style.opacity='0';d.style.transform='translateX(-50%) translateY(8px)';setTimeout(function(){try{d.remove();}catch(e){}},450);},4600);
 }catch(e){}};
 ;/* ══════════ inline block from app/index.html line 2435 ══════════ */
-/* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
+/* shared token list for the typeable symbol pickers (Paper Trade + Charts) - the screener tokens + common coins. Fills #symTokens too. */
   // Paper Trade + Charts are BYBIT-ONLY (owner decision): only tokens Bybit lists get a smooth live WS feed, so the
   // pickers list ONLY Bybit-tradeable symbols and window.mpIsBybit() gates the screener's paper-trade action + free-entry.
   window.mpMarketName=function(s){return ({XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',UK100:'FTSE 100',JPN225:'Nikkei 225',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',AAPL:'Apple',TSLA:'Tesla',NVDA:'NVIDIA',MSFT:'Microsoft',AMZN:'Amazon',GOOGL:'Alphabet',META:'Meta',AMD:'AMD',NFLX:'Netflix',COIN:'Coinbase',MSTR:'Strategy',PLTR:'Palantir',HOOD:'Robinhood',AVGO:'Broadcom',INTC:'Intel',JPM:'JPMorgan',DIS:'Disney',BABA:'Alibaba',SPY:'S&P 500 ETF',QQQ:'Nasdaq 100 ETF',MARA:'MARA Holdings',RIOT:'Riot Platforms',CLSK:'CleanSpark',HUT:'Hut 8',CIFR:'Cipher Mining',WULF:'TeraWulf',GLXY:'Galaxy Digital',BMNR:'Bitmine',SBET:'SharpLink',TSM:'TSMC',QCOM:'Qualcomm',ARM:'Arm',SMCI:'Super Micro',ASML:'ASML',TXN:'Texas Instruments',ORCL:'Oracle',CRM:'Salesforce',ADBE:'Adobe',GME:'GameStop',AMC:'AMC',SOFI:'SoFi',RIVN:'Rivian',LCID:'Lucid',NIO:'NIO',UBER:'Uber',ABNB:'Airbnb',RBLX:'Roblox',DKNG:'DraftKings',SNAP:'Snap',PYPL:'PayPal',SHOP:'Shopify',SPOT:'Spotify',F:'Ford',BA:'Boeing',LLY:'Eli Lilly',V:'Visa',MA:'Mastercard',WMT:'Walmart',COST:'Costco',XOM:'Exxon',JNJ:'Johnson & Johnson',PG:'Procter & Gamble',UNH:'UnitedHealth',HD:'Home Depot',BAC:'Bank of America',GS:'Goldman Sachs',KO:'Coca-Cola',PEP:'PepsiCo',T:'AT&T',IWM:'Russell 2000 ETF',DIA:'Dow ETF',ARKK:'ARK Innovation',TQQQ:'Nasdaq 3x ETF',SQQQ:'Nasdaq -3x ETF',GLD:'Gold ETF',SLV:'Silver ETF',TLT:'20Y Treasury ETF',VOO:'Vanguard S&P 500',XLE:'Energy ETF'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
-    (window.__mpSymJ=window.__mpSymJ||fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(j){ /* shared with mp-nav.js — the same list was fetched twice per load */
+    (window.__mpSymJ=window.__mpSymJ||fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(j){ /* shared with mp-nav.js - the same list was fetched twice per load */
       var byb={};                                             // Bybit set: raw (1000PEPE) + de-prefixed clean (PEPE)
-      // Bybit uses a 1000x multiplier as a PREFIX (1000PEPE) on some and a SUFFIX (SHIB1000) on others — normalize BOTH to the clean ticker.
+      // Bybit uses a 1000x multiplier as a PREFIX (1000PEPE) on some and a SUFFIX (SHIB1000) on others - normalize BOTH to the clean ticker.
       function clean(s){return String(s||'').toUpperCase().replace(/^1(0{3,6})(?=[A-Z])/,'').replace(/([A-Z0-9])1(0{3,6})$/,'$1');}
       if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(!s)return;byb[s]=1;byb[clean(s)]=1;});
       var hasSyms=!!(j&&j.symbols&&j.symbols.length);
       window.mpBybitSet=byb;
       var _byb0=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
-      // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) — always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS — fine for slower-moving assets)
+      // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) - always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS - fine for slower-moving assets)
       var MKT={XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1,EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
-      var STK={AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1,MARA:1,RIOT:1,CLSK:1,HUT:1,CIFR:1,WULF:1,GLXY:1,BMNR:1,SBET:1,TSM:1,QCOM:1,ARM:1,SMCI:1,ASML:1,TXN:1,ORCL:1,CRM:1,ADBE:1,GME:1,AMC:1,SOFI:1,RIVN:1,LCID:1,NIO:1,UBER:1,ABNB:1,RBLX:1,DKNG:1,SNAP:1,PYPL:1,SHOP:1,SPOT:1,F:1,BA:1,LLY:1,V:1,MA:1,WMT:1,COST:1,XOM:1,JNJ:1,PG:1,UNH:1,HD:1,BAC:1,GS:1,KO:1,PEP:1,T:1,IWM:1,DIA:1,ARKK:1,TQQQ:1,SQQQ:1,GLD:1,SLV:1,TLT:1,VOO:1,XLE:1}; // real equities via Yahoo (worker leg) — tradeable, REST-priced (no crypto WS)
+      var STK={AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1,MARA:1,RIOT:1,CLSK:1,HUT:1,CIFR:1,WULF:1,GLXY:1,BMNR:1,SBET:1,TSM:1,QCOM:1,ARM:1,SMCI:1,ASML:1,TXN:1,ORCL:1,CRM:1,ADBE:1,GME:1,AMC:1,SOFI:1,RIVN:1,LCID:1,NIO:1,UBER:1,ABNB:1,RBLX:1,DKNG:1,SNAP:1,PYPL:1,SHOP:1,SPOT:1,F:1,BA:1,LLY:1,V:1,MA:1,WMT:1,COST:1,XOM:1,JNJ:1,PG:1,UNH:1,HD:1,BAC:1,GS:1,KO:1,PEP:1,T:1,IWM:1,DIA:1,ARKK:1,TQQQ:1,SQQQ:1,GLD:1,SLV:1,TLT:1,VOO:1,XLE:1}; // real equities via Yahoo (worker leg) - tradeable, REST-priced (no crypto WS)
       window.mpStk=STK;
-      // Centralized market-closed check (stocks only — Yahoo gives marketState for equities, not FX/indices). Populated
+      // Centralized market-closed check (stocks only - Yahoo gives marketState for equities, not FX/indices). Populated
       // by the price pollers (window.mpMktState[sym]=state). Default ALLOW when unknown. Used by every trade opener
       // (plan form, mterm, /charts quick-trade, mobile demo) so the market-closed block is consistent, not plan-form-only.
       window.mpMktState=window.mpMktState||{};
@@ -165,7 +165,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     }
     return open>now?open:null;
   };
-  // "14h 22m" / "6m" — a countdown reads as a wait, a timestamp reads as trivia
+  // "14h 22m" / "6m" - a countdown reads as a wait, a timestamp reads as trivia
   window.mpUntil=function(ms){
     var d=Math.max(0,ms-Date.now()), mi=Math.round(d/60000);
     if(mi<60) return mi+'m';
@@ -193,8 +193,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // One phrasing for every "you cannot open this now" message, so the toast and the panel never disagree.
   window.mpMktClosedMsg=function(sym){
     var ex=window.mpMktExplain&&window.mpMktExplain(sym);
-    if(ex&&ex.until) return sym+' is closed — the exchange opens in '+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
-    return sym+' market is closed right now — you can trade it when the exchange reopens.';
+    if(ex&&ex.until) return sym+' is closed - the exchange opens in '+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
+    return sym+' market is closed right now - you can trade it when the exchange reopens.';
   };
   window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return (MKT[sym]||STK[sym])?true:_byb0(sym);};
       // Asset class of a symbol → realistic per-market fees + the class selector on Paper Trade
@@ -202,28 +202,28 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       window.mpAssetClass=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');if(STK[sym])return 'stock';if(sym==='XAU'||sym==='XAG')return 'metal';if(IDX[sym])return 'index';if(FX[sym])return 'forex';return 'crypto';};
       // Yahoo-sourced (real stock/forex/index data) → keep OFF the Bybit WS (its tokenized/absent perp would feed a mismatched price into the forming candle). Metals stay on Bybit (real XAUUSDT perp, smooth WS).
       window.mpIsYahoo=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return !!(STK[sym]||IDX[sym]||FX[sym]);};
-      // Per-coin max leverage — only the deepest-liquidity coins get 1000×; illiquid tokens, metals, indices & forex are capped (roughly what real exchanges allow). Default = 50×.
+      // Per-coin max leverage - only the deepest-liquidity coins get 1000×; illiquid tokens, metals, indices & forex are capped (roughly what real exchanges allow). Default = 50×.
       // Per-trade taker fee, applied ONLY at close (live P&L stays clean → no -99% at open). Capped so the round-trip fee can never exceed ~20% of margin at any leverage: realistic 0.055% up to ~180×, tapering above so 1000× fees don't nuke the position.
       // Per-MARKET fee (not the crypto taker fee for everything). Real-world cost by class: crypto perp taker ~0.055%/side;
       // stocks = tight CFD spread/commission ~0.02%; forex majors = fraction of a pip ~0.008%; metals/indices ~0.015%.
       // Applied once at close (round-trip), capped so it can never exceed ~10% of margin at extreme leverage.
-      /* FEE VENUES (2026-09-11) — MIRROR of FEE_VENUES in src/worker.js (taker % and referral discount %). The trader can have
+      /* FEE VENUES (2026-09-11) - MIRROR of FEE_VENUES in src/worker.js (taker % and referral discount %). The trader can have
          fills charged at a real exchange's taker rate less the discount a MarginPad sign-up gets there (crypto only; the
          MarginPad class rate for everything else). The choice is the ACCOUNT default (uprefs 'feevenue', shared with the
          Bot API's GET|POST /v1/fees); guests keep it in localStorage. add() below stamps t.feeRate from THIS table and the
-         server stamps the same rate from its own — they must agree, so change both. */
+         server stamps the same rate from its own - they must agree, so change both. */
       window.mpFeeVenues={bybit:{n:'Bybit',t:0.055,d:20},binance:{n:'Binance',t:0.050,d:20},okx:{n:'OKX',t:0.050,d:0},bitget:{n:'Bitget',t:0.060,d:20},mexc:{n:'MEXC',t:0.020,d:0},gate:{n:'Gate',t:0.050,d:20},kucoin:{n:'KuCoin',t:0.060,d:0},kraken:{n:'Kraken',t:0.050,d:0},hyperliquid:{n:'Hyperliquid',t:0.045,d:4}};
       try{window.mpFeeVenue=String(localStorage.getItem('mp_feevenue')||'');if(!window.mpFeeVenues[window.mpFeeVenue])window.mpFeeVenue='';}catch(e){window.mpFeeVenue='';}
       window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */
       /* the "?" circles next to the two exchange pickers (and the calculators' margin picker) toggle a plain-words hint under the
-         field (owner 2026-09-12: "I did not know what the margin-rate picker does and I doubt others do") — a button, not a title
+         field (owner 2026-09-12: "I did not know what the margin-rate picker does and I doubt others do") - a button, not a title
          tooltip, because a title never shows on a phone */
       document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('.ptt-q[data-hint]'):null;if(!b)return;e.preventDefault();var h=document.getElementById(b.getAttribute('data-hint'));if(!h)return;h.hidden=!h.hidden;b.setAttribute('aria-expanded',h.hidden?'false':'true');b.classList.toggle('on',!h.hidden);});
-      /* option text is "Name — rate" on purpose: the same exDeco renderer that draws the "Exchange (sets margin rate)" picker
+      /* option text is "Name - rate" on purpose: the same exDeco renderer that draws the "Exchange (sets margin rate)" picker
          (coloured initial tile + name + rate on the right) reads that shape, so the two dropdowns in Advanced look identical (owner 2026-09-12) */
-      (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad — 0.055%</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' — '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' · '+v.d+'% off':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
+      (function(){var sel=document.getElementById('planFeeVenue');if(!sel)return;var V=window.mpFeeVenues;var html='<option value="">MarginPad - 0.055%</option>';Object.keys(V).forEach(function(k){var v=V[k],eff=v.t*(1-v.d/100);html+='<option value="'+k+'">'+v.n+' - '+eff.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'%'+(v.d?' · '+v.d+'% off':'')+'</option>';});sel.innerHTML=html;sel.value=window.mpFeeVenue||'';
         var silent=false;
         silent=true;try{sel.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}silent=false; /* the custom-select wrapper may already be attached (init order): let its label read the restored device value instead of the one option the HTML shipped with */
         function apply(k,push){window.mpFeeVenue=V[k]?k:'';try{localStorage.setItem('mp_feevenue',window.mpFeeVenue);}catch(e){}if(sel.value!==window.mpFeeVenue){sel.value=window.mpFeeVenue;silent=true;try{sel.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}silent=false;} /* the change event lets the custom-select label follow a value set from the account (silent = no second POST) */ try{if(window.mpPlanCalc)window.mpPlanCalc();else if(typeof calc==='function')calc();}catch(e){}
@@ -233,7 +233,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         var pull=function(){var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}if(!me||!window.fetch)return;fetch('/api/trade/fees',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.venue!==undefined){var k=d.venue||'';if(k!==window.mpFeeVenue)apply(k,false);}}).catch(function(){});};
         window.addEventListener('mp-auth-change',pull);var n0=0,iv0=setInterval(function(){if(++n0>80){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);pull();},100);
       })();
-      window.mpMaxLev=(function(){/* MIRROR of MAXLEV/maxLevFor in src/worker.js — the SERVER clamps every open, so any value here the server does not honour is a lie: the ticket showed a liq price for leverage the fill never used. */var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
+      window.mpMaxLev=(function(){/* MIRROR of MAXLEV/maxLevFor in src/worker.js - the SERVER clamps every open, so any value here the server does not honour is a lie: the ticket showed a liq price for leverage the fill never used. */var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
       Object.keys(STK).forEach(add);                          // then real equities (Apple, Tesla, …)
@@ -245,11 +245,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       cb&&cb(out);});};
 
 ;/* ══════════ inline block from app/index.html line 2762 ══════════ */
-function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=true;try{fn();}catch(e){}}try{if(!el||!('IntersectionObserver' in window)){(window.requestIdleCallback||function(f){setTimeout(f,1500);})(go);return;}var io=new IntersectionObserver(function(en){for(var i=0;i<en.length;i++)if(en[i].isIntersecting){io.disconnect();go();return;}},{rootMargin:'240px'});io.observe(el);if(el.offsetParent)setTimeout(go,20000);}catch(e){go();}} /* below-the-fold sections used to fetch on idle within ~1.5s of load — 19 API calls in the first 3s on a cold mobile load, most for content nobody had scrolled to (measured 2026-09-02). Hidden containers (route isolation) never fire; a laid-out one has a 20s safety so nothing stays empty forever. */
+function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=true;try{fn();}catch(e){}}try{if(!el||!('IntersectionObserver' in window)){(window.requestIdleCallback||function(f){setTimeout(f,1500);})(go);return;}var io=new IntersectionObserver(function(en){for(var i=0;i<en.length;i++)if(en[i].isIntersecting){io.disconnect();go();return;}},{rootMargin:'240px'});io.observe(el);if(el.offsetParent)setTimeout(go,20000);}catch(e){go();}} /* below-the-fold sections used to fetch on idle within ~1.5s of load - 19 API calls in the first 3s on a cold mobile load, most for content nobody had scrolled to (measured 2026-09-02). Hidden containers (route isolation) never fire; a laid-out one has a 20s safety so nothing stays empty forever. */
 (function(){var grid=document.getElementById('mpGrid'),upd=document.getElementById('mpUpd');if(!grid)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fgc(v){return v<=24?'#ff5a4d':v<=44?'#ff9f43':v<=55?'#cfd3d8':v<=75?'#2ebd85':'#19d98a';}function render(d){if(!d||d.error){grid.innerHTML='<div class="mp-load">Live market data unavailable right now.</div>';return;}var fg=d.fearGreed,liq=d.liq24h,top=d.topLiq||[],h='';if(fg){var deg=Math.round(fg.value*3.6);var pv=(fg.prev!=null)?('Yesterday '+fg.prev+(fg.value>=fg.prev?' ▲':' ▼')):'';h+='<div class="mp-card mp-fg"><div class="mp-k">Fear &amp; Greed Index</div><div class="mp-fg-row"><div class="mp-gauge" style="background:conic-gradient('+fgc(fg.value)+' '+deg+'deg,#1a1f27 '+deg+'deg)"><span>'+fg.value+'</span></div><div class="mp-fg-info"><div class="mp-fg-lbl" style="color:'+fgc(fg.value)+'">'+fg.label+'</div><div class="mp-fg-prev">'+pv+'</div></div></div><div class="mp-fg-scale"><i style="left:'+fg.value+'%"></i></div><div class="mp-fg-ticks"><span>Extreme fear</span><span>Extreme greed</span></div></div>';}if(liq){var lp=liq.total?liq.long/liq.total*100:50,sp=100-lp;h+='<div class="mp-card mp-liq"><div class="mp-k">Liquidations · 24h</div><div class="mp-liq-v">'+bn(liq.total)+'</div><div class="mp-ls"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i></div><div class="mp-ls-l"><span class="up">Longs '+bn(liq.long)+'</span><span class="dn">'+bn(liq.short)+' Shorts</span></div></div>';}if(top.length){h+='<div class="mp-card mp-top"><div class="mp-k">Most rekt · 24h</div>'+top.slice(0,4).map(function(c){var lp2=c.liq?c.long/c.liq*100:50;return '<div class="mp-top-r"><span class="mp-top-s">'+c.s+'</span><span class="mp-top-bar"><i class="l" style="width:'+lp2.toFixed(0)+'%"></i><i class="s" style="width:'+(100-lp2).toFixed(0)+'%"></i></span><span class="mp-top-v">'+bn(c.liq)+'</span></div>';}).join('')+'</div>';}grid.innerHTML=h;if(upd)upd.textContent='updated just now';}function load(){fetch('/api/cg/pulse',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(grid,load);setInterval(load,120000);})();
 
 ;/* ══════════ inline block from app/index.html line 2785 ══════════ */
-(function(){var box=document.getElementById('derivBoard');if(!box)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}function fn(f){if(f==null||!isFinite(f))return '—';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}function render(d){if(!d||!d.coins||!d.coins.length){box.innerHTML='<div class="db-load">Live data unavailable right now.</div>';return;}box.innerHTML=d.coins.map(function(c){var up=(c.chg24h||0)>=0,lp=c.longPct!=null?c.longPct:50,sp=c.shortPct!=null?c.shortPct:50,fpos=(c.funding||0)>=0;return '<a class="db-card" href="/screener"><div class="db-top"><span class="db-sym">'+c.symbol+'</span><span class="db-chg '+(up?'up':'dn')+'">'+(up?'+':'')+(c.chg24h!=null?c.chg24h.toFixed(1):'0')+'%</span></div><div class="db-px">'+(c.price!=null?fpx(c.price):'—')+'</div><div class="db-ls" title="Long '+lp+'% / Short '+sp+'%"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="db-meta"><span class="'+(fpos?'up':'dn')+'">Fund '+fn(c.funding)+'</span><span>OI '+bn(c.oiUsd)+'</span></div></a>';}).join('');}function load(){fetch('/api/cg/board',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(box,load);setInterval(load,120000);})();
+(function(){var box=document.getElementById('derivBoard');if(!box)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}function fn(f){if(f==null||!isFinite(f))return '-';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}function render(d){if(!d||!d.coins||!d.coins.length){box.innerHTML='<div class="db-load">Live data unavailable right now.</div>';return;}box.innerHTML=d.coins.map(function(c){var up=(c.chg24h||0)>=0,lp=c.longPct!=null?c.longPct:50,sp=c.shortPct!=null?c.shortPct:50,fpos=(c.funding||0)>=0;return '<a class="db-card" href="/screener"><div class="db-top"><span class="db-sym">'+c.symbol+'</span><span class="db-chg '+(up?'up':'dn')+'">'+(up?'+':'')+(c.chg24h!=null?c.chg24h.toFixed(1):'0')+'%</span></div><div class="db-px">'+(c.price!=null?fpx(c.price):'-')+'</div><div class="db-ls" title="Long '+lp+'% / Short '+sp+'%"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="db-meta"><span class="'+(fpos?'up':'dn')+'">Fund '+fn(c.funding)+'</span><span>OI '+bn(c.oiUsd)+'</span></div></a>';}).join('');}function load(){fetch('/api/cg/board',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(box,load);setInterval(load,120000);})();
 
 ;/* ══════════ inline block from app/index.html line 2955 ══════════ */
 /* Paper Trade: open a position at the live price, track it live in the Journal */
@@ -280,26 +280,26 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(lbl){var wasClosed=lbl.getAttribute('data-mkt')==='closed';if(closed!==wasClosed){lbl.setAttribute('data-mkt',closed?'closed':'open');lbl.childNodes.forEach&&Array.prototype.forEach.call(lbl.childNodes,function(n){if(n.nodeType===3)n.textContent=closed?'CLOSED':'LIVE';});}}}
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
-  function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
+  function money(x){if(!isFinite(x))return '-';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=window._mpOpenWait?((window.mpT&&window.mpT('jOpening'))||'Opening…'):cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade')); /* _mpOpenWait: a server open in flight (add() in the journal IIFE) keeps "Opening…" on the button across the 1 s tick */ if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
   function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,'planLivePx',symPrec());}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
   // The price this ticket will actually be entered at: the live price for a market order, the typed level for a
-  // limit order. Size, notional and the liquidation estimate must all be quoted off THAT — a limit ticket showing
+  // limit order. Size, notional and the liquidation estimate must all be quoted off THAT - a limit ticket showing
   // a liq computed from the live price would be wrong by exactly the distance the trader is waiting for.
   function effPx(){var p=window.mpPlanLimit;return (window.mpPlanType==='limit'&&isFinite(p)&&p>0)?p:live;}
   function calc(){
     var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional','planFee'];
     var px=effPx();
-    if(!isFinite(px)||px<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();try{limHint();}catch(_){}return;}
+    if(!isFinite(px)||px<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'-');});setBtn();try{limHint();}catch(_){}return;}
     var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-_mmr)/lev):px*(1+(1-_mmr)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
     var _ld=(liq-px)/px*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
     /* Round-trip cost BEFORE the click (owner 2026-09-09: "I paid $18 of fees on a $100 position just because I
-       raised the leverage"). The fee is charged on the POSITION, not on the margin — 0.055% a side of $16,300 is
-       $8.96 — so at high leverage it is a real share of the stake and nothing said so until the trade was closed.
+       raised the leverage"). The fee is charged on the POSITION, not on the margin - 0.055% a side of $16,300 is
+       $8.96 - so at high leverage it is a real share of the stake and nothing said so until the trade was closed.
        Same rate the fill will use (window.mpFeeRate mirrors the worker's feeRateFor). */
     try{var _fr=(window.mpFeeRate?window.mpFeeRate(lev,sym):0.00055),_rt=notional*_fr*2;
       set('planFee', money(_rt)+'  ('+(_rt/amt*100).toFixed(_rt/amt>=0.1?1:2)+'% '+((window.mpT&&window.mpT('rFeeOfMargin'))||'of margin')+')');
@@ -309,7 +309,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     try{limHint();}catch(_){}
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
-  // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
+  // the slower cached REST value clobber a fresh WS tick - that 0–5s staleness was the ±$1k forming-candle flicker.
   function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;liveState=(pd.state!=null?String(pd.state):'');try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);if(pd.sess&&window.mpMktSess)window.mpMktSess[sym.toUpperCase()]=pd.sess;}catch(_){}showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
@@ -331,22 +331,22 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   window.mpApplyLevCap=applyLevCap;
   if(levEl)levEl.addEventListener('input',function(){var cap=planCap();if(parseFloat(levEl.value)>cap){levEl.value=String(cap);var _n=Date.now();if(_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}syncLevR();levRisk();});
   var _levRaf=false;
-  if(levR)levR.addEventListener('input',function(){if(!levEl)return;var _pv=levEl.value;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));if(levEl.value!==_pv&&window.mpHaptic)window.mpHaptic('step'); /* one tick per STEP of the ladder — the drag itself must never buzz */levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
+  if(levR)levR.addEventListener('input',function(){if(!levEl)return;var _pv=levEl.value;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));if(levEl.value!==_pv&&window.mpHaptic)window.mpHaptic('step'); /* one tick per STEP of the ladder - the drag itself must never buzz */levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
   // the number field snaps on COMMIT, not on every keystroke: snapping while typing would turn "107" into 110 at the
   // second digit and fight the user. On blur or Enter the value lands on the same ladder the slider offers.
-  if(levEl)levEl.addEventListener('change',function(){var v=parseFloat(levEl.value);if(!isFinite(v))return;var s=Math.min(planCap(),levSnap(v));if(String(s)!==String(levEl.value)){levEl.value=String(s);syncLevR();levRisk();try{calc();}catch(_){}if(window.mpHaptic)window.mpHaptic('step');} /* the value snapped to the ladder — say so */});
+  if(levEl)levEl.addEventListener('change',function(){var v=parseFloat(levEl.value);if(!isFinite(v))return;var s=Math.min(planCap(),levSnap(v));if(String(s)!==String(levEl.value)){levEl.value=String(s);syncLevR();levRisk();try{calc();}catch(_){}if(window.mpHaptic)window.mpHaptic('step');} /* the value snapped to the ladder - say so */});
   var _pSymCap=document.getElementById('planSym');if(_pSymCap)_pSymCap.addEventListener('change',function(){applyLevCap(true);});
   syncLevR();levRisk();setTimeout(function(){applyLevCap(false);},200);
   /* ── MARKET / LIMIT ────────────────────────────────────────────────────────────────────────────────────────
      Cross-IIFE state lives on window (this file's many IIFEs share nothing else): add() in the journal IIFE reads
      mpPlanType/mpPlanLimit to decide between an instant fill and a resting order. The wrong-side rule is shown
-     LIVE here — the trader sees "a limit long must be below the market" while typing, not after clicking. */
+     LIVE here - the trader sees "a limit long must be below the market" while typing, not after clicking. */
   window.mpPlanType='market';window.mpPlanLimit=NaN;
   var typeEl=document.getElementById('planType'),limWrap=document.getElementById('planLimWrap'),limIn=document.getElementById('planLimitPx'),limQ=document.getElementById('planLimQuick'),limH=document.getElementById('planLimHint');
   /* The level may sit EITHER side of the market (owner correction 2026-09-05): below it this is a classic limit
      ("buy the dip at 81.60"), above it a breakout entry ("buy IF HYPE gets to 83.80"), which is the thing MEXC
      calls a trigger order. So the quick buttons are signed both ways and the hint states, in words, which way the
-     market has to move for this ticket to fill — it is information now, not a refusal. */
+     market has to move for this ticket to fill - it is information now, not a refusal. */
   function symPrec(){try{var _p=window.__mpPT&&window.__mpPT();return window.mpPricePrec?window.mpPricePrec((_p&&_p.bars)||null,live):2;}catch(e){return 2;}}
   var LQ=[-2,-1,1,2];
   function limQuick(){if(!limQ)return;limQ.innerHTML=LQ.map(function(p){return '<button type="button" data-lq="'+p+'">'+(p>0?'+':'')+p+'%</button>';}).join('');}
@@ -384,7 +384,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   setType('market');limBadge();setTimeout(limBadge,1500);
   window.mpPlanSetType=setType; // the chart's "limit order here" affordance and the E2E both drive the form through this
   window.mpPlanCalc=calc; // the "Fees as on" picker lives in an earlier inline block where calc() is out of scope; without this hook the quoted round-trip fee only refreshed on the next price tick (measured on the phone 2026-09-12: 3 s with no change)
-  (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row — reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
+  (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row - reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
     if(advChk.checked){window._mpSltpHidden=false;try{ensureDrag();}catch(e){}var sl=document.getElementById('planSlOpt'),tp=document.getElementById('planTpOpt'),entry=(window.mpPlanLive&&+window.mpPlanLive.price)||0,seg=document.getElementById('planSeg'),onb=seg&&seg.querySelector('button.on'),lng=!(onb&&onb.getAttribute('data-side')==='short'),dp=(entry>=1?2:6);
@@ -392,7 +392,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(entry>0&&tp&&!(parseFloat(tp.value)>0))tp.value=String(+(entry*(lng?1.03:0.97)).toFixed(dp));
       try{calc();}catch(e){}}
     try{posDragLines();}catch(e){}try{updatePlanRisk();}catch(e){}});
-  // GUEST GATE (owner 2026-08-16): Advanced (SL/TP) needs an account. Guest positions are client-only — no server-side
+  // GUEST GATE (owner 2026-08-16): Advanced (SL/TP) needs an account. Guest positions are client-only - no server-side
   // sweep settles their SL/TP, so a trigger touched while the tab is backgrounded can be missed. Signed-in trades settle
   // on the server regardless of the tab. Guests see WHY it is locked + a one-tap sign-in path.
   (function(){
@@ -403,16 +403,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       advChk.disabled=g;
       if(lbl){lbl.style.opacity=g?'.55':'';lbl.title=g?'Create a free account to use stop-loss and take-profit':'';}
       var n=document.getElementById('advGateNote');
-      if(g&&!n&&lbl&&lbl.parentNode){n=document.createElement('span');n.id='advGateNote';n.style.cssText='font-size:10.5px;color:#8a94a1;margin-left:8px;line-height:1.3';n.innerHTML='SL/TP needs a free account — <a href="#" data-auth-open style="color:#c2f64a">sign in</a>';lbl.parentNode.insertBefore(n,lbl.nextSibling);}
+      if(g&&!n&&lbl&&lbl.parentNode){n=document.createElement('span');n.id='advGateNote';n.style.cssText='font-size:10.5px;color:#8a94a1;margin-left:8px;line-height:1.3';n.innerHTML='SL/TP needs a free account - <a href="#" data-auth-open style="color:#c2f64a">sign in</a>';lbl.parentNode.insertBefore(n,lbl.nextSibling);}
       if(!g&&n)n.parentNode.removeChild(n);
       if(g&&advChk.checked){advChk.checked=false;advChk.dispatchEvent(new Event('change',{bubbles:true}));}
     }
     if(lbl)lbl.addEventListener('click',function(e){ if(isGuest()){e.preventDefault();try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();else{var b=document.querySelector('[data-auth-open]');if(b)b.click();}}catch(_){}} },true);
     gate();
-    var gn=0,gi=setInterval(function(){gate();if(++gn>20)clearInterval(gi);},1500); // mpAuth resolves async after load — settle the state within ~30s, then stop polling
+    var gn=0,gi=setInterval(function(){gate();if(++gn>20)clearInterval(gi);},1500); // mpAuth resolves async after load - settle the state within ~30s, then stop polling
     document.addEventListener('mp:auth',gate); // fired on sign-in/out where available; harmless if never fired
   })();
-  // live "what you risk" readout — shows the $ lost if the stop hits and gained if TP hits, from amount × leverage × distance
+  // live "what you risk" readout - shows the $ lost if the stop hits and gained if TP hits, from amount × leverage × distance
   function updatePlanRisk(){var rs=document.getElementById('planRiskSl'),rt=document.getElementById('planRiskTp');if(!rs&&!rt)return;
     function setBox(b,h){if(!b)return;b.innerHTML=h||'';b.hidden=!h;}
     var adv=document.getElementById('planAdvChk');
@@ -421,18 +421,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var entry=(window.mpPlanLive&&+window.mpPlanLive.price)||0;
     if(!(adv&&adv.checked)||!margin||!entry){setBox(rs,'');setBox(rt,'');return;}
     var seg=document.getElementById('planSeg'),onb=seg&&seg.querySelector('button.on'),lng=!(onb&&onb.getAttribute('data-side')==='short');
-    // SL readout — directly under the stop-loss field
+    // SL readout - directly under the stop-loss field
     var hs='';
     if(sl>0){var wrong=lng?(sl>=entry):(sl<=entry);
       if(wrong){hs='<div class="pr-warn">⚠ Stop-loss is on the wrong side of entry</div>';}
       else{var lossFrac=Math.min(1,lev*Math.abs(entry-sl)/entry);hs='<div class="pr-sl"><span>If stop-loss hits</span><span class="v"><b>−$'+(margin*lossFrac).toFixed(2)+'</b> ('+Math.round(lossFrac*100)+'%)</span></div>';}}
     setBox(rs,hs);
-    // TP readout — directly under the take-profit field
+    // TP readout - directly under the take-profit field
     var ht='';
     if(tp>0){var wt=lng?(tp<=entry):(tp>=entry);if(!wt){var gainFrac=lev*Math.abs(tp-entry)/entry;ht='<div class="pr-tp"><span>If take-profit hits</span><span class="v"><b>+$'+(margin*gainFrac).toFixed(2)+'</b> (+'+Math.round(gainFrac*100)+'%)</span></div>';}}
     setBox(rt,ht);}
   window.mpPlanRisk=updatePlanRisk;
-  // Exchange margin preset (paper trade) — sets the maintenance-margin rate used for the liq estimate + opened position
+  // Exchange margin preset (paper trade) - sets the maintenance-margin rate used for the liq estimate + opened position
   window.mpPlanMmr=0.005;
   (function(){var px=document.getElementById('planEx');if(!px)return;px.addEventListener('change',function(){var v=parseFloat(px.value);window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005;try{calc();}catch(_){}try{updatePlanRisk();}catch(_){}});})();
   ['planSlOpt','planTpOpt','planLev','planAmt'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){window._mpSltpHidden=false;try{posDragLines();}catch(_){}try{updatePlanRisk();}catch(_){}});});
@@ -466,17 +466,17 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(v.p>0&&Math.abs(raw-v.p)/v.p>0.025){v.rej=(v.rej||0)+1;if(v.rej<2)return v.p;} // hold last-good until a 2nd tick confirms the jump
     v.p=raw;v.rej=0;return raw; }
   window.mpLivePrices=prices; // shared with the My Trades drawer so it shows live P&L without double-polling
-  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});
-    // A resting limit order's coin must be priced too — otherwise the cross is never seen on this device (the server
+  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='-')s[e.sym]=1;});
+    // A resting limit order's coin must be priced too - otherwise the cross is never seen on this device (the server
     // still fills it on the */10 sweep, but the trader watching the chart would see nothing happen).
     try{if(window.mpOrders)window.mpOrders.list().forEach(function(o){if(o&&o.sym)s[String(o.sym).toUpperCase()]=1;});}catch(e){}
     if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
-  // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
+  // fresh WS tick with the slower/edge-cached /api/price value - that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);if(pd.sess&&window.mpMktSess)window.mpMktSess[sym.toUpperCase()]=pd.sess;}catch(_){}if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
-  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */
+  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L - legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */
     /* pnlNet = what a CLOSE actually books: the taker fee on both legs, i.e. the server's own `close(px)` and the same
-       expression as pnlAt() above. `pnl` deliberately stays GROSS — that is the unrealized number an exchange shows on
+       expression as pnlAt() above. `pnl` deliberately stays GROSS - that is the unrealized number an exchange shows on
        an open position, and settling the fee into it made a fresh $100 position read -$12 the instant it opened (owner,
        reverted 2026-09-09). ONLY the close paths read pnlNet, so a manually closed trade can no longer disagree with the
        server and flip Win -> Loss a few seconds later. Legacy rows carry feeRate 0 -> pnlNet === pnl. MIRROR: the other
@@ -486,13 +486,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
-    // symbol. When prices[sym] is unset/seed, metrics() falls back to EACH trade's OWN entry — so two open trades on the
+    // symbol. When prices[sym] is unset/seed, metrics() falls back to EACH trade's OWN entry - so two open trades on the
     // same coin feed DIFFERENT "live" values into the per-symbol spike filter ccPx()/_vpx[sym]; ccPx sees the newer entry
     // as a >2.5% "spike" off the older one and RETURNS THE OLDER ENTRY → the newer 100× trade is measured against the old
     // 1000× entry (e.g. 0.0465 vs 0.0237) → −49% → phantom liquidation. Display P&L can use the entry fallback; liquidation must NOT.
     var _spx=prices[e.sym]; if(!_spx||!(+_spx.p>0)||_spx.seed)return false;
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
-    if(window.__mpDebug){try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){}} // DIAG (opt-in): per-symbol tick trail — was allocating for every open position every tick
+    if(window.__mpDebug){try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){}} // DIAG (opt-in): per-symbol tick trail - was allocating for every open position every tick
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
     var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir-((+e.qty||0)*(e.entry+exit)*(+e.feeRate||0))-(+e.fund||0):null;};
     var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
@@ -512,7 +512,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     else if(sl){var _p=pnlAt(e.stop);e.status=(_p!=null&&_p>0)?'win':'loss';e.exit=e.stop;e.pnl=clamp(_p);_clArm[e.id]=0;} // a trailing/break-even stop can lock PROFIT → count it as a win
     else{
       // Liquidation needs 2 CONSECUTIVE validated ticks (2026-08-11, was extreme-leverage-only): after a tab return the
-      // spike-filter state is cold, so its FIRST accepted print is unchecked — one bad print could liquidate. TP/SL stay
+      // spike-filter state is cold, so its FIRST accepted print is unchecked - one bad print could liquidate. TP/SL stay
       // first-touch (touch orders, and their damage is bounded); liq is the -100% outcome so it pays the 1-tick delay.
       _clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;
       _clArm[e.id]=0;
@@ -529,7 +529,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}
   var _nudgeIds={},_nudgeT=null;
   // A srv (server-filled, signed-in) position that auto-closes LOCALLY must tell the server so it settles the SAME
-  // position at its OWN level (candle-check) and stamps sc — otherwise the client's local close syncs WITHOUT sc and the
+  // position at its OWN level (candle-check) and stamps sc - otherwise the client's local close syncs WITHOUT sc and the
   // trade never counts on the paid board. Debounced: one nudge per close-burst; the server rate-limits (1/3s) + verifies
   // from its own candles (no client price/reason trusted). keepalive so a tab close still delivers it. Fire-and-forget:
   // the server is authoritative and pullTrades reconciles the sc'd close (local-closed display is kept until then).
@@ -541,16 +541,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var sym=(e.sym||'Trade'),side=String(e.side||'').toUpperCase();
     buzz(kind==='liq'?[50,45,50,45,95]:(kind==='tp'?[18,55,18]:[35]));   // distinct haptic per outcome (liq = strongest)
     var pnl=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?'+$':'−$')+Math.abs(e.pnl).toFixed(2)):'';
-    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' — '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
-    try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' — liquidated':kind==='tp'?' — take-profit':' — stop-loss')+(pnl?' '+pnl:''));}catch(_){}
+    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' - '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
+    try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' - liquidated':kind==='tp'?' - take-profit':' - stop-loss')+(pnl?' '+pnl:''));}catch(_){}
     try{if(window.mpGuestNudge)window.mpGuestNudge(kind,e.sym,(e.pnl!=null&&isFinite(e.pnl))?+e.pnl:null);}catch(_){} /* guest activation card (mp-auth.js): liquidation / TP / SL closes */}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
-    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
-      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
+      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'-')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'-')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
-    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+((+e.margin>0)?' · Size <b>'+money(+e.margin)+'</b>':'')+(e.partial?' · <b>'+e.partial+'%</b>':'')+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
@@ -561,11 +561,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function _tkMeta(e,m){return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin <b>'+money((+e.margin||+e.riskAmt||0))+'</b>';}
   /* SL/TP ON THE TICKET THE TRADER ACTUALLY WATCHES (owner 2026-09-09: "I set a TP on the open ticket, press save,
      and nothing on the ticket says it is set"). Measured: the take-profit WAS saved (journal + server + the drawer
-     card + the chart line all carried it) — this ticket, the one under the form, simply never printed SL/TP and
+     card + the chart line all carried it) - this ticket, the one under the form, simply never printed SL/TP and
      offered no way to set them, so the only feedback lived inside the My Trades drawer. The row doubles as the
      opener: same window.mpSltpSheet, same levels. MIRROR in the mobile terminal's updPnl(). */
   function _tkRisk(e){var has=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length));
-    var sl=window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'),tp=window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—');
+    var sl=window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'),tp=window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-');
     return 'SL <b>'+sl+'</b> · TP <b>'+tp+'</b><button type="button" class="ptl-sltp" data-ptl-sltp="'+e.id+'">'+(has?'Edit':'Set')+'</button>';}
   function renderLast(){var el=document.getElementById('ptLastTrade');if(!el)return;var open=load().filter(function(e){return e.status==='open';});
     if(!open.length){el.hidden=true;el.className='pt-tickets';el.innerHTML='';_lastSig='';return;}
@@ -575,16 +575,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
       return '<div class="pt-last '+_tkCls(m)+(window.mpBalTkt(e)?' pt-gold':'')+'" data-tid="'+e.id+'">'
-        +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
+        +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'-')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-cut"></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
         +'<div class="ptl-risk">'+_tkRisk(e)+'</div>'
         +'</div>';
     }).join('');
-    // only the NEW ticket animates in — re-running panelIn on every existing card was the "shake" on spawn
+    // only the NEW ticket animates in - re-running panelIn on every existing card was the "shake" on spawn
     Array.prototype.forEach.call(el.querySelectorAll('.pt-last'),function(c){if(_prevIds.indexOf(c.getAttribute('data-tid'))>=0)c.style.animation='none';});}
-  // live refresh that NEVER rebuilds the DOM unless the open-set changes — replacing innerHTML every tick re-ran the
+  // live refresh that NEVER rebuilds the DOM unless the open-set changes - replacing innerHTML every tick re-ran the
   // panelIn animation + reflowed the cards = the "shaking/flicker" on mobile. In-place text updates don't shake.
   function renderLastLive(){var el=document.getElementById('ptLastTrade');if(!el)return;if(el.querySelector('button:hover'))return; // leave the DOM alone while Close is hovered → no lost tap
     var open=load().filter(function(e){return e.status==='open';});
@@ -592,14 +592,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var list=open.slice(-5).reverse(),sig=list.map(function(e){return e.id;}).join(',');
     if(sig!==_lastSig){renderLast();return;} // a trade opened/closed → structural rebuild (re-animates once, intentionally)
     list.forEach(function(e){var row=el.querySelector('.pt-last[data-tid="'+e.id+'"]');if(!row)return;var m=metrics(e);
-      var pnlc=_tkCls(m);if(!row.classList.contains(pnlc)){row.classList.remove('pf','ls','be');row.classList.add(pnlc);} // swap ONLY the pnl state class — the old wholesale row.className='pt-last '+pnlc dropped pt-gold every tick (Balance Mode gold on the small ticket)
+      var pnlc=_tkCls(m);if(!row.classList.contains(pnlc)){row.classList.remove('pf','ls','be');row.classList.add(pnlc);} // swap ONLY the pnl state class - the old wholesale row.className='pt-last '+pnlc dropped pt-gold every tick (Balance Mode gold on the small ticket)
       var px=row.querySelector('.ptl-px');if(px){var pv=fp(m.live);if(px.textContent!==pv)px.textContent=pv;}
       var big=row.querySelector('.big');if(big){var bv=_tkPnl(m);if(big.textContent!==bv)big.textContent=bv;}
       var roe=row.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var meta=row.querySelector('.ptl-meta');if(meta){var mv=_tkMeta(e,m);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
       var rsk=row.querySelector('.ptl-risk');if(rsk){var rkv=_tkRisk(e);if(rsk.innerHTML!==rkv)rsk.innerHTML=rkv;} /* an SL/TP saved from anywhere (this row, the drawer, the server sync) lands here within a tick */
     });}
-  // Set / Edit SL-TP straight from the ticket under the form — the same sheet the drawer uses, so there is one editor, not two.
+  // Set / Edit SL-TP straight from the ticket under the form - the same sheet the drawer uses, so there is one editor, not two.
   document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-sltp]');if(!b)return;
     ev.preventDefault();ev.stopPropagation();
     var id=b.getAttribute('data-ptl-sltp');
@@ -608,21 +608,21 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-close]');if(!b)return;
     var id=b.getAttribute('data-ptl-close'),d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;
     var e=d[i];
-    if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();drawLines();mtCount();});return;} /* partial-close sheet (owner task) — the sheet stores + rerenders */
-    var m=metrics(e);var _pN=(m.pnlNet!=null?Math.round(m.pnlNet*100)/100:null);/* cents, exactly like the server's close() — the two journals then hold the SAME number, not a near one */e.status=(_pN!=null?(_pN>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(_pN!=null?_pN:0);buzz([22]); // haptic on manual close
+    if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();drawLines();mtCount();});return;} /* partial-close sheet (owner task) - the sheet stores + rerenders */
+    var m=metrics(e);var _pN=(m.pnlNet!=null?Math.round(m.pnlNet*100)/100:null);/* cents, exactly like the server's close() - the two journals then hold the SAME number, not a near one */e.status=(_pN!=null?(_pN>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(_pN!=null?_pN:0);buzz([22]); // haptic on manual close
     window._mpSltpHidden=true;store(d);renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
   var _posSig='';
-  var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand — every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
+  var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand - every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
   function wireFreePan(el){var st={d:0};el.addEventListener('pointerdown',function(e){var r=el.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-64);st.dec=0;},true);el.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){_userPS=true;return;}if(dy>dx){_userPS=true;try{chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);el.addEventListener('dblclick',function(e){var r=el.getBoundingClientRect();if(e.clientX>r.right-64){_userPS=false;try{chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});}
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:true,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
     /* lastValueVisible was OFF, so the terminal drew the live price LINE with no number on it: the only readable
        prices were the axis ticks, and those are round by design (LWC picks a "nice" step for the visible range,
-       exactly like TradingView — on a $8 range that step is $1, which is the "83, 84, 85, 86" the owner saw).
+       exactly like TradingView - on a $8 range that step is $1, which is the "83, 84, 85, 86" the owner saw).
        The badge is the fix: it carries the live price to this market's real precision, and it tracks the forming
        candle, so it updates on every WS tick like the number in the form above the chart. (2026-09-05) */
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
-    // timeframe — but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
+    // timeframe - but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
     if(!bars||!bars.length)return orig?orig():null;
     var vr=null;try{vr=chart.timeScale().getVisibleLogicalRange();}catch(e){}
     var n=bars.length,from=vr?Math.max(0,Math.floor(vr.from)):Math.max(0,n-160),to=vr?Math.min(n-1,Math.ceil(vr.to)):n-1;
@@ -659,12 +659,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function showNoData(sym){var el=document.getElementById('ptChart');if(!el)return;var s=el.querySelector('.chart-skel');if(s&&s.parentNode)s.parentNode.removeChild(s);if(el.querySelector('.chart-nodata'))return;var d=document.createElement('div');d.className='chart-nodata';d.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;color:#9aa3ad;z-index:6;pointer-events:none;padding:24px';d.innerHTML='<div style="font-size:15px;font-weight:700;color:#e9e7df">No market data for '+String(sym||'').replace(/[^A-Za-z0-9]/g,'')+'</div><small style="font-size:12px;color:#707a86;line-height:1.5;max-width:280px">This coin isn\'t on our live data feed (it may be delisted or renamed on the exchanges). Pick another pair to keep trading.</small>';el.appendChild(d);} // a coin our sources can\'t resolve now shows a message instead of a silent, frozen blank chart
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false,morePages=0;
-  try{window.__mpPT=function(){return {bars:bars,chart:chart,candle:candle,noMore:noMore,morePages:morePages,sym:chartSym,tf:chartTf,entryMode:entryMode,marks:_marks.slice()};};}catch(e){} // permanent read-only debug accessor (mirror of /charts __mpWinsDbg + mobile __mfcPanes) — lets headless E2E introspect the paper-trade chart's live bars/pagination state (bars/noMore/morePages are reassigned, so return via closure)
+  try{window.__mpPT=function(){return {bars:bars,chart:chart,candle:candle,noMore:noMore,morePages:morePages,sym:chartSym,tf:chartTf,entryMode:entryMode,marks:_marks.slice()};};}catch(e){} // permanent read-only debug accessor (mirror of /charts __mpWinsDbg + mobile __mfcPanes) - lets headless E2E introspect the paper-trade chart's live bars/pagination state (bars/noMore/morePages are reassigned, so return via closure)
   // Clamp ISOLATED phantom wicks (bad/transient prints in the exchange klines): a candle whose low/high is an extreme
   // outlier vs its OWN body AND BOTH neighbouring candles is almost certainly bad data (the "a drop/spike that never
-  // happened" candle). Clamp it to a sane bound so it doesn't show as a giant vertical line — or feed a liquidation.
+  // happened" candle). Clamp it to a sane bound so it doesn't show as a giant vertical line - or feed a liquidation.
   function sanitizeBars(kd){ if(!kd||!kd.length)return kd;
-    /* a bar with a null/NaN OHLC value poisons lightweight-charts' own render loop — every frame throws
+    /* a bar with a null/NaN OHLC value poisons lightweight-charts' own render loop - every frame throws
        "Value is null" and the chart is permanently broken until reload. Drop such bars entirely. */
     var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;
       if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;
@@ -681,27 +681,27 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // render a klines array onto the chart (precision + data + scale + live-seed of the forming candle + position lines)
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
-    try{candle.applyOptions({priceFormat:mpPriceFmt(bars,bars[bars.length-1]&&bars[bars.length-1].close)});}catch(e){}/* decimals MEASURED from this market's own candles (mpPricePrec) — a magnitude guess drew HYPE 85.64 as 85.640 */
+    try{candle.applyOptions({priceFormat:mpPriceFmt(bars,bars[bars.length-1]&&bars[bars.length-1].close)});}catch(e){}/* decimals MEASURED from this market's own candles (mpPricePrec) - a magnitude guess drew HYPE 85.64 as 85.640 */
     _userPS=false;try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
-    /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
+    /* seed the forming candle with the live price immediately - the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
   function preloadTfs(sym,curTf){ var all=['1','5','15','60','240','1440','10080'],list=all;
-    if(window.innerWidth<721){ /* mobile: prewarm only the two NEIGHBOURING timeframes (~50KB), not all six (~150KB) — measured 2026-09-05: TF switch p95 5.7s on phones because every switch fetched on demand */ var i=all.indexOf(curTf);list=[all[i-1],all[i+1]].filter(Boolean); }
+    if(window.innerWidth<721){ /* mobile: prewarm only the two NEIGHBOURING timeframes (~50KB), not all six (~150KB) - measured 2026-09-05: TF switch p95 5.7s on phones because every switch fetched on demand */ var i=all.indexOf(curTf);list=[all[i-1],all[i+1]].filter(Boolean); }
     list.forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
-  var _kq=0; // klines request ticket (2026-09-02): loadKlines + refreshKlinesQuiet share it — only the newest full-window response may paint
+  var _kq=0; // klines request ticket (2026-09-02): loadKlines + refreshKlinesQuiet share it - only the newest full-window response may paint
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;morePages=0;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
-    if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
-    var _pk=null;try{if(window.__preK){var _hit=(window.__preK.key===ck);if(_hit)_pk=window.__preK.p;window.__preR=_hit?'hit':'miss';window.__preK=null;}}catch(e){}/* cold-load waterfall: an inline <head> preload may have fired this exact klines request in parallel with the bundle download — pick up its promise instead of a fresh serial fetch. no-store means the browser won't dedupe, so the handoff MUST be the promise not the cache. DRIFT DETECTOR: __preR = hit (key matched) or miss (inline drifted from what loadKlines asks → a wasted request on EVERY cold load, silently, forever — the exact thing this optimization is supposed to REDUCE). __preR rides the perf probe → AE 'preload' rows, so drift surfaces as a metric with a denominator instead of quietly burning infra. consume __preK once either way. */
+    if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache - no flash on a TF/symbol switch
+    var _pk=null;try{if(window.__preK){var _hit=(window.__preK.key===ck);if(_hit)_pk=window.__preK.p;window.__preR=_hit?'hit':'miss';window.__preK=null;}}catch(e){}/* cold-load waterfall: an inline <head> preload may have fired this exact klines request in parallel with the bundle download - pick up its promise instead of a fresh serial fetch. no-store means the browser won't dedupe, so the handoff MUST be the promise not the cache. DRIFT DETECTOR: __preR = hit (key matched) or miss (inline drifted from what loadKlines asks → a wasted request on EVERY cold load, silently, forever - the exact thing this optimization is supposed to REDUCE). __preR rides the perf probe → AE 'preload' rows, so drift surfaces as a metric with a denominator instead of quietly burning infra. consume __preK once either way. */
     var _q=++_kq;
     (_pk||fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||_q!==_kq)return; // user switched again before this resolved → drop the stale response
-      if(kd&&kd.length){_holeK=0;klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length)){try{if(window.__mpUxm){if(window.__mpCsWarm)window.__mpUxm('cs',performance.now()-_csT);else window.__mpUxm('cc',performance.now());}}catch(e){}}try{window.__mpCsWarm=1;}catch(e){}/* cc = COLD first-chart telemetry: performance.now() = nav->first render (the first-impression time ux-chart deliberately skips). Fires once per page load (first cold render, __mpCsWarm still falsy). */} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
-      (window.requestIdleCallback?requestIdleCallback(function(){preloadTfs(sym,tf);},{timeout:4000}):setTimeout(function(){preloadTfs(sym,tf);},2500)); // warm the other timeframes so the next switch is instant — DEFERRED to browser-idle so the 6-TF prewarm (~114KB of klines) no longer competes with the essential bundle/chart on the cold-load critical path (cut cold load meaningfully); still warm within a few seconds of idle
+      if(kd&&kd.length){_holeK=0;klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length)){try{if(window.__mpUxm){if(window.__mpCsWarm)window.__mpUxm('cs',performance.now()-_csT);else window.__mpUxm('cc',performance.now());}}catch(e){}}try{window.__mpCsWarm=1;}catch(e){}/* cc = COLD first-chart telemetry: performance.now() = nav->first render (the first-impression time ux-chart deliberately skips). Fires once per page load (first cold render, __mpCsWarm still falsy). */} // first load is a COLD page-load fetch, not a switch - the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
+      (window.requestIdleCallback?requestIdleCallback(function(){preloadTfs(sym,tf);},{timeout:4000}):setTimeout(function(){preloadTfs(sym,tf);},2500)); // warm the other timeframes so the next switch is instant - DEFERRED to browser-idle so the 6-TF prewarm (~114KB of klines) no longer competes with the essential bundle/chart on the cold-load critical path (cut cold load meaningfully); still warm within a few seconds of idle
     }); }
-  // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
+  // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view - self-heals a phantom wick a bad live
   // tick baked into a (now closed) candle. renderKlines() scrolls to realtime so it can't be used for a periodic refresh.
   function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden||loadingMore)return; // don't race loadMore's pagination (setData mid-append → duplicate/non-monotonic bars)
     try{var _vr=chart.timeScale().getVisibleLogicalRange();if(_vr&&bars.length&&_vr.to<bars.length-3)return;}catch(e){} // user is scrolled into HISTORY → skip the re-sync (setData would drop their paginated bars + the autoScale re-assert would override their zoom). The live edge they're not watching heals on their return.
@@ -711,39 +711,39 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       kd=sanitizeBars(kd);_holeK=0;klCache[sym+'|'+tf]=kd;
       /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change).
          The old diff compared by INDEX with a length-equality gate, so every candle roll (server window shifts
-         by one) downgraded to a FULL setData repaint — the "last few candles change when the timer ends" bug.
+         by one) downgraded to a FULL setData repaint - the "last few candles change when the timer ends" bug.
          Now: compare by TIME over the overlap; our forming bar is NEVER regressed to the (edge-cached, older)
          server snapshot; genuinely new trailing bars are APPENDED via cheap update()s; setData fires ONLY when
-         a CLOSED bar truly differs from the authoritative kline (real heal — rare now that bars are trade-exact). */
+         a CLOSED bar truly differs from the authoritative kline (real heal - rare now that bars are trade-exact). */
       var _rmode=0,_app=[],_mism=false;
       if(!bars||bars.length<3||kd.length<2){_rmode=2;bars=kd;}
       else{
         var _lastA=bars[bars.length-1],_lastK=kd[kd.length-1],_tmap={};
         for(var _i2=0;_i2<bars.length;_i2++)_tmap[bars[_i2].time]=bars[_i2];
         /* tick estimate from the data itself (max decimals over the last ~40 bars): the open tolerance below must be
-           TICK-relative, not only %-relative — one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
+           TICK-relative, not only %-relative - one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
            forced a visible full-repaint heal every resync after a roll (probe 2026-08-15), while one BTC tick is 0.00016%. */
         var _tkD=0;for(var _t5=Math.max(0,kd.length-40);_t5<kd.length;_t5++){var _b5=kd[_t5],_v5=[_b5.open,_b5.high,_b5.low,_b5.close];for(var _t6=0;_t6<4;_t6++){var _s5=String(_v5[_t6]),_e5=_s5.indexOf('e-'),_d5=0;if(_e5>=0){_d5=(+_s5.slice(_e5+2)||0)+(((_s5.slice(0,_e5).split('.')[1])||'').length);}else{var _p5=_s5.indexOf('.');_d5=_p5<0?0:_s5.length-_p5-1;}if(_d5>_tkD)_tkD=_d5;}}
         var _otol=function(o){var a=Math.abs(o);return Math.max(a*5e-5,Math.min(Math.pow(10,-_tkD)*1.6,a*0.001));};/* allow 1 tick (not 2+), hard-capped at 0.1% so a degenerate decimals estimate can't mask a real divergence */
         for(var _k2=0;_k2<kd.length;_k2++){var _b=kd[_k2];
           if(_b.time>_lastA.time){_app.push(_b);continue;}
-          /* the snapshot's LAST bar is the SERVER'S forming bar — and the edge cache (5-20s) can serve a stale
+          /* the snapshot's LAST bar is the SERVER'S forming bar - and the edge cache (5-20s) can serve a stale
              PARTIAL version of a minute we already CLOSED from the live trade stream. It is never an authority
              for a closed bar: measured flip-flop (h $22 off, then back) came exactly from trusting it. */
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=bars[0].time){_mism=true;break;}continue;}
-          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
+          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) - strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
         if(_mism){_rmode=2;bars=kd;if(_lastK.time===_lastA.time)bars[bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])bars[bars.length-1]=_tmap[_lastK.time];bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rmode=1;bars=bars.concat(_app);}
       }
       if(_rmode===2){try{candle.setData(bars);}catch(e){}}
       else if(_rmode===1){for(var _a3=0;_a3<_app.length;_a3++){try{candle.update(_app[_a3]);}catch(e){}}}
-      try{if(!_userPS)chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */
+      try{if(!_userPS)chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen - re-fitting every quiet refresh self-heals it */
       if(_rmode!==0){lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}} /* mode 0 = everything matched → touch NOTHING (the old unconditional lastBar swap nudged the live close backward every 30s) */
     }); }
-  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));if(!older.length){noMore=true;return;}/* !older.length = oldest bar didn't move back = source can't go deeper (real "no more" test, not "returned few") */morePages++;if(morePages>=30)noMore=true;/* hard cap ~30 pages: anti-infinite for thin pairs. Removed `older.length<900 → noMore` which stopped at the SOURCE's inception (bybit-lin BTC 2020) instead of the coin's — the worker cascade falls through to a deeper source (gate-spot BTC 2013) on the next end= window */bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
-  /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
+  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));if(!older.length){noMore=true;return;}/* !older.length = oldest bar didn't move back = source can't go deeper (real "no more" test, not "returned few") */morePages++;if(morePages>=30)noMore=true;/* hard cap ~30 pages: anti-infinite for thin pairs. Removed `older.length<900 → noMore` which stopped at the SOURCE's inception (bybit-lin BTC 2020) instead of the coin's - the worker cascade falls through to a deeper source (gate-spot BTC 2013) on the next end= window */bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
+  /* Buy/Sell signals - a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
      kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
   var inds={};try{inds=JSON.parse(localStorage.getItem('mp_pt_inds')||'null')||{};}catch(e){inds={};}
   try{if(localStorage.getItem('mp_sig')==='1'&&inds.sig==null)inds.sig=true;}catch(e){} // migrate the old single Signals toggle
@@ -774,7 +774,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function ensurePtLeg(){if(ptLeg)return;var host=document.getElementById('ptChart');if(!host)return;ptLeg=document.createElement('div');ptLeg.className='pt-leg';host.appendChild(ptLeg);}
   function fmtLeg(v,dec){if(v==null||!isFinite(v))return '–';return dec===0?String(Math.round(v)):(dec==null?fp(v):(+v).toFixed(dec));}
   function updatePtLegend(param){ensurePtLeg();if(!ptLeg)return;if(!ptLegItems.length){ptLeg.style.display='none';ptLeg.innerHTML='';return;}ptLeg.style.display='';ptLeg.innerHTML=ptLegItems.map(function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}return '<span style="color:'+it.color+'">'+it.label+' <b>'+fmtLeg(v,it.dec)+'</b></span>';}).join('');}
-  function applyInds(){if(!chart||!candle)return; // indicators removed from Paper Trade — cleanup no-op (kept so loadKlines/loadMore/refresh callers stay valid)
+  function applyInds(){if(!chart||!candle)return; // indicators removed from Paper Trade - cleanup no-op (kept so loadKlines/loadMore/refresh callers stay valid)
     // The entry dots are their own one-point series (drawMarks), not series markers, so this cleanup leaves them alone.
     try{candle.setMarkers([]);}catch(e){}
     indSeries.forEach(function(s){try{chart.removeSeries(s);}catch(e){}});indSeries=[];ptLegItems=[];
@@ -808,55 +808,55 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var PT_INDS=[['sig','Buy / Sell signals'],['ema','EMA 21'],['sma','SMA 50'],['sma2','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['vol','Volume'],['rsi','RSI 14'],['macd','MACD'],['stoch','Stochastic'],['atr','ATR 14'],['wr','Williams %R'],['cci','CCI']];
   var ptIndMenu=null;
   function updIndN(){var n=0,k;for(k in inds)if(inds[k])n++;var el=document.getElementById('ptIndN');if(el)el.textContent=n?String(n):'';var btn=document.getElementById('ptInd');if(btn)btn.classList.toggle('on',n>0);}
-  var PTIPS={sig:'Green arrow = trend just flipped UP (possible buy). Red arrow = flipped DOWN (possible sell).',ema:'Smooth average price, recent bars count more. Above the line = going up; below = going down.',sma:'The plain average price over the last 50 bars — a simple trend line.',sma2:'The average price over 200 bars — the big long-term trend line.',hma:'A super-smooth, fast average price line — less wobble and less lag.',vwap:'Average price weighted by how much was traded — big traders’ idea of fair price.',bb:'Two bands around price. Near the top = pricey, near the bottom = cheap. Wide = wild, tight = calm.',kc:'Bands based on how much price usually moves. Popping outside = a strong move.',dc:'The highest high and lowest low recently. Breaking above = an upside breakout.',vol:'How much was traded each bar. Tall bars = lots of trading right then.',rsi:'A 0–100 meter. Above 70 = maybe too high (overbought); below 30 = too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above 0 = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild → use wider stops.',wr:'Williams %R — upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'How far price is from its average. Above +100 = strong up; below −100 = strong down.'};
+  var PTIPS={sig:'Green arrow = trend just flipped UP (possible buy). Red arrow = flipped DOWN (possible sell).',ema:'Smooth average price, recent bars count more. Above the line = going up; below = going down.',sma:'The plain average price over the last 50 bars - a simple trend line.',sma2:'The average price over 200 bars - the big long-term trend line.',hma:'A super-smooth, fast average price line - less wobble and less lag.',vwap:'Average price weighted by how much was traded - big traders’ idea of fair price.',bb:'Two bands around price. Near the top = pricey, near the bottom = cheap. Wide = wild, tight = calm.',kc:'Bands based on how much price usually moves. Popping outside = a strong move.',dc:'The highest high and lowest low recently. Breaking above = an upside breakout.',vol:'How much was traded each bar. Tall bars = lots of trading right then.',rsi:'A 0–100 meter. Above 70 = maybe too high (overbought); below 30 = too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above 0 = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild → use wider stops.',wr:'Williams %R - upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'How far price is from its average. Above +100 = strong up; below −100 = strong down.'};
   function buildIndMenu(){ptIndMenu=document.createElement('div');ptIndMenu.className='ptt-ind-menu';ptIndMenu.hidden=true;ptIndMenu.innerHTML='<div class="ptt-ind-h">Indicators</div>'+PT_INDS.map(function(t){return '<button type="button" class="ptt-ind-item" data-ind="'+t[0]+'" title="'+(PTIPS[t[0]]||'').replace(/"/g,'&quot;')+'"><span class="ptt-ind-ck"></span>'+t[1]+'</button>';}).join('');document.body.appendChild(ptIndMenu);
     ptIndMenu.addEventListener('click',function(e){var b=e.target.closest('.ptt-ind-item');if(!b)return;var k=b.getAttribute('data-ind');inds[k]=!inds[k];b.classList.toggle('on',!!inds[k]);try{localStorage.setItem('mp_pt_inds',JSON.stringify(inds));}catch(_){}applyInds();updIndN();});
     document.addEventListener('pointerdown',function(e){if(ptIndMenu&&!ptIndMenu.hidden&&!(e.target.closest&&(e.target.closest('.ptt-ind-menu')||e.target.closest('#ptInd'))))ptIndMenu.hidden=true;},true);
-    window.addEventListener('scroll',function(e){if(ptIndMenu&&!ptIndMenu.hidden&&!(e.target&&e.target.closest&&e.target.closest('.ptt-ind-menu')))ptIndMenu.hidden=true;},true);}/* only close on OUTSIDE scroll — scrolling inside the (now taller) menu must not dismiss it */
+    window.addEventListener('scroll',function(e){if(ptIndMenu&&!ptIndMenu.hidden&&!(e.target&&e.target.closest&&e.target.closest('.ptt-ind-menu')))ptIndMenu.hidden=true;},true);}/* only close on OUTSIDE scroll - scrolling inside the (now taller) menu must not dismiss it */
   function openIndMenu(btn){if(!ptIndMenu)buildIndMenu();if(!ptIndMenu.hidden){ptIndMenu.hidden=true;return;}Array.prototype.forEach.call(ptIndMenu.querySelectorAll('.ptt-ind-item'),function(it){it.classList.toggle('on',!!inds[it.getAttribute('data-ind')]);});ptIndMenu.hidden=false;var r=btn.getBoundingClientRect(),mw=ptIndMenu.offsetWidth||210,mh=ptIndMenu.offsetHeight||280;var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+6;if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-6);ptIndMenu.style.left=Math.max(8,left)+'px';ptIndMenu.style.top=top+'px';}
   var indBtn=document.getElementById('ptInd');
   if(indBtn)indBtn.addEventListener('click',function(){openIndMenu(indBtn);});
   updIndN();
-  var _klReload=0,_holeK=0;/* set when liveCandle detects missing bars; cleared only when a klines fetch SUCCEEDS — the 5s watchdog retries off it (a rolled live bar makes lastBar look current, blinding the lastBar-behind check) */
+  var _klReload=0,_holeK=0;/* set when liveCandle detects missing bars; cleared only when a klines fetch SUCCEEDS - the 5s watchdog retries off it (a rolled live bar makes lastBar look current, blinding the lastBar-behind check) */
   // Re-fetch the candles (throttled). Used to self-heal the chart after the tab was backgrounded / the feed paused
-  // for a while — browsers throttle setInterval in hidden tabs, so liveCandle stops rolling new bars and a gap forms.
+  // for a while - browsers throttle setInterval in hidden tabs, so liveCandle stops rolling new bars and a gap forms.
   function reloadKlinesThrottled(){var now=Date.now();if(now-_klReload<8000)return;_klReload=now;loadKlines();}
   function liveCandle(){var pd=window.mpPlanLive,pdFresh=(pd&&pd.sym===chartSym&&pd.price>0&&pd.t&&Date.now()-pd.t<6000);
-    /* the WS-fed form price (window.mpPlanLive) is the real-time truth — but ONLY while it's fresh. If it goes stale (form feed paused/disconnected) fall back to the chart's own /api/price poll so the chart can NEVER freeze on a stale value. */
+    /* the WS-fed form price (window.mpPlanLive) is the real-time truth - but ONLY while it's fresh. If it goes stale (form feed paused/disconnected) fall back to the chart's own /api/price poll so the chart can NEVER freeze on a stale value. */
     var p=0;
     if(pdFresh)p=pd.price;
     else{var _pr=prices[chartSym],_prT=(_pr&&_pr.p>0)?(_pr.t||0):-1,_pdT=(pd&&pd.sym===chartSym&&pd.price>0)?(pd.t||0):-1;
       if(_prT>=0||_pdT>=0)p=(_prT>=_pdT)?_pr.p:pd.price;}/* both sources stale → use the FRESHER one (the old code preferred the poll map even when it was minutes older than the WS value) */
-    if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing — a skewed device clock must not roll bars at wrong boundaries
-    if(nowBar-lastBar.time>ivSec*1.5){_holeK=1;reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
+    if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing - a skewed device clock must not roll bars at wrong boundaries
+    if(nowBar-lastBar.time>ivSec*1.5){_holeK=1;reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) - the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
     /* ROLL GRACE (2026-08-12, "candle body ends incomplete" screenshot): a tickers/poll event can cross the
-       boundary 100-300ms BEFORE the closing minute's final publicTrade batch lands — finalizing then snapshots
+       boundary 100-300ms BEFORE the closing minute's final publicTrade batch lands - finalizing then snapshots
        an INCOMPLETE bucket (clipped close/body, healed later by the re-sync = the visible glitch). publicTrade
        is time-ordered per symbol, so the first NEW-minute trade guarantees the old minute is complete → hold the
-       roll until that trade arrives (or 2s pass — a quiet boundary means no late trades, bucket already final). */
+       roll until that trade arrives (or 2s pass - a quiet boundary means no late trades, bucket already final). */
     var _grace=false;
     if(nowBar>lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nowBar&&(_snow/1000-nowBar)<2)_grace=true;}catch(_){}}
     if(nowBar>lastBar.time&&!_grace){
       /* FINALIZE the closing bar from exchange-stamped trade buckets (mpTicks1m) BEFORE rolling: the candle that
          just closed becomes EXACTLY the authoritative kline (1m: full OHLC; >1m: final-minute close + extremes)
-         and must never change again — the re-sync then has nothing to repaint (owner directive 2026-08-12). */
+         and must never change again - the re-sync then has nothing to repaint (owner directive 2026-08-12). */
       try{var _TKf=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
         for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<lastBar.time||_fb.t>=lastBar.time+ivSec)continue;
-          if(ivSec===60){if(lastBar.high!==_fb.h||lastBar.low!==_fb.l||lastBar.close!==_fb.c){lastBar.high=_fb.h;lastBar.low=_fb.l;lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade — Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
+          if(ivSec===60){if(lastBar.high!==_fb.h||lastBar.low!==_fb.l||lastBar.close!==_fb.c){lastBar.high=_fb.h;lastBar.low=_fb.l;lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_fb.h>lastBar.high){lastBar.high=_fb.h;_fch=true;}if(_fb.l<lastBar.low){lastBar.low=_fb.l;_fch=true;}if(_fb.t===lastBar.time+ivSec-60&&lastBar.close!==_fb.c){lastBar.close=_fb.c;_fch=true;}}}
         if(_fch){if(lastBar.high<Math.max(lastBar.open,lastBar.close))lastBar.high=Math.max(lastBar.open,lastBar.close);if(lastBar.low>Math.min(lastBar.open,lastBar.close))lastBar.low=Math.min(lastBar.open,lastBar.close);try{candle.update(lastBar);}catch(_){}}
       }}catch(_){}
-      /* keep the bars array in lockstep with the roll (workspace parity) — without this every post-roll re-sync
+      /* keep the bars array in lockstep with the roll (workspace parity) - without this every post-roll re-sync
          saw a length/window mismatch and downgraded to a FULL setData repaint of the last candles, every minute */
       try{if(bars&&bars.length){if(bars[bars.length-1].time===lastBar.time)bars[bars.length-1]=lastBar;else if(lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}}catch(_){}
       var _nbk=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}catch(_){}
       var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;
-      if(_nbk){lastBar={time:nowBar,open:_op,high:Math.max(_nbk.h,_op),low:Math.min(_nbk.l,_op),close:_nbk.c};_lgp=_nbk.c;_rej=0;} /* open = prevClose ALWAYS (Bybit kline convention — measured 0/998 open!=prevClose gaps on HYPE/BTC 1m+5m, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
+      if(_nbk){lastBar={time:nowBar,open:_op,high:Math.max(_nbk.h,_op),low:Math.min(_nbk.l,_op),close:_nbk.c};_lgp=_nbk.c;_rej=0;} /* open = prevClose ALWAYS (Bybit kline convention - measured 0/998 open!=prevClose gaps on HYPE/BTC 1m+5m, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
       else{lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;}/* no trade bucket yet (quiet first ms / non-WS symbol) → same prev-close open */
       try{if(bars&&bars.length&&lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}catch(_){}
-      try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(!_grace){if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price — never bake it into the closing bar; only the time-scoped bucket merge below may touch it */
-      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open — adopting it drew a phantom gap between candles */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar — wicks match the authoritative kline instead of growing on the 30s re-sync */
+      try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there - don't yank them back while they pan history */}else{if(!_grace){if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price - never bake it into the closing bar; only the time-scoped bucket merge below may touch it */
+      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar - wicks match the authoritative kline instead of growing on the 30s re-sync */
       startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
@@ -866,7 +866,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var tgt=+lastBar.close; if(!(tgt>0))return;
     var fresh=(_dispP==null||!isFinite(_dispP));
     if(fresh){ _dispP=tgt; }
-    else if(_dispP!==tgt){ if(window.innerWidth<=880){_dispP=tgt;} /* mobile battery: skip the 60fps easing chain — one direct paint per tick instead of ~5-10 rAF canvas paints */ else { var d=tgt-_dispP; if(Math.abs(d)<=Math.max(Math.abs(tgt)*1e-5,1e-9))_dispP=tgt; else { _dispP+=d*0.34; _smP=true; } } }
+    else if(_dispP!==tgt){ if(window.innerWidth<=880){_dispP=tgt;} /* mobile battery: skip the 60fps easing chain - one direct paint per tick instead of ~5-10 rAF canvas paints */ else { var d=tgt-_dispP; if(Math.abs(d)<=Math.max(Math.abs(tgt)*1e-5,1e-9))_dispP=tgt; else { _dispP+=d*0.34; _smP=true; } } }
     else return;
     var c=_dispP; if(c>lastBar.high)c=lastBar.high; else if(c<lastBar.low)c=lastBar.low;
     try{candle.update({time:lastBar.time,open:lastBar.open,high:lastBar.high,low:lastBar.low,close:c});}catch(e){}
@@ -875,7 +875,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   document.addEventListener('visibilitychange',function(){if(!document.hidden)startSmoothP();});
   function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));}
   // ENTRY AS A LINE, OR AS A MARK ON THE CANDLE (owner 2026-09-13). "line" keeps the horizontal entry price line;
-  // "mark" drops it and puts a small circle on the bar the position opened in — green B for a long, red S for a short.
+  // "mark" drops it and puts a small circle on the bar the position opened in - green B for a long, red S for a short.
   // Markers are series markers, anchored to a bar time, so they stay glued to the candles under pan and zoom. The mark
   // size follows the chart: tiny on a phone, a little bigger on a wide desktop, never a blob.
   var entryMode='line';try{entryMode=localStorage.getItem('mp_entry_mode')==='mark'?'mark':'line';}catch(e){}
@@ -918,13 +918,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // diff: only destroy/recreate the chart price-line objects when the open-position set actually changes. This used
     // to churn every line EVERY tick (1Hz), and each createPriceLine re-fires the autoscale recompute + a chart redraw.
     // updateZone still runs so the liq zone/edge pills track scroll/scale. renderKlines/refreshKlinesQuiet reset _linesSig.
-    var ords=[];try{if(window.mpOrders)ords=window.mpOrders.forSym(chartSym);}catch(e){} // resting limit orders on this coin get their own dashed line — a waiting order you cannot see is one you forget you placed
+    var ords=[];try{if(window.mpOrders)ords=window.mpOrders.forSym(chartSym);}catch(e){} // resting limit orders on this coin get their own dashed line - a waiting order you cannot see is one you forget you placed
     var sig=op.map(function(e){return e.id+':'+e.entry+':'+e.stop+':'+e.tp+':'+e.side+':'+e.lev+':'+liqOf(e)+':'+JSON.stringify(e.tps||0)+':'+JSON.stringify(e.sls||0);}).join('|')+'#'+ords.map(function(o){return o.id+':'+o.px+':'+o.side;}).join('|');
     sig+='#'+entryMode;
     if(sig===_linesSig){updateZone();return;} _linesSig=sig;
     plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
     // cache the line prices FIRST so the autoscale provider (which fires the moment a price line is created) already sees them
-    // GROUP identical levels first — 3 positions at (nearly) the same entry used to stack 3 overlapping LONG/LIQ/TP
+    // GROUP identical levels first - 3 positions at (nearly) the same entry used to stack 3 overlapping LONG/LIQ/TP
     // labels on the axis + 3 edge pills covering each other (UX audit, mobile). One line/pill per level, titled ×N.
     _openLines=[];_openMarks=[];var _grp={};
     function _gAdd(p,label,color,w,style){if(!(p>0))return;_openLines.push(p);var k=label+'@'+p.toPrecision(6);var g=_grp[k];if(g){g.n++;return;}_grp[k]={p:p,label:label,color:color,w:w,style:style,n:1};}
@@ -949,13 +949,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function updateEdges(){if(edgeEl&&edgeEl.childNodes.length)edgeEl.innerHTML='';}
   // Candle-close countdown chip (user request via chat, 2026-08-08): time left in the CURRENT candle for the active TF.
   // Non-interactive readout (pointer-events:none) pinned bottom-left above the time axis; UTC-aligned intervals only
-  // (weekly is epoch-anchored → hidden there). Plain text update each second — no CSS animation (owner reduced-motion).
+  // (weekly is epoch-anchored → hidden there). Plain text update each second - no CSS animation (owner reduced-motion).
   var _cdEl=null;
   function tickCd(){var host=document.getElementById('ptChart');if(!host||!chart||!bars||!bars.length){if(_cdEl)_cdEl.textContent='';return;}
-    if(!_cdEl){_cdEl=document.createElement('div');_cdEl.className='pt-cd';_cdEl.style.cssText='position:absolute;top:8px;right:72px;z-index:5;pointer-events:none;font-family:\'Space Mono\',monospace;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#9aa3ad;background:rgba(10,12,15,.72);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:3px 8px;text-shadow:0 1px 3px rgba(0,0,0,.7)';host.appendChild(_cdEl);} // top-right, clear of the right price axis — bottom corners are covered by the page's floating buttons (E2E elementFromPoint proof)
-    if(_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node — re-attach
+    if(!_cdEl){_cdEl=document.createElement('div');_cdEl.className='pt-cd';_cdEl.style.cssText='position:absolute;top:8px;right:72px;z-index:5;pointer-events:none;font-family:\'Space Mono\',monospace;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#9aa3ad;background:rgba(10,12,15,.72);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:3px 8px;text-shadow:0 1px 3px rgba(0,0,0,.7)';host.appendChild(_cdEl);} // top-right, clear of the right price axis - bottom corners are covered by the page's floating buttons (E2E elementFromPoint proof)
+    if(_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node - re-attach
     var ivMin=+chartTf||15;if(!(ivMin>0)||ivMin>=10080){_cdEl.textContent='';return;}
-    var ivMs=ivMin*60000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock — the countdown must be right even on a skewed device
+    var ivMs=ivMin*60000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock - the countdown must be right even on a skewed device
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
     _cdEl.textContent='close in '+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
   setInterval(tickCd,1000);
@@ -969,11 +969,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(y==null||!isFinite(y))return;
       if(long)html+='<div class="zone" style="top:'+Math.max(0,y).toFixed(1)+'px;height:'+Math.max(0,H-y).toFixed(1)+'px"></div>';
       else html+='<div class="zone" style="top:0;height:'+Math.max(0,Math.min(H,y)).toFixed(1)+'px"></div>';});
-    if(zoneEl._h!==html){zoneEl._h=html;zoneEl.innerHTML=html;}} // only touch the DOM when the zone geometry actually changed — was an unconditional innerHTML rebuild at ~60fps
+    if(zoneEl._h!==html){zoneEl._h=html;zoneEl.innerHTML=html;}} // only touch the DOM when the zone geometry actually changed - was an unconditional innerHTML rebuild at ~60fps
   window.mpDrawLines=drawLines; // let the My Trades drawer refresh the chart lines the instant a position is closed/edited
   window.addEventListener('mp-orders',function(){try{drawLines();}catch(e){}}); // placing/cancelling/filling an order repaints its line immediately, not on the next tick
   function chartHeader(){var px=document.getElementById('ptChartPx'),ch=document.getElementById('ptChartChg'),pd=window.mpPlanLive;var p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p),cg=(pd&&pd.sym===chartSym)?pd.chg:0;if(p>0){if(px){if(window.mpSmoothPx)window.mpSmoothPx(px,p,fp);else px.textContent=fp(p);}if(ch){ch.textContent=((cg>=0?'+':'')+(+cg||0).toFixed(2))+'%';ch.style.color=cg>=0?'var(--up)':'var(--red)';}}
-    // the on-chart live-price label colour follows the 24h change (consistent) — never the current TF candle's up/down
+    // the on-chart live-price label colour follows the 24h change (consistent) - never the current TF candle's up/down
     if(candle){var _cc=(cg>=0?'#2ebd85':'#ff5a4d');if(_cc!==_plc){_plc=_cc;try{candle.applyOptions({priceLineColor:_cc});}catch(e){}}}}
   var tfEl=document.getElementById('ptTf'),tfBtn=document.getElementById('ptTfBtn'),tfCur=document.getElementById('ptTfCur');
   // Entry style: its own control beside the timeframe pill, two explicit options rather than a toggle you have to
@@ -994,20 +994,20 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   if(pSym)pSym.addEventListener('change',function(){setTimeout(loadKlines,30);});
   var sv=document.getElementById('planSave');
   if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderLast();
-    // ONLY pop the ticket when a NEW position actually opened this click — a blocked/spam click (cooldown, empty
+    // ONLY pop the ticket when a NEW position actually opened this click - a blocked/spam click (cooldown, empty
     // amount, wrong-side SL/TP) must NOT re-shake the last ticket as if it just opened (owner report).
     if(Date.now()-(window._mpLastOpenTs||0)<500){window._mpLastOpenTs=0; /* consume: pop exactly once per real open, never on a later blocked click */ var _lt=document.getElementById('ptLastTrade');if(_lt&&!_lt.hidden){var _f=_lt.querySelector('.pt-last');if(_f){_f.classList.remove('justopened');void _f.offsetWidth;_f.classList.add('justopened');setTimeout(function(){_f.classList.remove('justopened');},1000);}}}
     drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();},140);});
   function ensureChart(){var pl=document.getElementById('plan');if(!pl||!pl.classList.contains('active')||!pl.offsetParent)return;if(!inited){inited=true;loadLib(function(){initChart();loadKlines();});}else if(!chart&&window.LightweightCharts){initChart();loadKlines();}}
   function mtCount(){var el=document.getElementById('ptMtCount');if(!el)return;var n=load().filter(function(e){return e.status==='open';}).length;el.textContent=n?String(n):'';}
-  // dynamic stop management — trailing stop trails the best price; break-even snaps the stop to entry once ROE hits the trigger
+  // dynamic stop management - trailing stop trails the best price; break-even snaps the stop to entry once ROE hits the trigger
   function manageStops(e,m){if(e.status!=='open'||!(m.live>0))return false;var moved=false,long=m.long;
     if(e.be>0&&isFinite(m.roe)&&m.roe*100>=e.be){if(long){if(e.stop==null||e.stop<e.entry){e.stop=e.entry;moved=true;}}else{if(e.stop==null||e.stop>e.entry){e.stop=e.entry;moved=true;}}}
     if(e.trail>0){if(long){if(e.hwm==null||m.live>e.hwm)e.hwm=m.live;var ts=e.hwm*(1-e.trail/100);if(e.stop==null||ts>e.stop){e.stop=ts;moved=true;}}else{if(e.hwm==null||m.live<e.hwm)e.hwm=m.live;var ts2=e.hwm*(1+e.trail/100);if(e.stop==null||ts2<e.stop){e.stop=ts2;moved=true;}}}
     return moved;}
   /* ---- Multi-level TP/SL (owner 2026-07-13): e.tps / e.sls = [{p,pct}]. Each level closes pct% of the position
      when touched. Legacy e.tp / e.stop stay MIRRORS of the nearest 100% level, so checkClose, sweepLiq and every
-     display/liq path keep working untouched — only pct<100 levels are executed here (live tick only, like the
+     display/liq path keep working untouched - only pct<100 levels are executed here (live tick only, like the
      partial-close sheet). Positions edited into multiple SL levels skip trailing/break-even (they'd fight the mirror). */
   function lvlSync(e){var long=e.side!=='short';
     function mir(arr,isTp){if(!arr||!arr.length)return null;var full=arr.filter(function(L){return +L.pct>=100&&+L.p>0;});if(!full.length)return null;
@@ -1018,7 +1018,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   window.mpLvlTxt=function(e,isTp,fmt){var arr=isTp?e.tps:e.sls,lg=e.side!=='short';
     if(arr&&arr.length){var a=arr.slice().sort(function(x,y){return (isTp===lg)?(x.p-y.p):(y.p-x.p);});
       var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
-    var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'—';};
+    var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'-';};
   function lvlHit(d,e,m){if(e.status!=='open')return false;
     if(!((e.tps&&e.tps.length)||(e.sls&&e.sls.length)))return false;
     if(!(e.qty!=null&&isFinite(e.qty))&&!(+e.margin>0))return false; // legacy entries can't be split
@@ -1036,7 +1036,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(+part.margin>0&&pnl<-(+part.margin))pnl=-(+part.margin);
       part.status=pnl>=0?'win':'loss';part.exit=exitPx;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
-      try{if(window.mpLimitToast)window.mpLimitToast((isTp?'Take-profit':'Stop-loss')+' level filled — closed '+Math.round(f*100)+'% of '+String(e.sym||'')+' at '+fp(exitPx)+' · '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
+      try{if(window.mpLimitToast)window.mpLimitToast((isTp?'Take-profit':'Stop-loss')+' level filled - closed '+Math.round(f*100)+'% of '+String(e.sym||'')+' at '+fp(exitPx)+' · '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
       try{buzz(isTp?[18,55,18]:[35]);}catch(_){}}
     function proc(arr,isTp){if(!arr||!arr.length)return arr;
       return arr.filter(function(L){var p=+L.p,pct=+L.pct||100;
@@ -1050,22 +1050,22 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function tick(){ensureChart();
     /* Resting limit orders are checked on the SAME 1s heartbeat as stops and liquidations, and against the same
        live prices. Signed in, this only ASKS the server to look (it re-verifies and fills at the order's price);
-       for a guest it fills locally. Runs even when the Paper Trade panel is hidden — an order must not depend on
+       for a guest it fills locally. Runs even when the Paper Trade panel is hidden - an order must not depend on
        which tool tab happens to be open, exactly like the liquidation check below. */
     try{if(window.mpOrders)window.mpOrders.check();}catch(e){}
     var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var _rp=prices[e.sym];if(!_rp||!(+_rp.p>0)||_rp.seed)return; /* ROOT FIX: no REAL feed price for this symbol → skip stops/levels/liquidation entirely. metrics() falls back to THIS trade's own entry, so 2 open trades on one coin push different values into the per-symbol spike filter ccPx()/_vpx and it returns the wrong (older) entry → phantom liquidation. Display P&L still uses the fallback; only decisions are gated. */var m=metrics(e);if(!(e.sls&&e.sls.length)&&manageStops(e,m))changed=true;if(lvlHit(d,e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
     if(closedAny)window._mpSltpHidden=true; // a position hit SL/TP/liq and closed → hide the SL/TP lines (they reappear only when a new trade is set up)
-    if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile — skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
-    if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden — it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
+    if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile - skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
+    if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden - it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
     liveCandle();chartHeader();renderLastLive();mtCount();drawLines();/* drawLines() ends with updateZone(), so it's no longer called separately here (was running updateZone twice/tick). drawLines is now signature-diffed so it only churns chart price-lines when the open set changes. */
-    try{posDragLines();}catch(e){}/* keep the draggable SL/TP lines aligned as the chart scrolls/scales — never let it break the lines above */}
+    try{posDragLines();}catch(e){}/* keep the draggable SL/TP lines aligned as the chart scrolls/scales - never let it break the lines above */}
   // real-time chart updates from the WebSocket feed (the forming candle, header price and liq zone follow every tick)
   var _rafC=false;
   document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();renderLastLive();});});
   pollPrices();setInterval(pollPrices,3000);
   tick();setInterval(tick,1000);
   setInterval(function(){if(document.body.getAttribute('data-prod')==='plan'&&chart&&candle)refreshKlinesQuiet();},30000); // self-heal phantom wicks + any freeze by re-syncing with true klines every 30s
-  /* CHART LIVENESS WATCHDOG — the permanent cure for "the chart stands still" (esp. on higher TFs like 5m where new bars are
+  /* CHART LIVENESS WATCHDOG - the permanent cure for "the chart stands still" (esp. on higher TFs like 5m where new bars are
      rare, so the per-new-bar autoscale re-assert almost never fires). Every 5s while the Paper Trade chart is visible:
      (1) re-assert autoScale so a locked/drifted price scale (data updating but chart LOOKS frozen) heals within 5s, not 60s;
      (2) if NO usable live price has reached the chart for >9s (WS+poll both stalled, or the spike-filter got stuck rejecting
@@ -1077,7 +1077,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     try{var vr=chart.timeScale().getVisibleLogicalRange();if(!_userPS&&(!vr||!bars.length||vr.to>=bars.length-2))chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     var _pd=window.mpPlanLive,_srcT=Math.max((_pd&&_pd.sym===chartSym&&_pd.t)||0,(prices[chartSym]&&prices[chartSym].t)||0);
     if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)(window.mpWS.resub||window.mpWS.sub)(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{var _vr9=chart.timeScale().getVisibleLogicalRange();if(!_vr9||!bars.length||_vr9.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}}
-    // ALSO: catch a stalled CHART even when the price source LOOKS fresh — if the newest bar is more than ~1.5
+    // ALSO: catch a stalled CHART even when the price source LOOKS fresh - if the newest bar is more than ~1.5
     // intervals behind now, new bars stopped forming (the real "chart froze" symptom). Force a fresh klines sync.
     try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5||_holeK)refreshKlinesQuiet();}}catch(e){}
   },5000);
@@ -1085,20 +1085,20 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
      never gets liquidated even if it blew through its liq level. On load (and when the tab regains focus) we
      replay each open trade against historical candles since it opened and liquidate any that crossed liq. */
   // Offline backfill: while the tab is away, checkClose can't watch price, so on return we replay candles since the
-  // trade opened and close it at the FIRST of {SL, TP, liquidation} that the price reached — at that exact level. This
+  // trade opened and close it at the FIRST of {SL, TP, liquidation} that the price reached - at that exact level. This
   // used to only detect liquidation, so a position that had hit its SL while you were away got wrongly liquidated for
   // the full margin instead of stopping out at the (smaller) SL loss.
-  function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
-    open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return; // skip fresh trades — the live tick owns those (and we don't want a phantom insta-close right after open)
+  function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='-'&&e.entry>0;});if(!open.length)return;
+    open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return; // skip fresh trades - the live tick owns those (and we don't want a phantom insta-close right after open)
       var lng=e.side!=='short',liq=liqOf(e),ageH=(Date.now()-e.ts)/3600000;
       var stop=(e.stop!=null&&isFinite(+e.stop))?+e.stop:null,tp=(e.tp!=null&&isFinite(+e.tp))?+e.tp:null;
       // the loss-side exit hit FIRST on an adverse move: for a long the HIGHER of {SL, liq} (price passes it first going
-      // down) — so an SL above liq caps at the SL, an SL below liq (or none) liquidates at liq. Mirror for a short.
+      // down) - so an SL above liq caps at the SL, an SL below liq (or none) liquidates at liq. Mirror for a short.
       var lossExit=stop!=null?(lng?Math.max(stop,liq):Math.min(stop,liq)):liq, isLiq=(lossExit===liq);
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5'; // coarser interval for longer gaps so the returned candles still span the whole period
       fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
         if(!kd||!kd.length)return;kd=sanitizeBars(kd);var cross=null,exitPx=null,liab=false;
-        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open — the open candle's pre-open wick must never close the position (2026-07-03 fix)
+        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open - the open candle's pre-open wick must never close the position (2026-07-03 fix)
           // liq requires CLOSE-confirmation (a lone wick, esp. after an offline gap, must never liquidate); SL/TP are
           // touch orders and fill on the wick (sanitizeBars already clamped isolated bad prints).
           var lossHit=lng?(isLiq?(+b.low<=liq&&+b.close<=liq*1.03):(+b.low<=lossExit)):(isLiq?(+b.high>=liq&&+b.close>=liq*0.97):(+b.high>=lossExit));
@@ -1124,7 +1124,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
 })();
 
 ;/* ══════════ inline block from app/index.html line 3391 ══════════ */
-/* Trading Journal — saved setups + results, all in localStorage */
+/* Trading Journal - saved setups + results, all in localStorage */
 (function(){
   var KEY='mp_journal';
   function MT(k,d){return (window.mpT&&window.mpT(k))||d;}
@@ -1153,7 +1153,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // Season-board eligibility badge (owner, 2026-09-02). The rows QUOTE the leaderboard rules as written on /rewards (See rules):
   // opened and closed this season, filled and closed by the server, crypto pairs only, at least $1 of margin, a win needs +5% ROE
   // on a real price move of at least 0.2%, copies count once. Evaluated per ticket from the journal; the server applies the same
-  // rules (UserStore /leaderboard tradeev path + _lbBest) — change both together. Green = counts; grey = tap for the list. The
+  // rules (UserStore /leaderboard tradeev path + _lbBest) - change both together. Green = counts; grey = tap for the list. The
   // list opens in a fixed popover next to the badge so the ticket never changes size.
   var _eligData=null,_eligPop=null;
   var ELIG_EXCL={};'EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' ').forEach(function(s){ELIG_EXCL[s]=1;});
@@ -1173,7 +1173,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(closed&&pnl!=null){if(pnl>0){var roe=margin>0?pnl/margin*100:0,mv=roe/lev,q=roe>=5&&mv>=0.2;
         add(q,(q?MT('eligR5ok','Counted win: +{r}% ROE on a {m}% price move'):MT('eligR5no','Not a counted win: +{r}% ROE on a {m}% price move. A win only counts at +5% ROE or better on a real price move of at least 0.2%; smaller profits count as neither')).replace('{r}',roe.toFixed(1)).replace('{m}',mv.toFixed(2)));}
       else add(true,MT('eligR5loss','Loss. Losses always count'),true);}
-    /* Rule 6 mirrors the server's dedupe of CLOSE events (same user+symbol+side within a 10-minute chain): closed rows compare close times, open rows the open time; the slices of one partially-closed position share a root id and are never each other's copy (2026-09-12 — every partial close used to wear the "copies count once" badge). MIRROR in mp-trade.js */
+    /* Rule 6 mirrors the server's dedupe of CLOSE events (same user+symbol+side within a 10-minute chain): closed rows compare close times, open rows the open time; the slices of one partially-closed position share a root id and are never each other's copy (2026-09-12 - every partial close used to wear the "copies count once" badge). MIRROR in mp-trade.js */
     var twins=0,_ei=String(e.id||''),_eT=(closed&&+e.closeTs>0)?+e.closeTs:openTs;for(var i=0;i<all.length;i++){var o=all[i];if(!o||o===e||o.id===e.id)continue;var _oi=String(o.id||'');if(_ei&&_oi&&(_oi.indexOf(_ei)===0||_ei.indexOf(_oi)===0))continue;if(String(o.sym||'').toUpperCase()!==String(e.sym||'').toUpperCase()||(o.side==='short')!==(e.side==='short'))continue;var _oT=((o.status==='win'||o.status==='loss')&&+o.closeTs>0)?+o.closeTs:eligOpenTs(o);if(Math.abs(_oT-_eT)<=600000)twins++;}
     if(twins)add(false,MT('eligR6no','Copies count once: {n} identical position(s) (same coin, same direction) opened together count as one trade').replace('{n}',twins));
     else add(true,MT('eligR6ok','Not a copy of another position'));
@@ -1191,25 +1191,25 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */
-    /* pnlNet: see the metrics() above — gross stays on the card, the fee is settled only into what a close books. */
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L - legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */
+    /* pnlNet: see the metrics() above - gross stays on the card, the fee is settled only into what a close books. */
     var _fxN=(gross!=null)?((+e.qty||0)*((+e.entry||0)+live)*(+e.feeRate||0)):0,pnlNet=(gross!=null)?gross-_fxN-(+e.fund||0):null;
     if(margin>0&&pnlNet!=null&&pnlNet<-margin)pnlNet=-margin;
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
-        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'—')+'</b></div>'
-        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
-        +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'—')+'</b></div>'
+        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'-')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
+        +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'-')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
         +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+pctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
-        +'<div><span>SL</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b></div>'
-        +'<div><span>TP</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b></div>'
+        +'<div><span>SL</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b></div>'
+        +'<div><span>TP</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button></div>'
@@ -1277,7 +1277,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _rt=(+e.feeRate>0?+e.feeRate:0.00055),_mxT=(window.mpFeeVenues&&window.mpFeeVenues.mexc&&+window.mpFeeVenues.mexc.t>0)?+window.mpFeeVenues.mexc.t/100:0.0002;
     var _legs=(+b.fo||0)+(+b.fc||0);
     if(!(_legs>0)){var _q=+e.qty||0,_en=+e.entry||0,_ex=(e.exit!=null?+e.exit:_en);if(!(_q>0)&&+e.margin>0&&_en>0)_q=(+e.margin*((+e.lev>0)?+e.lev:1))/_en;_legs=_q*(_en+_ex)*_rt;}
-    /* MEXC futures lists crypto only — an AAPL or EURUSD ticket has a fee window but no MEXC pair to point at, and
+    /* MEXC futures lists crypto only - an AAPL or EURUSD ticket has a fee window but no MEXC pair to point at, and
        the link would 404. Everything else shows, win or loss, down to a saving of one cent (owner 2026-09-14). */
     if(window.mpAssetClass&&window.mpAssetClass(sym)!=='crypto')return '';
     if(_mine){ /* the trade already ran at MEXC's rate. Quote ONLY what was charged and the rate it was charged at \u2014 both
@@ -1309,19 +1309,19 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){if(!o.contains(ev.target))o.classList.remove('on');});}catch(_){}
     },true);}
 
-  var _glIdx=-1; // index (within the visible list) of the newest winning close — set by render(), read by closedCard
+  var _glIdx=-1; // index (within the visible list) of the newest winning close - set by render(), read by closedCard
   function closedCard(e,_i){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
         +'<div><span>'+MT('jExit','Exit')+'</span><b>'+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+'</b></div>'
         +'<div><span>'+MT('jLev','Leverage')+'</span><b>'+(e.lev||1)+'×</b></div>'
-        +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'—')+'</b></div>'
-        +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'—')+'</b></div>'
-        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
+        +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'-')+'</b></div>'
+        +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'-')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
         +(feeHas(e)?'<div><span>'+MT('jFees','Fees')+'</span><b class="pp-fee" role="button" tabindex="0" title="'+MT('jFeeTip','Tap for the fee breakdown')+'">'+feeLbl(e)+'</b></div>':'')
       +'</div>'
       +(feeHas(e)?feeBdHtml(e):'')
@@ -1344,7 +1344,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     x.textBaseline='alphabetic';x.fillStyle=prem?GOLD:'#c2f64a';x.font='700 38px Arial';x.fillText('MARGINPAD',70,120);
     if(prem){var pw=x.measureText('MARGINPAD').width;x.fillStyle='rgba(240,195,90,0.16)';rr(x,70+pw+16,88,138,40,11);x.fill();x.fillStyle=GOLD2;x.font='800 22px Arial';x.fillText('PREMIUM',70+pw+31,116);}
     x.fillStyle='#6b7682';x.font='400 26px Arial';x.textAlign='right';x.fillText('marginpad.io',W-70,120);x.textAlign='left';
-    x.fillStyle='#fff';x.font='800 92px Arial';x.fillText(e.sym||'—',70,252);
+    x.fillStyle='#fff';x.font='800 92px Arial';x.fillText(e.sym||'-',70,252);
     var bs=(long?'LONG':'SHORT')+'  '+(e.lev||1)+'x';x.font='700 34px Arial';var bw=x.measureText(bs).width+44;
     x.fillStyle=long?'rgba(46,189,133,0.18)':'rgba(255,98,88,0.18)';rr(x,70,292,bw,60,14);x.fill();
     x.fillStyle=long?'#34d99a':'#ff7b72';x.fillText(bs,92,334);
@@ -1371,7 +1371,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       .then(function(d){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}
         if(d&&d.id){try{closeJr();}catch(_){}if(window.mpChatSay)window.mpChatSay('trade:'+d.id);toast(MT('jSharedChat','Shared to chat'));}
         else if(d&&d.error==='login_required'){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}}
-        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit','Too many shares right now — try again later.'));}
+        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit','Too many shares right now - try again later.'));}
         else{toast(MT('jShareFail','Could not share the ticket.'));}})
       .catch(function(){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}toast(MT('jShareFail','Could not share the ticket.'));});
   }
@@ -1418,18 +1418,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="jrb-row" style="font:11px \'Space Mono\',monospace;color:#8a7a52;margin:0 0 10px">from '+mK(bm.start)+'</div>'
       +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell('In trades',mK(openMargin))+cell('Available',mK(bm.start+realized-openMargin))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
   /* A resting limit order is not a position, so it gets its own tab rather than a fake row among open trades:
-     nothing here has a P&L, a liquidation price or a close button — only a price it is waiting for and a Cancel. */
+     nothing here has a P&L, a liquidation price or a close button - only a price it is waiting for and a Cancel. */
   function orderCard(o){
     var long=o.side!=='short',lp=(window.mpLivePrices&&window.mpLivePrices[o.sym]&&+window.mpLivePrices[o.sym].p)||0;
     var away=(lp>0)?((+o.px-lp)/lp*100):null;
     return '<div class="pp pp-ord" data-oid="'+esc(o.id)+'">'
-      +'<div class="pp-h"><span class="pp-sym">'+esc(o.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-ordtag">'+MT('otLimit','Limit')+'</span><span class="pp-live">'+(o.lev||1)+'×'+(lp>0?' · '+fp(lp):'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(o.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-ordtag">'+MT('otLimit','Limit')+'</span><span class="pp-live">'+(o.lev||1)+'×'+(lp>0?' · '+fp(lp):'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+fp(+o.px)+'</span><span class="roe">'+(away==null?MT('otWaiting','waiting'):((away>=0?'+':'')+away.toFixed(2)+'% '+MT('otFromMkt','from market')))+'</span></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+money(+o.margin)+'</b></div>'
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+money((+o.margin||0)*((+o.lev>0)?+o.lev:1))+'</b></div>'
-        +'<div><span>SL</span><b>'+(o.sl!=null?fp(+o.sl):'—')+'</b></div>'
-        +'<div><span>TP</span><b>'+(o.tp!=null?fp(+o.tp):'—')+'</b></div>'
+        +'<div><span>SL</span><b>'+(o.sl!=null?fp(+o.sl):'-')+'</b></div>'
+        +'<div><span>TP</span><b>'+(o.tp!=null?fp(+o.tp):'-')+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-(+o.ts||Date.now()))+' '+MT('otWaiting','waiting')+(o.local?' · '+MT('otLocalNote','this device only'):'')+'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="ordchart" data-oid="'+esc(o.id)+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel','Cancel order')+'</button></div>'
@@ -1450,100 +1450,100 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     function stat(v,l,col){return '<div class="jr-stat"><div class="v"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
     statsEl.innerHTML=stat(open.length,MT('jOpenN','Open'))
       +stat((unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>=0?'#34d99a':'#ff7b72')
-      +stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))
+      +stat(wr==null?'-':wr+'%',MT('jWinRate','Win rate'))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var ords=ordersNow();
     var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
     var _ord=rows.slice().reverse(),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
     /* The partner line belongs on the newest WINNING close. It was pinned to index 0, so one losing trade after a
-       winning one hid it entirely — the card is only ever rendered when the very newest close happened to be green
+       winning one hid it entirely - the card is only ever rendered when the very newest close happened to be green
        (owner 2026-09-09: "put the ads back on the winning tickets"). MIRROR in mp-trade.js. */
     _glIdx=-1;
     if(jrTab!=='orders'&&jrTab!=='open')for(var _gi=0;_gi<_vis.length;_gi++){if(_vis[_gi]&&(+_vis[_gi].pnl)>0){_glIdx=_gi;break;}}
-    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting — place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
-    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server — they fill even when you are away.')+'</div>';
+    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting - place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions - open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
+    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server - they fill even when you are away.')+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore','Show more')+' ('+_rest+')</button>';
-    if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season — stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
+    if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
     listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
-    if(add._busy){ // 1s cooldown active (or a server open still in flight) — nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button
+    if(add._busy){ // 1s cooldown active (or a server open still in flight) - nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button
       var _nb=document.getElementById('planSave'); if(_nb){_nb.classList.remove('cd-nudge');void _nb.offsetWidth;_nb.classList.add('cd-nudge');setTimeout(function(){_nb.classList.remove('cd-nudge');},340);} return; }
-    add._busy=true; setTimeout(function(){if(!add._wait)add._busy=false;},1000); // 1s anti-spam lock (was a silent 650ms debounce) — paired with the visible cooldown bar below; a pending server open keeps the lock until it settles
+    add._busy=true; setTimeout(function(){if(!add._wait)add._busy=false;},1000); // 1s anti-spam lock (was a silent 650ms debounce) - paired with the visible cooldown bar below; a pending server open keeps the lock until it settles
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
     var _say=function(m){if(window.mpLimitToast)window.mpLimitToast(m);}; // honest micro-feedback: never swallow a click silently (UX audit: "enabled button that does nothing")
-    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say('Max trade size is $100,000 — the amount was capped.');} // hard cap: max $100k per trade (owner rule)
+    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say('Max trade size is $100,000 - the amount was capped.');} // hard cap: max $100k per trade (owner rule)
     if(!isFinite(amt)||amt<=0){_say('Enter an amount (USD) above $0 to open a trade.');return;}
-    if(!isFinite(entry)||entry<=0){_say('Waiting for the live price — try again in a second.');return;}
-    var _bav=balAvail(); if(_bav!=null&&balHasTagged()&&_bav>0.5&&amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say('Balance Mode: capped to your available $'+amt.toLocaleString()+'.');} // Balance Mode only CAPS the size to what's left — it NEVER blocks the open button. A used-up balance just drives equity negative (shown red on the strip), like a real blow-up. Fixes the "nothing happens" dead-button for good.
+    if(!isFinite(entry)||entry<=0){_say('Waiting for the live price - try again in a second.');return;}
+    var _bav=balAvail(); if(_bav!=null&&balHasTagged()&&_bav>0.5&&amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say('Balance Mode: capped to your available $'+amt.toLocaleString()+'.');} // Balance Mode only CAPS the size to what's left - it NEVER blocks the open button. A used-up balance just drives equity negative (shown red on the strip), like a real blow-up. Fixes the "nothing happens" dead-button for good.
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
-    // the live price MUST be a fresh reading for THIS exact symbol — a stale mpPlanLive, or one still holding the
+    // the live price MUST be a fresh reading for THIS exact symbol - a stale mpPlanLive, or one still holding the
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
-    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
+    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' - try again in a second.');add._busy=false;return;}
     entry=+pl.price;
     if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
     /* LIMIT MODE: everything below (size, notional, liq, the SL/TP side checks) is computed against the price this
-       ticket will actually be entered at — so `entry` becomes the limit price here, and the marketable case is
+       ticket will actually be entered at - so `entry` becomes the limit price here, and the marketable case is
        refused rather than quietly turned into a market order. */
     var _isLim=(window.mpPlanType==='limit'), _limPx=+window.mpPlanLimit, _mktPx=entry;
     if(_isLim){
       if(!isFinite(_limPx)||_limPx<=0){_say('Enter a limit price (the price you want to be filled at).');add._busy=false;return;}
-      if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say('That price is more than 20x away from the market — check the decimal point.');add._busy=false;return;}
-      entry=_limPx; // the level may sit either side of the market — below it is a classic limit, above it a breakout entry
+      if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say('That price is more than 20x away from the market - check the decimal point.');add._busy=false;return;}
+      entry=_limPx; // the level may sit either side of the market - below it is a classic limit, above it a breakout entry
     }
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
-    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
+    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee - was 0, which made some closed tickets show no Fees line
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
     trail=(isFinite(trail)&&trail>0)?trail:0; be=(isFinite(be)&&be>0)?be:0;
     // Guard: a stop/target already on the WRONG side of the live entry would trigger the instant the position
     // opens (this is what made copied / stale screener setups self-close at open with a random-looking result).
-    // Drop it — a long's stop must be below entry & target above; a short's the reverse.
+    // Drop it - a long's stop must be below entry & target above; a short's the reverse.
     var _long=side==='long';
-    // BLOCK the open while a typed SL/TP is on the wrong side of entry — matching the SL/TP edit modal. The old
+    // BLOCK the open while a typed SL/TP is on the wrong side of entry - matching the SL/TP edit modal. The old
     // behavior (strip it and open WITHOUT the stop) made the user's protective order silently vanish (UX audit
     // called it "the worst possible message for a risk-education product").
     var _bad=[];
     if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry)))_bad.push('stop-loss');
     if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))_bad.push('take-profit');
-    if(_bad.length){_say('Your '+_bad.join(' and ')+' is on the wrong side of the entry price — fix it (or clear the field) to open the trade.');try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
+    if(_bad.length){_say('Your '+_bad.join(' and ')+' is on the wrong side of the entry price - fix it (or clear the field) to open the trade.');try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
     if(_isLim){ // rest the order instead of opening: mpOrders owns it from here (server-side when signed in)
-      if(!window.mpOrders){_say('Limit orders are still loading — try again in a second.');add._busy=false;return;}
+      if(!window.mpOrders){_say('Limit orders are still loading - try again in a second.');add._busy=false;return;}
       var _btnL=document.getElementById('planSave'),_spL=_btnL&&_btnL.querySelector('span');
       window.mpOrders.add({sym:sym,side:side,px:entry,lev:L,margin:amt,sl:stop,tp:(isFinite(tp)?tp:null)},function(){
         if(_btnL&&_spL){var _o=_spL.textContent;_btnL.classList.add('saved','cooldown');_spL.textContent=MT('otPlaced','Order placed ✓');setTimeout(function(){_btnL.classList.remove('cooldown');},1000);setTimeout(function(){_spL.textContent=_o;_btnL.classList.remove('saved');},1400);}
         if(window.mpBuzz)window.mpBuzz([12]);
         try{if(window.__mpTrack)window.__mpTrack('limitorder',sym+' '+side+' @'+entry);}catch(e){}
-        try{if(window.mpDrawLines)window.mpDrawLines();}catch(e){} // drawLines lives in the chart IIFE — reach it through the global, not a bare name
+        try{if(window.mpDrawLines)window.mpDrawLines();}catch(e){} // drawLines lives in the chart IIFE - reach it through the global, not a bare name
         render();
       },function(){add._busy=false;});
       return;
     }
-    /* P0 dual-write: signed-in opens are SERVER-FILLED (/api/trade/open) — the server takes its own live
+    /* P0 dual-write: signed-in opens are SERVER-FILLED (/api/trade/open) - the server takes its own live
        price and writes the trade into the account journal (src:'srv'). We insert the SERVER position (same
        id!) locally so the UI is instant and the 12s sync/pull merge is idempotent. Timeout or any error →
        the classic local open below, so trading never blocks on the network. Anonymous users: local as always. */
-    var _tLocal={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null};
+    var _tLocal={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'-',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null};
     var _finishOpen=function(t){
       try{if(window.mpBal&&window.mpBal.tag)window.mpBal.tag(t);}catch(_){} // stamp the trade with the current Balance Mode session so it (and only it) counts toward the balance
       var data=load();
       data.push(t);
-      if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:t.entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
-      store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer — no popup; stamp the open so the ticket pop only fires for a REAL open */
+      if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:t.entry,t:Date.now()}; // start P&L at exactly 0 - kills the phantom -100% / instant-liquidation at open
+      store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer - no popup; stamp the open so the ticket pop only fires for a REAL open */
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
-    if(window.mpHaptic)window.mpHaptic('ok'); // the position is open — the one confirmation worth feeling
+    if(window.mpHaptic)window.mpHaptic('ok'); // the position is open - the one confirmation worth feeling
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved','cooldown');sp.textContent=MT('jOpened','Position opened \u2713');setTimeout(function(){btn.classList.remove('cooldown');},1000);setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1120);}
     try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
-      try{drawLines();}catch(e){} // async server path finishes after add() returns — draw lines here too
+      try{drawLines();}catch(e){} // async server path finishes after add() returns - draw lines here too
     };
     var _me=null;try{_me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(_){ }
     if(_me&&window.mpSrvOpen){
@@ -1559,7 +1559,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
   var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
-  // ticket + tab actions are delegated to document — the list lives in the drawer, which parses after this script
+  // ticket + tab actions are delegated to document - the list lives in the drawer, which parses after this script
   document.addEventListener('click',function(ev){
     var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
@@ -1601,7 +1601,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';}).filter(window.mpSsnShow);var wins=closed.filter(function(e){return e.status==='win';}).length;var wr=closed.length?Math.round(wins/closed.length*100):null;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
-      var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl class — wholesale className= dropped pp-gold every tick (2nd copy: the My Trades drawer, same flicker as the terminal list)
+      var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl class - wholesale className= dropped pp-gold every tick (2nd copy: the My Trades drawer, same flicker as the terminal list)
       var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
@@ -1611,14 +1611,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function jrLockBody(){if(window.innerWidth<721&&!_jrLocked){_jrScrollY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_jrScrollY)+'px';document.documentElement.classList.add('jr-lock');_jrLocked=true;}}
   function jrUnlockBody(){if(_jrLocked){document.documentElement.classList.remove('jr-lock');document.body.style.top='';_jrLocked=false;window.scrollTo(0,_jrScrollY);}}
   function openJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=false;if(b)b.hidden=false;document.documentElement.classList.add('jr-open');jrLockBody();render();if(jrTimer)clearInterval(jrTimer);jrTimer=setInterval(renderLive,1000);}
-  window.mpOpenTrades=openJr; // mp-nav's mobile bottom-bar "Trades" prefers this over navigating (mobile white-flash fix 2026-07-13 — mp-trade.js already exported it, the app shell didn't)
+  window.mpOpenTrades=openJr; // mp-nav's mobile bottom-bar "Trades" prefers this over navigating (mobile white-flash fix 2026-07-13 - mp-trade.js already exported it, the app shell didn't)
   function closeJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=true;if(b)b.hidden=true;document.documentElement.classList.remove('jr-open');jrUnlockBody();if(jrTimer){clearInterval(jrTimer);jrTimer=null;}}
   // PC: wheel over the drawer must never scroll the page behind it (overscroll-behavior covers scroll-chaining;
   // this also handles a short/empty drawer that isn't scrollable at all).
   (function(){var d=document.getElementById('jrDrawer');if(!d)return;d.addEventListener('wheel',function(e){var noScroll=d.scrollHeight<=d.clientHeight+1,atTop=d.scrollTop<=0,atBot=d.scrollTop+d.clientHeight>=d.scrollHeight-1;if(noScroll||(e.deltaY<0&&atTop)||(e.deltaY>0&&atBot))e.preventDefault();},{passive:false});})();
   // Close on pointerdown (fires at touch-start, before the synthesized click) so the drawer dismisses instantly
-  // even when the Paper Trade tick / live render has the main thread busy — fixes the mobile "tap close → ~1s lag".
-  // Swallow the ghost mousedown+click that the same tap fires AFTER the drawer is hidden — otherwise it lands on
+  // even when the Paper Trade tick / live render has the main thread busy - fixes the mobile "tap close → ~1s lag".
+  // Swallow the ghost mousedown+click that the same tap fires AFTER the drawer is hidden - otherwise it lands on
   // whatever is now under the finger (the language <select> sits top-right, exactly under the close ✕) and opens it.
   function swallowGhost(){
     var killM=function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('.mobnav,[data-mn],[data-mytrades]')){document.removeEventListener('mousedown',killM,true);return;} /* never swallow a deliberate nav/My-Trades tap */ ev.preventDefault();ev.stopPropagation();document.removeEventListener('mousedown',killM,true);};
@@ -1645,15 +1645,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var _jrLast=0;
   document.addEventListener('mp:price',function(){var d=document.getElementById('jrDrawer');if(!d||d.hidden)return;var now=(window.performance&&performance.now)?performance.now():+new Date();if(now-_jrLast<800)return;_jrLast=now;renderLive();});
   render();
-  if(/[?&]trades=1/.test(location.search)){window.addEventListener('load',function(){try{openJr();}catch(e){}});} // deep-link: /?trades=1 opens My Trades — deferred to load because the drawer markup is parsed after this script
+  if(/[?&]trades=1/.test(location.search)){window.addEventListener('load',function(){try{openJr();}catch(e){}});} // deep-link: /?trades=1 opens My Trades - deferred to load because the drawer markup is parsed after this script
 })();
 
 ;/* ══════════ inline block from app/index.html line 3609 ══════════ */
-/* Real-time price feed — a single Bybit USDT-perp (linear) WebSocket streaming whatever symbols the user views.
+/* Real-time price feed - a single Bybit USDT-perp (linear) WebSocket streaming whatever symbols the user views.
    Updates window.mpLivePrices and fires a 'mp:price' event on every tick (sub-100ms), so the Paper Trade
    price, chart candle and live P&L feel instant. REST polling stays as a fallback if the socket is down. */
 /* Server-clock sync: candle boundaries + the close-countdown must NOT trust the device clock (a skewed clock rolls
-   bars into wrong minute buckets which the 30s re-sync then visibly repaints — measured 46s skew in the wild).
+   bars into wrong minute buckets which the 30s re-sync then visibly repaints - measured 46s skew in the wild).
    Best-RTT sample wins; refreshed every 10 min for drift. window.mpSrvNow() = server-true Date.now(). */
 (function(){
   function sync(){var t0=Date.now();fetch('/api/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var t1=Date.now();if(!d||!isFinite(+d.t))return;var rtt=t1-t0,off=(+d.t+rtt/2)-t1;if(window.__mpSrvRtt==null||rtt<=window.__mpSrvRtt+20){window.__mpSrvRtt=rtt;window.mpSrvOff=off;}}).catch(function(){});}
@@ -1666,7 +1666,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   window.mpLivePrices=window.mpLivePrices||{};
   window.mpHist=window.mpHist||{};
   var ws=null,alive=false,retry=0,pingT=null,lastH={},chgMap={};
-  // stream whatever the user actually looks at (chart/paper-trade symbol, open positions) — not just a fixed 8.
+  // stream whatever the user actually looks at (chart/paper-trade symbol, open positions) - not just a fixed 8.
   var want={},order=[],MAXW=44;
   BASE.forEach(function(s){want[s]=1;order.push(s);});
   function clean(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
@@ -1680,7 +1680,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var lastTick=Date.now(), lastWsTick=Date.now(), reT=null, connT=null; // lastWsTick = WS-only freshness (REST bridge must NOT refresh it, or a dead socket looks alive)
   function emit(sym,price,chg){
     lastTick=Date.now();
-    try{window.__mpWsSeen[sym]=Date.now();}catch(_){} // TEMP pxtag: mark this symbol as WS-covered (see __mpPQ) — DELETE with the pxtag round
+    try{window.__mpWsSeen[sym]=Date.now();}catch(_){} // TEMP pxtag: mark this symbol as WS-covered (see __mpPQ) - DELETE with the pxtag round
     var prev=window.mpLivePrices[sym]||{};
     window.mpLivePrices[sym]={p:price,t:Date.now(),chg:(chg!=null&&isFinite(chg))?chg:prev.chg};
     pushHist(sym,price);
@@ -1695,11 +1695,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(connT){clearTimeout(connT);connT=null;}
     try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();}/* USDT-perp stream: covers TRX & virtually every pair (spot was missing many) + matches futures pricing */
     connT=setTimeout(function(){connT=null;if(!ws||ws.readyState!==1){try{ws&&(ws.onclose=null,ws.close());}catch(_){}reconnect();}},10000); // handshake stuck in CONNECTING (mobile radio hand-off / captive portal) never fires onopen/onclose → force a retry
-    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
+    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect - sendOp chunks at 10/req
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
     ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.ts&&isFinite(+m.ts)){var _wl=Date.now()-(+m.ts);if(_wl>-2000&&_wl<30000){var _ww=window.__mpWsLatW;if(!_ww||Date.now()-_ww.t>60000){window.__mpWsLatW={t:Date.now(),v:_wl};}else if(_wl<_ww.v){_ww.v=_wl;}window.__mpWsLat=(window.__mpWsLatW||{}).v;}}if(!m.topic)return;
       if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');
-        var TK=window.mpTicks1m=window.mpTicks1m||{},tk=TK[sym]; // EXACT per-minute OHLC from EVERY trade in the batch, bucketed by the trade's own exchange timestamp (T) — immune to device-clock skew. The forming candle merges these extremes so wicks are exact instead of rAF-sampled (the old path kept only the batch's LAST trade → missed extremes → the 30s re-sync visibly grew wicks).
+        var TK=window.mpTicks1m=window.mpTicks1m||{},tk=TK[sym]; // EXACT per-minute OHLC from EVERY trade in the batch, bucketed by the trade's own exchange timestamp (T) - immune to device-clock skew. The forming candle merges these extremes so wicks are exact instead of rAF-sampled (the old path kept only the batch's LAST trade → missed extremes → the 30s re-sync visibly grew wicks).
         for(var _ti=0;_ti<m.data.length;_ti++){var _tr=m.data[_ti],_tp=parseFloat(_tr.p),_tt=Math.floor((+_tr.T||Date.now())/60000)*60;
           if(!isFinite(_tp))continue;
           if(!tk)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:null};
@@ -1707,20 +1707,20 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
           else if(_tt>tk.cur.t)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:tk.cur};
           else if(tk.prev&&_tt===tk.prev.t){var _pb=tk.prev;_pb.c=_tp;if(_tp>_pb.h)_pb.h=_tp;if(_tp<_pb.l)_pb.l=_tp;}
           /* older than prev → drop; the old `cur.t!==_tt → reset` path let a straggler REWIND cur to a past
-             minute and shove the live minute into prev — bucket order is now monotonic no matter what arrives */}
+             minute and shove the live minute into prev - bucket order is now monotonic no matter what arrives */}
         var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
-    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT&&!document.hidden)window.__mpWsDownT=Date.now();}catch(e){}/* ws-recon must mean "how long the price was frozen WHILE THE USER WATCHED". A socket that dies in a backgrounded tab (or is closed by our own 20s battery saver) and re-opens on return was measuring the whole away period — p95 40s against a 2.5s budget, a permanent false alarm. Downtime that starts hidden is not measured; downtime that GOES hidden is voided below. */if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
+    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT&&!document.hidden)window.__mpWsDownT=Date.now();}catch(e){}/* ws-recon must mean "how long the price was frozen WHILE THE USER WATCHED". A socket that dies in a backgrounded tab (or is closed by our own 20s battery saver) and re-opens on return was measuring the whole away period - p95 40s against a 2.5s budget, a permanent false alarm. Downtime that starts hidden is not measured; downtime that GOES hidden is voided below. */if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
   function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2000,3000,3000,3000][retry-1]||3000);} // fast first retry (250ms), then backoff CAPPED at 3s (was 8s): the `online` event is unreliable on mobile radio hand-offs, so a network that returns mid-backoff could sit dead for up to 8s → 3s cap halves that worst case (ws-recon p95). Retries during a real outage are cheap failed WS handshakes.
-  function kick(){ // force a brand-new socket NOW (dead/stuck one) — used by the watchdog / resume / online
+  function kick(){ // force a brand-new socket NOW (dead/stuck one) - used by the watchdog / resume / online
     try{if(ws){ws.onclose=null;ws.close();}}catch(_){}
     ws=null;if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}retry=0;connect();
   }
   connect();
-  // Watchdog: key off lastWsTick (WS-ONLY freshness — the REST bridge below must NOT mask a dead socket). If the WS itself
+  // Watchdog: key off lastWsTick (WS-ONLY freshness - the REST bridge below must NOT mask a dead socket). If the WS itself
   // has delivered nothing for >8s while visible AND we're not already (re)connecting, force a fresh socket regardless of
   // readyState (covers CONNECTING/CLOSING/CLOSED that the old readyState===1 check ignored). Then bridge with a REST poll.
   setInterval(function(){
@@ -1731,7 +1731,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     }
   },3000);
   function onResume(){if(Date.now()-lastWsTick>5000&&!connT&&!reT)kick();} // returned to a stale tab / bfcache restore → new socket now
-  // BATTERY (mobile audit 2026-08-16): a hidden tab kept the socket streaming ~20 msgs/s (publicTrade) — pure radio+CPU
+  // BATTERY (mobile audit 2026-08-16): a hidden tab kept the socket streaming ~20 msgs/s (publicTrade) - pure radio+CPU
   // drain while nothing is visible. Close it after 20s hidden: background timers are throttled anyway, client SL/TP can't
   // act there, and the server-side sweep is the money-path safety net. onResume's kick() rebuilds the socket on return
   // and the chart engines already resync on visibilitychange.
@@ -1747,7 +1747,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
 })();
 
 ;/* ══════════ inline block from app/index.html line 3666 ══════════ */
-/* Lazy-load the heavy TradingView embeds — inject each widget's script only when it scrolls near view.
+/* Lazy-load the heavy TradingView embeds - inject each widget's script only when it scrolls near view.
    The below-fold advanced chart often never loads at all, saving a large third-party payload on most visits. */
 (function(){
   function loadTV(c){var cfg=c.querySelector('.tv-cfg'),type=c.getAttribute('data-tv');if(!cfg||!type||c.getAttribute('data-tv-done'))return;c.setAttribute('data-tv-done','1');var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='https://s3.tradingview.com/external-embedding/embed-widget-'+type+'.js';s.textContent=cfg.textContent.trim();c.appendChild(s);}
@@ -1761,11 +1761,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
 ;/* ══════════ inline block from app/index.html line 3678 ══════════ */
 (function(){
   var CLARITY_ID = ''; // set to a Microsoft Clarity project ID for visual click heatmaps + recordings
-  var ADS_CONV_LABEL = ''; // Google Ads conversion label for affiliate clicks — paste the label from your conversion action (e.g. 'abCdEf1gH'); leave '' until created
+  var ADS_CONV_LABEL = ''; // Google Ads conversion label for affiliate clicks - paste the label from your conversion action (e.g. 'abCdEf1gH'); leave '' until created
   if (CLARITY_ID) { (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script',CLARITY_ID); }
   // Accurate traffic source: referrer alone is empty for most real traffic (app webviews, referrer-policy stripping,
   // typed/bookmark, PWA, and paid ad clicks). Compute the ENTRY source once per session from URL campaign params
-  // (gclid = Google Ads, utm_source, fbclid, ref) FIRST, then the external referrer host — persisted so internal hops keep it.
+  // (gclid = Google Ads, utm_source, fbclid, ref) FIRST, then the external referrer host - persisted so internal hops keep it.
   function mpEntrySrc(){
     try{
       var s=sessionStorage.getItem('mp_src'); if(s)return s; // '' cached = keep trying (a mid-session external return can still name the source)
@@ -1778,7 +1778,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         else if(q.get('fbclid'))src='facebook';
         else if(q.get('twclid'))src='twitter';
         else if(q.get('ttclid'))src='tiktok';
-        else if(q.get('ref'))src='referral';/* a referral CODE is not a traffic source — it used to land raw in ops 'By source' (2026-09-02) */
+        else if(q.get('ref'))src='referral';/* a referral CODE is not a traffic source - it used to land raw in ops 'By source' (2026-09-02) */
       }
       if(!src&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')src=h;}catch(_){}}
       src=(src||'').slice(0,40);
@@ -1810,21 +1810,21 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}
       if(window.clarity){window.clarity('event', t+(e?':'+e:''));}
     }catch(_){}
-    // Google Ads / GA4 conversion signal on affiliate (exchange) clicks — the revenue proxy the campaign optimises toward
+    // Google Ads / GA4 conversion signal on affiliate (exchange) clicks - the revenue proxy the campaign optimises toward
     if(t==='exchange'&&window.gtag){try{gtag('event','affiliate_click',{exchange:e||'',page:location.pathname});if(ADS_CONV_LABEL){gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}}catch(_){}}
   }
-  window.__mpPv=1;/* tell mp-nav.js's universal beacon this page already sent its pageview — it only scanned INLINE scripts, so every app-shell route was counted twice (2026-09-02) */
+  window.__mpPv=1;/* tell mp-nav.js's universal beacon this page already sent its pageview - it only scanned INLINE scripts, so every app-shell route was counted twice (2026-09-02) */
   send('pageview');
   window.__mpTrack=send;
   // log nav-bar taps (Browse / Practice / Trades / Chat) so the admin sees WHEN visitors use the nav bar, not just which pages load
   document.addEventListener('click',function(e){try{var mn=e.target.closest&&e.target.closest('.mobnav [data-mn]');if(mn)send('nav',(mn.getAttribute('aria-label')||mn.getAttribute('data-mn')||'nav').slice(0,24));}catch(_){}},true);
   // in-page product switches (Calc/Heatmap/Swap/Paper Trade/Charts on the homepage) don't reload, so fire a virtual
-  // pageview for them too — same nav stream as real page loads, carrying where the visitor came from (&f).
+  // pageview for them too - same nav stream as real page loads, carrying where the visitor came from (&f).
   function navTo(path){try{var from=null;try{from=sessionStorage.getItem('mp_lastpath');}catch(_){}if(from===path)return;var u='/api/track?t=pageview&p='+encodeURIComponent(path)+(from?('&f='+encodeURIComponent(from)):'');try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);else{var _s0=mpFirstSrc();if(_s0)u+='&s0='+encodeURIComponent(_s0);}}catch(_){}if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}try{sessionStorage.setItem('mp_lastpath',path);}catch(_){}}catch(_){}}
   window.__mpNav=navTo;
-  // scroll depth — fire once per 25/50/75/100% threshold
+  // scroll depth - fire once per 25/50/75/100% threshold
   (function(){var hit={};function s(){var st=window.scrollY||document.documentElement.scrollTop||0,dh=(document.documentElement.scrollHeight-window.innerHeight)||1,pct=st/dh*100;[25,50,75,100].forEach(function(t){if(pct>=t&&!hit[t]){hit[t]=1;send('scroll',String(t));}});}window.addEventListener('scroll',s,{passive:true});})();
-  // time on page — bucketed, sent once when the tab is hidden/closed
+  // time on page - bucketed, sent once when the tab is hidden/closed
   (function(){var t0=Date.now(),sent=false;function leave(){if(sent)return;sent=true;var x=Math.round((Date.now()-t0)/1000);send('time',x<10?'0-10s':x<30?'10-30s':x<60?'30-60s':x<180?'1-3m':x<600?'3-10m':'10m+');}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')leave();});window.addEventListener('pagehide',leave);})();
   // human-readable label for whatever was clicked, so the stats dashboard reads clearly
   var ID2NAME={planSave:'Open position (Long/Short)',jrOpen:'My Trades (header)',jrClose:'Close My Trades',jrBackdrop:'Close My Trades (tap-away)',planSym:'Symbol picker',planLev:'Leverage input',planAmt:'Amount input',ptSig:'Signals toggle',planAdvChk:'Advanced toggle',planSlOpt:'Stop-loss input',planTpOpt:'Take-profit input',ptMtCount:'My Trades (in terminal)',chatOpen:'Open chat',chatClose:'Close chat'};
@@ -1899,8 +1899,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var rm=cb.closest('.result-main'); if(!rm) return;
       var lbl=rm.querySelector('.rlabel'), val=rm.querySelector('.rvalue');
       var lt=lbl?lbl.textContent.trim():'', vt=val?val.textContent.trim():'';
-      if(!vt||vt==='—') return;
-      var msg=''+lt+': '+vt+' — free crypto futures calculators at marginpad.io';
+      if(!vt||vt==='-') return;
+      var msg=''+lt+': '+vt+' - free crypto futures calculators at marginpad.io';
       var url='https://marginpad.io'+panelState(rm.closest('.panel'));
       send('share', lt);
       if(navigator.share){ navigator.share({title:'MarginPad', text:msg, url:url}).catch(function(){}); }
@@ -1914,7 +1914,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var LB='/api/reward/lb';
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){return [];}}
   function getAddr(){try{var a=localStorage.getItem('mp_reward_addr')||'';return /^0x[0-9a-fA-F]{40}$/.test(a)?a:'';}catch(e){return '';}}
-  function render(){var list=document.getElementById('lbList');if(!list)return;fetch(LB).then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[];list.innerHTML=t.length?t.slice(0,6).map(function(x){return '<div class="lbw-row"><span class="lbw-rank">'+x.rank+'</span><span class="lbw-who">'+x.who+'</span><span class="lbw-roe">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</span></div>';}).join(''):'<div class="lbw-empty">No trades yet this season — be the first.</div>';}).catch(function(){});}
+  function render(){var list=document.getElementById('lbList');if(!list)return;fetch(LB).then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[];list.innerHTML=t.length?t.slice(0,6).map(function(x){return '<div class="lbw-row"><span class="lbw-rank">'+x.rank+'</span><span class="lbw-who">'+x.who+'</span><span class="lbw-roe">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</span></div>';}).join(''):'<div class="lbw-empty">No trades yet this season - be the first.</div>';}).catch(function(){});}
   function sync(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return;/* Trade League is account-based: signed in = eligible, no wallet needed (server keys by the account) */var sub={};try{sub=JSON.parse(localStorage.getItem('mp_lb_sub')||'{}');}catch(e){}var d=jload(),changed=false;d.forEach(function(e){if((e.status==='win'||e.status==='loss')&&e.id&&!sub[e.id]){var margin=(+e.margin>0)?+e.margin:0,pnl=+e.pnl;if(margin>0&&isFinite(pnl)){var roe=pnl/margin*100;sub[e.id]=1;changed=true;try{fetch(LB,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:me.username||'',symbol:e.sym||'',side:e.side||'long',roe:roe,pnl:pnl})});}catch(_){}}}});if(changed){try{localStorage.setItem('mp_lb_sub',JSON.stringify(sub));}catch(e){}setTimeout(render,900);}}
   var tog=document.getElementById('lbToggle'),w=document.getElementById('lbWidget');
   if(tog&&w)tog.addEventListener('click',function(){w.classList.toggle('open');});
@@ -1934,7 +1934,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   /* per-coin chat rooms: All + a few majors. 'global' = the original shared room (history preserved). */
   var ROOMS=['global','BTC','ETH','SOL','BNB','XRP','DOGE'],room='global',roomBar=null;
   var CT_STAR='<svg class="ct-ric ct-ricprem" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>';
-  function chatRooms(){var b=['global'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;} /* per-coin rooms retired 2026-09-02: measured over the DO history, BTC 6 messages lifetime, ETH 1, XRP 3, SOL/BNB/DOGE 0 — an empty room reads as a dead site. The room_<COIN> DO instances stay; re-add a coin here to reopen it. */ // Premium lounge appears only for VIPs (server also enforces it)
+  function chatRooms(){var b=['global'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;} /* per-coin rooms retired 2026-09-02: measured over the DO history, BTC 6 messages lifetime, ETH 1, XRP 3, SOL/BNB/DOGE 0 - an empty room reads as a dead site. The room_<COIN> DO instances stay; re-add a coin here to reopen it. */ // Premium lounge appears only for VIPs (server also enforces it)
   function roomLabel(r){return r==='global'?'All':r==='PREMIUM'?'Premium':r;}
   var CT_CARET='<svg class="ct-rcaret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var CT_CHECK='<svg class="ct-ri-ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
@@ -1954,13 +1954,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     menu.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-room]');if(b){switchRoom(b.getAttribute('data-room'));menu.hidden=true;btn.classList.remove('open');}});
     document.addEventListener('click',function(){if(menu&&!menu.hidden){menu.hidden=true;btn.classList.remove('open');}});
   }
-  /* The Premium lounge entry depends on window._mpPrem, which mp-auth fills from the /api/auth/xp poll — often AFTER the chat was
+  /* The Premium lounge entry depends on window._mpPrem, which mp-auth fills from the /api/auth/xp poll - often AFTER the chat was
      opened, so buildRoomBar() saw one room, skipped the selector and nothing ever rebuilt it (owner 2026-09-12: "sometimes the
      dropdown shows, sometimes I must close and reopen the chat"). Ask once while unknown, rebuild on every poll until it exists. MIRROR in mp-trade.js. */
   function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
   window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
-  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
+  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge - VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   /* escape first (XSS-safe), THEN turn `trade:<id>` tokens into clickable links that open the shared ticket */
@@ -1973,7 +1973,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
 
   /* ── message actions (owner 2026-09-14) ───────────────────────────────────────────────────────────────────────
      MIRROR: byte-identical in home.js and mp-trade.js. The gesture and the sheet are shared (mp-auth.js); this is
-     only the room's own half — who owns a message, and how an action reaches the socket. */
+     only the room's own half - who owns a message, and how an action reaches the socket. */
   var myWho='',rxSet=[],editMs=900000;
   function msgById(id){if(!msgs)return null;var n=msgs.querySelectorAll('[data-mid]');for(var i=0;i<n.length;i++)if(n[i].getAttribute('data-mid')===String(id))return n[i];return null;}
   function rxHtml(rx,mid){rx=rx||{};var k=Object.keys(rx);if(!k.length)return '';var h='<span class="ct-rx">';
@@ -2010,7 +2010,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var _ts=+m.ts||0;var _hm=_ts?(function(x){var p=function(n){return n<10?'0'+n:''+n;};return p(x.getHours())+':'+p(x.getMinutes());})(new Date(_ts)):'';var _tm=_hm?'<span class="ct-time" title="'+new Date(_ts).toLocaleString()+'">'+_hm+'</span>':'';var who=_tm+(m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>');var _sg=window._mpParseSig&&window._mpParseSig(m.t);var _body=_sg?window._mpSigCardHtml(_sg):linkifyMsg(m.t);if(m.admin)_body=mentionify(_body);var _mid=(m.id!=null?m.id:String(m.ts||''));d.setAttribute('data-mid',_mid);d.setAttribute('data-ts',String(+m.ts||0));if(m.a&&myWho&&m.a===myWho)d.setAttribute('data-own','1');d.innerHTML=who+' <span class="ct-body">'+_body+(m.ed?'<span class="ct-ed" title="edited">edited</span>':'')+rxHtml(m.rx,_mid)+'</span>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   /* click a username in chat → open that trader's profile card. MIRRORS the copy in mp-trade.js (deliberate duplication):
      the card lives in mp-profile.js, which most pages do not load, so fall back to the on-demand loader in mp-nav.js
-     rather than doing nothing. Looked up at call time — these bundles parse in different orders. */
+     rather than doing nothing. Looked up at call time - these bundles parse in different orders. */
   function openTraderCard(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;
     var go=function(){var f=window.mpOpenProfile||window.lbOpenProfile;if(f){try{f(n);}catch(_){}}};
     if(window.mpOpenProfile||window.lbOpenProfile){go();return;}
@@ -2037,13 +2037,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['','',''];
       var html='<b style="color:#c2f64a">'+meta.t+' · this season</b><br>';
-      if(!t.length)html+='<span style="color:#9aa3ad">No one on this board yet — be the first!</span>';
+      if(!t.length)html+='<span style="color:#9aa3ad">No one on this board yet - be the first!</span>';
       else html+=t.slice(0,10).map(function(x,i){var val;
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
         else if(board===4)val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
         else if(board===5){var _gp=+x.pts||0;val='<b style="color:'+(_gp>=0?'#ffcf3f':'#ff7b72')+'">'+(_gp>0?'+':'')+_gp+' pts</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';}else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?' green day':' green days')+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
-        return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
+        return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> - '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
  html+='<br><span style="color:#ffce8a;font-size:11.5px"> 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
  html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> green days · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · <b>/leaderboard4</b> ROE · <b>/leaderboard5</b> Gold Room · members only, prizes paid in USDT each 14-day season</span>';
@@ -2059,7 +2059,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
        the session behind the socket regardless. */
     window.__mpChatAct=function(o){try{if(!o||['edit','del','react'].indexOf(o.type)<0)return false;if(!ws||ws.readyState!==1)return false;ws.send(JSON.stringify(o));return true;}catch(e){return false;}};
     ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
-      if(d.type==='poll'||d.type==='pollv'){try{var pb=document.getElementById('ctPollBox');if(!pb){pb=document.createElement('div');pb.id='ctPollBox';msgs.parentNode.insertBefore(pb,msgs);}if(d.type==='poll'&&!d.poll){pb.innerHTML='';window.__ctPoll=null;}else{var P=d.type==='poll'?d.poll:(window.__ctPoll?Object.assign(window.__ctPoll,{votes:d.votes}):null);if(P){window.__ctPoll=P;var tot=0;P.votes.forEach(function(v){tot+=v;});var oh=P.opts.map(function(o,i){var pc=tot?Math.round(P.votes[i]/tot*100):0;var mi=window.__ctPollMy&&window.__ctPollMy.id===P.id?window.__ctPollMy.i:null;return '<button type="button" data-pvi="'+i+'" '+(P.closed?'disabled':'')+' style="display:block;width:100%;text-align:left;margin:4px 0;padding:7px 9px;background:'+(mi===i?'#1a2413':'#12161d')+';border:1px solid '+(mi===i?'#c2f64a':'#232b3a')+';border-radius:8px;color:#dbe4f5;font-size:12px;cursor:'+(P.closed?'default':'pointer')+';position:relative;overflow:hidden;font-family:inherit"><span style="position:absolute;left:0;top:0;bottom:0;width:'+pc+'%;background:rgba(194,246,74,.12)"></span><span style="position:relative">'+o+' <b style="float:right;color:#c2f64a">'+pc+'%</b></span></button>';}).join('');pb.innerHTML='<div style="background:#0d1014;border:1px solid #2a3345;border-radius:10px;padding:10px 12px;margin:8px 10px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:5px">'+(P.closed?'POLL · FINAL RESULTS':'LIVE POLL — tap to vote')+'</div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">'+P.q+'</div>'+oh+'<div style="font-size:10px;color:#5c6b84;margin-top:4px">'+tot+' vote'+(tot===1?'':'s')+'</div></div>';if(!P.closed&&!pb._pw){pb._pw=1;pb.addEventListener('click',function(ev){var b=ev.target.closest('[data-pvi]');if(!b||!window.__ctPoll||window.__ctPoll.closed)return;var i=+b.getAttribute('data-pvi');window.__ctPollMy={id:window.__ctPoll.id,i:i};try{ws.send(JSON.stringify({type:'vote',id:window.__ctPoll.id,i:i,u:user}));}catch(e){}});}}}}catch(e){}}
+      if(d.type==='poll'||d.type==='pollv'){try{var pb=document.getElementById('ctPollBox');if(!pb){pb=document.createElement('div');pb.id='ctPollBox';msgs.parentNode.insertBefore(pb,msgs);}if(d.type==='poll'&&!d.poll){pb.innerHTML='';window.__ctPoll=null;}else{var P=d.type==='poll'?d.poll:(window.__ctPoll?Object.assign(window.__ctPoll,{votes:d.votes}):null);if(P){window.__ctPoll=P;var tot=0;P.votes.forEach(function(v){tot+=v;});var oh=P.opts.map(function(o,i){var pc=tot?Math.round(P.votes[i]/tot*100):0;var mi=window.__ctPollMy&&window.__ctPollMy.id===P.id?window.__ctPollMy.i:null;return '<button type="button" data-pvi="'+i+'" '+(P.closed?'disabled':'')+' style="display:block;width:100%;text-align:left;margin:4px 0;padding:7px 9px;background:'+(mi===i?'#1a2413':'#12161d')+';border:1px solid '+(mi===i?'#c2f64a':'#232b3a')+';border-radius:8px;color:#dbe4f5;font-size:12px;cursor:'+(P.closed?'default':'pointer')+';position:relative;overflow:hidden;font-family:inherit"><span style="position:absolute;left:0;top:0;bottom:0;width:'+pc+'%;background:rgba(194,246,74,.12)"></span><span style="position:relative">'+o+' <b style="float:right;color:#c2f64a">'+pc+'%</b></span></button>';}).join('');pb.innerHTML='<div style="background:#0d1014;border:1px solid #2a3345;border-radius:10px;padding:10px 12px;margin:8px 10px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:5px">'+(P.closed?'POLL · FINAL RESULTS':'LIVE POLL - tap to vote')+'</div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">'+P.q+'</div>'+oh+'<div style="font-size:10px;color:#5c6b84;margin-top:4px">'+tot+' vote'+(tot===1?'':'s')+'</div></div>';if(!P.closed&&!pb._pw){pb._pw=1;pb.addEventListener('click',function(ev){var b=ev.target.closest('[data-pvi]');if(!b||!window.__ctPoll||window.__ctPoll.closed)return;var i=+b.getAttribute('data-pvi');window.__ctPollMy={id:window.__ctPoll.id,i:i};try{ws.send(JSON.stringify({type:'vote',id:window.__ctPoll.id,i:i,u:user}));}catch(e){}});}}}}catch(e){}}
       if(d.type==='history'){if(typeof d.me==='string')myWho=d.me;if(Array.isArray(d.rx)&&d.rx.length)rxSet=d.rx;if(+d.editMs>0)editMs=+d.editMs;msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
       else if(d.type==='edited'){var _r=msgById(d.id);if(_r){var _b=_r.querySelector('.ct-body');if(_b)_b.innerHTML=(window._mpParseSig&&window._mpParseSig(d.t))?window._mpSigCardHtml(window._mpParseSig(d.t)):linkifyMsg(d.t);if(!_r.querySelector('.ct-ed')&&_b)_b.insertAdjacentHTML('afterend','<span class="ct-ed" title="edited">edited</span>');}}
       else if(d.type==='deleted'){var _r2=msgById(d.id);if(_r2&&_r2.parentNode)_r2.parentNode.removeChild(_r2);try{if(window.mpMsgSheetClose)window.mpMsgSheetClose();}catch(_){}}
@@ -2067,7 +2067,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       else if(d.type==='actfail'){chatNote(d.why==='signin'?'Sign in to do that':d.why==='notyours'?'You can only change your own messages':d.why==='late'?'Too late to edit that one':'That message is gone');}
       else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(d.message&&d.message.u===user){markChatSeen();}else if(box.hidden&&d.message){chatAlert(true);}}
       else if(d.type==='presence'){setOnline(d.online);}};
- ws.onclose=function(ev){ws=null;if(ev&&ev.code===4001)return;/* replaced by a newer tab — reconnect only when this tab is visible again */if(joined)setTimeout(connect,3000);};
+ ws.onclose=function(ev){ws=null;if(ev&&ev.code===4001)return;/* replaced by a newer tab - reconnect only when this tab is visible again */if(joined)setTimeout(connect,3000);};
     ws.onerror=function(){try{ws.close();}catch(e){}};
   }
  /* Safari keeps background-tab sockets half-open; close ours cleanly when the page goes away and
@@ -2075,10 +2075,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
  window.addEventListener('pagehide',function(){if(ws){try{ws.onclose=null;ws.close(1000);}catch(e){}ws=null;}});
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&joined&&!ws)connect();});
  window.addEventListener('pageshow',function(){if(joined&&!ws)connect();});
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge - VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
-  window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing — on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
+  window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing - on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
   if(/[?&]chat=1/.test(location.search)){try{openBox();}catch(e){}}
@@ -2110,7 +2110,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
 })();
 
-;/* ══════════ shared trade-ticket viewer — opens a chat `trade:<id>` link in a branded modal (self-contained) ══════════ */
+;/* ══════════ shared trade-ticket viewer - opens a chat `trade:<id>` link in a branded modal (self-contained) ══════════ */
 (function(){
   if(window.mpOpenTrade)return;
   var CSS='.mptk-ov{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,5,7,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}'
@@ -2164,7 +2164,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
    +'@media(max-width:520px){.mprl-row{flex-direction:column}.mprl-cut{width:auto;height:1px;transform:none}}';
   function inject(){if(document.getElementById('mptkCss'))return;var s=document.createElement('style');s.id='mptkCss';s.textContent=CSS;(document.head||document.documentElement).appendChild(s);}
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
-  function fp(x){x=+x;if(!isFinite(x))return '—';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  function fp(x){x=+x;if(!isFinite(x))return '-';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function money(x){var n=x<0;x=Math.abs(+x||0);var s;if(x>=1e9)s=(x/1e9).toFixed(2)+'B';else if(x>=1e6)s=(x/1e6).toFixed(2)+'M';else if(x>=1e5)s=(x/1e3).toFixed(1)+'K';else s=x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;}
   function ago(t){t=+t;if(!t)return '';var s=Math.floor((Date.now()-t)/1000);if(s<60)return 'just now';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
   var curOv=null;
@@ -2187,16 +2187,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var val=(margin!=null&&+t.lev>0)?margin*(+t.lev):(t.notional!=null?+t.notional:null);
     var inner='<div class="mptk-glow" style="background:radial-gradient(120% 55% at 50% 0%,'+(win?'rgba(46,189,133,.16)':'rgba(255,98,88,.16)')+',transparent 70%)"></div>'
       +'<div class="mptk-in">'+top()
-      +'<div class="mptk-hd"><span class="mptk-sym">'+esc(t.sym||'—')+'</span><span class="mptk-pill '+(long?'mptk-long':'mptk-short')+'">'+(long?'LONG':'SHORT')+'</span><span class="mptk-pill mptk-lev">'+(+t.lev>0?(+t.lev):1)+'×</span><span class="mptk-st '+stCls+'">'+stTxt+(t.partial?' · '+t.partial+'%':'')+'</span></div>'
-      +'<div class="mptk-roe" style="color:'+ac+'">'+(roe!=null?((roe>=0?'+':'')+roe.toFixed(2)+'%'):'—')+'</div>'
+      +'<div class="mptk-hd"><span class="mptk-sym">'+esc(t.sym||'-')+'</span><span class="mptk-pill '+(long?'mptk-long':'mptk-short')+'">'+(long?'LONG':'SHORT')+'</span><span class="mptk-pill mptk-lev">'+(+t.lev>0?(+t.lev):1)+'×</span><span class="mptk-st '+stCls+'">'+stTxt+(t.partial?' · '+t.partial+'%':'')+'</span></div>'
+      +'<div class="mptk-roe" style="color:'+ac+'">'+(roe!=null?((roe>=0?'+':'')+roe.toFixed(2)+'%'):'-')+'</div>'
       +'<div class="mptk-pnl" style="color:'+(win?'#9fe9c8':'#ffb3ad')+'">'+(pnl!=null?((pnl>=0?'+':'−')+money(Math.abs(pnl)).replace('-','')+(closed?'':' (live)')):'')+'</div>'
       +'<div class="mptk-grid">'
         +'<div class="mptk-cell"><div class="l">Entry</div><div class="v">'+fp(t.entry)+'</div></div>'
         +'<div class="mptk-cell"><div class="l">'+(closed?'Exit':'Mark')+'</div><div class="v">'+fp(mark)+'</div></div>'
         +'<div class="mptk-cell"><div class="l">Leverage</div><div class="v">'+(+t.lev>0?(+t.lev):1)+'×</div></div>'
-        +'<div class="mptk-cell"><div class="l">Liquidation</div><div class="v">'+(t.liq!=null?fp(t.liq):'—')+'</div></div>'
-        +'<div class="mptk-cell"><div class="l">Size</div><div class="v">'+(margin!=null?money(margin):'—')+'</div></div>'
-        +'<div class="mptk-cell"><div class="l">Value</div><div class="v">'+(val!=null?money(val):'—')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Liquidation</div><div class="v">'+(t.liq!=null?fp(t.liq):'-')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Size</div><div class="v">'+(margin!=null?money(margin):'-')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Value</div><div class="v">'+(val!=null?money(val):'-')+'</div></div>'
       +'</div>'
       +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
       +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
@@ -2266,7 +2266,7 @@ window.addEventListener('load', function () {
   if(mn)mn.addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b)return;
     var a=b.getAttribute('data-mn');
-    if(a==='journal'){/* opens the My Trades drawer via the global [data-mytrades] handler — same UI as Paper Trade ▸ My Trades */}
+    if(a==='journal'){/* opens the My Trades drawer via the global [data-mytrades] handler - same UI as Paper Trade ▸ My Trades */}
     else if(a==='chat'){ var bx=document.getElementById('chatBox'); if(bx&&!bx.hidden){ var x=document.getElementById('ctClose'); if(x)x.click(); } else { var c=document.getElementById('chatFab'); if(c)c.click(); } }
     else if(a==='home'){location.href='/';}
     else if(a==='plan'){if(window.mpGo){window.mpGo('/paper-trade');}else{location.href='/paper-trade';}}
@@ -2296,9 +2296,9 @@ window.addEventListener('load', function () {
   function dismiss(){banner.hidden=true;try{localStorage.setItem(KEY,'1');}catch(e){}}
   closeB.addEventListener('click',dismiss);
   /* Install-promo etiquette (2026-07 UX pass). The old "show on first touch or 6s" fired the banner right when the
-     user STARTED doing something — screenshots showed it covering the Browse panel, the My Trades drawer and the
+     user STARTED doing something - screenshots showed it covering the Browse panel, the My Trades drawer and the
      just-opened-position feedback. Now: appears after 45s of engaged dwell (12s for returning visitors), NEVER while
-     an overlay/drawer/chat is open (hides itself if one opens), auto-hides after 15s without burning the dismissal —
+     an overlay/drawer/chat is open (hides itself if one opens), auto-hides after 15s without burning the dismissal -
      only an explicit ✕ or Install ends it for good. */
   function overlayOpen(){try{return document.documentElement.classList.contains('jr-open')||!!document.querySelector('#browsePanel.on,.scr-sheet.on')||(function(){var cb=document.getElementById('chatBox');return cb&&!cb.hidden;})()||(sheet&&!sheet.hidden);}catch(e){return false;}}
   var VIS=1;try{VIS=+localStorage.getItem('mp_pwa_v')||0;if(!sessionStorage.getItem('mp_pwa_sv')){VIS++;localStorage.setItem('mp_pwa_v',String(VIS));sessionStorage.setItem('mp_pwa_sv','1');}}catch(e){}
@@ -2326,12 +2326,12 @@ window.addEventListener('load', function () {
 ;/* ══════════ inline block from app/index.html line 3994 ══════════ */
 (function(){
   var stage=document.getElementById('heatChart'); if(!stage)return;
-  // (the 'coming soon' placeholder injection + UI hiding lived here 2026-07..2026-07-24 — removed when the collector came back on the new droplet)
-  var HEAT_DISABLED=false; // re-enabled 2026-07-24: the heatmap is fed by OUR collector (/api/v1 recent+live+clusters) which lives again on the new droplet. (Do NOT `return` here — the rest of this IIFE runs the product switcher + swap + mobile hub.)
+  // (the 'coming soon' placeholder injection + UI hiding lived here 2026-07..2026-07-24 - removed when the collector came back on the new droplet)
+  var HEAT_DISABLED=false; // re-enabled 2026-07-24: the heatmap is fed by OUR collector (/api/v1 recent+live+clusters) which lives again on the new droplet. (Do NOT `return` here - the rest of this IIFE runs the product switcher + swap + mobile hub.)
   var chart=null, candle=null, plines=[], libBusy=false;
   function ensureLib(cb){ if(window.LightweightCharts){cb();return;} if(libBusy)return; libBusy=true;
     var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';
-    s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load — check your connection.</div>';};
+    s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load - check your connection.</div>';};
     document.head.appendChild(s); }
   function initChart(){ if(chart||!window.LightweightCharts)return;
     chart=mpCreateChart(stage,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono', monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,0.4)'},horzLines:{color:'rgba(35,41,50,0.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1,vertLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'},horzLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'}},autoSize:true});
@@ -2424,7 +2424,7 @@ window.addEventListener('load', function () {
       if(vmx>0){ var maxLen=Math.max(80,paneW*0.46);
         var p0=candle.priceToCoordinate(cur.price),p1=candle.priceToCoordinate(cur.price+step),barH=Math.max(2.5,(p0!=null&&p1!=null?Math.abs(p0-p1):4)-1);
         for(var i3=0;i3<dispBins.length;i3++){ var bn3=dispBins[i3],y3=candle.priceToCoordinate(bn3.price); if(y3==null||y3<0||y3>H)continue;
-          var len=Math.max(2,Math.sqrt(bn3.vol/vmx)*maxLen); /* sqrt scale: one giant cluster no longer flattens every other bar to invisible — big stays biggest, the rest stay readable */ octx.fillStyle=bn3.green?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
+          var len=Math.max(2,Math.sqrt(bn3.vol/vmx)*maxLen); /* sqrt scale: one giant cluster no longer flattens every other bar to invisible - big stays biggest, the rest stay readable */ octx.fillStyle=bn3.green?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
         var top=dispBins.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,4);
         octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
         for(var i4=0;i4<top.length;i4++){ var bn4=top[i4],y4=candle.priceToCoordinate(bn4.price); if(y4==null||y4<6||y4>H-6)continue;
@@ -2459,7 +2459,7 @@ window.addEventListener('load', function () {
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
     var cnt=0,nl=0,ns=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;nl+=liqBuckets[i].long||0;ns+=liqBuckets[i].short||0;}
     var not=sideMode==='long'?nl:sideMode==='short'?ns:nl+ns, sl=sideMode==='long'?' long':sideMode==='short'?' short':'';
-    el.innerHTML = (not>0) ? cur.coin+sl+' liquidations · last '+WIN[win].lbl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
+    el.innerHTML = (not>0) ? cur.coin+sl+' liquidations · last '+WIN[win].lbl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet - liquidations spike on moves</span>'; }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
     el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }
@@ -2487,19 +2487,19 @@ window.addEventListener('load', function () {
     clMax=0; clusters.forEach(function(c){if(c.est_notional>clMax)clMax=c.est_notional;});
     setFallback(false); }
   // Keep the forming candle alive between full kline reloads: move its close (and high/low) with the live price,
-  // and roll a fresh candle when the interval ticks over — so the chart never looks frozen even when liquidations are sparse.
+  // and roll a fresh candle when the interval ticks over - so the chart never looks frozen even when liquidations are sparse.
   function liveCandle(){ if(!candle||!cur.price||!lastBar)return;
     var p=cur.price, ivSec=parseInt(WIN[win].iv,10)*60, nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
     var rolled=nowBar>lastBar.time;
     if(rolled){ var _hop=lastBar.close,_hspk=(_hlgp>0&&Math.abs(p-_hlgp)/_hlgp>0.025),_hcl=_hspk?_hop:p; lastBar={time:nowBar,open:_hop,high:Math.max(_hop,_hcl),low:Math.min(_hop,_hcl),close:_hcl}; if(!_hspk)_hlgp=p; _hrej=0; }
     else { if(_hlgp>0 && Math.abs(p-_hlgp)/_hlgp>0.025){ if(++_hrej<3) return; } /* reject a lone >2.5% print that would ratchet a fake wick; accept only if 3 in a row confirm a real move */ _hlgp=p; _hrej=0; lastBar.close=p; if(p>lastBar.high)lastBar.high=p; if(p<lastBar.low)lastBar.low=p; }
-    try{ candle.update(lastBar); if(rolled){var _sp9=chart.timeScale().scrollPosition();if(_sp9==null||_sp9>-2)chart.timeScale().scrollToRealTime();} }catch(e){} } /* snap on bar-roll ONLY if the user is at the live edge — never yank a panned view (owner 2026-08-13) */
+    try{ candle.update(lastBar); if(rolled){var _sp9=chart.timeScale().scrollPosition();if(_sp9==null||_sp9>-2)chart.timeScale().scrollToRealTime();} }catch(e){} } /* snap on bar-roll ONLY if the user is at the live edge - never yank a panned view (owner 2026-08-13) */
   function pricePoll(){ if(document.hidden)return; var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c)+window.__mpPQ('heat',c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
-    if(_hWsT&&Date.now()-_hWsT<6000){sched();return;} // a fresh WS tick already moved the candle — don't clobber it with the slower (≤10s) cached REST value
+    if(_hWsT&&Date.now()-_hWsT<6000){sched();return;} // a fresh WS tick already moved the candle - don't clobber it with the slower (≤10s) cached REST value
     cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
   function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
   function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} if(priceT){clearInterval(priceT);priceT=null;} if(klT){clearInterval(klT);klT=null;} }
-  // Feed the forming candle from the live WebSocket tick (sub-second, fresh) instead of only the cached REST poll —
+  // Feed the forming candle from the live WebSocket tick (sub-second, fresh) instead of only the cached REST poll -
   // kills the stale-price flicker that briefly inverted the last candle. Cheap when the heatmap is closed (no candle yet → early return).
   document.addEventListener('mp:price',function(ev){ if(!ev.detail||ev.detail.sym!==cur.coin)return; var p=+ev.detail.price; if(!(p>0))return;
     cur.price=p; _hWsT=Date.now(); if(ev.detail.chg!=null&&isFinite(+ev.detail.chg))cur.chg=+ev.detail.chg;
@@ -2512,15 +2512,15 @@ window.addEventListener('load', function () {
   var _hq=0;
   function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;var _q=++_hq;
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
-      if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals — sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
+      if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=a5af1630
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=7fc65810
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
-    // is the RETIRED v1 — dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
+    // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=a5af1630';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=7fc65810';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -2537,11 +2537,11 @@ window.addEventListener('load', function () {
   function dl(){shot(function(b){if(!b)return;var u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='marginpad-'+cur.coin+'-liquidation-heatmap.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},3000);});}
   var dlb=document.getElementById('heatDl');if(dlb)dlb.addEventListener('click',dl);
   var shb=document.getElementById('heatSh');if(shb)shb.addEventListener('click',function(){
-    shot(function(b){if(!b)return;try{var f=new File([b],'marginpad-'+cur.coin+'-heatmap.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:cur.coin+' Liquidation Heatmap',text:cur.coin+' liquidation levels — marginpad.io'}).catch(function(){});return;}}catch(e){}dl();});
+    shot(function(b){if(!b)return;try{var f=new File([b],'marginpad-'+cur.coin+'-heatmap.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:cur.coin+' Liquidation Heatmap',text:cur.coin+' liquidation levels - marginpad.io'}).catch(function(){});return;}}catch(e){}dl();});
   });
   // product switcher
   var heatmap=document.getElementById('heatmap'),swapEl=document.getElementById('swap'),tabsEl=document.querySelector('.tabs'),cardEl=document.querySelector('.card'),loaded=false,swapInit=false;
-  // Mobile: hide the calculator/product content on the landing (Browse is the entry point) — show it only on a tool route/tab.
+  // Mobile: hide the calculator/product content on the landing (Browse is the entry point) - show it only on a tool route/tab.
   if(!/^\/(charts|calculators)\/?$/.test(location.pathname)&&window.matchMedia&&window.matchMedia('(max-width:680px)').matches){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';}
   function showPlan(){var ps=document.querySelectorAll('.panel');for(var q=0;q<ps.length;q++)ps[q].classList.toggle('active',ps[q].id==='plan');}
   function initSwap(){
@@ -2560,7 +2560,7 @@ window.addEventListener('load', function () {
     var p=this.getAttribute('data-prod');if(!p)return; // skip nav-only cards (Rekt link, Coming-soon)
     for(var j=0;j<prods.length;j++)prods[j].classList.remove('active');this.classList.add('active');
     document.body.setAttribute('data-prod',p); // the floating liq feed only shows on the heatmap
-    /* mpGo, not __mpNav: __mpNav is only the "a route happened" notifier that mpGo itself calls at the end — it never
+    /* mpGo, not __mpNav: __mpNav is only the "a route happened" notifier that mpGo itself calls at the end - it never
        navigated, so switching product from a dedicated tool route left the URL (and the route's body class) behind and
        two tools rendered at once. The same-path test keeps the route-isolation click this handler receives on load from
        pushing a duplicate history entry; _inApply covers the clicks applyRoute/popstate make. (2026-09-09) */
@@ -2593,7 +2593,7 @@ window.addEventListener('load', function () {
     ps.value=v;ps.dispatchEvent(new Event('change',{bubbles:true}));
   }catch(_){}};
   /* ===== Recently traded rail (owner 2026-08-16): slim clickable badge rail between the chart and the order form.
-     Symbols come from the REAL journal (mp_journal, newest first, distinct); every badge is GUARANTEED a logo —
+     Symbols come from the REAL journal (mp_journal, newest first, distinct); every badge is GUARANTEED a logo -
      a brand-colored monogram renders instantly and a real coin icon (coincap CDN) layers on top only if it loads.
      Click = the proven planSym option+change switch (same path the ?coin= deep link uses). Same-tab journal writes
      don't fire the storage event, so a light 10s poll + pageshow keeps it fresh. */
@@ -2639,7 +2639,7 @@ window.addEventListener('load', function () {
       var h='';
       for(var i=0;i<syms.length;i++){ var s=syms[i], letters=s.length>4?s.slice(0,4):s, ic=icon(s);
         var isImg=!ic&&!NONCRYPTO[s];
-        h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+' — trade it again" aria-label="Switch to '+s+'">'
+        h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+' - trade it again" aria-label="Switch to '+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
           +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
           +'</button>'; }
@@ -2669,7 +2669,7 @@ window.addEventListener('load', function () {
       try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}
     },300);}
   if(/^\/calculators\/?$/.test(location.pathname)){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
-  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly — the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
+  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly - the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
   var _pq=(location.search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
   var _coin=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];
   if(_pq){var hb=document.querySelector('.prod[data-prod="'+_pq+'"]');if(hb)hb.click();
@@ -2678,7 +2678,7 @@ window.addEventListener('load', function () {
   var _inApply=false;
   function _unhideWrap(){var wrap=document.querySelector('.wrap');if(wrap)Array.prototype.forEach.call(wrap.children,function(ch){if(ch.style&&ch.style.display==='none')ch.style.display='';});}
   // Apply a screener copy-trade setup (side / leverage / SL / TP) to the Paper Trade form. Used BOTH on first page load
-  // AND on SPA navigation (applyRoute) — the screener links are intercepted into in-page routes, so without this the
+  // AND on SPA navigation (applyRoute) - the screener links are intercepted into in-page routes, so without this the
   // leverage/SL/TP never get applied (only the coin did) and the trade opened at the default 1000×.
   function mpPlanSetup(search){ search=search||'';
     function _g(k){var m=search.match(new RegExp('[?&]'+k+'=([^&]+)'));return m?decodeURIComponent(m[1]):'';}
@@ -2732,8 +2732,8 @@ window.addEventListener('load', function () {
     if(!/^\/charts\/?$/.test(path)){ requestAnimationFrame(function(){ try{ if(window.mpBgKick) window.mpBgKick(); }catch(_){} }); } // re-wake the animated background after the /charts page kept it display:none → 0×0
   }
   function mpGo(path){ var u; try{u=new URL(path,location.href);}catch(e){location.href=path;return;}
-    if(u.pathname==='/'&&!u.search){ location.href='/'; return; } // the homepage is now the separate bento page — a real nav, not an in-page applyRoute that would show the stale app-shell homepage
-    if(/^\/charts\/?$/.test(u.pathname)&&window.matchMedia&&window.matchMedia('(max-width: 880px)').matches){ location.href=u.pathname+u.search; return; } // MOBILE /charts must FULL-navigate (2026-07-30): the mp-mcharts loader only hooks the INITIAL /charts landing, never SPA routes (documented gotcha — same root cause as the My Trades Chart-button break). An intercepted SPA route (e.g. the mp-nav drawer's Charts link on /paper-trade) stranded the user on a dead app-shell page with no mobile charts. Guard here covers the link-interceptor AND every programmatic mpGo; since mobile never pushStates /charts, no popstate case can arise either.
+    if(u.pathname==='/'&&!u.search){ location.href='/'; return; } // the homepage is now the separate bento page - a real nav, not an in-page applyRoute that would show the stale app-shell homepage
+    if(/^\/charts\/?$/.test(u.pathname)&&window.matchMedia&&window.matchMedia('(max-width: 880px)').matches){ location.href=u.pathname+u.search; return; } // MOBILE /charts must FULL-navigate (2026-07-30): the mp-mcharts loader only hooks the INITIAL /charts landing, never SPA routes (documented gotcha - same root cause as the My Trades Chart-button break). An intercepted SPA route (e.g. the mp-nav drawer's Charts link on /paper-trade) stranded the user on a dead app-shell page with no mobile charts. Guard here covers the link-interceptor AND every programmatic mpGo; since mobile never pushStates /charts, no popstate case can arise either.
     var run=function(){ _inApply=true; try{ history.pushState({mp:1},'',u.pathname+u.search); applyRoute(u.pathname,u.search); }catch(e){ _inApply=false; location.href=u.pathname+u.search; return; } _inApply=false; try{if(window.__mpNav)window.__mpNav(u.pathname);}catch(_){} };
     if(document.startViewTransition){try{document.startViewTransition(run);}catch(e){run();}}else run();
   }
@@ -2756,7 +2756,7 @@ window.addEventListener('load', function () {
 
 ;/* ══════════ inline block from app/index.html line 4331 ══════════ */
 (function(){
-  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // desktop-only polish (cursor spotlight / scroll-reveal / count-up) — skip on phones: it wires mousemove + reads getBoundingClientRect in loops (forced layout) + sets MutationObservers, all wasted on touch where the calc is hidden and reveals are frozen
+  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // desktop-only polish (cursor spotlight / scroll-reveal / count-up) - skip on phones: it wires mousemove + reads getBoundingClientRect in loops (forced layout) + sets MutationObservers, all wasted on touch where the calc is hidden and reveals are frozen
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   // 1) spotlight that follows the cursor on the product cards
   var prods=document.querySelectorAll('.prod');
@@ -2812,17 +2812,17 @@ window.addEventListener('load', function () {
       for(var i=0;i<sel.options.length;i++){(function(o,idx){
         var it=document.createElement('button'); it.type='button'; it.className='csel-opt'+(idx===sel.selectedIndex?' sel':'');
         if(sel._cselDeco){it.innerHTML=sel._cselDeco(o);}else{it.textContent=o.textContent;} /* deco: rich option rows (e.g. exchange chips) */
-        it.addEventListener('click',function(){ if(sel.selectedIndex!==idx){ sel.selectedIndex=idx; sync(); sel.dispatchEvent(new Event('change',{bubbles:true})); } close(); }); /* selectedIndex, NOT value — the exchange presets share values (0.5) and value-matching snapped every pick to the first one */
+        it.addEventListener('click',function(){ if(sel.selectedIndex!==idx){ sel.selectedIndex=idx; sync(); sel.dispatchEvent(new Event('change',{bubbles:true})); } close(); }); /* selectedIndex, NOT value - the exchange presets share values (0.5) and value-matching snapped every pick to the first one */
         list.appendChild(it);
       })(sel.options[i],i); }
     }
-    function onTouchMove(e){ if(list.contains(e.target))return; e.preventDefault(); } // while the dropdown is open, only the list scrolls — never the page behind it (fixes mobile scroll-chaining / first-touch break-through)
+    function onTouchMove(e){ if(list.contains(e.target))return; e.preventDefault(); } // while the dropdown is open, only the list scrolls - never the page behind it (fixes mobile scroll-chaining / first-touch break-through)
     function place(){ var r=trig.getBoundingClientRect(); panel.style.position='fixed'; panel.style.left=r.left+'px'; panel.style.top=(r.bottom+6)+'px'; panel.style.width=Math.max(r.width,160)+'px'; panel.style.right='auto'; panel.style.zIndex='1000'; } // floating mode: anchor the panel to the trigger and escape the chart card's overflow/stacking so it never hides behind the chart
     function open(){ build(); panel.hidden=false; trig.classList.add('open'); if(floating){place();window.addEventListener('scroll',place,true);window.addEventListener('resize',place);} document.addEventListener('touchmove',onTouchMove,{passive:false}); if(search){search.value='';filter('');setTimeout(function(){search.focus();},20);} var s=list.querySelector('.csel-opt.sel'); if(s)s.scrollIntoView({block:'nearest'}); }
     function close(){ panel.hidden=true; trig.classList.remove('open'); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
     function useVal(v){ v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16); if(!v)return; var f=false; for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.toUpperCase()===v){f=true;break;} } if(!f){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } var ch=sel.value!==v; sel.value=v; sync(); if(ch)sel.dispatchEvent(new Event('change',{bubbles:true})); close(); }
     function filter(q){ q=(q||'').toLowerCase(); var exact=false,o=list.children; for(var i=0;i<o.length;i++){ if(o[i].classList.contains('csel-add'))continue; var t=o[i].textContent.toLowerCase(); o[i].style.display=t.indexOf(q)>=0?'':'none'; if(t===q)exact=true; }
-      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+' — not on Bybit (paper trade unavailable)'; add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
+      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+' - not on Bybit (paper trade unavailable)'; add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
     trig.addEventListener('click',function(e){ e.stopPropagation(); if(panel.hidden){open();}else{close();} });
     if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var _q=(search.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!window.mpIsBybit||window.mpIsBybit(_q))useVal(search.value); } }); }
     document.addEventListener('click',function(e){ if(!wrap.contains(e.target)&&!panel.contains(e.target)) close(); });
@@ -2840,7 +2840,7 @@ window.addEventListener('load', function () {
       function rebuild(cls){
         var t=window.mpTokens||[], syms=t.filter(function(s){return classOf(s)===cls;});
         if(!syms.length)syms=[DEF[cls]];
-        ps.innerHTML=syms.map(function(s){var nm=window.mpMarketName?window.mpMarketName(s):'';return '<option value="'+s+'">'+s+(nm?' — '+nm:'')+'</option>';}).join('');
+        ps.innerHTML=syms.map(function(s){var nm=window.mpMarketName?window.mpMarketName(s):'';return '<option value="'+s+'">'+s+(nm?' - '+nm:'')+'</option>';}).join('');
         var want=(DEF[cls]&&syms.indexOf(DEF[cls])>=0)?DEF[cls]:syms[0];
         ps.value=want; ps.dispatchEvent(new Event('change',{bubbles:true})); // reloads chart + price; enhance re-reads options on next open
       }
@@ -2858,7 +2858,7 @@ window.addEventListener('load', function () {
       pc.addEventListener('change',function(){ rebuild(pc.value); applyClassUI(pc.value); });
       ps.addEventListener('change',function(){ var c=classOf(ps.value); if(pc.value!==c){pc.value=c; applyClassUI(c);} }); // keep the class in sync if the symbol changes elsewhere
       // SAFETY: whenever the symbol picker OPENS, guarantee its options match the selected class. Defends against
-      // any drift — a stale cached bundle, or the free-entry search having added a cross-class ticker — so the
+      // any drift - a stale cached bundle, or the free-entry search having added a cross-class ticker - so the
       // dropdown can never show e.g. crypto while "Stocks" is selected. Capture-phase so it runs BEFORE the
       // custom-select's own open→build (which reads ps.options), and it preserves the current pick.
       try { var _trg = ps.closest && ps.closest('.csel') && ps.closest('.csel').querySelector('.csel-trigger');
@@ -2868,7 +2868,7 @@ window.addEventListener('load', function () {
           var t = window.mpTokens || [], syms = t.filter(function(s){ return classOf(s) === cls; });
           if (!syms.length) syms = [DEF[cls]];
           var cur = ps.value;
-          ps.innerHTML = syms.map(function(s){ var nm = window.mpMarketName ? window.mpMarketName(s) : ''; return '<option value="'+s+'">'+s+(nm?' — '+nm:'')+'</option>'; }).join('');
+          ps.innerHTML = syms.map(function(s){ var nm = window.mpMarketName ? window.mpMarketName(s) : ''; return '<option value="'+s+'">'+s+(nm?' - '+nm:'')+'</option>'; }).join('');
           ps.value = (classOf(cur) === cls && syms.indexOf(cur) >= 0) ? cur : ((DEF[cls] && syms.indexOf(DEF[cls]) >= 0) ? DEF[cls] : syms[0]);
           if (ps.value !== cur) ps.dispatchEvent(new Event('change', { bubbles: true }));
         }, true);
@@ -2876,19 +2876,19 @@ window.addEventListener('load', function () {
     })();
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
     var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d'],'Coinbase':['#0052ff','#ffffff']};
-    function exDeco(o){var t=o.textContent||'',m=t.split('—'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
+    function exDeco(o){var t=o.textContent||'',m=t.split('-'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
       if(!rate&&/custom/i.test(name))return '<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>';
       var c=EXCOL[name]||['#3a4450','#e9e7df'];
       return '<span class="csel-ex"><i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i><b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
     ['liqEx','crEx','planEx','planFeeVenue'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}}); // planFeeVenue = the "Fees as on" picker in Advanced, same rows as the margin-rate picker beside it
-    /* langSel stays a native select — matches the homepage header (EN box, not a globe) */
+    /* langSel stays a native select - matches the homepage header (EN box, not a globe) */
     (window.requestIdleCallback||function(f){setTimeout(f,1500);})(function(){if(window.mpLoadTokens)window.mpLoadTokens(function(toks){var ps=document.getElementById('planSym');if(!ps)return;var have={};for(var i=0;i<ps.options.length;i++)have[ps.options[i].value.toUpperCase()]=1;toks.forEach(function(s){if(!have[s]){var o=document.createElement('option');o.value=s;o.textContent=s;ps.appendChild(o);}});});});
   }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
 })();
 
 ;/* ══════════ inline block from app/index.html line 4414 ══════════ */
-/* Global live-liquidation feed (floating left cards) — REMOVED; replaced by the /rekt/ live feed page. */
+/* Global live-liquidation feed (floating left cards) - REMOVED; replaced by the /rekt/ live feed page. */
 (function(){
   return;
   var box=null, seen={}, order=[], first=true;
@@ -2907,7 +2907,7 @@ window.addEventListener('load', function () {
     while(order.length>600) delete seen[order.shift()];
     var show=(first?fresh.slice(0,2):fresh.slice(0,4)); first=false; show.reverse(); for(var s=0;s<show.length;s++) add(show[s]);
   }).catch(function(){}); }
-  function start(){ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); } // re-enabled 2026-07-24 — collector lives on the new DigitalOcean droplet
+  function start(){ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); } // re-enabled 2026-07-24 - collector lives on the new DigitalOcean droplet
   if(document.readyState!=='loading')start(); else document.addEventListener('DOMContentLoaded',start);
 })();
 
@@ -2915,7 +2915,7 @@ window.addEventListener('load', function () {
 /* reveal sections on scroll (staggered, respects reduced-motion) */
 (function(){
   var sel='.exchanges,.hotpairs,.tvsec,.tools,.site-foot,.faqs,.calc-seo';
-  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // phones: render sections immediately (no reveal-up) — skips the per-section getBoundingClientRect + IntersectionObserver setup
+  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // phones: render sections immediately (no reveal-up) - skips the per-section getBoundingClientRect + IntersectionObserver setup
   var els=[].slice.call(document.querySelectorAll(sel));
   if(!els.length)return;
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
@@ -2931,11 +2931,11 @@ window.addEventListener('load', function () {
 (function(){
   document.querySelectorAll('.rvalue').forEach(function(el){el.classList.add('copynum');if(!el.title)el.title='Click to copy';});
   function tip(x,y,msg){var t=document.createElement('div');t.className='copied-tip';t.textContent=msg;t.style.left=x+'px';t.style.top=y+'px';document.body.appendChild(t);setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';},750);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},1100);}
-  document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.copynum');if(!el)return;var txt=(el.textContent||'').trim();if(!txt||txt==='…'||txt==='—')return;var r=el.getBoundingClientRect();function ok(){tip(r.left+r.width/2,r.top,'Copied ✓');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){});}else{ok();}});
+  document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.copynum');if(!el)return;var txt=(el.textContent||'').trim();if(!txt||txt==='…'||txt==='-')return;var r=el.getBoundingClientRect();function ok(){tip(r.left+r.width/2,r.top,'Copied ✓');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){});}else{ok();}});
 })();
 /* 15. + #5 count-up tween & pulse the calculator result when its value changes */
 (function(){if(!('MutationObserver'in window)||!window.requestAnimationFrame)return;
-  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // calc is hidden on phones — skip the per-result MutationObserver count-up
+  if(window.matchMedia&&window.matchMedia('(max-width:760px)').matches)return; // calc is hidden on phones - skip the per-result MutationObserver count-up
   var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
   function parse(txt){var m=String(txt).match(/-?[\d,]*\.?\d+/);if(!m)return null;var raw=m[0];var num=parseFloat(raw.replace(/,/g,''));if(!isFinite(num))return null;
     return {num:num,dec:(raw.split('.')[1]||'').length,pre:txt.slice(0,m.index),suf:txt.slice(m.index+raw.length),grp:raw.indexOf(',')>=0};}
@@ -2982,7 +2982,7 @@ window.addEventListener('load', function () {
 (function(){var nav=document.querySelector('.mobnav');if(!nav)return;var map={plan:'plan'};function upd(){var p=document.body.getAttribute('data-prod')||'calc';var mn=map[p]||null;nav.querySelectorAll('button').forEach(function(b){b.classList.toggle('active',!!mn&&b.getAttribute('data-mn')===mn);});}if('MutationObserver'in window)new MutationObserver(upd).observe(document.body,{attributes:true,attributeFilter:['data-prod']});upd();})();
 /* Hero CTA → jump to a product tab */
 (function(){document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-prod-jump]');if(!b)return;e.preventDefault();var t=document.querySelector('.prod[data-prod="'+b.getAttribute('data-prod-jump')+'"]');if(t){t.click();var n=document.querySelector('.prodnav')||t;n.scrollIntoView({behavior:'smooth',block:'start'});}});})();
-/* Paper Trade always opens the dedicated full-screen /paper-trade page (homepage prodnav card + hero CTA). The in-page .prod[data-prod=plan].click() is still used internally by the router when already on /paper-trade — so only intercept a USER click made elsewhere. */
+/* Paper Trade always opens the dedicated full-screen /paper-trade page (homepage prodnav card + hero CTA). The in-page .prod[data-prod=plan].click() is still used internally by the router when already on /paper-trade - so only intercept a USER click made elsewhere. */
 (function(){var pc=document.querySelector('.prod[data-prod="plan"]');if(!pc)return;
   pc.addEventListener('click',function(e){
     if(/^\/paper-trade\/?$/.test(location.pathname))return; // on the dedicated page → let the in-page activation proceed
@@ -2990,7 +2990,7 @@ window.addEventListener('load', function () {
     if(window.mpGo){window.mpGo('/paper-trade');}else{location.href='/paper-trade';}
   },true);
 })();
-/* Smooth live prices — ease the displayed value toward the latest real price every frame so big numbers ROLL
+/* Smooth live prices - ease the displayed value toward the latest real price every frame so big numbers ROLL
    instead of jumping (feels alive + smooth, never a static step). Honest: only ever shows values between two
    real consecutive ticks. mpSmoothPx(el, value, fmtFn) registers an element; the rAF loop animates it. */
 (function(){
@@ -3006,16 +3006,16 @@ window.addEventListener('load', function () {
     el.textContent=fmt(s.cur,s.dp);
     return true;
   };
-  var EASE=0.045; // slower, more visible roll (~1.1s to settle) — the price "rolls" gently between ticks instead of snapping
-  /* event-driven since 2026-07-14 (mobile perf): the loop used to rAF forever even with nothing to ease — it now
+  var EASE=0.045; // slower, more visible roll (~1.1s to settle) - the price "rolls" gently between ticks instead of snapping
+  /* event-driven since 2026-07-14 (mobile perf): the loop used to rAF forever even with nothing to ease - it now
      stops when every price has settled and restarts on the next mpSmoothPx() call (pollers/WS keep those coming),
-     plus a visibilitychange kick. Worst case with no new ticks: the last written value stays — correct. */
+     plus a visibilitychange kick. Worst case with no new ticks: the last written value stays - correct. */
   var _smRun=false;
   function tick(){
     var busy=false,now=Date.now();
     if(!document.hidden){
       for(var k in states){var s=states[k];if(!s.el||!(s.target>0))continue;
-        if(s.visT===undefined||now-s.visT>1000){s.vis=!!s.el.offsetParent;s.visT=now;} // hidden elements (hp-grid etc. on route pages) don't deserve 60fps formatting — re-check 1x/s
+        if(s.visT===undefined||now-s.visT>1000){s.vis=!!s.el.offsetParent;s.visT=now;} // hidden elements (hp-grid etc. on route pages) don't deserve 60fps formatting - re-check 1x/s
         if(!s.vis){if(s.cur!==s.target){s.cur=s.target;s.el.textContent=fmt(s.cur,s.dp);}continue;}
         var d=s.target-s.cur, eps=Math.max(1e-9,Math.abs(s.target)*5e-7);
         if(Math.abs(d)>eps){s.cur+=d*EASE;s.el.textContent=fmt(s.cur,s.dp);busy=true;}
@@ -3036,16 +3036,16 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=80a67d56'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=545b99dd'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
 if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct /charts landing → load + the module self-activates */
 
-;/* the mobile "living terminal" IIFE (#mtpGo, ~115 lines) was removed 2026-09-12: its markup showed only on the tool-less landing, which no route reaches (every app-shell route opens a tool and hides .mterm) — dead code that still carried its own local-open path */
+;/* the mobile "living terminal" IIFE (#mtpGo, ~115 lines) was removed 2026-09-12: its markup showed only on the tool-less landing, which no route reaches (every app-shell route opens a tool and hides .mterm) - dead code that still carried its own local-open path */
 
 ;/* ══════════ inline block from app/index.html line 4662 ══════════ */
-/* Mobile liquidation-heatmap teaser — renders a heat silhouette and opens the real heatmap on tap. Mobile-only. */
+/* Mobile liquidation-heatmap teaser - renders a heat silhouette and opens the real heatmap on tap. Mobile-only. */
 (function(){
   var viz=document.getElementById('mteaserViz'),card=document.getElementById('mteaserHeat');
   if(!viz||!card)return;
@@ -3068,11 +3068,11 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function getAddr(){try{var a=localStorage.getItem('mp_reward_addr')||'';return /^0x[0-9a-fA-F]{40}$/.test(a)?a:'';}catch(e){return '';}}
   function renderGate(){if(!gate)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){gate.className='lg-gate locked';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+LT('lgGateAnon','The Trade League is for registered users.')+' <button type="button" class="lg-signin" data-auth-open>'+LT('lgGateBtn','Sign in free to join')+'</button>';return;}
-    gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','— close winning trades to climb.');}
+    gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','- close winning trades to climb.');}
  function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends"> 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
  var lgMode='roe',lgLast=null,lgRoeRows=[];
  // Ticket view for the Top-ROE board (owner 2026-08-20): each row gets a small icon that opens the trade
- // behind the rank. Icon, not a "Ticket" label — usernames on this board run long and a text button pushed
+ // behind the rank. Icon, not a "Ticket" label - usernames on this board run long and a text button pushed
  // the row over. Only what the board actually stores is shown (symbol, side, ROE, PnL); there is no entry
  // price or leverage in lbbest, so none is invented.
  function lgTicket(x){
@@ -3100,12 +3100,12 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
  lgTicket(lgRoeRows[+b.getAttribute('data-lgtk')]);
  });
   function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgGreenDays','Green days')+'</button><button type="button" class="lg-pill'+(lgMode==='roe2'?' on':'')+'" data-lgm="roe2">'+LT('lgTopRoe2','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
-  function lgNote(){if(lgMode==='pnl')return '<div class="lg-wr-note">'+LT('lgPnlNoPay','Top PnL is bragging rights — the other boards pay real USDT each 14-day season.')+'</div>';if(lgMode==='wr')return '<div class="lg-wr-note pay">'+LT('lgWrRank','Pays the top 5 each 14-day season. Ranked by win rate weighted by trades played — more games make your % count for more (a 45W-3L can rank above a higher % on fewer trades). Min 20 closed trades.')+'</div>';return '<div class="lg-wr-note pay">'+LT('lgPayAll','This board pays the top 5 in real USDT every 14-day season.')+'</div>';}
+  function lgNote(){if(lgMode==='pnl')return '<div class="lg-wr-note">'+LT('lgPnlNoPay','Top PnL is bragging rights - the other boards pay real USDT each 14-day season.')+'</div>';if(lgMode==='wr')return '<div class="lg-wr-note pay">'+LT('lgWrRank','Pays the top 5 each 14-day season. Ranked by win rate weighted by trades played - more games make your % count for more (a 45W-3L can rank above a higher % on fewer trades). Min 20 closed trades.')+'</div>';return '<div class="lg-wr-note pay">'+LT('lgPayAll','This board pays the top 5 in real USDT every 14-day season.')+'</div>';}
   function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){
       var wt=(d&&d.topWr)||[];
-      if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 20 closed trades this week yet — close 20+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
+      if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 20 closed trades this week yet - close 20+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
       board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span><span class="lg-tr">'+(+x.w||0)+'W-'+(+x.l||0)+'L</span><span class="lg-roe up">'+(+x.wr||0).toFixed(0)+'%</span></div>';}).join('')
         +ends;
@@ -3113,20 +3113,20 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     if(lgMode==='roe2'){
  var rt=((d&&d.top)||[]).filter(function(x){return +x.roe>0;}).slice(0,5);lgRoeRows=rt;
       var rz=(d&&d.boardPrizes&&d.boardPrizes.roe)||[10,8,6,4,2];
-      if(!rt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgRoeEmpty','No winning trades yet this season — close one in profit to top the ROE board.')+'</div>'+ends;wireLgPills();return;}
+      if(!rt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgRoeEmpty','No winning trades yet this season - close one in profit to top the ROE board.')+'</div>'+ends;wireLgPills();return;}
       board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgRoeHead','Top ROE this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+rt.map(function(x,i){var rk=i+1,roe=+x.roe,prize=(rz[i]!=null&&+rz[i]>0)?('$'+rz[i]):'';
  return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(x.symbol?'<button type="button" class="lg-tk" data-lgtk="'+i+'" title="'+LT('lgTkHead','Trade behind this rank')+'" aria-label="'+LT('lgTkHead','Trade behind this rank')+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v2M14 11v2M14 16v2"/></svg></button>':'')+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     if(lgMode==='pnl'){
       var pt=(d&&d.topPnl)||[];
-      if(!pt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgPnlEmpty','No winning trades yet this week — close one in profit to top the PnL board.')+'</div>'+ends;wireLgPills();return;}
+      if(!pt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgPnlEmpty','No winning trades yet this week - close one in profit to top the PnL board.')+'</div>'+ends;wireLgPills();return;}
       board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgPnlHead','Top PnL this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+pt.slice(0,5).map(function(x,i){var rk=i+1,p=+x.pnl;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(p>=0?'up':'dn')+'">'+lgMoneyH(p)+'</span></div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     var t=(d&&d.topGreen)||[];
     var pz=(d&&d.boardPrizes&&d.boardPrizes.green)||[10,6,4,3,2];
     try{var sub=document.querySelector('.lg-sub');if(sub&&pz.length>=3){var k=0;sub.innerHTML=sub.innerHTML.replace(/\$\d+/g,function(m){k++;return k<=3?('$'+pz[k-1]):m;});}}catch(e){}
-    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgGreenEmpty','No green days yet this season — close a day in profit (3+ trades) and you are on the board.')+'</div>'+ends;wireLgPills();return;}
+    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgGreenEmpty','No green days yet this season - close a day in profit (3+ trades) and you are on the board.')+'</div>'+ends;wireLgPills();return;}
     board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgGreenHead','Most green days this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,days=+x.days||0,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
       return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+((+x.trades)?'<span class="lg-tr">'+(+x.trades)+' trades</span>':'')+'<span class="lg-roe up">'+days+(days===1?' day':' days')+'</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
     if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();}
@@ -3140,32 +3140,32 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     if(!total){you.innerHTML='';return;}
     function stat(v,l,win){return '<div class="lg-yc'+(win?' win':'')+'"><div class="lg-yv">'+v+'</div><div class="lg-yl">'+l+'</div></div>';}
     you.innerHTML='<div class="lg-you-h">'+LT('lgYouStats','Your trading stats')+'</div><div class="lg-you-grid">'+stat(total,LT('jTrades','Trades'))+stat(wr+'%',LT('jWinRate','Win rate'),wr>=50)+stat('+'+bestRoe.toFixed(0)+'%',LT('lgBestRoe','Best ROE'),bestRoe>0)+stat(streak,LT('lgWinStreak','Win streak'),streak>=3)+'</div>';}
-  renderGate(); // gate is cheap + can be above the fold once signed in — keep it instant
+  renderGate(); // gate is cheap + can be above the fold once signed in - keep it instant
   // the leaderboard board + your-stats are below the fold and do a /lb fetch + DOM build → defer off the load critical path (weak-phone perf)
   mpWhenVisible(board,function(){renderBoard();renderYou();}); /* was: idle + 1.8s + 4.5s = THREE /api/reward/lb fetches in the first 5s of every load (measured 2026-09-02); the repaints below now redraw from the cached response */
   setInterval(renderBoard,60000);
-  // the language pack loads async — repaint board+stats once it's in so LT() picks up the translations (not English fallback from the first paint)
+  // the language pack loads async - repaint board+stats once it's in so LT() picks up the translations (not English fallback from the first paint)
   setTimeout(function(){if(lgLast)lgDraw();renderYou();},1800);setTimeout(function(){if(lgLast)lgDraw();renderYou();},4500);
   var _gt=setInterval(function(){renderGate();renderYou();},2000);setTimeout(function(){clearInterval(_gt);},14000); // mpAuth resolves login state async
   document.addEventListener('visibilitychange',function(){if(!document.hidden){renderBoard();renderYou();renderGate();}});
 })();
 
 ;/* ══════════ inline block from app/index.html line 4712 ══════════ */
-/* "Graduation" CTA — nudge the user to a real (affiliate) exchange after 20 paper trades, then every 30 (20, 50, 80, …). */
+/* "Graduation" CTA - nudge the user to a real (affiliate) exchange after 20 paper trades, then every 30 (20, 50, 80, …). */
 (function(){
   var NXKEY='mp_grad_next';
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
-  /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here — the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
+  /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here - the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
   var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
           {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
-    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
+    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}}); }
   function show(){if(!elm)build();var n=window.__gradN||count();
     try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=window.__gradFW?'First winning trade':(n+' trades practiced');
-        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).':'You have opened '+n+' paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
+        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).':'You have opened '+n+' paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
     elm.hidden=false;}
   function wins(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(t){return t&&(t.status==='win'||(+t.pnl>0));}).length;}catch(e){return 0;}}
   /* funnel tuning (owner 2026-08-14): first offer at 8 opened trades (20 was measured too late - /paper-trade converts ~2%),
@@ -3181,11 +3181,11 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 })();
 
 ;/* ══════════ inline block from app/index.html line 4733 ══════════ */
-/* /charts workspace — collapsible left control panel (neon reopen tab) + Ctrl+wheel to grow the working area. Desktop only. */
+/* /charts workspace - collapsible left control panel (neon reopen tab) + Ctrl+wheel to grow the working area. Desktop only. */
 (function(){
   function isCharts(){return document.body.classList.contains('charts-page')&&window.matchMedia('(min-width:881px)').matches;}
   var sx=document.getElementById('cwsSideX'),re=document.getElementById('cwsReopen'),board=document.getElementById('cwsBoard'),cs=document.getElementById('chartspace');
-  // the sidebar OVERLAYS the board now — opening/closing must NOT move or re-tile the charts
+  // the sidebar OVERLAYS the board now - opening/closing must NOT move or re-tile the charts
   function setOff(off){document.body.classList.toggle('cws-side-off',off);try{localStorage.setItem('mp_cws_side',off?'0':'1');}catch(e){}}
   if(sx)sx.addEventListener('click',function(){setOff(true);});
   if(re)re.addEventListener('click',function(){setOff(false);});
@@ -3205,7 +3205,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   if(bg){ try{var cur=(localStorage.getItem('mp_ch_theme')==='light')?'light':'dark';Array.prototype.forEach.call(bg.children,function(b){b.classList.toggle('on',b.getAttribute('data-bg')===cur);});}catch(e){}
     bg.addEventListener('click',function(e){var b=e.target.closest('[data-bg]');if(!b)return;var m=b.getAttribute('data-bg');Array.prototype.forEach.call(bg.children,function(x){x.classList.toggle('on',x===b);});try{if(window.mpCharts&&window.mpCharts.setTheme)window.mpCharts.setTheme(m);}catch(_){}});
   }
-  // sidebar widgets — Watchlist (from mp_watchlist) + Top signals (from /api/screener). Click a coin → open it in a chart. /charts route only.
+  // sidebar widgets - Watchlist (from mp_watchlist) + Top signals (from /api/screener). Click a coin → open it in a chart. /charts route only.
   var watch=document.getElementById('cwsWatch'),scr=document.getElementById('cwsScr'),CHG={},SCR={};
   function fmtChg(v){return (v>=0?'+':'')+(+v).toFixed(1)+'%';}
   function openSym(s){try{if(window.mpCharts&&window.mpCharts.openSymbol)window.mpCharts.openSymbol(s);}catch(e){}}
@@ -3218,7 +3218,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var withSetup=rows.filter(function(r){return r&&r.setup&&typeof r.score==='number';}).sort(function(a,b){return Math.abs(b.score-50)-Math.abs(a.score-50);});
     var top=withSetup.slice(0,8);
     if(top.length<8){var rest=rows.filter(function(r){return r&&typeof r.score==='number'&&!r.setup;}).sort(function(a,b){return b.score-a.score;});top=top.concat(rest.slice(0,8-top.length));}
-    if(!top.length){scr.innerHTML='<div class="cws-w-empty">No signals right now — markets are quiet. Refreshing…</div>';return;}
+    if(!top.length){scr.innerHTML='<div class="cws-w-empty">No signals right now - markets are quiet. Refreshing…</div>';return;}
     scr.innerHTML=top.map(function(r){var dir=r.setup?(r.setup.dir==='long'?'<span class="sd up">▲</span>':'<span class="sd dn">▼</span>'):'';return '<button type="button" class="cws-wcoin" data-sym="'+r.s+'" title="Open '+r.s+' with indicators + setup">'+dir+'<span class="sym">'+r.s+'</span><span class="chg '+(r.chg>=0?'up':'dn')+'">'+fmtChg(r.chg)+'</span><span class="sc" style="background:'+scoreColor(r.score)+'">'+r.score+'</span></button>';}).join(''); }
   var scrLoaded=false,scrTimer=null,scrInflight=false;
   function scheduleScr(ms){clearTimeout(scrTimer);scrTimer=setTimeout(loadScr,ms);}
@@ -3238,7 +3238,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 })();
 
 ;/* ══════════ inline block from app/index.html line 4790 ══════════ */
-/* Activation nudge — when an ANONYMOUS user has closed 2 paper trades (peak engagement), prompt a free 1-tap sign-up. Shows once. */
+/* Activation nudge - when an ANONYMOUS user has closed 2 paper trades (peak engagement), prompt a free 1-tap sign-up. Shows once. */
 (function(){
   var KEY='mp_act_nudge_shown';
   function closedCount(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(e){return e&&(e.status==='win'||e.status==='loss');}).length;}catch(e){return 0;}}
@@ -3246,7 +3246,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var elm=null,welcome=0,busy=false;
   function bonusBit(){return 'get a <b>free USDT</b> welcome bonus';} // amount stays hidden until they sign in (per owner)
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
-    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">Save your progress</div><h3>Save your trades — sign up free</h3><p>You have closed 2 paper trades. Create a free account (just an email code, no password) to keep your journal across devices, '+bonusBit()+', and set price alerts on any coin.</p><button class="grad-go" type="button" style="display:block;width:100%;margin:4px 0 6px;padding:13px;border:none;border-radius:11px;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:14px;cursor:pointer">Sign up free &#8594;</button><button class="grad-later" type="button">Maybe later</button></div>';
+    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">Save your progress</div><h3>Save your trades - sign up free</h3><p>You have closed 2 paper trades. Create a free account (just an email code, no password) to keep your journal across devices, '+bonusBit()+', and set price alerts on any coin.</p><button class="grad-go" type="button" style="display:block;width:100%;margin:4px 0 6px;padding:13px;border:none;border-radius:11px;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:14px;cursor:pointer">Sign up free &#8594;</button><button class="grad-later" type="button">Maybe later</button></div>';
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-go')){elm.hidden=true;try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}return;}if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;}}); }
   function show(){if(!elm)build();elm.hidden=false;}
@@ -3258,7 +3258,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 })();
 
 ;/* ══════════ inline block from app/index.html line 4810 ══════════ */
-/* Mobile "Browse" — a full-screen slide-up navigator (replaces Home in the bottom nav).
+/* Mobile "Browse" - a full-screen slide-up navigator (replaces Home in the bottom nav).
    Progressive disclosure: primary Trade tools first, Calculators expand on demand, the rest tucked into "More". */
 (function(){
   if(!document.querySelector('.mobnav'))return;
@@ -3279,7 +3279,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var html='<div class="browse-sheet"><div class="browse-head"><span class="browse-title" data-i18n="brBrowse">Browse</span><button type="button" class="browse-x" aria-label="Close">&#10005;</button></div><div class="browse-searchwrap"><input type="text" class="browse-search" placeholder="Search pages, guides, coins…" data-ph="brSearch" autocomplete="off" aria-label="Search"></div><div class="browse-scroll">'
    +'<div class="browse-sugg" id="browseSugg" hidden></div>'
    +'<div class="browse-sec" data-i18n="secNew">New here?</div>'
-   +row('<a class="browse-row" href="/where-to-start/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>','Where to start','Crypto from zero — a free beginner path','#c2f64a','START','brWtsT','brWtsS','brStart')
+   +row('<a class="browse-row" href="/where-to-start/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>','Where to start','Crypto from zero - a free beginner path','#c2f64a','START','brWtsT','brWtsS','brStart')
    +'<div class="browse-sec" data-i18n="secCalc">Calculators</div>'
    +row('<button type="button" class="browse-row browse-expand" data-expand="calc">','</button>',I.calc,'Calculators','Liquidation, PnL, size &amp; more','#c2f64a','','brCalcT','brCalcS')
    +'<div class="browse-sub" data-sub="calc" hidden>'
@@ -3298,11 +3298,11 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
    +row('<a class="browse-row" href="/news/">','</a>',I.news,'Crypto News','Latest headlines · live','#ff8c5a','','brNewsT','brNewsS')
    +row('<a class="browse-row" href="/community/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>','Community','Trader posts, ideas &amp; discussion','#c2f64a','NEW','brCommT','brCommS')
    +row('<a class="browse-row" href="/tools/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>','Trading Tools','Backtester · journal · pivots · risk','#46e0e6','NEW','brToolsT','brToolsS','brNew')
-      +row('<a class="browse-row" href="/trading-api/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>','Bot API','Test your trading bot — free','#3fd8e6','NEW','','')
+      +row('<a class="browse-row" href="/trading-api/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>','Bot API','Test your trading bot - free','#3fd8e6','NEW','','')
    +row('<a class="browse-row" href="/coins/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>','Markets','Top 100 coins · prices &amp; market cap','#16c2d6','','brMktsT','brMktsS')
    +row('<a class="browse-row" href="/defi/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>','DeFi','TVL, chains, protocols &amp; stablecoins','#9d7bff','','brDefiT','brDefiS')
    +row('<a class="browse-row" href="/fear-greed/">','</a>',I.fng,'Fear &amp; Greed','Live market sentiment','#7fd957','','brFngT','brFngS')
-   +row('<a class="browse-row" href="/heatmap">','</a>',I.heat,'Liquidation Heatmap','Liquidation pools & real liqs — live','#ffb347','','brHeatT','brHeatS')
+   +row('<a class="browse-row" href="/heatmap">','</a>',I.heat,'Liquidation Heatmap','Liquidation pools & real liqs - live','#ffb347','','brHeatT','brHeatS')
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258','','navRekt','prodRektS')
    +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,'Price Alerts','Email or Telegram when a coin hits your price','#c2f64a','','brAlertsT','brAlertsS')
    +'<div class="browse-sec" data-i18n="secEarn">Earn</div>'
@@ -3360,7 +3360,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var exp=t.closest('[data-expand]');if(exp){var sub=bp.querySelector('[data-sub="'+exp.getAttribute('data-expand')+'"]');if(sub){var show=sub.hidden;sub.hidden=!show;exp.classList.toggle('expanded',show);}return;}
     var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');
       var _dest={plan:'/paper-trade',charts:'/charts',calc:'/calculators',heat:'/heatmap',swap:'/swap'}[p]||('/?p='+p);
-      if(window.mpGo){close();window.mpGo(_dest);return;} // in-page switch (no reload) — works from the homepage or a dedicated page
+      if(window.mpGo){close();window.mpGo(_dest);return;} // in-page switch (no reload) - works from the homepage or a dedicated page
       if(p==='plan'){location.href='/paper-trade';return;}
       if(/paper-page|charts-page|calc-page|heatmap-page|swap-page/.test(document.body.className)){location.href=_dest;return;}
       var c=document.querySelector('.prod[data-prod="'+p+'"]');close();setTimeout(function(){if(c)c.click();window.scrollTo({top:0,behavior:'smooth'});},130);return;}
@@ -3372,8 +3372,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 })();
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
-/* Screener lazy-loaded — only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=50470f32';_ss.defer=true;document.head.appendChild(_ss);}
+/* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
+if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=50bdbf8d';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -3398,8 +3398,8 @@ window.mpSrvOpen=function(payload,ok,fail){
       .then(function(d){clearTimeout(to);
         if(d&&d.ok&&d.position&&d.position.id)ok(d.position);
         else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}
-        else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open — that let the 20/min and open-cap rules through the back door */
-          var _lm=d.error==='rate_limited'?'Slow down — '+(d.max||20)+' opens per minute is the limit. Try again in a moment.':'You already hold the maximum number of open positions'+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
+        else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open - that let the 20/min and open-cap rules through the back door */
+          var _lm=d.error==='rate_limited'?'Slow down - '+(d.max||20)+' opens per minute is the limit. Try again in a moment.':'You already hold the maximum number of open positions'+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
           try{if(window.mpLimitToast)window.mpLimitToast(_lm);}catch(e){}fail({blocked:true,message:_lm,error:d.error});}
         else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
         else retry();})
@@ -3407,7 +3407,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   }
   attempt();
 };
-/* Daily-visit streak + comeback hook — pure client (localStorage), reaches every visitor. Builds a daily-return habit; window.mpStreak is exposed for the faucet/league to read. */
+/* Daily-visit streak + comeback hook - pure client (localStorage), reaches every visitor. Builds a daily-return habit; window.mpStreak is exposed for the faucet/league to read. */
 (function(){try{
   var K='mp_streak';
   function dstr(off){var d=new Date();if(off)d.setUTCDate(d.getUTCDate()+off);return d.toISOString().slice(0,10);}
@@ -3419,29 +3419,29 @@ window.mpSrvOpen=function(payload,ok,fail){
   var n=s.d||1,el=document.getElementById('mpStreak');if(!el)return;
   var line;
   if(n>=30)line='A month straight. At this point the market checks on YOU.';
-  else if(n>=14)line='Two weeks deep — this is what discipline looks like.';
+  else if(n>=14)line='Two weeks deep - this is what discipline looks like.';
   else if(n>=7)line='A full week. Most people quit by Wednesday.';
-  else if(n>=3)line='Day '+n+'. Habits beat hunches — keep stacking.';
+  else if(n>=3)line='Day '+n+'. Habits beat hunches - keep stacking.';
   else line='Back-to-back days. The chart noticed.';
   var sub=n>=2?(line+' Set a price alert so you never miss a move.'):'Welcome back. Show up tomorrow and this becomes a streak.';
-  if(window.mpToast){window.mpToast({mark:String(n),kind:'record',ms:8500,dismissible:true,key:'streak',html:'<b style="color:#e9e7df">'+n+'-day streak</b><br>'+sub,action:(n>=2?{label:'Alerts',href:'/alerts/'}:null)});return;} /* the last card that lived in its own corner (bottom-LEFT) — one stack now */
+  if(window.mpToast){window.mpToast({mark:String(n),kind:'record',ms:8500,dismissible:true,key:'streak',html:'<b style="color:#e9e7df">'+n+'-day streak</b><br>'+sub,action:(n>=2?{label:'Alerts',href:'/alerts/'}:null)});return;} /* the last card that lived in its own corner (bottom-LEFT) - one stack now */
   el.innerHTML='<div style="flex:1"><b>'+n+'-day streak</b><small>'+sub+'</small>'+(n>=2?'<a class="mps-cta" href="/alerts/">Set a price alert →</a>':'')+'</div><span class="mps-x">×</span>';
   function hide(){el.classList.remove('show');setTimeout(function(){el.hidden=true;},400);}
-  // Only the explicit CTA link navigates. Tapping anywhere else on the toast just dismisses it — it must NEVER hijack a tap meant for the page underneath (e.g. the trade button) and send it to /alerts.
+  // Only the explicit CTA link navigates. Tapping anywhere else on the toast just dismisses it - it must NEVER hijack a tap meant for the page underneath (e.g. the trade button) and send it to /alerts.
   el.addEventListener('click',function(e){if(e.target.closest('.mps-cta'))return;hide();});
   setTimeout(function(){el.hidden=false;requestAnimationFrame(function(){el.classList.add('show');});},1400);
   setTimeout(hide,8500);
 }catch(e){}})();
 
 ;/* ══════════ inline block from app/index.html line 4955 ══════════ */
-/* Import a paper position opened from the Telegram bot (?claim=TOKEN) into My Trades — works on web or mobile, idempotent. */
+/* Import a paper position opened from the Telegram bot (?claim=TOKEN) into My Trades - works on web or mobile, idempotent. */
 (function(){
   try{
     var u=new URL(location.href);var tok=u.searchParams.get('claim');if(!tok||!/^[a-z0-9]{6,48}$/i.test(tok))return;
     function cleanUrl(){try{u.searchParams.delete('claim');history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);}catch(e){}}
     function toast(){var go0=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};
       if(window.mpToast){window.mpToast({mark:'✓',kind:'good',ms:6000,key:'tgclaim',msg:'Imported your Telegram trade.',action:{label:'My Trades',onClick:go0}});setTimeout(go0,700);return;}
-      var t=document.createElement('div');t.innerHTML='Imported your Telegram trade — open in <b>My Trades</b>.';t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
+      var t=document.createElement('div');t.innerHTML='Imported your Telegram trade - open in <b>My Trades</b>.';t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
     fetch('/api/tgclaim?token='+encodeURIComponent(tok)).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!j||!j.ok||!j.pos)return;var p=j.pos;
       var arr;try{arr=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){arr=[];}
@@ -3460,14 +3460,14 @@ window.mpSrvOpen=function(payload,ok,fail){
 })();
 
 ;/* ══════════ inline block from app/index.html line 4979 ══════════ */
-/* Paper-trade limits: max 50 open positions total, max 10 open per pair, and ONE-WAY mode (can't hold a long and a short on the same pair at once — kills the hedge trick). Blocks the open and shows a toast. */
+/* Paper-trade limits: max 50 open positions total, max 10 open per pair, and ONE-WAY mode (can't hold a long and a short on the same pair at once - kills the hedge trick). Blocks the open and shows a toast. */
 (function(){
   var MAX_TOTAL=50,MAX_PAIR=10;
   function openTrades(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(e){return e&&e.status==='open';});}catch(e){return [];}}
   var _lt=0;
   window.mpLimitToast=function(msg){
     var now=Date.now();if(now-_lt<600)return;_lt=now; // de-dupe rapid double-fires
-    if(window.mpToast){window.mpToast({msg:msg,kind:'warn',mark:'!',ms:4500,key:msg});return;} /* side stack, level-framed — this used to land on top of the trade form */
+    if(window.mpToast){window.mpToast({msg:msg,kind:'warn',mark:'!',ms:4500,key:msg});return;} /* side stack, level-framed - this used to land on top of the trade form */
     var t=document.createElement('div');t.textContent=msg;
     t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:130;background:#1a0f0f;color:#ffd2cc;border:1px solid #ff6258;border-left:3px solid #ff6258;border-radius:12px;padding:13px 17px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;font-family:inherit;text-align:center;';
     document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
@@ -3476,15 +3476,15 @@ window.mpSrvOpen=function(payload,ok,fail){
   // returns true if a new `side` trade on `sym` is allowed; otherwise shows the limit toast and returns false
   window.mpTradeGate=function(sym,side){
     var open=openTrades();
-    if(open.length>=MAX_TOTAL){window.mpLimitToast('Limit reached — '+MAX_TOTAL+' open trades is the max. Close some to open new ones.');return false;}
+    if(open.length>=MAX_TOTAL){window.mpLimitToast('Limit reached - '+MAX_TOTAL+' open trades is the max. Close some to open new ones.');return false;}
     if(sym){var s=String(sym).toUpperCase();
       if(side){ // one-way mode: can't open the OPPOSITE direction on a pair you already hold open (no long+short hedge on the same coin)
         var want=(side==='short')?'short':'long';
         var hasOpp=open.some(function(e){return String(e.sym||'').toUpperCase()===s&&((e.side==='short'?'short':'long')!==want);});
-        if(hasOpp){window.mpLimitToast('You already have a '+(want==='long'?'SHORT':'LONG')+' '+s+' position open — close it before opening a '+(want==='long'?'LONG':'SHORT')+'.');return false;}
+        if(hasOpp){window.mpLimitToast('You already have a '+(want==='long'?'SHORT':'LONG')+' '+s+' position open - close it before opening a '+(want==='long'?'LONG':'SHORT')+'.');return false;}
       }
       var n=open.filter(function(e){return String(e.sym||'').toUpperCase()===s;}).length;
-      if(n>=MAX_PAIR){window.mpLimitToast('Limit reached — max '+MAX_PAIR+' open '+s+' trades. Close one to open another.');return false;}}
+      if(n>=MAX_PAIR){window.mpLimitToast('Limit reached - max '+MAX_PAIR+' open '+s+' trades. Close one to open another.');return false;}}
     return true;
   };
 })();
@@ -3503,7 +3503,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=d38d117c'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=86c1f214'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }
@@ -3517,7 +3517,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 })();
 
 ;/* ══════════ service worker registration (added 2026-07) ══════════
-   Register for EVERYONE — offline app-shell + instant repeat loads. Previously sw.js was only
+   Register for EVERYONE - offline app-shell + instant repeat loads. Previously sw.js was only
    registered when a user enabled push notifications, so the installed PWA had no offline support. */
 (function(){ if('serviceWorker' in navigator){ try{ navigator.serviceWorker.register('/sw.js'); }catch(e){} } })();
 
@@ -3546,7 +3546,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   restored.forEach(function(el){try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}}); // recompute results with the restored values
 })();
 
-;/* ══════════ UX pass (2026-07): bottom-nav "Trades" badge — open-position count at a glance ══════════ */
+;/* ══════════ UX pass (2026-07): bottom-nav "Trades" badge - open-position count at a glance ══════════ */
 (function(){
   var btn=document.querySelector('.mobnav [data-mn="journal"]');if(!btn)return;
   var b=document.createElement('span');b.className='mn-badge';b.hidden=true;btn.appendChild(b);
@@ -3575,7 +3575,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
   function fullClose(e,m){try{setTimeout(function(){if(window.mpXpCheck)window.mpXpCheck();},1400);}catch(_){} /* records + XP toasts arrive now, not on the next 60s poll */
-    var _pN=(m.pnlNet!=null?Math.round(m.pnlNet*100)/100:null);/* cents, exactly like the server's close() — the two journals then hold the SAME number, not a near one */e.status=(_pN!=null?(_pN>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(_pN!=null?_pN:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}try{var _pn=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?' +$':' −$')+Math.abs(e.pnl).toFixed(2)):'';window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — '+(e.status==='win'?'win':'loss')+_pn);}catch(_){}}
+    var _pN=(m.pnlNet!=null?Math.round(m.pnlNet*100)/100:null);/* cents, exactly like the server's close() - the two journals then hold the SAME number, not a near one */e.status=(_pN!=null?(_pN>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(_pN!=null?_pN:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}try{var _pn=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?' +$':' −$')+Math.abs(e.pnl).toFixed(2)):'';window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' - '+(e.status==='win'?'win':'loss')+_pn);}catch(_){}}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Close position">'
@@ -3598,7 +3598,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   function sync(){ var e=entry(); if(!e||e.status!=='open'){hide();return;}
     var m=mx(e);
     Array.prototype.forEach.call(ov.querySelectorAll('.mpcs-chips button'),function(b){b.classList.toggle('on',+b.getAttribute('data-p')===pct);});
-    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(m.long?'lg':'sh')+'">'+(m.long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'× · '+fm(m.live);
+    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'-')+' <b class="'+(m.long?'lg':'sh')+'">'+(m.long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'× · '+fm(m.live);
     var pnl=(m.pnlNet!=null?m.pnlNet:0); /* the sheet previews exactly the number it is about to book (taker fee settled), not the gross card number */
     ov.querySelector('.mpcs-pnl').innerHTML='<span class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'−')+fm(Math.abs(pnl)).replace('-','')+'</span><small>ROE '+((m.roeNet*100)>=0?'+':'')+(m.roeNet*100).toFixed(2)+'%</small>';
     var f=pct/100,part=pnl*f,keepM=(m.margin||0)*(1-f);
@@ -3650,19 +3650,19 @@ window.mpSrvOpen=function(payload,ok,fail){
       pnl=Math.round(pnl*100)/100; /* cents, exactly like the server */
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
-      try{window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — closed '+part.partial+'% '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
+      try{window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' - closed '+part.partial+'% '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
       try{if(part.partial>=100&&window.mpGuestNudge)window.mpGuestNudge('manual',e.sym,pnl);}catch(_){} /* guest activation card (mp-auth.js), full closes only */
     }
     jstore(d);hide();
     var _tear=(f>=1)?mpcsCaptureTear(curId):null; // desktop full-close receipt tear
     done();
     if(_tear)_tear();
-    // confirm the close — the card just vanishing left users asking "where did my trade go?" (UX audit)
+    // confirm the close - the card just vanishing left users asking "where did my trade go?" (UX audit)
     try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
-      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' — saved to My Trades.');}catch(_){}
+      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' - saved to My Trades.');}catch(_){}
   }
   // DESKTOP receipt-tear animation: on a FULL close, clone the just-closed ticket, tear off its bottom stub
-  // along the perforation, then fly the top toward My Trades — so the close reads as "filed away", not "vanished".
+  // along the perforation, then fly the top toward My Trades - so the close reads as "filed away", not "vanished".
   function mpcsCaptureTear(id){
     try{
       if(window.innerWidth<721)return null; // desktop only (owner scope)
@@ -3697,7 +3697,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       wrap.appendChild(bot);wrap.appendChild(top);
       document.body.appendChild(wrap);
       // remember where the OTHER tickets sit now, so after the list rebuilds we can slide them up smoothly
-      // (FLIP) instead of letting the one below snap into the torn ticket's slot — which read as "a hidden position".
+      // (FLIP) instead of letting the one below snap into the torn ticket's slot - which read as "a hidden position".
       var oldTops={};
       Array.prototype.forEach.call(host.querySelectorAll('.pt-last'),function(c){var tid=c.getAttribute('data-tid');if(tid&&tid!==String(id))oldTops[tid]=c.getBoundingClientRect().top;});
       return function(){ void wrap.offsetWidth; wrap.classList.add('tearing');
@@ -3706,7 +3706,7 @@ window.mpSrvOpen=function(payload,ok,fail){
             var tid=c.getAttribute('data-tid'),o=oldTops[tid]; if(o==null)return;
             var dy=o-c.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
             // HOLD the gap open (pin the survivor at its old spot) while the stub tears off, THEN glide it up.
-            // Sliding immediately made the one below arrive before the tear finished — it read as a hidden position.
+            // Sliding immediately made the one below arrive before the tear finished - it read as a hidden position.
             c.style.transition='none'; c.style.transform='translateY('+dy.toFixed(1)+'px)';
             setTimeout(function(){
               c.style.transition='transform .55s cubic-bezier(.22,.61,.36,1)'; c.style.transform='translateY(0)';
@@ -3723,7 +3723,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 ;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level): edit stop-loss / take-profit
    LEVELS on any OPEN ticket. window.mpSltpSheet(id, onDone). Up to 3 levels per side, each with a % of the
    position to close at that price (100% = full close, smaller % = partial, remainder stays open). Every level
-   has an ✕ remove button — no levels = no SL/TP. Wrong-side values are rejected per level. Storage: a single
+   has an ✕ remove button - no levels = no SL/TP. Wrong-side values are rejected per level. Storage: a single
    100% level stays in legacy e.stop/e.tp; anything richer goes to e.sls/e.tps=[{p,pct}] with the legacy field
    mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays keep working unchanged). */
 (function(){ if(window.mpSltpSheet)return;
@@ -3734,7 +3734,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   if(!window.mpLvlTxt)window.mpLvlTxt=function(e,isTp,fmt){var arr=isTp?e.tps:e.sls,lg=e.side!=='short';
     if(arr&&arr.length){var a=arr.slice().sort(function(x,y){return (isTp===lg)?(x.p-y.p):(y.p-x.p);});
       var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
-    var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'—';};
+    var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'-';};
   var ov=null,curId=null,after=null,MAXL=3;
   function rowHtml(p,pct){return '<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="price" value="'+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
   function build(){ if(ov)return;
@@ -3744,7 +3744,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       +'<div class="mpss-live"></div>'
       +'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">Stop-loss levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add stop-loss</button></div>'
       +'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">Take-profit levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add take-profit</button></div>'
-      +'<div class="mpss-hint">Each level closes its % of the position when the price touches it — 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>'
+      +'<div class="mpss-hint">Each level closes its % of the position when the price touches it - 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>'
       +'<div class="mpss-warn" hidden></div>'
       +'<button type="button" class="mpcs-go up">Save SL / TP</button>'
       +'</div>';
@@ -3770,7 +3770,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     build();
     var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
     var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
-    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
+    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'-')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
     ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
     Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){
       var isTp=sec.getAttribute('data-k')==='tp',rows=sec.querySelector('.mpss-rows');
@@ -3784,7 +3784,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   function warn(t){var w=ov.querySelector('.mpss-warn');w.textContent=t;w.hidden=false;}
   /* The price field is TEXT with inputmode=decimal, not type=number, and a comma counts as a decimal point.
      Measured 2026-09-10 on the owner's own account: three saves in a row reached the server as "SL off / TP off"
-     — the level he typed never left the form. A number input hands back an EMPTY string for content the browser
+     - the level he typed never left the form. A number input hands back an EMPTY string for content the browser
      considers invalid, and it silently drops a comma ("105,50" became 10550, a price 100x wrong); an empty row is
      read here as a deleted level, so the save quietly wiped instead of setting. Now the field keeps what was
      typed and anything unparseable is reported instead of dropped. */
@@ -3803,7 +3803,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(!sls.length&&!tps.length&&!had){hide();return;} // nothing typed and nothing to clear: closing is not an instruction to wipe
     for(var i=0;i<sls.length;i++){var s=sls[i];
       if(!isFinite(s.p)||!(s.p>0)){warn('Stop-loss price is not a number.');return;}
-      if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?'LONG every stop-loss must be BELOW':'SHORT every stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}}
+      if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?'LONG every stop-loss must be BELOW':'SHORT every stop-loss must be ABOVE')+' the live price ('+fp(lv)+') - otherwise it would trigger instantly.');return;}}
     for(var j=0;j<tps.length;j++){var t=tps[j];
       if(!isFinite(t.p)||!(t.p>0)){warn('Take-profit price is not a number.');return;}
       if(long?t.p<=lv:t.p>=lv){warn('For a '+(long?'LONG every take-profit must be ABOVE':'SHORT every take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}}
@@ -3818,12 +3818,12 @@ window.mpSrvOpen=function(payload,ok,fail){
     put(sls,false);put(tps,true);
     jstore(r.d);hide();
     /* Server-first for server-filled trades (mirror of the close sheet): the journal sync already carries
-       stop/tp within ~12s, but the cron sweep runs on the SERVER copy — until it syncs, a fresh SL/TP is
+       stop/tp within ~12s, but the cron sweep runs on the SERVER copy - until it syncs, a fresh SL/TP is
        invisible to it. Fire-and-forget so the local apply above stays instant; failure = today's behavior
        (sync converges). Only e.stop/e.tp go over: the server sweep reads single levels, and the multi-level
        ladder (e.sls/e.tps) stays a client feature that rides the journal.
        KNOWN GAP (deliberate): /sltp validates the level against ENTRY, while this sheet validates against
-       the LIVE price — so a break-even stop (above entry on a winning long) is rejected server-side and
+       the LIVE price - so a break-even stop (above entry on a winning long) is rejected server-side and
        falls back to the journal sync, ~12s later. Correct outcome, just not instant. Widening the server
        check needs a fresh mark price inside the DO, which is a money-path change, not a copy tweak. */
     try{var _me8=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
@@ -3986,8 +3986,8 @@ window.mpSrvOpen=function(payload,ok,fail){
 })();
 
 ;/* Moon nudge (owner 2026-08-13): stocks/forex/metals/indices in the PT plan form are markets crypto venues
-   don't offer retail — Moon is exactly that product. A violet-lime rail under the Open button, ONLY for
-   non-crypto classes; copy follows the selected symbol. Single copy (home.js only — plan form lives on app shell). */
+   don't offer retail - Moon is exactly that product. A violet-lime rail under the Open button, ONLY for
+   non-crypto classes; copy follows the selected symbol. Single copy (home.js only - plan form lives on app shell). */
 (function(){
   function ensure(){
     var ex=document.getElementById('mpMoonNudge');if(ex)return ex;
@@ -4014,13 +4014,13 @@ window.mpSrvOpen=function(payload,ok,fail){
     var ps=document.getElementById('planSym');if(!ps)return;
     var sym=String(ps.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,''),cls;
     if(window.mpAssetClass)cls=window.mpAssetClass(sym);
-    else{ /* mpAssetClass arrives async (Bybit symbol fetch) — same tables inline so the nudge is timing-proof */
+    else{ /* mpAssetClass arrives async (Bybit symbol fetch) - same tables inline so the nudge is timing-proof */
       var STK2={AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1,MARA:1,RIOT:1,CLSK:1,HUT:1,CIFR:1,WULF:1,GLXY:1,BMNR:1,SBET:1,TSM:1,QCOM:1,ARM:1,SMCI:1,ASML:1,TXN:1,ORCL:1,CRM:1,ADBE:1,GME:1,AMC:1,SOFI:1,RIVN:1,LCID:1,NIO:1,UBER:1,ABNB:1,RBLX:1,DKNG:1,SNAP:1,PYPL:1,SHOP:1,SPOT:1,F:1,BA:1,LLY:1,V:1,MA:1,WMT:1,COST:1,XOM:1,JNJ:1,PG:1,UNH:1,HD:1,BAC:1,GS:1,KO:1,PEP:1,T:1,IWM:1,DIA:1,ARKK:1,TQQQ:1,SQQQ:1,GLD:1,SLV:1,TLT:1,VOO:1,XLE:1},IDX2={SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1},FX2={EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
       cls=STK2[sym]?'stock':(sym==='XAU'||sym==='XAG')?'metal':IDX2[sym]?'index':FX2[sym]?'forex':'crypto';}
     var n=ensure();if(!n)return;
     if(cls==='crypto'){n.classList.remove('on');return;}
     var nm=(window.mpMarketName&&window.mpMarketName(sym))||sym;
-    n.innerHTML='<img src="/assets/moon.png" alt=""><span class="t"><span class="k">MOON · REAL MARKETS</span>Trade <b>'+nm+'</b> for real on Moon — '+(CLSW[cls]||'markets')+', up or down, 24/7</span><span class="a">→</span>';
+    n.innerHTML='<img src="/assets/moon.png" alt=""><span class="t"><span class="k">MOON · REAL MARKETS</span>Trade <b>'+nm+'</b> for real on Moon - '+(CLSW[cls]||'markets')+', up or down, 24/7</span><span class="a">→</span>';
     n.classList.add('on');
   };
   function wire(){var ps=document.getElementById('planSym');if(!ps)return;ps.addEventListener('change',function(){setTimeout(window._mpMoonNudge,0);});window._mpMoonNudge();}
@@ -4052,7 +4052,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 /* shared toast for role-gated chat command replies (visible only to the sender; mirrored home.js/mp-trade.js, one instance per page) */
 (function(){if(window.__mpCcSys)return;window.__mpCcSys=function(t){var h=document.getElementById('ccSysT');if(!h){h=document.createElement('div');h.id='ccSysT';h.style.cssText='position:fixed;bottom:86px;left:50%;transform:translateX(-50%);z-index:1400;background:#12151d;border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:12px;padding:9px 16px;font:600 12.5px system-ui,sans-serif;max-width:88vw;opacity:0;transition:opacity .25s;pointer-events:none;text-align:center';document.body.appendChild(h);}h.textContent=t;h.style.opacity='1';clearTimeout(window.__mpCcT);window.__mpCcT=setTimeout(function(){h.style.opacity='0';},4600);};})();
 
-;/* ══ No page zoom on touch devices — only the chart canvases may pinch (owner 2026-09-04: iOS Safari ignores user-scalable=no,
+;/* ══ No page zoom on touch devices - only the chart canvases may pinch (owner 2026-09-04: iOS Safari ignores user-scalable=no,
    a pinch on the UI zoomed the whole app shell and there was no way back). Pinch outside a chart is cancelled (Safari gesture
    events + 2-finger touchmove), double-tap zoom is off via touch-action:manipulation (home.css), and if the page still ends up
    scaled (any path we did not catch) the viewport meta is re-asserted, which snaps iOS back to 1x. Charts keep their own pinch. */

@@ -1,4 +1,4 @@
-// REST-polling liquidation collectors (2026-07-25) — exchanges with PUBLIC liquidation data over REST but no
+// REST-polling liquidation collectors (2026-07-25) - exchanges with PUBLIC liquidation data over REST but no
 // public WS liq stream we can use: Gate.io (futures liq_orders), HTX (linear-swap v3), dYdX v4 (trades with
 // type=LIQUIDATED). Same normalized event shape as the WS collectors; polled every few seconds per symbol.
 // Verified from this droplet before building: Gate returns live rows, HTX responds 200 (public), dYdX flags liqs.
@@ -9,7 +9,7 @@ class RestPoller {
     this.name = name; this.symbols = symbols || []; this.onEvent = onEvent || (() => {});
     this.intervalMs = intervalMs || 10000;
     this.connected = false; this.lastMsgAt = null; this.lastEventAt = null; this.eventsTotal = 0;
-    this.seen = new Set(); // poll windows overlap — local dedupe on top of storage.insert's
+    this.seen = new Set(); // poll windows overlap - local dedupe on top of storage.insert's
   }
   status() { const now = Date.now(); return { name: this.name, connected: this.connected, lastMsgAt: this.lastMsgAt, lastEventAt: this.lastEventAt, eventsTotal: this.eventsTotal, silentMs: this.lastMsgAt ? now - this.lastMsgAt : null }; }
   emit(e) {
@@ -22,13 +22,13 @@ class RestPoller {
     const tick = async () => { try { await this.poll(); this.connected = true; this.lastMsgAt = Date.now(); } catch (e) { this.connected = false; log.warn('[' + this.name + '] poll failed', { e: String(e).slice(0, 120) }); } };
     tick(); this.timer = setInterval(tick, this.intervalMs);
   }
-  async init() {} // BaseCollector API parity — index.js awaits init() on every collector before start()
+  async init() {} // BaseCollector API parity - index.js awaits init() on every collector before start()
   stop() { if (this.timer) clearInterval(this.timer); }
   shutdown() { this.stop(); } // index.js graceful-exit calls shutdown() on every collector
   async getJson(url, opts) { const r = await fetch(url, { signal: AbortSignal.timeout(8000), ...opts }); if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + url.slice(0, 80)); return r.json(); }
 }
 
-// Gate.io USDT futures — GET /futures/usdt/liq_orders?contract=X_USDT (public). qty is in CONTRACTS, so the
+// Gate.io USDT futures - GET /futures/usdt/liq_orders?contract=X_USDT (public). qty is in CONTRACTS, so the
 // quanto_multiplier per contract (fetched once) converts to coin size. order_size < 0 = forced sell = LONG liquidated.
 export class GateLiqCollector extends RestPoller {
   constructor(opts) { super('gate', { ...opts, intervalMs: 12000 }); this.mult = {}; this.from = Math.floor(Date.now() / 1000) - 300; }
@@ -54,7 +54,7 @@ export class GateLiqCollector extends RestPoller {
   }
 }
 
-// HTX linear swaps — GET /linear-swap-api/v3/swap_liquidation_orders (public). direction 'sell' = LONG liquidated.
+// HTX linear swaps - GET /linear-swap-api/v3/swap_liquidation_orders (public). direction 'sell' = LONG liquidated.
 // `amount` is the coin quantity when present; falls back to volume (contracts) which for HTX linear is coin-ish.
 export class HtxLiqCollector extends RestPoller {
   constructor(opts) { super('htx', { ...opts, intervalMs: 20000 }); this.since = Date.now() - 300000; }
@@ -73,7 +73,7 @@ export class HtxLiqCollector extends RestPoller {
   }
 }
 
-// dYdX v4 — GET /v4/trades/perpetualMarket/X-USD (public); liquidations arrive as trades with type LIQUIDATED.
+// dYdX v4 - GET /v4/trades/perpetualMarket/X-USD (public); liquidations arrive as trades with type LIQUIDATED.
 // SELL liquidation trade = a long got closed. Markets exist for the majors; missing ones just 404 and are skipped.
 export class DydxLiqCollector extends RestPoller {
   constructor(opts) { super('dydx', { ...opts, intervalMs: 12000 }); }

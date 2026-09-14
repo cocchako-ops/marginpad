@@ -30,7 +30,7 @@ function timed(storage) {
 // Async reads through the reader worker thread (./reader.js). The API's whole-day aggregates took 2-10s
 // each on the droplet and ran on the main thread, where the exchange sockets live; a burst of them was a
 // 30-50s stall that dropped every venue. Reads now wait in the worker; the main thread only writes.
-const READ_TIMEOUT_MS = 25000; // nginx gives up at 30s — fail the request before it does, and never queue forever
+const READ_TIMEOUT_MS = 25000; // nginx gives up at 30s - fail the request before it does, and never queue forever
 const READS = ['histogram', 'live', 'feed', 'pulse', 'liqBySymbol', 'oi24h', 'stats', 'getClusters', 'exportDay', 'latestOi'];
 function asyncReads(path) {
   let worker = null, seq = 0; const pending = new Map();
@@ -46,13 +46,13 @@ function asyncReads(path) {
     });
     worker.on('error', (e) => { log.error('reader worker error', { e: String(e) }); });
     worker.on('exit', (code) => {
-      log.warn('reader worker exited — respawning', { code });
+      log.warn('reader worker exited - respawning', { code });
       for (const [id, p] of pending) { clearTimeout(p.t); p.rej(new Error('reader restarted')); pending.delete(id); }
       stats.restarts++; setTimeout(spawn, 500);
     });
   }
   spawn();
-  const out = { readerStats: () => ({ ...stats, inflight: pending.size }) }; // not 'stats' — that name is the DB stats read below
+  const out = { readerStats: () => ({ ...stats, inflight: pending.size }) }; // not 'stats' - that name is the DB stats read below
   for (const fn of READS) {
     out[fn] = (...args) => new Promise((res, rej) => {
       const id = ++seq;

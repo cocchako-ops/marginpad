@@ -1,7 +1,7 @@
 /* Live activity log E2E (2026-09-06). The owner reads mp-ops People > Activity every day to see who does what and what
    is being abused, so the whole chain is proven end to end on production:
      server-written trade rows: open / SL-TP / close / limit order placed + cancelled land in the ring with the username,
-       the label the owner reads and the structured x{} (sym, side, lev, margin, pnl, via) — no client beacon involved
+       the label the owner reads and the structured x{} (sym, side, lev, margin, pnl, via) - no client beacon involved
      rate limit: the 21st open in a minute is refused AND leaves one 'ratelimit' row
      guest identity: a pageview and a trade beacon from the same device cookie share ONE visitor id and carry the device
      failed sign-in codes leave 'otpfail' rows and the radar raises 'otp_fail' for that (masked) email
@@ -57,7 +57,7 @@ const act = (q) => get('/api/admin/activity?e2e=1&' + q).then(r => r.body);
   const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36 e2e-activity';
   const beacon = (q) => fetch(ORIGIN + '/api/track?' + q, { headers: { cookie: 'mp_did=' + DID, 'user-agent': UA, 'x-admin-key': K } }).then(r => r.status); // the key tags the rows e2 so the owner's daily read never shows test traffic
   const b1 = await beacon('t=pageview&p=%2Fpaper-trade');
-  await sleep(1500); // no batcher since 2026-09-07 — the DO stores the row at once
+  await sleep(1500); // no batcher since 2026-09-07 - the DO stores the row at once
   const b2 = await beacon('t=paper&e=BTC%20long%205x&p=%2Fpaper-trade');
   chk('guest beacons accepted', b1 === 204 && b2 === 204, { b1, b2 });
   await sleep(1500); await beacon('t=close&e=BTC%20%2B%241.20&p=%2Fpaper-trade'); await sleep(3000);

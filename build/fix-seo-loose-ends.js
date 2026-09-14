@@ -2,7 +2,7 @@
  * Idempotent, runs over dist. Run: node build/fix-seo-loose-ends.js [--dry]
  *
  * 1. /es/premium/ canonicalised to the ENGLISH page. A twin that canonicalises away tells Google not
- *    to index it at all — the Spanish page would simply vanish. It happened because the English page's
+ *    to index it at all - the Spanish page would simply vanish. It happened because the English page's
  *    canonical has no trailing slash (https://marginpad.io/premium) and gen-pages rewrites the slashed
  *    form. Fixed here and the shape is asserted by seo-surface-e2e, so one odd canonical cannot do it
  *    again quietly.
@@ -10,7 +10,7 @@
  * 2. The 33 FROZEN language subpages (/de/funding/, /tr/long-short/, /ar/defi/ … 11 languages x 3)
  *    are indexable, self-canonical, in NO sitemap and reachable from nothing. CLAUDE.md records that
  *    translated subpages are RETIRED and that the worker 301s /<lang>/<anything>/ to the English
- *    original — these are the leftovers that are still served as static files. Self-canonical, they
+ *    original - these are the leftovers that are still served as static files. Self-canonical, they
  *    compete with the English page they are a copy of. They now canonicalise to that English page,
  *    which is the decision that was already made, just never applied to the files.
  *

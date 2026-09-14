@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>¿Qué es un trailing stop? Cómo asegurar la ganancia mientras se mueve el precio (2026) — MarginPad</title>
+<title>¿Qué es un trailing stop? Cómo asegurar la ganancia mientras se mueve el precio (2026) - MarginPad</title>
 <meta name="description" content="Un trailing stop sigue el precio a una distancia fija, asegurando ganancias mientras deja correr una posición ganadora. Aprende cómo funciona, cómo fijar la distancia, los errores más comunes y cuándo usarlo." />
 <meta name="keywords" content="trailing stop, what is a trailing stop, trailing stop loss, trailing stop crypto, how to set a trailing stop, lock in profit trading, trailing stop percentage, ride a winner" />
 <link rel="canonical" href="https://marginpad.io/es/blog/what-is-a-trailing-stop/" />
@@ -45,7 +45,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Un trailing stop es un stop-loss que sigue automáticamente el precio a tu favor a una distancia fija: un porcentaje o una cantidad en dólares. Cuando el precio sube en un long, el stop se ajusta hacia arriba con él; si luego el precio revierte esa distancia, el stop se activa y asegura tu ganancia. Nunca retrocede, así que protege el beneficio mientras deja correr una posición ganadora."}},{"@type":"Question","name":"¿Qué tan amplio debe ser un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Lo bastante amplio para sobrevivir al ruido normal del mercado, y lo bastante ajustado para proteger una ganancia real. Si es demasiado ajustado, la volatilidad habitual te saca antes de tiempo; si es demasiado amplio, devuelves una buena parte de la ganancia antes de que se active. Muchos traders basan la distancia en la volatilidad (por ejemplo, un múltiplo del ATR) en lugar de un número redondo, para que el stop respire con el mercado."}},{"@type":"Question","name":"¿Cuándo debería usar un trailing stop en vez de uno fijo?","acceptedAnswer":{"@type":"Answer","text":"Usa un stop fijo para definir tu riesgo al entrar, y cambia a (o añade) un trailing stop una vez que la operación esté en ganancia y siga la tendencia, para acompañar el movimiento mientras proteges las ganancias. Los trailing stops brillan en tendencias fuertes; en mercados laterales y erráticos suelen saltar antes de tiempo."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Trailing stop","item":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -80,26 +80,26 @@
   <article>
     <h1>¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)</h1>
     <div class="meta">Riesgo · 5 min de lectura · Actualizado en junio de 2026</div>
-    <p>Cortar una pérdida es fácil de entender. La habilidad más difícil es saber cuándo <em>tomar ganancias</em> &mdash; vendes demasiado pronto y te pierdes el gran movimiento; te quedas demasiado tiempo y lo devuelves todo. Un <strong>trailing stop</strong> está diseñado para resolver exactamente eso. <em>(Solo con fines educativos &mdash; no es asesoría financiera.)</em></p>
+    <p>Cortar una pérdida es fácil de entender. La habilidad más difícil es saber cuándo <em>tomar ganancias</em> - vendes demasiado pronto y te pierdes el gran movimiento; te quedas demasiado tiempo y lo devuelves todo. Un <strong>trailing stop</strong> está diseñado para resolver exactamente eso. <em>(Solo con fines educativos - no es asesoría financiera.)</em></p>
     <h2>Qué hace un trailing stop</h2>
-    <p>Un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> normal se queda en un precio fijo. Un <strong>trailing stop</strong>, en cambio, sigue al precio a una <strong>distancia</strong> fija &mdash; digamos 3% &mdash; pero solo a tu favor. En un long:</p>
+    <p>Un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> normal se queda en un precio fijo. Un <strong>trailing stop</strong>, en cambio, sigue al precio a una <strong>distancia</strong> fija - digamos 3% - pero solo a tu favor. En un long:</p>
     <ul>
     <li>A medida que el precio <strong>sube</strong>, el stop <strong>avanza</strong> un 3% por detrás del nuevo máximo.</li>
-    <li>Cuando el precio <strong>baja</strong>, el stop <strong>se queda quieto</strong> &mdash; nunca retrocede.</li>
+    <li>Cuando el precio <strong>baja</strong>, el stop <strong>se queda quieto</strong> - nunca retrocede.</li>
     <li>Si el precio cae tu distancia del 3%, el stop <strong>se dispara</strong> y sales, asegurando la ganancia.</li>
     </ul>
     <p>El efecto: <strong>dejas correr una ganadora</strong> tan lejos como la tendencia la lleve, mientras un piso fijo debajo de tu ganancia sigue subiendo. Ya no tienes que adivinar el techo exacto.</p>
     <h2>Un ejemplo rápido</h2>
-    <p>Abres un long a $60,000 con un <strong>trailing stop del 3%</strong>. El precio sube a $66,000 &mdash; tu stop ha subido hasta cerca de $64,000. Luego el precio se revierte; en $64,000 el stop se dispara. Capturaste la mayor parte de un movimiento de $4,000 <strong>sin predecir el techo</strong> &mdash; y si el precio hubiera seguido subiendo, el stop habría seguido subiendo con él.</p>
+    <p>Abres un long a $60,000 con un <strong>trailing stop del 3%</strong>. El precio sube a $66,000 - tu stop ha subido hasta cerca de $64,000. Luego el precio se revierte; en $64,000 el stop se dispara. Capturaste la mayor parte de un movimiento de $4,000 <strong>sin predecir el techo</strong> - y si el precio hubiera seguido subiendo, el stop habría seguido subiendo con él.</p>
     <h2>Cómo fijar la distancia</h2>
-    <p>Aquí está todo el juego. <strong>Demasiado ajustada</strong> y el ruido normal del mercado te saca antes de que el movimiento se desarrolle. <strong>Demasiado amplia</strong> y devuelves una buena parte antes de que se dispare. En vez de un número redondo, muchos traders ajustan la distancia según la <strong>volatilidad</strong> &mdash; un múltiplo del <a href="/es/blog/what-is-open-interest/">rango reciente</a> (ATR) &mdash; para que el stop respire con el mercado. Y recuerda: los trailing stops están hechos para <strong>tendencias</strong>; en mercados laterales y erráticos te sacan a latigazos.</p>
+    <p>Aquí está todo el juego. <strong>Demasiado ajustada</strong> y el ruido normal del mercado te saca antes de que el movimiento se desarrolle. <strong>Demasiado amplia</strong> y devuelves una buena parte antes de que se dispare. En vez de un número redondo, muchos traders ajustan la distancia según la <strong>volatilidad</strong> - un múltiplo del <a href="/es/blog/what-is-open-interest/">rango reciente</a> (ATR) - para que el stop respire con el mercado. Y recuerda: los trailing stops están hechos para <strong>tendencias</strong>; en mercados laterales y erráticos te sacan a latigazos.</p>
     <h2>Úsalo junto a un stop fijo, no en su lugar</h2>
     <p>Lo mejor es definir tu riesgo con un <strong>stop fijo al entrar</strong>, y luego, una vez que la operación está cómodamente en ganancias, dejar que un <strong>trailing stop</strong> tome el control para proteger y extender la ganancia. El stop fijo limita la caída; el trailing stop administra la subida.</p>
     <h2>Pruébalo sin riesgo</h2>
-    <p>El <a href="/es/paper-trade">Paper Trade</a> de MarginPad tiene una opción de <strong>trailing stop</strong> integrada (junto al break-even y los stops fijos) en el panel Avanzado. Abre una posición al precio en vivo, define una distancia de trailing, y mira cómo el stop avanza mientras se mueve la operación &mdash; sin cuenta y sin dinero en riesgo &mdash; hasta que sientas cuál es la distancia correcta para las condiciones.</p>
-    <div class="callout"><div class="k">ACOMPAÑA UNA GANADORA CON SEGURIDAD</div><p style="margin-bottom:14px">Pon un trailing stop en una operación de práctica a precio en vivo y mira cómo asegura la ganancia mientras sube el precio &mdash; sin cuenta, sin dinero en riesgo.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
+    <p>El <a href="/es/paper-trade">Paper Trade</a> de MarginPad tiene una opción de <strong>trailing stop</strong> integrada (junto al break-even y los stops fijos) en el panel Avanzado. Abre una posición al precio en vivo, define una distancia de trailing, y mira cómo el stop avanza mientras se mueve la operación - sin cuenta y sin dinero en riesgo - hasta que sientas cuál es la distancia correcta para las condiciones.</p>
+    <div class="callout"><div class="k">ACOMPAÑA UNA GANADORA CON SEGURIDAD</div><p style="margin-bottom:14px">Pon un trailing stop en una operación de práctica a precio en vivo y mira cómo asegura la ganancia mientras sube el precio - sin cuenta, sin dinero en riesgo.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -126,6 +126,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

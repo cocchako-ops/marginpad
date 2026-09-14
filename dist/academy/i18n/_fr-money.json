@@ -13,15 +13,15 @@
     },
     {
      "h": "Les points de pourcentage ne sont pas des pourcentages",
-     "p": "Ce sont deux choses différentes. Si ton win rate — ton taux de trades gagnants — passe de 40% à 44%, c’est une hausse de 4 points de pourcentage. Mais rapportée à ton point de départ, elle vaut 4 divisé par 40, soit 10%. Même changement, deux chiffres honnêtes. Dès que tu vois un pourcentage d’un pourcentage, ralentis et vérifie duquel des deux on parle."
+     "p": "Ce sont deux choses différentes. Si ton win rate - ton taux de trades gagnants - passe de 40% à 44%, c’est une hausse de 4 points de pourcentage. Mais rapportée à ton point de départ, elle vaut 4 divisé par 40, soit 10%. Même changement, deux chiffres honnêtes. Dès que tu vois un pourcentage d’un pourcentage, ralentis et vérifie duquel des deux on parle."
     },
     {
      "h": "Plus dix, moins dix, et pourtant pas à l’équilibre",
-     "p": "Pars de 100 $. Ajoute 10% et tu as 110 $. Retire maintenant 10% — mais 10% de 110 $, c’est 11 $, pas 10 $. Tu finis à 99 $. Le gain était mesuré sur 100 $ et la perte sur 110 $, donc ils ne s’annulent pas. Inverse l’ordre et tu retombes sur 99 $ : 100 $ qui descendent à 90 $, puis 9 $ de plus."
+     "p": "Pars de 100 $. Ajoute 10% et tu as 110 $. Retire maintenant 10% - mais 10% de 110 $, c’est 11 $, pas 10 $. Tu finis à 99 $. Le gain était mesuré sur 100 $ et la perte sur 110 $, donc ils ne s’annulent pas. Inverse l’ordre et tu retombes sur 99 $ : 100 $ qui descendent à 90 $, puis 9 $ de plus."
     },
     {
      "h": "Les variations en pourcentage se multiplient",
-     "p": "Il y a un raccourci. Un gain de 10%, c’est multiplier par 1,10 ; une perte de 10%, c’est multiplier par 0,90. Fais les deux et tu obtiens 1,10 × 0,90, soit 0,99 — une perte nette de 1%. Enchaîne tout un mois de trades de cette façon, et c’est la multiplication, pas l’addition, qui décrit ce que ton compte a vraiment fait."
+     "p": "Il y a un raccourci. Un gain de 10%, c’est multiplier par 1,10 ; une perte de 10%, c’est multiplier par 0,90. Fais les deux et tu obtiens 1,10 × 0,90, soit 0,99 - une perte nette de 1%. Enchaîne tout un mois de trades de cette façon, et c’est la multiplication, pas l’addition, qui décrit ce que ton compte a vraiment fait."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Une perte creuse un trou plus profond",
-     "p": "Perds 50% de 1 000 $ et il te reste 500 $. Pour revenir à 1 000 $, tu dois ajouter 500 $ — et 500 $, c’est 100% de ce qu’il te reste. Une perte de 50% exige un gain de 100% pour être effacée. La perte et sa réparation n’ont pas la même taille, et elles ne l’ont jamais."
+     "p": "Perds 50% de 1 000 $ et il te reste 500 $. Pour revenir à 1 000 $, tu dois ajouter 500 $ - et 500 $, c’est 100% de ce qu’il te reste. Une perte de 50% exige un gain de 100% pour être effacée. La perte et sa réparation n’ont pas la même taille, et elles ne l’ont jamais."
     },
     {
      "h": "La table de récupération",
-     "p": "Refais la même arithmétique sur toute l’échelle. −10% demande environ 11% pour revenir. −20% demande 25%. Un tiers perdu demande 50%. −50% demande 100%. −80% laisse 200 $ sur 1 000 $, donc il te faut 800 $ par-dessus ces 200 $ — soit 400%. −90% demande 900%. La courbe ne s’incurve pas doucement. Elle devient verticale."
+     "p": "Refais la même arithmétique sur toute l’échelle. −10% demande environ 11% pour revenir. −20% demande 25%. Un tiers perdu demande 50%. −50% demande 100%. −80% laisse 200 $ sur 1 000 $, donc il te faut 800 $ par-dessus ces 200 $ - soit 400%. −90% demande 900%. La courbe ne s’incurve pas doucement. Elle devient verticale."
     },
     {
      "h": "Prouve-le toi-même",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Ce que ça change chez toi",
-     "p": "C’est pour ça que les professionnels surveillent le drawdown — la distance entre un compte et son plus haut point — de plus près que les performances. Une série de petites pertes est une arithmétique survivable. Une seule grosse perte est un problème d’une autre catégorie. Tout ce qui vient après cette carte, de la taille de position aux stop-loss, existe pour garder chaque perte assez petite pour que la récupération reste ordinaire."
+     "p": "C’est pour ça que les professionnels surveillent le drawdown - la distance entre un compte et son plus haut point - de plus près que les performances. Une série de petites pertes est une arithmétique survivable. Une seule grosse perte est un problème d’une autre catégorie. Tout ce qui vient après cette carte, de la taille de position aux stop-loss, existe pour garder chaque perte assez petite pour que la récupération reste ordinaire."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Trois nombres font un résultat",
-     "p": "Le profit and loss — le P&L — vient d’exactement trois nombres : le prix auquel tu es entré, le prix auquel tu es sorti, et le nombre d’unités que tu détenais. Rien d’autre n’entre dans le calcul. Pour un long, un pari sur la hausse, le P&L, c’est le prix de sortie moins le prix d’entrée, multiplié par le nombre d’unités."
+     "p": "Le profit and loss - le P&L - vient d’exactement trois nombres : le prix auquel tu es entré, le prix auquel tu es sorti, et le nombre d’unités que tu détenais. Rien d’autre n’entre dans le calcul. Pour un long, un pari sur la hausse, le P&L, c’est le prix de sortie moins le prix d’entrée, multiplié par le nombre d’unités."
     },
     {
      "h": "Un long, calculé",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Tu ne choisis pas le mouvement",
-     "p": "Tu ne décides pas si le Bitcoin bouge de 2% aujourd’hui. Tu contrôles exactement un nombre : la taille de ta position. Tout le reste — le sens, le timing, la volatilité — est une supposition ou un cadeau. La taille de position est le seul paramètre de tout le calcul qui t’appartienne entièrement, et c’est ce qui en fait la vraie décision que tu prends."
+     "p": "Tu ne décides pas si le Bitcoin bouge de 2% aujourd’hui. Tu contrôles exactement un nombre : la taille de ta position. Tout le reste - le sens, le timing, la volatilité - est une supposition ou un cadeau. La taille de position est le seul paramètre de tout le calcul qui t’appartienne entièrement, et c’est ce qui en fait la vraie décision que tu prends."
     },
     {
      "h": "Même mouvement, le résultat que tu veux",
@@ -214,15 +214,15 @@
     },
     {
      "h": "La taille sort du stop",
-     "p": "Maintenant l’arithmétique tourne à l’envers. Tu veux acheter de l’ETH à 2 000 $ avec un stop-loss à 1 960 $ — un ordre qui ferme le trade si le prix descend là. La distance est de 40 $ par coin. Tu risques 10 $ au total, donc divise : 10 $ divisés par 40 $ font 0,25 ETH. C’est ta taille, une position de 500 $."
+     "p": "Maintenant l’arithmétique tourne à l’envers. Tu veux acheter de l’ETH à 2 000 $ avec un stop-loss à 1 960 $ - un ordre qui ferme le trade si le prix descend là. La distance est de 40 $ par coin. Tu risques 10 $ au total, donc divise : 10 $ divisés par 40 $ font 0,25 ETH. C’est ta taille, une position de 500 $."
     },
     {
      "h": "Stop plus large, taille plus petite",
-     "p": "Change une seule chose. Mets le stop à 1 900 $ à la place, une distance de 100 $ par coin. Le risque reste 10 $, donc la taille devient 10 $ divisés par 100 $, soit 0,1 ETH — une position de 200 $. Le stop n’a rendu le trade ni plus sûr ni plus risqué. Il a changé le nombre de coins que tu peux tenir à risque fixe identique."
+     "p": "Change une seule chose. Mets le stop à 1 900 $ à la place, une distance de 100 $ par coin. Le risque reste 10 $, donc la taille devient 10 $ divisés par 100 $, soit 0,1 ETH - une position de 200 $. Le stop n’a rendu le trade ni plus sûr ni plus risqué. Il a changé le nombre de coins que tu peux tenir à risque fixe identique."
     },
     {
      "h": "Pourquoi 1% et pas 10%",
-     "p": "À 1% de risque, dix pertes d’affilée te coûtent environ 10% du compte, et la table de récupération dit qu’un trou de 10% demande à peu près 11% pour être rebouché. À 10% de risque, les mêmes dix pertes laissent environ un tiers de ce que tu avais au départ — un trou qui demande environ 187% pour en sortir. Mêmes trades, même niveau, arithmétique différente."
+     "p": "À 1% de risque, dix pertes d’affilée te coûtent environ 10% du compte, et la table de récupération dit qu’un trou de 10% demande à peu près 11% pour être rebouché. À 10% de risque, les mêmes dix pertes laissent environ un tiers de ce que tu avais au départ - un trou qui demande environ 187% pour en sortir. Mêmes trades, même niveau, arithmétique différente."
     }
    ],
    "quiz": [
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Les frais se calculent sur le notionnel",
-     "p": "Un frais de futures est un pourcentage de la valeur totale de la position — le notionnel — pas de l’argent que tu as déposé. Ouvre une position de 6 000 $ et des frais taker de 0,055% coûtent 3,30 $. Ferme-la et tu paies encore. Les frais ne demandent jamais combien de ton propre argent est derrière le trade. Ils ne voient que la taille de la position."
+     "p": "Un frais de futures est un pourcentage de la valeur totale de la position - le notionnel - pas de l’argent que tu as déposé. Ouvre une position de 6 000 $ et des frais taker de 0,055% coûtent 3,30 $. Ferme-la et tu paies encore. Les frais ne demandent jamais combien de ton propre argent est derrière le trade. Ils ne voient que la taille de la position."
     },
     {
      "h": "Le levier multiplie les frais",
-     "p": "Le levier permet à une petite somme de ton argent — la marge — de contrôler une position plus grosse. À 20x, une position de 6 000 $ demande 300 $ de marge. Les 3,30 $ de frais font 0,055% de la position mais 1,1% de tes 300 $. Aller-retour, entrée et sortie, ça fait 2,2% de ta marge partis avant même que le prix ait bougé."
+     "p": "Le levier permet à une petite somme de ton argent - la marge - de contrôler une position plus grosse. À 20x, une position de 6 000 $ demande 300 $ de marge. Les 3,30 $ de frais font 0,055% de la position mais 1,1% de tes 300 $. Aller-retour, entrée et sortie, ça fait 2,2% de ta marge partis avant même que le prix ait bougé."
     },
     {
      "h": "Le spread et le slippage coûtent aussi",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Le tout, une fois",
-     "p": "Compte 1 000 $. Risque 1%, donc 10 $. Entrée sur l’ETH à 2 000 $, stop 1 960 $, distance 40 $. La taille, c’est 10 $ divisés par 40 $, soit 0,25 ETH — une position de 500 $. Un objectif à 2 120 $ donne 120 $ par coin, donc 0,25 coin rapporte 30 $. Ça fait 3R. Les frais aller-retour à 0,11% de 500 $ font 0,55 $, peu de chose à côté de 30 $."
+     "p": "Compte 1 000 $. Risque 1%, donc 10 $. Entrée sur l’ETH à 2 000 $, stop 1 960 $, distance 40 $. La taille, c’est 10 $ divisés par 40 $, soit 0,25 ETH - une position de 500 $. Un objectif à 2 120 $ donne 120 $ par coin, donc 0,25 coin rapporte 30 $. Ça fait 3R. Les frais aller-retour à 0,11% de 500 $ font 0,55 $, peu de chose à côté de 30 $."
     },
     {
      "h": "Les maths ne prédisent rien",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Tu as maintenant tout le calcul. Ouvre les calculateurs et fais tourner tes propres chiffres — compte, risque, distance du stop — jusqu’à ce que le dimensionnement devienne automatique.",
+    "p": "Tu as maintenant tout le calcul. Ouvre les calculateurs et fais tourner tes propres chiffres - compte, risque, distance du stop - jusqu’à ce que le dimensionnement devienne automatique.",
     "label": "Ouvrir les calculateurs →"
    }
   }

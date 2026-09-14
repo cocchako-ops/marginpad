@@ -24,7 +24,7 @@ window.mpJStore=window.mpJStore||function(a){
   return false;
 };
 /* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
-   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device - the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
    DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
    unaffected. Shifting the data instead would corrupt every one of those. */
@@ -46,16 +46,16 @@ function mpTzMerge(o){
   return o;
 }
 function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
-window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
-/* Mobile full-screen Charts — landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
+window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 - DELETE with the pxtag round */
+/* Mobile full-screen Charts - landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){
   var ov=null,panes=[],activeI=0,split=1,drawOn=false,forcePair=null,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
-  // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no — re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
+  // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no - re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
   function resetViewport(){try{var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';var base=c.replace(/,?\s*minimum-scale=[^,]*/,'');m.setAttribute('content',base+', minimum-scale=1.0');setTimeout(function(){m.setAttribute('content',base);},60);}catch(e){}}
   function resetViewportHard(){resetViewport();setTimeout(resetViewport,280);setTimeout(resetViewport,800);}
   var _fsT=null;
-  function forceScale1(then){ /* verify-and-retry: iOS sometimes re-applies the stale scale — loop the meta jiggle until visualViewport really reads ~1 (max ~3s) */
+  function forceScale1(then){ /* verify-and-retry: iOS sometimes re-applies the stale scale - loop the meta jiggle until visualViewport really reads ~1 (max ~3s) */
     if(_fsT){clearInterval(_fsT);_fsT=null;}
     var n=0;resetViewport();
     _fsT=setInterval(function(){ n++;
@@ -67,7 +67,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function price(s){var lp=window.mpLivePrices&&window.mpLivePrices[s];return lp&&lp.p>0?lp.p:0;}
   // clamp ISOLATED phantom wicks (bad/transient prints) so one bad candle can't draw a giant vertical line
-  function sanitizeBars(kd){if(!kd||!kd.length)return kd;var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;_q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}kd=_ok;/* drop null/NaN bars — they poison the chart's render loop ("Value is null" crash) */if(kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
+  function sanitizeBars(kd){if(!kd||!kd.length)return kd;var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;_q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}kd=_ok;/* drop null/NaN bars - they poison the chart's render loop ("Value is null" crash) */if(kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
   function fp(p){p=+p;return '$'+p.toLocaleString('en-US',{maximumFractionDigits:p>=100?2:p>=1?4:6});}
   // ---- indicator helpers (own copies; same families as desktop) ----
   function sma(c,p){var o=[],s=0;for(var i=0;i<c.length;i++){s+=c[i];if(i>=p)s-=c[i-p];o.push(i>=p-1?s/p:null);}return o;}
@@ -82,7 +82,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function hma(c,p){var half=Math.max(1,Math.round(p/2)),sq=Math.max(1,Math.round(Math.sqrt(p))),w1=wma(c,half),w2=wma(c,p),raw=[],i,j;for(i=0;i<c.length;i++)raw.push((w1[i]!=null&&w2[i]!=null)?2*w1[i]-w2[i]:null);var o=[];for(i=0;i<c.length;i++){if(i<p-2+sq){o.push(null);continue;}var sum=0,ws=0,ok=true;for(j=0;j<sq;j++){var v=raw[i-j];if(v==null){ok=false;break;}var w=sq-j;sum+=v*w;ws+=w;}o.push(ok?sum/ws:null);}return o;}
   function willr(bs,p){var o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(null);continue;}var hh=-Infinity,ll=Infinity;for(j=i-p+1;j<=i;j++){if(bs[j].high>hh)hh=bs[j].high;if(bs[j].low<ll)ll=bs[j].low;}o.push(hh===ll?-50:(hh-bs[i].close)/(hh-ll)*-100);}return o;}
   function cci(bs,p){var tp=bs.map(function(b){return (+b.high+ +b.low+ +b.close)/3;}),o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(null);continue;}var sum=0;for(j=i-p+1;j<=i;j++)sum+=tp[j];var ma=sum/p,md=0;for(j=i-p+1;j<=i;j++)md+=Math.abs(tp[j]-ma);md/=p;o.push(md===0?0:(tp[i]-ma)/(0.015*md));}return o;}
-  /* Supertrend(10,3) buy/sell markers — same engine as the desktop workspace + Paper Trade "Signals" */
+  /* Supertrend(10,3) buy/sell markers - same engine as the desktop workspace + Paper Trade "Signals" */
   function computeSignals(d){var n=d?d.length:0,P=10,M=3;if(n<P+3)return [];
     var tr=[],i;for(i=0;i<n;i++){tr.push(i===0?d[i].high-d[i].low:Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)));}
     var at=[],seed=0;for(i=0;i<P;i++)seed+=tr[i];var a=seed/P;for(i=0;i<n;i++){if(i<P)at.push(a);else{a=(a*(P-1)+tr[i])/P;at.push(a);}}
@@ -92,7 +92,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var pd=i?dir[i-1]:1,cd;if(i===0)cd=1;else if(pd===1)cd=d[i].close<cL?-1:1;else cd=d[i].close>cU?1:-1;dir.push(cd);
       if(i>P&&cd!==pd)mk.push(cd===1?{time:d[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'BUY'}:{time:d[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'SELL'});}
     return mk;}
-  /* Support/resistance — recent pivot highs/lows (same as desktop computeSR) */
+  /* Support/resistance - recent pivot highs/lows (same as desktop computeSR) */
   function computeSR(d){var L=6,n=d?d.length:0,lv=[];if(n<2*L+6)return lv;
     for(var i=L;i<n-L;i++){var hi=d[i].high,lo=d[i].low,ph=true,pl=true;
       for(var j=i-L;j<=i+L;j++){if(d[j].high>hi)ph=false;if(d[j].low<lo)pl=false;}
@@ -129,13 +129,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
-      +'<h3>'+mcT('mcGateT2','Rotate your phone')+'</h3><p>'+mcT('mcGateS2','Charts work in landscape — turn your phone sideways and they open instantly.')+'</p>'
+      +'<h3>'+mcT('mcGateT2','Rotate your phone')+'</h3><p>'+mcT('mcGateS2','Charts work in landscape - turn your phone sideways and they open instantly.')+'</p>'
       +'<button class="mfc-gate-go" data-gx style="background:none;border:1px solid #2c3540;color:#9aa3ad">'+mcT('mcClose','Close')+' ✕</button>';
     ov.appendChild(gate);
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
     function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}
-      // portrait no longer walls off the charts — they WORK in portrait (verified by the real-browser UX audit); the
+      // portrait no longer walls off the charts - they WORK in portrait (verified by the real-browser UX audit); the
       // full-screen gate was blocking a functional experience. The inline .mfc-rot hint still nudges toward landscape.
       showGate(false);if(!entered){proceed();return;}
       setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
@@ -164,7 +164,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(a==='ai')return openSheet('ai');
   }
   // ---- panes ----
-  // Drawing palette comes from the shared builder in mp-charts.js (loaded before this module by the home.js loader) — no alert tool on mobile. Evaluated lazily at pane build so load order can't race.
+  // Drawing palette comes from the shared builder in mp-charts.js (loaded before this module by the home.js loader) - no alert tool on mobile. Evaluated lazily at pane build so load order can't race.
   function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
@@ -182,7 +182,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.sub||p._subSync)return;p._subSync=1;try{p.sub.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;}); /* oscillator sub-pane follows the main time axis */
     p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',
       // extend the auto-fit range to include the imported position's entry/liq lines (capped at 2.4× the candle range)
-      // so a TF switch can't re-fit to candles only and push the lines off-screen — mirrors the desktop engines.
+      // so a TF switch can't re-fit to candles only and push the lines off-screen - mirrors the desktop engines.
       autoscaleInfoProvider:function(orig){try{
         if(!p.bars||!p.bars.length)return orig?orig():null;
         var vr=null;try{vr=p.chart.timeScale().getVisibleLogicalRange();}catch(e){}
@@ -210,13 +210,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return false;
       var ok=false;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
       return ok;
     });
   }
   function loadKlines(p){ if(!p.candle)return;p._userPS=false;_applyKlines(p).then(function(ok){if(ok&&!p.dead&&p.candle)try{var _vn=(p.bars&&p.bars.length)||0;if(_vn>0)p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});else p.chart.timeScale().scrollToRealTime();}catch(e){}}); } // user/initial: pin the last ~120 bars (was scrollToRealTime, which kept barSpacing → deep-history dataset squished/sparse)
-  function resyncKlines(p){ if(!p.candle)return; // background re-sync — mirror of desktop refreshData: bail if the user scrolled into history so we never yank them back to the edge (guard is INSIDE, un-bypassable); never scrolls
+  function resyncKlines(p){ if(!p.candle)return; // background re-sync - mirror of desktop refreshData: bail if the user scrolled into history so we never yank them back to the edge (guard is INSIDE, un-bypassable); never scrolls
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(vr&&p.bars&&p.bars.length&&vr.to<p.bars.length-3)return;}catch(e){}
     /* WINDOW-ALIGNED diff (2026-08-12, owner: a closed candle must never visibly change): the old path called
        _applyKlines = unconditional setData every 60s → a full repaint each minute. Now identical bars paint
@@ -234,28 +234,28 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _lastA=p.bars[p.bars.length-1],_lastK=kd[kd.length-1],_tmap={};
         for(var _i2=0;_i2<p.bars.length;_i2++)_tmap[p.bars[_i2].time]=p.bars[_i2];
         /* tick estimate from the data itself (max decimals over the last ~40 bars): the open tolerance below must be
-           TICK-relative, not only %-relative — one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
+           TICK-relative, not only %-relative - one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
            forced a visible full-repaint heal every resync after a roll (probe 2026-08-15), while one BTC tick is 0.00016%. */
         var _tkD=0;for(var _t5=Math.max(0,kd.length-40);_t5<kd.length;_t5++){var _b5=kd[_t5],_v5=[_b5.open,_b5.high,_b5.low,_b5.close];for(var _t6=0;_t6<4;_t6++){var _s5=String(_v5[_t6]),_e5=_s5.indexOf('e-'),_d5=0;if(_e5>=0){_d5=(+_s5.slice(_e5+2)||0)+(((_s5.slice(0,_e5).split('.')[1])||'').length);}else{var _p5=_s5.indexOf('.');_d5=_p5<0?0:_s5.length-_p5-1;}if(_d5>_tkD)_tkD=_d5;}}
         var _otol=function(o){var a=Math.abs(o);return Math.max(a*5e-5,Math.min(Math.pow(10,-_tkD)*1.6,a*0.001));};/* allow 1 tick (not 2+), hard-capped at 0.1% so a degenerate decimals estimate can't mask a real divergence */
         for(var _k2=0;_k2<kd.length;_k2++){var _b=kd[_k2];
           if(_b.time>_lastA.time){_app.push(_b);continue;}
-          /* the snapshot's LAST bar = the server's (possibly stale-cached, PARTIAL) forming bar — never an
+          /* the snapshot's LAST bar = the server's (possibly stale-cached, PARTIAL) forming bar - never an
              authority for a minute we already closed from the live trade stream (measured flip-flop source) */
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=p.bars[0].time){_mism=true;break;}continue;}
-          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
+          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) - strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
         if(_mism){_rm=2;p.bars=kd;if(_lastK.time===_lastA.time)p.bars[p.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])p.bars[p.bars.length-1]=_tmap[_lastK.time];p.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;p.bars=p.bars.concat(_app);}
       }
       if(_rm===2){try{p.candle.setData(p.bars);}catch(e){}}
       else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{p.candle.update(_app[_a3]);}catch(e){}}}
       if(_rm!==0){p.lastBar=p.bars[p.bars.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{applyInds(p);}catch(e){}if(p.trades)try{drawTrades(p);}catch(e){}try{if(p.w)p.w.bars=p.bars;}catch(e){}}
-      p._hole=0;/* cleared ONLY on a successful snapshot apply/compare — a rolled live bar makes lastBar look current, blinding the interval gap check (same _holeK lesson as desktop) */
+      p._hole=0;/* cleared ONLY on a successful snapshot apply/compare - a rolled live bar makes lastBar look current, blinding the interval gap check (same _holeK lesson as desktop) */
       label(p);
     }); }
-  // load older history when the pane is scrolled back toward the start (full history to the coin's inception) — per-pane, mirror of desktop loadMoreW incl. the vr0+shift that keeps the view exactly where the user is (prepending resets setData to the edge otherwise = another way to yank them)
+  // load older history when the pane is scrolled back toward the start (full history to the coin's inception) - per-pane, mirror of desktop loadMoreW incl. the vr0+shift that keeps the view exactly where the user is (prepending resets setData to the edge otherwise = another way to yank them)
   function loadMoreM(p){ if(!p.candle||p._lm||p._noMore||!p.bars||!p.bars.length)return;
     var sym=p.sym,tf=p.tf,end=p.bars[0].time*1000-1; p._lm=true;
     var _lmg=setTimeout(function(){p._lm=false;},12000); // a hung fetch must not pin p._lm forever (that would also disable the 60s resync)
@@ -279,39 +279,39 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!p.lastBar)return;
     /* HOLE GUARD (Safari suspend/resume, 2026-08-15 owner screenshots): newest bar >1.5 intervals behind → mark the
        hole + force a re-sync NOW; a HUGE gap (>30 bars, e.g. a 2h-suspended tab) must NOT roll a detached forming
-       candle onto 2h-old history — wait for the real bars. Modest gap still falls through so the chart keeps moving.
+       candle onto 2h-old history - wait for the real bars. Modest gap still falls through so the chart keeps moving.
        Runs BEFORE the pr>0 bail (a stalled feed must still refetch). */
     try{var _ivH=parseInt(p.tf,10)*60,_nbH=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivH)*_ivH;
       if(_nbH-p.lastBar.time>_ivH*1.5){p._hole=1;if(!p._gapT||Date.now()-p._gapT>8000){p._gapT=Date.now();resyncKlines(p);}if(_nbH-p.lastBar.time>_ivH*30)return;}}catch(e){}
     var pr=price(p.sym);if(!(pr>0))return;
     // spike filter (same as the desktop/paper-trade/heatmap engines): reject a lone tick that jumps >2.5% from the last
-    // accepted price — one bad print would otherwise blow out the forming candle's high/low and compress every other candle
+    // accepted price - one bad print would otherwise blow out the forming candle's high/low and compress every other candle
     // (the "candles lose their shape / half candle over time" bug). Accept only if 3 in a row confirm a real move.
     if(p._lgp>0){ if(Math.abs(pr-p._lgp)/p._lgp>0.025){ p._rej=(p._rej||0)+1; if(p._rej<3)return; } else { p._rej=0; } }
     p._lgp=pr;
     var _msn=window.mpSrvNow?window.mpSrvNow():Date.now();
     var iv=parseInt(p.tf,10)*60,nb=Math.floor(_msn/1000/iv)*iv; // server-clock bucketing (skewed device clocks rolled bars at wrong boundaries)
     /* ROLL GRACE: hold the roll until the first NEW-minute trade arrives (time-ordered stream → old minute
-       complete) or 2s pass — a boundary-crossing ticker event must not finalize an incomplete bucket (clipped body) */
+       complete) or 2s pass - a boundary-crossing ticker event must not finalize an incomplete bucket (clipped body) */
     var _grace=false;
     if(nb>p.lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nb&&(_msn/1000-nb)<2)_grace=true;}catch(_){}}
     if(nb>p.lastBar.time&&!_grace){
-      /* FINALIZE the closing bar from exchange-stamped trade buckets BEFORE rolling — the closed candle becomes
+      /* FINALIZE the closing bar from exchange-stamped trade buckets BEFORE rolling - the closed candle becomes
          exactly the authoritative kline and never changes again (1m: full OHLC; >1m: final-minute close + extremes). */
       try{var _TKz=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKz){var _zbs=[_TKz.cur,_TKz.prev],_zch=false;
         for(var _zi=0;_zi<2;_zi++){var _zb=_zbs[_zi];if(!_zb)continue;if(_zb.t<p.lastBar.time||_zb.t>=p.lastBar.time+iv)continue;
-          if(iv===60){if(p.lastBar.high!==_zb.h||p.lastBar.low!==_zb.l||p.lastBar.close!==_zb.c){p.lastBar.high=_zb.h;p.lastBar.low=_zb.l;p.lastBar.close=_zb.c;_zch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade — Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
+          if(iv===60){if(p.lastBar.high!==_zb.h||p.lastBar.low!==_zb.l||p.lastBar.close!==_zb.c){p.lastBar.high=_zb.h;p.lastBar.low=_zb.l;p.lastBar.close=_zb.c;_zch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_zb.h>p.lastBar.high){p.lastBar.high=_zb.h;_zch=true;}if(_zb.l<p.lastBar.low){p.lastBar.low=_zb.l;_zch=true;}if(_zb.t===p.lastBar.time+iv-60&&p.lastBar.close!==_zb.c){p.lastBar.close=_zb.c;_zch=true;}}}
         if(_zch){if(p.lastBar.high<Math.max(p.lastBar.open,p.lastBar.close))p.lastBar.high=Math.max(p.lastBar.open,p.lastBar.close);if(p.lastBar.low>Math.min(p.lastBar.open,p.lastBar.close))p.lastBar.low=Math.min(p.lastBar.open,p.lastBar.close);try{p.candle.update(p.lastBar);}catch(_){}}
       }}catch(_){}
       try{if(p.bars&&p.bars.length){if(p.bars[p.bars.length-1].time===p.lastBar.time)p.bars[p.bars.length-1]=p.lastBar;else if(p.lastBar.time>p.bars[p.bars.length-1].time)p.bars.push(p.lastBar);}}catch(_){}
       var _znb=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nb)_znb=_TKo.cur;}catch(_){}
-      if(_znb){var _zop=p.lastBar.close;p.lastBar={time:nb,open:_zop,high:Math.max(_znb.h,_zop),low:Math.min(_znb.l,_zop),close:_znb.c};p._lgp=_znb.c;}/* open = prevClose ALWAYS (Bybit kline convention — measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
+      if(_znb){var _zop=p.lastBar.close;p.lastBar={time:nb,open:_zop,high:Math.max(_znb.h,_zop),low:Math.min(_znb.l,_zop),close:_znb.c};p._lgp=_znb.c;}/* open = prevClose ALWAYS (Bybit kline convention - measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
       else{p.lastBar={time:nb,open:p.lastBar.close,high:Math.max(p.lastBar.close,pr),low:Math.min(p.lastBar.close,pr),close:pr};}
       try{if(p.bars&&p.bars.length&&p.lastBar.time>p.bars[p.bars.length-1].time)p.bars.push(p.lastBar);}catch(_){}
       try{if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}}
-    else{if(!_grace){p.lastBar.close=pr;if(pr>p.lastBar.high)p.lastBar.high=pr;if(pr<p.lastBar.low)p.lastBar.low=pr;}/* during the roll grace pr may already be a NEW-minute price — never bake it into the closing bar */
-      try{var _TKm=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKm&&p._lgp>0){var _mm=[_TKm.cur,_TKm.prev];for(var _mi9=0;_mi9<2;_mi9++){var _mk=_mm[_mi9];if(!_mk)continue;if(_mk.t<p.lastBar.time||_mk.t>=p.lastBar.time+iv)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open — adopting it drew a phantom gap between candles */if(_mk.h>p.lastBar.high&&_mk.h<p._lgp*1.025)p.lastBar.high=_mk.h;if(_mk.l<p.lastBar.low&&_mk.l>p._lgp*0.975)p.lastBar.low=_mk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
+    else{if(!_grace){p.lastBar.close=pr;if(pr>p.lastBar.high)p.lastBar.high=pr;if(pr<p.lastBar.low)p.lastBar.low=pr;}/* during the roll grace pr may already be a NEW-minute price - never bake it into the closing bar */
+      try{var _TKm=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKm&&p._lgp>0){var _mm=[_TKm.cur,_TKm.prev];for(var _mi9=0;_mi9<2;_mi9++){var _mk=_mm[_mi9];if(!_mk)continue;if(_mk.t<p.lastBar.time||_mk.t>=p.lastBar.time+iv)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_mk.h>p.lastBar.high&&_mk.h<p._lgp*1.025)p.lastBar.high=_mk.h;if(_mk.l<p.lastBar.low&&_mk.l>p._lgp*0.975)p.lastBar.low=_mk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
     try{p.candle.update(p.lastBar);}catch(e){}label(p);
   }
   function label(p){var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);if(pe&&pr)pe.textContent=fp(pr);}
@@ -404,10 +404,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     d.filter(function(e){return e.status==='open'&&e.sym===p.sym;}).forEach(function(e){var long=e.side!=='short';
       _add(+e.entry,(long?'LONG':'SHORT')+' '+(e.lev||1)+'x',long?'#10b981':'#ef4444',1);
       _add(liqOf(e),'LIQ','#ff3b3b',2);});
-    for(var gk in _g){var g=_g[gk];try{p.tradeLines.push(p.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:0,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}}} // one line per level (×N) — stacked labels covered the candles (UX audit, mobile)
+    for(var gk in _g){var g=_g[gk];try{p.tradeLines.push(p.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:0,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}}} // one line per level (×N) - stacked labels covered the candles (UX audit, mobile)
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
-  function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);} // draw event also fires on MOBILE (2026-08-11) — the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
+  function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);} // draw event also fires on MOBILE (2026-08-11) - the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
   function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
   function toggleTrades(btn){var on=!btn.classList.contains('on');btn.classList.toggle('on',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
   function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));mfcSave();}
@@ -422,7 +422,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var sheet=null,floatEl=null;
   function closeSheet(){if(sheet&&sheet.parentNode)sheet.parentNode.removeChild(sheet);sheet=null;}
   function closeFloat(){if(floatEl&&floatEl.parentNode)floatEl.parentNode.removeChild(floatEl);floatEl=null;}
-  // floating, draggable calculator — sits at the top so the keyboard never covers it, easy to type, easy to dismiss
+  // floating, draggable calculator - sits at the top so the keyboard never covers it, easy to type, easy to dismiss
   function openCalc(){closeFloat();var p=panes[activeI];floatEl=document.createElement('div');floatEl.className='mfc-float';
     floatEl.innerHTML='<div class="mfc-float-h"><b>'+mcT('mcCalcTitle','Liquidation calculator')+'</b><button class="mfc-float-x" data-fx aria-label="Close">✕</button></div><div class="mfc-float-b" id="mfcFB"></div>';
     ov.appendChild(floatEl);floatEl.querySelector('[data-fx]').addEventListener('click',closeFloat);
@@ -431,7 +431,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     handle.addEventListener('pointerdown',function(e){if(e.target.closest('[data-fx]'))return;drag=true;var r=panel.getBoundingClientRect();panel.style.left=r.left+'px';panel.style.top=r.top+'px';panel.style.transform='none';sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;try{handle.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
     handle.addEventListener('pointermove',function(e){if(!drag)return;panel.style.left=Math.max(4,ox+(e.clientX-sx))+'px';panel.style.top=Math.max(4,oy+(e.clientY-sy))+'px';});
     handle.addEventListener('pointerup',function(){drag=false;});}
-  // Demo trade — FULL window (owner v2): own coin picker (independent of the chart), the complete
+  // Demo trade - FULL window (owner v2): own coin picker (independent of the chart), the complete
   // Paper-Trade opener incl. Advanced (exchange margin preset, SL, TP, trailing stop, break-even), big X.
   function openTrade(){closeFloat();
     var old=ov.querySelector('.mfc-trbd');if(old){old.remove();return;}
@@ -444,7 +444,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<div class="mfc-sl mtr-syml" id="mtrSymL" hidden></div>'
       +'<div class="mtr-otype" id="mtrType"><button class="on" data-ot="market" type="button">'+mcT('otMarket','Market')+'</button><button data-ot="limit" type="button">'+mcT('otLimit','Limit')+'</button></div>'
       +'<div class="mtr-seg" id="mtrSeg"><button class="on" data-side="long" type="button">'+mcT('long','Long')+'</button><button data-side="short" type="button">'+mcT('short','Short')+'</button></div>'
-      +'<div id="mtrLimWrap" hidden><label class="mtr-lbl">'+mcT('lLimitPx','Limit price')+'</label><input class="mtr-in" id="mtrLim" type="number" inputmode="decimal" step="any" min="0" placeholder="—"><div class="mtr-limh" id="mtrLimH"></div></div>'
+      +'<div id="mtrLimWrap" hidden><label class="mtr-lbl">'+mcT('lLimitPx','Limit price')+'</label><input class="mtr-in" id="mtrLim" type="number" inputmode="decimal" step="any" min="0" placeholder="-"><div class="mtr-limh" id="mtrLimH"></div></div>'
       +'<label class="mtr-lbl">'+mcT('lAmountIn','Amount (USD)')+'</label>'
       +'<input class="mtr-in" id="mtrAmt" type="number" inputmode="decimal" value="100" min="1" max="100000" step="any">'
       +'<label class="mtr-lbl">'+mcT('lLeverage','Leverage')+' <b id="mtrLevV" style="color:#c2f64a">20×</b></label>'
@@ -452,18 +452,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<label class="mtr-adv"><input type="checkbox" id="mtrAdvChk"><span>'+mcT('mtAdvanced','Advanced')+'</span></label>'
       +'<div class="mtr-advbox" id="mtrAdv" hidden>'
       +  '<label class="mtr-lbl">'+mcT('lExchangePt','Exchange (sets margin rate)')+'</label>'
-      +  '<select class="mtr-in" id="mtrEx"><option value="0.4">Binance — 0.4%</option><option value="0.5" selected>Bybit — 0.5%</option><option value="0.5">OKX — 0.5%</option><option value="0.5">Bitget — 0.5%</option><option value="0.5">KuCoin — 0.5%</option><option value="0.5">Gate — 0.5%</option><option value="0.6">Kraken — 0.6%</option></select>'
-      +  '<label class="mtr-lbl">'+mcT('lStopOpt','Stop-loss (optional)')+'</label><input class="mtr-in" id="mtrSL" type="number" inputmode="decimal" step="any" placeholder="—">'
-      +  '<label class="mtr-lbl">'+mcT('lTpOpt','Take-profit (optional)')+'</label><input class="mtr-in" id="mtrTP" type="number" inputmode="decimal" step="any" placeholder="—">'
+      +  '<select class="mtr-in" id="mtrEx"><option value="0.4">Binance - 0.4%</option><option value="0.5" selected>Bybit - 0.5%</option><option value="0.5">OKX - 0.5%</option><option value="0.5">Bitget - 0.5%</option><option value="0.5">KuCoin - 0.5%</option><option value="0.5">Gate - 0.5%</option><option value="0.6">Kraken - 0.6%</option></select>'
+      +  '<label class="mtr-lbl">'+mcT('lStopOpt','Stop-loss (optional)')+'</label><input class="mtr-in" id="mtrSL" type="number" inputmode="decimal" step="any" placeholder="-">'
+      +  '<label class="mtr-lbl">'+mcT('lTpOpt','Take-profit (optional)')+'</label><input class="mtr-in" id="mtrTP" type="number" inputmode="decimal" step="any" placeholder="-">'
       +  '<label class="mtr-lbl">'+mcT('lTrail','Trailing stop')+' (%)</label><input class="mtr-in" id="mtrTr" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
       +  '<label class="mtr-lbl">'+mcT('lBreakEven','Break-even at ROE')+' (%)</label><input class="mtr-in" id="mtrBE" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
       +'</div>'
-      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">—</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">—</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">—</b></div></div>'
+      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">-</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">-</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">-</b></div></div>'
       +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen','Open demo trade')+'</button>'
       +'<div class="mtr-msg" id="mtrMsg"></div>'
       +'</div></div>';
     ov.appendChild(el);
-    // windowed modal: the dimmed backdrop swallows everything — no scroll/pan bleeding through to the chart
+    // windowed modal: the dimmed backdrop swallows everything - no scroll/pan bleeding through to the chart
     el.addEventListener('touchmove',function(e){if(!e.target.closest('.mfc-trf-b'))e.preventDefault();},{passive:false});
     el.addEventListener('pointerdown',function(e){if(!e.target.closest('.mfc-trwin')){e.preventDefault();e.stopPropagation();}});
     el.addEventListener('wheel',function(e){if(!e.target.closest('.mfc-trf-b'))e.preventDefault();},{passive:false});
@@ -471,7 +471,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function closeWin(){try{clearInterval(updT);}catch(e){}el.remove();}
     var xb=el.querySelector('.mfc-trf-x');
     xb.addEventListener('click',closeWin);
-    xb.addEventListener('pointerup',function(e){e.preventDefault();closeWin();}); // belt & braces — the old float ✕ missed taps on some phones
+    xb.addEventListener('pointerup',function(e){e.preventDefault();closeWin();}); // belt & braces - the old float ✕ missed taps on some phones
     // coin picker (independent of the chart)
     if(window.mpLoadTokens)try{window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;});}catch(e){}
     var symQ=q('mtrSymQ'),symL=q('mtrSymL'),symBtn=q('mtrSymBtn');
@@ -493,17 +493,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     q('mtrAdvChk').addEventListener('change',function(){q('mtrAdv').hidden=!this.checked;});
     q('mtrEx').addEventListener('change',function(){mmr=(+this.value||0.5)/100;upd();});
     function livePx(){
-      // FRESH price only — a stale window.mpLivePrices[sym] (e.g. seeded long ago by another open position on the same
+      // FRESH price only - a stale window.mpLivePrices[sym] (e.g. seeded long ago by another open position on the same
       // coin and never updated because the coin isn't in the live WS feed) must NEVER become a new trade's entry: it
       // gave a wrong entry → wrong liq → the trade "instantly liquidated / vanished". So prefer the LIVE chart for this
-      // symbol (REST-resynced ≤60s + live ticks — exactly the price the user sees), then mpLivePrices ONLY if <15s old.
+      // symbol (REST-resynced ≤60s + live ticks - exactly the price the user sees), then mpLivePrices ONLY if <15s old.
       for(var i=0;i<panes.length;i++){var pp=panes[i];if(pp&&pp.sym===tSym&&pp.lastBar&&+pp.lastBar.close>0)return +pp.lastBar.close;}
       var lp=window.mpLivePrices&&window.mpLivePrices[tSym];
       if(lp&&lp.p>0&&lp.t&&(Date.now()-lp.t)<15000)return +lp.p;
       // nothing fresh → pull a REST price + seed the map, return 0 so the opener asks the user to retry (never opens stale)
       fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
       return 0;}
-    // Market fills now; Limit rests until the market reaches the price and fills AT it (mpOrders owns the order —
+    // Market fills now; Limit rests until the market reaches the price and fills AT it (mpOrders owns the order -
     // server-side when signed in, so it fills with the phone in a pocket). Same wrong-side rule as the terminal.
     function limPx(){var e=q('mtrLim');var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
     function limHint(){var h=q('mtrLimH');if(!h)return;
@@ -525,7 +525,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(epx>0){var liq=side==='long'?epx*(1-(1-mmr)/lev):epx*(1+(1-mmr)/lev);
         q('mtrPx').textContent=fp(epx);
         q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
-      }else{q('mtrPx').textContent='…';q('mtrLiq').textContent='—';}
+      }else{q('mtrPx').textContent='…';q('mtrLiq').textContent='-';}
       q('mtrSz').textContent=fp(amt*lev);q('mtrNot').textContent=fp(amt*lev);
       q('mtrGo').classList.toggle('short',side==='short');limHint();}
     upd();
@@ -535,19 +535,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
       if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
       if(window.mpTradeGate&&!window.mpTradeGate(tSym,side))return;
-      if(oType==='limit'){ // rest the order — no fresh-price fetch needed: the server re-checks the side before accepting
+      if(oType==='limit'){ // rest the order - no fresh-price fetch needed: the server re-checks the side before accepting
         var _lp=limPx(),_mk=livePx(),_lg=side==='long';
         if(!isFinite(_lp)||_lp<=0){msg.style.color='#ff6258';msg.textContent=mcT('otNoPx','Enter a limit price.');return;}
-        if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx','Waiting for a live price — try again in a second.');return;}
+        if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx','Waiting for a live price - try again in a second.');return;}
         /* the level may sit either side of the market */
         var _s9=parseFloat(q('mtrSL').value),_t9=parseFloat(q('mtrTP').value);
         _s9=(isFinite(_s9)&&(_lg?_s9<_lp:_s9>_lp))?_s9:null;_t9=(isFinite(_t9)&&(_lg?_t9>_lp:_t9<_lp))?_t9:null; // side-checked against the LIMIT price
-        if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}
+        if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading - try again in a second.';return;}
         window.mpOrders.add({sym:tSym,side:side,px:_lp,lev:lev,margin:amt,sl:_s9,tp:_t9},function(){
-          msg.style.color='#f0c35a';msg.textContent=mcT('otPlaced','Order placed ✓')+' — '+tSym+' '+side+' '+fp(_lp);
+          msg.style.color='#f0c35a';msg.textContent=mcT('otPlaced','Order placed ✓')+' - '+tSym+' '+side+' '+fp(_lp);
           try{window.mpBuzz&&window.mpBuzz([12]);}catch(e){}
           try{if(window.__mpTrack)window.__mpTrack('limitorder',tSym+' '+side+' @'+_lp);}catch(e){}
-        },function(m){msg.style.color='#ff6258';msg.textContent=m||mcT('otFail','Could not place the order — try again.');});
+        },function(m){msg.style.color='#ff6258';msg.textContent=m||mcT('otFail','Could not place the order - try again.');});
         return;
       }
       // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
@@ -557,12 +557,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');
       fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         var px=j&&+(j.price||j.p||0);if(!(px>0))px=livePx();
-        if(!(px>0)){_mcDone();msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
+        if(!(px>0)){_mcDone();msg.style.color='#ff6258';msg.textContent='Waiting for a live price - try again in a second.';return;}
         try{if(j&&j.state!=null&&window.mpMktState)window.mpMktState[String(tSym).toUpperCase()]=String(j.state);}catch(_){}
-        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){_mcDone();msg.style.color='#ff6258';msg.textContent=tSym+' market is closed — you can trade it when it reopens.';return;} // stocks: block while the exchange is shut (consistent with the plan form)
+        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){_mcDone();msg.style.color='#ff6258';msg.textContent=tSym+' market is closed - you can trade it when it reopens.';return;} // stocks: block while the exchange is shut (consistent with the plan form)
         var long=side==='long';
         var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
-        if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side — drop so it can't self-trigger
+        if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side - drop so it can't self-trigger
         if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
         var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
         var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
@@ -577,7 +577,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
         try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
         try{if(typeof updMT==='function')updMT();}catch(e){}
-        msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+tSym+' '+side+' '+lev+'× · $'+amt;
+        msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' - '+tSym+' '+side+' '+lev+'× · $'+amt;
         var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
         };
@@ -614,15 +614,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     body.innerHTML='<div class="mfc-calc-grid"><div class="mfc-calc-seg" id="mfcCs"><button class="on" data-side="long">'+mcT('long','Long')+'</button><button data-side="short">'+mcT('short','Short')+'</button></div>'
       +'<label>'+mcT('lEntry','Entry price')+' (USD)</label><input id="mfcCe" type="number" inputmode="decimal" value="'+(pr||'').toString()+'" step="any">'
       +'<label>'+mcT('lLeverage','Leverage')+'</label><input id="mfcCl" type="number" inputmode="numeric" value="10" step="any">'
-      +'<div class="mfc-calc-out"><div class="big" id="mfcCo">—</div><div class="sub" id="mfcCd">'+mcT('rEstLiq','Estimated liquidation price')+'</div></div></div>';
+      +'<div class="mfc-calc-out"><div class="big" id="mfcCo">-</div><div class="sub" id="mfcCd">'+mcT('rEstLiq','Estimated liquidation price')+'</div></div></div>';
     var side='long';
-    function calc(){var e=+body.querySelector('#mfcCe').value,L=+body.querySelector('#mfcCl').value,mmr=0.005;if(!(e>0)||!(L>0)){body.querySelector('#mfcCo').textContent='—';return;}var liq=side==='long'?e*(1-(1-mmr)/L):e*(1+(1-mmr)/L);var dist=(1/L-mmr)*100;body.querySelector('#mfcCo').textContent=fp(liq);body.querySelector('#mfcCd').textContent=(side==='long'?mcT('long','Long'):mcT('short','Short'))+' '+mcT('mtLiq','liq')+' · '+dist.toFixed(2)+'% '+mcT('mcFromEntry','from entry');}
+    function calc(){var e=+body.querySelector('#mfcCe').value,L=+body.querySelector('#mfcCl').value,mmr=0.005;if(!(e>0)||!(L>0)){body.querySelector('#mfcCo').textContent='-';return;}var liq=side==='long'?e*(1-(1-mmr)/L):e*(1+(1-mmr)/L);var dist=(1/L-mmr)*100;body.querySelector('#mfcCo').textContent=fp(liq);body.querySelector('#mfcCd').textContent=(side==='long'?mcT('long','Long'):mcT('short','Short'))+' '+mcT('mtLiq','liq')+' · '+dist.toFixed(2)+'% '+mcT('mcFromEntry','from entry');}
     body.querySelector('#mfcCs').addEventListener('click',function(e){var b=e.target.closest('[data-side]');if(!b)return;side=b.getAttribute('data-side');this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});calc();});
     body.querySelector('#mfcCe').addEventListener('input',calc);body.querySelector('#mfcCl').addEventListener('input',calc);calc();}
   function buildAi(body,p){
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){body.innerHTML='<p style="color:#cfd4da;font-size:14px;line-height:1.5">'+mcT('mcAiSignin','Sign in (free) to ask the AI about this chart.')+'</p><button class="mfc-b on" data-auth-open style="margin-top:10px">'+mcT('mcSigninFree','Sign in free')+'</button>';return;}
-    body.innerHTML='<div class="mfc-ai-body" id="mfcAB"><div class="mfc-ai-msg ai">'+mcT('mcAskAbout','Ask me about')+' '+p.sym+' '+tfLabel(p.tf)+' — '+mcT('mcAiHint','trend, levels, or what the indicators suggest.')+'</div></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
+    body.innerHTML='<div class="mfc-ai-body" id="mfcAB"><div class="mfc-ai-msg ai">'+mcT('mcAskAbout','Ask me about')+' '+p.sym+' '+tfLabel(p.tf)+' - '+mcT('mcAiHint','trend, levels, or what the indicators suggest.')+'</div></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
     var msgs=body.querySelector('#mfcAB'),inp=body.querySelector('#mfcAI'),btn=body.querySelector('#mfcAS'),busy=false;
     function add(cls,txt){var d=document.createElement('div');d.className='mfc-ai-msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
     function ctx(){
@@ -632,11 +632,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     }
     function send(){var q=(inp.value||'').trim();if(!q||busy)return;busy=true;inp.value='';add('me',q);var bub=add('ai','…');
       fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:[],stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
-        if(!resp.ok){busy=false;bub.textContent=resp.status===429?'Daily AI limit reached — resets tomorrow.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI is part of MarginPad Premium ($3.99/mo) — upgrade from your profile to use it.':'Could not reach AI — try again.'));return;}
+        if(!resp.ok){busy=false;bub.textContent=resp.status===429?'Daily AI limit reached - resets tomorrow.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI is part of MarginPad Premium ($3.99/mo) - upgrade from your profile to use it.':'Could not reach AI - try again.'));return;}
         if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';
-        (function pump(){rd.read().then(function(res){if(res.done){busy=false;if(!acc)bub.textContent='No answer — try again.';return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;bub.textContent=acc;msgs.scrollTop=msgs.scrollHeight;}}catch(e){}}pump();}).catch(function(){busy=false;});})();
-      }).catch(function(){busy=false;bub.textContent='Network error — try again.';});}
+        (function pump(){rd.read().then(function(res){if(res.done){busy=false;if(!acc)bub.textContent='No answer - try again.';return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;bub.textContent=acc;msgs.scrollTop=msgs.scrollHeight;}}catch(e){}}pump();}).catch(function(){busy=false;});})();
+      }).catch(function(){busy=false;bub.textContent='Network error - try again.';});}
     btn.addEventListener('click',send);inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});setTimeout(function(){inp.focus();},40);}
   // ---- open / close ----
   var entered=false;
@@ -648,7 +648,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
   function open(sym){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
     if(sym){var _S=String(sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_S){forcePair=_S;if(panes.length){try{var _st=ov.querySelector('#mfcStage');panes.forEach(function(pp){try{if(pp.chart)pp.chart.remove();}catch(e){}try{if(pp.sub)pp.sub.remove();}catch(e){}pp.sub=null;});if(_st)_st.innerHTML='';panes=[];activeI=0;}catch(e){}}}}
-    showGate(false);proceed(); // portrait works too — the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
+    showGate(false);proceed(); // portrait works too - the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
     if(!panes.length){
@@ -667,10 +667,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var backEl=null,backWait=false,backBrowse=false;
   function showBack(){ if(!backEl){ backEl=document.createElement('div');backEl.className='mfc-back';
       backEl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 3v2M12 19v2"/></svg>'
-        +'<h3>'+mcT('mcBackT','Turn your phone upright')+'</h3><p>'+mcT('mcBackS','Charts closed — rotate back to keep browsing.')+'</p>'
+        +'<h3>'+mcT('mcBackT','Turn your phone upright')+'</h3><p>'+mcT('mcBackS','Charts closed - rotate back to keep browsing.')+'</p>'
         +'<button class="mfc-back-x" type="button">'+mcT('mcBackX','Exit anyway')+'</button>';
       ov.appendChild(backEl);
-      backEl.addEventListener('click',function(){finishBack();}); /* the whole dark panel is the exit — no button hunting, zoom-proof */ }
+      backEl.addEventListener('click',function(){finishBack();}); /* the whole dark panel is the exit - no button hunting, zoom-proof */ }
     backEl.hidden=false; var st=ov.querySelector('#mfcStage'),bar=ov.querySelector('.mfc-bar');if(st)st.style.visibility='hidden';if(bar)bar.style.visibility='hidden'; }
   function finishBack(){ backWait=false; if(backEl)backEl.hidden=true;
     var st=ov&&ov.querySelector('#mfcStage'),bar=ov&&ov.querySelector('.mfc-bar');if(st)st.style.visibility='';if(bar)bar.style.visibility='';
@@ -683,12 +683,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{location.replace('/');}catch(e){location.href='/';}
   }
   window.mpOpenCharts=open;
-  try{window.__mfcPanes=function(){return panes;};}catch(e){} // permanent read-only debug accessor (mirror of desktop window.__mpWinsDbg) — lets headless E2E introspect the live pane bars; panes is reassigned on forcePair so return it via closure
+  try{window.__mfcPanes=function(){return panes;};}catch(e){} // permanent read-only debug accessor (mirror of desktop window.__mpWinsDbg) - lets headless E2E introspect the live pane bars; panes is reassigned on forcePair so return it via closure
   // live ticks
   document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym)live(p);});});
   setInterval(function(){if(!ov||ov.hidden)return;panes.forEach(function(p){
     if(!p.candle)return;
-    // (1) re-assert autoScale ONLY at the realtime edge — a locked/drifted price scale (e.g. the user dragged the
+    // (1) re-assert autoScale ONLY at the realtime edge - a locked/drifted price scale (e.g. the user dragged the
     //     price axis) makes the chart LOOK frozen even though live() keeps updating; heal it in ~2s like desktop.
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(!p._userPS&&(!vr||!p.bars||!p.bars.length||vr.to>=p.bars.length-2))p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     // (2) newest bar >1.5 intervals behind now → new bars stopped forming; force a klines re-sync (independent of price freshness)
@@ -703,12 +703,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
   // candle-close countdown (2026-07-30): shares the desktop's server-skew (window.__mpSrvSkew); one 1s ticker for all panes, guarded on the overlay being open. Stalled feed -> '--:--'.
   (function(){function skew(){if(window.__mpSrvSkew!=null||window.__mpSrvSkewP)return;window.__mpSrvSkewP=1;fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){window.__mpSrvSkew=(d&&+d.ts>0)?(+d.ts-Date.now()):0;}).catch(function(){window.__mpSrvSkew=0;});}
-  setInterval(function(){if(!ov||ov.hidden||document.hidden||!panes.length)return;skew();var nowS=(window.mpSrvNow?window.mpSrvNow():(Date.now()+(+window.__mpSrvSkew||0)))/1000; /* SAME clock as the bar roll (mpSrvNow) — the cached /api/prices skew made the timer lag the roll */
+  setInterval(function(){if(!ov||ov.hidden||document.hidden||!panes.length)return;skew();var nowS=(window.mpSrvNow?window.mpSrvNow():(Date.now()+(+window.__mpSrvSkew||0)))/1000; /* SAME clock as the bar roll (mpSrvNow) - the cached /api/prices skew made the timer lag the roll */
     panes.forEach(function(p){var el=p.el&&p.el.querySelector('.mfc-pl-cd');if(!el)return;var iv=parseInt(p.tf,10)*60;if(!(iv>0)){el.textContent='';return;}
       var stale=!p.lastBar||((nowS-p.lastBar.time)>iv*1.5+90);var sec=Math.max(0,Math.floor(iv-(nowS%iv)));var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),x=sec%60,P=function(n){return (n<10?'0':'')+n;};
       el.classList.toggle('stale',!!stale);el.textContent=stale?'--:--':(iv>=3600?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x)));});},1000);})();
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)resyncKlines(p);});});
-  window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)resyncKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange (re-sync, guarded — don't yank a scrolled-back user)
+  window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)resyncKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange (re-sync, guarded - don't yank a scrolled-back user)
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mcharts]');if(!t)return;if(isMob()){e.preventDefault();e.stopPropagation();open();}},true);
   // landing on /charts on a phone → open the full-screen experience automatically

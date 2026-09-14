@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo — MarginPad</title>
+<title>Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo - MarginPad</title>
 <meta name="description" content="Órdenes a mercado vs órdenes límite explicadas para futuros cripto: ejecución instantánea y slippage frente a control del precio y comisiones maker, cuándo usar cada una, y dónde encajan las órdenes stop y stop-limit." />
 <meta name="keywords" content="limit vs market order, market order, limit order crypto, order types crypto futures, maker vs taker order, stop limit order, slippage limit order, which order type to use" />
 <link rel="canonical" href="https://marginpad.io/es/blog/limit-vs-market-orders/" />
@@ -45,7 +45,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuál es la diferencia entre una orden a mercado y una orden límite?","acceptedAnswer":{"@type":"Answer","text":"Una orden a mercado se ejecuta al instante al mejor precio disponible: tomas lo que ofrezca el libro de órdenes, lo que puede implicar slippage en mercados rápidos o con poca liquidez. Una orden límite se ejecuta solo a tu precio elegido o mejor: tú controlas el precio, pero la orden puede no ejecutarse nunca si el precio no llega a ese nivel. Mercado = velocidad; límite = control del precio."}},{"@type":"Question","name":"¿Qué tipo de orden tiene comisiones más bajas?","acceptedAnswer":{"@type":"Answer","text":"Las órdenes límite que quedan pendientes en el libro suelen pagar la comisión maker más baja (y algunos exchanges pagan un rebate maker), porque añaden liquidez. Las órdenes a mercado retiran liquidez y pagan la comisión taker más alta. A lo largo de muchas operaciones esa diferencia se acumula, lo que es una de las razones por las que los traders activos prefieren las órdenes límite."}},{"@type":"Question","name":"¿Qué es una orden stop o stop-limit?","acceptedAnswer":{"@type":"Answer","text":"Una orden stop es un disparador: cuando el precio llega a tu nivel de stop, dispara una orden a mercado (stop-market) o una orden límite (stop-limit). Los traders usan los stops para fijar un stop-loss o para entrar en una ruptura. El stop-market garantiza la salida pero no el precio; el stop-limit controla el precio pero puede no ejecutarse en un movimiento rápido."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Límite vs mercado","item":"https://marginpad.io/es/blog/limit-vs-market-orders/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -80,26 +80,26 @@
   <article>
     <h1>Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo</h1>
     <div class="meta">Básicos · 5 min de lectura · Actualizado en junio de 2026</div>
-    <p>Toda operación que colocas es de uno de dos tipos básicos: una <strong>orden a mercado</strong> o una <strong>orden límite</strong>. Elegir la equivocada te cuesta dinero &mdash; en slippage, en comisiones, o en una ejecución que nunca quisiste. Aquí está la diferencia, cuándo usar cada una, y dónde encajan las órdenes stop. <em>(Solo con fines educativos &mdash; no es asesoramiento financiero.)</em></p>
+    <p>Toda operación que colocas es de uno de dos tipos básicos: una <strong>orden a mercado</strong> o una <strong>orden límite</strong>. Elegir la equivocada te cuesta dinero - en slippage, en comisiones, o en una ejecución que nunca quisiste. Aquí está la diferencia, cuándo usar cada una, y dónde encajan las órdenes stop. <em>(Solo con fines educativos - no es asesoramiento financiero.)</em></p>
     <h2>Orden a mercado: velocidad, a cierto precio</h2>
     <p>Una <strong>orden a mercado</strong> se ejecuta <strong>de inmediato</strong> al mejor precio disponible en ese momento en el libro de órdenes. Tienes garantizada la ejecución, pero <strong>no</strong> el precio. En un mercado que se mueve rápido o con poca liquidez, tu orden «recorre el libro», ejecutándose a precios progresivamente peores: esa diferencia entre el precio que viste y el que obtuviste es el <a href="/es/blog/what-is-slippage/">slippage</a>. Las órdenes a mercado también pagan la <a href="/es/blog/maker-vs-taker-fees/">comisión taker</a> más alta porque retiran liquidez.</p>
-    <p><strong>Úsala cuando</strong> entrar o salir <em>ahora mismo</em> importa más que unos pocos ticks de precio &mdash; cerrar rápido una operación perdedora, o entrar en un movimiento que no puedes dejar pasar.</p>
+    <p><strong>Úsala cuando</strong> entrar o salir <em>ahora mismo</em> importa más que unos pocos ticks de precio - cerrar rápido una operación perdedora, o entrar en un movimiento que no puedes dejar pasar.</p>
     <h2>Orden límite: control del precio, sin garantía</h2>
-    <p>Una <strong>orden límite</strong> se ejecuta solo a <strong>tu precio o mejor</strong>. Tú fijas el precio; la orden queda pendiente en el libro hasta que el mercado la alcanza. La contrapartida: si el precio nunca llega ahí, <strong>nunca se ejecuta</strong>. La ventaja es real &mdash; controlas tu entrada con exactitud, evitas el slippage, y normalmente pagas la <strong>comisión maker</strong> más baja (a veces un rebate) porque estás añadiendo liquidez.</p>
-    <p><strong>Úsala cuando</strong> el precio importa más que la velocidad &mdash; entrar en un nivel específico, escalar una posición, o tomar ganancias en un objetivo.</p>
+    <p>Una <strong>orden límite</strong> se ejecuta solo a <strong>tu precio o mejor</strong>. Tú fijas el precio; la orden queda pendiente en el libro hasta que el mercado la alcanza. La contrapartida: si el precio nunca llega ahí, <strong>nunca se ejecuta</strong>. La ventaja es real - controlas tu entrada con exactitud, evitas el slippage, y normalmente pagas la <strong>comisión maker</strong> más baja (a veces un rebate) porque estás añadiendo liquidez.</p>
+    <p><strong>Úsala cuando</strong> el precio importa más que la velocidad - entrar en un nivel específico, escalar una posición, o tomar ganancias en un objetivo.</p>
     <h2>Órdenes stop y stop-limit</h2>
     <p>Una <strong>orden stop</strong> es un disparador, no un tercer tipo de precio. Cuando el mercado llega a tu nivel de stop, dispara una orden a mercado (<strong>stop-market</strong>) o una orden límite (<strong>stop-limit</strong>):</p>
     <ul>
-    <li><strong>Stop-market</strong> &mdash; garantiza tu salida, pero no a qué precio (buena para un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> firme que debes respetar).</li>
-    <li><strong>Stop-limit</strong> &mdash; controla el precio, pero puede <em>no ejecutarse</em> si el mercado salta de golpe atravesando tu límite. Peligrosa como stop-loss en un desplome.</li>
+    <li><strong>Stop-market</strong> - garantiza tu salida, pero no a qué precio (buena para un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> firme que debes respetar).</li>
+    <li><strong>Stop-limit</strong> - controla el precio, pero puede <em>no ejecutarse</em> si el mercado salta de golpe atravesando tu límite. Peligrosa como stop-loss en un desplome.</li>
     </ul>
     <h2>Una regla simple</h2>
     <p>Usa <strong>órdenes límite para entrar</strong> (normalmente tienes tiempo y quieres un buen precio), y un <strong>stop-market para protegerte</strong> (necesitas que la salida realmente ocurra). Recurre a una orden a mercado sencilla solo cuando la velocidad de verdad le gane al precio. A lo largo de cientos de operaciones, el ahorro en comisiones y slippage de las órdenes límite es significativo.</p>
     <h2>Practica ambas antes de que te cuesten dinero</h2>
-    <p>La mejor forma de sentir la diferencia es usarlas. En <a href="/es/paper-trade">Paper Trade de MarginPad</a> puedes abrir posiciones al precio en vivo y ensayar entradas, stops y objetivos &mdash; sin cuenta y sin dinero en riesgo &mdash; hasta que elegir el tipo de orden correcto sea automático. Calcula el tamaño de cada operación con la <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> y conoce tu <a href="/es/calculators?c=liq">precio de liquidación</a> antes de hacer clic.</p>
-    <div class="callout"><div class="k">PRACTICA LOS TIPOS DE ORDEN</div><p style="margin-bottom:14px">Ensaya entradas, stops y objetivos al precio en vivo &mdash; sin cuenta, sin dinero en riesgo &mdash; hasta que el tipo de orden correcto te salga natural.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
+    <p>La mejor forma de sentir la diferencia es usarlas. En <a href="/es/paper-trade">Paper Trade de MarginPad</a> puedes abrir posiciones al precio en vivo y ensayar entradas, stops y objetivos - sin cuenta y sin dinero en riesgo - hasta que elegir el tipo de orden correcto sea automático. Calcula el tamaño de cada operación con la <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> y conoce tu <a href="/es/calculators?c=liq">precio de liquidación</a> antes de hacer clic.</p>
+    <div class="callout"><div class="k">PRACTICA LOS TIPOS DE ORDEN</div><p style="margin-bottom:14px">Ensaya entradas, stops y objetivos al precio en vivo - sin cuenta, sin dinero en riesgo - hasta que el tipo de orden correcto te salga natural.</p><a class="cta" href="/es/paper-trade">Abrir Paper Trade &rarr;</a></div>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -126,6 +126,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

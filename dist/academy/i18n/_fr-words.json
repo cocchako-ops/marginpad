@@ -9,19 +9,19 @@
    "cards": [
     {
      "h": "Une position, c’est un pari ouvert",
-     "p": "Avant de trader, tu es flat : tu ne possèdes rien et rien ne peut t’arriver. À la seconde où tu achètes ou vends, tu as une position — un pari ouvert, avec un sens et une taille. Elle reste ouverte, gagnant et perdant à chaque mouvement de prix, jusqu’à ce que tu la fermes. Quand un trader dit « je suis en position », c’est comme dire « j’ai mis de l’argent là-dessus »."
+     "p": "Avant de trader, tu es flat : tu ne possèdes rien et rien ne peut t’arriver. À la seconde où tu achètes ou vends, tu as une position - un pari ouvert, avec un sens et une taille. Elle reste ouverte, gagnant et perdant à chaque mouvement de prix, jusqu’à ce que tu la fermes. Quand un trader dit « je suis en position », c’est comme dire « j’ai mis de l’argent là-dessus »."
     },
     {
      "h": "Long, c’est vouloir que ça monte",
-     "p": "Être long, c’est gagner quand le prix monte. Achète du Bitcoin à 60 000 $, revends-le à 63 000 $, et tu as fait 3 000 $ par coin — c’est un long. Rien n’est emprunté, rien n’est exotique : c’est acheter, avec un nom. Presque tout le monde commence là, parce que ça colle à la façon dont on pense déjà à posséder quelque chose. « Long BTC » veut simplement dire : je suis positionné pour que le prix monte."
+     "p": "Être long, c’est gagner quand le prix monte. Achète du Bitcoin à 60 000 $, revends-le à 63 000 $, et tu as fait 3 000 $ par coin - c’est un long. Rien n’est emprunté, rien n’est exotique : c’est acheter, avec un nom. Presque tout le monde commence là, parce que ça colle à la façon dont on pense déjà à posséder quelque chose. « Long BTC » veut simplement dire : je suis positionné pour que le prix monte."
     },
     {
      "h": "Le short gagne quand le prix baisse",
-     "p": "Le short est le miroir. Tu vends d’abord à un prix haut et tu rachètes plus tard plus bas, et la différence est pour toi. Short à 60 000 $, rachat à 57 000 $, et tu as gardé 3 000 $ par coin pendant que le marché tombait. Sur les futures, aucun coin ne change de mains — tu détiens un contrat qui te paie quand le prix baisse. C’est comme ça qu’un trader gagne de l’argent dans un marché en baisse."
+     "p": "Le short est le miroir. Tu vends d’abord à un prix haut et tu rachètes plus tard plus bas, et la différence est pour toi. Short à 60 000 $, rachat à 57 000 $, et tu as gardé 3 000 $ par coin pendant que le marché tombait. Sur les futures, aucun coin ne change de mains - tu détiens un contrat qui te paie quand le prix baisse. C’est comme ça qu’un trader gagne de l’argent dans un marché en baisse."
     },
     {
      "h": "La taille finit la phrase",
-     "p": "Le sens seul n’est pas une position. « Long BTC » ne dit rien de ce qu’un mouvement te coûte ; « long BTC, 500 $ » le dit. La taille de position, c’est l’argent au travail, et c’est elle qui décide de ce que vaut chaque mouvement de 1% : 500 $ qui bougent de 1%, ça fait 5 $, en gain comme en perte. Les débutants se disputent sur le sens et ignorent la taille — la moitié qui contrôle réellement les dégâts."
+     "p": "Le sens seul n’est pas une position. « Long BTC » ne dit rien de ce qu’un mouvement te coûte ; « long BTC, 500 $ » le dit. La taille de position, c’est l’argent au travail, et c’est elle qui décide de ce que vaut chaque mouvement de 1% : 500 $ qui bougent de 1%, ça fait 5 $, en gain comme en perte. Les débutants se disputent sur le sens et ignorent la taille - la moitié qui contrôle réellement les dégâts."
     }
    ],
    "quiz": [
@@ -44,7 +44,7 @@
      ]
     },
     {
-     "q": "Deux traders sont longs BTC — un à 200 $, l’autre à 2 000 $. Un mouvement de 1% vaut :",
+     "q": "Deux traders sont longs BTC - un à 200 $, l’autre à 2 000 $. Un mouvement de 1% vaut :",
      "o": [
       "2 $ et 20 $",
       "2 $ pour chacun des deux",
@@ -60,15 +60,15 @@
    "cards": [
     {
      "h": "Bull et bear, c’est la direction",
-     "p": "Un bull market est une longue période de hausse ; un bear market, une longue période de baisse. Les animaux viennent de leur façon d’attaquer : le taureau lance ses cornes vers le haut, l’ours abat sa patte vers le bas. Te dire bullish, c’est attendre la hausse ; bearish, la baisse. Ce sont des mots lents — ils décrivent des mois, pas cet après-midi."
+     "p": "Un bull market est une longue période de hausse ; un bear market, une longue période de baisse. Les animaux viennent de leur façon d’attaquer : le taureau lance ses cornes vers le haut, l’ours abat sa patte vers le bas. Te dire bullish, c’est attendre la hausse ; bearish, la baisse. Ce sont des mots lents - ils décrivent des mois, pas cet après-midi."
     },
     {
      "h": "Pump et dump, c’est la vitesse",
-     "p": "Un pump est une hausse rapide, un dump une chute rapide. Ni l’un ni l’autre ne dit pourquoi. Attention quand même : « pump and dump » en une seule expression désigne une combine — un groupe achète discrètement un petit coin, en fait bruyamment la promotion, puis vend aux acheteurs qu’il a attirés. La hausse est réelle, et la sortie leur appartient, pas à toi."
+     "p": "Un pump est une hausse rapide, un dump une chute rapide. Ni l’un ni l’autre ne dit pourquoi. Attention quand même : « pump and dump » en une seule expression désigne une combine - un groupe achète discrètement un petit coin, en fait bruyamment la promotion, puis vend aux acheteurs qu’il a attirés. La hausse est réelle, et la sortie leur appartient, pas à toi."
     },
     {
      "h": "Correction, krach, et la différence",
-     "p": "La convention habituelle : une baisse d’environ 10% depuis un sommet récent s’appelle une correction, et une chute de 20% ou plus, un bear market. Un krach n’est pas une taille, c’est une vitesse — l’essentiel de la chute arrive en quelques heures ou quelques jours. En crypto, une journée à 10% est ordinaire, alors les gens empruntent ces mots à la légère. Demande le chiffre, pas le nom."
+     "p": "La convention habituelle : une baisse d’environ 10% depuis un sommet récent s’appelle une correction, et une chute de 20% ou plus, un bear market. Un krach n’est pas une taille, c’est une vitesse - l’essentiel de la chute arrive en quelques heures ou quelques jours. En crypto, une journée à 10% est ordinaire, alors les gens empruntent ces mots à la légère. Demande le chiffre, pas le nom."
     },
     {
      "h": "Ces mots décrivent, ils ne prédisent jamais",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "La marge, c’est ton argent dedans",
-     "p": "La marge est l’argent que tu déposes pour tenir une position. Le notionnel est la taille complète que cette position contrôle. Dépose 100 $ de marge pour contrôler 1 000 $ de Bitcoin : 100 $ sont ta marge, 1 000 $ ton notionnel. Chaque frais, chaque profit et chaque perte se calcule sur le notionnel puis atterrit dans ta marge — c’est exactement pour ça que de petits pourcentages semblent énormes."
+     "p": "La marge est l’argent que tu déposes pour tenir une position. Le notionnel est la taille complète que cette position contrôle. Dépose 100 $ de marge pour contrôler 1 000 $ de Bitcoin : 100 $ sont ta marge, 1 000 $ ton notionnel. Chaque frais, chaque profit et chaque perte se calcule sur le notionnel puis atterrit dans ta marge - c’est exactement pour ça que de petits pourcentages semblent énormes."
     },
     {
      "h": "Le levier, c’est le rapport",
@@ -119,7 +119,7 @@
     },
     {
      "h": "La liquidation, c’est la sortie forcée",
-     "p": "Tes pertes sortent de ta marge. Quand la perte l’a presque entièrement mangée, l’exchange ferme la position à ta place, parce que la partie empruntée doit être protégée. C’est la liquidation. Ce n’est pas un avertissement — c’est la fin de cette position, au prix où le marché se trouve à cet instant. À 10x, un mouvement d’environ 10% contre toi suffit."
+     "p": "Tes pertes sortent de ta marge. Quand la perte l’a presque entièrement mangée, l’exchange ferme la position à ta place, parce que la partie empruntée doit être protégée. C’est la liquidation. Ce n’est pas un avertissement - c’est la fin de cette position, au prix où le marché se trouve à cet instant. À 10x, un mouvement d’environ 10% contre toi suffit."
     },
     {
      "h": "Laquelle est en profit",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Ordre market : la vitesse avant le prix",
-     "p": "Un ordre market dit : prends le prix disponible maintenant, quel qu’il soit. Il s’exécute immédiatement — l’exécution, c’est le moment où ton ordre devient vraiment une position — parce qu’il accepte ce que l’autre côté demande à cet instant. Tu entres à tous les coups. Tu n’obtiens pas toujours le prix que tu as vu. Utilise-le quand être dedans compte plus qu’être précis."
+     "p": "Un ordre market dit : prends le prix disponible maintenant, quel qu’il soit. Il s’exécute immédiatement - l’exécution, c’est le moment où ton ordre devient vraiment une position - parce qu’il accepte ce que l’autre côté demande à cet instant. Tu entres à tous les coups. Tu n’obtiens pas toujours le prix que tu as vu. Utilise-le quand être dedans compte plus qu’être précis."
     },
     {
      "h": "Ordre limit : le prix avant la vitesse",
@@ -171,7 +171,7 @@
     },
     {
      "h": "Un stop est un déclencheur",
-     "p": "Un stop n’est pas encore un ordre — c’est une consigne qui en devient un quand le prix touche le niveau que tu as choisi. Un stop-loss se place sous une position longue et la ferme si le prix descend là, plafonnant les dégâts. Un take-profit fait la même chose du côté gagnant. Ni l’un ni l’autre ne garantit le prix exact : une fois déclenchés, ils s’exécutent en général au marché."
+     "p": "Un stop n’est pas encore un ordre - c’est une consigne qui en devient un quand le prix touche le niveau que tu as choisi. Un stop-loss se place sous une position longue et la ferme si le prix descend là, plafonnant les dégâts. Un take-profit fait la même chose du côté gagnant. Ni l’un ni l’autre ne garantit le prix exact : une fois déclenchés, ils s’exécutent en général au marché."
     },
     {
      "h": "Spread et slippage",
@@ -214,7 +214,7 @@
    "cards": [
     {
      "h": "FOMO et FUD",
-     "p": "FOMO, c’est la fear of missing out : la peur de rater le train, l’envie d’acheter parce que ça monte déjà sans toi. FUD, c’est fear, uncertainty and doubt : l’envie de vendre parce que quelque chose sonne mal. Les deux nomment une émotion, pas un fait sur le marché. Et les deux servent d’accusation — traiter ta prudence de FUD, c’est une façon de t’empêcher de réfléchir."
+     "p": "FOMO, c’est la fear of missing out : la peur de rater le train, l’envie d’acheter parce que ça monte déjà sans toi. FUD, c’est fear, uncertainty and doubt : l’envie de vendre parce que quelque chose sonne mal. Les deux nomment une émotion, pas un fait sur le marché. Et les deux servent d’accusation - traiter ta prudence de FUD, c’est une façon de t’empêcher de réfléchir."
     },
     {
      "h": "HODL, paper hands, diamond hands",
@@ -222,11 +222,11 @@
     },
     {
      "h": "Whales et retail",
-     "p": "Une whale est un détenteur assez gros pour que ses propres achats ou ventes fassent bouger le prix. Le retail, c’est tout le monde petit — toi, presque certainement, et il n’y a rien d’insultant là-dedans. L’intéressant, c’est l’asymétrie : une whale doit planifier sa sortie, parce que la taille ne part jamais discrètement, alors que toi tu es dehors en un clic."
+     "p": "Une whale est un détenteur assez gros pour que ses propres achats ou ventes fassent bouger le prix. Le retail, c’est tout le monde petit - toi, presque certainement, et il n’y a rien d’insultant là-dedans. L’intéressant, c’est l’asymétrie : une whale doit planifier sa sortie, parce que la taille ne part jamais discrètement, alors que toi tu es dehors en un clic."
     },
     {
      "h": "La capitulation, et qui s’en sert",
-     "p": "La capitulation, c’est le moment où les détenteurs arrêtent d’espérer et vendent à n’importe quel prix : gros volume, chute violente, puis épuisement. Elle ne s’identifie qu’après coup. C’est la limite honnête de tous les mots de cette leçon — ils décrivent bien l’humeur de la foule et ne prédisent rien. Quand quelqu’un s’en sert pour te dire quoi faire maintenant, demande quelle position il détient."
+     "p": "La capitulation, c’est le moment où les détenteurs arrêtent d’espérer et vendent à n’importe quel prix : gros volume, chute violente, puis épuisement. Elle ne s’identifie qu’après coup. C’est la limite honnête de tous les mots de cette leçon - ils décrivent bien l’humeur de la foule et ne prédisent rien. Quand quelqu’un s’en sert pour te dire quoi faire maintenant, demande quelle position il détient."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
    "cards": [
     {
      "h": "Le support et la résistance sont des zones",
-     "p": "Le support est une zone de prix où l’achat est apparu à répétition et a stoppé une baisse. La résistance est là où la vente a stoppé à répétition une hausse. Ce sont des zones, pas des lignes — un niveau à 60 000 $ veut dire, en vrai, quelque part entre 59 800 $ et 60 200 $. Ils comptent parce qu’assez de traders les regardent et agissent dessus, et c’est exactement pour ça qu’ils finissent par céder."
+     "p": "Le support est une zone de prix où l’achat est apparu à répétition et a stoppé une baisse. La résistance est là où la vente a stoppé à répétition une hausse. Ce sont des zones, pas des lignes - un niveau à 60 000 $ veut dire, en vrai, quelque part entre 59 800 $ et 60 200 $. Ils comptent parce qu’assez de traders les regardent et agissent dessus, et c’est exactement pour ça qu’ils finissent par céder."
     },
     {
      "h": "Tendance et range",
@@ -277,7 +277,7 @@
     },
     {
      "h": "Chaque niveau a besoin d’une unité de temps",
-     "p": "L’unité de temps, c’est la durée que couvre une bougie — 5 minutes, 4 heures, un jour. Un support tracé en 5 minutes est invisible sur le daily. Le même marché peut être en tendance baissière en 5 minutes et en tendance haussière en daily, et les deux affirmations sont vraies. Quand quelqu’un dit « la tendance », le mot qui manque, c’est l’unité de temps."
+     "p": "L’unité de temps, c’est la durée que couvre une bougie - 5 minutes, 4 heures, un jour. Un support tracé en 5 minutes est invisible sur le daily. Le même marché peut être en tendance baissière en 5 minutes et en tendance haussière en daily, et les deux affirmations sont vraies. Quand quelqu’un dit « la tendance », le mot qui manque, c’est l’unité de temps."
     }
    ],
    "quiz": [
@@ -316,11 +316,11 @@
    "cards": [
     {
      "h": "Le volume compte, la liquidité absorbe",
-     "p": "Le volume, c’est combien a réellement été échangé sur une période — un fait sur le passé. La liquidité, c’est combien attend dans le carnet d’ordres en ce moment — un fait sur le présent. Un coin peut faire une journée de volume énorme et rester mince, au point qu’une vente de 50 000 $ le fasse quand même chuter de plusieurs pourcents. Le volume te dit l’intérêt ; la liquidité te dit si tu peux sortir."
+     "p": "Le volume, c’est combien a réellement été échangé sur une période - un fait sur le passé. La liquidité, c’est combien attend dans le carnet d’ordres en ce moment - un fait sur le présent. Un coin peut faire une journée de volume énorme et rester mince, au point qu’une vente de 50 000 $ le fasse quand même chuter de plusieurs pourcents. Le volume te dit l’intérêt ; la liquidité te dit si tu peux sortir."
     },
     {
      "h": "La volatilité mesure le mouvement, pas la direction",
-     "p": "La volatilité, c’est de combien le prix bouge, dans un sens comme dans l’autre. Un coin qui oscille de 5% par jour est cinq fois plus volatil qu’un coin à 1%, que ces journées soient vertes ou rouges. C’est pour ça que le levier compte ici : ta distance à la liquidation est fixe, et c’est la volatilité qui décide de la fréquence à laquelle le prix parcourt cette distance. Une forte volatilité n’est pas mauvaise — elle est plus rapide, dans les deux sens."
+     "p": "La volatilité, c’est de combien le prix bouge, dans un sens comme dans l’autre. Un coin qui oscille de 5% par jour est cinq fois plus volatil qu’un coin à 1%, que ces journées soient vertes ou rouges. C’est pour ça que le levier compte ici : ta distance à la liquidation est fixe, et c’est la volatilité qui décide de la fréquence à laquelle le prix parcourt cette distance. Une forte volatilité n’est pas mauvaise - elle est plus rapide, dans les deux sens."
     },
     {
      "h": "Le market cap n’est pas l’argent investi",
@@ -354,7 +354,7 @@
      "q": "« Plus d’acheteurs que de vendeurs », c’est :",
      "o": [
       "Ce qui produit toute hausse de prix",
-      "Impossible — chaque transaction a les deux",
+      "Impossible - chaque transaction a les deux",
       "Une autre façon de dire volume élevé",
       "Une mesure de la profondeur du carnet"
      ]

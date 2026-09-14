@@ -1,5 +1,5 @@
 /* Codes E2E (2026-09-06): a code can give the pro pass, cents on the rewards balance, Premium days or Ticks.
-   Generated through the ops endpoint (key + ?e2e=1), redeemed through /api/pass (op buy, src code — the /season/ box) with the
+   Generated through the ops endpoint (key + ?e2e=1), redeemed through /api/pass (op buy, src code - the /season/ box) with the
    admin ?uid= hook on a throwaway member. Proven: each kind applies (response fields from the store / ledger), a code is one use
    per account, a used-up code refuses, a revoked code refuses, an unknown code refuses, the ops list shows kind + amount, and
    every redemption leaves a 'code' row in the live activity log.

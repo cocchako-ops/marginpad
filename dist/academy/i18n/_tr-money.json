@@ -17,11 +17,11 @@
     },
     {
      "h": "On yukarı, on aşağı, başa değil",
-     "p": "$100 ile başla. %10 ekle, $110 olur. Şimdi %10 çıkar — ama $110'un %10'u $11'dir, $10 değil. $99'da bitirirsin. Kazanç $100 üzerinden, kayıp $110 üzerinden ölçüldü; bu yüzden birbirlerini götürmezler. Sırayı ters çevir, yine $99'a inersin: $100 düşüp $90 olur, sonra $9 eklenir."
+     "p": "$100 ile başla. %10 ekle, $110 olur. Şimdi %10 çıkar - ama $110'un %10'u $11'dir, $10 değil. $99'da bitirirsin. Kazanç $100 üzerinden, kayıp $110 üzerinden ölçüldü; bu yüzden birbirlerini götürmezler. Sırayı ters çevir, yine $99'a inersin: $100 düşüp $90 olur, sonra $9 eklenir."
     },
     {
      "h": "Yüzde değişimleri çarpılır",
-     "p": "Bir kısayol var. %10 kazanç, 1,10 ile çarpmaktır; %10 kayıp, 0,90 ile çarpmak. İkisini de yap, 1,10 çarpı 0,90 elde edersin, yani 0,99 — net %1 kayıp. Koca bir ayın işlemlerini böyle arka arkaya diz; hesabının gerçekte ne yaptığını toplama değil, çarpma söyler."
+     "p": "Bir kısayol var. %10 kazanç, 1,10 ile çarpmaktır; %10 kayıp, 0,90 ile çarpmak. İkisini de yap, 1,10 çarpı 0,90 elde edersin, yani 0,99 - net %1 kayıp. Koca bir ayın işlemlerini böyle arka arkaya diz; hesabının gerçekte ne yaptığını toplama değil, çarpma söyler."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Kayıplar daha derin bir çukur kazar",
-     "p": "$1.000'ın %50'sini kaybet, elinde $500 kalır. $1.000'a dönmek için $500 eklemen gerekir — ve $500, kalan paranın %100'üdür. %50'lik bir kayıp, geri alınması için %100'lük bir kazanç ister. Kayıp ile onun tamiri aynı büyüklükte değildir; hiçbir zaman da olmaz."
+     "p": "$1.000'ın %50'sini kaybet, elinde $500 kalır. $1.000'a dönmek için $500 eklemen gerekir - ve $500, kalan paranın %100'üdür. %50'lik bir kayıp, geri alınması için %100'lük bir kazanç ister. Kayıp ile onun tamiri aynı büyüklükte değildir; hiçbir zaman da olmaz."
     },
     {
      "h": "Toparlanma tablosu",
-     "p": "Aynı aritmetiği ölçek boyunca yürüt. %10 düşüş, geri gelmek için yaklaşık %11 ister. %20 düşüş %25 ister. Üçte bir düşüş %50 ister. %50 düşüş %100 ister. %80 düşüş, $1.000'dan geriye $200 bırakır; $200'ün üstüne $800 gerekir — yani %400. %90 düşüş %900 ister. Eğri nazikçe bükülmez. Dikleşir."
+     "p": "Aynı aritmetiği ölçek boyunca yürüt. %10 düşüş, geri gelmek için yaklaşık %11 ister. %20 düşüş %25 ister. Üçte bir düşüş %50 ister. %50 düşüş %100 ister. %80 düşüş, $1.000'dan geriye $200 bırakır; $200'ün üstüne $800 gerekir - yani %400. %90 düşüş %900 ister. Eğri nazikçe bükülmez. Dikleşir."
     },
     {
      "h": "Kendin kanıtla",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Bu, sende neyi değiştirir",
-     "p": "Profesyonellerin drawdown'ı — hesabın en yüksek noktasının ne kadar altına düştüğünü — getirilerden daha yakından izlemesinin sebebi budur. Arka arkaya küçük kayıplar, atlatılabilir bir aritmetiktir. Tek bir büyük kayıp ise bambaşka bir problem sınıfıdır. Bu karttan sonraki her şey, pozisyon boyutundan stop-loss'lara kadar, tek tek kayıpları toparlanma sıradan kalacak kadar küçük tutmak için vardır."
+     "p": "Profesyonellerin drawdown'ı - hesabın en yüksek noktasının ne kadar altına düştüğünü - getirilerden daha yakından izlemesinin sebebi budur. Arka arkaya küçük kayıplar, atlatılabilir bir aritmetiktir. Tek bir büyük kayıp ise bambaşka bir problem sınıfıdır. Bu karttan sonraki her şey, pozisyon boyutundan stop-loss'lara kadar, tek tek kayıpları toparlanma sıradan kalacak kadar küçük tutmak için vardır."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Sonucu üç sayı yapar",
-     "p": "Kâr ve zarar — K/Z — tam olarak üç sayıdan çıkar: girdiğin fiyat, çıktığın fiyat ve kaç birim tuttuğun. Hesaba başka hiçbir şey girmez. Fiyatın yükseleceğine oynayan long için K/Z, çıkış fiyatı eksi giriş fiyatı çarpı birim sayısıdır."
+     "p": "Kâr ve zarar - K/Z - tam olarak üç sayıdan çıkar: girdiğin fiyat, çıktığın fiyat ve kaç birim tuttuğun. Hesaba başka hiçbir şey girmez. Fiyatın yükseleceğine oynayan long için K/Z, çıkış fiyatı eksi giriş fiyatı çarpı birim sayısıdır."
     },
     {
      "h": "Bir long, adım adım",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Hareketi sen seçemezsin",
-     "p": "Bitcoin'in bugün %2 oynayıp oynamayacağını sen kontrol etmiyorsun. Kontrol ettiğin tek bir sayı var: pozisyonunun ne kadar büyük olduğu. Geri kalan her şey — yön, zamanlama, volatilite — ya tahmindir ya hediye. Pozisyon boyutu, tüm hesaptaki tamamen sana ait tek girdidir; asıl verdiğin karar da bu yüzden odur."
+     "p": "Bitcoin'in bugün %2 oynayıp oynamayacağını sen kontrol etmiyorsun. Kontrol ettiğin tek bir sayı var: pozisyonunun ne kadar büyük olduğu. Geri kalan her şey - yön, zamanlama, volatilite - ya tahmindir ya hediye. Pozisyon boyutu, tüm hesaptaki tamamen sana ait tek girdidir; asıl verdiğin karar da bu yüzden odur."
     },
     {
      "h": "Aynı hareket, istediğin her sonuç",
@@ -214,15 +214,15 @@
     },
     {
      "h": "Boyut, stop'tan çıkar",
-     "p": "Şimdi aritmetik tersine işler. ETH'yi $2.000'dan almak, stop-loss'u $1.960'a koymak istiyorsun — fiyat oraya düşerse işlemi kapatan emir. Mesafe coin başına $40. Toplamda $10 riske ediyorsun, o hâlde böl: $10 bölü $40, 0,25 ETH eder. Boyutun bu; $500'lık bir pozisyon."
+     "p": "Şimdi aritmetik tersine işler. ETH'yi $2.000'dan almak, stop-loss'u $1.960'a koymak istiyorsun - fiyat oraya düşerse işlemi kapatan emir. Mesafe coin başına $40. Toplamda $10 riske ediyorsun, o hâlde böl: $10 bölü $40, 0,25 ETH eder. Boyutun bu; $500'lık bir pozisyon."
     },
     {
      "h": "Geniş stop, küçük boyut",
-     "p": "Tek bir şeyi değiştir. Stop'u $1.900'e koy; mesafe coin başına $100 olur. Risk $10 kalır, dolayısıyla boyut $10 bölü $100, yani 0,1 ETH — $200'lük bir pozisyon. Stop, işlemi daha güvenli ya da daha riskli yapmadı. Aynı sabit riskte kaç coin tutabileceğini değiştirdi."
+     "p": "Tek bir şeyi değiştir. Stop'u $1.900'e koy; mesafe coin başına $100 olur. Risk $10 kalır, dolayısıyla boyut $10 bölü $100, yani 0,1 ETH - $200'lük bir pozisyon. Stop, işlemi daha güvenli ya da daha riskli yapmadı. Aynı sabit riskte kaç coin tutabileceğini değiştirdi."
     },
     {
      "h": "Neden %1, neden %10 değil",
-     "p": "%1 riskte, arka arkaya on kayıp sana hesabın yaklaşık %10'una mal olur ve toparlanma tablosu %10'luk çukurun tamiri için kabaca %11 gerektiğini söyler. %10 riskte ise aynı on kayıp, başladığın paranın yaklaşık üçte birini bırakır — dışarı tırmanmak için yaklaşık %187 isteyen bir çukur. Aynı işlemler, aynı beceri, farklı aritmetik."
+     "p": "%1 riskte, arka arkaya on kayıp sana hesabın yaklaşık %10'una mal olur ve toparlanma tablosu %10'luk çukurun tamiri için kabaca %11 gerektiğini söyler. %10 riskte ise aynı on kayıp, başladığın paranın yaklaşık üçte birini bırakır - dışarı tırmanmak için yaklaşık %187 isteyen bir çukur. Aynı işlemler, aynı beceri, farklı aritmetik."
     }
    ],
    "quiz": [
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Komisyonlar notional üzerinden alınır",
-     "p": "Vadeli işlem komisyonu, ortaya koyduğun nakdin değil, pozisyonun tamamının — yani notional'ın — bir yüzdesidir. $6.000'lık pozisyon aç, %0,055'lik taker komisyonu $3,30 tutar. Kapat, bir daha ödersin. Komisyon, işlemin arkasında kendi paranın ne kadar olduğunu hiç sormaz. Sadece pozisyon büyüklüğünü görür."
+     "p": "Vadeli işlem komisyonu, ortaya koyduğun nakdin değil, pozisyonun tamamının - yani notional'ın - bir yüzdesidir. $6.000'lık pozisyon aç, %0,055'lik taker komisyonu $3,30 tutar. Kapat, bir daha ödersin. Komisyon, işlemin arkasında kendi paranın ne kadar olduğunu hiç sormaz. Sadece pozisyon büyüklüğünü görür."
     },
     {
      "h": "Kaldıraç komisyonu çarpar",
-     "p": "Kaldıraç, nakdinin küçük bir kısmının — teminatın — daha büyük bir pozisyonu kontrol etmesini sağlar. 20x'te $6.000'lık pozisyon $300 teminat ister. $3,30'luk komisyon pozisyonun %0,055'i, ama $300'ünün %1,1'idir. Gidiş dönüş, girip çıkınca, fiyat daha hiç oynamadan teminatının %2,2'si gitmiş olur."
+     "p": "Kaldıraç, nakdinin küçük bir kısmının - teminatın - daha büyük bir pozisyonu kontrol etmesini sağlar. 20x'te $6.000'lık pozisyon $300 teminat ister. $3,30'luk komisyon pozisyonun %0,055'i, ama $300'ünün %1,1'idir. Gidiş dönüş, girip çıkınca, fiyat daha hiç oynamadan teminatının %2,2'si gitmiş olur."
     },
     {
      "h": "Spread ve slipaj da para götürür",
@@ -371,7 +371,7 @@
     },
     {
      "h": "Başabaş gelmek bedava değildir",
-     "p": "%0,055'lik iki taker komisyonu, pozisyonun %0,11'ini eder. Tek bir sent kazanmadan önce fiyatın lehine %0,11 oynaması gerekir — üstelik bu spread'den önce. Kaldıraç bunu değiştirmez: her hâlükârda pozisyonun %0,11'idir. 20x'te günde on gidiş dönüş, teminatının %22'si demektir."
+     "p": "%0,055'lik iki taker komisyonu, pozisyonun %0,11'ini eder. Tek bir sent kazanmadan önce fiyatın lehine %0,11 oynaması gerekir - üstelik bu spread'den önce. Kaldıraç bunu değiştirmez: her hâlükârda pozisyonun %0,11'idir. 20x'te günde on gidiş dönüş, teminatının %22'si demektir."
     }
    ],
    "quiz": [
@@ -410,11 +410,11 @@
    "cards": [
     {
      "h": "Beş sayı, sırayla",
-     "p": "Her girişten önce beş şeyi yaz. Bir: hesabının büyüklüğü. İki: kaybetmeye razı olduğun dolar. Üç: giriş fiyatı ve stop fiyatı; bunlar stop mesafesini verir. Dört: pozisyon boyutu — risk bölü o mesafe. Beş: hedef ve onun ima ettiği R katı. Beşinci adım 1R'nin altındaysa cevabı zaten biliyorsun."
+     "p": "Her girişten önce beş şeyi yaz. Bir: hesabının büyüklüğü. İki: kaybetmeye razı olduğun dolar. Üç: giriş fiyatı ve stop fiyatı; bunlar stop mesafesini verir. Dört: pozisyon boyutu - risk bölü o mesafe. Beş: hedef ve onun ima ettiği R katı. Beşinci adım 1R'nin altındaysa cevabı zaten biliyorsun."
     },
     {
      "h": "Baştan sona, bir kez",
-     "p": "Hesap $1.000. Risk %1, yani $10. ETH girişi $2.000, stop $1.960, mesafe $40. Boyut $10 bölü $40, yani 0,25 ETH — $500'lük bir pozisyon. Hedef $2.120 coin başına $120 verir, 0,25 coin de $30 eder. Bu 3R'dir. Gidiş dönüş komisyonu $500'ün %0,11'i, yani $0,55; $30'un yanında küçük kalır."
+     "p": "Hesap $1.000. Risk %1, yani $10. ETH girişi $2.000, stop $1.960, mesafe $40. Boyut $10 bölü $40, yani 0,25 ETH - $500'lük bir pozisyon. Hedef $2.120 coin başına $120 verir, 0,25 coin de $30 eder. Bu 3R'dir. Gidiş dönüş komisyonu $500'ün %0,11'i, yani $0,55; $30'un yanında küçük kalır."
     },
     {
      "h": "Matematik tahmin yapmaz",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Hesabın tamamı artık elinde. Hesaplayıcıları aç ve kendi sayılarını çalıştır — hesap, risk, stop mesafesi — boyutlandırma aritmetiği otomatikleşene kadar.",
+    "p": "Hesabın tamamı artık elinde. Hesaplayıcıları aç ve kendi sayılarını çalıştır - hesap, risk, stop mesafesi - boyutlandırma aritmetiği otomatikleşene kadar.",
     "label": "Hesaplayıcıları Aç →"
    }
   }

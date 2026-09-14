@@ -47,7 +47,7 @@
      "q": "U uzlaznom trendu cena padne ispod prethodnog dna. To znači…",
      "o": [
       "Silazni trend je sigurno počeo",
-      "Ništa — trend definišu samo vrhovi",
+      "Ništa - trend definišu samo vrhovi",
       "Niz uzlaznog trenda je prekinut",
       "Trend je postao jači"
      ]
@@ -97,7 +97,7 @@
     {
      "q": "Cena probije tvoju liniju, pa je ti ponovo nacrtaš položenije. To je…",
      "o": [
-      "Dobra praksa — grafikoni se stalno menjaju",
+      "Dobra praksa - grafikoni se stalno menjaju",
       "Prilagođavanje linije onome što želiš",
       "Obavezno čim treći dodir padne",
       "Način na koji profesionalci vode otvoreni rizik"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Masa, a ne laser",
-     "p": "Podrška nije jedna cena. To je pojas u kom se pojavilo dovoljno kupaca da zaustave pad — nekad na $100.00, nekad na $99.40, nekad tek posle uboda dole na $98.80. Nacrtati liniju od jednog piksela i očekivati da je cena poštuje u cent je čest način da te izbaci iz ideje koja je bila sasvim u redu."
+     "p": "Podrška nije jedna cena. To je pojas u kom se pojavilo dovoljno kupaca da zaustave pad - nekad na $100.00, nekad na $99.40, nekad tek posle uboda dole na $98.80. Nacrtati liniju od jednog piksela i očekivati da je cena poštuje u cent je čest način da te izbaci iz ideje koja je bila sasvim u redu."
     },
     {
      "h": "Neka fitilji odrede ivice",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Dokaži jednim dodirom",
-     "prompt": "Dodirni bilo gde unutar zone podrške — pojas u kom se dna grupišu.",
+     "prompt": "Dodirni bilo gde unutar zone podrške - pojas u kom se dna grupišu.",
      "p": "Jedan dodir. Ovde ne postoji jedan tačan piksel, i baš to je lekcija."
     },
     {
@@ -152,7 +152,7 @@
       "Tvoj nivo je prosto bio pogrešan",
       "Počeo je novi silazni trend",
       "Podrška je sada postala otpor",
-      "Normalno — nivo je zona, a ne linija"
+      "Normalno - nivo je zona, a ne linija"
      ]
     }
    ]
@@ -200,7 +200,7 @@
     {
      "q": "Nivo je izdržao četiri puta. Na petom dodiru…",
      "o": [
-      "Mora da izdrži — četiri dodira ga potvrđuju",
+      "Mora da izdrži - četiri dodira ga potvrđuju",
       "Automatski postaje linija trenda",
       "Može da padne bez ikakve najave",
       "Garantuje breakout u tvoju korist"
@@ -289,7 +289,7 @@
     {
      "q": "Nivo pukne na neobično niskom volumenu. Treba da…",
      "o": [
-      "Uzmeš to olako — malo ljudi je učestvovalo",
+      "Uzmeš to olako - malo ljudi je učestvovalo",
       "Uzmeš to kao potvrđeno, volumen je šum",
       "Pretpostaviš da je preokret sada zagarantovan",
       "Udvostručiš poziciju da uhvatiš potez"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Igrati pogrešnu igru je skupo",
-     "p": "Primeni pravila trenda unutar range-a i kupovaćeš svaki nalet na gornjoj ivici i prodavati svako ispiranje na donjoj — kupovina skupo, prodaja jeftino, u krug, uz provizije svaki put. Primeni pravila range-a na tržište u trendu i stalno ćeš shortovati u snagu. Imenovati stanje pre nego što deluješ nije opcioni domaći."
+     "p": "Primeni pravila trenda unutar range-a i kupovaćeš svaki nalet na gornjoj ivici i prodavati svako ispiranje na donjoj - kupovina skupo, prodaja jeftino, u krug, uz provizije svaki put. Primeni pravila range-a na tržište u trendu i stalno ćeš shortovati u snagu. Imenovati stanje pre nego što deluješ nije opcioni domaći."
     },
     {
      "h": "Range se steže pre nego što se završi",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Imenuj trend, obeleži dva nivoa",
-     "p": "Izgovori niz naglas: viši vrhovi i viša dna, ogledalo toga, ili nijedno — što znači range. Zatim obeleži tačno dve vodoravne zone: najbližu iznad cene i najbližu ispod. Dve. Ako si nacrtao šest linija, napravio si grafikon koji se slaže sa bilo čim što odlučiš da uradiš."
+     "p": "Izgovori niz naglas: viši vrhovi i viša dna, ogledalo toga, ili nijedno - što znači range. Zatim obeleži tačno dve vodoravne zone: najbližu iznad cene i najbližu ispod. Dve. Ako si nacrtao šest linija, napravio si grafikon koji se slaže sa bilo čim što odlučiš da uradiš."
     },
     {
      "h": "Dovrši rečenicu, pa stani",
@@ -426,7 +426,7 @@
     },
     {
      "h": "Većina grafikona ne zaslužuje mišljenje",
-     "p": "Pošten rezultat ove rutine je, najčešće, ništa. Nema jasnog trenda, nema bliskog nivoa, nema ničeg konkretnog u čemu bi mogao da pogrešiš. To je rezultat, a ne neuspeh — rutina je filter, a filter koji nikad ništa ne odbaci ne filtrira. Zatvori grafikon i pogledaj drugi simbol."
+     "p": "Pošten rezultat ove rutine je, najčešće, ništa. Nema jasnog trenda, nema bliskog nivoa, nema ničeg konkretnog u čemu bi mogao da pogrešiš. To je rezultat, a ne neuspeh - rutina je filter, a filter koji nikad ništa ne odbaci ne filtrira. Zatvori grafikon i pogledaj drugi simbol."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Koliko god ih nađeš",
       "Šest, po jednu za svaki vremenski okvir",
-      "Dve — najbližu iznad i najbližu ispod",
+      "Dve - najbližu iznad i najbližu ispod",
       "Nijednu, linije trenda su dovoljne"
      ]
     },

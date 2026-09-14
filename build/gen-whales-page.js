@@ -1,4 +1,4 @@
-/* /hyperliquid-whales/ — biggest Hyperliquid whale positions + recent whale actions via /api/cg/hyper (Coinglass /api/hyperliquid/*). */
+/* /hyperliquid-whales/ - biggest Hyperliquid whale positions + recent whale actions via /api/cg/hyper (Coinglass /api/hyperliquid/*). */
 const fs = require('fs');
 const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'hyperliquid-whales');
@@ -6,7 +6,7 @@ const OUT = path.join(__dirname, '..', 'dist', 'hyperliquid-whales');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const url = 'https://marginpad.io/hyperliquid-whales/';
-const title = 'Hyperliquid Whale Tracker — Biggest Whale Positions Live';
+const title = 'Hyperliquid Whale Tracker - Biggest Whale Positions Live';
 const desc = 'Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup.';
 const kw = 'hyperliquid whale tracker, hyperliquid whales, whale positions, crypto whale tracker, hyperliquid liquidation, whale long short, biggest crypto positions, whale alert';
 
@@ -116,7 +116,7 @@ const CSS = HEADER_CSS + `
     .wl-tr .amt{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:8px;font-size:13px}
     .wl-tr .amt small{margin:0}
     .wl-tr .say .l1{font-size:12px}
-    /* the detail carries the useful part (avg price, how long it took, what was booked) — on a narrow
+    /* the detail carries the useful part (avg price, how long it took, what was booked) - on a narrow
        screen it wraps to two lines rather than being cut off at the first one */
     .wl-tr .say .l2{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.5}
   }
@@ -229,7 +229,7 @@ const CSS = HEADER_CSS + `
 
 const ld = `<script type="application/ld+json">${JSON.stringify({
   '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
-    { '@type': 'Question', name: 'What is a Hyperliquid whale tracker?', acceptedAnswer: { '@type': 'Answer', text: 'Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time.' } },
+    { '@type': 'Question', name: 'What is a Hyperliquid whale tracker?', acceptedAnswer: { '@type': 'Answer', text: 'Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions - their size, direction, leverage, entry, liquidation price and live unrealized profit or loss - so you can see exactly what the biggest traders are betting on in real time.' } },
     { '@type': 'Question', name: 'Why watch whale positions?', acceptedAnswer: { '@type': 'Answer', text: 'Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not.' } },
     { '@type': 'Question', name: 'Is the whale data live?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Positions and recent whale actions are read from the public on-chain API of Hyperliquid by the MarginPad whale tracker and refresh every few minutes. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates.' } }
   ]
@@ -269,11 +269,11 @@ ${ld}
   <header id="wlHead">
     <div class="brand">
       <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+      <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
-      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT - claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
       <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
@@ -282,21 +282,21 @@ ${ld}
   <article>
     <div class="wl-eyebrow"><i></i>Live · Hyperliquid on-chain</div>
     <h1>Hyperliquid Whale Tracker</h1>
-    <p class="lead">See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perp exchange, every whale position is public — real size, real leverage, real liquidation price. Below: net long vs short exposure, the largest open positions with live P&amp;L, and a feed of the latest whale moves. Free, no signup.</p>
+    <p class="lead">See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perp exchange, every whale position is public - real size, real leverage, real liquidation price. Below: net long vs short exposure, the largest open positions with live P&amp;L, and a feed of the latest whale moves. Free, no signup.</p>
 
-    <div class="wl-wait" id="wlWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Whale data is <b>refreshing</b> — one moment.</span></div>
+    <div class="wl-wait" id="wlWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Whale data is <b>refreshing</b> - one moment.</span></div>
 
     <div class="wl-hero" id="wlHero">
       <div class="wl-htop">
-        <div class="wl-side l"><div class="lab">Whales long</div><div class="v" id="wlLongV">—</div></div>
-        <div class="wl-side s"><div class="lab">Whales short</div><div class="v" id="wlShortV">—</div></div>
+        <div class="wl-side l"><div class="lab">Whales long</div><div class="v" id="wlLongV">-</div></div>
+        <div class="wl-side s"><div class="lab">Whales short</div><div class="v" id="wlShortV">-</div></div>
       </div>
       <div class="wl-bar"><div class="lg" id="wlBarL" style="width:50%"></div><div class="sh" id="wlBarS" style="width:50%"></div></div>
-      <div class="wl-pct"><span class="l" id="wlPctL">—</span><span class="s" id="wlPctS">—</span></div>
+      <div class="wl-pct"><span class="l" id="wlPctL">-</span><span class="s" id="wlPctS">-</span></div>
       <div class="wl-tiles">
-        <div class="wl-tile"><div class="k">Tracked whales</div><div class="v" id="wlCount">—</div></div>
-        <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">—</div></div>
-        <div class="wl-tile"><div class="k">Aggregate unrealized P&amp;L</div><div class="v" id="wlUpnl">—</div></div>
+        <div class="wl-tile"><div class="k">Tracked whales</div><div class="v" id="wlCount">-</div></div>
+        <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">-</div></div>
+        <div class="wl-tile"><div class="k">Aggregate unrealized P&amp;L</div><div class="v" id="wlUpnl">-</div></div>
       </div>
     </div>
 
@@ -353,7 +353,7 @@ ${ld}
         <div class="wl-thd co"><span>Market</span><span class="r">24h</span><span>Whale money: long vs short</span><span class="cl r">Wallets</span><span class="cl r">Avg lev</span><span class="cl r">Funding / day</span><span class="cl r">Share of OI</span></div>
         <div id="wlCoins"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">One row per market these whales hold. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now &mdash; a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
+      <p class="wl-note">One row per market these whales hold. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now - a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
     </section>
 
     <!-- BEST THIS MONTH -->
@@ -362,22 +362,22 @@ ${ld}
         <div class="wl-thd be"><span></span><span>Trader</span><span class="r">30-day P&amp;L</span><span class="cl r">Return</span><span class="cl r">Volume traded</span></div>
         <div id="wlBest"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">Ranked by realised profit over the last thirty days across the <b>whole</b> Hyperliquid leaderboard, not only the accounts we track by size &mdash; the best trader of a month is usually not the biggest one. Click a row for the full book. <a href="/season/#boards">MarginPad runs its own season boards</a> if you would rather be measured than watched.</p>
+      <p class="wl-note">Ranked by realised profit over the last thirty days across the <b>whole</b> Hyperliquid leaderboard, not only the accounts we track by size - the best trader of a month is usually not the biggest one. Click a row for the full book. <a href="/season/#boards">MarginPad runs its own season boards</a> if you would rather be measured than watched.</p>
     </section>
 
     <div class="wl-cta">
-      <a class="go" href="/paper-trade">Practice trading — free, no signup →</a>
+      <a class="go" href="/paper-trade">Practice trading - free, no signup →</a>
       <a href="/liquidations/">Liquidations</a>
       <a href="/open-interest/">Open interest</a>
       <a href="/long-short/">Long/short ratio</a>
     </div>
 
     <h2>How to read the whale board</h2>
-    <p><strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data — no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style="color:var(--grn)">net long</span> or <span style="color:var(--red)">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile — if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.</p>
+    <p><strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data - no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style="color:var(--grn)">net long</span> or <span style="color:var(--red)">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile - if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.</p>
     <h2>Whales are context, not a signal</h2>
-    <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
+    <p>A big position is a bet, not a guarantee - whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only — not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only - not financial advice.</p>
   </article>
 
   <!-- ── one whale, everything we can say about them. Opened from any row on any view. ─────────── -->
@@ -385,7 +385,7 @@ ${ld}
   <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Whale profile">
     <div class="wd-h">
       <div class="wd-id">
-        <span class="wd-adr" id="wdAdr">—</span>
+        <span class="wd-adr" id="wdAdr">-</span>
         <span class="wd-sub" id="wdSub"></span>
       </div>
       <button type="button" class="wd-x" id="wdX" aria-label="Close">&#10005;</button>
@@ -403,7 +403,7 @@ ${ld}
   var esc=function(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});};
   function usd(v){var s=v<0?'-':'';var a=Math.abs(+v||0);if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(0)+'K';return s+'$'+Math.round(a);}
   function spnl(v){var s=v>=0?'+':'-';var a=Math.abs(+v||0);if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(0)+'K';return s+'$'+Math.round(a);}
-  function px(v){var a=+v||0;if(!a)return '—';if(a>=1000)return '$'+a.toLocaleString('en-US',{maximumFractionDigits:0});if(a>=1)return '$'+a.toFixed(2);return '$'+a.toPrecision(4);}
+  function px(v){var a=+v||0;if(!a)return '-';if(a>=1000)return '$'+a.toLocaleString('en-US',{maximumFractionDigits:0});if(a>=1)return '$'+a.toFixed(2);return '$'+a.toPrecision(4);}
   function shorta(a){a=String(a||'');return a.length>10?a.slice(0,6)+'…'+a.slice(-4):a;}
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
   var HL='https://hypurrscan.io/address/';
@@ -430,7 +430,7 @@ ${ld}
   }
   function took(a,b){ var s=Math.round((b-a)/1000); if(s<=1)return 'in one go';
     if(s<60)return 'over '+s+'s'; var m=Math.floor(s/60); return 'over '+m+'m'+(s%60?' '+(s%60)+'s':''); }
-  /* a builder-deployed market is listed as "xyz:GOLD" on the chain — show the market, keep the builder in the title */
+  /* a builder-deployed market is listed as "xyz:GOLD" on the chain - show the market, keep the builder in the title */
   function mkt(sym){ var i=String(sym||'').indexOf(':'); return i>0?String(sym).slice(i+1):String(sym||''); }
   function paintTrades(d){
     var box=document.getElementById('wlTrades'); if(!box)return;
@@ -451,7 +451,7 @@ ${ld}
     var n=document.getElementById('wlTabTr'); if(n)n.textContent=all.length?all.length:'';
     var note=document.getElementById('wlTrNote');
     if(note)note.textContent=tr.length||d.fillWatch
-      ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution — a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
+      ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution - a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
       : '';
     if(!tr.length){
       box.innerHTML=all.length
@@ -467,7 +467,7 @@ ${ld}
       var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
                (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
                (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
-      return '<div class="wl-tr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+esc(t.sym)+' · '+esc(t.dir)+' — open this wallet">'
+      return '<div class="wl-tr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+esc(t.sym)+' · '+esc(t.dir)+' - open this wallet">'
         +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
         +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
         +'<span class="amt">'+usd(t.usd)+'<small>'+(t.sz>=1?(+t.sz).toLocaleString('en-US',{maximumFractionDigits:2}):(+t.sz).toFixed(4))+' '+m+'</small></span></div>';
@@ -484,7 +484,7 @@ ${ld}
   /* ── state the views share ─────────────────────────────────────────────────────────────────── */
   var VIEW='pos', F={sym:'',side:'',sort:'val'}, TF={sym:'',act:''};
   function fmtPct(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
-  function fund8(f){ if(f==null)return '—'; var p=f*100; return (p>=0?'+':'')+p.toFixed(4)+'%'; }
+  function fund8(f){ if(f==null)return '-'; var p=f*100; return (p>=0?'+':'')+p.toFixed(4)+'%'; }
 
   /* ── POSITIONS ─────────────────────────────────────────────────────────────────────────────── */
   function paintPos(d){
@@ -523,7 +523,7 @@ ${ld}
         '<span class="wl-rk">'+(i+1)+'</span>'+
         '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+
           '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(mkt(p.sym))+'</span>'+rec+'</span>'+
-        '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'—')+'</span>'+
+        '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'-')+'</span>'+
         '<span class="wl-val">'+usd(p.val)+'</span>'+
         '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+'% away</small>':'')+'</span>'+
         '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
@@ -542,13 +542,13 @@ ${ld}
       var fd=c.fundDay;
       return '<div class="wl-cr" data-sym="'+esc(c.sym)+'" role="button" tabindex="0">'+
         '<span class="m">'+esc(mkt(c.sym))+'<small>'+px(c.mark)+'</small></span>'+
-        '<span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg==null?'—':fmtPct(c.chg))+'</span>'+
+        '<span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg==null?'-':fmtPct(c.chg))+'</span>'+
         '<span class="wl-split"><span class="sb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span>'+
           '<span class="sl"><span class="l">'+usd(c.longUsd)+' long</span><span class="s">'+usd(c.shortUsd)+' short</span></span></span>'+
         '<span class="wl-num">'+c.n+'<small>'+c.longN+'L / '+c.shortN+'S</small></span>'+
-        '<span class="wl-num'+(c.lev>=20?' dn':'')+'">'+(c.lev?c.lev+'×':'—')+'</span>'+
-        '<span class="wl-num '+(fd==null?'dim':(fd>=0?'up':'dn'))+'">'+(fd==null?'—':spnl(fd))+'<small>'+fund8(c.fund)+'/h</small></span>'+
-        '<span class="wl-num dim">'+(c.oiShare==null?'—':c.oiShare+'%')+'<small>'+(c.oi?usd(c.oi):'')+'</small></span>'+
+        '<span class="wl-num'+(c.lev>=20?' dn':'')+'">'+(c.lev?c.lev+'×':'-')+'</span>'+
+        '<span class="wl-num '+(fd==null?'dim':(fd>=0?'up':'dn'))+'">'+(fd==null?'-':spnl(fd))+'<small>'+fund8(c.fund)+'/h</small></span>'+
+        '<span class="wl-num dim">'+(c.oiShare==null?'-':c.oiShare+'%')+'<small>'+(c.oi?usd(c.oi):'')+'</small></span>'+
       '</div>';
     }).join('');
   }
@@ -591,9 +591,9 @@ ${ld}
       '<path d="'+dPath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
   }
   function recCell(k,w){
-    if(!w)return '<div class="c"><div class="k">'+k+'</div><div class="v">—</div></div>';
+    if(!w)return '<div class="c"><div class="k">'+k+'</div><div class="v">-</div></div>';
     var v=w.pnl;
-    return '<div class="c"><div class="k">'+k+'</div><div class="v '+(v>=0?'up':'dn')+'">'+(v==null?'—':spnl(v))+'</div>'+
+    return '<div class="c"><div class="k">'+k+'</div><div class="v '+(v>=0?'up':'dn')+'">'+(v==null?'-':spnl(v))+'</div>'+
       '<div class="r">'+(w.vlm?usd(w.vlm)+' vol':'')+'</div></div>';
   }
   function wdRender(j){
@@ -619,7 +619,7 @@ ${ld}
     }
     var pos=j.pos||[];
     H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
-    if(!pos.length) H+='<div class="wl-empty">Flat right now — no open perpetual position.</div>';
+    if(!pos.length) H+='<div class="wl-empty">Flat right now - no open perpetual position.</div>';
     else H+=pos.map(function(p){
       var dd=(p.liq&&p.entry)?null:null;
       var mark=null; /* the profile does not carry a mark; the liq bar is drawn from entry vs liq */
@@ -634,7 +634,7 @@ ${ld}
           '<div><div class="k">ENTRY</div><div class="v">'+px(p.entry)+'</div></div>'+
           '<div><div class="k">LIQUIDATION</div><div class="v">'+px(p.liq)+'</div></div>'+
           '<div><div class="k">UNREALIZED</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
-          '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'—')+'</div></div>'+
+          '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
         '</div>'+
         (room!=null?'<div class="lqb"><i class="'+cls+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
       '</div>';

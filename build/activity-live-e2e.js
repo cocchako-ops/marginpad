@@ -2,7 +2,7 @@
    Proves on production:
      PUSH: a guest pageview / event beacon reaches an open /api/admin/activity/ws socket within 3 s (no batcher anywhere), the
            pageview carries nv (first visit), source, browser, network; the event carries the same visitor id
-     IDENTITY: a `username` row (u = old name, e = new name) folds both names into ONE actor — no "One device, 2 accounts" for
+     IDENTITY: a `username` row (u = old name, e = new name) folds both names into ONE actor - no "One device, 2 accounts" for
            that device, a 'rename' info line instead, old-name rows answer to the new key; a real second account on the same
            device still trips the radar
      ONLINE: the presence heartbeat joins the visitor's last pageview (page + account) in onlineList
@@ -120,7 +120,7 @@ const beacon = (did, q) => fetch(ORIGIN + '/api/track?' + q, { headers: { cookie
     await beacon(D4, 't=paper&e=ETH%20long%203x&p=%2Fpaper-trade');
     let pill = null; for (let w = 0; w < 16; w++) { await sleep(250); pill = await page.evaluate(() => { const p = document.querySelector('#acStream .acpend'); return p ? p.textContent : null; }); if (pill) break; }
     const heldRow = await page.evaluate(() => Array.from(document.querySelectorAll('#acStream .row.ev')).some(x => x.textContent.indexOf('ETH long 3x') >= 0));
-    chk('browser: hovering holds the stream — the new row waits in a pill instead of moving under the cursor', !!pill && /\d+ new row/.test(pill) && !heldRow, { pill, heldRow });
+    chk('browser: hovering holds the stream - the new row waits in a pill instead of moving under the cursor', !!pill && /\d+ new row/.test(pill) && !heldRow, { pill, heldRow });
     await page.mouse.move(5, 5); await sleep(400);
     const released = await page.evaluate(() => ({ pill: !!document.querySelector('#acStream .acpend'), row: Array.from(document.querySelectorAll('#acStream .row.ev')).some(x => x.textContent.indexOf('ETH long 3x') >= 0) }));
     chk('browser: leaving releases the held rows into the stream', !released.pill && released.row, released);
@@ -145,6 +145,6 @@ const beacon = (did, q) => fetch(ORIGIN + '/api/track?' + q, { headers: { cookie
 
   // ---- cleanup: purge every injected/beaconed row (all e2-tagged anyway)
   for (const q of [TAG, '"di":"e2e']) { try { await post('/api/admin/activity?purge=' + encodeURIComponent(q)); } catch (e) {} }
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

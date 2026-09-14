@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "O preço se move em direção às ordens",
-     "p": "Grandes players não conseguem preencher posições grandes onde o livro está vazio — precisam de ordens paradas do outro lado. Aglomerados de stop-loss e liquidações SÃO essas ordens. Por isso o preço tantas vezes fura um nível óbvio, preenche ali e reverte: ele foi às compras."
+     "p": "Grandes players não conseguem preencher posições grandes onde o livro está vazio - precisam de ordens paradas do outro lado. Aglomerados de stop-loss e liquidações SÃO essas ordens. Por isso o preço tantas vezes fura um nível óbvio, preenche ali e reverte: ele foi às compras."
     },
     {
      "h": "Seu stop é a entrada de outra pessoa",
-     "p": "Seu stop-loss abaixo do suporte é uma ordem de venda esperando acontecer. Mil traders colocando-o no mesmo lugar óbvio criam uma piscina de vendedores garantidos — o lugar perfeito para um grande comprador absorver. Não é conspiração; é simplesmente como tamanho grande é preenchido."
+     "p": "Seu stop-loss abaixo do suporte é uma ordem de venda esperando acontecer. Mil traders colocando-o no mesmo lugar óbvio criam uma piscina de vendedores garantidos - o lugar perfeito para um grande comprador absorver. Não é conspiração; é simplesmente como tamanho grande é preenchido."
     },
     {
      "h": "Operar isso, não temer",
-     "p": "Você não pode escapar do jogo, mas pode parar de ser o alvo mais fácil: coloque invalidações além das piscinas óbvias, espere o varre-e-reverte em níveis limpos, e trate um pavio que fura um nível e o retoma na hora como informação — alguém acabou de ser preenchido."
+     "p": "Você não pode escapar do jogo, mas pode parar de ser o alvo mais fácil: coloque invalidações além das piscinas óbvias, espere o varre-e-reverte em níveis limpos, e trate um pavio que fura um nível e o retoma na hora como informação - alguém acabou de ser preenchido."
     }
    ],
    "quiz": [
@@ -43,7 +43,7 @@
      "q": "Um pavio através de um nível que é retomado na hora sugere…",
      "o": [
       "O nível quebrou definitivamente e nunca mais funciona",
-      "Um varrido de liquidez — alguém foi preenchido",
+      "Um varrido de liquidez - alguém foi preenchido",
       "Hora de entrar em pânico",
       "Volume baixo"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "A história é escrita no lateral",
-     "p": "Tendências são o resultado; ranges são a causa. Num range, grandes players constroem (acumulam) ou descarregam (distribuem) posições em silêncio, sem mover o preço contra si. A direção do rompimento normalmente é decidida muito antes de acontecer — dentro do range."
+     "p": "Tendências são o resultado; ranges são a causa. Num range, grandes players constroem (acumulam) ou descarregam (distribuem) posições em silêncio, sem mover o preço contra si. A direção do rompimento normalmente é decidida muito antes de acontecer - dentro do range."
     },
     {
      "h": "Lendo o range",
-     "p": "Observe como o preço se comporta nas bordas: sondas repetidas abaixo da mínima que se recuperam rápido (varridas na demanda) sugerem acumulação; altas fracassando no topo com volume encolhendo sugerem distribuição. O meio do range é ruído — as bordas são a pista."
+     "p": "Observe como o preço se comporta nas bordas: sondas repetidas abaixo da mínima que se recuperam rápido (varridas na demanda) sugerem acumulação; altas fracassando no topo com volume encolhendo sugerem distribuição. O meio do range é ruído - as bordas são a pista."
     },
     {
      "h": "O spring e a armadilha",
-     "p": "O final clássico: um rompimento falso CONTRA a direção verdadeira — o spring — que varre os stops, preenche o tamanho final do grande player e reverte para o movimento verdadeiro. Se você aprende a esperar a armadilha, a armadilha vira sua entrada em vez da sua saída."
+     "p": "O final clássico: um rompimento falso CONTRA a direção verdadeira - o spring - que varre os stops, preenche o tamanho final do grande player e reverte para o movimento verdadeiro. Se você aprende a esperar a armadilha, a armadilha vira sua entrada em vez da sua saída."
     }
    ],
    "quiz": [
@@ -103,7 +103,7 @@
    "cards": [
     {
      "h": "Buracos no leilão",
-     "p": "Quando o preço se move violentamente numa direção, ele pula preços — quase nada foi negociado ali. Essa zona fina é um desequilíbrio (muitas vezes chamado de fair value gap). Mercados frequentemente revisitam essas zonas depois, porque preços não negociados são negócio inacabado do leilão."
+     "p": "Quando o preço se move violentamente numa direção, ele pula preços - quase nada foi negociado ali. Essa zona fina é um desequilíbrio (muitas vezes chamado de fair value gap). Mercados frequentemente revisitam essas zonas depois, porque preços não negociados são negócio inacabado do leilão."
     },
     {
      "h": "Por que as revisitas acontecem",
@@ -111,7 +111,7 @@
     },
     {
      "h": "Usando desequilíbrios com honestidade",
-     "p": "Um desequilíbrio é uma zona CANDIDATA a entradas na direção da tendência — nunca uma garantia. Empilhe com estrutura: um desequilíbrio que se sobrepõe a um suporte e à tendência do timeframe maior é um setup de verdade; um gap solitário num gráfico de 1 minuto é ruído com nome chique."
+     "p": "Um desequilíbrio é uma zona CANDIDATA a entradas na direção da tendência - nunca uma garantia. Empilhe com estrutura: um desequilíbrio que se sobrepõe a um suporte e à tendência do timeframe maior é um setup de verdade; um gap solitário num gráfico de 1 minuto é ruído com nome chique."
     }
    ],
    "quiz": [
@@ -154,11 +154,11 @@
     },
     {
      "h": "Aceitação e rejeição",
-     "p": "Preço entrando num nó de volume alto tende a desacelerar e serrar — muito negócio foi feito ali e volta a atrair negociação. Preço entrando num nó de volume baixo tende a atravessar rápido — ninguém quis negociar ali antes e ninguém quer agora. Isso explica muitos movimentos rápidos melhor que qualquer indicador."
+     "p": "Preço entrando num nó de volume alto tende a desacelerar e serrar - muito negócio foi feito ali e volta a atrair negociação. Preço entrando num nó de volume baixo tende a atravessar rápido - ninguém quis negociar ali antes e ninguém quer agora. Isso explica muitos movimentos rápidos melhor que qualquer indicador."
     },
     {
      "h": "Uso prático",
-     "p": "Marque o nó de maior volume do range recente (o point of control). Acima dele, quedas para dentro dele frequentemente acham compradores; abaixo, altas para dentro dele acham vendedores. Combine com seus níveis de m1 — quando um nó de volume e um nível estrutural concordam, você achou uma zona de verdade."
+     "p": "Marque o nó de maior volume do range recente (o point of control). Acima dele, quedas para dentro dele frequentemente acham compradores; abaixo, altas para dentro dele acham vendedores. Combine com seus níveis de m1 - quando um nó de volume e um nível estrutural concordam, você achou uma zona de verdade."
     }
    ],
    "quiz": [
@@ -197,11 +197,11 @@
    "cards": [
     {
      "h": "O que são os níveis de fib",
-     "p": "Retrações de Fibonacci marcam frações fixas de um movimento anterior — 38.2%, 50%, 61.8%. Não há lei física obrigando o preço a respeitá-las. E ainda assim são respeitadas com frequência. Por quê? Milhões de traders desenham as mesmas linhas e agem nelas — um espelho autorrealizável."
+     "p": "Retrações de Fibonacci marcam frações fixas de um movimento anterior - 38.2%, 50%, 61.8%. Não há lei física obrigando o preço a respeitá-las. E ainda assim são respeitadas com frequência. Por quê? Milhões de traders desenham as mesmas linhas e agem nelas - um espelho autorrealizável."
     },
     {
      "h": "O jeito honesto de usá-los",
-     "p": "Trate os fibs como um MAPA de onde outros traders esperam reações, não como gravidade. A retração de 61.8% numa tendência de alta é uma zona popular de compra — o que a torna uma zona real, acredite você ou não na matemática. Autorrealizável ainda assim se realiza."
+     "p": "Trate os fibs como um MAPA de onde outros traders esperam reações, não como gravidade. A retração de 61.8% numa tendência de alta é uma zona popular de compra - o que a torna uma zona real, acredite você ou não na matemática. Autorrealizável ainda assim se realiza."
     },
     {
      "h": "Confluência, de novo",
@@ -244,7 +244,7 @@
    "cards": [
     {
      "h": "Nem todo verde é igual",
-     "p": "Quando o mercado repica, algumas moedas se recuperam para topos novos enquanto outras mal saem das mínimas. Essa diferença — força relativa — é uma das vantagens mais duráveis do trading: o que se recusou a cair na tempestade normalmente lidera a recuperação."
+     "p": "Quando o mercado repica, algumas moedas se recuperam para topos novos enquanto outras mal saem das mínimas. Essa diferença - força relativa - é uma das vantagens mais duráveis do trading: o que se recusou a cair na tempestade normalmente lidera a recuperação."
     },
     {
      "h": "Medindo de forma simples",
@@ -252,7 +252,7 @@
     },
     {
      "h": "Forte com a maré",
-     "p": "Combine com m9: num mercado risk-on com dominância caindo, comprar as alts relativamente mais fortes é pescar onde os peixes estão — tendência, maré e força alinhadas. Comprar a moeda mais fraca porque está \"barata\" é o trade exatamente oposto com etiqueta de desconto."
+     "p": "Combine com m9: num mercado risk-on com dominância caindo, comprar as alts relativamente mais fortes é pescar onde os peixes estão - tendência, maré e força alinhadas. Comprar a moeda mais fraca porque está \"barata\" é o trade exatamente oposto com etiqueta de desconto."
     }
    ],
    "quiz": [
@@ -291,11 +291,11 @@
    "cards": [
     {
      "h": "A volatilidade se agrupa",
-     "p": "Mercados alternam entre regimes: longos trechos de ranges apertados e quietos e explosões de expansão violenta. A volatilidade se agrupa — calmaria segue calmaria, tempestade segue tempestade — até o regime quebrar. A mesma estratégia não pode tratar os dois mundos de forma idêntica."
+     "p": "Mercados alternam entre regimes: longos trechos de ranges apertados e quietos e explosões de expansão violenta. A volatilidade se agrupa - calmaria segue calmaria, tempestade segue tempestade - até o regime quebrar. A mesma estratégia não pode tratar os dois mundos de forma idêntica."
     },
     {
      "h": "Adaptando tamanho e stops",
-     "p": "Num regime de tempestade, um stop que era sensato semana passada agora está dentro do ruído — e seu tamanho precisa encolher para manter o risco constante (distância de stop maior × tamanho menor = o mesmo risco de 1%). Em regimes de calmaria morta, trades de rompimento morrem repetidamente enquanto a reversão à média prospera."
+     "p": "Num regime de tempestade, um stop que era sensato semana passada agora está dentro do ruído - e seu tamanho precisa encolher para manter o risco constante (distância de stop maior × tamanho menor = o mesmo risco de 1%). Em regimes de calmaria morta, trades de rompimento morrem repetidamente enquanto a reversão à média prospera."
     },
     {
      "h": "A checagem de regime",
@@ -307,7 +307,7 @@
      "q": "A volatilidade tende a…",
      "o": [
       "Ser completamente aleatória a cada dia, sem memória",
-      "Se agrupar — calmaria segue calmaria, tempestade segue tempestade",
+      "Se agrupar - calmaria segue calmaria, tempestade segue tempestade",
       "Só subir",
       "Só cair"
      ]
@@ -338,15 +338,15 @@
    "cards": [
     {
      "h": "De ferramentas a um sistema",
-     "p": "Você agora tem muitas lentes: estrutura, liquidez, ranges, desequilíbrios, nós de volume, fibs, força relativa, regimes — mais tudo dos cursos 1-4. Um profissional não usa todas em todo lugar; ele define um CONJUNTO fixo que precisa se alinhar antes de um trade existir."
+     "p": "Você agora tem muitas lentes: estrutura, liquidez, ranges, desequilíbrios, nós de volume, fibs, força relativa, regimes - mais tudo dos cursos 1-4. Um profissional não usa todas em todo lugar; ele define um CONJUNTO fixo que precisa se alinhar antes de um trade existir."
     },
     {
      "h": "Monte seu conjunto",
-     "p": "Conjunto exemplo: tendência do timeframe maior + um nível estrutural + um nó de volume concordando + posicionamento não lotado contra você + nenhum evento vermelho no calendário dentro da janela. Cinco checagens. O seu pode ser diferente — o que importa é que seja ESCRITO e fixo, para cada trade ser comparável no diário."
+     "p": "Conjunto exemplo: tendência do timeframe maior + um nível estrutural + um nó de volume concordando + posicionamento não lotado contra você + nenhum evento vermelho no calendário dentro da janela. Cinco checagens. O seu pode ser diferente - o que importa é que seja ESCRITO e fixo, para cada trade ser comparável no diário."
     },
     {
      "h": "Menos trades, mais pesados",
-     "p": "Um conjunto de verdade filtra brutalmente: a maioria dos dias não produz nada, e esse é o design. Os trades que passam carregam várias razões independentes — exatamente o que torna o R:R deles honesto. Esta é a ponte entre saber coisas e ter uma vantagem."
+     "p": "Um conjunto de verdade filtra brutalmente: a maioria dos dias não produz nada, e esse é o design. Os trades que passam carregam várias razões independentes - exatamente o que torna o R:R deles honesto. Esta é a ponte entre saber coisas e ter uma vantagem."
     }
    ],
    "quiz": [
@@ -379,7 +379,7 @@
     }
    ],
    "try": {
-    "p": "Abra o workspace de gráficos e marque UM conjunto completo em qualquer moeda: tendência, nível, nó de volume — e confira o posicionamento. Sem trade — só a leitura.",
+    "p": "Abra o workspace de gráficos e marque UM conjunto completo em qualquer moeda: tendência, nível, nó de volume - e confira o posicionamento. Sem trade - só a leitura.",
     "label": "Abrir Gráficos →"
    }
   }

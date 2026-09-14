@@ -20,8 +20,8 @@ const OUT = path.join(ROOT, 'dist', 'index.html');
 
 let h = fs.readFileSync(SRC, 'utf8');
 
-const TITLE = 'MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations';
-const DESC = 'Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC.';
+const TITLE = 'MarginPad - Free Crypto Futures Terminal, Paper Trade & Liquidations';
+const DESC = 'Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free - no deposit, no KYC.';
 const CANON = 'https://marginpad.io/';
 const OG_IMG = 'https://marginpad.io/assets/og/home.jpg';   // the homepage's own card (2026-09-14); every page has one now
 
@@ -30,16 +30,16 @@ const GTAG = `<!-- Google tag (gtag.js) -->
 
 const JSONLD = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":${JSON.stringify(DESC)}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>`;
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad - Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>`;
 
-// hreflang alternates — connect the 13 language homepages so Google/Yandex/Bing treat them as one site's translations
+// hreflang alternates - connect the 13 language homepages so Google/Yandex/Bing treat them as one site's translations
 // (huge for international + Yandex-RU targeting). Must stay in sync with build/gen-i18n-pages.js LANGS.
 const HREFLANG_LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
 const HREFLANG = ['<link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />',
   '<link rel="alternate" hreflang="en" href="https://marginpad.io/" />']
   .concat(HREFLANG_LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="https://marginpad.io/${l}/" />`)).join('\n');
 
-// Yandex.Metrica (counter 110941944) — on the homepage too so quick gen-home-live deploys never drop it (build/add-metrica.js covers the rest of the site).
+// Yandex.Metrica (counter 110941944) - on the homepage too so quick gen-home-live deploys never drop it (build/add-metrica.js covers the rest of the site).
 const METRICA = `<!-- Yandex.Metrika counter -->
 <script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:(window.innerWidth>880),clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
@@ -49,10 +49,10 @@ const METRICA = `<!-- Yandex.Metrika counter -->
 h = h.replace('<meta name="robots" content="noindex,nofollow" />',
               '<meta name="robots" content="index,follow,max-image-preview:large" />');
 // 2) real title
-h = h.replace('<title>MarginPad — Demo homepage (full-width)</title>',
+h = h.replace('<title>MarginPad - Demo homepage (full-width)</title>',
               '<title>' + TITLE + '</title>');
 // 3) inject SEO head (description, canonical, OG, twitter, JSON-LD) + gtag right after <head>
-// demo-home already carries both counters in its own <head> (they are the source markup); inject only what is missing — the live homepage shipped BOTH twice for a while (double gtag config + double Metrica init, found 2026-09-02).
+// demo-home already carries both counters in its own <head> (they are the source markup); inject only what is missing - the live homepage shipped BOTH twice for a while (double gtag config + double Metrica init, found 2026-09-02).
 const headExtra = `
 ${h.indexOf("AW-18230384038") >= 0 ? "" : GTAG}
 <meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
@@ -82,7 +82,7 @@ h = h.replace('<head>', '<head>' + headExtra);
 h = h.replace(/[ \t]*<meta charset=[^>]*>\s*/i, '');
 h = h.replace('<head>', '<head>\n<meta charset="UTF-8" />');
 
-// 4) the on-page demo pageview beacon points at /demo-home/ — retarget it to the homepage
+// 4) the on-page demo pageview beacon points at /demo-home/ - retarget it to the homepage
 h = h.replace("'/api/track?t=pageview&p=/demo-home/'", "'/api/track?t=pageview&p=/'");
 
 fs.writeFileSync(OUT, h);

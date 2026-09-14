@@ -50,7 +50,7 @@
 .frame-nat_vn::before{background:linear-gradient(180deg,#fff27a,#FFDD00 50%,#e0b800);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 .frame-nat_ua{--nr:rgba(0,91,187,.9);--ng:rgba(255,213,0,.5);--nb:linear-gradient(180deg,#1c78de 0 50%,#FFD500 50%);--ne:block}
 .frame-nat_ua::before{border-radius:50%;background:radial-gradient(circle at 50% 50%,#3a2a08 0 2.6px,#FFD500 3px 5.4px,transparent 5.8px),repeating-conic-gradient(#FFD500 0 10deg,transparent 10deg 30deg)}
-/* --- WAVE 2 (2026-09-05, owner): 30 more countries — every country with 2+ accounts on the site plus nine larger crypto markets we already have users in. Same technique as wave 1. --- */
+/* --- WAVE 2 (2026-09-05, owner): 30 more countries - every country with 2+ accounts on the site plus nine larger crypto markets we already have users in. Same technique as wave 1. --- */
 .frame-nat_et{--nr:rgba(16,140,66,.9);--ng:rgba(252,221,9,.45);--nb:linear-gradient(180deg,#108C42 0 33.4%,#FCDD09 33.4% 66.6%,#DA121A 66.6%);--ne:block}
 .frame-nat_et::before{border-radius:50%;background:radial-gradient(circle,#FCDD09 0 3px,transparent 3.4px),repeating-conic-gradient(from 18deg,#FCDD09 0 4deg,transparent 4deg 72deg),#1a5fd0}
 .frame-nat_ao{--nr:rgba(214,16,17,.9);--ng:rgba(255,207,0,.45);--nb:linear-gradient(180deg,#D61011 0 50%,#141414 50%);--ne:block}

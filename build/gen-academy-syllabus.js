@@ -1,7 +1,7 @@
 /* Regenerates the crawlable syllabus block on /academy/ from the inline #acadData.
 
    The Academy path itself is rendered by JavaScript, so without this block a crawler sees a hero
-   and nothing else — no lesson titles, no course names. The syllabus is the page's actual indexable
+   and nothing else - no lesson titles, no course names. The syllabus is the page's actual indexable
    body, which is why it must be rebuilt whenever a course or lesson is added, and why it lives
    between <!-- syllabus:start --> and <!-- syllabus:end --> markers instead of being hand-edited.
 
@@ -39,10 +39,10 @@ const block = START + '<section class="syl" id="syllabus"><h2>The full syllabus<
 
 const old = html.slice(a, b + END.length);
 if (old === block) { console.log('syllabus: unchanged (' + data.courses.length + ' courses, ' + lessons + ' lessons)'); process.exit(0); }
-if (CHECK) { console.log('syllabus: OUT OF DATE — run node build/gen-academy-syllabus.js'); process.exit(1); }
+if (CHECK) { console.log('syllabus: OUT OF DATE - run node build/gen-academy-syllabus.js'); process.exit(1); }
 
 const out = html.slice(0, a) + block + html.slice(b + END.length);
 fs.writeFileSync(PAGE + '.tmp', out, 'utf8');
 fs.renameSync(PAGE + '.tmp', PAGE);
-console.log('syllabus: rebuilt — ' + data.courses.length + ' courses, ' + lessons + ' lessons, ' +
+console.log('syllabus: rebuilt - ' + data.courses.length + ' courses, ' + lessons + ' lessons, ' +
   (block.length - old.length > 0 ? '+' : '') + (block.length - old.length) + ' bytes');

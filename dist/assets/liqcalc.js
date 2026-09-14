@@ -7,14 +7,14 @@
     return isFinite(n)
       ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 }))
-      : '—';
+      : '-';
   };
   function calc() {
     var out = $('liqOut'); if (!out) return;
     var entry = parseFloat($('liqEntry').value),
         lev = parseFloat($('liqLev').value),
         mmr = parseFloat($('liqMmr').value) / 100;
-    if (!isFinite(entry) || !isFinite(lev) || lev <= 0 || !isFinite(mmr)) { out.textContent = '—'; $('liqDist').textContent = '—'; return; }
+    if (!isFinite(entry) || !isFinite(lev) || lev <= 0 || !isFinite(mmr)) { out.textContent = '-'; $('liqDist').textContent = '-'; return; }
     var liq = side === 'long' ? entry * (1 - 1 / lev + mmr) : entry * (1 + 1 / lev - mmr);
     var dist = (liq - entry) / entry * 100;
     out.textContent = '$' + fmt(liq);

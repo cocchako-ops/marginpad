@@ -28,7 +28,7 @@ export function createSqliteStorage(path, opts = {}) {
   }
   function ensure() { if (!insertStmt) prepareAll(); } // prepares lazily once tables exist
 
-  // Every query here runs synchronously on the main thread — the same thread that reads the exchange
+  // Every query here runs synchronously on the main thread - the same thread that reads the exchange
   // sockets. The market-wide aggregates are the expensive ones (whole-day scans), and the same answer is
   // asked for by every colo of the edge cache within seconds. Memoize them for a short TTL so a burst
   // costs one scan, not one per request. Keys carry the window so different windows never collide.
@@ -141,7 +141,7 @@ export function createSqliteStorage(path, opts = {}) {
   function insertOi(symbol, exchange, ts, oiBase, price) { ensure(); oiStmt.run(symbol, exchange, ts, oiBase, price); }
   function latestOi(symbol) { ensure();
     // Latest row per exchange. The old GROUP BY + MAX(ts) walked every row of the symbol (30 days × 3 venues
-    // × every 2 min ≈ 65k) on each 12s poll — 2s cold. The poll only needs the last hour; (symbol, ts) makes
+    // × every 2 min ≈ 65k) on each 12s poll - 2s cold. The poll only needs the last hour; (symbol, ts) makes
     // that a short range scan, and the newest row per exchange is picked here.
     const rows = db.prepare('SELECT exchange, oi_base AS oi, price, ts FROM oi WHERE symbol=? AND ts>=? ORDER BY ts DESC').all(symbol, Date.now() - 3600000);
     const seen = new Map();
@@ -184,7 +184,7 @@ export function createSqliteStorage(path, opts = {}) {
   function pulse(sinceTs) { ensure(); return cached('pulse:' + hoursKey(sinceTs), 30000, () => pulseRaw(sinceTs)); } // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
   function pulseRaw(sinceTs) {
     // px = price of the newest row in the window: SQLite takes bare columns from the row that produced a
-    // lone MAX(). The previous correlated subquery did one (symbol, ts) seek per output symbol — 300 cold
+    // lone MAX(). The previous correlated subquery did one (symbol, ts) seek per output symbol - 300 cold
     // seeks on a box whose page cache cannot hold the table. Every column here is in idx_liq_ts_cov, so
     // the whole window is one contiguous index-only scan.
     const bySym = db.prepare("SELECT symbol s, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh, MAX(ts) mt, price px FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY symbol ORDER BY (l+sh) DESC LIMIT 300").all(sinceTs).map((r) => ({ s: r.s, l: r.l, sh: r.sh, px: r.px }));
@@ -197,7 +197,7 @@ export function createSqliteStorage(path, opts = {}) {
     return cached('liqBySym:' + hoursKey(since), 60000, () => db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since));
   }
 
-  // Full raw dump of one UTC day — feeds the R2 archive (worker cron pulls this once/day).
+  // Full raw dump of one UTC day - feeds the R2 archive (worker cron pulls this once/day).
   // Raw rows are pruned after retentionDays; the archive is how history outlives that AND the droplet.
   function exportDay(d0, d1) { ensure();
     return db.prepare('SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts').all(d0, d1);

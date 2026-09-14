@@ -4,11 +4,11 @@
    ticket read "+$0.12 Win" and flipped to a Loss the moment the server settled it (owner report 2026-09-09).
 
    The rule this file protects, in both directions:
-     1. an OPEN position still shows the GROSS unrealized number — a fresh $100 position reads about 0.00, NOT
+     1. an OPEN position still shows the GROSS unrealized number - a fresh $100 position reads about 0.00, NOT
         -$12. Settling the fee into the live figure was tried on 2026-09-09 and reverted on the owner's order;
         this test fails if it ever comes back.
      2. a CLOSE (full, partial, from the sheet or the fallback path, member or guest) books
-        qty*(exit-entry)*dir - qty*(entry+exit)*feeRate - funding, floored at -margin — the server's expression
+        qty*(exit-entry)*dir - qty*(entry+exit)*feeRate - funding, floored at -margin - the server's expression
         to the cent, so the ticket cannot disagree with the account.
 
    Run: node build/close-net-e2e.js */
@@ -126,17 +126,17 @@ const journal = async () => {
       chk('a 100% close books the same net expression', !!full && Math.abs(full.pnl - netOf(full, full.exit)) < 0.01, full && { booked: +full.pnl.toFixed(4), net: +netOf(full, full.exit).toFixed(4) });
       await sleep(16000);
       const srv = (await journal()).filter(t => String(t.id) === String(full && full.id))[0];
-      // The two can still differ by a TICK — client and server each take their own live price a moment apart — but never
+      // The two can still differ by a TICK - client and server each take their own live price a moment apart - but never
       // by the fee, which is what flipped tickets from Win to Loss. Both are rounded to cents, so a match is exact when
       // the price did not move between the two reads.
-      // The two numbers can differ by the price TICK between the client's close and the server's re-price — that is
+      // The two numbers can differ by the price TICK between the client's close and the server's re-price - that is
       // honest and unavoidable. What must not differ is the FORMULA: the server's stored pnl has to be the same net
       // expression applied to the server's own exit, exactly as the client's is to its own. A systematic gap the size
       // of the fee is the bug that flipped tickets from Win to Loss.
       {
         const srvSelf = srv ? Math.abs((+srv.pnl) - netOf(srv, +srv.exit)) : 99;
         const feeLeg = (+full.qty || 0) * ((+full.entry || 0) + (+full.exit || 0)) * (+full.feeRate || 0);
-        chk('the server settles by the SAME formula (its own exit, fee both legs) — no systematic gap the size of the fee', !!srv && srvSelf <= 0.011, { serverPnl: srv && srv.pnl, serverFormula: srv && +netOf(srv, +srv.exit).toFixed(4), localPnl: full && full.pnl, localExit: full && full.exit, serverExit: srv && srv.exit, feeIs: +feeLeg.toFixed(2) });
+        chk('the server settles by the SAME formula (its own exit, fee both legs) - no systematic gap the size of the fee', !!srv && srvSelf <= 0.011, { serverPnl: srv && srv.pnl, serverFormula: srv && +netOf(srv, +srv.exit).toFixed(4), localPnl: full && full.pnl, localExit: full && full.exit, serverExit: srv && srv.exit, feeIs: +feeLeg.toFixed(2) });
       }
 
       // ---- 5. a legacy row (feeRate 0) is not touched
@@ -179,6 +179,6 @@ const journal = async () => {
     try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}
   }
   const bad = out.filter(l => l.slice(0, 4) === 'FAIL').length;
-  console.log('\nUID ' + uidE + ' — pass ' + (out.length - bad) + ' fail ' + bad);
+  console.log('\nUID ' + uidE + ' - pass ' + (out.length - bad) + ' fail ' + bad);
   process.exit(bad ? 1 : 0);
 })();

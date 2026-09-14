@@ -43,7 +43,7 @@ window.mpJStore=window.mpJStore||function(a){
   return false;
 };
 /* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
-   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device - the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
    DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
    unaffected. Shifting the data instead would corrupt every one of those. */
@@ -65,7 +65,7 @@ function mpTzMerge(o){
   return o;
 }
 function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
-window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
+window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 - DELETE with the pxtag round */
 /* ===== Charts workspace: draggable, resizable windowed charts (LightweightCharts) ===== */
 (function(){
   var board=document.getElementById('cwsBoard'), space=document.getElementById('chartspace');
@@ -77,8 +77,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var MP_INDS={mom:1,sqz:1,liqr:1,casc:1,brain:1,memory:1,magnet:1,sentf:1};
   var INDACC={ok:false};
   function indAllowed(){return !!INDACC.ok;}
-  function fetchIndAccess(cb){try{fetch('/api/ind/access',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){INDACC.ok=!!(j&&j.allowed);if(cb)cb();});}catch(e){}} // MarginPad-exclusive signals — lime in every menu so they stand out
-  var ITIPS={sig:'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).',mom:'Momentum shift: a green MOM arrow when MACD momentum turns up AND RSI confirms strength (>52); red when momentum turns down and RSI is weak (<48). Catches the moment buyers/sellers take over — pair it with the trend Buy/Sell for confirmation.',sqz:'Squeeze breakout: when volatility coils tight (Bollinger Bands squeeze inside the Keltner Channel) the market is loading up. A SQZ arrow fires the moment it releases, in the breakout direction — often the start of a fast move.',liqr:'Liquidation reversal (our data): a big liquidation cascade = forced traders capitulating. A green LIQ arrow marks a bar where LONGS were wiped out (panic low, a possible bounce); red where SHORTS were squeezed (blow-off top). A contrarian signal you will not find on other charts.',memory:'Market Memory (our AI forecast): finds the past bars whose full market state (8 factors) most resembles RIGHT NOW, then shows what happened NEXT on average. The lower panel is the expected 6-bar move, the dashed line is the projected target, and the legend tells you how many analogs matched and how often they went up. It WILL be wrong sometimes \u2014 it is the market\u2019s own memory, an edge, not a crystal ball. Exclusive to MarginPad.',magnet:'Liquidation Magnet (our data): price is pulled toward big pools of liquidation orders. This draws the dominant pool ABOVE (short liqs, red) and BELOW (long liqs, green) the current price; the BOLD line is the stronger magnet \u2014 the more likely next target. Estimated from our liquidation model. Exclusive to MarginPad.',sentf:'Sentiment Flip (our data): when the crowd is piled on one side AND paying to hold it (funding), a small turn against them snowballs. A green FLIP fires when positioning is stretched short and momentum turns up (squeeze fuel); red when the crowd is trapped long and momentum rolls over. Contrarian, and self-scored. Exclusive to MarginPad.',brain:'Market Brain (our adaptive AI): blends 8 factors — trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure — and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market — one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.',psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.',sma:'The plain average price over the last bars. A simple trend line — price above it is bullish.',hma:'A super-smooth, fast average price line — less wobble and less lag than EMA/SMA.',vwap:'The average price weighted by how much was traded. Big traders treat it as today’s fair price.',bb:'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.',kc:'Bands based on how much price usually moves. Price popping outside them signals a strong move.',dc:'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.',sr:'Lines where price often bounces (support) or gets rejected (resistance).',pp:'Key daily price levels (pivot) where price tends to pause or turn.',vol:'How much was traded each bar. Tall bars = lots of people trading right then.',rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild market → use wider stops.',wr:'Williams %R — like an upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.'};
+  function fetchIndAccess(cb){try{fetch('/api/ind/access',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){INDACC.ok=!!(j&&j.allowed);if(cb)cb();});}catch(e){}} // MarginPad-exclusive signals - lime in every menu so they stand out
+  var ITIPS={sig:'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).',mom:'Momentum shift: a green MOM arrow when MACD momentum turns up AND RSI confirms strength (>52); red when momentum turns down and RSI is weak (<48). Catches the moment buyers/sellers take over - pair it with the trend Buy/Sell for confirmation.',sqz:'Squeeze breakout: when volatility coils tight (Bollinger Bands squeeze inside the Keltner Channel) the market is loading up. A SQZ arrow fires the moment it releases, in the breakout direction - often the start of a fast move.',liqr:'Liquidation reversal (our data): a big liquidation cascade = forced traders capitulating. A green LIQ arrow marks a bar where LONGS were wiped out (panic low, a possible bounce); red where SHORTS were squeezed (blow-off top). A contrarian signal you will not find on other charts.',memory:'Market Memory (our AI forecast): finds the past bars whose full market state (8 factors) most resembles RIGHT NOW, then shows what happened NEXT on average. The lower panel is the expected 6-bar move, the dashed line is the projected target, and the legend tells you how many analogs matched and how often they went up. It WILL be wrong sometimes \u2014 it is the market\u2019s own memory, an edge, not a crystal ball. Exclusive to MarginPad.',magnet:'Liquidation Magnet (our data): price is pulled toward big pools of liquidation orders. This draws the dominant pool ABOVE (short liqs, red) and BELOW (long liqs, green) the current price; the BOLD line is the stronger magnet \u2014 the more likely next target. Estimated from our liquidation model. Exclusive to MarginPad.',sentf:'Sentiment Flip (our data): when the crowd is piled on one side AND paying to hold it (funding), a small turn against them snowballs. A green FLIP fires when positioning is stretched short and momentum turns up (squeeze fuel); red when the crowd is trapped long and momentum rolls over. Contrarian, and self-scored. Exclusive to MarginPad.',brain:'Market Brain (our adaptive AI): blends 8 factors - trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure - and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market - one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.',psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.',sma:'The plain average price over the last bars. A simple trend line - price above it is bullish.',hma:'A super-smooth, fast average price line - less wobble and less lag than EMA/SMA.',vwap:'The average price weighted by how much was traded. Big traders treat it as today’s fair price.',bb:'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.',kc:'Bands based on how much price usually moves. Price popping outside them signals a strong move.',dc:'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.',sr:'Lines where price often bounces (support) or gets rejected (resistance).',pp:'Key daily price levels (pivot) where price tends to pause or turn.',vol:'How much was traded each bar. Tall bars = lots of people trading right then.',rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild market → use wider stops.',wr:'Williams %R - like an upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.'};
   var wins=[], notes=[], zTop=10, built=false, libLoading=false, libCbs=[];
   function isMobile(){return !!(window.matchMedia && window.matchMedia('(max-width:880px)').matches);}
   function MAXn(){return isMobile()?1:MAX_DESKTOP;}
@@ -88,8 +88,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
   function ema(v,p){var k=2/(p+1),o=[],e;for(var i=0;i<v.length;i++){e=i?v[i]*k+o[i-1]*(1-k):v[i];o.push(e);}return o;}
   // clamp ISOLATED phantom wicks (bad/transient prints) so a single bad candle can't draw a giant vertical line
-  function sanitizeBars(kd){if(!kd||!kd.length)return kd;var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;_q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}kd=_ok;/* drop null/NaN bars — they poison the chart's render loop ("Value is null" crash) */if(kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
-  /* Supertrend(10,3) buy/sell — same engine as the Paper Trade "Signals" toggle */
+  function sanitizeBars(kd){if(!kd||!kd.length)return kd;var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;_q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}kd=_ok;/* drop null/NaN bars - they poison the chart's render loop ("Value is null" crash) */if(kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
+  /* Supertrend(10,3) buy/sell - same engine as the Paper Trade "Signals" toggle */
   function signalPlan(d){var n=d?d.length:0,P=10,M=3;if(n<P+3)return {mk:[],last:null};
     var tr=[],i;for(i=0;i<n;i++){tr.push(i===0?d[i].high-d[i].low:Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)));}
     var atr=[],seed=0;for(i=0;i<P;i++)seed+=tr[i];var a=seed/P;for(i=0;i<n;i++){if(i<P)atr.push(a);else{a=(a*(P-1)+tr[i])/P;atr.push(a);}}
@@ -104,7 +104,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     for(var f=0;f<fl.length;f++){var s=fl[f];if(!(s.atr>0))continue;var tp=s.entry+s.dir*3*s.atr,end=(f+1<fl.length)?fl[f+1].i:d.length;
       for(var j=s.i+1;j<end;j++){var bar=d[j];if(s.dir===1?(bar.high>=tp):(bar.low<=tp)){mk.push({time:bar.time,position:s.dir===1?'aboveBar':'belowBar',color:'#26de81',shape:'circle',text:'TP'});break;}}}
     return mk;}
-  /* Momentum shift: MACD/signal cross gated by RSI(14) — a momentum turn with a strength filter (fewer false flips than a raw cross) */
+  /* Momentum shift: MACD/signal cross gated by RSI(14) - a momentum turn with a strength filter (fewer false flips than a raw cross) */
   function computeMomentum(d){var n=d?d.length:0;if(n<40)return [];var c=closes(d),m=macdCalc(c),r=rsiCalc(c,14),mk=[],i;
     for(i=35;i<n;i++){if(!isFinite(m.macd[i])||!isFinite(m.signal[i])||!isFinite(m.macd[i-1])||!isFinite(m.signal[i-1])||!isFinite(r[i]))continue;
       if(m.macd[i-1]<=m.signal[i-1]&&m.macd[i]>m.signal[i]&&r[i]>52)mk.push({time:d[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'MOM'});
@@ -130,7 +130,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* async: pull recent liquidations for this window's symbol (our collector), cache 60s per symbol, re-render markers */
   function loadLiqRev(w){if(!w||w.dead||!w.sym||w._liqFetching)return;if(w._liqEvents&&w._liqSym===w.sym&&Date.now()-(w._liqT||0)<60000)return;w._liqFetching=true;
     fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(w.sym)+'&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(jj){w._liqFetching=false;if(!w||w.dead)return;w._liqEvents=(jj&&jj.events)||[];w._liqSym=w.sym;w._liqT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
-  /* Self-scoring: grade every arrow this indicator fired on the LOADED bars — 1R:1R (entry=signal close,
+  /* Self-scoring: grade every arrow this indicator fired on the LOADED bars - 1R:1R (entry=signal close,
      target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
      its own recent hit-rate on THIS symbol+TF, so users see when it works and when it does not. */
   function scoreMarkers(bars,mks){if(!bars||bars.length<30||!mks||!mks.length)return null;
@@ -233,7 +233,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return {score:score,mk:mk,top:top};}
   /* Market Memory: k-nearest-neighbour ANALOG forecast. For each bar we take its 8-factor vector and find the
      most similar PAST bars (scaled Euclidean distance, only bars old enough to have a known 6-bar outcome), then
-     average what happened next. A genuinely predictive read from our data — it will be wrong sometimes, but it
+     average what happened next. A genuinely predictive read from our data - it will be wrong sometimes, but it
      is the market's own memory: "when it looked like this before, here is what tended to happen". */
   function memoryCalc(w,bars){var n=bars?bars.length:0;if(n<160)return null;
     var _bf=brainFactors(w,bars),F=_bf.F,a=_bf.a,c=_bf.c,nf=F.length,i,j,k;
@@ -254,7 +254,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var last=n-1,pl=predict(last,n-K),proj=null;
     if(pl){var projRet=pl.avg*a[last]/c[last];proj={p:c[last]*(1+projRet),ret:projRet,up:pl.up,n:pl.n};}
     return {forecast:forecast,mk:mk,proj:proj};}
-  /* current liquidation pools (local leverage-ladder snapshot — same model as Cascade Radar / the heatmap) */
+  /* current liquidation pools (local leverage-ladder snapshot - same model as Cascade Radar / the heatmap) */
   function poolsNow(bars){var n=bars?bars.length:0;if(n<40)return [];var LEVS=[[5,0.16],[10,0.26],[25,0.24],[50,0.18],[100,0.16]];var px0=bars[n-1].close,binH=px0*0.002;if(!(binH>0))return [];var alive={},i,k;
     for(i=0;i<n;i++){var b=bars[i];for(k in alive){var pr=(+k+0.5)*binH;if(pr>=b.low&&pr<=b.high)delete alive[k];}
       if(i>0){var pv=bars[i-1],noti=((+pv.vol||0)*pv.close)||Math.abs(pv.close-pv.open)*1e4;for(var L=0;L<LEVS.length;L++){var lv=LEVS[L][0],wg=noti*LEVS[L][1]*0.5;var bl=Math.floor(pv.close*(1-0.995/lv)/binH),bs=Math.floor(pv.close*(1+0.995/lv)/binH);var al=alive[bl];if(al&&al.long)al.w+=wg;else if(!al)alive[bl]={w:wg,long:1};var as2=alive[bs];if(as2&&!as2.long)as2.w+=wg;else if(!as2)alive[bs]={w:wg,long:0};}}
@@ -280,10 +280,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else if(armed&&st<=-0.45&&mom<0){mk.push({time:bars[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'FLIP'});armed=false;}
       else if(!armed&&Math.abs(st)<0.2)armed=true;}
     return {sent:sent,mk:mk};}
-  /* Ichimoku (9/26/52) — Tenkan, Kijun, Senkou span A/B */
+  /* Ichimoku (9/26/52) - Tenkan, Kijun, Senkou span A/B */
   function ichimoku(b){var n=b.length,conv=[],base=[],spanA=[],spanB=[];function hl(i,p){if(i<p-1)return NaN;var h=-Infinity,l=Infinity;for(var j=i-p+1;j<=i;j++){if(b[j].high>h)h=b[j].high;if(b[j].low<l)l=b[j].low;}return (h+l)/2;}
     for(var i=0;i<n;i++){var c=hl(i,9),k=hl(i,26),sb=hl(i,52);conv.push(c);base.push(k);spanA.push((isFinite(c)&&isFinite(k))?(c+k)/2:NaN);spanB.push(sb);}return {conv:conv,base:base,spanA:spanA,spanB:spanB};}
-  /* Parabolic SAR (0.02 step, 0.2 max) — trailing dots */
+  /* Parabolic SAR (0.02 step, 0.2 max) - trailing dots */
   function psarCalc(b){var n=b.length,out=new Array(n),step=0.02,maxAf=0.2;if(n<2){for(var z=0;z<n;z++)out[z]=NaN;return out;}
     var up=b[1].close>=b[0].close,ep=up?b[0].high:b[0].low,sar=up?b[0].low:b[0].high,af=step;out[0]=NaN;
     for(var i=1;i<n;i++){sar=sar+af*(ep-sar);
@@ -303,7 +303,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function money(n){n=+n||0;var a=Math.abs(n);return a>=1e9?'$'+(n/1e9).toFixed(1)+'B':a>=1e6?'$'+(n/1e6).toFixed(1)+'M':a>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+n.toFixed(0);}
   function cwFmt(v,dec){if(v==null||!isFinite(v))return '–';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
   // Decimals on the price axis are MEASURED from the market's own candles (window.mpPricePrec, defined in the
-  // shared chart-helper block in home.js) instead of guessed from price magnitude — the guess drew HYPE 85.64 as
+  // shared chart-helper block in home.js) instead of guessed from price magnitude - the guess drew HYPE 85.64 as
   // 85.640 and cut 5-decimal FX short. `bars` is optional: without it this degrades to the magnitude floor.
   function applyPrec(series,p,bars){try{var n=window.mpPricePrec?window.mpPricePrec(bars||null,p):2;series.applyOptions({priceFormat:{type:'price',precision:n,minMove:Math.pow(10,-n)}});}catch(e){}}
   function _legHidden(){try{return localStorage.getItem('mp:leghide')==='1';}catch(e){return false;}}
@@ -411,7 +411,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function chartsTradeRefresh(){var sig='';try{jload().forEach(function(e){sig+=e.sym+'|'+e.status+'|'+e.side+'|'+e.entry+';';});}catch(e){}if(sig===_ctSig)return;_ctSig=sig;for(var i=0;i<wins.length;i++){var w=wins[i];if(w&&!w.dead&&w.candle){updateMTBtn(w);if(w.mtOn)try{importTrades(w);}catch(e){}}}}
   (function(){var orig=window.mpJournalRender;window.mpJournalRender=function(){if(orig)try{orig.apply(this,arguments);}catch(e){}try{chartsTradeRefresh();}catch(e){}};})();
   // autoscale provider factory (ported from the Paper Trade chart): the visible-candle range is EXTENDED to include the
-  // imported position's entry/liq/tp/sl lines so they stay in view on EVERY timeframe — capped at 2.4× the candle range
+  // imported position's entry/liq/tp/sl lines so they stay in view on EVERY timeframe - capped at 2.4× the candle range
   // so a far liq on 1m can't shrink the candles to a flat line. Without this, a TF switch re-fit the scale to candles
   // only and the position lines landed off-screen ("lines don't place correctly / don't adapt when I change the time").
   function mtAutoscale(w){ return function(orig){ try{
@@ -437,7 +437,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         if(e.liq)_add(+e.liq,'LIQ','#ff3b3b',1,2);
         if(e.tp!=null)_add(+e.tp,'TP','#9aa3ad',1,3);
         if(e.stop!=null)_add(+e.stop,'SL','#9aa3ad',1,3);});
-      for(var gk in _g){var g=_g[gk];try{w.mtLines.push(w.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:g.s,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}} // one line per LEVEL (×N) — stacked identical labels were illegible (UX audit)
+      for(var gk in _g){var g=_g[gk];try{w.mtLines.push(w.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:g.s,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}} // one line per LEVEL (×N) - stacked identical labels were illegible (UX audit)
     }
     updateMTBtn(w); }
   /* notes pinned to a window (drag a note onto a chart to pin it; per-window Notes button) */
@@ -455,7 +455,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     document.addEventListener('pointerdown',function(e){if(winNotesEl&&!winNotesEl.hidden&&!(e.target.closest&&(e.target.closest('.cws-notes-menu')||e.target.closest('.cwin-notes-btn'))))winNotesEl.hidden=true;},true);
     window.addEventListener('scroll',function(){if(winNotesEl)winNotesEl.hidden=true;},true);}
   function openWinNotes(w,btn){if(!winNotesEl)buildWinNotes();winNotesW=w;renderWinNotes();winNotesEl.hidden=false;var r=btn.getBoundingClientRect(),mw=winNotesEl.offsetWidth||240,mh=winNotesEl.offsetHeight||180;var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+6;if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-6);winNotesEl.style.left=Math.max(8,left)+'px';winNotesEl.style.top=top+'px';}
-  /* shared Indicators dropdown — one element on <body>, fixed-positioned (never clipped by the window) */
+  /* shared Indicators dropdown - one element on <body>, fixed-positioned (never clipped by the window) */
   var indMenuEl=null,indMenuW=null;
   function updateIndN(w){if(!w.el)return;var btn=w.el.querySelector('.cwin-ind-btn'),el=w.el.querySelector('.cwin-ind-n');if(!btn)return;var n=0;for(var k in w.inds)if(w.inds[k])n++;if(el)el.textContent=n?String(n):'';btn.classList.toggle('active',n>0);}
   function buildIndMenu(){
@@ -465,7 +465,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     indMenuEl.addEventListener('click',function(e){
       var per=e.target.closest&&e.target.closest('.cwin-ind-pers b[data-pp]');
       if(per&&indMenuW){var row=per.parentNode,pk=row.getAttribute('data-p'),pp=+per.getAttribute('data-pp');var list=pk==='ema'?(indMenuW.emaList=indMenuW.emaList||(indMenuW.emaP?[indMenuW.emaP]:[21])):(indMenuW.smaList=indMenuW.smaList||(indMenuW.smaP?[indMenuW.smaP]:[50]));var ix=list.indexOf(pp);if(ix>=0){if(list.length>1)list.splice(ix,1);}else{if(list.length>=3)list.shift();list.push(pp);}list.sort(function(a,b){return a-b;});Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});if(!indMenuW.inds[pk]){indMenuW.inds[pk]=true;var itm=indMenuEl.querySelector('.cwin-ind-item[data-ind="'+pk+'"]');if(itm)itm.classList.add('on');}applyInds(indMenuW);updateIndN(indMenuW);savePersist();return;}
-      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock the premium indicators');else chartToast('Premium indicator — sign in and upgrade to use it.');return;}indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
+      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock the premium indicators');else chartToast('Premium indicator - sign in and upgrade to use it.');return;}indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
     });
     document.addEventListener('pointerdown',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ind-menu')||e.target.closest('.cwin-ind-btn'))))indMenuEl.hidden=true;},true);
     window.addEventListener('scroll',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target&&e.target.closest&&e.target.closest('.cwin-ind-menu')))indMenuEl.hidden=true;},true);/* scrolling inside the indicator list must not close it */
@@ -483,7 +483,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function chartToast(msg){if(window.mpToast){window.mpToast({msg:msg,kind:'warn',mark:'!',ms:4200,key:msg});return;} /* one channel (mp-auth) */
     var t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(18px);z-index:130;background:#11151b;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #ffb347;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;text-align:center;';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(18px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},350);},4200);}
-  /* ---- Ask AI about this chart — multi-turn, streamed, history kept, glued to the window ---- */
+  /* ---- Ask AI about this chart - multi-turn, streamed, history kept, glued to the window ---- */
   var aiEl=null,aiW=null,aiBusy=false,aiRaf=0,aiLastL=null,aiLastT=null,aiLimit=50,aiOffX=8,aiOffY=0,aiDragging=false;
   function tfWords(tf){return {'15':'15-minute','60':'1-hour','240':'4-hour','1440':'daily'}[tf]||tfLabel(tf);}
   function _p6(x){return (x!=null&&isFinite(x))?+(+x).toPrecision(6):null;}
@@ -492,7 +492,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* Build a rich, pre-computed technical brief of the window so the AI reasons over real numbers (computed regardless of which indicators the user has toggled). */
   function aiContext(w){
     var bars=w.bars||[],n=bars.length,last=bars[n-1]||{},price=last.close;
-    if(n<10||!(price>0))return {symbol:w.sym,timeframe:tfWords(w.tf),price:price||null,note:'Only '+n+' candles loaded — limited read.'};
+    if(n<10||!(price>0))return {symbol:w.sym,timeframe:tfWords(w.tf),price:price||null,note:'Only '+n+' candles loaded - limited read.'};
     var c=closes(bars);
     var win=bars.slice(-150),wf=win[0],chgWin=(wf&&wf.close)?+(((price-wf.close)/wf.close)*100).toFixed(2):null;
     var prev=bars[n-2]||{},chgBar=(prev.close)?+(((price-prev.close)/prev.close)*100).toFixed(2):null;
@@ -516,7 +516,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // downsampled recent path (so the model sees the trajectory)
     var rc=c.slice(-24).map(_p6);
     // open paper-trade position on this symbol
-    var pos=null;if(w.mtOn){try{var j=jload();for(var i=0;i<j.length;i++){var e=j[i];if(e.status==='open'&&e.sym===w.sym){var dir=e.side==='short'?-1:1,liq=e.liq?+e.liq:null,lev=+e.lev||1;pos={side:e.side==='short'?'short':'long',entry:_p6(+e.entry),leverage:lev,liq:_p6(liq),pnlPctRoe:+(((price-e.entry)/e.entry)*100*lev*dir).toFixed(1),distanceToLiqPct:liq?+(((price-liq)/price)*100*dir).toFixed(2):null};break;}}}catch(e){}}/* only let the AI see a position if the user actually imported it onto THIS chart (mtOn) — otherwise it must not assume any position */
+    var pos=null;if(w.mtOn){try{var j=jload();for(var i=0;i<j.length;i++){var e=j[i];if(e.status==='open'&&e.sym===w.sym){var dir=e.side==='short'?-1:1,liq=e.liq?+e.liq:null,lev=+e.lev||1;pos={side:e.side==='short'?'short':'long',entry:_p6(+e.entry),leverage:lev,liq:_p6(liq),pnlPctRoe:+(((price-e.entry)/e.entry)*100*lev*dir).toFixed(1),distanceToLiqPct:liq?+(((price-liq)/price)*100*dir).toFixed(2):null};break;}}}catch(e){}}/* only let the AI see a position if the user actually imported it onto THIS chart (mtOn) - otherwise it must not assume any position */
     var indsOn=[];for(var k in w.inds){if(w.inds[k])indsOn.push(k);}
     return {
       symbol:w.sym, timeframe:tfWords(w.tf), barsLoaded:n,
@@ -542,12 +542,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var COPY_SVG='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
   /* split a trade-plan JSON block (```plan {...}```) off the prose so it never shows as raw text, and parse it for the "Add to chart" button */
   function _aiPlanOk(p){return p&&typeof p==='object'&&(p.entry||p.stop||p.bias||(p.levels&&p.levels.length)||(p.targets&&p.targets.length));}
-  /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence — and to the closing fence not having streamed in yet. */
+  /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence - and to the closing fence not having streamed in yet. */
   function aiSplitPlan(text){text=String(text||'');
     var re=/```[a-zA-Z]*\s*([\s\S]*?)```/g,m,plan=null,idx=-1;
     while((m=re.exec(text))){var b=m[1].trim();if(b.charAt(0)==='{'){try{var p=JSON.parse(b);if(_aiPlanOk(p)){plan=p;idx=m.index;}}catch(e){}}}
     if(plan!=null)return {prose:text.slice(0,idx).replace(/\s+$/,''),plan:plan};
-    var oi=text.search(/```[a-zA-Z]*\s*\{/);if(oi>=0&&text.indexOf('```',oi+3)<0)return {prose:text.slice(0,oi).replace(/\s+$/,''),plan:null};/* opening fence streaming in — hide the partial JSON */
+    var oi=text.search(/```[a-zA-Z]*\s*\{/);if(oi>=0&&text.indexOf('```',oi+3)<0)return {prose:text.slice(0,oi).replace(/\s+$/,''),plan:null};/* opening fence streaming in - hide the partial JSON */
     return {prose:text,plan:null};}
   function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan)h+='<button class="aiplan" type="button" data-plan="'+escAttr(JSON.stringify(m.plan))+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg><span>Draw this plan on the chart</span></button>';h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
@@ -559,15 +559,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);
     (plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});
     (plan.levels||[]).forEach(function(l){if(l)pl(l.price,'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
-    chartToast('AI plan drawn on '+w.sym+' — '+(plan.bias?plan.bias.toUpperCase()+' setup. ':'')+'Change symbol/timeframe to clear.');
+    chartToast('AI plan drawn on '+w.sym+' - '+(plan.bias?plan.bias.toUpperCase()+' setup. ':'')+'Change symbol/timeframe to clear.');
   }
-  function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short — no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
+  function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short - no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
   function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
   var aiPremium=false;
-  function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium — $3.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
-  function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in to use Ask AI — a built-in analyst that reads any chart. It is part of MarginPad Premium ($3.99/mo): <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
+  function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium - $3.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
+  function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in to use Ask AI - a built-in analyst that reads any chart. It is part of MarginPad Premium ($3.99/mo): <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
   function aiClose(){if(aiEl)aiEl.hidden=true;if(aiRaf){cancelAnimationFrame(aiRaf);aiRaf=0;}}
-  /* The panel stays attached to its chart window via an offset (aiOffX/aiOffY from the window's top-right) — so it moves WITH the window on drag/scroll, but the user can freely drag it anywhere (which just updates the offset). */
+  /* The panel stays attached to its chart window via an offset (aiOffX/aiOffY from the window's top-right) - so it moves WITH the window on drag/scroll, but the user can freely drag it anywhere (which just updates the offset). */
   function aiFollow(){
     if(!aiEl||aiEl.hidden||!aiW||!aiW.el||aiW.dead){aiRaf=0;if(aiW&&aiW.dead)aiClose();return;}
     if(!aiDragging){
@@ -607,7 +607,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!me){aiShowGate();return;}
     if(!aiPremium){aiShowPremiumGate();return;}
     var w=aiW,q=String(question||'').trim();if(!q)q='Give me a sharp, practical read on this chart right now.';
-    /* the Ask-AI mission credit and the 'ai' activity event are recorded server-side by /api/ai/chart (2026-09-02) — no client beacon, so desktop and the mobile sheet count identically */
+    /* the Ask-AI mission credit and the 'ai' activity event are recorded server-side by /api/ai/chart (2026-09-02) - no client beacon, so desktop and the mobile sheet count identically */
     var hist=aiHistLoad(w);hist.push({role:'user',text:q,ts:Date.now()});aiHistSave(w,hist);
     var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text};});
     aiBusy=true;aiRenderBody(w);
@@ -617,12 +617,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var acc='',got=false;
     function fail(msg){aiBusy=false;bub.classList.remove('streaming');bub.innerHTML='<span style="color:#ff8a80">'+escHtml(msg)+'</span>';}
     fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:aiContext(w),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
-      if(!resp.ok){resp.json().then(function(d){aiBusy=false;if(resp.status===401){bub.remove();aiShowGate();}else if(resp.status===402){bub.remove();aiShowPremiumGate();}else if(resp.status===429){fail('You’ve used all '+((d&&d.limit)||aiLimit)+' AI questions today — resets tomorrow.');aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail('AI is not switched on yet.');}else{fail('Could not reach AI — please try again.');}}).catch(function(){fail('Could not reach AI — please try again.');});return;}
+      if(!resp.ok){resp.json().then(function(d){aiBusy=false;if(resp.status===401){bub.remove();aiShowGate();}else if(resp.status===402){bub.remove();aiShowPremiumGate();}else if(resp.status===429){fail('You’ve used all '+((d&&d.limit)||aiLimit)+' AI questions today - resets tomorrow.');aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail('AI is not switched on yet.');}else{fail('Could not reach AI - please try again.');}}).catch(function(){fail('Could not reach AI - please try again.');});return;}
       var u=resp.headers.get('x-ai-used'),l=resp.headers.get('x-ai-limit');if(u)aiSetQuota(+u,+l);
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail('Streaming not supported here.');});return;}
       var reader=resp.body.getReader(),dec=new TextDecoder(),buf='';
-      function atBottom(){return (body.scrollHeight-body.scrollTop-body.clientHeight)<60;} // only auto-scroll if the user is already at the bottom — never yank them down while they read/scroll up
-      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplitPlan(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back — try again.</span>';return;}var atB=atBottom();bub.innerHTML=aiAiInner({text:prose,plan:sp.plan});if(atB)body.scrollTop=body.scrollHeight;var h2=aiHistLoad(w);h2.push({role:'ai',text:prose,plan:sp.plan||undefined,ts:Date.now()});aiHistSave(w,h2);}
+      function atBottom(){return (body.scrollHeight-body.scrollTop-body.clientHeight)<60;} // only auto-scroll if the user is already at the bottom - never yank them down while they read/scroll up
+      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplitPlan(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back - try again.</span>';return;}var atB=atBottom();bub.innerHTML=aiAiInner({text:prose,plan:sp.plan});if(atB)body.scrollTop=body.scrollHeight;var h2=aiHistLoad(w);h2.push({role:'ai',text:prose,plan:sp.plan||undefined,ts:Date.now()});aiHistSave(w,h2);}
       function pump(){reader.read().then(function(res){
         if(res.done){finish();return;}
         buf+=dec.decode(res.value,{stream:true});var idx;
@@ -630,7 +630,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         pump();
       }).catch(function(){finish();});}
       pump();
-    }).catch(function(){fail('Network error — try again.');});
+    }).catch(function(){fail('Network error - try again.');});
   }
   function openAiPanel(w,btn){
     if(!aiEl)aiBuild();
@@ -643,7 +643,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(aiRaf)cancelAnimationFrame(aiRaf);aiRaf=requestAnimationFrame(aiFollow);
     if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(!aiPremium){aiShowPremiumGate();}else{aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);}}}).catch(function(){});
   }
-  /* Set a price alert straight from the chart — tap a level, it creates a real /api/alerts alert + draws an anchored line */
+  /* Set a price alert straight from the chart - tap a level, it creates a real /api/alerts alert + draws an anchored line */
   // remove an alert's line + cancel it server-side (silent skips the toast / used on failed creates)
   function chAlertDel(w,a,silent){if(!a)return;if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}
     if(w.chAlerts)w.chAlerts=w.chAlerts.filter(function(x){return x!==a;});
@@ -660,19 +660,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var pl=null;try{pl=w.candle.createPriceLine({price:price,color:'#ffb347',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'ALERT '+(dir==='up'?'≥':'≤')});}catch(e){}
     var rec={id:null,price:price,dir:dir,pl:pl};(w.chAlerts=w.chAlerts||[]).push(rec);
     fetch('/api/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:w.sym,target:price,dir:dir,channel:'email'})}).then(function(r){return r.json();}).then(function(d){
-      if(d&&d.ok){rec.id=d.id;chartToast('Alert set — '+w.sym+' '+(dir==='up'?'≥':'≤')+' '+cwFmt(price)+' · we’ll email you · click the line to remove');}
+      if(d&&d.ok){rec.id=d.id;chartToast('Alert set - '+w.sym+' '+(dir==='up'?'≥':'≤')+' '+cwFmt(price)+' · we’ll email you · click the line to remove');}
       else{chAlertDel(w,rec,true);
         if(d&&d.error==='too_many')chartToast('Too many active alerts (max 25). Remove some on /alerts.');
         else if(d&&d.error==='not_signed_in'){chartToast('Sign in (free) to set price alerts.');try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}}
         else chartToast('Couldn’t set the alert. Try again.');}
-    }).catch(function(){chAlertDel(w,rec,true);chartToast('Network error — alert not set.');});
+    }).catch(function(){chAlertDel(w,rec,true);chartToast('Network error - alert not set.');});
   }
-  /* per-window drawing overlay — TradingView-style. Shapes anchored to (logical bar index, price), re-projected
+  /* per-window drawing overlay - TradingView-style. Shapes anchored to (logical bar index, price), re-projected
      each redraw so they track pan/zoom. Select tool: hit-test, drag whole shape or endpoint handles, delete, restyle.
      Drawings persist per symbol:timeframe in localStorage (times serialized as bar time, restored to logicals). */
   var DRAW_LS='mp_charts_draw';
   function drawStoreAll(){try{return JSON.parse(localStorage.getItem(DRAW_LS)||'{}')||{};}catch(e){return {};}}
-  // Shared drawing palette — ONE tidy row that never wraps: [select] [tool▾] [color▾] [style▾] | [delete] [undo] [clear].
+  // Shared drawing palette - ONE tidy row that never wraps: [select] [tool▾] [color▾] [style▾] | [delete] [undo] [clear].
   // Tools/colors/line-styles live in labeled dropdown panels (.cwin-pop) so a first-time visitor reads names, not glyphs.
   function drawToolsHtml(withAlert){
     var T=[['trend','╱','Trend line'],['ray','⇗','Ray'],['arrow','➔','Arrow'],['hline','―','Horizontal line'],['vline','│','Vertical line'],['rect','▭','Rectangle'],['fib','F','Fibonacci'],['measure','⇕','Measure'],['pen','✎','Freehand'],['text','T','Text label']];
@@ -681,7 +681,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var COLS=['#3fd8e6','#c2f64a','#ff6258','#ff9f4d','#b48cff','#ffffff'],cols='';
     for(var j=0;j<COLS.length;j++)cols+='<span class="cwin-color'+(j===0?' on':'')+'" data-color="'+COLS[j]+'" style="background:'+COLS[j]+'"></span>';
     return '<div class="cwin-tools">'
-      +'<button class="cwin-tool" data-tool="select" title="Select / move / edit — tap a drawing" type="button">↖</button>'
+      +'<button class="cwin-tool" data-tool="select" title="Select / move / edit - tap a drawing" type="button">↖</button>'
       +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">╱</span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
@@ -778,7 +778,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         return s;}).filter(Boolean);
       redraw();}
     w.dr.save=save;w.dr.reload=reload;
-    w.dr._dbg=function(){var g=grid();return {grid:g,shapes:JSON.parse(JSON.stringify(w.dr.shapes)),proj:w.dr.shapes.map(function(s){var l1=(s.l1!=null?s.l1:s.l),p1=(s.p1!=null?s.p1:s.p);return {x1:xOf(l1),y1:yOf(p1),x2:(s.l2!=null?xOf(s.l2):null),y2:(s.p2!=null?yOf(s.p2):null)};})};};/* debug/E2E hook (2026-07-30, permanent like __mpKlineMerge): read-only snapshot of shape anchors + projections + grid — powers drift measurement */
+    w.dr._dbg=function(){var g=grid();return {grid:g,shapes:JSON.parse(JSON.stringify(w.dr.shapes)),proj:w.dr.shapes.map(function(s){var l1=(s.l1!=null?s.l1:s.l),p1=(s.p1!=null?s.p1:s.p);return {x1:xOf(l1),y1:yOf(p1),x2:(s.l2!=null?xOf(s.l2):null),y2:(s.p2!=null?yOf(s.p2):null)};})};};/* debug/E2E hook (2026-07-30, permanent like __mpKlineMerge): read-only snapshot of shape anchors + projections + grid - powers drift measurement */
     // ---- interactions ----
     function pos(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
     function d2seg(px,py,x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy,t=L2?((px-x1)*dx+(py-y1)*dy)/L2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));}
@@ -805,11 +805,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
         w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
         if(hitS){var snap;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){snap=null;}drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};}
-        else if(w.dr._auto){w.dr._auto=0;w.dr.on=false;try{w.el.classList.remove('drawing');var _atg=w.el.querySelector('.cwin-draw-tg');if(_atg)_atg.classList.remove('on');}catch(_3){}}/* auto edit-session (entered by clicking a drawing outside draw mode) ends on an empty click — this one click is consumed, the next gesture pans the chart normally */
+        else if(w.dr._auto){w.dr._auto=0;w.dr.on=false;try{w.el.classList.remove('drawing');var _atg=w.el.querySelector('.cwin-draw-tg');if(_atg)_atg.classList.remove('on');}catch(_3){}}/* auto edit-session (entered by clicking a drawing outside draw mode) ends on an empty click - this one click is consumed, the next gesture pans the chart normally */
         return;}
       if(tl==='alert'){createChartAlert(w,p.y);return;}
       var st={color:w.dr.color,w:w.dr.lw,dash:w.dr.dash};
-      var placed=function(s){w.dr.shapes.push(s);w.dr.sel=s;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';redraw();save();if(w._drSyncUI)w._drSyncUI();};/* TradingView parity (2026-07-30): after placing a shape, revert to select + auto-select it (immediate adjust/style); pen is the exception — stays active for multi-stroke annotation */
+      var placed=function(s){w.dr.shapes.push(s);w.dr.sel=s;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';redraw();save();if(w._drSyncUI)w._drSyncUI();};/* TradingView parity (2026-07-30): after placing a shape, revert to select + auto-select it (immediate adjust/style); pen is the exception - stays active for multi-stroke annotation */
       if(tl==='pen')w.dr.cur=Object.assign({t:'pen',pts:[{l:L,p:P}]},st);
       else if(tl==='hline')placed(Object.assign({t:'hline',p:P},st));
       else if(tl==='vline')placed(Object.assign({t:'vline',l:L},st));
@@ -840,9 +840,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* TradingView parity (2026-07-30): drawings are clickable OUTSIDE draw mode. The canvas stays pointer-events:none
        (pan/zoom untouched by default); this CAPTURE-phase listener on the window body hit-tests a pointerdown BEFORE the
        chart sees it. On a shape hit: consume the event, enter an auto edit-session (draw mode + select + selection) and
-       start the move-drag immediately — setPointerCapture routes the follow-up pointermove/up to cv, so the EXISTING drag
+       start the move-drag immediately - setPointerCapture routes the follow-up pointermove/up to cv, so the EXISTING drag
        handlers do the work. Empty space: listener stays silent → the chart pans as before. The session exits on an empty
-       click in select mode (that one click is consumed — re-dispatching into the LWC canvas is fragile; TradingView eats
+       click in select mode (that one click is consumed - re-dispatching into the LWC canvas is fragile; TradingView eats
        a deselect click the same way). Zero overhead with no drawings (early return). */
     w._drBodyPd=function(e){
       if(w.dead||!w.dr||w.dr.on||!w.dr.shapes.length)return;
@@ -859,12 +859,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};
       try{cv.setPointerCapture(e.pointerId);}catch(_3){}
     };
-    body.addEventListener('pointerdown',w._drBodyPd,true); // dies with the window DOM — no closeWin cleanup needed (unlike the window/document-level w._drKey/w._drPd)
+    body.addEventListener('pointerdown',w._drBodyPd,true); // dies with the window DOM - no closeWin cleanup needed (unlike the window/document-level w._drKey/w._drPd)
     w._drKey=function(e){if(!w.dr||!w.dr.on||w.dead)return;var tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable))return;
       if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){var ix=w.dr.shapes.indexOf(w.dr.sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();e.preventDefault();}
       else if(e.key==='Escape'&&w.dr.sel){w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();}};window.addEventListener('keydown',w._drKey); // handler ref kept on w so closeWin can removeEventListener (was leaking per window over preset/layout switches)
     if('ResizeObserver'in window){try{w.dr.ro=new ResizeObserver(function(){size();});w.dr.ro.observe(body);}catch(_){}}
-    // re-project drawings whenever the chart pans/zooms (its time scale exists once buildChart finishes — poll briefly)
+    // re-project drawings whenever the chart pans/zooms (its time scale exists once buildChart finishes - poll briefly)
     w._drawC=function(){if(w._drRaf||w.dead)return;w._drRaf=true;requestAnimationFrame(function(){w._drRaf=false;if(!w.dead)redraw();});}; // rAF-coalesce: pan/zoom + live ticks fire many times/frame; one canvas re-projection per frame is enough
     (function attach(tries){if(w.dead)return;if(w.chart){try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(){w._drawC();});}catch(e){}return;}if((tries||0)<50)setTimeout(function(){attach((tries||0)+1);},120);})(0);
     setTimeout(size,60);
@@ -890,7 +890,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var sc=tools.querySelector('.scur');if(sc){sc.textContent=da?'┄':'━';sc.style.fontSize=(lw===1?'9px':(lw===3?'15px':'12px'));}
       var del=tools.querySelector('[data-del]');if(del)del.classList.toggle('sel',!!s);}
     w._drSyncUI=syncUI;
-    w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr — wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
+    w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr - wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
     tools.addEventListener('pointerdown',function(e){e.stopPropagation();});
     tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
       if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
@@ -908,7 +908,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   // ── candle-close countdown (2026-07-30): ONE 1s ticker for ALL windows (never per-window). Boundary math = TF grid
   // (iv - now mod iv, UTC-aligned like exchange candles), with `now` corrected by a server-clock skew from /api/prices .ts
-  // — never the raw client clock (the measured-machine skew gotcha). Feed stalled / no data → '--:--', never negative
+  // - never the raw client clock (the measured-machine skew gotcha). Feed stalled / no data → '--:--', never negative
   // and never a frozen 00:00. Format is per-INTERVAL: >=1h shows HH:MM:SS, below shows MM:SS.
   function cdSkew(){if(window.__mpSrvSkew!=null||window.__mpSrvSkewP)return;window.__mpSrvSkewP=1;fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){window.__mpSrvSkew=(d&&+d.ts>0)?(+d.ts-Date.now()):0;}).catch(function(){window.__mpSrvSkew=0;});}
   function cdFmt(sec,useH){sec=Math.max(0,Math.floor(sec));var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),x=sec%60,P=function(n){return (n<10?'0':'')+n;};return useH?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x));}
@@ -939,7 +939,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(n.html)ta.innerHTML=n.html; else if(n.text)ta.textContent=n.text; // migrate plain-text notes to rich text
     var cols=n.el.querySelectorAll('.cws-note-col');
     Array.prototype.forEach.call(cols,function(cd){cd.classList.toggle('on',cd.getAttribute('data-c')===n.color);
-      cd.addEventListener('mousedown',function(e){e.preventDefault();}); // keep the editor's caret/selection — don't let the swatch steal focus
+      cd.addEventListener('mousedown',function(e){e.preventDefault();}); // keep the editor's caret/selection - don't let the swatch steal focus
       cd.addEventListener('click',function(e){e.stopPropagation();var c=cd.getAttribute('data-c');n.color=c;Array.prototype.forEach.call(cols,function(x){x.classList.remove('on');});cd.classList.add('on');try{ta.focus();document.execCommand('styleWithCSS',false,true);document.execCommand('foreColor',false,c);}catch(_){}n.html=ta.innerHTML;n.text=ta.textContent;saveNotes();});});
     ta.addEventListener('input',function(){n.html=ta.innerHTML;n.text=ta.textContent;saveNotes();});
     n.el.addEventListener('pointerdown',function(){n.el.style.zIndex=++zTop;});
@@ -964,11 +964,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(n.winId!=null){n.el.style.display='none';var pw=winById(n.winId);if(pw)updateNotesBtn(pw);}
     saveNotes();
   }
-  /* clickable symbol dropdown for chart windows — search box + scrollable token list (from the screener) + free entry */
+  /* clickable symbol dropdown for chart windows - search box + scrollable token list (from the screener) + free entry */
   var symMenuEl=null,symMenuW=null,symMenuInput=null;
   function symFallback(){return window.mpTokens||['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX'];}
   function commitSym(v){v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v||!symMenuInput)return;symMenuEl.hidden=true;symMenuInput.value=v;symMenuInput.dispatchEvent(new Event('change',{bubbles:true}));}
-  function renderSymList(){if(!symMenuEl)return;var q=(symMenuEl._srch.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var toks=symFallback().filter(function(s){return !q||s.indexOf(q)>=0;});var html=toks.slice(0,150).map(function(s){return '<button type="button" class="cwin-sym-opt'+(s===(symMenuW&&symMenuW.sym)?' on':'')+'" data-sym="'+s+'">'+s+'</button>';}).join('');if(q&&toks.indexOf(q)<0)html='<button type="button" class="cwin-sym-opt cwin-sym-add" data-sym="'+q+'">⊕ Trade '+q+'</button>'+html;symMenuEl._list.innerHTML=html||'<div class="cwin-sym-empty">no match — press Enter to use it</div>';}
+  function renderSymList(){if(!symMenuEl)return;var q=(symMenuEl._srch.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var toks=symFallback().filter(function(s){return !q||s.indexOf(q)>=0;});var html=toks.slice(0,150).map(function(s){return '<button type="button" class="cwin-sym-opt'+(s===(symMenuW&&symMenuW.sym)?' on':'')+'" data-sym="'+s+'">'+s+'</button>';}).join('');if(q&&toks.indexOf(q)<0)html='<button type="button" class="cwin-sym-opt cwin-sym-add" data-sym="'+q+'">⊕ Trade '+q+'</button>'+html;symMenuEl._list.innerHTML=html||'<div class="cwin-sym-empty">no match - press Enter to use it</div>';}
   function buildSymMenu(){symMenuEl=el('<div class="cwin-sym-menu" hidden><input class="cwin-sym-search" type="text" placeholder="Search ticker…" autocomplete="off" spellcheck="false"><div class="cwin-sym-list"></div></div>');document.body.appendChild(symMenuEl);
     symMenuEl._srch=symMenuEl.querySelector('.cwin-sym-search');symMenuEl._list=symMenuEl.querySelector('.cwin-sym-list');
     symMenuEl.addEventListener('pointerdown',function(e){e.stopPropagation();});
@@ -978,7 +978,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     document.addEventListener('pointerdown',function(e){if(symMenuEl&&!symMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-sym-menu')||e.target.closest('.cwin-sym'))))symMenuEl.hidden=true;},true);
     window.addEventListener('scroll',function(e){if(symMenuEl&&!symMenuEl.hidden){var t=e.target;if(t&&t.closest&&t.closest('.cwin-sym-menu'))return;/* don't close when scrolling INSIDE the menu list */symMenuEl.hidden=true;}},true);}
   function openSymMenu(input,w){if(!symMenuEl)buildSymMenu();symMenuInput=input;symMenuW=w;symMenuEl._srch.value='';renderSymList();symMenuEl.hidden=false;var r=input.getBoundingClientRect(),mw=Math.max(180,r.width),mh=symMenuEl.offsetHeight||300;symMenuEl.style.minWidth=mw+'px';var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+4;if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-4);symMenuEl.style.left=Math.max(8,left)+'px';symMenuEl.style.top=top+'px';setTimeout(function(){try{symMenuEl._srch.focus();}catch(e){}},20);}
-  /* chart background theme — dark (default) or light/white. Applies to every window + the board. */
+  /* chart background theme - dark (default) or light/white. Applies to every window + the board. */
   var chTheme='dark';try{chTheme=(localStorage.getItem('mp_ch_theme')==='light')?'light':'dark';}catch(e){}
   function themeOpts(){return chTheme==='light'
     ?{layout:{background:{color:'#ffffff'},textColor:'#2a2f37'},grid:{vertLines:{color:'rgba(0,0,0,.06)'},horzLines:{color:'rgba(0,0,0,.06)'}},rightPriceScale:{borderColor:'#d6dade'},timeScale:{borderColor:'#d6dade'}}
@@ -997,7 +997,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.sub||w._subSync)return;w._subSync=1;try{w.sub.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;}); /* keep the oscillator sub-pane locked to the main time axis */
       w.legItems=[];var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);w.legEl=lg;try{w.chart.subscribeCrosshairMove(function(param){cwLeg(w,param);syncCrosshair(w,param);});}catch(_){}try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreW(w);});}catch(_){} }catch(e){return;}
     loadData(w,true); }); }
-  function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol — drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF — clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
+  function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol - drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF - clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
     var _q=w._kq=(w._kq||0)+1;/* request ticket: a full-window klines response only applies while it is the NEWEST full-window request for this window (2026-09-02) */
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle||_q!==w._kq)return;
@@ -1005,14 +1005,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       showSkel(w,false); }); }
   // Quietly re-sync the candles with the exchange's true OHLC (no skeleton, preserves the view). The live WS feed only
   // ever EXPANDS the forming bar's high/low, so a transient bad/low print bakes a phantom wick ("a drop that never
-  // happened") into the bar — and once it closes it's stuck forever (no other reload on desktop). A periodic refetch of
+  // happened") into the bar - and once it closes it's stuck forever (no other reload on desktop). A periodic refetch of
   // the authoritative klines erases any such phantom. Mirrors the mobile engine's 60s reload.
   function refreshData(w){ if(w.dead||!w.candle||w._lm)return; var sym=w.sym,tf=w.tf; // w._lm: don't race loadMoreW's pagination
     try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
     var _q=w._kq=(w._kq||0)+1;
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||_q!==w._kq||!kd||!kd.length)return;
-      kd=sanitizeBars(kd);w._hole=0;/* server answered — the diff below heals any missing minutes (or the hole is legit per the authority) */
+      kd=sanitizeBars(kd);w._hole=0;/* server answered - the diff below heals any missing minutes (or the hole is legit per the authority) */
       /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change). Compare by
          TIME over the overlap (a roll shifts the server window → the old index/length diff full-repainted every
          minute); never regress our live forming bar to the edge-cached snapshot; append new trailing bars via
@@ -1023,18 +1023,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _lastA=w.bars[w.bars.length-1],_lastK=kd[kd.length-1],_tmap={};
         for(var _i2=0;_i2<w.bars.length;_i2++)_tmap[w.bars[_i2].time]=w.bars[_i2];
         /* tick estimate from the data itself (max decimals over the last ~40 bars): the open tolerance below must be
-           TICK-relative, not only %-relative — one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
+           TICK-relative, not only %-relative - one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
            forced a visible full-repaint heal every resync after a roll (probe 2026-08-15), while one BTC tick is 0.00016%. */
         var _tkD=0;for(var _t5=Math.max(0,kd.length-40);_t5<kd.length;_t5++){var _b5=kd[_t5],_v5=[_b5.open,_b5.high,_b5.low,_b5.close];for(var _t6=0;_t6<4;_t6++){var _s5=String(_v5[_t6]),_e5=_s5.indexOf('e-'),_d5=0;if(_e5>=0){_d5=(+_s5.slice(_e5+2)||0)+(((_s5.slice(0,_e5).split('.')[1])||'').length);}else{var _p5=_s5.indexOf('.');_d5=_p5<0?0:_s5.length-_p5-1;}if(_d5>_tkD)_tkD=_d5;}}
         var _otol=function(o){var a=Math.abs(o);return Math.max(a*5e-5,Math.min(Math.pow(10,-_tkD)*1.6,a*0.001));};/* allow 1 tick (not 2+), hard-capped at 0.1% so a degenerate decimals estimate can't mask a real divergence */
         for(var _k2=0;_k2<kd.length;_k2++){var _b=kd[_k2];
           if(_b.time>_lastA.time){_app.push(_b);continue;}
-          /* the snapshot's LAST bar = the server's (possibly stale-cached, PARTIAL) forming bar — never an
+          /* the snapshot's LAST bar = the server's (possibly stale-cached, PARTIAL) forming bar - never an
              authority for a minute we already closed from the live trade stream (measured flip-flop source) */
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=w.bars[0].time){_mism=true;break;}continue;}
-          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
+          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) - strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
         if(_mism){_rm=2;w.bars=kd;if(_lastK.time===_lastA.time)w.bars[w.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])w.bars[w.bars.length-1]=_tmap[_lastK.time];w.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;w.bars=w.bars.concat(_app);}
       }
@@ -1045,13 +1045,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // load older history when the user scrolls back toward the start (full history to the coin's inception, like Paper Trade)
   function loadMoreW(w){ if(w.dead||w._lm||w._noMore||!w.bars||!w.bars.length||!w.candle)return;
     var sym=w.sym,tf=w.tf,end=w.bars[0].time*1000-1; w._lm=true;
-    var _lmg=setTimeout(function(){w._lm=false;},12000);/* a hung (never-settling) fetch would otherwise pin w._lm=true forever, which permanently disables refreshData — the 60s re-sync that is the last defense against a frozen chart */
+    var _lmg=setTimeout(function(){w._lm=false;},12000);/* a hung (never-settling) fetch would otherwise pin w._lm=true forever, which permanently disables refreshData - the 60s re-sync that is the last defense against a frozen chart */
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       clearTimeout(_lmg); w._lm=false; if(w.dead||sym!==w.sym||tf!==w.tf||!w.candle)return;
       if(!kd||!kd.length){w._noMore=true;return;}
       var first=w.bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));
-      if(!older.length){w._noMore=true;return;} // no bar older than our current first → the source cannot go deeper. This IS the real "oldest bar didn't move back" test — NOT "returned few" (older is strictly b.time<first, so any non-empty older moves first strictly back)
-      w._mpg=(w._mpg||0)+1; if(w._mpg>=30)w._noMore=true; // hard cap ~30 pages/(symbol+TF): anti-infinite for thin pairs / history gaps that dribble a few bars per page. Replaces the old `older.length<900 → noMore`, which mistook a SOURCE's inception for the coin's: a short page just means THIS source ran out (bybit-lin BTC = 2020), and the worker cascade falls through to a deeper source (gate-spot BTC = 2013) on the next end= window — the <900 stop capped history at the source start, not the coin start
+      if(!older.length){w._noMore=true;return;} // no bar older than our current first → the source cannot go deeper. This IS the real "oldest bar didn't move back" test - NOT "returned few" (older is strictly b.time<first, so any non-empty older moves first strictly back)
+      w._mpg=(w._mpg||0)+1; if(w._mpg>=30)w._noMore=true; // hard cap ~30 pages/(symbol+TF): anti-infinite for thin pairs / history gaps that dribble a few bars per page. Replaces the old `older.length<900 → noMore`, which mistook a SOURCE's inception for the coin's: a short page just means THIS source ran out (bybit-lin BTC = 2020), and the worker cascade falls through to a deeper source (gate-spot BTC = 2013) on the next end= window - the <900 stop capped history at the source start, not the coin start
       var shift=older.length; w.bars=older.concat(w.bars);
       var vr0=null;try{vr0=w.chart.timeScale().getVisibleLogicalRange();}catch(e){}
       try{w.candle.setData(w.bars);}catch(e){}
@@ -1065,34 +1065,34 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function liveTick(w,p){ if(!w.candle||!w.lastBar)return;
     var _wsn=window.mpSrvNow?window.mpSrvNow():Date.now();
     var ivSec=parseInt(w.tf,10)*60,nowBar=Math.floor(_wsn/1000/ivSec)*ivSec,nb=false; // server-clock bucketing (skewed device clocks rolled bars at wrong boundaries)
-    if(nowBar-w.lastBar.time>ivSec*1.5){ w._hole=1;/* remember the hole: once a live bar rolls below, lastBar looks current and every gap check goes blind — the watchdog keeps retrying refreshData off this flag until a klines fetch actually SUCCEEDS (mobile 4G wake drops the first one) */ if(!w._gapT||Date.now()-w._gapT>8000){w._gapT=Date.now();refreshData(w);} if(!(p>0)||nowBar-w.lastBar.time>ivSec*30)return; } /* klines behind → refetch; but with a live price and a modest gap (≤30 bars) fall through to roll a LIVE candle so the chart keeps moving instead of freezing while klines catches up. missed >1 interval (throttled/backgrounded tab, feed pause) → refetch the real candles instead of leaving a hole. Checked BEFORE the p>0 bail so a stalled feed still refetches (mirrors the Paper Trade fix). */
+    if(nowBar-w.lastBar.time>ivSec*1.5){ w._hole=1;/* remember the hole: once a live bar rolls below, lastBar looks current and every gap check goes blind - the watchdog keeps retrying refreshData off this flag until a klines fetch actually SUCCEEDS (mobile 4G wake drops the first one) */ if(!w._gapT||Date.now()-w._gapT>8000){w._gapT=Date.now();refreshData(w);} if(!(p>0)||nowBar-w.lastBar.time>ivSec*30)return; } /* klines behind → refetch; but with a live price and a modest gap (≤30 bars) fall through to roll a LIVE candle so the chart keeps moving instead of freezing while klines catches up. missed >1 interval (throttled/backgrounded tab, feed pause) → refetch the real candles instead of leaving a hole. Checked BEFORE the p>0 bail so a stalled feed still refetches (mirrors the Paper Trade fix). */
     if(!(p>0))return;
     /* ROLL GRACE: a tickers/poll event can cross the boundary before the closing minute's final publicTrade
-       batch lands — hold the roll until the first NEW-minute trade (stream is time-ordered → old minute is then
+       batch lands - hold the roll until the first NEW-minute trade (stream is time-ordered → old minute is then
        complete) or 2s pass (quiet boundary = bucket already final). Prevents the clipped-body finalize. */
     var _grace=false;
     if(nowBar>w.lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nowBar&&(_wsn/1000-nowBar)<2)_grace=true;}catch(_){}}
     if(nowBar>w.lastBar.time&&!_grace){
-      /* FINALIZE the closing bar from exchange-stamped trade buckets BEFORE rolling — the closed candle becomes
+      /* FINALIZE the closing bar from exchange-stamped trade buckets BEFORE rolling - the closed candle becomes
          exactly the authoritative kline and never changes again (1m: full OHLC; >1m: final-minute close + extremes). */
       try{var _TKf=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
         for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<w.lastBar.time||_fb.t>=w.lastBar.time+ivSec)continue;
-          if(ivSec===60){if(w.lastBar.high!==_fb.h||w.lastBar.low!==_fb.l||w.lastBar.close!==_fb.c){w.lastBar.high=_fb.h;w.lastBar.low=_fb.l;w.lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade — Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
+          if(ivSec===60){if(w.lastBar.high!==_fb.h||w.lastBar.low!==_fb.l||w.lastBar.close!==_fb.c){w.lastBar.high=_fb.h;w.lastBar.low=_fb.l;w.lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_fb.h>w.lastBar.high){w.lastBar.high=_fb.h;_fch=true;}if(_fb.l<w.lastBar.low){w.lastBar.low=_fb.l;_fch=true;}if(_fb.t===w.lastBar.time+ivSec-60&&w.lastBar.close!==_fb.c){w.lastBar.close=_fb.c;_fch=true;}}}
         if(_fch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{w.candle.update(w.lastBar);}catch(_){}}
       }}catch(_){}
       var _nbk=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}catch(_){}
       var _wop=w.lastBar.close,_wspk=(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025),_wcl=_wspk?_wop:p;
-      if(_nbk){w.lastBar={time:nowBar,open:_wop,high:Math.max(_nbk.h,_wop),low:Math.min(_nbk.l,_wop),close:_nbk.c};w._lgp=_nbk.c;w._rej=0;}/* open = prevClose ALWAYS (Bybit kline convention — measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
+      if(_nbk){w.lastBar={time:nowBar,open:_wop,high:Math.max(_nbk.h,_wop),low:Math.min(_nbk.l,_wop),close:_nbk.c};w._lgp=_nbk.c;w._rej=0;}/* open = prevClose ALWAYS (Bybit kline convention - measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
       else{w.lastBar={time:nowBar,open:_wop,high:Math.max(_wop,_wcl),low:Math.min(_wop,_wcl),close:_wcl};if(!_wspk)w._lgp=p;w._rej=0;}/* no bucket yet → same prev-close open */
       w.bars.push(w.lastBar);nb=true;}
-    else{if(!_grace){if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price — never bake it into the closing bar */
-      try{var _TKw=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKw&&w._lgp>0){var _mw=[_TKw.cur,_TKw.prev];for(var _wi9=0;_wi9<2;_wi9++){var _wk=_mw[_wi9];if(!_wk)continue;if(_wk.t<w.lastBar.time||_wk.t>=w.lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open — adopting it drew a phantom gap between candles */if(_wk.h>w.lastBar.high&&_wk.h<w._lgp*1.025)w.lastBar.high=_wk.h;if(_wk.l<w.lastBar.low&&_wk.l>w._lgp*0.975)w.lastBar.low=_wk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
+    else{if(!_grace){if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price - never bake it into the closing bar */
+      try{var _TKw=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKw&&w._lgp>0){var _mw=[_TKw.cur,_TKw.prev];for(var _wi9=0;_wi9<2;_wi9++){var _wk=_mw[_wi9];if(!_wk)continue;if(_wk.t<w.lastBar.time||_wk.t>=w.lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_wk.h>w.lastBar.high&&_wk.h<w._lgp*1.025)w.lastBar.high=_wk.h;if(_wk.l<w.lastBar.low&&_wk.l>w._lgp*0.975)w.lastBar.low=_wk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
     if(nb){w._disp=w.lastBar.close;try{w.candle.update(w.lastBar);}catch(e){}applyInds(w);try{if(!w._userPS)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
     else startSmooth(); // forming-bar close is eased toward the true price by the rAF loop → it glides at 60fps instead of snapping
     if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw)w.dr.redraw();
-    // once price crosses an alert level it has triggered (cron emails) — clear its line so it doesn't linger
-    if(w.chAlerts&&w.chAlerts.length){for(var ai=w.chAlerts.length-1;ai>=0;ai--){var al=w.chAlerts[ai];if((al.dir==='up'&&p>=al.price)||(al.dir==='down'&&p<=al.price)){if(al.pl)try{w.candle.removePriceLine(al.pl);}catch(e){}w.chAlerts.splice(ai,1);chartToast(''+w.sym+' hit '+cwFmt(al.price)+' — alert triggered');}}} }
+    // once price crosses an alert level it has triggered (cron emails) - clear its line so it doesn't linger
+    if(w.chAlerts&&w.chAlerts.length){for(var ai=w.chAlerts.length-1;ai>=0;ai--){var al=w.chAlerts[ai];if((al.dir==='up'&&p>=al.price)||(al.dir==='down'&&p<=al.price)){if(al.pl)try{w.candle.removePriceLine(al.pl);}catch(e){}w.chAlerts.splice(ai,1);chartToast(''+w.sym+' hit '+cwFmt(al.price)+' - alert triggered');}}} }
   // ---- smoothness: ease each forming candle's displayed close toward its true price at 60fps so it glides (premium feel).
   // Runs only while something is still moving (self-stops when every window has settled; restarted by liveTick), and never while hidden.
   var _smRun=false;
@@ -1104,7 +1104,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var fresh=(w._disp==null||!isFinite(w._disp));
       if(fresh){ w._disp=tgt; }
       else if(w._disp!==tgt){ var d=tgt-w._disp; if(Math.abs(d)<=Math.max(Math.abs(tgt)*1e-5,1e-9))w._disp=tgt; else { w._disp+=d*0.34; active=true; } }
-      else continue; // settled — nothing to redraw
+      else continue; // settled - nothing to redraw
       var c=w._disp; if(c>w.lastBar.high)c=w.lastBar.high; else if(c<w.lastBar.low)c=w.lastBar.low;
       try{w.candle.update({time:w.lastBar.time,open:w.lastBar.open,high:w.lastBar.high,low:w.lastBar.low,close:c});}catch(e){}
     }
@@ -1113,9 +1113,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   document.addEventListener('visibilitychange',function(){if(!document.hidden){startSmooth();
     wins.forEach(function(w){if(!w.dead&&w.candle)refreshData(w);});/* returning from a backgrounded tab: force a real klines re-sync NOW instead of waiting up to 60s (intervals were throttled while hidden → the forming candle froze / a gap formed) */
   }});
-  /* CHART LIVENESS WATCHDOG (same cure as the Paper Trade chart) — every 6s per window while visible:
+  /* CHART LIVENESS WATCHDOG (same cure as the Paper Trade chart) - every 6s per window while visible:
      (1) re-assert autoScale ONLY when the realtime edge is in view (a locked/drifted price scale makes a chart LOOK
-         frozen even though data updates — and on 5m+ new-bar re-fits are rare); never fights a user scrolled into history.
+         frozen even though data updates - and on 5m+ new-bar re-fits are rare); never fights a user scrolled into history.
      (2) if NO price has reached this window for >15s (WS quiet for the symbol AND the 12s REST poll failing/skipped),
          hard-recover: re-subscribe the WS and re-sync the candles. A chart can stay stale for at most ~15-20s. */
   setInterval(function(){ if(document.hidden)return; var now=Date.now();
@@ -1130,7 +1130,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     } },6000);
   function bringFront(w){wins.forEach(function(x){if(x.el)x.el.classList.remove('front');});if(w.el){w.el.classList.add('front');w.el.style.zIndex=++zTop;}}
   // sync the crosshair (vertical time line) across every chart window, so hovering one reads them all at the same moment
-  var _xhSync=false,_xhSyncOn=false; // crosshair sync is OFF by default — only the hovered chart shows the crosshair
+  var _xhSync=false,_xhSyncOn=false; // crosshair sync is OFF by default - only the hovered chart shows the crosshair
   function toggleSync(){_xhSyncOn=!_xhSyncOn;var b=document.getElementById('cwsSync');if(b)b.classList.toggle('on',_xhSyncOn);if(!_xhSyncOn){wins.forEach(function(o){if(o.chart)try{o.chart.clearCrosshairPosition();}catch(e){}});}}
   function syncCrosshair(src,param){if(!_xhSyncOn||_xhSync)return;_xhSync=true;try{
     if(param&&param.time!=null){wins.forEach(function(o){if(o===src||!o.chart||!o.candle)return;var pr=(o.lastBar&&+o.lastBar.close)||0;if(pr>0)try{o.chart.setCrosshairPosition(pr,param.time,o.candle);}catch(e){}});}
@@ -1213,7 +1213,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var x=(cfg.x!=null)?cfg.x:Math.min(bw-ww,18+i*30),y=(cfg.y!=null)?cfg.y:Math.min(bh-wh,18+i*30);
       w.el.style.width=ww+'px';w.el.style.height=wh+'px';w.el.style.left=Math.max(0,Math.min(x,bw-ww))+'px';w.el.style.top=Math.max(0,Math.min(y,bh-wh))+'px';}
     board.appendChild(w.el); wins.push(w); renumber(); bringFront(w); wireWin(w); setupDraw(w); buildChart(w); cdStart();
-    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000&&Date.now()-(w._pollT||0)<45000)return; /* WS feed is the single source of truth — skip REST while WS is fresh, BUT a hard 45s floor guarantees the poll can never be starved: _wsT is stamped on ANY mp:price incl. a stale/bridged value, so without this floor a silently-dead feed would suppress the poll forever (a freeze) */ fetch('/api/price?symbol='+encodeURIComponent(w.sym)+window.__mpPQ('cht',w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}}); },12000);
+    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000&&Date.now()-(w._pollT||0)<45000)return; /* WS feed is the single source of truth - skip REST while WS is fresh, BUT a hard 45s floor guarantees the poll can never be starved: _wsT is stamped on ANY mp:price incl. a stale/bridged value, so without this floor a silently-dead feed would suppress the poll forever (a freeze) */ fetch('/api/price?symbol='+encodeURIComponent(w.sym)+window.__mpPQ('cht',w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}}); },12000);
     w.refreshT=setInterval(function(){ if(!w.dead&&!document.hidden)refreshData(w); },60000); // self-heal any phantom wick from a bad live tick by re-syncing with the true klines every 60s
     updateCount(); }
   document.addEventListener('mp:price',function(ev){ if(!ev.detail)return; var s=ev.detail.sym,p=+ev.detail.price; if(!(p>0))return;
@@ -1253,7 +1253,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function saveLayout(){ if(!wins.length){alert('Open at least one chart first.');return;} var name=(prompt('Name this layout:','My layout')||'').trim(); if(!name)return; var arr=layoutsLoad(),snap=snapshot();snap.name=name;snap.ts=Date.now(); var idx=-1;for(var i=0;i<arr.length;i++)if(arr[i].name===name)idx=i; if(idx>=0)arr[idx]=snap;else arr.push(snap); layoutsSave(arr); var b=document.getElementById('cwsSave'),s=b&&b.querySelector('span'); if(s){var o=s.textContent;s.textContent='Saved ✓';setTimeout(function(){s.textContent=o;},1600);} }
   function loadLayout(snap){ if(!snap)return; wins.slice().forEach(function(w){closeWin(w);}); notes.slice().forEach(function(n){if(n.el.parentNode)n.el.parentNode.removeChild(n.el);}); notes=[]; (snap.wins||[]).slice(0,MAXn()).forEach(function(c){addWin(c);}); (snap.notes||[]).forEach(function(c){addNote(c);}); savePersist();saveNotes(); }
   var layMenuEl=null;
-  function renderLayMenu(){var arr=layoutsLoad();layMenuEl.innerHTML='<div class="cwin-ind-menu-h">Saved layouts</div>'+(arr.length?('<div class="cwin-ind-menu-list">'+arr.map(function(l){var c=(l.wins||[]).length;return '<div class="cws-lay-item"><button type="button" class="cws-lay-open" data-name="'+escAttr(l.name)+'">'+escHtml(l.name)+' <small>'+c+' chart'+(c===1?'':'s')+'</small></button><button type="button" class="cws-lay-del" data-del="'+escAttr(l.name)+'" title="Delete" aria-label="Delete">&#10005;</button></div>';}).join('')+'</div>'):'<div class="cws-lay-empty">No saved layouts yet — arrange your charts, then “Save layout”.</div>');}
+  function renderLayMenu(){var arr=layoutsLoad();layMenuEl.innerHTML='<div class="cwin-ind-menu-h">Saved layouts</div>'+(arr.length?('<div class="cwin-ind-menu-list">'+arr.map(function(l){var c=(l.wins||[]).length;return '<div class="cws-lay-item"><button type="button" class="cws-lay-open" data-name="'+escAttr(l.name)+'">'+escHtml(l.name)+' <small>'+c+' chart'+(c===1?'':'s')+'</small></button><button type="button" class="cws-lay-del" data-del="'+escAttr(l.name)+'" title="Delete" aria-label="Delete">&#10005;</button></div>';}).join('')+'</div>'):'<div class="cws-lay-empty">No saved layouts yet - arrange your charts, then “Save layout”.</div>');}
   function buildLayMenu(){ layMenuEl=el('<div class="cwin-ind-menu cws-lay-menu" hidden></div>'); document.body.appendChild(layMenuEl);
     layMenuEl.addEventListener('pointerdown',function(e){e.stopPropagation();});
     layMenuEl.addEventListener('click',function(e){var del=e.target.closest('[data-del]'),it=e.target.closest('[data-name]');
@@ -1278,7 +1278,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var p=qtPrice(qtEl.querySelector('.cqt-sym').value),l=qtLimPx(),long=qtSide==='long';
     if(!isFinite(l)||l<=0){h.textContent='The price you want to be filled at.';h.className='cqt-limh';return;}
     if(!(p>0)){h.textContent='';h.className='cqt-limh';return;}
-    var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?'below':'above')+' the market — fills if it '+(d<0?'drops':'rises')+' to '+fmtP(l)+'.';h.className='cqt-limh';
+    var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?'below':'above')+' the market - fills if it '+(d<0?'drops':'rises')+' to '+fmtP(l)+'.';h.className='cqt-limh';
   }
   function qtSetType(t){
     qtType=(t==='limit')?'limit':'market';if(!qtEl)return;
@@ -1303,21 +1303,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var advc=qtEl.querySelector('.cqt-adv-chk'),advOn=advc&&advc.checked,tp=advOn?parseFloat(qtEl.querySelector('.cqt-tp').value):NaN,sl=advOn?parseFloat(qtEl.querySelector('.cqt-sl').value):NaN;
     if(!(amt>0)){msg.style.color='#ff6258';msg.textContent='Enter an amount.';return;}
     if(window.mpTradeGate&&!window.mpTradeGate(sym,qtSide))return; // enforce open-trade limits + one-way mode
-    if(qtType==='limit'){ // rest the order instead of opening — mpOrders owns it (server-side when signed in)
+    if(qtType==='limit'){ // rest the order instead of opening - mpOrders owns it (server-side when signed in)
       var _lpx=qtLimPx(),_mk=qtPrice(sym),_lng9=qtSide==='long';
       if(!isFinite(_lpx)||_lpx<=0){msg.style.color='#ff6258';msg.textContent='Enter a limit price.';return;}
-      if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent='Waiting for the live price — try again in a second.';return;}
+      if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent='Waiting for the live price - try again in a second.';return;}
       /* the level may sit either side of the market: below = classic limit, above = breakout entry */
       var _sl9=(advOn&&isFinite(sl)&&(_lng9?sl<_lpx:sl>_lpx))?sl:null,_tp9=(advOn&&isFinite(tp)&&(_lng9?tp>_lpx:tp<_lpx))?tp:null; // side-checked against the LIMIT price, which is this order's entry
-      if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading — try again in a second.';return;}
+      if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading - try again in a second.';return;}
       window.mpOrders.add({sym:sym,side:qtSide,px:_lpx,lev:lev,margin:amt,sl:_sl9,tp:_tp9},function(){
-        msg.style.color='#f0c35a';msg.innerHTML='Limit '+(_lng9?'long':'short')+' '+sym+' at '+fmtP(_lpx)+' is waiting — see it in <b>My Trades &rarr; Orders</b>.';
+        msg.style.color='#f0c35a';msg.innerHTML='Limit '+(_lng9?'long':'short')+' '+sym+' at '+fmtP(_lpx)+' is waiting - see it in <b>My Trades &rarr; Orders</b>.';
         try{window.mpBuzz&&window.mpBuzz([12]);}catch(e){}
         try{if(window.__mpTrack)window.__mpTrack('limitorder',sym+' '+qtSide+' @'+_lpx);}catch(e){}
       },function(m){msg.style.color='#ff6258';msg.textContent=m||'Could not place the order.';});
       return;
     }
-    function open(p,srvT,cid){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed — you can trade it when it reopens.');return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
+    function open(p,srvT,cid){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed - you can trade it when it reopens.');return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
       var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
@@ -1329,9 +1329,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
       try{wins.forEach(updateMTBtn);}catch(e){}
       try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
-      msg.style.color='#2ebd85';msg.innerHTML=(qtSide==='long'?'Long':'Short')+' '+sym+' '+L+'&times; opened — see it in <b>My Trades</b>.';
+      msg.style.color='#2ebd85';msg.innerHTML=(qtSide==='long'?'Long':'Short')+' '+sym+' '+L+'&times; opened - see it in <b>My Trades</b>.';
       try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+qtSide);}catch(e){}}
-    // open at a FRESH price only — a stale mpLivePrices[sym] (old value seeded by another position, coin not in the live
+    // open at a FRESH price only - a stale mpLivePrices[sym] (old value seeded by another position, coin not in the live
     // feed) would give a wrong entry → wrong liq → phantom "instant liquidation". Stale/missing → REST fetch then open.
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],entry=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0;
     var openVia=function(p){ // P0 dual-write: signed-in -> server fill (src:'srv'); anon/failure -> classic local open
@@ -1345,7 +1345,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else{_qd();open(p);}};
     if(entry>0)openVia(entry);
     else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }
-  function buildQT(){ qtEl=el('<div class="cqt-modal" hidden><div class="cqt-panel"><div class="cqt-head"><span>Quick Paper Trade</span><button class="cqt-x" type="button" aria-label="Close">&#10005;</button></div><label class="cqt-l">Symbol</label><select class="cqt-sym">'+SYMS.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select><div class="cqt-otype"><button type="button" class="on" data-ot="market">Market</button><button type="button" data-ot="limit">Limit</button></div><div class="cqt-side"><button type="button" class="on" data-side="long">Long</button><button type="button" class="cqt-short" data-side="short">Short</button></div><div class="cqt-limwrap" hidden><label class="cqt-l">Limit price</label><input class="cqt-lim" type="number" min="0" step="any" inputmode="decimal"><div class="cqt-limh"></div></div><label class="cqt-l">Amount (USD)</label><input class="cqt-amt" type="number" value="100" min="0" inputmode="decimal"><label class="cqt-l cqt-levl">Leverage <span class="cqt-levv">10&times;</span></label><input class="cqt-lev" type="range" min="0" max="1000" value="333"><label class="cqt-adv"><input type="checkbox" class="cqt-adv-chk"><span class="cqt-adv-box"></span>Advanced &mdash; take-profit &amp; stop-loss</label><div class="cqt-adv-fields" hidden><div class="cqt-grid2"><div><label class="cqt-l">Take profit</label><input class="cqt-tp" type="number" min="0" inputmode="decimal"></div><div><label class="cqt-l">Stop loss</label><input class="cqt-sl" type="number" min="0" inputmode="decimal"></div></div></div><div class="cqt-info3"><div class="cqt-cell"><span>Entry</span><b class="cqt-entry">&mdash;</b></div><div class="cqt-cell"><span>Liq. price</span><b class="cqt-liq">&mdash;</b></div><div class="cqt-cell"><span>Position</span><b class="cqt-size">&mdash;</b></div></div><button class="cqt-open" type="button">Open position</button><div class="cqt-msg"></div></div></div>');
+  function buildQT(){ qtEl=el('<div class="cqt-modal" hidden><div class="cqt-panel"><div class="cqt-head"><span>Quick Paper Trade</span><button class="cqt-x" type="button" aria-label="Close">&#10005;</button></div><label class="cqt-l">Symbol</label><select class="cqt-sym">'+SYMS.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select><div class="cqt-otype"><button type="button" class="on" data-ot="market">Market</button><button type="button" data-ot="limit">Limit</button></div><div class="cqt-side"><button type="button" class="on" data-side="long">Long</button><button type="button" class="cqt-short" data-side="short">Short</button></div><div class="cqt-limwrap" hidden><label class="cqt-l">Limit price</label><input class="cqt-lim" type="number" min="0" step="any" inputmode="decimal"><div class="cqt-limh"></div></div><label class="cqt-l">Amount (USD)</label><input class="cqt-amt" type="number" value="100" min="0" inputmode="decimal"><label class="cqt-l cqt-levl">Leverage <span class="cqt-levv">10&times;</span></label><input class="cqt-lev" type="range" min="0" max="1000" value="333"><label class="cqt-adv"><input type="checkbox" class="cqt-adv-chk"><span class="cqt-adv-box"></span>Advanced - take-profit &amp; stop-loss</label><div class="cqt-adv-fields" hidden><div class="cqt-grid2"><div><label class="cqt-l">Take profit</label><input class="cqt-tp" type="number" min="0" inputmode="decimal"></div><div><label class="cqt-l">Stop loss</label><input class="cqt-sl" type="number" min="0" inputmode="decimal"></div></div></div><div class="cqt-info3"><div class="cqt-cell"><span>Entry</span><b class="cqt-entry">-</b></div><div class="cqt-cell"><span>Liq. price</span><b class="cqt-liq">-</b></div><div class="cqt-cell"><span>Position</span><b class="cqt-size">-</b></div></div><button class="cqt-open" type="button">Open position</button><div class="cqt-msg"></div></div></div>');
     document.body.appendChild(qtEl);
     qtEl.querySelector('.cqt-x').addEventListener('click',function(){qtEl.hidden=true;});
     qtEl.addEventListener('click',function(e){if(e.target===qtEl)qtEl.hidden=true;});
@@ -1362,11 +1362,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!(qtPrice(sym)>0))fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};updateQT();}}); }
   // ---- movable calculator popup ----
   var calcEl=null;
-  function fMoney(x){if(!isFinite(x))return '—';var n=Math.abs(x);return (x<0?'-$':'$')+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function fMoney(x){if(!isFinite(x))return '-';var n=Math.abs(x);return (x<0?'-$':'$')+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   function doCalc(t,b){var v=function(id){var e=b.querySelector('#'+id);return e?parseFloat(e.value):NaN;},side=b._side||'long',res,rEl=b.querySelector('.cws-calc-res');
-    if(t==='liq'){var en=v('clEntry'),lv=Math.max(1,v('clLev')||1);res=(isFinite(en)&&en>0)?('<span>Liquidation price</span><b style="color:#ff6258">'+fMoney(side==='long'?en*(1-(1-0.005)/lv):en*(1+(1-0.005)/lv))+'</b>'):'<span>Liquidation price</span><b>—</b>';}
-    else if(t==='pnl'){var e2=v('cpEntry'),x2=v('cpExit'),am=v('cpAmt'),lv2=Math.max(1,v('cpLev')||1);if(isFinite(e2)&&isFinite(x2)&&e2>0&&am>0){var roi=(x2-e2)/e2*(side==='long'?1:-1),pnl=roi*am*lv2;res='<span>PnL · ROE</span><b style="color:'+(pnl>=0?'#2ebd85':'#ff6258')+'">'+(pnl>=0?'+':'')+fMoney(pnl)+'  ·  '+(roi*lv2>=0?'+':'')+(roi*lv2*100).toFixed(1)+'%</b>';}else res='<span>PnL · ROE</span><b>—</b>';}
-    else{var bal=v('csBal'),rk=v('csRisk'),en3=v('csEntry'),st=v('csStop');if(isFinite(bal)&&isFinite(rk)&&isFinite(en3)&&isFinite(st)&&Math.abs(en3-st)>0){var ra=bal*rk/100,qty=ra/Math.abs(en3-st);res='<span>Position size</span><b>'+fMoney(qty*en3)+'</b> <small>'+qty.toLocaleString('en-US',{maximumFractionDigits:4})+' units · risk '+fMoney(ra)+'</small>';}else res='<span>Position size</span><b>—</b>';}
+    if(t==='liq'){var en=v('clEntry'),lv=Math.max(1,v('clLev')||1);res=(isFinite(en)&&en>0)?('<span>Liquidation price</span><b style="color:#ff6258">'+fMoney(side==='long'?en*(1-(1-0.005)/lv):en*(1+(1-0.005)/lv))+'</b>'):'<span>Liquidation price</span><b>-</b>';}
+    else if(t==='pnl'){var e2=v('cpEntry'),x2=v('cpExit'),am=v('cpAmt'),lv2=Math.max(1,v('cpLev')||1);if(isFinite(e2)&&isFinite(x2)&&e2>0&&am>0){var roi=(x2-e2)/e2*(side==='long'?1:-1),pnl=roi*am*lv2;res='<span>PnL · ROE</span><b style="color:'+(pnl>=0?'#2ebd85':'#ff6258')+'">'+(pnl>=0?'+':'')+fMoney(pnl)+'  ·  '+(roi*lv2>=0?'+':'')+(roi*lv2*100).toFixed(1)+'%</b>';}else res='<span>PnL · ROE</span><b>-</b>';}
+    else{var bal=v('csBal'),rk=v('csRisk'),en3=v('csEntry'),st=v('csStop');if(isFinite(bal)&&isFinite(rk)&&isFinite(en3)&&isFinite(st)&&Math.abs(en3-st)>0){var ra=bal*rk/100,qty=ra/Math.abs(en3-st);res='<span>Position size</span><b>'+fMoney(qty*en3)+'</b> <small>'+qty.toLocaleString('en-US',{maximumFractionDigits:4})+' units · risk '+fMoney(ra)+'</small>';}else res='<span>Position size</span><b>-</b>';}
     if(rEl)rEl.innerHTML=res; }
   function renderCalc(t){var b=calcEl.querySelector('.cws-calc-body');
     function fld(id,lbl,val){return '<label class="cws-calc-l">'+lbl+'</label><input class="cws-calc-in" id="'+id+'" type="number" inputmode="decimal" value="'+(val!=null?val:'')+'">';}
@@ -1378,7 +1378,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     b.oninput=function(){doCalc(t,b);};
     var sr=b.querySelector('.cws-calc-side');if(sr)sr.addEventListener('click',function(e){var bt=e.target.closest('button');if(!bt)return;this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});bt.classList.add('on');b._side=bt.getAttribute('data-cs');doCalc(t,b);});
     doCalc(t,b); }
-  function buildCalc(){ calcEl=el('<div class="cws-calc" hidden><div class="cws-calc-h"><span>Calculator</span><button class="cws-calc-x" type="button" aria-label="Close">&#10005;</button></div><div class="cws-calc-tabs"><button type="button" class="on" data-ct="liq">Liquidation</button><button type="button" data-ct="pnl">PnL</button><button type="button" data-ct="size">Size</button></div><div class="cws-calc-body"></div><a class="cws-ext" href="https://chromewebstore.google.com/detail/fnfmgenngfmflcboejooaeiojnbcinkb" target="_blank" rel="noopener"><span class="cws-ext-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span class="cws-ext-b"><b>Get the browser extension</b><span>This calculator in your toolbar — free</span></span><span class="cws-ext-go">Add &rarr;</span></a></div>');
+  function buildCalc(){ calcEl=el('<div class="cws-calc" hidden><div class="cws-calc-h"><span>Calculator</span><button class="cws-calc-x" type="button" aria-label="Close">&#10005;</button></div><div class="cws-calc-tabs"><button type="button" class="on" data-ct="liq">Liquidation</button><button type="button" data-ct="pnl">PnL</button><button type="button" data-ct="size">Size</button></div><div class="cws-calc-body"></div><a class="cws-ext" href="https://chromewebstore.google.com/detail/fnfmgenngfmflcboejooaeiojnbcinkb" target="_blank" rel="noopener"><span class="cws-ext-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span class="cws-ext-b"><b>Get the browser extension</b><span>This calculator in your toolbar - free</span></span><span class="cws-ext-go">Add &rarr;</span></a></div>');
     document.body.appendChild(calcEl);
     calcEl.querySelector('.cws-calc-x').addEventListener('click',function(){calcEl.hidden=true;});
     calcEl.querySelector('.cws-calc-tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');renderCalc(b.getAttribute('data-ct'));});
@@ -1400,7 +1400,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else if(t.closest&&t.closest('#cwsLayouts')){openLayMenu(t.closest('#cwsLayouts'));}
     else if(t.closest&&t.closest('#cwsShare')){doShare();} });
   /* preset layouts: tile N charts edge-to-edge in a grid */
-  /* pick a grid that keeps each cell roughly landscape (~1.55 wide:tall) — so 2 charts stack full-width instead of stretching tall, etc. */
+  /* pick a grid that keeps each cell roughly landscape (~1.55 wide:tall) - so 2 charts stack full-width instead of stretching tall, etc. */
   // pick cols×rows: prefer a TIGHT grid (few empty cells → 4 charts = 2×2, not 3×2) then the most landscape cell shape
   function gridFor(n,bw,bh){var best=null;for(var cols=1;cols<=n;cols++){var rows=Math.ceil(n/cols);var empty=cols*rows-n;var ar=(bw/cols)/(bh/rows);var sc=empty*0.6+Math.abs(Math.log(ar/1.5));if(best===null||sc<best.sc)best={cols:cols,rows:rows,sc:sc};}return best||{cols:1,rows:n};}
   function applyPreset(n){ if(!n)return; if(isMobile()){ wins.slice().forEach(function(w){closeWin(w);}); addWin({sym:'BTC',tf:'60'}); return; }
@@ -1417,7 +1417,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var bw=board&&board.clientWidth;if(!bw)return;
     var over=wins.some(function(w){if(!w.el)return false;var l=parseFloat(w.el.style.left)||0,ww=w.el.offsetWidth||0;return l+ww>bw+6;});
     if(over)reflowWins();},250);});
-  /* re-tile the CURRENT windows (keeps their symbols/data) to fill the board — used when the sidebar collapses so charts reclaim the freed space */
+  /* re-tile the CURRENT windows (keeps their symbols/data) to fill the board - used when the sidebar collapses so charts reclaim the freed space */
   function reflowWins(){if(isMobile()||!wins.length)return;var bw=board.clientWidth||900,bh=board.clientHeight||600,gap=8,n=wins.length;var g=gridFor(n,bw,bh),cols=g.cols,rows=g.rows;var cw=Math.floor((bw-gap*(cols+1))/cols),chh=Math.floor((bh-gap*(rows+1))/rows);wins.forEach(function(w,i){var r=Math.floor(i/cols),c=i%cols;w.el.style.left=(gap+c*(cw+gap))+'px';w.el.style.top=(gap+r*(chh+gap))+'px';w.el.style.width=cw+'px';w.el.style.height=chh+'px';});try{savePersist();}catch(e){}try{window.dispatchEvent(new Event('resize'));}catch(e){}}
   function openSymbolW(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym||isMobile())return;if(wins.length<MAXn()){addWin({sym:sym,tf:'60'});setTimeout(reflowWins,40);return;}var w=wins[wins.length-1];if(!w)return;w.sym=sym;var inp=w.el.querySelector('.cwin-sym');if(inp)inp.value=sym;loadData(w,true);try{updateMTBtn(w);}catch(e){}bringFront(w);}
   /* open a coin from "Top signals" → fully-drawn 4h chart (EMA21/50 + RSI + MACD) + a "why this is a good setup" panel with the 50–100x setup */
@@ -1425,7 +1425,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function drawSetupLines(w,su){if(!w||!w.candle||!su)return;clearSetupLines(w);w._setupLines=[];
     function pl(price,color,style,title,width){if(price==null||!isFinite(+price))return;try{w._setupLines.push(w.candle.createPriceLine({price:+price,color:color,lineWidth:width||1,lineStyle:style,axisLabelVisible:true,title:title}));}catch(e){}}
     pl(su.entry,'#3fd8e6',0,'ENTRY',2);pl(su.sl,'#ff3b3b',2,'STOP',1);pl(su.tp1,'#2ebd85',3,'TP1',1);pl(su.tp2,'#2ebd85',3,'TP2',1);pl(su.tp3,'#2ebd85',3,'TP3',1);}
-  function su_fmt(v){v=+v;if(!isFinite(v))return '—';var a=Math.abs(v);var d=a<1?5:a<100?3:2;return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function su_fmt(v){v=+v;if(!isFinite(v))return '-';var a=Math.abs(v);var d=a<1?5:a<100?3:2;return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
   function su_row(label,val,col){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:2.5px 0;"><span style="color:#8d96a1;">'+label+'</span><span style="font-family:\'Space Mono\',monospace;font-weight:700;color:'+(col||'#cdd3da')+';">'+val+'</span></div>';}
   var setupPanel=null,setupW=null;
   function hideSetupPanel(){if(setupPanel){try{setupPanel.remove();}catch(e){}}setupPanel=null;setupW=null;}
@@ -1440,9 +1440,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var setupCard=su?('<div style="margin-top:12px;border:1px solid '+(long?'rgba(46,189,133,.4)':'rgba(255,98,88,.4)')+';border-radius:11px;padding:11px 12px;background:'+(long?'rgba(46,189,133,.06)':'rgba(255,98,88,.06)')+';">'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;"><span style="font-family:\'Space Mono\',monospace;font-weight:800;font-size:13px;letter-spacing:.06em;color:'+(long?'#2ebd85':'#ff6258')+';">'+(long?'▲ LONG':'▼ SHORT')+'</span><span style="font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;color:#c2f64a;border:1px solid rgba(194,246,74,.5);border-radius:6px;padding:2px 8px;">'+su.lev+'x</span></div>'
       +su_row('Entry',su_fmt(su.entry),'#cdd3da')+su_row('Stop loss',su_fmt(su.sl),'#ff6258')+su_row('Target 1',su_fmt(su.tp1),'#2ebd85')+su_row('Target 2',su_fmt(su.tp2),'#2ebd85')+su_row('Target 3',su_fmt(su.tp3),'#2ebd85')+su_row('Risk : reward','1 : '+(su.rrr||1.5),'#cdd3da')
-      +'<div style="margin-top:9px;font-size:10.5px;line-height:1.4;color:#ff9a90;">⚠ '+su.lev+'x is extreme risk — a ~'+(100/su.lev).toFixed(1)+'% move against you = liquidation. Always use the stop and size small.</div>'
+      +'<div style="margin-top:9px;font-size:10.5px;line-height:1.4;color:#ff9a90;">⚠ '+su.lev+'x is extreme risk - a ~'+(100/su.lev).toFixed(1)+'% move against you = liquidation. Always use the stop and size small.</div>'
       +'<div style="display:flex;gap:7px;margin-top:10px;"><button id="cwsSetupDraw" type="button" style="flex:1;background:#13343c;border:1px solid #2e6f7c;color:#9fe7f0;border-radius:8px;padding:8px;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:700;cursor:pointer;">Draw on chart</button><a href="/paper-trade?coin='+encodeURIComponent(sym)+'&side='+(long?'long':'short')+'&lev='+su.lev+'&sl='+(+su.sl).toFixed(6)+'&tp='+(+su.tp1).toFixed(6)+'" style="flex:1;text-align:center;background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:8px;padding:8px;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:700;text-decoration:none;">Practice →</a></div>'
-      +'</div>'):'<div style="margin-top:12px;font-size:12px;color:#8d96a1;line-height:1.5;">No high-conviction setup right now — the chart is loaded with EMA, RSI and MACD so you can read it yourself.</div>';
+      +'</div>'):'<div style="margin-top:12px;font-size:12px;color:#8d96a1;line-height:1.5;">No high-conviction setup right now - the chart is loaded with EMA, RSI and MACD so you can read it yourself.</div>';
     setupPanel.innerHTML=''
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px 13px 0;">'
         +'<div style="min-width:0;"><div style="font-family:\'Space Mono\',monospace;font-weight:800;font-size:16px;letter-spacing:.04em;">'+escHtml(sym)+'</div><div style="font-size:11.5px;color:'+col+';font-weight:700;margin-top:2px;">'+escHtml((info&&info.verdict)||'Chart loaded')+'</div></div>'
@@ -1488,16 +1488,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
   function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
     var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}if(wins.length)return;}}
-    var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left — windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
+    var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left - windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
     else { showEmpty(true); /* nothing on this device -> restore the account's workspace (new phone, cleared cache) */
       try{ window.mpWorkspace.pull(function(list){ if(list&&list.length&&!wins.length){ showEmpty(false);
         list.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}}); if(!wins.length)showEmpty(true); } }); }catch(e){}
     }}
-  function showMobileNote(){var bd=document.getElementById('cwsBoard');if(!bd)return;showEmpty(false);var d=el('<div class="cws-mobile-note"><div class="cws-mn-ic"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Charts works best on desktop</h3><p>The multi-window workspace — drag, resize, indicators &amp; drawing — needs more room than a phone offers. Open <b>marginpad.io/charts</b> on your computer for the full experience.</p><button type="button" class="cws-mn-btn" id="cwsMnGo">Continue anyway</button></div>');bd.appendChild(d);var go=d.querySelector('#cwsMnGo');if(go)go.addEventListener('click',function(){if(d.parentNode)d.parentNode.removeChild(d);buildInitial();});}
+  function showMobileNote(){var bd=document.getElementById('cwsBoard');if(!bd)return;showEmpty(false);var d=el('<div class="cws-mobile-note"><div class="cws-mn-ic"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Charts works best on desktop</h3><p>The multi-window workspace - drag, resize, indicators &amp; drawing - needs more room than a phone offers. Open <b>marginpad.io/charts</b> on your computer for the full experience.</p><button type="button" class="cws-mn-btn" id="cwsMnGo">Continue anyway</button></div>');bd.appendChild(d);var go=d.querySelector('#cwsMnGo');if(go)go.addEventListener('click',function(){if(d.parentNode)d.parentNode.removeChild(d);buildInitial();});}
   function loadMC(){try{return JSON.parse(localStorage.getItem('mp_mchart')||'{}')||{};}catch(e){return {};}}
   function saveMC(o){try{localStorage.setItem('mp_mchart',JSON.stringify(o));}catch(e){}}
-  /* Mobile Charts — a single full-screen live chart (symbol search, timeframes, indicators, My-Trades lines, quick trade).
+  /* Mobile Charts - a single full-screen live chart (symbol search, timeframes, indicators, My-Trades lines, quick trade).
      Reuses the desktop indicator math + loadData/liveTick/applyInds via a window-shaped object. */
   function buildMobileChart(){
     var bd=document.getElementById('cwsBoard'); if(!bd)return; showEmpty(false);
@@ -1539,7 +1539,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&mw.candle&&!mw.dead)loadData(mw,false);});
     window.addEventListener('storage',updMT);
   }
-  window.mpCharts={ activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) — owner request
+  window.mpCharts={ activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) - owner request
     setTheme:function(m){chTheme=(m==='light')?'light':'dark';try{localStorage.setItem('mp_ch_theme',chTheme);}catch(e){}applyTheme();},
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},

@@ -18,16 +18,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>Slippage Calculator — The Cost of Market Orders | MarginPad</title>
-<meta name="description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars — and what it silently costs over a month of trading." />
+<title>Slippage Calculator - The Cost of Market Orders | MarginPad</title>
+<meta name="description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars - and what it silently costs over a month of trading." />
 <meta name="keywords" content="slippage calculator, market order cost, execution slippage crypto" />
 <link rel="canonical" href="https://marginpad.io/crypto-slippage-calculator/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-slippage-calculator/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-slippage-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-slippage-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Slippage Calculator — The Cost of Market Orders | MarginPad" />
-<meta property="og:description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars — and what it silently costs over a month of trading." />
+<meta property="og:title" content="Slippage Calculator - The Cost of Market Orders | MarginPad" />
+<meta property="og:description" content="Free slippage calculator: expected vs filled price turned into slippage percentage and dollars - and what it silently costs over a month of trading." />
 <meta property="og:url" content="https://marginpad.io/crypto-slippage-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/crypto-slippage-calculator.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -67,9 +67,9 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Slippage Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-slippage-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Slippage Calculator","item":"https://marginpad.io/crypto-slippage-calculator/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I reduce slippage?","acceptedAnswer":{"@type":"Answer","text":"Limit orders where urgency allows, split large orders, trade liquid pairs and hours, and avoid market orders around news — depth is visible in the book before you click."}},{"@type":"Question","name":"Is slippage worse with leverage?","acceptedAnswer":{"@type":"Answer","text":"The percentage is the same but applies to the full position: at 20x a 0.1% slip instantly costs 2% of margin — on entry AND exit."}},{"@type":"Question","name":"Do stop-losses slip too?","acceptedAnswer":{"@type":"Answer","text":"Yes — a triggered stop becomes a market order exactly when books thin out. Stop-limit orders bound the damage at the risk of not filling."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Slippage Calculator — The Cost of Market Orders","url":"https://marginpad.io/crypto-slippage-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-slippage-calculator.jpg" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I reduce slippage?","acceptedAnswer":{"@type":"Answer","text":"Limit orders where urgency allows, split large orders, trade liquid pairs and hours, and avoid market orders around news - depth is visible in the book before you click."}},{"@type":"Question","name":"Is slippage worse with leverage?","acceptedAnswer":{"@type":"Answer","text":"The percentage is the same but applies to the full position: at 20x a 0.1% slip instantly costs 2% of margin - on entry AND exit."}},{"@type":"Question","name":"Do stop-losses slip too?","acceptedAnswer":{"@type":"Answer","text":"Yes - a triggered stop becomes a market order exactly when books thin out. Stop-limit orders bound the damage at the risk of not filling."}}]}</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Slippage Calculator - The Cost of Market Orders","url":"https://marginpad.io/crypto-slippage-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-slippage-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -82,20 +82,20 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="calc"><div class="cgrid"><div class="f"><label for="exp">Expected price</label><input id="exp" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="fill">Actual fill price</label><input id="fill" type="number" inputmode="decimal" value="60045"></div><div class="f"><label for="pos">Position size (USD)</label><input id="pos" type="number" inputmode="decimal" value="5000"></div><div class="f"><label for="tpm">Trades per month</label><input id="tpm" type="number" inputmode="decimal" value="40"></div></div><div class="res" id="res"></div></div>
 <h2>How it is calculated</h2>
 <div class="frm">slippage % = |fill &minus; expected| / expected</div>
-<p>Slippage scales with order size, book depth and volatility — near zero on BTC majors in quiet hours, brutal on thin alts during news. For active traders it routinely costs more than the taker fee itself, and it never shows on a statement.</p>
+<p>Slippage scales with order size, book depth and volatility - near zero on BTC majors in quiet hours, brutal on thin alts during news. For active traders it routinely costs more than the taker fee itself, and it never shows on a statement.</p>
 <h2>Worked example</h2>
-<div class="ex">Expecting <b>$60,000</b>, filled at <b>$60,045</b>: 0.075% — <b>$3.75</b> on a $5,000 position. Both sides of 40 monthly trades: <b>$300/month</b>, silently.</div>
+<div class="ex">Expecting <b>$60,000</b>, filled at <b>$60,045</b>: 0.075% - <b>$3.75</b> on a $5,000 position. Both sides of 40 monthly trades: <b>$300/month</b>, silently.</div>
 <h2>FAQ</h2>
-<div class="faq"><details><summary>How do I reduce slippage?</summary><p>Limit orders where urgency allows, split large orders, trade liquid pairs and hours, and avoid market orders around news — depth is visible in the book before you click.</p></details><details><summary>Is slippage worse with leverage?</summary><p>The percentage is the same but applies to the full position: at 20x a 0.1% slip instantly costs 2% of margin — on entry AND exit.</p></details><details><summary>Do stop-losses slip too?</summary><p>Yes — a triggered stop becomes a market order exactly when books thin out. Stop-limit orders bound the damage at the risk of not filling.</p></details></div>
+<div class="faq"><details><summary>How do I reduce slippage?</summary><p>Limit orders where urgency allows, split large orders, trade liquid pairs and hours, and avoid market orders around news - depth is visible in the book before you click.</p></details><details><summary>Is slippage worse with leverage?</summary><p>The percentage is the same but applies to the full position: at 20x a 0.1% slip instantly costs 2% of margin - on entry AND exit.</p></details><details><summary>Do stop-losses slip too?</summary><p>Yes - a triggered stop becomes a market order exactly when books thin out. Stop-limit orders bound the damage at the risk of not filling.</p></details></div>
 <h2>Related tools</h2>
 <div class="rel"><a href="/crypto-fee-calculator/">Fee calculator</a><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/exchanges/">Compare exchanges</a><a href="/screener">Screener (liquidity)</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
-<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var e=+document.getElementById('exp').value,f=+document.getElementById('fill').value,p=+document.getElementById('pos').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(e>0&&f>0&&p>0)){r.innerHTML='';return;}var sl=Math.abs(f-e)/e,usd=p*sl,mo=usd*2*n;r.innerHTML='<div class="rrow big"><span class="k">Slippage</span><span class="v">'+(sl*100).toFixed(3)+'%</span></div><div class="rrow"><span class="k">Cost on this fill</span><span class="v dn">-'+usd.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Monthly (both sides, '+n+' trades)</span><span class="v dn">-'+mo.toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

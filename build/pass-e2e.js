@@ -185,7 +185,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
         redeemReach: !!(chit && cb.contains(chit)), redeemInBuy: !!document.querySelector('#buy #codeIn'), buyOpts: document.querySelectorAll('#buy .opt').length, giftBtn: !!gb, giftReach: !!(ghit && gb.contains(ghit)) };
     });
     // Claim all: the road must update in place (same scroll position), every button gone, toast shown.
-    // Toasts are read from the ONE side stack (#mpxpT in mp-auth.js), never this page's retired #tst card —
+    // Toasts are read from the ONE side stack (#mpxpT in mp-auth.js), never this page's retired #tst card -
     // every notice moved there on 2026-09-10 and these checks had been reading a dead element ever since, so
     // the suite showed 2 failures for four days while the product was fine (found 2026-09-14).
     await p2.evaluate(() => { document.getElementById('claimAll').scrollIntoView({ block: 'center' }); });
@@ -211,7 +211,7 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
     member.gm.sent = await p2.evaluate(() => ({ closed: !document.getElementById('gm').classList.contains('on'), toast: (function(){var st=document.getElementById('mpxpT');var t=st?Array.prototype.map.call(st.children,function(c){return c.innerText||'';}).join(' '):'';return t||((document.getElementById('tst')||{}).textContent||'');})(), rowSent: /SENT/.test(document.getElementById('gifts').textContent), give0: /0 to give/.test(document.getElementById('gifts').textContent) }));
     await ctx2.close();
   });
-  chk('page: guest sees the gate and all 80 tier cells (40 x 2 tracks), no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 80 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '—', guest);
+  chk('page: guest sees the gate and all 80 tier cells (40 x 2 tracks), no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 80 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '-', guest);
   chk('page: pro member sees reachable Claim buttons for every remaining reward, PRO pill, tier, Claim all, no gate', member && member.claim && member.n === 2 * T - 3 && member.reach && /pro/i.test(member.pill) && member.tier === T + '/40' && member.claimAll && member.claimAllT === 'Claim all ' + (2 * T - 3) && !member.scrollsX && !member.gate, member);
   chk('page: the road fill ends between the reached tier node and the next one (measured from node centers, not a %; fill = its left offset + width)', member && member.nextCenter > member.curCenter + 50 && member.fill >= member.curCenter - 1 && member.fill <= member.nextCenter + 1, member && { fill: member.fill, cur: member.curCenter, next: member.nextCenter });
   chk('page: Claim all claims every reward in place: 0 buttons left, toast, scroll kept, counter 0', member && member.after && member.after.n === 0 && /Claimed/.test(member.after.toast) && Math.abs(member.after.scrollL - member.after.before) < 2 && member.after.claimed >= 2 * T - 3 && !member.after.claimAll && member.after.toClaim === '0', member && member.after);

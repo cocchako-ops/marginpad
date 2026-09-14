@@ -25,10 +25,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <link rel="preconnect" href="https://api.coingecko.com" />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <script>/* Mark dedicated-tool routes on <html> BEFORE first paint so the landing never flashes when arriving at /paper-trade, /charts, /calculators (e.g. from the Rekt nav). */(function(){var p=location.pathname,c=document.documentElement;if(/^\/paper-trade\/?$/.test(p))c.className+=' route-paper';else if(/^\/charts\/?$/.test(p))c.className+=' route-charts';else if(/^\/calculators\/?$/.test(p))c.className+=' route-calc';else if(/^\/screener\/?$/.test(p))c.className+=' route-screener';})();</script>
-<!-- Instant navigation: prefetch same-origin pages on hover/pointerdown (Chromium) so clicks load near-instantly; the existing @view-transition then cross-fades them. Progressive enhancement — other browsers ignore it. -->
+<!-- Instant navigation: prefetch same-origin pages on hover/pointerdown (Chromium) so clicks load near-instantly; the existing @view-transition then cross-fades them. Progressive enhancement - other browsers ignore it. -->
 <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/api/*"}}]},"eagerness":"moderate"}]}</script>
-<title>Mapa de liquidaciones cripto, mapa de calor y calculadoras — MarginPad</title>
-<meta name="description" content="Mapa de liquidaciones cripto en vivo y gratis, un espacio de trabajo multi-gráfico con herramientas de dibujo &amp; indicadores, y una terminal Paper Trade sin riesgo — abre Long/Short al precio en vivo, practica hasta 1000x y observa tu P&amp;L en vivo — más calculadoras de precisión: precio de liquidación, tamaño de posición, PnL, DCA &amp; take-profit. Sin registro, cualquier exchange." />
+<title>Mapa de liquidaciones cripto, mapa de calor y calculadoras - MarginPad</title>
+<meta name="description" content="Mapa de liquidaciones cripto en vivo y gratis, un espacio de trabajo multi-gráfico con herramientas de dibujo &amp; indicadores, y una terminal Paper Trade sin riesgo - abre Long/Short al precio en vivo, practica hasta 1000x y observa tu P&amp;L en vivo - más calculadoras de precisión: precio de liquidación, tamaño de posición, PnL, DCA &amp; take-profit. Sin registro, cualquier exchange." />
 <meta name="keywords" content="liquidation price calculator, position size calculator crypto, crypto pnl calculator, dca calculator crypto, average down calculator, take profit calculator, futures calculator, leverage calculator, risk management crypto, crypto chart workspace, live crypto charts, trading chart drawing tools" />
 <link rel="canonical" href="https://marginpad.io/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
@@ -53,18 +53,18 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 {"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"}
 </script>
 <meta property="og:site_name" content="MarginPad" />
-<meta property="og:title" content="MarginPad — Mapa de Liquidaciones Cripto &amp; Calculadoras de Futuros" />
+<meta property="og:title" content="MarginPad - Mapa de Liquidaciones Cripto &amp; Calculadoras de Futuros" />
 <meta property="og:description" content="Terminal Paper Trade sin riesgo + mapa de liquidaciones y calculadoras: precio de liquidación, tamaño de posición, PnL, DCA & take-profit. Gratis, instantáneo, sin registro." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/" />
 <meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="MarginPad — Mapa de Liquidaciones Cripto &amp; Calculadoras de Futuros" />
+<meta name="twitter:title" content="MarginPad - Mapa de Liquidaciones Cripto &amp; Calculadoras de Futuros" />
 <meta name="twitter:description" content="Calculadoras de liquidación, tamaño de posición, PnL, DCA & take-profit para futuros cripto. Gratis, sin registro." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="MarginPad — mapa de liquidaciones cripto, mapa de calor y calculadoras de futuros." />
+<meta property="og:image:alt" content="MarginPad - mapa de liquidaciones cripto, mapa de calor y calculadoras de futuros." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
@@ -78,14 +78,14 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
 <link rel="stylesheet" href="/assets/fonts.css" />
-<!-- The two faces on the LCP path (variable fonts, latin subset) — fonts.css only reveals them after it has itself downloaded and parsed. -->
+<!-- The two faces on the LCP path (variable fonts, latin subset) - fonts.css only reveals them after it has itself downloaded and parsed. -->
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","description":"Un kit de herramientas gratuito de futuros de cripto: paper trading sin riesgo al precio en vivo, un mapa de calor de liquidaciones en tiempo real y calculadoras de precisión — precio de liquidación, tamaño de posición, PnL/ROI, entrada DCA y take-profit.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Liquidation price calculator","Position size calculator","PnL / ROI calculator","DCA average entry calculator","Take-profit target calculator"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","description":"Un kit de herramientas gratuito de futuros de cripto: paper trading sin riesgo al precio en vivo, un mapa de calor de liquidaciones en tiempo real y calculadoras de precisión - precio de liquidación, tamaño de posición, PnL/ROI, entrada DCA y take-profit.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Liquidation price calculator","Position size calculator","PnL / ROI calculator","DCA average entry calculator","Take-profit target calculator"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Para una posición con margen aislado, el precio de liquidación estimado es Entry × (1 − 1/Leverage + MMR) para longs y Entry × (1 + 1/Leverage − MMR) para shorts, donde MMR es la tasa de margen de mantenimiento."}},{"@type":"Question","name":"¿Cómo calculo el tamaño de una posición por riesgo?","acceptedAnswer":{"@type":"Answer","text":"Decide qué porcentaje de tu cuenta arriesgar si se activa tu stop, y luego divide ese riesgo en dólares entre la distancia de la entrada al stop para obtener la cantidad de monedas a comprar."}},{"@type":"Question","name":"¿Cuál es la diferencia entre ROI y ROE?","acceptedAnswer":{"@type":"Answer","text":"El ROI de precio es el porcentaje que se movió el activo. El ROE es tu rendimiento sobre el margen aportado, que el apalancamiento multiplica."}},{"@type":"Question","name":"¿Cómo funciona una calculadora de DCA / promediar a la baja en cripto?","acceptedAnswer":{"@type":"Answer","text":"Calcula tu precio de entrada promedio combinado entre varias compras como el costo total dividido entre la cantidad total."}},{"@type":"Question","name":"¿Cómo calculo un precio de take-profit?","acceptedAnswer":{"@type":"Answer","text":"Elige un ROE objetivo. El precio de salida necesario es Entrada × (1 + ROE / (100 × Apalancamiento)) para longs y Entrada × (1 − ROE / (100 × Apalancamiento)) para shorts."}}]}</script>
-<link rel="stylesheet" href="/assets/home.css?v=45b234d4">
+<link rel="stylesheet" href="/assets/home.css?v=b73d5421">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
-     biggest dependencies — the klines request and the charting library — only started AFTER ~450 KB of JS had been
+     biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
      carried the CONSUMER of this handoff (window.__preK, plus a __preR hit/miss drift metric that rides the perf probe)
      but the producer had been lost from this file, so the optimisation was silently dead. The key must match what
@@ -121,7 +121,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   <header>
     <div class="brand">
       <button type="button" class="hmenu" id="hmenuBtn" aria-label="Menú"><span></span><span></span><span></span></button>
-      <a href="/es/" class="mark" aria-label="MarginPad — inicio">MARGIN<b>PAD</b></a>
+      <a href="/es/" class="mark" aria-label="MarginPad - inicio">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Únete a nuestro grupo de Telegram" aria-label="Grupo de Telegram"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
@@ -135,10 +135,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   <section class="hero" id="hero">
     <div class="hero-copy">
       <h1><span data-i18n="heroA">Todo lo que necesitas</span><br><em data-i18n="heroB">para operar futuros.</em></h1>
-      <p class="sub" data-i18n="sub">Practica operaciones al precio en vivo, detecta zonas de liquidación en el mapa de calor y calcula cada número al detalle — liquidación, PnL, tamaño de posición &amp; más. Sin registro, funciona con cualquier exchange.</p>
+      <p class="sub" data-i18n="sub">Practica operaciones al precio en vivo, detecta zonas de liquidación en el mapa de calor y calcula cada número al detalle - liquidación, PnL, tamaño de posición &amp; más. Sin registro, funciona con cualquier exchange.</p>
       <div class="hero-actions">
         <button type="button" class="hero-cta" data-prod-jump="plan"><span data-i18n="heroCta">Abrir Paper Trade</span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <a href="/es/rewards/" class="hero-cta hero-cta-rwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span data-i18n="heroCtaRwd">Recompensas</span></a> <span class="hero-note" data-i18n="heroNote">Sin registro · cualquier exchange · 100% gratis</span>
+        <a href="/es/rewards/" class="hero-cta hero-cta-rwd" title="Free USDT - claim every 5 min"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span data-i18n="heroCtaRwd">Recompensas</span></a> <span class="hero-note" data-i18n="heroNote">Sin registro · cualquier exchange · 100% gratis</span>
       </div>
     </div>
   </section>
@@ -188,7 +188,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="cws-hint" id="cwsHint"><span>Arrastra un gráfico desde su encabezado</span><span>Cambia el tamaño desde cualquier borde</span><span>Doble clic para maximizar</span><span>Las teclas 1–6 cambian la temporalidad</span><span>A = agregar gráfico · D = dibujar</span></div>
     </div>
     <div class="cws-board" id="cwsBoard">
-      <div class="cws-empty" id="cwsEmpty"><div class="cws-empty-i"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></div><p>Empieza con una <b>plantilla</b> — o crea la tuya.</p><div class="cws-tpls"><button type="button" data-tpl="scalp"><b>Scalping</b><span>BTC · 5m · señales + EMA</span></button><button type="button" data-tpl="swing"><b>Swing</b><span>BTC · 4h · EMA + SMA</span></button><button type="button" data-tpl="btcmtf"><b>BTC multi-TF</b><span>15m + 1H lado a lado</span></button><button type="button" data-tpl="top3"><b>Top 3</b><span>Cuadrícula BTC · ETH · SOL</span></button></div><button type="button" class="cws-emptybtn" data-cws-add>O agrega un gráfico en blanco</button></div>
+      <div class="cws-empty" id="cwsEmpty"><div class="cws-empty-i"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></div><p>Empieza con una <b>plantilla</b> - o crea la tuya.</p><div class="cws-tpls"><button type="button" data-tpl="scalp"><b>Scalping</b><span>BTC · 5m · señales + EMA</span></button><button type="button" data-tpl="swing"><b>Swing</b><span>BTC · 4h · EMA + SMA</span></button><button type="button" data-tpl="btcmtf"><b>BTC multi-TF</b><span>15m + 1H lado a lado</span></button><button type="button" data-tpl="top3"><b>Top 3</b><span>Cuadrícula BTC · ETH · SOL</span></button></div><button type="button" class="cws-emptybtn" data-cws-add>O agrega un gráfico en blanco</button></div>
     </div>
   </section>
 
@@ -197,13 +197,13 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <select id="heatCoin" class="heat-coin" aria-label="Moneda">
         <option>BTC</option><option>ETH</option>
       </select>
-      <div class="heat-px" id="heatPx">—</div>
+      <div class="heat-px" id="heatPx">-</div>
       <div class="heat-act">
         <button id="heatDl" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span data-i18n="heatDl">Descargar</span></button>
         <button id="heatSh" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span data-i18n="heatSh">Compartir</span></button>
       </div>
     </div>
-    <div class="heat-src"><span class="heat-src-dot"></span><span data-i18n="heatSrc">Datos de liquidaciones en vivo agregados de <b>Binance</b>, <b>Bybit</b> &amp; <b>OKX</b> — streams directos de los exchanges, actualizados en tiempo real.</span></div>
+    <div class="heat-src"><span class="heat-src-dot"></span><span data-i18n="heatSrc">Datos de liquidaciones en vivo agregados de <b>Binance</b>, <b>Bybit</b> &amp; <b>OKX</b> - streams directos de los exchanges, actualizados en tiempo real.</span></div>
     <div class="heat-ctrl">
       <div class="heat-wins">
         <button class="heat-win" data-w="1H" type="button">1H</button>
@@ -233,14 +233,14 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div id="heatChart"></div>
       <div class="heat-legend"><span><i class="lg-s"></i><span data-i18n="legShorts">Shorts liquidados · arriba</span></span><span><i class="lg-l"></i><span data-i18n="legLongs">Longs liquidados · abajo</span></span></div>
       <div class="heat-tip" id="heatTip"></div>
-      <div class="heat-fallback" id="heatFallback" style="display:none"><span data-i18n="heatWarm">El feed de liquidaciones en vivo se está calentando — por ahora mostramos niveles de apalancamiento estimados.</span></div>
+      <div class="heat-fallback" id="heatFallback" style="display:none"><span data-i18n="heatWarm">El feed de liquidaciones en vivo se está calentando - por ahora mostramos niveles de apalancamiento estimados.</span></div>
     </div>
     <div class="heat-ticker" id="heatTicker" aria-live="polite"></div>
     <p class="heat-note">Las burbujas &amp; el histograma son liquidaciones reales · las líneas de apalancamiento son estimaciones · no son datos del libro de órdenes.</p>
   </section>
 
   <section id="swap" class="swapwrap" style="display:none" aria-label="Swap de cripto">
-    <p class="swap-intro" data-i18n="swapIntro">Haz swap de más de 900 monedas al instante — sin cuenta, no custodial. Tus fondos y direcciones nunca pasan por MarginPad.</p>
+    <p class="swap-intro" data-i18n="swapIntro">Haz swap de más de 900 monedas al instante - sin cuenta, no custodial. Tus fondos y direcciones nunca pasan por MarginPad.</p>
     <div class="swap-badges">
       <span class="swap-badge"><span class="lvdot"></span> <span data-i18n="swapBadge1">No custodial</span></span> <span class="swap-badge"><span data-i18n="swapBadge2">900+ monedas</span></span> <span class="swap-badge"><span data-i18n="swapBadge3">Sin cuenta</span></span>
     </div>
@@ -248,13 +248,13 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="swap-load" id="swapLoad" data-i18n="swapLoad">Cargando swap…</div>
       <iframe id="iframe-widget" title="Crypto swap" allow="clipboard-write" loading="lazy"></iframe>
     </div>
-    <p class="swap-note" data-i18n="swapNote">Los swaps los procesa ChangeNOW. MarginPad nunca guarda tu cripto ni tus claves — verifica siempre dos veces la dirección de destino antes de enviar.</p>
+    <p class="swap-note" data-i18n="swapNote">Los swaps los procesa ChangeNOW. MarginPad nunca guarda tu cripto ni tus claves - verifica siempre dos veces la dirección de destino antes de enviar.</p>
   </section>
 
   <section id="screener" class="scrwrap" style="display:none" aria-label="Screener de mercado">
     <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Mercados</span><h2>Screener</h2></div>
     <p class="sec-sub" data-i18n="scrSub">Mercados USDT-perp en vivo, cada uno con un puntaje MarginPad de 0 a 100 (RSI, MACD, medias móviles, ATR, funding &amp; volumen en velas de 4h). Toca cualquier moneda para ver el análisis completo, el setup de la operación y los derivados en vivo.</p>
-    <a class="scr-tg" href="https://t.me/marginpad" target="_blank" rel="noopener" onclick="try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}" style="display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)"> <span style="flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="23" height="23" fill="#fff"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z"/></svg></span> <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Señales de trading gratis en Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">3–5 setups de alta convicción al día — entrada, stop &amp; objetivos</i></span> <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Únete gratis</span> </a>
+    <a class="scr-tg" href="https://t.me/marginpad" target="_blank" rel="noopener" onclick="try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}" style="display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)"> <span style="flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="23" height="23" fill="#fff"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z"/></svg></span> <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Señales de trading gratis en Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">3–5 setups de alta convicción al día - entrada, stop &amp; objetivos</i></span> <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Únete gratis</span> </a>
     <div class="scr-mode" id="scrMode" role="tablist" aria-label="Modo screener"><button type="button" data-mode="perp" class="on" role="tab">Futuros perpetuos</button><button type="button" data-mode="onchain" role="tab">On-chain · Memecoins <em>NUEVO</em></button></div>
     <div class="scr-stats" id="scrStats"></div>
     <div class="scr-meta" id="scrMeta"></div>
@@ -277,7 +277,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <div id="scrOnchain" hidden>
       <div class="scr-oc-tabs" id="scrOcTabs"><button type="button" data-oct="trending" class="on">Tendencia</button><button type="button" data-oct="fresh">Pares nuevos</button></div>
       <div class="scr-list" id="scrOcList"><div class="scr-loading">Cargando pools on-chain…</div></div>
-      <p class="scr-oc-attr">Datos on-chain de DEX por <a href="https://www.geckoterminal.com" target="_blank" rel="noopener">GeckoTerminal</a> · las memecoins son EXTREMADAMENTE volátiles — la mayoría de los pares nuevos terminan en cero. Nunca operes con dinero que no puedas perder.</p>
+      <p class="scr-oc-attr">Datos on-chain de DEX por <a href="https://www.geckoterminal.com" target="_blank" rel="noopener">GeckoTerminal</a> · las memecoins son EXTREMADAMENTE volátiles - la mayoría de los pares nuevos terminan en cero. Nunca operes con dinero que no puedas perder.</p>
     </div>
     <p class="scr-foot">Datos en vivo multi-exchange (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + datos de derivados de MarginPad (nuestro propio recolector de liquidaciones de nueve exchanges) · solo paper trading, no es asesoría financiera.</p>
   </section>
@@ -327,36 +327,36 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
             </div>
             <div class="pt2-lim" id="planLimWrap" hidden>
               <label for="planLimitPx" data-i18n="lLimitPx">Precio límite</label>
-              <div class="input-line"><input type="number" id="planLimitPx" step="any" inputmode="decimal" placeholder="&mdash;"><span class="unit">USD</span></div>
+              <div class="input-line"><input type="number" id="planLimitPx" step="any" inputmode="decimal" placeholder="-"><span class="unit">USD</span></div>
               <div class="pt2-lim-q" id="planLimQuick"></div>
               <div class="pt2-lim-h" id="planLimHint"></div>
             </div>
             <div class="pt2-fields">
-              <div class="pt2-amt"><label data-i18n="lAmountIn">Monto (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div><div class="lev-warn"><svg class="lw-ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="levWarn">Apalancamiento alto — la liquidación queda muy cerca de la entrada</span></div></div>
+              <div class="pt2-amt"><label data-i18n="lAmountIn">Monto (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div><div class="lev-warn"><svg class="lw-ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="levWarn">Apalancamiento alto - la liquidación queda muy cerca de la entrada</span></div></div>
               <div class="pt2-lev"><label data-i18n="lLeverage">Apalancamiento</label><div class="input-line"><input type="number" id="planLev" value="20" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div></div>
             </div>
             <div class="lev-row">
               <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span>Avanzado</span></label>
               <div class="lev-slidewrap"><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="1000" step="1" aria-label="Control deslizante de apalancamiento"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
             </div>
-            <div class="ptt-stats"><div><span data-i18n="rPosSize">Tamaño de posición</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Valor nocional</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Liquidación est.</span><b id="planLiq">—</b></div><div><span data-i18n="rFeeRound">Comisión de apertura + cierre</span><b id="planFee">—</b></div></div>
+            <div class="ptt-stats"><div><span data-i18n="rPosSize">Tamaño de posición</span><b id="planSize">-</b></div><div><span data-i18n="rNotional">Valor nocional</span><b id="planNotional">-</b></div><div><span data-i18n="rEstLiq">Liquidación est.</span><b id="planLiq">-</b></div><div><span data-i18n="rFeeRound">Comisión de apertura + cierre</span><b id="planFee">-</b></div></div>
             <div class="plan-adv" id="planAdvIn" hidden>
               <div class="field"><div class="fl-row"><label data-i18n="lExchangePt">Exchange (define la tasa de margen)</label><button type="button" class="ptt-q" data-hint="planExHint" aria-expanded="false" aria-label="¿Qué hace la tasa de margen?">?</button></div><div class="input-line"><select id="planEx" aria-label="Preajuste de margen de mantenimiento por exchange">
-                <option value="0.5" selected>MarginPad — 0.5%</option>
-                <option value="0.4">Binance — 0.4%</option>
-                <option value="0.5">Bybit — 0.5%</option>
-                <option value="0.5">OKX — 0.5%</option>
-                <option value="0.5">Bitget — 0.5%</option>
-                <option value="0.1">MEXC — 0.1%</option>
-                <option value="0.5">KuCoin — 0.5%</option>
-                <option value="0.5">Gate — 0.5%</option>
-                <option value="0.6">Kraken — 0.6%</option>
-                <option value="1.25">Hyperliquid — 1.25%</option>
-                <option value="1.33">Coinbase — 1.33%</option>
+                <option value="0.5" selected>MarginPad - 0.5%</option>
+                <option value="0.4">Binance - 0.4%</option>
+                <option value="0.5">Bybit - 0.5%</option>
+                <option value="0.5">OKX - 0.5%</option>
+                <option value="0.5">Bitget - 0.5%</option>
+                <option value="0.1">MEXC - 0.1%</option>
+                <option value="0.5">KuCoin - 0.5%</option>
+                <option value="0.5">Gate - 0.5%</option>
+                <option value="0.6">Kraken - 0.6%</option>
+                <option value="1.25">Hyperliquid - 1.25%</option>
+                <option value="1.33">Coinbase - 1.33%</option>
               </select></div><p class="plan-hint" id="planExHint" hidden><b>El margen de mantenimiento</b> es la parte de tu posición que el exchange te exige mantener en depósito; en el momento en que tu margen cae hasta ese nivel, te liquidan. Binance pide 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% en su primer nivel, Hyperliquid 1.25% en BTC, Coinbase 1.33%; el valor por defecto de MarginPad es 0.5%. Solo cambia <b>dónde queda tu precio de liquidación</b>. El tamaño de posición, las comisiones y el P&amp;L no cambian.</p></div>
-              <div class="field" id="planFeeField"><div class="fl-row"><label for="planFeeVenue">Comisiones como en (define la comisión taker)</label><button type="button" class="ptt-q" data-hint="planFeeHint" aria-expanded="false" aria-label="¿Qué hace la tabla de comisiones?">?</button></div><div class="input-line"><select id="planFeeVenue" aria-label="Tabla de comisiones"><option value="">MarginPad — 0.055%</option></select></div><p class="plan-hint" id="planFeeHint" hidden><b>La comisión taker</b> es lo que cobra el exchange por cada lado sobre el tamaño total de la posición (no sobre tu margen), una vez al abrir y otra al cerrar, menos el descuento que consigues registrándote desde MarginPad. Solo cambia <b>lo que cuesta la operación y tu P&amp;L neto</b>, nunca el precio de liquidación. <a href="/es/trading-api/#fees" target="_blank" rel="noopener">Cómo funcionan las tablas de comisiones</a></p></div>
-              <div class="field"><label data-i18n="lStopOpt">Stop-loss (opcional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
-              <div class="field"><label data-i18n="lTpOpt">Take-profit (opcional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
+              <div class="field" id="planFeeField"><div class="fl-row"><label for="planFeeVenue">Comisiones como en (define la comisión taker)</label><button type="button" class="ptt-q" data-hint="planFeeHint" aria-expanded="false" aria-label="¿Qué hace la tabla de comisiones?">?</button></div><div class="input-line"><select id="planFeeVenue" aria-label="Tabla de comisiones"><option value="">MarginPad - 0.055%</option></select></div><p class="plan-hint" id="planFeeHint" hidden><b>La comisión taker</b> es lo que cobra el exchange por cada lado sobre el tamaño total de la posición (no sobre tu margen), una vez al abrir y otra al cerrar, menos el descuento que consigues registrándote desde MarginPad. Solo cambia <b>lo que cuesta la operación y tu P&amp;L neto</b>, nunca el precio de liquidación. <a href="/es/trading-api/#fees" target="_blank" rel="noopener">Cómo funcionan las tablas de comisiones</a></p></div>
+              <div class="field"><label data-i18n="lStopOpt">Stop-loss (opcional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
+              <div class="field"><label data-i18n="lTpOpt">Take-profit (opcional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
               <div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="desactivado"><span class="unit">%</span></div></div>
               <div class="field"><label data-i18n="lBreakEven">Punto de equilibrio en ROE</label><div class="input-line"><input type="number" id="planBE" step="any" min="0" placeholder="desactivado"><span class="unit">%</span></div></div>
               <p class="note" style="margin-top:2px" data-i18n="advNote">El trailing stop sigue el precio por ese %; el punto de equilibrio mueve tu stop a la entrada cuando la ganancia (ROE) llega al % definido.</p>
@@ -371,39 +371,39 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
     <section class="panel active" id="liq">
       <div class="inputs">
-        <h2><span data-i18n="tLiq">Precio de liquidación</span> <small data-i18n="tLiqSub">— estimación con margen aislado</small></h2>
+        <h2><span data-i18n="tLiq">Precio de liquidación</span> <small data-i18n="tLiqSub">- estimación con margen aislado</small></h2>
         <div class="field"><label data-i18n="direction">Dirección</label>
           <div class="seg" data-seg="liqSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
         </div>
         <div class="field"><label data-i18n="lEntry">Precio de entrada</label><div class="input-line"><input type="number" id="liqEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><label data-i18n="lLeverage">Apalancamiento</label><div class="input-line"><input type="number" id="liqLev" value="10" step="any"><span class="unit">×</span></div></div>
         <div class="field"><div class="fl-row"><label data-i18n="lExchange">Exchange (define la tasa de margen)</label><button type="button" class="ptt-q" data-hint="liqExHint" aria-expanded="false" aria-label="¿Qué hace la tasa de margen?">?</button></div><div class="input-line"><select id="liqEx" aria-label="Preajuste de margen de mantenimiento por exchange">
-          <option value="0.4">Binance — 0.4%</option>
-          <option value="0.5" selected>Bybit — 0.5%</option>
-          <option value="0.5">OKX — 0.5%</option>
-          <option value="0.5">Bitget — 0.5%</option>
-          <option value="0.1">MEXC — 0.1%</option>
-          <option value="0.5">KuCoin — 0.5%</option>
-          <option value="0.5">Gate — 0.5%</option>
-          <option value="0.6">Kraken — 0.6%</option>
-          <option value="1.25">Hyperliquid — 1.25%</option>
-          <option value="1.33">Coinbase — 1.33%</option>
+          <option value="0.4">Binance - 0.4%</option>
+          <option value="0.5" selected>Bybit - 0.5%</option>
+          <option value="0.5">OKX - 0.5%</option>
+          <option value="0.5">Bitget - 0.5%</option>
+          <option value="0.1">MEXC - 0.1%</option>
+          <option value="0.5">KuCoin - 0.5%</option>
+          <option value="0.5">Gate - 0.5%</option>
+          <option value="0.6">Kraken - 0.6%</option>
+          <option value="1.25">Hyperliquid - 1.25%</option>
+          <option value="1.33">Coinbase - 1.33%</option>
           <option value="">Personalizado</option>
         </select></div><p class="plan-hint" id="liqExHint" hidden><b>El margen de mantenimiento</b> es la parte de tu posición que el exchange te exige mantener en depósito; en el momento en que tu margen cae hasta ese nivel, te liquidan. Binance pide 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% en su primer nivel, Hyperliquid 1.25% en BTC, Coinbase 1.33%. Solo cambia <b>dónde queda tu precio de liquidación</b>. Elige Personalizado para escribir la tasa que muestra tu nivel.</p></div>
         <div class="field"><label data-i18n="lMmr">Tasa de margen de mantenimiento</label><div class="input-line"><input type="number" id="liqMmr" value="0.5" step="any"><span class="unit">%</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Precio de liquidación estimado</div><div class="rvalue" id="liqOut">—</div><button class="copybtn" data-copy="liqOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rDist">Distancia desde la entrada</span><span class="v" id="liqDist">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rMove">Movimiento de precio hasta liq.</span><span class="v" id="liqMove">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rEffMargin">Margen efectivo</span><span class="v" id="liqMargin">—</span></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Precio de liquidación estimado</div><div class="rvalue" id="liqOut">-</div><button class="copybtn" data-copy="liqOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rDist">Distancia desde la entrada</span><span class="v" id="liqDist">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMove">Movimiento de precio hasta liq.</span><span class="v" id="liqMove">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEffMargin">Margen efectivo</span><span class="v" id="liqMargin">-</span></div>
         <p class="note" data-i18n="nLiq">Estimación para margen aislado. La liquidación real también depende de las comisiones, el funding y los niveles de margen de mantenimiento. Deja un margen de seguridad.</p>
       </div>
     </section>
 
     <section class="panel" id="cross">
       <div class="inputs">
-        <h2><span>Liquidación con margen cruzado</span> <small>&mdash; todo tu saldo respalda la operación</small></h2>
+        <h2><span>Liquidación con margen cruzado</span> <small>- todo tu saldo respalda la operación</small></h2>
         <div class="field"><label data-i18n="direction">Dirección</label>
           <div class="seg" data-seg="crSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
         </div>
@@ -411,36 +411,36 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="field"><label>Tamaño de posición</label><div class="input-line"><input type="number" id="crQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">moneda</span></div></div>
         <div class="field"><label>Saldo de la wallet de futuros</label><div class="input-line"><input type="number" id="crBal" value="1000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><div class="fl-row"><label data-i18n="lExchange">Exchange (define la tasa de margen)</label><button type="button" class="ptt-q" data-hint="crExHint" aria-expanded="false" aria-label="¿Qué hace la tasa de margen?">?</button></div><div class="input-line"><select id="crEx" aria-label="Preajuste de margen de mantenimiento por exchange">
-          <option value="0.4">Binance &mdash; 0.4%</option>
-          <option value="0.5" selected>Bybit &mdash; 0.5%</option>
-          <option value="0.5">OKX &mdash; 0.5%</option>
-          <option value="0.5">Bitget &mdash; 0.5%</option>
-          <option value="0.1">MEXC &mdash; 0.1%</option>
-          <option value="0.5">KuCoin &mdash; 0.5%</option>
-          <option value="0.5">Gate &mdash; 0.5%</option>
-          <option value="0.6">Kraken &mdash; 0.6%</option>
-          <option value="1.25">Hyperliquid &mdash; 1.25%</option>
-          <option value="1.33">Coinbase &mdash; 1.33%</option>
+          <option value="0.4">Binance - 0.4%</option>
+          <option value="0.5" selected>Bybit - 0.5%</option>
+          <option value="0.5">OKX - 0.5%</option>
+          <option value="0.5">Bitget - 0.5%</option>
+          <option value="0.1">MEXC - 0.1%</option>
+          <option value="0.5">KuCoin - 0.5%</option>
+          <option value="0.5">Gate - 0.5%</option>
+          <option value="0.6">Kraken - 0.6%</option>
+          <option value="1.25">Hyperliquid - 1.25%</option>
+          <option value="1.33">Coinbase - 1.33%</option>
           <option value="">Personalizado</option>
         </select></div><p class="plan-hint" id="crExHint" hidden><b>El margen de mantenimiento</b> es la parte de tu posición que el exchange te exige mantener en depósito; en el momento en que tu margen cae hasta ese nivel, te liquidan. Binance pide 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% en su primer nivel, Hyperliquid 1.25% en BTC, Coinbase 1.33%. Solo cambia <b>dónde queda tu precio de liquidación</b>. Elige Personalizado para escribir la tasa que muestra tu nivel.</p></div>
         <div class="field"><label data-i18n="lMmr">Tasa de margen de mantenimiento</label><div class="input-line"><input type="number" id="crMmr" value="0.5" step="any"><span class="unit">%</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Precio de liquidación estimado</div><div class="rvalue" id="crOut">&mdash;</div><button class="copybtn" data-copy="crOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rDist">Distancia desde la entrada</span><span class="v" id="crDist">&mdash;</span></div>
-        <div class="rrow"><span class="k">Apalancamiento efectivo</span><span class="v" id="crEffLev">&mdash;</span></div>
-        <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="crNotional">&mdash;</span></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Precio de liquidación estimado</div><div class="rvalue" id="crOut">-</div><button class="copybtn" data-copy="crOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rDist">Distancia desde la entrada</span><span class="v" id="crDist">-</span></div>
+        <div class="rrow"><span class="k">Apalancamiento efectivo</span><span class="v" id="crEffLev">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="crNotional">-</span></div>
         <table class="ladder">
           <thead><tr><th>Agregar al saldo</th><th>Nuevo precio de liq.</th><th data-i18n="rDist">Distancia desde la entrada</th></tr></thead>
           <tbody id="crLadder"></tbody>
         </table>
-        <p class="note">Margen cruzado: todo el saldo de futuros absorbe las pérdidas, así que aumentarlo aleja la liquidación — eso es lo que muestra la escala de arriba. Un long respaldado por más del valor total de la posición no puede liquidarse. Estimación para UNA sola posición abierta; la liquidación cruzada real también cuenta tus otras posiciones, el PnL no realizado, las comisiones y los niveles de margen.</p>
+        <p class="note">Margen cruzado: todo el saldo de futuros absorbe las pérdidas, así que aumentarlo aleja la liquidación - eso es lo que muestra la escala de arriba. Un long respaldado por más del valor total de la posición no puede liquidarse. Estimación para UNA sola posición abierta; la liquidación cruzada real también cuenta tus otras posiciones, el PnL no realizado, las comisiones y los niveles de margen.</p>
       </div>
     </section>
 
     <section class="panel" id="size">
       <div class="inputs">
-        <h2><span data-i18n="tSize">Tamaño de posición</span> <small data-i18n="tSizeSub">— basado en riesgo</small></h2>
+        <h2><span data-i18n="tSize">Tamaño de posición</span> <small data-i18n="tSizeSub">- basado en riesgo</small></h2>
         <div class="field"><label data-i18n="lBalance">Saldo de la cuenta</label><div class="input-line"><input type="number" id="szBal" value="5000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><label data-i18n="lRisk">Riesgo por operación</label><div class="input-line"><input type="number" id="szRisk" value="1" step="any"><span class="unit">%</span></div></div>
         <div class="field"><label data-i18n="lEntry">Precio de entrada</label><div class="input-line"><input type="number" id="szEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
@@ -448,18 +448,18 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="field"><label data-i18n="lLevMargin">Apalancamiento (opcional)</label><div class="input-line"><input type="number" id="szLev" value="10" step="any"><span class="unit">×</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rPosSize">Tamaño de posición</div><div class="rvalue" id="szOut">—</div><button class="copybtn" data-copy="szOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="szNotional">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rRisked">Monto en riesgo</span><span class="v" id="szRiskAmt">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rStopDist">Distancia al stop</span><span class="v" id="szDist">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rMarginReq">Margen requerido</span><span class="v" id="szMargin">—</span></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rPosSize">Tamaño de posición</div><div class="rvalue" id="szOut">-</div><button class="copybtn" data-copy="szOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="szNotional">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRisked">Monto en riesgo</span><span class="v" id="szRiskAmt">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rStopDist">Distancia al stop</span><span class="v" id="szDist">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMarginReq">Margen requerido</span><span class="v" id="szMargin">-</span></div>
         <p class="note" data-i18n="nSize">El tamaño de posición se calcula para que, si tocas tu stop, pierdas exactamente el % de riesgo que elegiste. El hábito que separa a los traders que sobreviven de los que no.</p>
       </div>
     </section>
 
     <section class="panel" id="pnl">
       <div class="inputs">
-        <h2><span data-i18n="tPnl">PnL / ROI</span> <small data-i18n="tPnlSub">— ganancias &amp; pérdidas</small></h2>
+        <h2><span data-i18n="tPnl">PnL / ROI</span> <small data-i18n="tPnlSub">- ganancias &amp; pérdidas</small></h2>
         <div class="field"><label data-i18n="direction">Dirección</label>
           <div class="seg" data-seg="pnlSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
         </div>
@@ -469,18 +469,18 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="field"><label data-i18n="lLevRoe">Apalancamiento (opcional)</label><div class="input-line"><input type="number" id="pnlLev" value="10" step="any"><span class="unit">×</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rPnl">Ganancia / Pérdida</div><div class="rvalue" id="pnlOut">—</div><button class="copybtn" data-copy="pnlOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rPriceRoi">ROI de precio</span><span class="v" id="pnlRoi">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rRoe">ROE (sobre el margen)</span><span class="v" id="pnlRoe">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rEntryNot">Nocional de entrada</span><span class="v" id="pnlNotional">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rExitVal">Valor de salida</span><span class="v" id="pnlExitVal">—</span></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rPnl">Ganancia / Pérdida</div><div class="rvalue" id="pnlOut">-</div><button class="copybtn" data-copy="pnlOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rPriceRoi">ROI de precio</span><span class="v" id="pnlRoi">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRoe">ROE (sobre el margen)</span><span class="v" id="pnlRoe">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEntryNot">Nocional de entrada</span><span class="v" id="pnlNotional">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rExitVal">Valor de salida</span><span class="v" id="pnlExitVal">-</span></div>
         <p class="note" data-i18n="nPnl">El ROE es el retorno sobre el margen que pusiste (amplificado por el apalancamiento). El ROI de precio es el movimiento puro. No incluye comisiones ni funding.</p>
       </div>
     </section>
 
     <section class="panel" id="dca">
       <div class="inputs">
-        <h2><span data-i18n="tDca">Promedio / DCA</span> <small data-i18n="tDcaSub">— entrada combinada</small></h2>
+        <h2><span data-i18n="tDca">Promedio / DCA</span> <small data-i18n="tDcaSub">- entrada combinada</small></h2>
         <div class="field"><label data-i18n="lBuy1">Compra 1</label><div class="row2"><input type="number" id="dcaP1" value="60000" step="any" data-ph="phPrice"><input type="number" id="dcaQ1" value="0.1" step="any" data-ph="phQty"></div></div>
         <div class="field"><label data-i18n="lBuy2">Compra 2</label><div class="row2"><input type="number" id="dcaP2" value="55000" step="any" data-ph="phPrice"><input type="number" id="dcaQ2" value="0.1" step="any" data-ph="phQty"></div></div>
         <div class="field"><label data-i18n="lBuy3">Compra 3</label><div class="row2"><input type="number" id="dcaP3" value="50000" step="any" data-ph="phPrice"><input type="number" id="dcaQ3" value="0.2" step="any" data-ph="phQty"></div></div>
@@ -488,18 +488,18 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="field"><label data-i18n="lCurPrice">Precio actual (opcional)</label><div class="input-line"><input type="number" id="dcaCur" value="58000" step="any"><span class="unit">USD</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rAvgEntry">Precio de entrada promedio</div><div class="rvalue" id="dcaOut">—</div><button class="copybtn" data-copy="dcaOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rTotalQty">Cantidad total</span><span class="v" id="dcaQty">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rTotalInv">Total invertido</span><span class="v" id="dcaCost">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rPosVal">Valor de la posición ahora</span><span class="v" id="dcaVal">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rUpnl">PnL no realizado</span><span class="v" id="dcaPnl">—</span></div>
-        <p class="note" data-i18n="nDca">Tu entrada promedio es el costo total ÷ la cantidad total. Promediar a la baja reduce tu punto de equilibrio — pero agrega solo siguiendo un plan, nunca para rescatar una mala operación.</p>
+        <div class="result-main"><div class="rlabel" data-i18n="rAvgEntry">Precio de entrada promedio</div><div class="rvalue" id="dcaOut">-</div><button class="copybtn" data-copy="dcaOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalQty">Cantidad total</span><span class="v" id="dcaQty">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalInv">Total invertido</span><span class="v" id="dcaCost">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rPosVal">Valor de la posición ahora</span><span class="v" id="dcaVal">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rUpnl">PnL no realizado</span><span class="v" id="dcaPnl">-</span></div>
+        <p class="note" data-i18n="nDca">Tu entrada promedio es el costo total ÷ la cantidad total. Promediar a la baja reduce tu punto de equilibrio - pero agrega solo siguiendo un plan, nunca para rescatar una mala operación.</p>
       </div>
     </section>
 
     <section class="panel" id="tp">
       <div class="inputs">
-        <h2><span data-i18n="tTp">Take-Profit</span> <small data-i18n="tTpSub">— escala de precios objetivo</small></h2>
+        <h2><span data-i18n="tTp">Take-Profit</span> <small data-i18n="tTpSub">- escala de precios objetivo</small></h2>
         <div class="field"><label data-i18n="direction">Dirección</label>
           <div class="seg" data-seg="tpSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
         </div>
@@ -509,7 +509,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="field"><label data-i18n="lTargetRoe">ROE objetivo personalizado</label><div class="input-line"><input type="number" id="tpCustom" value="75" step="any"><span class="unit">%</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rCustomTgt">Precio objetivo personalizado</div><div class="rvalue" id="tpOut">—</div><button class="copybtn" data-copy="tpOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rCustomTgt">Precio objetivo personalizado</div><div class="rvalue" id="tpOut">-</div><button class="copybtn" data-copy="tpOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
         <table class="ladder">
           <thead><tr><th data-i18n="colRoe">ROE objetivo</th><th data-i18n="colExit">Precio de salida</th><th data-i18n="colProfit">Ganancia</th></tr></thead>
           <tbody id="tpLadder"></tbody>
@@ -520,16 +520,16 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
     <section class="panel" id="rr">
       <div class="inputs">
-        <h2><span data-i18n="tRr">Riesgo / Beneficio</span> <small data-i18n="tRrSub">— ratio &amp; punto de equilibrio</small></h2>
+        <h2><span data-i18n="tRr">Riesgo / Beneficio</span> <small data-i18n="tRrSub">- ratio &amp; punto de equilibrio</small></h2>
         <div class="field"><label data-i18n="lEntry">Precio de entrada</label><div class="input-line"><input type="number" id="rrEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><label data-i18n="lStop">Precio de stop-loss</label><div class="input-line"><input type="number" id="rrStop" value="58000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><label data-i18n="lTp">Precio de take-profit</label><div class="input-line"><input type="number" id="rrTp" value="66000" step="any"><span class="unit">USD</span></div></div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rRR">Ratio riesgo / beneficio</div><div class="rvalue" id="rrOut">—</div><button class="copybtn" data-copy="rrOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rRiskR">Riesgo por unidad</span><span class="v" id="rrRisk">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rRewardR">Beneficio por unidad</span><span class="v" id="rrReward">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rBreakeven">Tasa de acierto de equilibrio</span><span class="v" id="rrBe">—</span></div>
+        <div class="result-main"><div class="rlabel" data-i18n="rRR">Ratio riesgo / beneficio</div><div class="rvalue" id="rrOut">-</div><button class="copybtn" data-copy="rrOut" aria-label="Copiar" title="Copiar"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rRiskR">Riesgo por unidad</span><span class="v" id="rrRisk">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRewardR">Beneficio por unidad</span><span class="v" id="rrReward">-</span></div>
+        <div class="rrow"><span class="k" data-i18n="rBreakeven">Tasa de acierto de equilibrio</span><span class="v" id="rrBe">-</span></div>
         <p class="note" data-i18n="nRr">Un ratio de 2.0 significa que buscas ganar el doble de lo que arriesgas. La tasa de acierto de equilibrio es el % de aciertos que necesitas solo para no perder dinero con este ratio.</p>
       </div>
     </section>
@@ -547,23 +547,23 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <section class="exchanges" id="exchanges">
     <span class="eyebrow" data-i18n="ebPartners">Socios</span>
     <h2 data-i18n="exTitle">Dónde operar</h2>
-    <p class="exsub" data-i18n="exSub">Pon estos números a trabajar. Compara los principales exchanges de cripto — apalancamiento máximo, por qué destaca cada uno y el bono que recibes como usuario nuevo.</p>
+    <p class="exsub" data-i18n="exSub">Pon estos números a trabajar. Compara los principales exchanges de cripto - apalancamiento máximo, por qué destaca cada uno y el bono que recibes como usuario nuevo.</p>
     <div class="exgrid" id="exgrid"></div>
-    <p class="exnote" data-i18n="exNote">El apalancamiento máximo varía según el contrato, la región y el nivel de la cuenta. Los enlaces son de referido — mira el aviso más abajo.</p>
+    <p class="exnote" data-i18n="exNote">El apalancamiento máximo varía según el contrato, la región y el nivel de la cuenta. Los enlaces son de referido - mira el aviso más abajo.</p>
     <p class="exnote" style="margin-top:8px"><span data-i18n="exPages">Calculadoras de liquidación por exchange:</span> <a href="/es/bybit-liquidation-calculator/" style="color:var(--ink-dim)">Bybit</a> · <a href="/es/binance-liquidation-calculator/" style="color:var(--ink-dim)">Binance</a> · <a href="/es/okx-liquidation-calculator/" style="color:var(--ink-dim)">OKX</a> · <a href="/es/kucoin-liquidation-calculator/" style="color:var(--ink-dim)">KuCoin</a> · <a href="/es/gate-liquidation-calculator/" style="color:var(--ink-dim)">Gate</a> · <a href="/es/kraken-liquidation-calculator/" style="color:var(--ink-dim)">Kraken</a>
     </p>
   </section>
 
   <section class="derivsec" aria-label="Mercado de futuros en vivo">
     <div class="db-head"><h2>Mercado de futuros <span>derivados en vivo</span></h2><span class="db-live">LIVE</span></div>
-    <p class="db-sub">Funding, interés abierto y posicionamiento long/short en los principales mercados perpetuos — en vivo.</p>
+    <p class="db-sub">Funding, interés abierto y posicionamiento long/short en los principales mercados perpetuos - en vivo.</p>
     <div class="db-grid" id="derivBoard"><div class="db-load">Cargando derivados en vivo…</div></div>
   </section>
   
 
   <section class="hotpairs" id="trending">
     <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Mercados</span><h2 data-i18n="hotTitle">Tendencia</h2></div>
-    <p class="sec-sub" data-i18n="hotSub">Precios en vivo y movimientos de 24 horas en los mercados más activos. Toca el ★ para fijar un par en tu lista de seguimiento — los pares marcados pasan al frente.</p>
+    <p class="sec-sub" data-i18n="hotSub">Precios en vivo y movimientos de 24 horas en los mercados más activos. Toca el ★ para fijar un par en tu lista de seguimiento - los pares marcados pasan al frente.</p>
     <div class="hp-grid" id="hpGrid"></div>
   </section>
 
@@ -574,7 +574,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="mteaser-body">
         <span class="mteaser-eb" data-i18n="ebHeat2">Mapa de calor</span>
         <h3 data-i18n="mtHeatT">Mira dónde se concentran las liquidaciones</h3>
-        <p data-i18n="mtHeatS">Detecta los niveles exactos de precio donde los traders apalancados quedan barridos — antes de que llegue la cascada.</p>
+        <p data-i18n="mtHeatS">Detecta los niveles exactos de precio donde los traders apalancados quedan barridos - antes de que llegue la cascada.</p>
         <span class="mteaser-cta"><span data-i18n="mtHeatCta">Abrir el mapa de calor</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </div>
     </div>
@@ -582,16 +582,16 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
   <section class="tvsec">
     <div class="sec-head"><span class="eyebrow">Gratis</span><h2>Gráficos profesionales, integrados en MarginPad</h2></div>
-    <p class="sec-sub">Un espacio de trabajo completo de gráficos con múltiples ventanas — dibuja, agrega indicadores, importa tus operaciones y pregúntale a la IA. Sin inicio de sesión, funciona en tu navegador.</p>
+    <p class="sec-sub">Un espacio de trabajo completo de gráficos con múltiples ventanas - dibuja, agrega indicadores, importa tus operaciones y pregúntale a la IA. Sin inicio de sesión, funciona en tu navegador.</p>
     <a class="chads" href="/es/charts" aria-label="Abrir el espacio de gráficos de MarginPad">
       <div class="chads-bg"></div>
       <svg class="chads-art" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="chag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd8e6" stop-opacity=".4"/><stop offset="1" stop-color="#3fd8e6" stop-opacity="0"/></linearGradient></defs><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18 L300,160 L0,160 Z" fill="url(#chag)"/><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18" fill="none" stroke="#3fd8e6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
       <div class="chads-in">
         <div class="chads-badge"> Espacio de gráficos · gratis</div>
-        <h3>Dibuja, analiza &amp; opera — todo en un solo gráfico</h3>
+        <h3>Dibuja, analiza &amp; opera - todo en un solo gráfico</h3>
         <ul class="chads-feat">
           <li>Hasta 8 ventanas de gráficos flotantes lado a lado</li>
-          <li>19+ indicadores — RSI, MACD, Bollinger &amp; más</li>
+          <li>19+ indicadores - RSI, MACD, Bollinger &amp; más</li>
           <li>Líneas de tendencia, Fibs, soporte/resistencia &amp; notas</li>
           <li>Importa tus operaciones de paper trading al gráfico</li>
           <li>Pregúntale a la IA integrada sobre cualquier setup</li>
@@ -603,16 +603,16 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
   <section class="tools">
     <div class="sec-head"><span class="eyebrow" data-i18n="ebRecommended">Recomendado</span><h2 data-i18n="toolsTitle">Herramientas para traders que recomendamos</h2></div>
-    <p class="sec-sub" data-i18n="toolsSub">Las plataformas que combinaríamos con MarginPad — gráficos, impuestos y automatización.</p>
+    <p class="sec-sub" data-i18n="toolsSub">Las plataformas que combinaríamos con MarginPad - gráficos, impuestos y automatización.</p>
     <div class="tools-grid">
       <a class="toolcard" style="--exc:#2962ff" href="https://www.tradingview.com/pricing/?share_your_love=cocchako" target="_blank" rel="sponsored noopener noreferrer">
         <div class="tc-name">TradingView</div>
-        <div class="tc-desc" data-i18n="tdTv">Gráficos profesionales, más de 100 indicadores y alertas de precio — la plataforma de gráficos estándar de la industria.</div>
+        <div class="tc-desc" data-i18n="tdTv">Gráficos profesionales, más de 100 indicadores y alertas de precio - la plataforma de gráficos estándar de la industria.</div>
         <span class="tc-go" data-i18n="toolGo">Visitar →</span>
       </a>
       <a class="toolcard" style="--exc:#14b8a6" href="https://koinly.io/?via=B5C43E3F&amp;utm_source=friend" target="_blank" rel="sponsored noopener noreferrer">
         <div class="tc-name">Koinly</div>
-        <div class="tc-desc" data-i18n="tdKo">Informes de impuestos de cripto listos en minutos — se conecta con todos los exchanges principales.</div>
+        <div class="tc-desc" data-i18n="tdKo">Informes de impuestos de cripto listos en minutos - se conecta con todos los exchanges principales.</div>
         <span class="tc-go" data-i18n="toolGo">Visitar →</span>
       </a>
       <a class="toolcard" style="--exc:#3a7bff" href="https://app.3commas.io/auth/registration?utm_source=referral&amp;utm_medium=cabinet&amp;c=tc2235309" target="_blank" rel="sponsored noopener noreferrer">
@@ -627,9 +627,9 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <div class="league-card">
       <span class="league-badge"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3"/></svg>Liga de Trading</span>
       <h2 data-i18n="lgTitle">Registra tus operaciones, gana USDT</h2>
-      <p class="lg-sub" data-i18n="lgSub">Cuatro tablas de temporada — Green Days, Top ROE, Mejor tasa de acierto y XP de temporada — cada una paga a los 5 primeros en USDT real al final de cada temporada de 14 días. Participar es gratis: inicia sesión y cierra operaciones de paper trading.</p>
+      <p class="lg-sub" data-i18n="lgSub">Cuatro tablas de temporada - Green Days, Top ROE, Mejor tasa de acierto y XP de temporada - cada una paga a los 5 primeros en USDT real al final de cada temporada de 14 días. Participar es gratis: inicia sesión y cierra operaciones de paper trading.</p>
       <div class="lg-steps">
-        <div class="lg-step"><b>1</b><span data-i18n="lgS1">Inicia sesión — gratis, solo con email</span></div>
+        <div class="lg-step"><b>1</b><span data-i18n="lgS1">Inicia sesión - gratis, solo con email</span></div>
         <div class="lg-step"><b>2</b><span data-i18n="lgS2">Cierra operaciones ganadoras de paper trading</span></div>
         <div class="lg-step"><b>3</b><span data-i18n="lgS3">Los 5 primeros ganan USDT cada temporada</span></div>
       </div>
@@ -642,7 +642,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
   <section class="content2">
     <h2 data-i18n="calcsTitle">Seis calculadoras que todo trader de futuros de cripto necesita</h2>
-    <p class="sec-sub" data-i18n="calcsSub">Todo funciona en tu navegador — no se envía nada a ningún lado, no hay que crear una cuenta. Ve directo a la que necesitas:</p>
+    <p class="sec-sub" data-i18n="calcsSub">Todo funciona en tu navegador - no se envía nada a ningún lado, no hay que crear una cuenta. Ve directo a la que necesitas:</p>
     <div class="feature-grid">
       <a class="feat" href="#liq">
         <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.2 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.2a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
@@ -674,9 +674,9 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <details open><summary data-i18n="faqQ1">¿Cómo se calcula el precio de liquidación?</summary><div class="a" data-i18n-html="faqA1">Para una posición con margen aislado, el precio de liquidación estimado es <code>Entry × (1 − 1/Leverage + MMR)</code> para longs y <code>Entry × (1 + 1/Leverage − MMR)</code> para shorts, donde MMR es la tasa de margen de mantenimiento. Un apalancamiento mayor acerca la liquidación a la entrada; un long a 100× se liquida tras una caída de apenas un 1% aproximadamente.</div></details>
       <details><summary data-i18n="faqQ2">¿Cómo calculo el tamaño de una posición por riesgo?</summary><div class="a" data-i18n-html="faqA2">Decide qué porcentaje de tu cuenta estás dispuesto a perder si se activa tu stop (1% es lo habitual). La calculadora divide ese riesgo en dólares entre la distancia de la entrada al stop para saber cuántas monedas comprar, manteniendo cada pérdida pequeña y constante.</div></details>
       <details><summary data-i18n="faqQ3">¿Cuál es la diferencia entre ROI y ROE?</summary><div class="a" data-i18n-html="faqA3">El ROI de precio es el porcentaje que se movió el activo. El ROE es tu retorno sobre el margen que realmente pusiste, que el apalancamiento multiplica. Un movimiento del 6% con 10× de apalancamiento equivale a un retorno de aproximadamente 60% sobre el margen.</div></details>
-      <details><summary data-i18n="faqQ4">¿Cómo funciona una calculadora de DCA / promedio a la baja?</summary><div class="a" data-i18n-html="faqA4">Tu entrada promedio combinada es el costo total dividido entre la cantidad total de todas las compras. Promediar a la baja reduce tu punto de equilibrio, pero también aumenta tu posición — escala solo siguiendo un plan definido de antemano.</div></details>
+      <details><summary data-i18n="faqQ4">¿Cómo funciona una calculadora de DCA / promedio a la baja?</summary><div class="a" data-i18n-html="faqA4">Tu entrada promedio combinada es el costo total dividido entre la cantidad total de todas las compras. Promediar a la baja reduce tu punto de equilibrio, pero también aumenta tu posición - escala solo siguiendo un plan definido de antemano.</div></details>
       <details><summary data-i18n="faqQ5">¿Cómo calculo un precio de take-profit?</summary><div class="a" data-i18n-html="faqA5">Elige un retorno objetivo sobre el margen. El precio de salida necesario es <code>Entry × (1 + ROE / (100 × Leverage))</code> para longs y <code>Entry × (1 − ROE / (100 × Leverage))</code> para shorts.</div></details>
-      <details><summary data-i18n="faqQ6">¿Qué es un buen ratio riesgo/beneficio?</summary><div class="a" data-i18n-html="faqA6">Muchos traders buscan al menos 2:1 — ganar el doble de lo que arriesgan. Con 2:1 solo necesitas acertar cerca de un tercio de tus operaciones para llegar al punto de equilibrio. La pestaña de riesgo/beneficio muestra la tasa de acierto de equilibrio exacta para tu setup.</div></details>
+      <details><summary data-i18n="faqQ6">¿Qué es un buen ratio riesgo/beneficio?</summary><div class="a" data-i18n-html="faqA6">Muchos traders buscan al menos 2:1 - ganar el doble de lo que arriesgan. Con 2:1 solo necesitas acertar cerca de un tercio de tus operaciones para llegar al punto de equilibrio. La pestaña de riesgo/beneficio muestra la tasa de acierto de equilibrio exacta para tu setup.</div></details>
     </div>
 
     <div class="morelinks">
@@ -686,15 +686,15 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="ml-group"><span class="ml-h" data-i18n="mlCompare">Comparar</span><a href="/es/bybit-vs-binance/">Bybit vs Binance</a><span class="ml-sep">·</span><a href="/es/binance-vs-okx/">Binance vs OKX</a><span class="ml-sep">·</span><a href="/es/bybit-vs-okx/">Bybit vs OKX</a><span class="ml-sep">·</span><a href="/es/binance-vs-kucoin/">Binance vs KuCoin</a><span class="ml-sep">·</span><a href="/es/bybit-vs-kucoin/">Bybit vs KuCoin</a><span class="ml-sep">·</span><a href="/es/kraken-vs-binance/">Kraken vs Binance</a></div>
       <div class="ml-group"><span class="ml-h" data-i18n="mlTools">Herramientas</span><a href="/es/funding-fee-calculator/">Comisión de funding</a><span class="ml-sep">·</span><a href="/es/glossary/">Glosario</a><span class="ml-sep">·</span><a href="/api/">API gratis</a><span class="ml-sep">·</span><a href="/es/blog/crypto-futures-legal-in-the-us/">Guía de futuros en EE. UU.</a></div>
     </div>
-    <p class="botnote"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span><b data-i18n="botTitle">Bot de Telegram</b> — <span data-i18n="botFeatures">Consulta precios en vivo, configura alertas de precio, usa todas las calculadoras y únete a la Liga de Trading semanal — gratis, directo en tu chat.</span> <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener">@MarginPadBot</a></span></p>
-    <p class="disc">MarginPad es una herramienta educativa, no es asesoría financiera. Los cálculos son estimaciones y pueden diferir de los de tu exchange. Operar cripto conlleva un riesgo considerable de pérdida. Nunca operes con dinero que no puedas permitirte perder. Aviso de afiliación: algunos enlaces a exchanges en esta página son enlaces de referido — podemos ganar una comisión sin costo para ti, lo cual nunca afecta nuestros cálculos ni recomendaciones.</p>
+    <p class="botnote"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span><b data-i18n="botTitle">Bot de Telegram</b> - <span data-i18n="botFeatures">Consulta precios en vivo, configura alertas de precio, usa todas las calculadoras y únete a la Liga de Trading semanal - gratis, directo en tu chat.</span> <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener">@MarginPadBot</a></span></p>
+    <p class="disc">MarginPad es una herramienta educativa, no es asesoría financiera. Los cálculos son estimaciones y pueden diferir de los de tu exchange. Operar cripto conlleva un riesgo considerable de pérdida. Nunca operes con dinero que no puedas permitirte perder. Aviso de afiliación: algunos enlaces a exchanges en esta página son enlaces de referido - podemos ganar una comisión sin costo para ti, lo cual nunca afecta nuestros cálculos ni recomendaciones.</p>
   </section>
 
   <footer class="site-foot">
     <div class="foot-top">
       <div class="foot-brand">
         <a class="mark" href="/es/" aria-label="Inicio de MarginPad">MARGIN<b>PAD</b></a>
-        <p class="foot-blurb" data-i18n="footBlurb">Herramientas gratis de futuros de cripto — calculadoras de liquidación, mapa de calor, gráficos &amp; paper trading sin riesgo. Sin registro.</p>
+        <p class="foot-blurb" data-i18n="footBlurb">Herramientas gratis de futuros de cripto - calculadoras de liquidación, mapa de calor, gráficos &amp; paper trading sin riesgo. Sin registro.</p>
         <div class="foot-social">
           <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" aria-label="Bot de Telegram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></a>
         </div>
@@ -716,7 +716,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 </div>
 
-<script defer src="/assets/mp-calc.js?v=5ca3213e"></script>
+<script defer src="/assets/mp-calc.js?v=497f056f"></script>
 
 
 
@@ -738,7 +738,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <div id="chatBox" hidden>
   <div class="ct-head"><span class="ct-title" data-i18n="chatTitleW">Chat de traders</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Cerrar">✕</button></div>
   <div class="ct-gate" id="ctGate">
-    <p data-i18n="chatGateLogin">Inicia sesión para unirte al chat — es gratis (solo un código por email). Por favor no publiques tu email en el chat.</p>
+    <p data-i18n="chatGateLogin">Inicia sesión para unirte al chat - es gratis (solo un código por email). Por favor no publiques tu email en el chat.</p>
     <button id="ctSignin" type="button" data-i18n="chatSigninBtn">Inicia sesión para chatear</button>
   </div>
   <div class="ct-msgs" id="ctMsgs" hidden></div>
@@ -748,7 +748,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   </form>
 </div>
 
-<script src="/assets/i18n.js?v=9577cbd8" defer></script>
+<script src="/assets/i18n.js?v=6b07b242" defer></script>
 
 
 <div id="pwaBanner" class="pwa-banner" hidden>
@@ -765,7 +765,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <ol class="pwa-steps">
       <li><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#2ebd85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg> <span data-i18n="pwaStep1">Toca el botón Compartir en la barra de Safari</span></li>
       <li><span data-i18n="pwaStep2">Desplázate hacia abajo y toca “Agregar a pantalla de inicio”</span></li>
-      <li><span data-i18n="pwaStep3">Toca Agregar — se abre a pantalla completa, igual que una app</span></li>
+      <li><span data-i18n="pwaStep3">Toca Agregar - se abre a pantalla completa, igual que una app</span></li>
     </ol>
   </div>
 </div>
@@ -784,7 +784,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script defer src="/assets/mp-auth.js?v=1fd60faa"></script>
+<script defer src="/assets/mp-auth.js?v=35f0932a"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -792,7 +792,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=45b234d4"></script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script src="/assets/home.js?v=b73d5421"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

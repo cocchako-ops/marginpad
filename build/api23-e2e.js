@@ -4,7 +4,7 @@
 //   - type:"stop" = breakout entry (accepted on the breakout side, refused on the wrong side), GET /v1/orders says type
 //   - /v1/modify_order changes a resting order in place; a done order is 409
 //   - trailing stop: opened with trail_pct, ratcheted by an injected price (/api/admin/sweeptest), then stopped out AT
-//     the ratcheted level — never at the entry stop
+//     the ratcheted level - never at the entry stop
 //   - webhooks: 402 on free, then (Premium grant) add / bad url / test ping into the sink / a real position.opened
 //     delivery, signed, / delete; the sink shows the body
 //   - /v1/report: totals free, breakdowns locked; Premium unlocks findings
@@ -144,7 +144,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   let sink = await (await fetch(SINK)).json();
   const ping = (sink.deliveries || []).filter(d => d.body && d.body.event === 'ping')[0];
   chk('sink shows the ping with event/delivery/signature headers', !!ping && ping.headers['x-mp-event'] === 'ping' && /^sha256=[0-9a-f]{64}$/.test(ping.headers['x-mp-signature'] || '') && ping.headers['x-mp-delivery'], ping && ping.headers);
-  // verify the signature with the secret — the receiver's side of the contract
+  // verify the signature with the secret - the receiver's side of the contract
   if (ping) { const { createHmac } = require('crypto'); const raw = JSON.stringify(ping.body); const want = 'sha256=' + createHmac('sha256', hook.secret).update(raw).digest('hex'); chk('HMAC-SHA256 over the raw body verifies with the hook secret', want === ping.headers['x-mp-signature'], { match: want === ping.headers['x-mp-signature'] }); }
   r = await bot('/open', { symbol: 'BTC', side: 'long', margin_usd: 20, leverage: 3, client_order_id: 'e2e-wh-' + UID });
   const whPos = r.body.data && r.body.data.position;
@@ -215,6 +215,6 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
 
   console.log(out.join('\n'));
   const fails = out.filter(l => l.indexOf('FAIL') === 0).length;
-  console.log('\n' + (out.length - fails) + '/' + out.length + ' checks passed' + (fails ? ' — ' + fails + ' FAILED' : ''));
+  console.log('\n' + (out.length - fails) + '/' + out.length + ' checks passed' + (fails ? ' - ' + fails + ' FAILED' : ''));
   process.exit(fails ? 1 : 0);
 })().catch(e => { console.error('E2E crashed:', e); console.log(out.join('\n')); process.exit(1); });

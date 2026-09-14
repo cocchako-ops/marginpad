@@ -10,10 +10,10 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 const COINS = [
   { sym: 'BTC', name: 'Bitcoin', slug: 'btc', entry: 62000, lev: 125, blurb: 'Bitcoin has the deepest, most liquid perpetual-futures market in crypto, so spreads are tight and high leverage is widely available.' },
   { sym: 'ETH', name: 'Ethereum', slug: 'eth', entry: 1650, lev: 100, blurb: 'Ethereum perps are the second most traded contract after BTC, with deep liquidity across every major exchange.' },
-  { sym: 'SOL', name: 'Solana', slug: 'sol', entry: 63, lev: 75, blurb: 'Solana is one of the most volatile large-cap perps — fast moves mean liquidation can arrive quicker than the number suggests.' },
+  { sym: 'SOL', name: 'Solana', slug: 'sol', entry: 63, lev: 75, blurb: 'Solana is one of the most volatile large-cap perps - fast moves mean liquidation can arrive quicker than the number suggests.' },
   { sym: 'XRP', name: 'XRP', slug: 'xrp', entry: 1.1, lev: 75, blurb: 'XRP perps see sharp, news-driven spikes, so a generous liquidation buffer matters more than usual.' },
   { sym: 'BNB', name: 'BNB', slug: 'bnb', entry: 590, lev: 75, blurb: 'BNB futures are most liquid on Binance, where the token also pays a fee discount.' },
-  { sym: 'DOGE', name: 'Dogecoin', slug: 'doge', entry: 0.08, lev: 75, blurb: 'Dogecoin is a high-beta meme perp — it can double or halve on sentiment, so high leverage is especially risky.' },
+  { sym: 'DOGE', name: 'Dogecoin', slug: 'doge', entry: 0.08, lev: 75, blurb: 'Dogecoin is a high-beta meme perp - it can double or halve on sentiment, so high leverage is especially risky.' },
   { sym: 'ADA', name: 'Cardano', slug: 'ada', entry: 0.16, lev: 75, blurb: 'Cardano perps can trend hard for weeks; size for the move, not the candle.' },
   { sym: 'AVAX', name: 'Avalanche', slug: 'avax', entry: 6.5, lev: 75, blurb: 'Avalanche is a volatile large-cap alt where liquidation distance shrinks fast at high leverage.' },
   { sym: 'LINK', name: 'Chainlink', slug: 'link', entry: 11, lev: 75, blurb: 'Chainlink perps are popular among alt traders and move sharply around major partnership news.' },
@@ -22,21 +22,21 @@ const COINS = [
   { sym: 'TRX', name: 'TRON', slug: 'trx', entry: 0.13, lev: 75, blurb: 'TRON tends to grind rather than spike, but leverage still pins liquidation near entry.' },
   { sym: 'DOT', name: 'Polkadot', slug: 'dot', entry: 4.2, lev: 75, blurb: 'Polkadot is a liquid large-cap alt that can trend hard during alt-season rotations.' },
   { sym: 'MATIC', name: 'Polygon', slug: 'matic', entry: 0.4, lev: 75, blurb: 'Polygon perps are widely listed and move with broader L2 sentiment.' },
-  { sym: 'SHIB', name: 'Shiba Inu', slug: 'shib', entry: 0.000018, lev: 50, blurb: 'Shiba Inu is a high-beta meme perp priced in tiny decimals — double-check your entry and size carefully.' },
+  { sym: 'SHIB', name: 'Shiba Inu', slug: 'shib', entry: 0.000018, lev: 50, blurb: 'Shiba Inu is a high-beta meme perp priced in tiny decimals - double-check your entry and size carefully.' },
   { sym: 'NEAR', name: 'NEAR Protocol', slug: 'near', entry: 4.5, lev: 50, blurb: 'NEAR is a volatile large-cap alt where liquidation distance shrinks quickly at high leverage.' },
   { sym: 'UNI', name: 'Uniswap', slug: 'uni', entry: 7, lev: 75, blurb: 'Uniswap is the bellwether DeFi perp and reacts sharply to governance and fee-switch news.' },
   { sym: 'APT', name: 'Aptos', slug: 'apt', entry: 7, lev: 50, blurb: 'Aptos perps can move fast on unlock schedules and ecosystem news.' },
-  { sym: 'ICP', name: 'Internet Computer', slug: 'icp', entry: 9, lev: 50, blurb: 'Internet Computer is a high-volatility large-cap — give liquidation extra room.' },
+  { sym: 'ICP', name: 'Internet Computer', slug: 'icp', entry: 9, lev: 50, blurb: 'Internet Computer is a high-volatility large-cap - give liquidation extra room.' },
   { sym: 'PEPE', name: 'Pepe', slug: 'pepe', entry: 0.0000095, lev: 50, blurb: 'Pepe is one of the most volatile meme perps; high leverage here is a fast way to get liquidated.' },
-  { sym: 'BONK', name: 'Bonk', slug: 'bonk', entry: 0.00002, lev: 50, blurb: 'Bonk is a Solana meme perp with thin order books and violent intraday ranges — a small adverse move at high leverage is a liquidation, not a drawdown.' },
+  { sym: 'BONK', name: 'Bonk', slug: 'bonk', entry: 0.00002, lev: 50, blurb: 'Bonk is a Solana meme perp with thin order books and violent intraday ranges - a small adverse move at high leverage is a liquidation, not a drawdown.' },
   { sym: 'FLOKI', name: 'Floki', slug: 'floki', entry: 0.0001, lev: 50, blurb: 'Floki trades like the other meme perps: liquidity comes and goes with attention, so liquidation clusters build fast on both sides.' },
-  { sym: 'ORDI', name: 'ORDI', slug: 'ordi', entry: 12, lev: 50, blurb: 'ORDI, the Bitcoin BRC-20 token, follows BTC with a much bigger beta — the liquidation price sits closer than the leverage alone suggests.' },
+  { sym: 'ORDI', name: 'ORDI', slug: 'ordi', entry: 12, lev: 50, blurb: 'ORDI, the Bitcoin BRC-20 token, follows BTC with a much bigger beta - the liquidation price sits closer than the leverage alone suggests.' },
   { sym: 'FIL', name: 'Filecoin', slug: 'fil', entry: 4.5, lev: 75, blurb: 'Filecoin perps trend with storage-narrative cycles and can swing hard.' },
   { sym: 'ARB', name: 'Arbitrum', slug: 'arb', entry: 0.65, lev: 75, blurb: 'Arbitrum moves with L2 flows and unlocks; liquidity is solid across exchanges.' },
   { sym: 'OP', name: 'Optimism', slug: 'op', entry: 1.5, lev: 75, blurb: 'Optimism perps track the broader L2 sector and react to airdrop/unlock events.' },
   { sym: 'INJ', name: 'Injective', slug: 'inj', entry: 18, lev: 50, blurb: 'Injective is a fast-moving DeFi large-cap; liquidation arrives quickly at high leverage.' },
   { sym: 'SUI', name: 'Sui', slug: 'sui', entry: 1.1, lev: 50, blurb: 'Sui is a volatile newer large-cap with sharp, liquidity-driven moves.' },
-  { sym: 'SEI', name: 'Sei', slug: 'sei', entry: 0.4, lev: 50, blurb: 'Sei perps are volatile and thinner than the majors — keep leverage modest.' },
+  { sym: 'SEI', name: 'Sei', slug: 'sei', entry: 0.4, lev: 50, blurb: 'Sei perps are volatile and thinner than the majors - keep leverage modest.' },
   { sym: 'TIA', name: 'Celestia', slug: 'tia', entry: 5.5, lev: 50, blurb: 'Celestia can move hard on unlocks and modular-narrative flows.' },
   { sym: 'ATOM', name: 'Cosmos', slug: 'atom', entry: 6.5, lev: 75, blurb: 'Cosmos is a liquid large-cap alt that trends with the wider IBC ecosystem.' },
   { sym: 'AAVE', name: 'Aave', slug: 'aave', entry: 95, lev: 50, blurb: 'Aave is the blue-chip DeFi lending perp and reacts to TVL and rate news.' },
@@ -44,7 +44,7 @@ const COINS = [
   { sym: 'HBAR', name: 'Hedera', slug: 'hbar', entry: 0.07, lev: 75, blurb: 'Hedera moves on enterprise-adoption news; perps are liquid on the majors.' },
   { sym: 'BCH', name: 'Bitcoin Cash', slug: 'bch', entry: 380, lev: 75, blurb: 'Bitcoin Cash is a higher-priced large-cap where small percent moves are big dollar moves.' },
   { sym: 'ETC', name: 'Ethereum Classic', slug: 'etc', entry: 22, lev: 75, blurb: 'Ethereum Classic often tracks ETH and BTC with extra volatility.' },
-  { sym: 'WIF', name: 'dogwifhat', slug: 'wif', entry: 2.2, lev: 50, blurb: 'dogwifhat is a high-beta meme perp — expect violent swings and treat leverage with caution.' },
+  { sym: 'WIF', name: 'dogwifhat', slug: 'wif', entry: 2.2, lev: 50, blurb: 'dogwifhat is a high-beta meme perp - expect violent swings and treat leverage with caution.' },
   { sym: 'FET', name: 'Artificial Superintelligence (FET)', slug: 'fet', entry: 1.3, lev: 50, blurb: 'FET rides the AI narrative and can move sharply on sector sentiment.' },
   { sym: 'HYPE', name: 'Hyperliquid', slug: 'hype', entry: 35, lev: 50, blurb: 'HYPE is one of the highest-volume newer perps; fast, news-driven moves make a liquidation buffer essential.' },
   { sym: 'WLD', name: 'Worldcoin', slug: 'wld', entry: 1.5, lev: 75, blurb: 'Worldcoin perps swing hard on token unlocks and headlines, so size for the move, not the candle.' },
@@ -57,7 +57,7 @@ const COINS = [
   { sym: 'JUP', name: 'Jupiter', slug: 'jup', entry: 0.6, lev: 75, blurb: 'Jupiter tracks Solana-ecosystem flows and moves on unlocks; keep leverage modest.' },
   { sym: 'ENS', name: 'Ethereum Name Service', slug: 'ens', entry: 22, lev: 50, blurb: 'ENS is a mid-cap DeFi perp that trends with Ethereum and governance news.' },
   { sym: 'RUNE', name: 'THORChain', slug: 'rune', entry: 3.5, lev: 50, blurb: 'THORChain is a volatile cross-chain DeFi large-cap; liquidation distance shrinks quickly at high leverage.' },
-  { sym: 'GALA', name: 'Gala', slug: 'gala', entry: 0.025, lev: 75, blurb: 'Gala is a high-beta gaming perp priced in small decimals — double-check entry and size carefully.' },
+  { sym: 'GALA', name: 'Gala', slug: 'gala', entry: 0.025, lev: 75, blurb: 'Gala is a high-beta gaming perp priced in small decimals - double-check entry and size carefully.' },
   { sym: 'SAND', name: 'The Sandbox', slug: 'sand', entry: 0.35, lev: 75, blurb: 'The Sandbox moves with the metaverse/gaming narrative and broader alt sentiment.' },
   { sym: 'MANA', name: 'Decentraland', slug: 'mana', entry: 0.35, lev: 75, blurb: 'Decentraland is a liquid metaverse perp that can trend hard during sector rotations.' },
   { sym: 'AXS', name: 'Axie Infinity', slug: 'axs', entry: 5, lev: 50, blurb: 'AXS is a volatile gaming large-cap; unlock schedules and ecosystem news drive sharp moves.' },
@@ -161,7 +161,7 @@ function foot() {
 function coinPage(c) {
   const mmr = 0.5, url = `https://marginpad.io/${c.slug}-liquidation-calculator/`;
   const liq = c.entry * (1 - 1 / 10 + mmr / 100), dist = (1 / 10 - mmr / 100) * 100;
-  const title = `${c.sym} Liquidation Calculator — ${c.name} Futures (Long & Short)`;
+  const title = `${c.sym} Liquidation Calculator - ${c.name} Futures (Long & Short)`;
   const desc = `Free ${c.sym} liquidation calculator. Find the exact ${c.name} liquidation price for any leverage and position, long or short. Instant, private, no signup.`;
   const others = COINS.filter(x => x.slug !== c.slug).slice(0, 6);
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${c.sym} Liquidation Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
@@ -170,7 +170,7 @@ function coinPage(c) {
     keywords: `${c.slug} liquidation calculator, ${c.name.toLowerCase()} liquidation calculator, ${c.slug} liquidation price, ${c.slug} futures calculator, ${c.slug} leverage calculator` })
     + `
     <h1>${c.sym} Liquidation Calculator</h1>
-    <p class="lead"><strong>The quick answer:</strong> a ${c.name} (${c.sym}) long is liquidated roughly <strong>1 ÷ leverage</strong> below your entry (minus a ~0.5% maintenance margin) — about <strong>${dist.toFixed(1)}% at 10×</strong>, ~3.5% at 25× and ~0.5% at 100×; shorts mirror the same distance above entry. The calculator below gives your exact price for any entry, leverage and side — free, instant and private (it runs in your browser).</p>
+    <p class="lead"><strong>The quick answer:</strong> a ${c.name} (${c.sym}) long is liquidated roughly <strong>1 ÷ leverage</strong> below your entry (minus a ~0.5% maintenance margin) - about <strong>${dist.toFixed(1)}% at 10×</strong>, ~3.5% at 25× and ~0.5% at 100×; shorts mirror the same distance above entry. The calculator below gives your exact price for any entry, leverage and side - free, instant and private (it runs in your browser).</p>
     <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 16px" id="livePx" data-sym="${c.sym}"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live ${c.sym} price loading…</p>
     <div class="calc">
       <div class="calc-in">
@@ -180,36 +180,36 @@ function coinPage(c) {
         <label>Maintenance margin rate (%)</label><input id="liqMmr" type="number" value="${mmr}" step="any">
       </div>
       <div class="calc-out">
-        <div class="col">Estimated ${c.sym} liquidation price</div><div class="big" id="liqOut">—</div>
-        <div class="rr"><span>Distance from entry</span><b id="liqDist">—</b></div>
+        <div class="col">Estimated ${c.sym} liquidation price</div><div class="big" id="liqOut">-</div>
+        <div class="rr"><span>Distance from entry</span><b id="liqDist">-</b></div>
       </div>
     </div>
     <h2>How ${c.sym} liquidation works</h2>
-    <p>${c.blurb} Liquidation happens when losses eat through the margin backing your position — the exchange force-closes it to stop the loss going past your collateral. The isolated-margin estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate (about 0.5% on most ${c.sym} perpetuals). ${c.sym} futures list up to <b>${c.lev}× leverage</b> across the major venues, but the headline cap is a trap: the higher you go, the closer liquidation sits to your entry.</p>
+    <p>${c.blurb} Liquidation happens when losses eat through the margin backing your position - the exchange force-closes it to stop the loss going past your collateral. The isolated-margin estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate (about 0.5% on most ${c.sym} perpetuals). ${c.sym} futures list up to <b>${c.lev}× leverage</b> across the major venues, but the headline cap is a trap: the higher you go, the closer liquidation sits to your entry.</p>
 
     <h2>${c.sym} liquidation distance by leverage</h2>
     <p>How far ${c.name} has to move against an isolated-margin long before it is liquidated, at a 0.5% maintenance margin:</p>
     ${levTable(0.5, c.lev)}
     <p>At 100× a move of just ~1% wipes the position; at 5× you get roughly ${((1 / 5 - 0.005) * 100).toFixed(1)}% of room. Because ${c.name} routinely moves several percent in a session, most traders who last keep ${c.sym} leverage in the low-to-mid range and let the position breathe.</p>
 
-    <h2>Worked example — 10× ${c.sym} long</h2>
+    <h2>Worked example - 10× ${c.sym} long</h2>
     <p>A 10× ${c.sym} long entered at <code>$${fmt(c.entry)}</code> with a 0.5% maintenance margin rate is liquidated at about:</p>
     <div class="example">
       <div class="row"><span>Liquidation price</span><b>$${fmt(liq)}</b></div>
       <div class="row"><span>Move to liquidation</span><b>−${dist.toFixed(2)}%</b></div>
     </div>
-    <p>Enter your own numbers above — the calculator prefills the <b>live ${c.sym} price</b>, so you can see exactly where a real position would be wiped right now. Set your stop-loss comfortably inside that level and size by risk.</p>
+    <p>Enter your own numbers above - the calculator prefills the <b>live ${c.sym} price</b>, so you can see exactly where a real position would be wiped right now. Set your stop-loss comfortably inside that level and size by risk.</p>
 
     <h2>Common ways ${c.sym} traders get liquidated</h2>
     <ul>
-      <li><b>Chasing max leverage.</b> ${c.lev}× on ${c.sym} means a ~${(100 / c.lev).toFixed(2)}% wick against you is game over — and ${c.sym} prints wicks like that regularly.</li>
-      <li><b>No stop-loss.</b> Without a stop, the exchange's liquidation engine becomes your exit — at the worst possible price, plus a liquidation fee.</li>
+      <li><b>Chasing max leverage.</b> ${c.lev}× on ${c.sym} means a ~${(100 / c.lev).toFixed(2)}% wick against you is game over - and ${c.sym} prints wicks like that regularly.</li>
+      <li><b>No stop-loss.</b> Without a stop, the exchange's liquidation engine becomes your exit - at the worst possible price, plus a liquidation fee.</li>
       <li><b>Ignoring funding.</b> On a crowded ${c.sym} trade, funding drains your margin every 8 hours, nudging liquidation closer than the raw price math shows.</li>
-      <li><b>Sizing by dollars, not risk.</b> Size from your stop distance instead — see the <a href="/calculators?c=size">position-size calculator</a>.</li>
+      <li><b>Sizing by dollars, not risk.</b> Size from your stop distance instead - see the <a href="/calculators?c=size">position-size calculator</a>.</li>
     </ul>
 
     <h2>See ${c.sym} liquidations happen live</h2>
-    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) in real time — a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
+    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) in real time - a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
 
     <div class="mprl"><div class="mprl-t">TRADE ${c.sym} FOR REAL</div><div class="mprl-row">
       <a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><span class="mprl-k">Bybit</span><span class="mprl-d">${c.sym} futures · up to ${c.lev}× · deep liquidity</span><span class="mprl-a">&rarr;</span></a>
@@ -221,9 +221,9 @@ function coinPage(c) {
     <h3>At what percentage is a ${c.sym} position liquidated?</h3>
     <p>Roughly 1 ÷ leverage, minus the maintenance margin. A 10× ${c.sym} position is liquidated after about a 9–10% adverse move; 25× after ~4%; 100× after ~1%.</p>
     <h3>Does the ${c.sym} liquidation price change with position size?</h3>
-    <p>For <b>isolated</b> margin, no — the liquidation price depends on entry, leverage and MMR, not on how big the position is. For <b>cross</b> margin your whole wallet balance backs the trade, which pushes liquidation further away; model that with the <a href="/calculators?c=cross">cross-margin calculator</a>.</p>
+    <p>For <b>isolated</b> margin, no - the liquidation price depends on entry, leverage and MMR, not on how big the position is. For <b>cross</b> margin your whole wallet balance backs the trade, which pushes liquidation further away; model that with the <a href="/calculators?c=cross">cross-margin calculator</a>.</p>
     <h3>Is this ${c.sym} liquidation calculator accurate?</h3>
-    <p>It uses the standard isolated-margin formula and your exchange's maintenance margin. Real liquidation can differ slightly because of fees, funding and tiered maintenance margin on very large positions — treat the figure as a close estimate and leave a buffer.</p>
+    <p>It uses the standard isolated-margin formula and your exchange's maintenance margin. Real liquidation can differ slightly because of fees, funding and tiered maintenance margin on very large positions - treat the figure as a close estimate and leave a buffer.</p>
 
     <h2>Other coins &amp; tools</h2>
     <div class="related">
@@ -246,7 +246,7 @@ for (const c of COINS) {
   n++;
   console.log('wrote', c.slug + '-liquidation-calculator');
 }
-// keep sitemap.xml in sync — add any missing coin-calculator URLs
+// keep sitemap.xml in sync - add any missing coin-calculator URLs
 try {
   const smp = path.join(OUT, 'sitemap.xml');
   let sm = fs.readFileSync(smp, 'utf8');

@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Bir işlem üç cevaptır",
-     "p": "Emir fişine dokunmadan önce üç sorunun cevabı olmalı: hangi yön, hangi fiyatta yanıldığın kanıtlanır ve pozisyon ne kadar büyük. Yön tek başına bir tahmindir. Yön artı yanılma fiyatı, ama boyut yoksa yarım kalmıştır. Üçünden biri eksikse henüz elinde bir işlem yok — bir dilek var."
+     "p": "Emir fişine dokunmadan önce üç sorunun cevabı olmalı: hangi yön, hangi fiyatta yanıldığın kanıtlanır ve pozisyon ne kadar büyük. Yön tek başına bir tahmindir. Yön artı yanılma fiyatı, ama boyut yoksa yarım kalmıştır. Üçünden biri eksikse henüz elinde bir işlem yok - bir dilek var."
     },
     {
      "h": "Yön: long mu, short mu",
-     "p": "Long, fiyat yükselirse kazanırsın, düşerse kaybedersin demektir. Short bunun aynadaki hâlidir: fiyat düşerse kazanırsın. Vadeli işlemlerde ikisi tek tıkla ayrılır ve hiçbiri diğerinden güvenli değildir. Yönünü düz bir cümle olarak söyle — BTC long — çünkü fişteki diğer her alan ona bağlıdır."
+     "p": "Long, fiyat yükselirse kazanırsın, düşerse kaybedersin demektir. Short bunun aynadaki hâlidir: fiyat düşerse kazanırsın. Vadeli işlemlerde ikisi tek tıkla ayrılır ve hiçbiri diğerinden güvenli değildir. Yönünü düz bir cümle olarak söyle - BTC long - çünkü fişteki diğer her alan ona bağlıdır."
     },
     {
      "h": "Geçersizleşme: yanıldığın yer",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Teminat, notional, adet",
-     "p": "Tek bir pozisyonu üç sayı anlatır. Adet, kontrol ettiğin coin miktarıdır; diyelim 0,02 BTC. Notional, o adedin dolar karşılığıdır: BTC $50.000'ken 0,02 BTC, $1.000 notional eder. Teminat ise bakiyenden fiilen kilitlenen paradır — o pozisyonda 10x kaldıraçla $100. Kâr ve zarar notional'ı izler, asla teminatı değil."
+     "p": "Tek bir pozisyonu üç sayı anlatır. Adet, kontrol ettiğin coin miktarıdır; diyelim 0,02 BTC. Notional, o adedin dolar karşılığıdır: BTC $50.000'ken 0,02 BTC, $1.000 notional eder. Teminat ise bakiyenden fiilen kilitlenen paradır - o pozisyonda 10x kaldıraçla $100. Kâr ve zarar notional'ı izler, asla teminatı değil."
     },
     {
      "h": "Kaldıraç gerçekte neyi değiştirir",
@@ -123,7 +123,7 @@
     },
     {
      "h": "Geniş stop, küçük boyut",
-     "p": "Aynı $50'lık risk, stop %2 uzaktayken $2.500'lük bir pozisyon alır; %5 uzaktayken sadece $1.000'lık, çünkü $50 / 0,05 = $1.000. Kimsenin söylemediği takas budur: rahat etmek için uzağa konan stop sana boyut olarak pahalıya patlar. Yanılırsan iki versiyon da tam olarak $50 kaybeder — bütün mesele de zaten bu."
+     "p": "Aynı $50'lık risk, stop %2 uzaktayken $2.500'lük bir pozisyon alır; %5 uzaktayken sadece $1.000'lık, çünkü $50 / 0,05 = $1.000. Kimsenin söylemediği takas budur: rahat etmek için uzağa konan stop sana boyut olarak pahalıya patlar. Yanılırsan iki versiyon da tam olarak $50 kaybeder - bütün mesele de zaten bu."
     }
    ],
    "quiz": [
@@ -170,7 +170,7 @@
     },
     {
      "h": "Kendin yerleştir",
-     "prompt": "Bu bir long. Stop-loss'un ait olduğu yere dokun — salınım dibinin hemen altına.",
+     "prompt": "Bu bir long. Stop-loss'un ait olduğu yere dokun - salınım dibinin hemen altına.",
      "p": "Alana güvenmeden önce seviyeyi bildiğini kanıtla. Tek dokunuş."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "İki çizginin ima ettiği oran",
-     "p": "Stopun ve hedefin, işlem başlamadan bir oranı sabitler. Giriş $50.000, stop $49.000, hedef $52.000: $2.000 kazanmak için $1.000 riske ediyorsun — yani 2:1 getiri-risk. 2:1'de üç işlemden birini kazanmak, komisyonlar hariç başabaş getirir. Bu bir söz değil, aritmetiktir. Hedefe ulaşılacağının hiçbir garantisi yoktur. Tıklamadan önce oranı kontrol et."
+     "p": "Stopun ve hedefin, işlem başlamadan bir oranı sabitler. Giriş $50.000, stop $49.000, hedef $52.000: $2.000 kazanmak için $1.000 riske ediyorsun - yani 2:1 getiri-risk. 2:1'de üç işlemden birini kazanmak, komisyonlar hariç başabaş getirir. Bu bir söz değil, aritmetiktir. Hedefe ulaşılacağının hiçbir garantisi yoktur. Tıklamadan önce oranı kontrol et."
     }
    ],
    "quiz": [
@@ -261,11 +261,11 @@
    "cards": [
     {
      "h": "Pozisyon satırı, alan alan",
-     "p": "Dolduktan sonra pozisyonun bir satır olarak görünür: yön ve boyut, giriş fiyatı, mark fiyatı, gerçekleşmemiş kâr ve zarar, teminat ve likidasyon fiyatı. Her vadeli terminal aşağı yukarı bu alanları bir sırayla gösterir. Satırdaki hiçbir şey sana işlemin iyi olup olmadığını söylemez. Şu an neyin doğru olduğunu söyler — o başka bir iştir."
+     "p": "Dolduktan sonra pozisyonun bir satır olarak görünür: yön ve boyut, giriş fiyatı, mark fiyatı, gerçekleşmemiş kâr ve zarar, teminat ve likidasyon fiyatı. Her vadeli terminal aşağı yukarı bu alanları bir sırayla gösterir. Satırdaki hiçbir şey sana işlemin iyi olup olmadığını söylemez. Şu an neyin doğru olduğunu söyler - o başka bir iştir."
     },
     {
      "h": "Giriş fiyatı ve mark fiyatı",
-     "p": "Giriş, komisyonlar hariç fiilen dolduğun ortalama fiyattır. Mark fiyatı ise borsanın adil referans fiyatıdır; pozisyonunu değerlemek ve likidasyona karar vermek için kullanılır — genelde tek bir defterdeki son işleme değil, daha geniş bir endekse bağlanır. Bu bilinçlidir: tek bir tuhaf işlemin sana karşı kullanılmasını çok zorlaştırır."
+     "p": "Giriş, komisyonlar hariç fiilen dolduğun ortalama fiyattır. Mark fiyatı ise borsanın adil referans fiyatıdır; pozisyonunu değerlemek ve likidasyona karar vermek için kullanılır - genelde tek bir defterdeki son işleme değil, daha geniş bir endekse bağlanır. Bu bilinçlidir: tek bir tuhaf işlemin sana karşı kullanılmasını çok zorlaştırır."
     },
     {
      "h": "Gerçekleşmemiş, henüz senin değil demek",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Fişi doldurmak",
-     "p": "Yön alış. Emir türü limit, fiyat $50.000; yani maker komisyonunu ödersin ve hiç dolmayabileceğini kabul edersin. Boyut $2.500 notional, kaldıraç 10x. Göndermeden önce stop-loss alanına $49.000, take-profit alanına $52.000 yaz — o hedef, riskine karşı 2:1. Fişin tamamını bir kez baştan oku, sonra gönder."
+     "p": "Yön alış. Emir türü limit, fiyat $50.000; yani maker komisyonunu ödersin ve hiç dolmayabileceğini kabul edersin. Boyut $2.500 notional, kaldıraç 10x. Göndermeden önce stop-loss alanına $49.000, take-profit alanına $52.000 yaz - o hedef, riskine karşı 2:1. Fişin tamamını bir kez baştan oku, sonra gönder."
     },
     {
      "h": "Dolumdan sonra hiçbir şey yapma",

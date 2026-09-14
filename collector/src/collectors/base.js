@@ -1,11 +1,11 @@
 // BaseCollector: resilient single-websocket manager. Subclasses (one per exchange) only declare
 // the URL, subscribe frames, ping, and a parse() that returns normalized events. ALL exchange-specific
-// quirks live in the subclass — so an API change is a one-file fix.
+// quirks live in the subclass - so an API change is a one-file fix.
 //
 // Normalized event shape emitted via onEvent:
 //   { ts, exchange, symbol, side: 'long_liquidated'|'short_liquidated', price, qty, notional }
 //
-// Uses the global WebSocket (Node >=21) — no 'ws' dependency.
+// Uses the global WebSocket (Node >=21) - no 'ws' dependency.
 import { log } from '../logger.js';
 
 export class BaseCollector {
@@ -33,7 +33,7 @@ export class BaseCollector {
     this._lifeTimer = null;
     this._staleTimer = null;
     this._connectTimer = null;
-    this._gen = 0;                 // socket generation — handlers of a superseded socket must never touch the live one
+    this._gen = 0;                 // socket generation - handlers of a superseded socket must never touch the live one
     this._reconnPending = false;   // one reconnect per socket, whichever of error/close/timeout fires first
     this.msgsTotal = 0; this.pingsSent = 0; this.pingsSkipped = 0; this.pingsFailed = 0; this.lastPingAt = 0; this.reconnects = 0; // /status diagnostics
   }
@@ -65,7 +65,7 @@ export class BaseCollector {
     clearTimeout(this._connectTimer);
     this._connectTimer = setTimeout(() => {
       if (gen !== this._gen || this.connected) return;
-      log.warn(`[${this.name}] no 'open' within ${this.connectMs}ms — retrying`);
+      log.warn(`[${this.name}] no 'open' within ${this.connectMs}ms - retrying`);
       try { ws.close(); } catch {}
       this._reconnect('connect timeout', gen);
     }, this.connectMs);
@@ -107,7 +107,7 @@ export class BaseCollector {
     ws.addEventListener('error', (ev) => {
       log.warn(`[${this.name}] ws error`, { msg: ev && ev.message });
       // A failed handshake ("network error or non-101 status code") fires 'error' WITHOUT a 'close' in
-      // Node's WebSocket — so the reconnect cannot be left to the close handler. Ask for one here; if a
+      // Node's WebSocket - so the reconnect cannot be left to the close handler. Ask for one here; if a
       // close does follow, the pending guard in _reconnect makes the second request a no-op.
       if (gen !== this._gen) return;
       this.connected = false;
@@ -118,7 +118,7 @@ export class BaseCollector {
   _armSilence() {
     clearTimeout(this._silenceTimer);
     this._silenceTimer = setTimeout(() => {
-      log.warn(`[${this.name}] silent > ${this.silenceMs}ms — forcing reconnect`);
+      log.warn(`[${this.name}] silent > ${this.silenceMs}ms - forcing reconnect`);
       try { this.ws && this.ws.close(); } catch {}
     }, this.silenceMs);
   }
@@ -147,7 +147,7 @@ export class BaseCollector {
     if (!this.staleMs) return;
     this._staleTimer = setInterval(() => {
       if (this.connected && this.lastEventAt && Date.now() - this.lastEventAt > this.staleMs) {
-        log.warn(`[${this.name}] no events for ${Math.round((Date.now() - this.lastEventAt) / 1000)}s — reconnecting (likely a dead subscription)`);
+        log.warn(`[${this.name}] no events for ${Math.round((Date.now() - this.lastEventAt) / 1000)}s - reconnecting (likely a dead subscription)`);
         try { this.ws && this.ws.close(); } catch {}
       }
     }, 30000);

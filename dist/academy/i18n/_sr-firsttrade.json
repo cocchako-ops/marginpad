@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Trejd su tri odgovora",
-     "p": "Pre nego što dodirneš tiket naloga, tri pitanja moraju da imaju odgovore: koji smer, na kojoj ceni si dokazano u krivu, i kolika je pozicija. Sam smer je nagađanje. Smer plus cena na kojoj si u krivu, ali bez veličine, je nedovršen posao. Ako bilo koji od ta tri nedostaje, još nemaš trejd — imaš želju."
+     "p": "Pre nego što dodirneš tiket naloga, tri pitanja moraju da imaju odgovore: koji smer, na kojoj ceni si dokazano u krivu, i kolika je pozicija. Sam smer je nagađanje. Smer plus cena na kojoj si u krivu, ali bez veličine, je nedovršen posao. Ako bilo koji od ta tri nedostaje, još nemaš trejd - imaš želju."
     },
     {
      "h": "Smer: long ili short",
-     "p": "Long znači da profitiraš ako cena raste, a gubiš ako pada. Short je ogledalo: profitiraš ako pada. Na fjučersima su oba udaljena jedan klik, i nijedno nije ono bezbednije. Izgovori svoj smer kao običnu rečenicu — long BTC — pre svega ostalog, jer svako drugo polje na tiketu zavisi od njega."
+     "p": "Long znači da profitiraš ako cena raste, a gubiš ako pada. Short je ogledalo: profitiraš ako pada. Na fjučersima su oba udaljena jedan klik, i nijedno nije ono bezbednije. Izgovori svoj smer kao običnu rečenicu - long BTC - pre svega ostalog, jer svako drugo polje na tiketu zavisi od njega."
     },
     {
      "h": "Invalidacija: gde si u krivu",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Margina, notional, količina",
-     "p": "Tri broja opisuju jednu poziciju. Količina je koliko coina kontrolišeš, recimo 0.02 BTC. Notional je ta količina u dolarima: na $50,000 po BTC, 0.02 BTC je notional od $1,000. Margina je novac stvarno zaključan sa tvog balansa — na 10x poluzi na toj poziciji, $100. Profit i gubitak prate notional, nikad marginu."
+     "p": "Tri broja opisuju jednu poziciju. Količina je koliko coina kontrolišeš, recimo 0.02 BTC. Notional je ta količina u dolarima: na $50,000 po BTC, 0.02 BTC je notional od $1,000. Margina je novac stvarno zaključan sa tvog balansa - na 10x poluzi na toj poziciji, $100. Profit i gubitak prate notional, nikad marginu."
     },
     {
      "h": "Šta poluga zapravo menja",
@@ -170,7 +170,7 @@
     },
     {
      "h": "Postavi ga sam",
-     "prompt": "Ovo je long. Dodirni gde stop-loss pripada — tik ispod dna pokreta.",
+     "prompt": "Ovo je long. Dodirni gde stop-loss pripada - tik ispod dna pokreta.",
      "p": "Pre nego što se pouzdaš u to polje, dokaži da znaš nivo. Jedan dodir."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "Odnos koji tvoje dve linije podrazumevaju",
-     "p": "Tvoj stop i tvoj cilj fiksiraju odnos pre nego što trejd uopšte počne. Ulaz $50,000, stop $49,000, cilj $52,000 rizikuje $1,000 da bi zaradio $2,000 — odnos dobitka i rizika 2:1. Na 2:1 jedan dobitak u tri trejda izlazi na nulu pre provizija. To je aritmetika, a ne obećanje. Ništa ne kaže da će cilj ikad biti dostignut. Proveri odnos pre nego što klikneš."
+     "p": "Tvoj stop i tvoj cilj fiksiraju odnos pre nego što trejd uopšte počne. Ulaz $50,000, stop $49,000, cilj $52,000 rizikuje $1,000 da bi zaradio $2,000 - odnos dobitka i rizika 2:1. Na 2:1 jedan dobitak u tri trejda izlazi na nulu pre provizija. To je aritmetika, a ne obećanje. Ništa ne kaže da će cilj ikad biti dostignut. Proveri odnos pre nego što klikneš."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Ulazna cena i mark cena",
-     "p": "Ulaz je prosečna cena po kojoj si se stvarno izvršio, pre provizija. Mark cena je fer referentna cena menjačnice, kojom se vrednuje tvoja pozicija i odlučuje o likvidaciji — obično je vezana za širi indeks, a ne za poslednji trejd u jednoj knjizi. To je namerno: čini da se jedna čudna, usamljena cena mnogo teže upotrebi protiv tebe."
+     "p": "Ulaz je prosečna cena po kojoj si se stvarno izvršio, pre provizija. Mark cena je fer referentna cena menjačnice, kojom se vrednuje tvoja pozicija i odlučuje o likvidaciji - obično je vezana za širi indeks, a ne za poslednji trejd u jednoj knjizi. To je namerno: čini da se jedna čudna, usamljena cena mnogo teže upotrebi protiv tebe."
     },
     {
      "h": "Nerealizovano znači još nije tvoje",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Popunjavanje tiketa",
-     "p": "Strana buy. Tip naloga limit, cena $50,000, pa plaćaš maker proviziju i prihvataš da se možda nikad ne izvrši. Veličina $2,500 notionala, poluga 10x. Ukucaj $49,000 u polje za stop-loss i $52,000 u polje za take-profit pre nego što pošalješ — taj cilj je 2:1 u odnosu na tvoj rizik. Pročitaj ceo tiket jednom naglas, pa pošalji."
+     "p": "Strana buy. Tip naloga limit, cena $50,000, pa plaćaš maker proviziju i prihvataš da se možda nikad ne izvrši. Veličina $2,500 notionala, poluga 10x. Ukucaj $49,000 u polje za stop-loss i $52,000 u polje za take-profit pre nego što pošalješ - taj cilj je 2:1 u odnosu na tvoj rizik. Pročitaj ceo tiket jednom naglas, pa pošalji."
     },
     {
      "h": "Posle izvršenja, ne radi ništa",

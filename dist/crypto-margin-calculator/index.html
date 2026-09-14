@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>Margin Calculator — Collateral a Position Requires | MarginPad</title>
+<title>Margin Calculator - Collateral a Position Requires | MarginPad</title>
 <meta name="description" content="Free crypto margin calculator: position size and leverage turned into exact initial margin, quantity, maintenance margin and your liquidation buffer." />
 <meta name="keywords" content="margin calculator crypto, initial margin calculator, required margin futures" />
 <link rel="canonical" href="https://marginpad.io/crypto-margin-calculator/" />
@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-margin-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-margin-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Margin Calculator — Collateral a Position Requires | MarginPad" />
+<meta property="og:title" content="Margin Calculator - Collateral a Position Requires | MarginPad" />
 <meta property="og:description" content="Free crypto margin calculator: position size and leverage turned into exact initial margin, quantity, maintenance margin and your liquidation buffer." />
 <meta property="og:url" content="https://marginpad.io/crypto-margin-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/crypto-margin-calculator.jpg" />
@@ -67,9 +67,9 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Margin Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-margin-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Margin Calculator","item":"https://marginpad.io/crypto-margin-calculator/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Cross vs isolated — which does this model?","acceptedAnswer":{"@type":"Answer","text":"Isolated: only the assigned margin is at stake. Cross uses the whole wallet as cushion, delaying liquidation but risking everything — see the cross-vs-isolated guide on the blog."}},{"@type":"Question","name":"Why did the exchange ask for more?","acceptedAnswer":{"@type":"Answer","text":"Bigger positions hit higher maintenance tiers, open orders reserve margin, and risk engines add fee buffers. This models the standard first tier."}},{"@type":"Question","name":"Can requirements change mid-trade?","acceptedAnswer":{"@type":"Answer","text":"Yes — exchanges raise tiers during extreme volatility, moving liquidation closer without price moving. One more reason the buffer should never be your stop."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Margin Calculator — Collateral a Position Requires","url":"https://marginpad.io/crypto-margin-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-margin-calculator.jpg" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Cross vs isolated - which does this model?","acceptedAnswer":{"@type":"Answer","text":"Isolated: only the assigned margin is at stake. Cross uses the whole wallet as cushion, delaying liquidation but risking everything - see the cross-vs-isolated guide on the blog."}},{"@type":"Question","name":"Why did the exchange ask for more?","acceptedAnswer":{"@type":"Answer","text":"Bigger positions hit higher maintenance tiers, open orders reserve margin, and risk engines add fee buffers. This models the standard first tier."}},{"@type":"Question","name":"Can requirements change mid-trade?","acceptedAnswer":{"@type":"Answer","text":"Yes - exchanges raise tiers during extreme volatility, moving liquidation closer without price moving. One more reason the buffer should never be your stop."}}]}</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Margin Calculator - Collateral a Position Requires","url":"https://marginpad.io/crypto-margin-calculator/","dateModified":"2026-09-10T19:56:57.479Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-margin-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -78,24 +78,24 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <body>
 <div class="wrap">
 <h1>Crypto Margin Calculator</h1>
-<p class="sub">How much collateral the trade locks — before you find out at the order form.</p>
+<p class="sub">How much collateral the trade locks - before you find out at the order form.</p>
 <div class="calc"><div class="cgrid"><div class="f"><label for="pos">Position size (USD)</label><input id="pos" type="number" inputmode="decimal" value="5000"></div><div class="f"><label for="entry">Entry price</label><input id="entry" type="number" inputmode="decimal" value="60000"></div><div class="f"><label for="lev">Leverage</label><input id="lev" type="number" inputmode="decimal" value="10"></div><div class="f"><label for="mmr">Maintenance margin %</label><input id="mmr" type="number" inputmode="decimal" value="0.5" step="0.1"></div></div><div class="res" id="res"></div></div>
 <h2>How it is calculated</h2>
 <div class="frm">initial margin = position / leverage &nbsp;|&nbsp; maintenance = position &times; MMR</div>
-<p>Initial margin opens the position; <strong>maintenance margin</strong> is the floor below which the exchange force-closes it. The distance between them is your entire cushion — and at high leverage that cushion is a rounding error.</p>
+<p>Initial margin opens the position; <strong>maintenance margin</strong> is the floor below which the exchange force-closes it. The distance between them is your entire cushion - and at high leverage that cushion is a rounding error.</p>
 <h2>Worked example</h2>
-<div class="ex">A <b>$5,000</b> position at 10x locks <b>$500</b> initial margin. With 0.5% maintenance ($25) the cushion is <b>$475</b> — a 9.5% adverse move ends the position.</div>
+<div class="ex">A <b>$5,000</b> position at 10x locks <b>$500</b> initial margin. With 0.5% maintenance ($25) the cushion is <b>$475</b> - a 9.5% adverse move ends the position.</div>
 <h2>FAQ</h2>
-<div class="faq"><details><summary>Cross vs isolated — which does this model?</summary><p>Isolated: only the assigned margin is at stake. Cross uses the whole wallet as cushion, delaying liquidation but risking everything — see the cross-vs-isolated guide on the blog.</p></details><details><summary>Why did the exchange ask for more?</summary><p>Bigger positions hit higher maintenance tiers, open orders reserve margin, and risk engines add fee buffers. This models the standard first tier.</p></details><details><summary>Can requirements change mid-trade?</summary><p>Yes — exchanges raise tiers during extreme volatility, moving liquidation closer without price moving. One more reason the buffer should never be your stop.</p></details></div>
+<div class="faq"><details><summary>Cross vs isolated - which does this model?</summary><p>Isolated: only the assigned margin is at stake. Cross uses the whole wallet as cushion, delaying liquidation but risking everything - see the cross-vs-isolated guide on the blog.</p></details><details><summary>Why did the exchange ask for more?</summary><p>Bigger positions hit higher maintenance tiers, open orders reserve margin, and risk engines add fee buffers. This models the standard first tier.</p></details><details><summary>Can requirements change mid-trade?</summary><p>Yes - exchanges raise tiers during extreme volatility, moving liquidation closer without price moving. One more reason the buffer should never be your stop.</p></details></div>
 <h2>Related tools</h2>
 <div class="rel"><a href="/leverage-calculator/">Leverage calculator</a><a href="/btc-liquidation-calculator/">Liquidation calculator</a><a href="/blog/cross-vs-isolated-margin/">Cross vs isolated (guide)</a><a href="/calculators">All calculators (app)</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
-<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,en=+document.getElementById('entry').value,l=+document.getElementById('lev').value,mm=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(p>0&&en>0&&l>0)){r.innerHTML='';return;}var im=p/l,qty=p/en,mmv=p*mm;r.innerHTML='<div class="rrow big"><span class="k">Initial margin required</span><span class="v">'+im.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Maintenance margin</span><span class="v">'+mmv.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Buffer before liquidation</span><span class="v">'+(im-mmv).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

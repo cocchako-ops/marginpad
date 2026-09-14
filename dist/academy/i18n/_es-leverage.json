@@ -56,7 +56,7 @@
    "cards": [
     {
      "h": "Margen y multiplicador",
-     "p": "El apalancamiento te permite controlar una posición más grande que tu dinero. Pon $100 de margen a 10× de apalancamiento y controlas una posición de $1,000. Por cada 1% que se mueve el precio, tu posición gana o pierde $10 — que es el 10% de TU dinero. El multiplicador se aplica a las pérdidas exactamente igual que a las ganancias."
+     "p": "El apalancamiento te permite controlar una posición más grande que tu dinero. Pon $100 de margen a 10× de apalancamiento y controlas una posición de $1,000. Por cada 1% que se mueve el precio, tu posición gana o pierde $10 - que es el 10% de TU dinero. El multiplicador se aplica a las pérdidas exactamente igual que a las ganancias."
     },
     {
      "h": "Siéntelo: arrastra el apalancamiento",
@@ -65,7 +65,7 @@
     },
     {
      "h": "La matemática honesta del 100×",
-     "p": "A 100× de apalancamiento, un movimiento del 1% en tu contra borra el 100% de tu margen. Bitcoin se mueve un 1% de forma rutinaria — varias veces al día. Eso no es un crash del mercado; es ruido de fondo. El apalancamiento alto no hace mejor una estrategia, solo comprime el tiempo hasta que una oscilación normal te saca del juego."
+     "p": "A 100× de apalancamiento, un movimiento del 1% en tu contra borra el 100% de tu margen. Bitcoin se mueve un 1% de forma rutinaria - varias veces al día. Eso no es un crash del mercado; es ruido de fondo. El apalancamiento alto no hace mejor una estrategia, solo comprime el tiempo hasta que una oscilación normal te saca del juego."
     }
    ],
    "quiz": [
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "Qué es la liquidación",
-     "p": "Cuando una posición apalancada pierde casi todo su margen, el exchange la cierra a la fuerza para protegerse — eso es la liquidación. Tu posición desaparece, tu margen desaparece, y no hay recuperación posible aunque el precio rebote un segundo después. Es el precio más importante de tu pantalla."
+     "p": "Cuando una posición apalancada pierde casi todo su margen, el exchange la cierra a la fuerza para protegerse - eso es la liquidación. Tu posición desaparece, tu margen desaparece, y no hay recuperación posible aunque el precio rebote un segundo después. Es el precio más importante de tu pantalla."
     },
     {
      "h": "Tu turno: hazla segura",
@@ -117,7 +117,7 @@
     },
     {
      "h": "El «ya rebotará» no aplica aquí",
-     "p": "Un holder de spot puede aguantar una caída del 30% y esperar años. Un trader de futuros liquidado no puede — la posición ya no existe. Esta asimetría es LA diferencia entre spot y apalancamiento: el spot castiga lentamente a los traders sin paciencia, el apalancamiento los ejecuta al instante."
+     "p": "Un holder de spot puede aguantar una caída del 30% y esperar años. Un trader de futuros liquidado no puede - la posición ya no existe. Esta asimetría es LA diferencia entre spot y apalancamiento: el spot castiga lentamente a los traders sin paciencia, el apalancamiento los ejecuta al instante."
     }
    ],
    "quiz": [
@@ -150,7 +150,7 @@
     }
    ],
    "try": {
-    "p": "Calcula un precio de liquidación real: entrada, apalancamiento, dirección — mira exactamente dónde muere la posición.",
+    "p": "Calcula un precio de liquidación real: entrada, apalancamiento, dirección - mira exactamente dónde muere la posición.",
     "label": "Calculadora de liquidación →"
    }
   },
@@ -160,15 +160,15 @@
    "cards": [
     {
      "h": "La fórmula del P&L en palabras simples",
-     "p": "Tu ganancia o pérdida = tamaño de la posición × el porcentaje que se movió el precio. El ROE — retorno sobre el capital — es ese P&L medido contra tu margen. Arrastra el movimiento de precio abajo y mira cómo reaccionan ambos números a 10× de apalancamiento con $100 de margen."
+     "p": "Tu ganancia o pérdida = tamaño de la posición × el porcentaje que se movió el precio. El ROE - retorno sobre el capital - es ese P&L medido contra tu margen. Arrastra el movimiento de precio abajo y mira cómo reaccionan ambos números a 10× de apalancamiento con $100 de margen."
     },
     {
      "h": "Ir en short no es malvado, es una herramienta",
-     "p": "Ir en short — ganar con las caídas — se siente antinatural al principio. Pero los mercados caen más rápido de lo que suben (bajan en ascensor, suben por las escaleras), y un trader que solo puede ir en long está ciego en la mitad del mercado. En una cuenta demo, practica ambos hasta que ninguno se sienta especial."
+     "p": "Ir en short - ganar con las caídas - se siente antinatural al principio. Pero los mercados caen más rápido de lo que suben (bajan en ascensor, suben por las escaleras), y un trader que solo puede ir en long está ciego en la mitad del mercado. En una cuenta demo, practica ambos hasta que ninguno se sienta especial."
     },
     {
      "h": "Las comisiones y el funding muerden constantemente",
-     "p": "Cada apertura y cierre paga una comisión sobre el nocional, y los perpetuos intercambian pagos periódicos de funding entre longs y shorts (próxima lección). Con apalancamiento alto, estos pequeños costes se acumulan en un viento en contra significativo — otra razón silenciosa por la que pierden los que sobreoperan."
+     "p": "Cada apertura y cierre paga una comisión sobre el nocional, y los perpetuos intercambian pagos periódicos de funding entre longs y shorts (próxima lección). Con apalancamiento alto, estos pequeños costes se acumulan en un viento en contra significativo - otra razón silenciosa por la que pierden los que sobreoperan."
     }
    ],
    "quiz": [
@@ -196,7 +196,7 @@
       "Solo tu margen",
       "El tamaño nocional completo de la posición",
       "Solo tu ganancia",
-      "Nada en absoluto — los futuros son gratis"
+      "Nada en absoluto - los futuros son gratis"
      ]
     }
    ]
@@ -211,11 +211,11 @@
     },
     {
      "h": "El funding como termómetro de la multitud",
-     "p": "Un funding extremadamente positivo significa que la multitud está muy cargada en long Y pagando por el privilegio — históricamente una señal de alarma, porque los trades abarrotados se deshacen con violencia. Un funding extremadamente negativo marca shorts abarrotados, combustible para un short squeeze."
+     "p": "Un funding extremadamente positivo significa que la multitud está muy cargada en long Y pagando por el privilegio - históricamente una señal de alarma, porque los trades abarrotados se deshacen con violencia. Un funding extremadamente negativo marca shorts abarrotados, combustible para un short squeeze."
     },
     {
      "h": "Se acumula",
-     "p": "Un funding del 0.01% cada 8 horas suena a nada — pero es alrededor del 11% al año sobre tu nocional, y a 10× de apalancamiento es un lastre anualizado de tres dígitos sobre el margen. Quienes mantienen posiciones e ignoran el funding descubren que su P&L se fuga silenciosamente."
+     "p": "Un funding del 0.01% cada 8 horas suena a nada - pero es alrededor del 11% al año sobre tu nocional, y a 10× de apalancamiento es un lastre anualizado de tres dígitos sobre el margen. Quienes mantienen posiciones e ignoran el funding descubren que su P&L se fuga silenciosamente."
     }
    ],
    "quiz": [
@@ -248,7 +248,7 @@
     }
    ],
    "try": {
-    "p": "Mira el funding en vivo de más de 160 pares — encuentra la tasa más extrema ahora mismo.",
+    "p": "Mira el funding en vivo de más de 160 pares - encuentra la tasa más extrema ahora mismo.",
     "label": "Tasas de funding →"
    }
   },
@@ -258,11 +258,11 @@
    "cards": [
     {
      "h": "Tres herramientas, tres trabajos",
-     "p": "Una orden market se ejecuta al instante a lo que ofrezca el libro — pagas el spread y cualquier slippage. Una orden limit fija tu precio y espera. Una orden stop se activa cuando el precio cruza un nivel. La imagen de abajo muestra las tres conviviendo en el libro de órdenes."
+     "p": "Una orden market se ejecuta al instante a lo que ofrezca el libro - pagas el spread y cualquier slippage. Una orden limit fija tu precio y espera. Una orden stop se activa cuando el precio cruza un nivel. La imagen de abajo muestra las tres conviviendo en el libro de órdenes."
     },
     {
      "h": "Market: velocidad a cambio de precio. Limit: precio a cambio de paciencia.",
-     "p": "Usa órdenes market cuando entrar o salir AHORA MISMO importa más que el precio exacto — sabiendo que el slippage es peor durante movimientos violentos. Las entradas profesionales son mayormente limits: puede que nunca te ejecuten, pero cuando lo hacen es a tu precio o mejor, normalmente con comisiones más bajas."
+     "p": "Usa órdenes market cuando entrar o salir AHORA MISMO importa más que el precio exacto - sabiendo que el slippage es peor durante movimientos violentos. Las entradas profesionales son mayormente limits: puede que nunca te ejecuten, pero cuando lo hacen es a tu precio o mejor, normalmente con comisiones más bajas."
     },
     {
      "h": "Stops: automatización que salva cuentas",
@@ -305,11 +305,11 @@
    "cards": [
     {
      "h": "Dos formas de respaldar una posición",
-     "p": "El margen aislado separa una cantidad fija para una sola posición — si se liquida, pierdes solo ese muro. El margen cruzado deja que TODO tu balance de futuros respalde cada posición — más espacio antes de la liquidación, pero un estallido puede llevarse toda la cuenta."
+     "p": "El margen aislado separa una cantidad fija para una sola posición - si se liquida, pierdes solo ese muro. El margen cruzado deja que TODO tu balance de futuros respalde cada posición - más espacio antes de la liquidación, pero un estallido puede llevarse toda la cuenta."
     },
     {
      "h": "Cuándo tiene sentido cada uno",
-     "p": "El aislado es la opción por defecto del principiante y la elección honesta para trades arriesgados: el daño está predefinido. El cruzado encaja con carteras cubiertas y traders experimentados que gestionan el margen activamente. Usar el cruzado para sobrevivir más tiempo a un mal trade no es una estrategia — es un funeral más grande."
+     "p": "El aislado es la opción por defecto del principiante y la elección honesta para trades arriesgados: el daño está predefinido. El cruzado encaja con carteras cubiertas y traders experimentados que gestionan el margen activamente. Usar el cruzado para sobrevivir más tiempo a un mal trade no es una estrategia - es un funeral más grande."
     },
     {
      "h": "Comprueba antes de hacer clic",
@@ -352,15 +352,15 @@
    "cards": [
     {
      "h": "Dos precios en la misma pantalla",
-     "p": "El precio last es la operación más reciente en TU exchange. El precio mark es una mezcla de valor justo de varios exchanges más el índice spot. Difieren en centavos en mercados tranquilos — y de forma significativa en los violentos o en plataformas con poca liquidez."
+     "p": "El precio last es la operación más reciente en TU exchange. El precio mark es una mezcla de valor justo de varios exchanges más el índice spot. Difieren en centavos en mercados tranquilos - y de forma significativa en los violentos o en plataformas con poca liquidez."
     },
     {
      "h": "Las liquidaciones usan el precio mark",
-     "p": "Los exchanges liquidan según el MARK, no el last. Esto te protege: una sola mecha manipulada en una plataforma no puede liquidar posiciones en todas partes. También explica la confusión clásica — puedes ser liquidado cuando la mecha del gráfico en tu pantalla nunca tocó tu nivel, porque el mark sí llegó."
+     "p": "Los exchanges liquidan según el MARK, no el last. Esto te protege: una sola mecha manipulada en una plataforma no puede liquidar posiciones en todas partes. También explica la confusión clásica - puedes ser liquidado cuando la mecha del gráfico en tu pantalla nunca tocó tu nivel, porque el mark sí llegó."
     },
     {
      "h": "Cuál mirar",
-     "p": "Decisiones de trading: precio last (ahí es donde se ejecutan tus órdenes). Matemática de supervivencia: precio mark (es lo que usan la liquidación y el P&L no realizado). Las plataformas serias muestran ambos — aprende dónde muestra la tuya el mark, y pon alarmas sobre él, no sobre la mecha de la vela."
+     "p": "Decisiones de trading: precio last (ahí es donde se ejecutan tus órdenes). Matemática de supervivencia: precio mark (es lo que usan la liquidación y el P&L no realizado). Las plataformas serias muestran ambos - aprende dónde muestra la tuya el mark, y pon alarmas sobre él, no sobre la mecha de la vela."
     }
    ],
    "quiz": [
@@ -399,7 +399,7 @@
    "cards": [
     {
      "h": "Por qué la liquidación no es exactamente 100 ÷ apalancamiento",
-     "p": "El exchange exige un colchón de seguridad — el margen de mantenimiento (a menudo alrededor del 0.5% del nocional) — apartado en todo momento. La liquidación se dispara cuando tu capital cae HASTA ese colchón, no hasta cero. Así que un long a 10x se liquida alrededor de −9.5%, no exactamente a −10%."
+     "p": "El exchange exige un colchón de seguridad - el margen de mantenimiento (a menudo alrededor del 0.5% del nocional) - apartado en todo momento. La liquidación se dispara cuando tu capital cae HASTA ese colchón, no hasta cero. Así que un long a 10x se liquida alrededor de −9.5%, no exactamente a −10%."
     },
     {
      "h": "Posiciones más grandes, colchones más grandes",
@@ -407,7 +407,7 @@
     },
     {
      "h": "Liquidación parcial",
-     "p": "En posiciones grandes, muchos exchanges liquidan por partes — cerrando parte de la posición para devolver el margen por encima del mantenimiento, en lugar de destruirla toda de golpe. Útil, pero no dependas de ello: para cuando la liquidación parcial te está salvando, el trade ya ha fracasado."
+     "p": "En posiciones grandes, muchos exchanges liquidan por partes - cerrando parte de la posición para devolver el margen por encima del mantenimiento, en lugar de destruirla toda de golpe. Útil, pero no dependas de ello: para cuando la liquidación parcial te está salvando, el trade ya ha fracasado."
     }
    ],
    "quiz": [
@@ -446,7 +446,7 @@
    "cards": [
     {
      "h": "El trade empieza después de la entrada",
-     "p": "Los principiantes se obsesionan con las entradas; los profesionales gestionan lo que viene después. Una posición en vivo es una serie de decisiones: ¿sigue siendo válida la tesis? ¿se ha movido la invalidación? ¿sigue siendo correcto el tamaño? Gestionar no es toquetear — es ejecutar el plan que escribiste antes de entrar."
+     "p": "Los principiantes se obsesionan con las entradas; los profesionales gestionan lo que viene después. Una posición en vivo es una serie de decisiones: ¿sigue siendo válida la tesis? ¿se ha movido la invalidación? ¿sigue siendo correcto el tamaño? Gestionar no es toquetear - es ejecutar el plan que escribiste antes de entrar."
     },
     {
      "h": "Cierre parcial: pagarte a ti mismo",
@@ -454,7 +454,7 @@
     },
     {
      "h": "Stops en breakeven: trades gratis, con cuidado",
-     "p": "Después de que el precio se mueva de forma significativa a tu favor, mover el stop a la entrada hace que el trade sea libre de riesgo — psicológicamente no tiene precio. Hazlo demasiado pronto y el ruido normal te saca de un buen trade. Dale espacio: breakeven DESPUÉS del primer objetivo, no en el primer minuto en verde."
+     "p": "Después de que el precio se mueva de forma significativa a tu favor, mover el stop a la entrada hace que el trade sea libre de riesgo - psicológicamente no tiene precio. Hazlo demasiado pronto y el ruido normal te saca de un buen trade. Dale espacio: breakeven DESPUÉS del primer objetivo, no en el primer minuto en verde."
     }
    ],
    "quiz": [
@@ -479,7 +479,7 @@
     {
      "q": "El momento correcto para gestionar una posición es…",
      "o": [
-      "Nunca — siempre abrir la posición y olvidarse de ella",
+      "Nunca - siempre abrir la posición y olvidarse de ella",
       "Según el plan escrito ANTES de la entrada",
       "Cuando dé miedo",
       "Cada 30 segundos"
@@ -493,15 +493,15 @@
    "cards": [
     {
      "h": "Mito: más apalancamiento = más ganancia",
-     "p": "La ganancia viene del TAMAÑO de la posición por el movimiento del precio. El apalancamiento solo decide cuánto margen pones para ese tamaño. Una posición de $1,000 gana los mismos $30 con un movimiento del 3% ya use 2x o 50x — la versión a 50x simplemente se liquida 25 veces antes."
+     "p": "La ganancia viene del TAMAÑO de la posición por el movimiento del precio. El apalancamiento solo decide cuánto margen pones para ese tamaño. Una posición de $1,000 gana los mismos $30 con un movimiento del 3% ya use 2x o 50x - la versión a 50x simplemente se liquida 25 veces antes."
     },
     {
      "h": "Mito: los profesionales usan el apalancamiento máximo",
-     "p": "Las mesas profesionales operan rutinariamente con apalancamiento efectivo de un solo dígito. El botón de 100x existe porque es rentable para los exchanges, no para los usuarios. El apalancamiento alto es una herramienta de eficiencia de liquidez para quienes hacen cobertura y para scalpers que se miden en segundos — no una máquina de riqueza."
+     "p": "Las mesas profesionales operan rutinariamente con apalancamiento efectivo de un solo dígito. El botón de 100x existe porque es rentable para los exchanges, no para los usuarios. El apalancamiento alto es una herramienta de eficiencia de liquidez para quienes hacen cobertura y para scalpers que se miden en segundos - no una máquina de riqueza."
     },
     {
      "h": "El uso honesto del apalancamiento",
-     "p": "El apalancamiento te permite dejar menos capital en un exchange (hackeable, congelable) para la misma exposición — eso es eficiencia de capital. Usado con tamaños de posición diminutos es legítimo. Usado para maximizar el tamaño, convierte la volatilidad normal en ruina segura, con cuenta regresiva."
+     "p": "El apalancamiento te permite dejar menos capital en un exchange (hackeable, congelable) para la misma exposición - eso es eficiencia de capital. Usado con tamaños de posición diminutos es legítimo. Usado para maximizar el tamaño, convierte la volatilidad normal en ruina segura, con cuenta regresiva."
     }
    ],
    "quiz": [
@@ -540,11 +540,11 @@
    "cards": [
     {
      "h": "Cada número, descifrado",
-     "p": "Un ticket de posición muestra: dirección y apalancamiento (LONG 10x), precio de entrada, precio mark, tamaño o nocional, margen, precio de liquidación, P&L no realizado y ROE. Ahora conoces cada uno de ellos. Si algún número de un ticket en vivo te confunde, no añadas tamaño — descífralo primero."
+     "p": "Un ticket de posición muestra: dirección y apalancamiento (LONG 10x), precio de entrada, precio mark, tamaño o nocional, margen, precio de liquidación, P&L no realizado y ROE. Ahora conoces cada uno de ellos. Si algún número de un ticket en vivo te confunde, no añadas tamaño - descífralo primero."
     },
     {
      "h": "Los dos números que más importan",
-     "p": "El precio de liquidación (¿a qué distancia está la muerte?) y el tamaño de la posición (¿cuánto pierdo por cada movimiento del 1%?). El P&L y el ROE son resultados — se derivan de esos dos datos. Los traders que solo miran el número verde/rojo gestionan sentimientos; los que miran la distancia a la liquidación y el tamaño gestionan riesgo."
+     "p": "El precio de liquidación (¿a qué distancia está la muerte?) y el tamaño de la posición (¿cuánto pierdo por cada movimiento del 1%?). El P&L y el ROE son resultados - se derivan de esos dos datos. Los traders que solo miran el número verde/rojo gestionan sentimientos; los que miran la distancia a la liquidación y el tamaño gestionan riesgo."
     },
     {
      "h": "Ejercicio de graduación",
@@ -581,7 +581,7 @@
     }
    ],
    "try": {
-    "p": "Abre una posición demo y lee cada campo del ticket — entrada, tamaño, margen, liquidación, distancia. Diez segundos, cero confusión.",
+    "p": "Abre una posición demo y lee cada campo del ticket - entrada, tamaño, margen, liquidación, distancia. Diez segundos, cero confusión.",
     "label": "Paper Trade →"
    }
   }

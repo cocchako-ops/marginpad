@@ -1,54 +1,54 @@
 {
   "id": "stories",
   "name": "İşlem Hikâyeleri",
-  "sub": "İşlemini seç — etkileşimli senaryolar",
+  "sub": "İşlemini seç - etkileşimli senaryolar",
   "lessons": [
     {
       "id": "st1",
       "t": "İlk 100× Denemen",
       "cards": [
-        { "h": "Cuma gecesi, 100 dolar", "p": "Elinde 100 dolar demo para ve yalnızca yukarı giden bir grafik var. Kaldıraç kaydırıcısı parlıyor: 100×. 100×'te senin 100 doların 10.000 dolarlık BTC'yi kontrol eder ve beynin o mutlu hesabı anında yapar — lehine %1'lik bir hareket paranı dakikalar içinde ikiye katlar. Kaydırıcı diğer hesabı hiç anmaz." },
-        { "h": "Diğer hesap", "p": "100×'te borsanın teminatını silmek için aleyhine neredeyse hiç hareket gerekmez. Yaklaşık −%1 — sıradan bir kıpırdanma — ve pozisyon likide olur. Bekleyip atlatabileceğin bir zarar değil: silinmiş. BTC sen kahve yaparken %1'den fazla hareket eder." },
-        { "h": "Yine de giriyorsun", "p": "Long BTC, 100×, 100 dolar. Altı görkemli dakika boyunca 54 dolar kârdasın ve kafanda onu harcıyorsun. Sonra sıradan bir kırmızı mum — %1,2'lik bir düşüş, hiç dramatik değil — likidasyon fiyatına dokunuyor. Pozisyon gitti. On dakika sonra grafik toparlanıyor ve günü yeşil kapatıyor. Yönü doğru bilmiştin. Yine de her şeyi kaybettin." },
-        { "h": "Seni asıl öldüren şey", "p": "Yön değil — boyut. 10×'te aynı düşüş çirkin ama atlatılabilir bir geri çekilmeydi. 100×'te ölümdü. Kaldıraç seni daha haklı yapmaz; yanılmayı ne kadar süre karşılayabileceğini kısaltır. Ve her işlemin bir süre yanılabilmek için yere ihtiyacı vardır." },
-        { "h": "Aynı sahne, ikinci çekim", "p": "Aynı kurulum, ikinci deneme: 10× ve −%1,5'te bir stop. Düşüş seni −15 dolarla dışarı atıyor. Can sıkıcı. Toparlanmada yeniden giriyorsun ve asıl hareketi yakalıyorsun. Küçük zararlar, önemli işlemlere aldığın biletlerdir — oyunun tamamı budur." }
+        { "h": "Cuma gecesi, 100 dolar", "p": "Elinde 100 dolar demo para ve yalnızca yukarı giden bir grafik var. Kaldıraç kaydırıcısı parlıyor: 100×. 100×'te senin 100 doların 10.000 dolarlık BTC'yi kontrol eder ve beynin o mutlu hesabı anında yapar - lehine %1'lik bir hareket paranı dakikalar içinde ikiye katlar. Kaydırıcı diğer hesabı hiç anmaz." },
+        { "h": "Diğer hesap", "p": "100×'te borsanın teminatını silmek için aleyhine neredeyse hiç hareket gerekmez. Yaklaşık −%1 - sıradan bir kıpırdanma - ve pozisyon likide olur. Bekleyip atlatabileceğin bir zarar değil: silinmiş. BTC sen kahve yaparken %1'den fazla hareket eder." },
+        { "h": "Yine de giriyorsun", "p": "Long BTC, 100×, 100 dolar. Altı görkemli dakika boyunca 54 dolar kârdasın ve kafanda onu harcıyorsun. Sonra sıradan bir kırmızı mum - %1,2'lik bir düşüş, hiç dramatik değil - likidasyon fiyatına dokunuyor. Pozisyon gitti. On dakika sonra grafik toparlanıyor ve günü yeşil kapatıyor. Yönü doğru bilmiştin. Yine de her şeyi kaybettin." },
+        { "h": "Seni asıl öldüren şey", "p": "Yön değil - boyut. 10×'te aynı düşüş çirkin ama atlatılabilir bir geri çekilmeydi. 100×'te ölümdü. Kaldıraç seni daha haklı yapmaz; yanılmayı ne kadar süre karşılayabileceğini kısaltır. Ve her işlemin bir süre yanılabilmek için yere ihtiyacı vardır." },
+        { "h": "Aynı sahne, ikinci çekim", "p": "Aynı kurulum, ikinci deneme: 10× ve −%1,5'te bir stop. Düşüş seni −15 dolarla dışarı atıyor. Can sıkıcı. Toparlanmada yeniden giriyorsun ve asıl hareketi yakalıyorsun. Küçük zararlar, önemli işlemlere aldığın biletlerdir - oyunun tamamı budur." }
       ],
       "quiz": [
         { "q": "100× kaldıraçta, aleyhine yaklaşık ne kadarlık bir hareket pozisyonu likide eder?", "o": ["~%50", "~%10", "~%1", "Likide olamaz"] },
         { "q": "Hikâyede BTC günü yeşil kapattı. İşlem neden yine de öldü?", "o": ["Borsa hile yaptı", "Pozisyon, sıradan bir düşüşü atlatamayacak kadar büyüktü", "Stop-loss fazla dardı", "Kimsenin kaçamayacağı saf kötü şans"] },
-        { "q": "Kaldıraç aslında neyi kısaltır?", "o": ["Kazanmak için geçen süreyi", "Yanılmayı ne kadar süre karşılayabileceğini", "Borsanın komisyonlarını", "Hiçbir şeyi — yalnızca kârı çarpar"] }
+        { "q": "Kaldıraç aslında neyi kısaltır?", "o": ["Kazanmak için geçen süreyi", "Yanılmayı ne kadar süre karşılayabileceğini", "Borsanın komisyonlarını", "Hiçbir şeyi - yalnızca kârı çarpar"] }
       ]
     },
     {
       "id": "st2",
       "t": "İntikam İşlemi",
       "cards": [
-        { "h": "Stop yemek", "p": "SOL short'un stopunu vurur. −40 dolar, tam kitabına göre — küçük, kontrollü, planlanmış bir zarar. K/Z'in gayet iyi. Egon değil. Kafanda bir ses piyasanın sana 40 dolar borçlu olduğunu ilan eder ve bunu son derece ikna edici bir tonla söyler." },
-        { "h": "Piyasa sana hiçbir şey borçlu değil", "p": "İntikam işlemi kaldıraçtaki en pahalı alışkanlıktır. Sonraki işlem 'daha hızlı geri kazanmak için' daha büyük açılır, 'kaçmadan' anında girilir ve 'dönmek ZORUNDA olduğu için' stopun ötesinde tutulur. Tek tıkla üç kural birden çiğnenir — hepsinin yakıtı tek bir duygudur." },
-        { "h": "Olurken izle", "p": "Boyut iki katı, plan yok, doğrudan geri içeri. Piyasa senin var olduğunu bilmez, bu yüzden yaptığı şeyi yapmayı sürdürür — ve −40 dolar bir saatte −130 dolara döner. Şimdi ses üçüncü bir işlem istiyor, yine daha büyük. Hesaplar nadiren tek bir kötü işlemden ölür. Bir kötü işlemin intikamından ölürler." },
-        { "h": "Profesyonelin tepkisi", "p": "Stop yemek sistemin çalışmasıdır. Yanıldığını öğrenmek için 40 dolar ödedin — ucuz bilgi. Zarardan sonraki profesyonel hamle can sıkıcı derecede sakindir: uzaklaş, kaydet ve bir sonraki gerçek kurulum kendi takviminde ortaya çıktığında dön. Pozisyonsuz olmak da bir pozisyondur." },
-        { "h": "24 saat kuralı", "p": "Basit bir sigorta: üst üste iki zarar, o gün için bittin demektir. Üçüncüsünü kazanamayacağın için değil — üçüncü işlemi seçen kişi, planı yazan kişi olmadığı için. Hesabı o adamdan koru." }
+        { "h": "Stop yemek", "p": "SOL short'un stopunu vurur. −40 dolar, tam kitabına göre - küçük, kontrollü, planlanmış bir zarar. K/Z'in gayet iyi. Egon değil. Kafanda bir ses piyasanın sana 40 dolar borçlu olduğunu ilan eder ve bunu son derece ikna edici bir tonla söyler." },
+        { "h": "Piyasa sana hiçbir şey borçlu değil", "p": "İntikam işlemi kaldıraçtaki en pahalı alışkanlıktır. Sonraki işlem 'daha hızlı geri kazanmak için' daha büyük açılır, 'kaçmadan' anında girilir ve 'dönmek ZORUNDA olduğu için' stopun ötesinde tutulur. Tek tıkla üç kural birden çiğnenir - hepsinin yakıtı tek bir duygudur." },
+        { "h": "Olurken izle", "p": "Boyut iki katı, plan yok, doğrudan geri içeri. Piyasa senin var olduğunu bilmez, bu yüzden yaptığı şeyi yapmayı sürdürür - ve −40 dolar bir saatte −130 dolara döner. Şimdi ses üçüncü bir işlem istiyor, yine daha büyük. Hesaplar nadiren tek bir kötü işlemden ölür. Bir kötü işlemin intikamından ölürler." },
+        { "h": "Profesyonelin tepkisi", "p": "Stop yemek sistemin çalışmasıdır. Yanıldığını öğrenmek için 40 dolar ödedin - ucuz bilgi. Zarardan sonraki profesyonel hamle can sıkıcı derecede sakindir: uzaklaş, kaydet ve bir sonraki gerçek kurulum kendi takviminde ortaya çıktığında dön. Pozisyonsuz olmak da bir pozisyondur." },
+        { "h": "24 saat kuralı", "p": "Basit bir sigorta: üst üste iki zarar, o gün için bittin demektir. Üçüncüsünü kazanamayacağın için değil - üçüncü işlemi seçen kişi, planı yazan kişi olmadığı için. Hesabı o adamdan koru." }
       ],
       "quiz": [
-        { "q": "Stopun küçük ve planlı bir zararla yeni tetiklendi. Gerçekte ne oldu?", "o": ["Sistem başarısız oldu", "Sistem çalıştı — yanılmanın küçük ve bilinen bedelini ödedin", "Piyasa özellikle senin stopunu hedef aldı", "Stopu kaldırmalıydın"] },
-        { "q": "İntikam işlemini bu kadar tehlikeli yapan nedir?", "o": ["Genelde yanlış coinde olması", "Daha büyük, aceleci ve plansız olması — duygunun sürüklediği çiğnenmiş kurallar", "Zarardan sonra komisyonların artması", "Borsaların hesabını işaretlemesi"] },
-        { "q": "Üst üste iki zarardan sonra disiplinli hamle:", "o": ["Daha hızlı toparlamak için boyutu ikiye katlamak", "Hiç işlem yapmadığın bir coine geçmek", "O gün için durmak — duyguyla değil planla geri dönmek", "Stop yememek için stopları kaldırmak"] }
+        { "q": "Stopun küçük ve planlı bir zararla yeni tetiklendi. Gerçekte ne oldu?", "o": ["Sistem başarısız oldu", "Sistem çalıştı - yanılmanın küçük ve bilinen bedelini ödedin", "Piyasa özellikle senin stopunu hedef aldı", "Stopu kaldırmalıydın"] },
+        { "q": "İntikam işlemini bu kadar tehlikeli yapan nedir?", "o": ["Genelde yanlış coinde olması", "Daha büyük, aceleci ve plansız olması - duygunun sürüklediği çiğnenmiş kurallar", "Zarardan sonra komisyonların artması", "Borsaların hesabını işaretlemesi"] },
+        { "q": "Üst üste iki zarardan sonra disiplinli hamle:", "o": ["Daha hızlı toparlamak için boyutu ikiye katlamak", "Hiç işlem yapmadığın bir coine geçmek", "O gün için durmak - duyguyla değil planla geri dönmek", "Stop yememek için stopları kaldırmak"] }
       ]
     },
     {
       "id": "st3",
       "t": "FOMO Mumu",
       "cards": [
-        { "h": "Roket", "p": "Bir meme coin bir saatte %38 yükselmiş. Sohbet alev almış, biri 40× kazancın ekran görüntüsünü paylaşmış ve mum, içinde olmadığın için sana kişisel hakaret ediyormuş gibi büyümeye devam ediyor. Bu FOMO'dur — kaçırma korkusu — ve herhangi bir çöküşten daha fazla hesabı boşaltmıştır." },
+        { "h": "Roket", "p": "Bir meme coin bir saatte %38 yükselmiş. Sohbet alev almış, biri 40× kazancın ekran görüntüsünü paylaşmış ve mum, içinde olmadığın için sana kişisel hakaret ediyormuş gibi büyümeye devam ediyor. Bu FOMO'dur - kaçırma korkusu - ve herhangi bir çöküşten daha fazla hesabı boşaltmıştır." },
         { "h": "Sana tepeyi kim satıyor", "p": "Kimsenin ekran görüntüsünü almadığı mekanik: senin %38'de alabilmen için, %5'te almış birinin sana satması gerekir. Geç alanlar, erken alanların çıkış likiditesidir. Gürültü ne kadar yüksekse, muhtemelen elinde kalan son kişi olmaya o kadar yakınsın." },
-        { "h": "Kovalamaca", "p": "'Belli ki daha yukarı istiyor' diyerek mumun tepesinden alıyorsun. %4 daha yükseliyor — dâhisin! — sonra erken para çıkıyor ve on bir dakikada %22 düşüyor. Girişin artık grafikteki tepe fitili. Bu işlemi sen bulmadın. Bu işlem seni buldu." },
-        { "h": "Kovalamak mı beklemek mi", "p": "Disiplin 'hareket edenlere asla dokunma' değildir. Şudur: hareketi kaçırdın mı? Gitti — ve yarın her zaman bir yenisi olur. Gerçekten güçlü bir coin geri çekilir, taban kurar ve stop için makul bir yeri olan gerçek bir giriş sunar. Hiç geri çekilmezse de hiçbir şey kaybetmedin." },
-        { "h": "Sohbet değil, tarayıcı", "p": "Hareket edenleri adrenalinle değil veriyle bul — tarayıcı, sohbet bağırmaya başlamadan önce momentumu puanlar. Güçlü bir coine geri çekilmede planla girmek işlem yapmaktır. Dikey bir muma yabancılar heyecanlandığı için girmek bağış yapmaktır." }
+        { "h": "Kovalamaca", "p": "'Belli ki daha yukarı istiyor' diyerek mumun tepesinden alıyorsun. %4 daha yükseliyor - dâhisin! - sonra erken para çıkıyor ve on bir dakikada %22 düşüyor. Girişin artık grafikteki tepe fitili. Bu işlemi sen bulmadın. Bu işlem seni buldu." },
+        { "h": "Kovalamak mı beklemek mi", "p": "Disiplin 'hareket edenlere asla dokunma' değildir. Şudur: hareketi kaçırdın mı? Gitti - ve yarın her zaman bir yenisi olur. Gerçekten güçlü bir coin geri çekilir, taban kurar ve stop için makul bir yeri olan gerçek bir giriş sunar. Hiç geri çekilmezse de hiçbir şey kaybetmedin." },
+        { "h": "Sohbet değil, tarayıcı", "p": "Hareket edenleri adrenalinle değil veriyle bul - tarayıcı, sohbet bağırmaya başlamadan önce momentumu puanlar. Güçlü bir coine geri çekilmede planla girmek işlem yapmaktır. Dikey bir muma yabancılar heyecanlandığı için girmek bağış yapmaktır." }
       ],
       "quiz": [
-        { "q": "Bir saatte zaten %38 yükselmiş bir coini alırken büyük olasılıkla kimden alıyorsun?", "o": ["Borsadan", "Kâr alan erken alıcılardan — sen onların çıkışısın", "Pozisyon açan piyasa yapıcılardan", "Hiç kimseden — yeni coinler talep üzerine basılır"] },
+        { "q": "Bir saatte zaten %38 yükselmiş bir coini alırken büyük olasılıkla kimden alıyorsun?", "o": ["Borsadan", "Kâr alan erken alıcılardan - sen onların çıkışısın", "Pozisyon açan piyasa yapıcılardan", "Hiç kimseden - yeni coinler talep üzerine basılır"] },
         { "q": "Hikâyedeki trader aslında neyin parasını ödedi?", "o": ["Sağlam bir kırılım girişinin", "Başkalarının heyecanının, hem de tepede", "Erken bilginin", "Düşük riskli bir scalp'in"] },
-        { "q": "Büyük bir hareketi kaçırdın. Disiplinli tepki:", "o": ["Daha yükselmeden kovala", "Gittiğini kabul et — geri çekilmeyi ya da bir sonraki kurulumu bekle", "Onun yerine rastgele başka bir coin al", "Küçük bir hareket de büyüğü gibi ödesin diye kaldıracı yükselt"] }
+        { "q": "Büyük bir hareketi kaçırdın. Disiplinli tepki:", "o": ["Daha yükselmeden kovala", "Gittiğini kabul et - geri çekilmeyi ya da bir sonraki kurulumu bekle", "Onun yerine rastgele başka bir coin al", "Küçük bir hareket de büyüğü gibi ödesin diye kaldıracı yükselt"] }
       ]
     },
     {
@@ -56,62 +56,62 @@
       "t": "Haber Gecesi",
       "cards": [
         { "h": "FOMC'ye bir dakika", "p": "Grafiğin yatay, sıkışmış, sessiz. Altmış saniye içinde Fed konuşacak ve aklına parlak bir fikir geliyor: yönü tahmin et, kaldıracı aç, saniyeler içinde zengin ol. Piyasanın yarısında da aynı parlak fikir vardı. Sorun tam olarak bu." },
-        { "h": "Haber mumları ne yapar", "p": "Haber mumları bir yön seçmez — İKİSİNİ birden seçer. Aynı dakika içinde şiddetli bir yukarı ve aşağı fitil sıradandır: fiyat bir yöne %2 fırlar, diğer yöne %3 kırılır, sonra oturur. 'Gerçek' hareket başlamadan önce hem long'lar hem short'lar fitillerde stop yer ya da likide olur." },
-        { "h": "Yazı tura gibi görünen ama olmayan", "p": "Doğru tahmin etmek bile seni öldürebilir — yol önemlidir. 25×'te ters yöndeki fitil, doğru yöndeki hareket ödemeden likidasyonuna değer. Varış noktasını doğru bildin ve yolda öldün. Kaldıraçla haber tahmin etmek, iki tarafta da kaybedebileceğin bir yazı turadır." },
+        { "h": "Haber mumları ne yapar", "p": "Haber mumları bir yön seçmez - İKİSİNİ birden seçer. Aynı dakika içinde şiddetli bir yukarı ve aşağı fitil sıradandır: fiyat bir yöne %2 fırlar, diğer yöne %3 kırılır, sonra oturur. 'Gerçek' hareket başlamadan önce hem long'lar hem short'lar fitillerde stop yer ya da likide olur." },
+        { "h": "Yazı tura gibi görünen ama olmayan", "p": "Doğru tahmin etmek bile seni öldürebilir - yol önemlidir. 25×'te ters yöndeki fitil, doğru yöndeki hareket ödemeden likidasyonuna değer. Varış noktasını doğru bildin ve yolda öldün. Kaldıraçla haber tahmin etmek, iki tarafta da kaybedebileceğin bir yazı turadır." },
         { "h": "Profesyoneller 8:29'da ne yapar", "p": "Çoğunlukla hiçbir şey. Veriye pozisyonsuz girerler ya da geniş stoplarla minicik boyutla. Sonra SONRASINI işlerler: sıçrama oturup bir yön 15–30 dakika tutunduğunda, işte o atlatılabilir bir girişi olan gerçek bir trenddir. Ekonomik takvim tam da bunun seni asla pusuya düşürmemesi için vardır." },
         { "h": "Kalkış öncesi kontrolün", "p": "Kaldıraçlı her girişten önce sor: önümüzdeki birkaç saatte kırmızı bayraklı bir olay var mı? MarginPad takvimi her FOMC, TÜFE ve tarım dışı istihdam verisini işaretler. Otuz saniyelik kontrol, Fed konusunda haklı çıkıp yine de likide olmanın o özel deneyiminden iyidir." }
       ],
       "quiz": [
         { "q": "Bir haber mumunda neden HER İKİ taraftaki trader'lar da sık sık kaybeder?", "o": ["Borsalar işlemi dondurur", "Fiyat oturmadan önce her iki yöne de şiddetle fitil atar", "Haber her zaman fiyatlanmıştır", "Haber sırasında komisyonlar üçe katlanır"] },
         { "q": "Fed'in kararını doğru tahmin ettin ama likide oldun. Nasıl?", "o": ["Yön doğruysa imkânsız", "Ters yöndeki fitil, hareket ödemeden likidasyonuna dokundu", "Borsa pozisyonunu ters çevirdi", "Kayma yönünü değiştirdi"] },
-        { "q": "Büyük ve planlı bir olayı işlemenin daha güvenli yolu:", "o": ["Bir dakika önce azami kaldıraç", "Sıçramanın oturmasını bekle, sonra tutunan yönü işle", "Aynı anda 100× bir long ve bir short aç", "Haberin etkileyemeyeceği bir coin işle — böyle bir coin hep vardır"] }
+        { "q": "Büyük ve planlı bir olayı işlemenin daha güvenli yolu:", "o": ["Bir dakika önce azami kaldıraç", "Sıçramanın oturmasını bekle, sonra tutunan yönü işle", "Aynı anda 100× bir long ve bir short aç", "Haberin etkileyemeyeceği bir coin işle - böyle bir coin hep vardır"] }
       ]
     },
     {
       "id": "st5",
       "t": "Kalabalık Tekne",
       "cards": [
-        { "h": "Bedava para, herkes hemfikir", "p": "Takip ettiğin herkes long. Sohbet long. Funding her 8 saatte +%0,19 — long'lar o kadar kalabalık ki işlemde kalabilmek için short'lara para ödüyorlar. Sen bunu güven olarak okuyorsun. Piyasa ise yolcu listesi olarak." },
-        { "h": "Funding aslında nedir", "p": "Funding piyasanın kalabalık ölçeridir. Pozitif olması long'ların short'lara ödediği anlamına gelir — tekne long tarafa yatmıştır. Aşırı funding, işlemin KALABALIK olduğu anlamına gelir ve kalabalık işlemlerin tek bir ortak sorunu vardır: almak isteyen herkes çoktan almıştır. Geriye fiyatı yukarı itecek kim kaldı?" },
-        { "h": "Sıkışma", "p": "Fiyat duraklar. En yüksek kaldıraçlı long'lar önce sıkılır, sonra gerilir, sonra küçük bir düşüşle likide olur. Onların zorunlu satışı düşüşü derinleştirir, bu da bir sonraki katmanı likide eder — long sıkışması. Kalabalık bir tekneden çıkılmaz. O tekne kaldıraç sırasına göre boşaltılır." },
-        { "h": "Park hâlindeki arabaya kira ödemek", "p": "Bu arada senin 'bedava para' long'un, sırf var olmak için günde kabaca %0,6 funding ödedi. İki hafta yatay fiyat, piyasa daha hiç hareket etmeden yaklaşık −%8 demektir. Aşırı funding yalnızca sıkışmayı haber vermez — sessizce sana kalabalığın inancının faturasını keser." },
-        { "h": "Ölçeri okumak", "p": "Popüler bir işleme katılmadan önce funding'e bak — /funding her coini gösterir. Ilımlı funding: sorun yok. Aşırı funding: kalabalık bir tekneye geç kaldın ve bilet fiyatı artıyor. En iyi işlemler genelde popüler değil, yalnız hissettirir." }
+        { "h": "Bedava para, herkes hemfikir", "p": "Takip ettiğin herkes long. Sohbet long. Funding her 8 saatte +%0,19 - long'lar o kadar kalabalık ki işlemde kalabilmek için short'lara para ödüyorlar. Sen bunu güven olarak okuyorsun. Piyasa ise yolcu listesi olarak." },
+        { "h": "Funding aslında nedir", "p": "Funding piyasanın kalabalık ölçeridir. Pozitif olması long'ların short'lara ödediği anlamına gelir - tekne long tarafa yatmıştır. Aşırı funding, işlemin KALABALIK olduğu anlamına gelir ve kalabalık işlemlerin tek bir ortak sorunu vardır: almak isteyen herkes çoktan almıştır. Geriye fiyatı yukarı itecek kim kaldı?" },
+        { "h": "Sıkışma", "p": "Fiyat duraklar. En yüksek kaldıraçlı long'lar önce sıkılır, sonra gerilir, sonra küçük bir düşüşle likide olur. Onların zorunlu satışı düşüşü derinleştirir, bu da bir sonraki katmanı likide eder - long sıkışması. Kalabalık bir tekneden çıkılmaz. O tekne kaldıraç sırasına göre boşaltılır." },
+        { "h": "Park hâlindeki arabaya kira ödemek", "p": "Bu arada senin 'bedava para' long'un, sırf var olmak için günde kabaca %0,6 funding ödedi. İki hafta yatay fiyat, piyasa daha hiç hareket etmeden yaklaşık −%8 demektir. Aşırı funding yalnızca sıkışmayı haber vermez - sessizce sana kalabalığın inancının faturasını keser." },
+        { "h": "Ölçeri okumak", "p": "Popüler bir işleme katılmadan önce funding'e bak - /funding her coini gösterir. Ilımlı funding: sorun yok. Aşırı funding: kalabalık bir tekneye geç kaldın ve bilet fiyatı artıyor. En iyi işlemler genelde popüler değil, yalnız hissettirir." }
       ],
       "quiz": [
         { "q": "Sürekli yüksek pozitif funding şu demektir:", "o": ["Coin temel olarak güçlüdür", "Long'lar kalabalıktır ve kalmak için short'lara ödüyorlardır", "Short'lar likide olmak üzeredir", "Borsa yükseliş beklentisindedir"] },
         { "q": "Bir long sıkışmasına ne güç verir?", "o": ["Yalnızca haber olayları", "Likide olan long'ların zorunlu satışı, ki bu bir sonraki katmanı likide eder", "Balinaların birikim yapması", "Borsaların likidite çekmesi"] },
-        { "q": "%0,19/8s funding ile 2 hafta yatay fiyatta long tuttun. K/Z'in kabaca:", "o": ["Sıfır — fiyat hareket etmedi", "Sırf funding'den yaklaşık %8 eksi", "Artı — funding long'lara öder", "Yalnızca giriş komisyonu kadar eksi"] }
+        { "q": "%0,19/8s funding ile 2 hafta yatay fiyatta long tuttun. K/Z'in kabaca:", "o": ["Sıfır - fiyat hareket etmedi", "Sırf funding'den yaklaşık %8 eksi", "Artı - funding long'lara öder", "Yalnızca giriş komisyonu kadar eksi"] }
       ]
     },
     {
       "id": "st6",
       "t": "Kayan Stop",
       "cards": [
-        { "h": "Sadece bu seferlik", "p": "ETH long'un stopuna %1 uzaklıkta ve aklına bir fikir geliyor — makul kılığına girmiş, işlemcilikteki en kötü fikir: 'Stopu biraz aşağı alayım. Dönmek üzere zaten.' O stopu planı olan sakin biri koymuştu. Şimdi onu zararı olan gergin biri taşımak üzere." },
-        { "h": "Stop aslında nedir", "p": "Stop-loss, işlem fikrinin resmen yanlış olduğu fiyattır — girmeden ÖNCE, hâlâ düşünebilirken seçilir. Onu taşımak işlemi ayarlamak değildir. 'Yanılmayı reddediyorum' demektir ki bu, piyasalardaki en pahalı cümledir." },
-        { "h": "Kayış", "p": "Bir kez taşıyorsun: −%2, −%4 oluyor. Fiyat düşmeye devam ediyor ve artık −%4 'çıkmak için saçma bir yer' gibi geliyor. Sonra −%7. Grafiğe bakmayı bırakıyorsun — kötü olduğunu böyle anlarsın. Planlı 20 dolarlık zarar artık 140 dolarlık bir rehine krizi ve piyasa pazarlık yapmaz." },
-        { "h": "Hızla yanılmak ucuzdur", "p": "Stopun bütün avantajı, yanılmayı UCUZ ve HIZLI yapmasıdır. Her kaydırma, ucuz ve hızlı bir zararı pahalı ve yavaş bir zarara çevirir — ve beynine planların isteğe bağlı olduğunu öğretir. Saygı gösterilen bir stop, on şanslı kaçıştan değerlidir, çünkü onu tekrarlayabilirsin." },
-        { "h": "Mekanik hâle getir", "p": "SL/TP'yi pozisyonu açtığın anda kur — site bunu boşuna hatırlatmıyor. Sonra tek kural: stop yalnızca senin lehine hareket eder. Kazanan bir long'un arkasından yukarı — serbest, bu kârı kilitler. Kaybeden birinin arkasından aşağı — asla. O tek kural bütün piyasalardan uzun yaşar." }
+        { "h": "Sadece bu seferlik", "p": "ETH long'un stopuna %1 uzaklıkta ve aklına bir fikir geliyor - makul kılığına girmiş, işlemcilikteki en kötü fikir: 'Stopu biraz aşağı alayım. Dönmek üzere zaten.' O stopu planı olan sakin biri koymuştu. Şimdi onu zararı olan gergin biri taşımak üzere." },
+        { "h": "Stop aslında nedir", "p": "Stop-loss, işlem fikrinin resmen yanlış olduğu fiyattır - girmeden ÖNCE, hâlâ düşünebilirken seçilir. Onu taşımak işlemi ayarlamak değildir. 'Yanılmayı reddediyorum' demektir ki bu, piyasalardaki en pahalı cümledir." },
+        { "h": "Kayış", "p": "Bir kez taşıyorsun: −%2, −%4 oluyor. Fiyat düşmeye devam ediyor ve artık −%4 'çıkmak için saçma bir yer' gibi geliyor. Sonra −%7. Grafiğe bakmayı bırakıyorsun - kötü olduğunu böyle anlarsın. Planlı 20 dolarlık zarar artık 140 dolarlık bir rehine krizi ve piyasa pazarlık yapmaz." },
+        { "h": "Hızla yanılmak ucuzdur", "p": "Stopun bütün avantajı, yanılmayı UCUZ ve HIZLI yapmasıdır. Her kaydırma, ucuz ve hızlı bir zararı pahalı ve yavaş bir zarara çevirir - ve beynine planların isteğe bağlı olduğunu öğretir. Saygı gösterilen bir stop, on şanslı kaçıştan değerlidir, çünkü onu tekrarlayabilirsin." },
+        { "h": "Mekanik hâle getir", "p": "SL/TP'yi pozisyonu açtığın anda kur - site bunu boşuna hatırlatmıyor. Sonra tek kural: stop yalnızca senin lehine hareket eder. Kazanan bir long'un arkasından yukarı - serbest, bu kârı kilitler. Kaybeden birinin arkasından aşağı - asla. O tek kural bütün piyasalardan uzun yaşar." }
       ],
       "quiz": [
-        { "q": "Stop-loss en iyi nasıl anlaşılır?", "o": ["Borsanın komisyon tetikleyicisi olarak", "Fikrinin yanlış olduğunun kanıtlandığı fiyat olarak — önceden kararlaştırılmış", "Bir öneri olarak", "Kârı garanti etmenin yolu olarak"] },
+        { "q": "Stop-loss en iyi nasıl anlaşılır?", "o": ["Borsanın komisyon tetikleyicisi olarak", "Fikrinin yanlış olduğunun kanıtlandığı fiyat olarak - önceden kararlaştırılmış", "Bir öneri olarak", "Kârı garanti etmenin yolu olarak"] },
         { "q": "Stopu fiyattan uzaklaştırmak neden bu kadar yıkıcı?", "o": ["Komisyonları artırdığı için", "Küçük ve planlı bir zararı ucu açık bir zarara çevirdiği ve seni planları terk etmeye alıştırdığı için", "Borsalar bunu cezalandırdığı için", "Pozisyonu anında kapattığı için"] },
-        { "q": "Bir stopun hareket etmesi gereken tek yön:", "o": ["Vurulmamak için fiyattan uzağa", "Senin lehine — kazanan bir işlemin arkasından kârı kilitleyerek", "Stoplar hiç hareket etmemeli", "Sohbet hangi tarafa eğilirse o tarafa"] }
+        { "q": "Bir stopun hareket etmesi gereken tek yön:", "o": ["Vurulmamak için fiyattan uzağa", "Senin lehine - kazanan bir işlemin arkasından kârı kilitleyerek", "Stoplar hiç hareket etmemeli", "Sohbet hangi tarafa eğilirse o tarafa"] }
       ]
     },
     {
       "id": "st7",
       "t": "Balinanın Gölgesi",
       "cards": [
-        { "h": "14 milyon dolarlık short", "p": "Balina takipçisi yanıp sönüyor: bir cüzdan az önce 14.000.000 dolarlık BTC short'u açtı. Parmağın havada bekliyor. 14 milyon dolar bahse giren biri mutlaka bir şey biliyordur, değil mi? Onu kopyalamak tek tık sürer. Onu anlamak biraz daha uzun sürer — ve aradaki fark senin hesabındır." },
-        { "h": "Göremediğin şey", "p": "Sen TEK bir pozisyon görüyorsun, defterin tamamını değil. O 14 milyon dolarlık short, 40 milyon dolarlık bir spot varlığı koruyor olabilir — balina BTC yükselse de düşse de kazanır. Ayrıca ters yönde %20'lik bir hareketi atlatıp sakince ekleyebilirler. Sen 20×'te yaklaşık %4 atlatabilirsin. Kâğıt üzerinde aynı işlem. Gerçekte bambaşka bir işlem." },
+        { "h": "14 milyon dolarlık short", "p": "Balina takipçisi yanıp sönüyor: bir cüzdan az önce 14.000.000 dolarlık BTC short'u açtı. Parmağın havada bekliyor. 14 milyon dolar bahse giren biri mutlaka bir şey biliyordur, değil mi? Onu kopyalamak tek tık sürer. Onu anlamak biraz daha uzun sürer - ve aradaki fark senin hesabındır." },
+        { "h": "Göremediğin şey", "p": "Sen TEK bir pozisyon görüyorsun, defterin tamamını değil. O 14 milyon dolarlık short, 40 milyon dolarlık bir spot varlığı koruyor olabilir - balina BTC yükselse de düşse de kazanır. Ayrıca ters yönde %20'lik bir hareketi atlatıp sakince ekleyebilirler. Sen 20×'te yaklaşık %4 atlatabilirsin. Kâğıt üzerinde aynı işlem. Gerçekte bambaşka bir işlem." },
         { "h": "Kopya", "p": "Short açıyorsun. BTC %6 yükseliyor. Balina yuvarlama hatası gibi 10 milyon dolar ekliyor ve sonunda başabaşa çıkıyor. Sen ilk gün likide oldun, üstelik onların K/Z'inde zar zor görünen bir hareket sırasında. Girişi kopyaladın. Arkasındaki cüzdanı kopyalayamazdın." },
-        { "h": "Balinalar hava durumudur, navigasyon değil", "p": "Balina pozisyonları bağlamdır, talimat değil. Bir seviyenin yakınında yığılan ağır short'lar, büyük paranın direnci nerede gördüğünü söyler — gerçekten faydalıdır. Ama onların girişi senin girişin değildir, çünkü onların riski senin riskin değildir. Hava durumunu izle. Direksiyona geçirme." },
-        { "h": "Pozisyonu değil, yöntemi çal", "p": "Balinalardan kopyalanmaya değer tek şey: yanılıp hayatta kalabilecekleri şekilde boyutlandırırlar. Bunu 100 dolar ölçeğinde yap — küçük boyut, geniş alan, saygı duyduğun bir stop — ve onlara para kazandıran tek kısmı kopyalamış olursun." }
+        { "h": "Balinalar hava durumudur, navigasyon değil", "p": "Balina pozisyonları bağlamdır, talimat değil. Bir seviyenin yakınında yığılan ağır short'lar, büyük paranın direnci nerede gördüğünü söyler - gerçekten faydalıdır. Ama onların girişi senin girişin değildir, çünkü onların riski senin riskin değildir. Hava durumunu izle. Direksiyona geçirme." },
+        { "h": "Pozisyonu değil, yöntemi çal", "p": "Balinalardan kopyalanmaya değer tek şey: yanılıp hayatta kalabilecekleri şekilde boyutlandırırlar. Bunu 100 dolar ölçeğinde yap - küçük boyut, geniş alan, saygı duyduğun bir stop - ve onlara para kazandıran tek kısmı kopyalamış olursun." }
       ],
       "quiz": [
-        { "q": "Bir balinanın 'zararda' görünen pozisyonu neden yine de onlar için iyi bir işlem olabilir?", "o": ["Balinalar asla kaybetmez", "Daha büyük bir varlığı koruyor olabilir — her iki durumda da kazanırlar", "Borsalar balinalara iade yapar", "İçeriden komisyon indirimleri"] },
-        { "q": "Bir balinanın short'unu 20×'te kopyaladın ve BTC %6 yükseldi. En olası sonuç?", "o": ["İkiniz de iyisiniz — aynı işlem sonuçta", "Balina ekler ve ayakta kalır; sen likide olursun", "İkiniz birlikte likide olursunuz", "Pozisyonun daha küçük olduğu için sen kazanırsın"] },
+        { "q": "Bir balinanın 'zararda' görünen pozisyonu neden yine de onlar için iyi bir işlem olabilir?", "o": ["Balinalar asla kaybetmez", "Daha büyük bir varlığı koruyor olabilir - her iki durumda da kazanırlar", "Borsalar balinalara iade yapar", "İçeriden komisyon indirimleri"] },
+        { "q": "Bir balinanın short'unu 20×'te kopyaladın ve BTC %6 yükseldi. En olası sonuç?", "o": ["İkiniz de iyisiniz - aynı işlem sonuçta", "Balina ekler ve ayakta kalır; sen likide olursun", "İkiniz birlikte likide olursunuz", "Pozisyonun daha küçük olduğu için sen kazanırsın"] },
         { "q": "Balinalardan gerçekten kopyalanabilir alışkanlık:", "o": ["Giriş fiyatları", "Dolar cinsinden pozisyon büyüklükleri", "Yanılıp hayatta kalabilecek şekilde boyutlandırmak", "Tam olarak kullandıkları kaldıraç"] }
       ]
     },
@@ -119,16 +119,16 @@
       "id": "st8",
       "t": "Bir İyi İşlem",
       "cards": [
-        { "h": "Yapacak bir şey yok", "p": "Salı. Kurulum yok. Eski sen bir tane 'bulurdu' — can sıkıntısı bir pozisyon açma makinesidir. Yeni sen tarayıcıya bakar, alınmaya değer bir şey görmez ve dizüstünü kapatır. O da bir işlemdir: az önce sabra long girdin ve sabır asla likide olmaz." },
+        { "h": "Yapacak bir şey yok", "p": "Salı. Kurulum yok. Eski sen bir tane 'bulurdu' - can sıkıntısı bir pozisyon açma makinesidir. Yeni sen tarayıcıya bakar, alınmaya değer bir şey görmez ve dizüstünü kapatır. O da bir işlemdir: az önce sabra long girdin ve sabır asla likide olmaz." },
         { "h": "Çarşamba: kurulum geliyor", "p": "SOL, günlerdir izlediğin bir seviyeye geri çekiliyor. Funding nötr, takvim 48 saat temiz. Kalkış öncesi: giriş, −%2'de stop, +%5'te hedef ve yanılmanın hesabın %1'ine mal olacağı kadar küçük bir boyut. Düğmeye dokunulmadan ÖNCE her kutu işaretlenmiş." },
-        { "h": "Sıkıcı orta bölüm", "p": "Giriş dolar. Fiyat stopuna doğru düşer ve o eski kaşıntıyı, onu taşıma isteğini hissedersin. Taşımazsın — burada yanılmak tam da tasarlandığı gibi %1'e mal olur. Fiyat döner. TP1'de yarısını alır ve stopu girişe çekersin. İşlemin geri kalanı artık bedava. Kimse bu kısmın ekran görüntüsünü almaz. Asıl iş bu kısımdır." },
-        { "h": "Çıkış", "p": "TP2 gelir. Hesapta yaklaşık +%4 — adrenalin yok, zafer turu yok, nabız yükselmesi yok. Duygular hissedilirken ve göz ardı edilirken uygulanmış bir plan. Bunu yüz kez yap, varyansın önemi kalmaz: asıl avantaj süreçtir. Tekrarlanan bir iyi işlem, bir kariyerdir." },
-        { "h": "Bütün kötü adamlarla tanıştın", "p": "100× kahramanı. İntikamcı. FOMO kovalayıcısı. Haber kumarbazı. Kalabalık tekne. Kayan stop. Balinanın gölgesi. Hepsi aynı kişiydi — planı olmayan ve piyasanın en sevdiği yemekle karşılaşan biri. Artık bir planın var. Sıkıcı hâle gelene kadar burada pratik yap. O zaman gerçekten senin olur." }
+        { "h": "Sıkıcı orta bölüm", "p": "Giriş dolar. Fiyat stopuna doğru düşer ve o eski kaşıntıyı, onu taşıma isteğini hissedersin. Taşımazsın - burada yanılmak tam da tasarlandığı gibi %1'e mal olur. Fiyat döner. TP1'de yarısını alır ve stopu girişe çekersin. İşlemin geri kalanı artık bedava. Kimse bu kısmın ekran görüntüsünü almaz. Asıl iş bu kısımdır." },
+        { "h": "Çıkış", "p": "TP2 gelir. Hesapta yaklaşık +%4 - adrenalin yok, zafer turu yok, nabız yükselmesi yok. Duygular hissedilirken ve göz ardı edilirken uygulanmış bir plan. Bunu yüz kez yap, varyansın önemi kalmaz: asıl avantaj süreçtir. Tekrarlanan bir iyi işlem, bir kariyerdir." },
+        { "h": "Bütün kötü adamlarla tanıştın", "p": "100× kahramanı. İntikamcı. FOMO kovalayıcısı. Haber kumarbazı. Kalabalık tekne. Kayan stop. Balinanın gölgesi. Hepsi aynı kişiydi - planı olmayan ve piyasanın en sevdiği yemekle karşılaşan biri. Artık bir planın var. Sıkıcı hâle gelene kadar burada pratik yap. O zaman gerçekten senin olur." }
       ],
       "quiz": [
-        { "q": "'Bugün kurulum yok.' Disiplinli eylem:", "o": ["Yine de işlem yapılabilir bir şey bul — hareket ilerlemedir", "Hiçbir şey yapma — sabır bir pozisyondur", "Keskin kalmak için küçük ve rastgele bir işlem aç", "Zayıf bir kurulum güçlüsü gibi ödesin diye kaldıracı yükselt"] },
+        { "q": "'Bugün kurulum yok.' Disiplinli eylem:", "o": ["Yine de işlem yapılabilir bir şey bul - hareket ilerlemedir", "Hiçbir şey yapma - sabır bir pozisyondur", "Keskin kalmak için küçük ve rastgele bir işlem aç", "Zayıf bir kurulum güçlüsü gibi ödesin diye kaldıracı yükselt"] },
         { "q": "TP1'de trader yarısını aldı ve stopu girişe taşıdı. Neden?", "o": ["Pozisyonu ikiye katlamak için", "Kârı kasaya koyup işlemin geri kalanını risksiz hâle getirmek için", "İşlem fikri yanlış olduğu için", "Kaldıracı artırmak için"] },
-        { "q": "Bu hikâyedeki asıl avantaj neydi?", "o": ["Gizli bir gösterge", "Şans", "Tekrarlanabilir bir süreç — planlı giriş, ölçülü risk, saygı duyulan stop, alınan kâr", "Doğru anda yüksek kaldıraç"] }
+        { "q": "Bu hikâyedeki asıl avantaj neydi?", "o": ["Gizli bir gösterge", "Şans", "Tekrarlanabilir bir süreç - planlı giriş, ölçülü risk, saygı duyulan stop, alınan kâr", "Doğru anda yüksek kaldıraç"] }
       ]
     }
   ]

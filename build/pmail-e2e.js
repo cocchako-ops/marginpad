@@ -44,6 +44,6 @@ const H = { 'x-admin-key': K };
     chk('phone 390: the inbox control is reachable and nothing overflows', !ph.none && ph.reach && ph.sw <= ph.ww, ph);
     await ctx.close();
   });
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

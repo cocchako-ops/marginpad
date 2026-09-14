@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Een trade is drie antwoorden",
-     "p": "Voordat je het orderticket aanraakt, moeten drie vragen een antwoord hebben: welke richting, op welke prijs blijkt dat je fout zit, en hoe groot de positie is. Richting alleen is een gok. Richting plus een foutprijs maar zonder grootte is onaf. Ontbreekt er één van de drie, dan heb je nog geen trade — dan heb je een wens."
+     "p": "Voordat je het orderticket aanraakt, moeten drie vragen een antwoord hebben: welke richting, op welke prijs blijkt dat je fout zit, en hoe groot de positie is. Richting alleen is een gok. Richting plus een foutprijs maar zonder grootte is onaf. Ontbreekt er één van de drie, dan heb je nog geen trade - dan heb je een wens."
     },
     {
      "h": "Richting: long of short",
-     "p": "Long betekent dat je wint als de prijs stijgt en verliest als hij daalt. Short is de spiegel: je wint als hij daalt. Bij futures liggen ze één klik uit elkaar, en geen van beide is de veiligere. Zeg je richting als een gewone zin — long BTC — voordat je iets anders doet, want elk ander veld op het ticket hangt ervan af."
+     "p": "Long betekent dat je wint als de prijs stijgt en verliest als hij daalt. Short is de spiegel: je wint als hij daalt. Bij futures liggen ze één klik uit elkaar, en geen van beide is de veiligere. Zeg je richting als een gewone zin - long BTC - voordat je iets anders doet, want elk ander veld op het ticket hangt ervan af."
     },
     {
      "h": "Invalidatie: waar je fout zit",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Marge, notioneel, hoeveelheid",
-     "p": "Drie getallen beschrijven één positie. Hoeveelheid is hoeveel van de munt je beheert, zeg 0.02 BTC. Notioneel is die hoeveelheid in dollars: op $50,000 per BTC is 0.02 BTC een notioneel van $1,000. Marge is het geld dat echt uit je saldo wordt vastgezet — op 10x hefboom bij die positie, $100. Winst en verlies volgen het notioneel, nooit de marge."
+     "p": "Drie getallen beschrijven één positie. Hoeveelheid is hoeveel van de munt je beheert, zeg 0.02 BTC. Notioneel is die hoeveelheid in dollars: op $50,000 per BTC is 0.02 BTC een notioneel van $1,000. Marge is het geld dat echt uit je saldo wordt vastgezet - op 10x hefboom bij die positie, $100. Winst en verlies volgen het notioneel, nooit de marge."
     },
     {
      "h": "Wat hefboom werkelijk verandert",
@@ -170,7 +170,7 @@
     },
     {
      "h": "Plaats hem zelf",
-     "prompt": "Dit is een long. Tik waar de stop-loss hoort — net onder de swingbodem.",
+     "prompt": "Dit is een long. Tik waar de stop-loss hoort - net onder de swingbodem.",
      "p": "Bewijs dat je het niveau kent voordat je het veld vertrouwt. Eén tik."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "De verhouding die je twee lijnen impliceren",
-     "p": "Je stop en je doel leggen een verhouding vast voordat de trade begint. Entry $50,000, stop $49,000, doel $52,000 riskeert $1,000 om $2,000 te maken — een reward-to-risk van 2:1. Bij 2:1 speel je met één winnaar op drie trades quitte, nog vóór kosten. Dat is rekenwerk, geen belofte. Niets zegt dat het doel ooit geraakt wordt. Check de verhouding voordat je klikt."
+     "p": "Je stop en je doel leggen een verhouding vast voordat de trade begint. Entry $50,000, stop $49,000, doel $52,000 riskeert $1,000 om $2,000 te maken - een reward-to-risk van 2:1. Bij 2:1 speel je met één winnaar op drie trades quitte, nog vóór kosten. Dat is rekenwerk, geen belofte. Niets zegt dat het doel ooit geraakt wordt. Check de verhouding voordat je klikt."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Entryprijs en mark price",
-     "p": "Entry is de gemiddelde prijs waarop je echt gevuld bent, vóór kosten. Mark price is de eerlijke referentieprijs van de exchange, gebruikt om je positie te waarderen en om liquidatie te bepalen — meestal verankerd aan een bredere index in plaats van aan de laatste trade op één boek. Dat is met opzet: het maakt één vreemde print veel moeilijker om tegen je te gebruiken."
+     "p": "Entry is de gemiddelde prijs waarop je echt gevuld bent, vóór kosten. Mark price is de eerlijke referentieprijs van de exchange, gebruikt om je positie te waarderen en om liquidatie te bepalen - meestal verankerd aan een bredere index in plaats van aan de laatste trade op één boek. Dat is met opzet: het maakt één vreemde print veel moeilijker om tegen je te gebruiken."
     },
     {
      "h": "Ongerealiseerd betekent nog niet van jou",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Het ticket invullen",
-     "p": "Richting kopen. Ordertype limiet, prijs $50,000, dus je betaalt de maker-fee en accepteert dat hij misschien nooit vult. Grootte $2,500 notioneel, hefboom 10x. Typ $49,000 in het stop-loss-veld en $52,000 in het take-profit-veld voordat je verstuurt — dat doel is 2:1 tegenover je risico. Lees het hele ticket één keer terug, en verstuur dan."
+     "p": "Richting kopen. Ordertype limiet, prijs $50,000, dus je betaalt de maker-fee en accepteert dat hij misschien nooit vult. Grootte $2,500 notioneel, hefboom 10x. Typ $49,000 in het stop-loss-veld en $52,000 in het take-profit-veld voordat je verstuurt - dat doel is 2:1 tegenover je risico. Lees het hele ticket één keer terug, en verstuur dan."
     },
     {
      "h": "Na de fill: doe niets",

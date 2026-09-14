@@ -18,16 +18,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>Drawdown Recovery Calculator — The Gain a Loss Demands | MarginPad</title>
-<meta name="description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss — why -50% needs +100% — and how long recovery takes at your edge." />
+<title>Drawdown Recovery Calculator - The Gain a Loss Demands | MarginPad</title>
+<meta name="description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss - why -50% needs +100% - and how long recovery takes at your edge." />
 <meta name="keywords" content="drawdown calculator, loss recovery calculator, percent to recover loss" />
 <link rel="canonical" href="https://marginpad.io/crypto-drawdown-calculator/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-drawdown-calculator/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-drawdown-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-drawdown-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Drawdown Recovery Calculator — The Gain a Loss Demands | MarginPad" />
-<meta property="og:description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss — why -50% needs +100% — and how long recovery takes at your edge." />
+<meta property="og:title" content="Drawdown Recovery Calculator - The Gain a Loss Demands | MarginPad" />
+<meta property="og:description" content="Free drawdown calculator: the exact percentage gain needed to recover any loss - why -50% needs +100% - and how long recovery takes at your edge." />
 <meta property="og:url" content="https://marginpad.io/crypto-drawdown-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/crypto-drawdown-calculator.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -67,9 +67,9 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Drawdown Recovery Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-drawdown-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Drawdown Recovery Calculator","item":"https://marginpad.io/crypto-drawdown-calculator/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What drawdown is survivable?","acceptedAnswer":{"@type":"Answer","text":"Mechanically anything under 100%; psychologically far less. Most professional programs treat 20-30% as the red line, beyond which required recovery demands unrealistic returns."}},{"@type":"Question","name":"How do I keep drawdowns shallow?","acceptedAnswer":{"@type":"Answer","text":"Fixed fractional risk per trade (0.5-2%), sizing from stops, cutting size after losing streaks — the position-size calculator implements the first two."}},{"@type":"Question","name":"Does this apply to leveraged accounts?","acceptedAnswer":{"@type":"Answer","text":"Even more: liquidation is a 100% drawdown of that margin. This math is why liquidation must never be the stop-loss."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Drawdown Recovery Calculator — The Gain a Loss Demands","url":"https://marginpad.io/crypto-drawdown-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-drawdown-calculator.jpg" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What drawdown is survivable?","acceptedAnswer":{"@type":"Answer","text":"Mechanically anything under 100%; psychologically far less. Most professional programs treat 20-30% as the red line, beyond which required recovery demands unrealistic returns."}},{"@type":"Question","name":"How do I keep drawdowns shallow?","acceptedAnswer":{"@type":"Answer","text":"Fixed fractional risk per trade (0.5-2%), sizing from stops, cutting size after losing streaks - the position-size calculator implements the first two."}},{"@type":"Question","name":"Does this apply to leveraged accounts?","acceptedAnswer":{"@type":"Answer","text":"Even more: liquidation is a 100% drawdown of that margin. This math is why liquidation must never be the stop-loss."}}]}</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Drawdown Recovery Calculator - The Gain a Loss Demands","url":"https://marginpad.io/crypto-drawdown-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-drawdown-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -82,20 +82,20 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="calc"><div class="cgrid"><div class="f"><label for="acct">Account before (USD)</label><input id="acct" type="number" inputmode="decimal" value="10000"></div><div class="f"><label for="dd">Drawdown %</label><input id="dd" type="number" inputmode="decimal" value="30" step="0.5"></div><div class="f"><label for="edge">Avg monthly return %</label><input id="edge" type="number" inputmode="decimal" value="5" step="0.5"></div></div><div class="res" id="res"></div></div>
 <h2>How it is calculated</h2>
 <div class="frm">recovery gain = 1 / (1 &minus; drawdown) &minus; 1</div>
-<p>Percentages compound from a smaller base after a loss: <strong>-10% needs +11%</strong>, -30% needs +43%, -50% needs +100%, -90% needs +900%. This asymmetry is the mathematical case for small per-trade risk — shallow drawdowns are cheap to repair, deep ones consume months of edge.</p>
+<p>Percentages compound from a smaller base after a loss: <strong>-10% needs +11%</strong>, -30% needs +43%, -50% needs +100%, -90% needs +900%. This asymmetry is the mathematical case for small per-trade risk - shallow drawdowns are cheap to repair, deep ones consume months of edge.</p>
 <h2>Worked example</h2>
-<div class="ex">A $10,000 account down <b>30%</b> holds $7,000 and needs <b>+42.9%</b> — about <b>7.3 months</b> of a solid 5%/month edge spent repairing instead of compounding.</div>
+<div class="ex">A $10,000 account down <b>30%</b> holds $7,000 and needs <b>+42.9%</b> - about <b>7.3 months</b> of a solid 5%/month edge spent repairing instead of compounding.</div>
 <h2>FAQ</h2>
-<div class="faq"><details><summary>What drawdown is survivable?</summary><p>Mechanically anything under 100%; psychologically far less. Most professional programs treat 20-30% as the red line, beyond which required recovery demands unrealistic returns.</p></details><details><summary>How do I keep drawdowns shallow?</summary><p>Fixed fractional risk per trade (0.5-2%), sizing from stops, cutting size after losing streaks — the position-size calculator implements the first two.</p></details><details><summary>Does this apply to leveraged accounts?</summary><p>Even more: liquidation is a 100% drawdown of that margin. This math is why liquidation must never be the stop-loss.</p></details></div>
+<div class="faq"><details><summary>What drawdown is survivable?</summary><p>Mechanically anything under 100%; psychologically far less. Most professional programs treat 20-30% as the red line, beyond which required recovery demands unrealistic returns.</p></details><details><summary>How do I keep drawdowns shallow?</summary><p>Fixed fractional risk per trade (0.5-2%), sizing from stops, cutting size after losing streaks - the position-size calculator implements the first two.</p></details><details><summary>Does this apply to leveraged accounts?</summary><p>Even more: liquidation is a 100% drawdown of that margin. This math is why liquidation must never be the stop-loss.</p></details></div>
 <h2>Related tools</h2>
 <div class="rel"><a href="/position-size-calculator/">Position size</a><a href="/risk-of-ruin-calculator/">Risk of ruin</a><a href="/crypto-win-rate-calculator/">Win-rate expectancy</a><a href="/paper-trade">Paper trading</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
-<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var a=+document.getElementById('acct').value,d=+document.getElementById('dd').value/100,e=+document.getElementById('edge').value/100;var r=document.getElementById('res');if(!(a>0&&d>0&&d<1)){r.innerHTML='';return;}var left=a*(1-d),need=(1/(1-d)-1)*100,months=e>0?Math.log(1/(1-d))/Math.log(1+e):null;r.innerHTML='<div class="rrow"><span class="k">Account after drawdown</span><span class="v dn">'+left.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Gain needed to recover</span><span class="v">+'+need.toFixed(1)+'%</span></div>'+(months!=null?'<div class="rrow"><span class="k">Months to highs at '+(e*100).toFixed(1)+'%/mo</span><span class="v">'+months.toFixed(1)+'</span></div>':'');}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

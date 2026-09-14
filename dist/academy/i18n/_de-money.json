@@ -17,11 +17,11 @@
     },
     {
      "h": "Zehn rauf, zehn runter, nicht neutral",
-     "p": "Starte mit $100. Rechne 10% dazu und du hast $110. Zieh jetzt 10% ab — aber 10% von $110 sind $11, nicht $10. Du landest bei $99. Der Gewinn wurde an $100 gemessen und der Verlust an $110, also heben sie sich nicht auf. Dreh die Reihenfolge um und du landest wieder bei $99: $100 runter auf $90, dann $9 rauf."
+     "p": "Starte mit $100. Rechne 10% dazu und du hast $110. Zieh jetzt 10% ab - aber 10% von $110 sind $11, nicht $10. Du landest bei $99. Der Gewinn wurde an $100 gemessen und der Verlust an $110, also heben sie sich nicht auf. Dreh die Reihenfolge um und du landest wieder bei $99: $100 runter auf $90, dann $9 rauf."
     },
     {
      "h": "Prozentänderungen multiplizieren sich",
-     "p": "Es gibt eine Abkürzung. Ein Gewinn von 10% ist eine Multiplikation mit 1.10; ein Verlust von 10% eine Multiplikation mit 0.90. Machst du beides, bekommst du 1.10 mal 0.90, also 0.99 — ein Nettoverlust von 1%. Reih so einen ganzen Monat an Trades aneinander, und die Multiplikation, nicht die Addition, ist das, was dein Konto wirklich getan hat."
+     "p": "Es gibt eine Abkürzung. Ein Gewinn von 10% ist eine Multiplikation mit 1.10; ein Verlust von 10% eine Multiplikation mit 0.90. Machst du beides, bekommst du 1.10 mal 0.90, also 0.99 - ein Nettoverlust von 1%. Reih so einen ganzen Monat an Trades aneinander, und die Multiplikation, nicht die Addition, ist das, was dein Konto wirklich getan hat."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Verluste graben ein tieferes Loch",
-     "p": "Verlier 50% von $1,000 und du hast $500. Um zurück auf $1,000 zu kommen, musst du $500 dazuverdienen — und $500 sind 100% von dem, was dir geblieben ist. Ein Verlust von 50% braucht einen Gewinn von 100%, um ihn ungeschehen zu machen. Der Verlust und seine Reparatur sind nicht gleich groß, und sie sind es nie."
+     "p": "Verlier 50% von $1,000 und du hast $500. Um zurück auf $1,000 zu kommen, musst du $500 dazuverdienen - und $500 sind 100% von dem, was dir geblieben ist. Ein Verlust von 50% braucht einen Gewinn von 100%, um ihn ungeschehen zu machen. Der Verlust und seine Reparatur sind nicht gleich groß, und sie sind es nie."
     },
     {
      "h": "Die Erholungstabelle",
-     "p": "Rechne dieselbe Arithmetik die Skala hinunter. 10% runter braucht rund 11% zurück. 20% runter braucht 25%. Ein Drittel runter braucht 50%. 50% runter braucht 100%. 80% runter lässt $200 von $1,000 übrig, du brauchst also $800 auf $200 — das sind 400%. 90% runter braucht 900%. Die Kurve biegt sich nicht sanft. Sie geht senkrecht."
+     "p": "Rechne dieselbe Arithmetik die Skala hinunter. 10% runter braucht rund 11% zurück. 20% runter braucht 25%. Ein Drittel runter braucht 50%. 50% runter braucht 100%. 80% runter lässt $200 von $1,000 übrig, du brauchst also $800 auf $200 - das sind 400%. 90% runter braucht 900%. Die Kurve biegt sich nicht sanft. Sie geht senkrecht."
     },
     {
      "h": "Beweis es dir selbst",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Was das an dir ändert",
-     "p": "Deshalb beobachten Profis den Drawdown — wie weit ein Konto unter seinen Höchststand gefallen ist — genauer als die Rendite. Eine Serie kleiner Verluste ist überlebbare Arithmetik. Ein großer Verlust ist eine andere Kategorie von Problem. Alles nach dieser Karte, von der Positionsgröße bis zum Stop-Loss, existiert, um einzelne Verluste klein genug zu halten, dass die Erholung gewöhnlich bleibt."
+     "p": "Deshalb beobachten Profis den Drawdown - wie weit ein Konto unter seinen Höchststand gefallen ist - genauer als die Rendite. Eine Serie kleiner Verluste ist überlebbare Arithmetik. Ein großer Verlust ist eine andere Kategorie von Problem. Alles nach dieser Karte, von der Positionsgröße bis zum Stop-Loss, existiert, um einzelne Verluste klein genug zu halten, dass die Erholung gewöhnlich bleibt."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Drei Zahlen ergeben das Ergebnis",
-     "p": "Gewinn und Verlust — P&L — kommen aus genau drei Zahlen: dem Preis, zu dem du eingestiegen bist, dem Preis, zu dem du ausgestiegen bist, und wie viele Einheiten du gehalten hast. Nichts sonst geht in die Rechnung ein. Für einen Long, eine Wette auf steigende Preise, ist der P&L der Ausstiegspreis minus Einstiegspreis, mal Anzahl der Einheiten."
+     "p": "Gewinn und Verlust - P&L - kommen aus genau drei Zahlen: dem Preis, zu dem du eingestiegen bist, dem Preis, zu dem du ausgestiegen bist, und wie viele Einheiten du gehalten hast. Nichts sonst geht in die Rechnung ein. Für einen Long, eine Wette auf steigende Preise, ist der P&L der Ausstiegspreis minus Einstiegspreis, mal Anzahl der Einheiten."
     },
     {
      "h": "Ein Long, durchgerechnet",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Die Bewegung kannst du dir nicht aussuchen",
-     "p": "Du kontrollierst nicht, ob sich Bitcoin heute 2% bewegt. Du kontrollierst genau eine Zahl: wie groß deine Position ist. Alles andere — Richtung, Timing, Volatilität — ist geraten oder geschenkt. Die Positionsgröße ist der einzige Input in der ganzen Rechnung, der vollständig dir gehört, und damit die eigentliche Entscheidung, die du triffst."
+     "p": "Du kontrollierst nicht, ob sich Bitcoin heute 2% bewegt. Du kontrollierst genau eine Zahl: wie groß deine Position ist. Alles andere - Richtung, Timing, Volatilität - ist geraten oder geschenkt. Die Positionsgröße ist der einzige Input in der ganzen Rechnung, der vollständig dir gehört, und damit die eigentliche Entscheidung, die du triffst."
     },
     {
      "h": "Dieselbe Bewegung, jedes beliebige Ergebnis",
@@ -214,15 +214,15 @@
     },
     {
      "h": "Die Größe folgt aus dem Stop",
-     "p": "Jetzt läuft die Rechnung rückwärts. Du willst ETH bei $2,000 kaufen, mit einem Stop-Loss bei $1,960 — einer Order, die den Trade schließt, wenn der Preis dorthin fällt. Die Distanz sind $40 pro Coin. Du riskierst insgesamt $10, also teilst du: $10 geteilt durch $40 sind 0.25 ETH. Das ist deine Größe, eine $500-Position."
+     "p": "Jetzt läuft die Rechnung rückwärts. Du willst ETH bei $2,000 kaufen, mit einem Stop-Loss bei $1,960 - einer Order, die den Trade schließt, wenn der Preis dorthin fällt. Die Distanz sind $40 pro Coin. Du riskierst insgesamt $10, also teilst du: $10 geteilt durch $40 sind 0.25 ETH. Das ist deine Größe, eine $500-Position."
     },
     {
      "h": "Weiterer Stop, kleinere Größe",
-     "p": "Ändere eine Sache. Setz den Stop stattdessen auf $1,900, eine Distanz von $100 pro Coin. Das Risiko bleibt $10, also wird die Größe $10 geteilt durch $100, also 0.1 ETH — eine $200-Position. Der Stop hat den Trade nicht sicherer oder riskanter gemacht. Er hat verändert, wie viele Coins du bei gleichem festem Risiko halten darfst."
+     "p": "Ändere eine Sache. Setz den Stop stattdessen auf $1,900, eine Distanz von $100 pro Coin. Das Risiko bleibt $10, also wird die Größe $10 geteilt durch $100, also 0.1 ETH - eine $200-Position. Der Stop hat den Trade nicht sicherer oder riskanter gemacht. Er hat verändert, wie viele Coins du bei gleichem festem Risiko halten darfst."
     },
     {
      "h": "Warum 1% und nicht 10%",
-     "p": "Bei 1% Risiko kosten dich zehn Verluste in Folge rund 10% des Kontos, und die Erholungstabelle sagt: Ein 10%-Loch braucht etwa 11% zur Reparatur. Bei 10% Risiko lassen dieselben zehn Verluste etwa ein Drittel von dem übrig, womit du gestartet bist — ein Loch, aus dem du rund 187% herausklettern musst. Dieselben Trades, dasselbe Können, andere Arithmetik."
+     "p": "Bei 1% Risiko kosten dich zehn Verluste in Folge rund 10% des Kontos, und die Erholungstabelle sagt: Ein 10%-Loch braucht etwa 11% zur Reparatur. Bei 10% Risiko lassen dieselben zehn Verluste etwa ein Drittel von dem übrig, womit du gestartet bist - ein Loch, aus dem du rund 187% herausklettern musst. Dieselben Trades, dasselbe Können, andere Arithmetik."
     }
    ],
    "quiz": [
@@ -269,7 +269,7 @@
     },
     {
      "h": "Warum R zwischen Konten reist",
-     "p": "Ein $50-Konto, das $0.50 riskiert, und ein $50,000-Konto, das $500 riskiert, können denselben Trade fahren und beide plus 3R melden. Genau das ist der Sinn. R rechnet die Kontogröße heraus, sodass du deine Trades miteinander vergleichen kannst, mit dem letzten Monat und mit denen von anderen — ohne dass die Dollarbeträge einen davon beeindruckend aussehen lassen."
+     "p": "Ein $50-Konto, das $0.50 riskiert, und ein $50,000-Konto, das $500 riskiert, können denselben Trade fahren und beide plus 3R melden. Genau das ist der Sinn. R rechnet die Kontogröße heraus, sodass du deine Trades miteinander vergleichen kannst, mit dem letzten Monat und mit denen von anderen - ohne dass die Dollarbeträge einen davon beeindruckend aussehen lassen."
     }
    ],
    "quiz": [
@@ -343,7 +343,7 @@
      ]
     },
     {
-     "q": "Bei einem Chance-Risiko-Verhältnis von 3R — welche Trefferquote ist die schwarze Null?",
+     "q": "Bei einem Chance-Risiko-Verhältnis von 3R - welche Trefferquote ist die schwarze Null?",
      "o": [
       "50%",
       "33%",
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Gebühren fallen auf das Notional an",
-     "p": "Eine Futures-Gebühr ist ein Prozentsatz des gesamten Positionswerts — des Notionals — nicht des Geldes, das du hinterlegst. Eröffne eine $6,000-Position und eine Taker-Gebühr von 0.055% kostet $3.30. Schließ sie und du zahlst erneut. Die Gebühr fragt nie, wie viel eigenes Geld hinter dem Trade steckt. Sie sieht nur die Positionsgröße."
+     "p": "Eine Futures-Gebühr ist ein Prozentsatz des gesamten Positionswerts - des Notionals - nicht des Geldes, das du hinterlegst. Eröffne eine $6,000-Position und eine Taker-Gebühr von 0.055% kostet $3.30. Schließ sie und du zahlst erneut. Die Gebühr fragt nie, wie viel eigenes Geld hinter dem Trade steckt. Sie sieht nur die Positionsgröße."
     },
     {
      "h": "Hebel multipliziert die Gebühr",
-     "p": "Hebel lässt einen kleinen Teil deines Geldes — die Margin — eine größere Position kontrollieren. Bei 20x braucht eine $6,000-Position $300 Margin. Die Gebühr von $3.30 sind 0.055% der Position, aber 1.1% deiner $300. Hin und zurück, rein und raus, sind das 2.2% deiner Margin weg, bevor sich der Preis überhaupt bewegt hat."
+     "p": "Hebel lässt einen kleinen Teil deines Geldes - die Margin - eine größere Position kontrollieren. Bei 20x braucht eine $6,000-Position $300 Margin. Die Gebühr von $3.30 sind 0.055% der Position, aber 1.1% deiner $300. Hin und zurück, rein und raus, sind das 2.2% deiner Margin weg, bevor sich der Preis überhaupt bewegt hat."
     },
     {
      "h": "Spread und Slippage kosten auch",
@@ -385,7 +385,7 @@
      ]
     },
     {
-     "q": "Bei 20x — welchen Anteil deiner Margin macht eine 0.055% Taker-Gebühr aus?",
+     "q": "Bei 20x - welchen Anteil deiner Margin macht eine 0.055% Taker-Gebühr aus?",
      "o": [
       "0.055%",
       "0.55%",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Das Ganze, einmal durch",
-     "p": "Konto $1,000. Risiko 1%, also $10. Einstieg ETH bei $2,000, Stop $1,960, Distanz $40. Die Größe ist $10 geteilt durch $40, also 0.25 ETH — eine $500-Position. Ziel $2,120 gibt $120 pro Coin, 0.25 Coins machen also $30. Das sind 3R. Die Gebühren für hin und zurück von 0.11% auf $500 sind $0.55, klein neben $30."
+     "p": "Konto $1,000. Risiko 1%, also $10. Einstieg ETH bei $2,000, Stop $1,960, Distanz $40. Die Größe ist $10 geteilt durch $40, also 0.25 ETH - eine $500-Position. Ziel $2,120 gibt $120 pro Coin, 0.25 Coins machen also $30. Das sind 3R. Die Gebühren für hin und zurück von 0.11% auf $500 sind $0.55, klein neben $30."
     },
     {
      "h": "Die Rechnung sagt nichts voraus",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Du hast jetzt die ganze Rechnung. Öffne die Rechner und spiel deine eigenen Zahlen durch — Konto, Risiko, Stop-Distanz — bis sich das Sizing automatisch anfühlt.",
+    "p": "Du hast jetzt die ganze Rechnung. Öffne die Rechner und spiel deine eigenen Zahlen durch - Konto, Risiko, Stop-Distanz - bis sich das Sizing automatisch anfühlt.",
     "label": "Rechner öffnen →"
    }
   }

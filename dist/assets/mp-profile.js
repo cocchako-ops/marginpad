@@ -1,4 +1,4 @@
-/* Shared trader-profile card + Follow — click any [data-lbu="username"] to open a level-styled profile
+/* Shared trader-profile card + Follow - click any [data-lbu="username"] to open a level-styled profile
    (same card as the homepage leaderboard). Self-contained: injects its own CSS, exposes window.mpOpenProfile.
    Load ONLY on pages that DON'T already have the inline leaderboard handler (e.g. /levels/) to avoid double delegation. */
 (function () {
@@ -96,13 +96,13 @@
         + '<div class="lbm-grid">'
           + stat((s2.trades || 0), s2.season ? 'Trades · season' : 'Trades')
           + stat((s2.winRate || 0) + '%', 'Win rate', s2.winRate >= 50 ? '#34d99a' : '')
-          + stat((s2.bestRoe == null ? '—' : pctC(s2.bestRoe)), 'Best ROE', s2.bestRoe > 0 ? '#34d99a' : '')
-          + stat((s2.bestPnl == null ? '—' : moneyC(s2.bestPnl)), 'Best trade', s2.bestPnl > 0 ? '#34d99a' : '')
+          + stat((s2.bestRoe == null ? '-' : pctC(s2.bestRoe)), 'Best ROE', s2.bestRoe > 0 ? '#34d99a' : '')
+          + stat((s2.bestPnl == null ? '-' : moneyC(s2.bestPnl)), 'Best trade', s2.bestPnl > 0 ? '#34d99a' : '')
           + stat(moneyC(s2.realized || 0), 'Realized P&L', (s2.realized >= 0 ? '#34d99a' : '#ff6c5c'))
           + stat(moneyC(s2.weekPnl || 0), (s2.weekTrades || 0) + ' trades · wk', (s2.weekPnl >= 0 ? '#34d99a' : '#ff6c5c'))
         + '</div>'
         // Personal records. SEASON records since 2026-09-12 (owner: the "all time" table was fed only by closes after 2026-09-06, so a
-        // veteran's real bests were missing) — the server computes them from the close ledger of the current 14-day season (records.scope).
+        // veteran's real bests were missing) - the server computes them from the close ledger of the current 14-day season (records.scope).
         // Values are compacted (k/M, whole-number ROE past 100%) because a 96px tile with nowrap+ellipsis cut "+$12,345.67" in half.
         + (function () { var R = d.records; if (!R || (R.roe == null && R.pnl == null && !R.streak && !R.day)) return '';
             var rec = function (v, l, t) { return '<div class="lbm-r"' + (t ? ' title="' + new Date(t).toISOString().slice(0, 10) + '"' : '') + '><b>' + v + '</b><span>' + l + '</span></div>'; };
@@ -138,7 +138,7 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
-  /* Sheen for the member tag: driven from JS, NOT a CSS @keyframes — animation effects can be turned off
+  /* Sheen for the member tag: driven from JS, NOT a CSS @keyframes - animation effects can be turned off
      at the OS level (the owner runs that way) and keyframes then never paint. A transform-free
      background-position tween always renders, and it stops while the tab is hidden. */
   (function(){ if (window.__mpSheen) return; window.__mpSheen = 1;

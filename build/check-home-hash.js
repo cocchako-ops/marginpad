@@ -1,4 +1,4 @@
-/* CI / pre-deploy guard: greps the SAME file list the stamper writes (app/index.html + all dist/**.html — via
+/* CI / pre-deploy guard: greps the SAME file list the stamper writes (app/index.html + all dist/**.html - via
    lib-html-files) and FAILS (exit 1) if any versioned bundle carries more than one distinct ?v= hash, or if a
    reference to a bundle that should be versioned is still bare. More than one hash means a bump-home-assets run
    missed a file and some page would load a stale bundle against a newer API; a bare reference means the service
@@ -36,9 +36,9 @@ for (const b of Object.keys(seen)) {
   const hashes = Object.keys(seen[b]);
   const bare = seen[b][''] ? [...seen[b]['']] : [];
   const versioned = hashes.filter(x => x);
-  if (bare.length) { bad++; console.error('check-home-hash: FAIL — ' + b + ' referenced WITHOUT ?v= in ' + bare.length + ' file(s): ' + bare.slice(0, 5).join(', ') + (bare.length > 5 ? ' (+' + (bare.length - 5) + ' more)' : '')); }
-  if (versioned.length > 1) { bad++; console.error('check-home-hash: FAIL — ' + b + ' carries ' + versioned.length + ' different hashes (a bump was missed):'); for (const hh of versioned) { const fl = [...seen[b][hh]]; console.error('  ' + hh + '  -> ' + fl.slice(0, 5).join(', ') + (fl.length > 5 ? '  (+' + (fl.length - 5) + ' more)' : '')); } }
+  if (bare.length) { bad++; console.error('check-home-hash: FAIL - ' + b + ' referenced WITHOUT ?v= in ' + bare.length + ' file(s): ' + bare.slice(0, 5).join(', ') + (bare.length > 5 ? ' (+' + (bare.length - 5) + ' more)' : '')); }
+  if (versioned.length > 1) { bad++; console.error('check-home-hash: FAIL - ' + b + ' carries ' + versioned.length + ' different hashes (a bump was missed):'); for (const hh of versioned) { const fl = [...seen[b][hh]]; console.error('  ' + hh + '  -> ' + fl.slice(0, 5).join(', ') + (fl.length > 5 ? '  (+' + (fl.length - 5) + ' more)' : '')); } }
 }
 if (bad) { console.error('Fix: node build/bump-home-assets.js  (then re-run this check).'); process.exit(1); }
 const summary = Object.keys(seen).map(b => b + '=' + Object.keys(seen[b])[0]).join(' ');
-console.log('check-home-hash: OK — one consistent hash per bundle across ' + files.length + ' html files (' + summary + ').');
+console.log('check-home-hash: OK - one consistent hash per bundle across ' + files.length + ' html files (' + summary + ').');

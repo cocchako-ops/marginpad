@@ -1,6 +1,6 @@
 // Inject the shared desktop nav (/assets/mp-nav.js) into every standalone page.
-// Skips: the homepage & language homepages (they carry the inline Browse panel — detected via class="mobnav"),
-// widget embeds (meant for iframes), and anything that already has it. Idempotent — safe to re-run each build.
+// Skips: the homepage & language homepages (they carry the inline Browse panel - detected via class="mobnav"),
+// widget embeds (meant for iframes), and anything that already has it. Idempotent - safe to re-run each build.
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');
@@ -20,7 +20,7 @@ for (const f of walk(ROOT, [])) {
   const rel = path.relative(ROOT, f).replace(/\\/g, '/');
   let html = fs.readFileSync(f, 'utf8');
   if (html.includes('mp-nav.js')) { skipped++; continue; }            // already has it
-  if (html.includes('hmenuBtn')) { skipped++; continue; }             // homepage / lang homepage — already has the inline hamburger + Browse
+  if (html.includes('hmenuBtn')) { skipped++; continue; }             // homepage / lang homepage - already has the inline hamburger + Browse
   if (rel.startsWith('widget/') || rel.includes('/widget/')) { skipped++; continue; } // iframe embeds
   if (!html.includes('</body>')) { skipped++; continue; }
   const i = html.lastIndexOf('</body>');

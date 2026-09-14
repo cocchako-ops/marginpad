@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>El bug de Zcash que pudo haber acuñado ZEC ilimitado — explicado — MarginPad</title>
+<title>El bug de Zcash que pudo haber acuñado ZEC ilimitado - explicado - MarginPad</title>
 <meta name="description" content="Una falla de cuatro años en el pool blindado Orchard de Zcash pudo haber permitido a un atacante falsificar ZEC de forma ilimitada. Qué pasó y qué significa para los traders." />
 <meta name="keywords" content="zcash bug, zcash orchard vulnerability, zec crash, zcash counterfeit bug, zec price drop 2026" />
 <link rel="canonical" href="https://marginpad.io/es/blog/zcash-orchard-counterfeiting-bug/" />
@@ -45,7 +45,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué fue el bug de Zcash Orchard?","acceptedAnswer":{"@type":"Answer","text":"Una falla de solidez en el circuito del pool blindado Orchard, activa desde 2022, que pudo haber permitido a un atacante crear ZEC falsificado, ilimitado e indetectable. Se corrigió con un parche de emergencia y se reveló públicamente el 5 de junio de 2026."}},{"@type":"Question","name":"¿Se llegaron a crear ZEC falsos?","acceptedAnswer":{"@type":"Answer","text":"Los desarrolladores de Zcash dicen que no hay evidencia de que el bug fuera explotado y creen que no se acuñaron monedas falsificadas. Pero como el pool está blindado, no existe una forma criptográfica de probar que la emisión nunca se infló durante esos cuatro años."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bug de Zcash Orchard","item":"https://marginpad.io/es/blog/zcash-orchard-counterfeiting-bug/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -82,23 +82,23 @@
     <div class="meta">Noticias · 5 min de lectura · Actualizado en junio de 2026</div>
     <p>El 5 de junio de 2026, la moneda de privacidad Zcash (ZEC) cayó con fuerza después de que los desarrolladores revelaran una falla crítica que, en teoría, podría haber permitido a alguien falsificar una cantidad ilimitada de ZEC sin que nadie lo notara. Esto es lo que pasó explicado en lenguaje sencillo, y por qué importa aunque nunca toques monedas de privacidad.</p>
     <h2>En qué consistía el bug</h2>
-    <p>La falla vivía en el <strong>pool blindado (shielded) Orchard</strong> — la parte de Zcash que oculta los montos de las transacciones detrás de pruebas de conocimiento cero. Un error de solidez (soundness) en el circuito de Orchard significaba que, bajo las condiciones adecuadas, entradas falsas podían burlar los controles que se supone garantizan que cada moneda es real. Un ingeniero de seguridad, Taylor Hornby, escribió una prueba de concepto funcional que acuñó <strong>ZEC falsificado, ilimitado e indetectable</strong> en una prueba local.</p>
-    <p>La parte inquietante: el bug llevaba activo desde la actualización de Orchard en <strong>mayo de 2022</strong> —unos cuatro años— y, como el pool está blindado, no hay forma de mirar atrás y probar si alguien lo explotó.</p>
+    <p>La falla vivía en el <strong>pool blindado (shielded) Orchard</strong> - la parte de Zcash que oculta los montos de las transacciones detrás de pruebas de conocimiento cero. Un error de solidez (soundness) en el circuito de Orchard significaba que, bajo las condiciones adecuadas, entradas falsas podían burlar los controles que se supone garantizan que cada moneda es real. Un ingeniero de seguridad, Taylor Hornby, escribió una prueba de concepto funcional que acuñó <strong>ZEC falsificado, ilimitado e indetectable</strong> en una prueba local.</p>
+    <p>La parte inquietante: el bug llevaba activo desde la actualización de Orchard en <strong>mayo de 2022</strong> -unos cuatro años- y, como el pool está blindado, no hay forma de mirar atrás y probar si alguien lo explotó.</p>
     <h2>Cómo se descubrió</h2>
     <p>Hornby descubrió el problema el 29 de mayo de 2026 durante una revisión específica del circuito de Orchard, según se reporta con ayuda de un modelo de IA. Lo reveló en privado; los desarrolladores de Zcash lanzaron un parche de emergencia el 1 de junio, y Shielded Labs lo hizo público el 5 de junio. El equipo dice que no hay evidencia de explotación y cree que no se crearon monedas falsas.</p>
     <h2>Por qué se desplomó el precio</h2>
-    <p>ZEC cayó cerca de un 30–50% en los días alrededor de la revelación —de unos $624 hacia $309 en los mínimos. Las ventas se aceleraron cuando Arthur Hayes, uno de los defensores más visibles de la reciente narrativa de las monedas de privacidad, salió de su posición. Para una moneda cuyo argumento entero es una emisión verificable y sin necesidad de confianza, "no podemos probar que la emisión nunca se infló" es casi la peor frase que se puede leer.</p>
+    <p>ZEC cayó cerca de un 30–50% en los días alrededor de la revelación -de unos $624 hacia $309 en los mínimos. Las ventas se aceleraron cuando Arthur Hayes, uno de los defensores más visibles de la reciente narrativa de las monedas de privacidad, salió de su posición. Para una moneda cuyo argumento entero es una emisión verificable y sin necesidad de confianza, "no podemos probar que la emisión nunca se infló" es casi la peor frase que se puede leer.</p>
     <h2>La lección para los traders</h2>
     <p>No necesitas tener ZEC para que esto te importe. Eventos de un solo titular mueven las criptomonedas un 30–50% en cuestión de horas, y las posiciones apalancadas se liquidan mucho antes de que se asiente el polvo. Por eso existen precisamente el dimensionamiento de posición y los stops:</p>
     <ul>
       <li>Dimensiona cada operación por <a href="/es/blog/crypto-position-sizing-risk-management/">riesgo, no por convicción</a>, para que un mal titular no pueda acabar con tu cuenta.</li>
       <li>Conoce tu <a href="/es/calculators?c=liq">precio de liquidación</a> antes de entrar, y mantén tu stop por dentro de él.</li>
-      <li>Con apalancamiento alto, un gap del 30% puede saltarse tu stop por completo — mira <a href="/es/blog/crypto-leverage-explained/">cuánto apalancamiento es demasiado</a>.</li>
+      <li>Con apalancamiento alto, un gap del 30% puede saltarse tu stop por completo - mira <a href="/es/blog/crypto-leverage-explained/">cuánto apalancamiento es demasiado</a>.</li>
     </ul>
     <div class="callout"><div class="k">Planifica primero el riesgo a la baja</div><p style="margin-bottom:14px">Revisa tu liquidación y dimensiona por riesgo antes de la próxima sorpresa.</p><a class="cta" href="/es/calculators?c=liq">Abrir las calculadoras →</a></div>
     <p style="font-size:13px;color:#8a93a0">Comentario informativo con fines educativos, no es asesoría financiera ni de seguridad. Las cifras se basan en la cobertura periodística en torno a la revelación del 5 de junio de 2026 y pueden ser revisadas.</p>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -125,6 +125,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

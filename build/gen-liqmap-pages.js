@@ -9,7 +9,7 @@ const COINS = [
   ['BNB', 'BNB'], ['ADA', 'Cardano'], ['LINK', 'Chainlink'], ['AVAX', 'Avalanche'], ['LTC', 'Litecoin'],
   ['TRX', 'TRON'], ['DOT', 'Polkadot'], ['PEPE', 'Pepe'], ['WIF', 'dogwifhat'], ['SUI', 'Sui'],
   ['HYPE', 'Hyperliquid'], ['SHIB', 'Shiba Inu'], ['NEAR', 'NEAR Protocol'],
-  // +14 (2026-08-16 SEO kompas: alt-coin map SERPs are soft — even X posts rank; every new slug auto-gets the SSR live block via the /*-liquidation-map/* middle-glob)
+  // +14 (2026-08-16 SEO kompas: alt-coin map SERPs are soft - even X posts rank; every new slug auto-gets the SSR live block via the /*-liquidation-map/* middle-glob)
   ['TON', 'Toncoin'], ['ATOM', 'Cosmos'], ['APT', 'Aptos'], ['ARB', 'Arbitrum'], ['OP', 'Optimism'],
   ['INJ', 'Injective'], ['SEI', 'Sei'], ['FIL', 'Filecoin'], ['UNI', 'Uniswap'], ['AAVE', 'Aave'],
   ['BONK', 'Bonk'], ['FLOKI', 'Floki'], ['ORDI', 'ORDI'], ['TAO', 'Bittensor'],
@@ -27,8 +27,8 @@ const SNAP_TOTSHARE = (function(){ var t = 0; for (var k in SNAP) t += SNAP[k].o
 const SNAP_DATE = '17 August 2026';
 const faq = (name, sym) => [
   { q: `What is a ${name} liquidation map?`, a: `A ${name} liquidation map shows where leveraged ${sym} positions are being forcibly closed. MarginPad plots real liquidation events from nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) as bubbles on the ${sym} price chart, with a price-level histogram showing where they cluster.` },
-  { q: `Is the ${sym} liquidation data real?`, a: `Yes — the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional "Clusters" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate.` },
-  { q: `How do I read the ${sym} liquidation map?`, a: `Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level — the densest bands are where most leverage was wiped out.` },
+  { q: `Is the ${sym} liquidation data real?`, a: `Yes - the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional "Clusters" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate.` },
+  { q: `How do I read the ${sym} liquidation map?`, a: `Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level - the densest bands are where most leverage was wiped out.` },
   { q: `Is the ${name} liquidation map free?`, a: `The map opens without a signup and the live heatmap runs free for a 5-minute preview; unlimited access is part of MarginPad Premium ($3.99/mo). You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers.` },
 ];
 
@@ -46,17 +46,17 @@ function page(sym, name) {
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${name} (${sym}) Liquidation Map — Live, Free, No Login | MarginPad</title>
+<title>${name} (${sym}) Liquidation Map - Live, Free, No Login | MarginPad</title>
 <meta name="description" content="${desc}" />
 <meta name="keywords" content="${sym} liquidation map, ${name} liquidations, ${sym} liquidation heatmap, crypto liquidations, ${sym} liquidation levels, liquidation chart" />
 <link rel="canonical" href="${url}" />
-<meta property="og:title" content="${name} (${sym}) Liquidation Map — Live" />
+<meta property="og:title" content="${name} (${sym}) Liquidation Map - Live" />
 <meta property="og:description" content="${desc}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="${name} (${sym}) Liquidation Map — Live" />
+<meta name="twitter:title" content="${name} (${sym}) Liquidation Map - Live" />
 <meta name="twitter:description" content="${desc}" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -78,25 +78,25 @@ ${crumbLd}
     <h1>${name} (${sym}) Liquidation Map</h1>
     <div class="meta">Live liquidation data · 9 exchanges</div>
     <div class="liqmap-cta top"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a><span class="cta-s">Free 5-minute live preview · no login · unlimited with Premium</span></div>
-    <p><strong>What this is:</strong> a ${name} liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) — it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
+    <p><strong>What this is:</strong> a ${name} liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
     <h2>What the ${sym} liquidation map shows</h2>
-    <p>MarginPad streams real liquidation events from nine perpetual-futures venues — Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
+    <p>MarginPad streams real liquidation events from nine perpetual-futures venues - Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex - over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
     <h2>How to read it</h2>
-    <p>High-leverage positions liquidate on tiny moves, so they sit close to the current ${sym} price; lower-leverage positions sit further away. Dense histogram bands act like magnets and as support or resistance — once a cluster is consumed, that level often flips. Red (long) clusters sit below price; green (short) clusters sit above. Hover any bubble for the exchange, side, size and time.</p>
+    <p>High-leverage positions liquidate on tiny moves, so they sit close to the current ${sym} price; lower-leverage positions sit further away. Dense histogram bands act like magnets and as support or resistance - once a cluster is consumed, that level often flips. Red (long) clusters sit below price; green (short) clusters sit above. Hover any bubble for the exchange, side, size and time.</p>
     <h2>Real liquidations vs estimated clusters</h2>
-    <p>The bubbles and histogram are <strong>real events</strong>. There is also an optional <strong>Clusters</strong> layer — a model that estimates where future ${sym} liquidations are likely to sit, built from open-interest changes and an assumed leverage distribution. It is clearly labelled as an estimate, not exchange order-book data. A third <strong>Levels</strong> layer overlays the classic theoretical liquidation prices by leverage. Toggle any combination.</p>
+    <p>The bubbles and histogram are <strong>real events</strong>. There is also an optional <strong>Clusters</strong> layer - a model that estimates where future ${sym} liquidations are likely to sit, built from open-interest changes and an assumed leverage distribution. It is clearly labelled as an estimate, not exchange order-book data. A third <strong>Levels</strong> layer overlays the classic theoretical liquidation prices by leverage. Toggle any combination.</p>
     <div class="liqmap-cta"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a></div>
     ${(function(){var d=snapOf(sym);if(!d)return '';
       var depth = d.b==='deep' ? `${sym} is one of the deepest perpetual markets there is, and a map on a book this size behaves differently from a small-cap one: it takes real size to push price through a cluster, so bands tend to be consumed gradually rather than in one sweep.`
-        : d.b==='mid' ? `${sym} sits in the middle of the depth range — liquid enough that clusters do not evaporate on a single order, thin enough that a determined move can run several bands in a row. This is the size where cascades are most readable on a map.`
+        : d.b==='mid' ? `${sym} sits in the middle of the depth range - liquid enough that clusters do not evaporate on a single order, thin enough that a determined move can run several bands in a row. This is the size where cascades are most readable on a map.`
         : `${sym} is a thin market by open-interest standards, and that changes how you read this map: the same dollar flow moves price much further than it would on a major, so clusters sit closer together and get taken out in fast, violent sequences rather than one at a time.`;
       var liqLine = d.liq > 0 ? ` Over the 24 hours before that snapshot, ${usdShort(d.liq)} of ${sym} positions were liquidated.` : '';
-      return `<h2>How deep is the ${sym} perpetual market?</h2>\n    <p>When this page was last rebuilt (${SNAP_DATE}), ${sym} perpetuals carried <strong>${usdShort(d.oi)}</strong> of open interest — ${sym === 'BTC' ? `<strong>${SNAP_TOTSHARE}%</strong> of all open interest across the ${SNAP_N} perpetual markets we track` : `${d.share < 0.1 ? `under <strong>0.1%</strong> of Bitcoin's` : `about <strong>${d.share.toFixed(1)}%</strong> of Bitcoin's`}`}.${liqLine} Those figures are a snapshot; the live box at the top of this page always shows the current ones.</p>\n    <p>${depth}</p>`;})()}
+      return `<h2>How deep is the ${sym} perpetual market?</h2>\n    <p>When this page was last rebuilt (${SNAP_DATE}), ${sym} perpetuals carried <strong>${usdShort(d.oi)}</strong> of open interest - ${sym === 'BTC' ? `<strong>${SNAP_TOTSHARE}%</strong> of all open interest across the ${SNAP_N} perpetual markets we track` : `${d.share < 0.1 ? `under <strong>0.1%</strong> of Bitcoin's` : `about <strong>${d.share.toFixed(1)}%</strong> of Bitcoin's`}`}.${liqLine} Those figures are a snapshot; the live box at the top of this page always shows the current ones.</p>\n    <p>${depth}</p>`;})()}
     <h2>How traders use the ${sym} liquidation map</h2>
-    <p>Liquidation clusters are where forced orders pile up, and price is drawn toward them like a magnet — a large band of ${sym} long liquidations below spot is fuel for a flush lower, while a wall of short liquidations above is fuel for a squeeze higher. Many traders use the map to (1) avoid entering just above a thick long-liquidation band, (2) anticipate where a cascade might accelerate or exhaust, and (3) place take-profits just ahead of a cluster rather than inside it. It pairs naturally with <a href="/${sym.toLowerCase()}-liquidation-calculator/">${sym} liquidation prices</a> for your own position and the live <a href="/liquidations/">${sym} 24h liquidation total</a>.</p>
-    <p>None of this is a signal on its own — clusters get consumed and levels flip. Treat the map as context, not a trade trigger, and rehearse the idea risk-free on the <a href="/paper-trade?coin=${sym}">${sym} paper-trading terminal</a> before you size up.</p>
+    <p>Liquidation clusters are where forced orders pile up, and price is drawn toward them like a magnet - a large band of ${sym} long liquidations below spot is fuel for a flush lower, while a wall of short liquidations above is fuel for a squeeze higher. Many traders use the map to (1) avoid entering just above a thick long-liquidation band, (2) anticipate where a cascade might accelerate or exhaust, and (3) place take-profits just ahead of a cluster rather than inside it. It pairs naturally with <a href="/${sym.toLowerCase()}-liquidation-calculator/">${sym} liquidation prices</a> for your own position and the live <a href="/liquidations/">${sym} 24h liquidation total</a>.</p>
+    <p>None of this is a signal on its own - clusters get consumed and levels flip. Treat the map as context, not a trade trigger, and rehearse the idea risk-free on the <a href="/paper-trade?coin=${sym}">${sym} paper-trading terminal</a> before you size up.</p>
     <div class="toolshow">
-      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-head">Everything free on MarginPad - no signup</div>
       <div class="ts-grid">
         <a class="ts-card" href="/calculators?c=liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
         <a class="ts-card" href="/heatmap"><b>Liquidation Heatmap</b><small>All coins, live</small></a>

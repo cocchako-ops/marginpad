@@ -1,7 +1,7 @@
 // BitMEX liquidations. Endpoint: wss://www.bitmex.com/realtime
 // Topic: `liquidation` (ONE subscription = ALL symbols, market-wide). Verified from BitMEX API at build time.
 //   table 'liquidation', action 'partial'|'insert'|'update'|'delete', data:[{orderID, symbol, side, price, leavesQty}]
-//   We emit on action==='insert' only — a NEW liquidation order. (partial = snapshot of standing orders on
+//   We emit on action==='insert' only - a NEW liquidation order. (partial = snapshot of standing orders on
 //   connect; emitting it would re-ingest the same orders on every reconnect/recycle.)
 // SIDE:  the liquidation ORDER side. side==='Sell' liquidates a LONG => long_liquidated; 'Buy' => short_liquidated.
 // SIZE:  leavesQty is in CONTRACTS. We fetch instrument metadata once to convert to base qty + USD notional:
@@ -16,7 +16,7 @@ import { log } from '../logger.js';
 export class BitmexCollector extends BaseCollector {
   constructor(opts) {
     super('bitmex', opts);
-    this.silenceMs = 40000;  // fed by ping/pong (~15s) — no reconnect storms during calm
+    this.silenceMs = 40000;  // fed by ping/pong (~15s) - no reconnect storms during calm
     this.staleMs = 0;        // liquidations are sparse here; do NOT event-stale (would thrash when quiet)
     this.meta = {};          // symbol -> { base, isInverse, isQuanto, u2pm }
   }
@@ -39,7 +39,7 @@ export class BitmexCollector extends BaseCollector {
       }
       log.info('[bitmex] loaded instrument metadata', { count: n });
     } catch (e) {
-      log.warn('[bitmex] failed to load instrument metadata — will skip unknown symbols', { e: String(e) });
+      log.warn('[bitmex] failed to load instrument metadata - will skip unknown symbols', { e: String(e) });
     }
   }
 

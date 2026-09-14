@@ -2,22 +2,22 @@
 // stream: core-perp liqs are engine-internal (their tx hash resolves to the SetGlobalAction oracle update,
 // verified empirically), and the ONLY public evidence is a fill carrying `liquidation:{liquidatedUser,markPx,
 // method}` metadata in userFills. Detection strategy ("counterparty harvest"):
-//   1. WS `trades` for EVERY listed coin gives [buyer, seller] on each trade — one side of a liquidation trade
+//   1. WS `trades` for EVERY listed coin gives [buyer, seller] on each trade - one side of a liquidation trade
 //      IS the liquidated user (their forced market order crosses the book).
 //   2. Sizeable trades become candidates; a worker polls `userFillsByTime` for those users (rate-limited
 //      ~43/min, largest-notional first) and checks each fill's `liquidation` field.
 //   3. Confirmed fills are emitted in the normalized shape; dedupe by fill tid.
-// v3: coverage = the FULL universe — core perps (~180 live) + every builder dex (xyz stocks/commodities, flx,
+// v3: coverage = the FULL universe - core perps (~180 live) + every builder dex (xyz stocks/commodities, flx,
 // vntl, ...; coin names arrive prefixed "xyz:CL" → emitted uppercased "XYZ:CL", same display as Coinglass).
 // Coverage stays notional-weighted: whales and cascades are caught; dust may slip under HL's API weight limits.
 import { log } from '../logger.js';
 
 const INFO = 'https://api.hyperliquid.xyz/info';
-const MIN_NOTIONAL = 1000;    // candidate threshold ($) — the 15-min fills window amortizes one check across ALL the user's recent liqs
+const MIN_NOTIONAL = 1000;    // candidate threshold ($) - the 15-min fills window amortizes one check across ALL the user's recent liqs
 const CHECK_MS = 1400;        // one userFillsByTime per 1.4s ≈ 43/min (HL weight ceiling is ~60/min)
-const RECHECK_USER_MS = 600000; // a checked user is silent for 10 min — their window already covered it
+const RECHECK_USER_MS = 600000; // a checked user is silent for 10 min - their window already covered it
 const FILLS_WINDOW_MS = 900000; // look at the user's last 15 min of fills (proven in the 8-min diagnostic: 210 liqs found)
-const MAX_SUBS = 900;         // HL allows 1000 WS subscriptions/IP — keep headroom
+const MAX_SUBS = 900;         // HL allows 1000 WS subscriptions/IP - keep headroom
 const REFRESH_COINS_MS = 6 * 3600000; // re-pull the universe every 6h (new listings join automatically)
 
 export class HyperliquidLiqCollector {
@@ -27,7 +27,7 @@ export class HyperliquidLiqCollector {
     this.onEvent = onEvent || (() => {});
     this.connected = false; this.lastMsgAt = null; this.lastEventAt = null; this.eventsTotal = 0;
     this.coins = [];                 // full subscription list (core + builder dexs)
-    this.candidates = [];            // {user, notional} — unique users seen on sizeable trades
+    this.candidates = [];            // {user, notional} - unique users seen on sizeable trades
     this.queued = new Set();
     this.checked = new Map();        // user -> last checked ts
     this.seenTid = new Set();        // emitted fill tids
@@ -65,7 +65,7 @@ export class HyperliquidLiqCollector {
   start() {
     this.connect();
     this.workerT = setInterval(() => this.checkNext().catch(() => {}), CHECK_MS);
-    this.pingT = setInterval(() => { try { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify({ method: 'ping' })); } catch (e) {} }, 30000); // HL drops idle sockets after ~60s — keep it warm (pong also refreshes lastMsgAt)
+    this.pingT = setInterval(() => { try { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify({ method: 'ping' })); } catch (e) {} }, 30000); // HL drops idle sockets after ~60s - keep it warm (pong also refreshes lastMsgAt)
     this.wdT = setInterval(() => this.watchdog(), 15000); // self-heal backstop: force a reconnect if the socket is stuck-open or the feed went silent (the event-driven onclose reconnect can't catch those)
   }
   shutdown() { try { if (this.ws) { this.ws.onclose = null; this.ws.close(); } } catch (e) {} if (this.workerT) clearInterval(this.workerT); if (this.reT) clearTimeout(this.reT); if (this.coinT) clearInterval(this.coinT); if (this.pingT) clearInterval(this.pingT); if (this.wdT) clearInterval(this.wdT); }
@@ -107,7 +107,7 @@ export class HyperliquidLiqCollector {
         for (const t of d.data) {
           const px = +t.px, sz = +t.sz; if (!(px > 0) || !(sz > 0)) continue;
           const notional = px * sz; if (notional < MIN_NOTIONAL) continue;
-          // BOTH participants become candidates — a liquidation shows up in EITHER side's fills (the liquidated
+          // BOTH participants become candidates - a liquidation shows up in EITHER side's fills (the liquidated
           // user's own fill AND the counterparty's fill both carry the liquidation metadata)
           for (const user of (t.users || [])) {
             if (!user) continue;

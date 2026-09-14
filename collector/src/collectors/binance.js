@@ -1,10 +1,10 @@
 // Binance USDT-M Futures liquidations. Stream: wss://fstream.binance.com/market/ws/!forceOrder@arr
 // MIGRATED 2026-07-24: Binance split futures WS into /public /market /private (notice 2026-03-06) and KILLED
-// the legacy /ws/ paths on 2026-04-23 — legacy connects fine but pushes NOTHING (that silent mute looked
+// the legacy /ws/ paths on 2026-04-23 - legacy connects fine but pushes NOTHING (that silent mute looked
 // exactly like a geo-block and cost us a proxy-hunting detour; it was just a dead endpoint).
 // Schema verified at build time from Binance derivatives docs.
 //   Message: { e:'forceOrder', E:eventTime, o:{ s:symbol, S:side, q:origQty, p:price, ap:avgPrice, T:tradeTime, ... } }
-// QUIRK: this is a SNAPSHOT stream — only the largest liquidation per symbol per ~1000ms is pushed,
+// QUIRK: this is a SNAPSHOT stream - only the largest liquidation per symbol per ~1000ms is pushed,
 //        so totals undercount true liquidation flow. Documented in UI tooltip.
 // SIDE:  o.S === 'SELL'  => a LONG position was force-closed (sold)  => 'long_liquidated'
 //        o.S === 'BUY'   => a SHORT position was force-closed (bought) => 'short_liquidated'
@@ -15,7 +15,7 @@ import { log } from '../logger.js';
 const SUFFIX = 'USDT';
 
 // Build an HTTP(S)-CONNECT proxy dispatcher from a URL, supporting embedded credentials
-// (http://user:pass@host:port). undici's ProxyAgent does HTTP CONNECT — NOT SOCKS.
+// (http://user:pass@host:port). undici's ProxyAgent does HTTP CONNECT - NOT SOCKS.
 function makeProxyAgent(ProxyAgent, u) {
   const url = new URL(u);
   const opts = { uri: url.origin };
@@ -34,7 +34,7 @@ export class BinanceCollector extends BaseCollector {
     this._set = new Set(this.symbols);
     this._dispatcher = null; // set in init() when a proxy is configured
   }
-  url() { return 'wss://fstream.binance.com/market/ws/!forceOrder@arr'; } // /market category since the 2026-04 URL split — forceOrder lives there (verified: legacy /ws/ = mute, /market/ws/ = data)
+  url() { return 'wss://fstream.binance.com/market/ws/!forceOrder@arr'; } // /market category since the 2026-04 URL split - forceOrder lives there (verified: legacy /ws/ = mute, /market/ws/ = data)
   wsOptions() { return this._dispatcher ? { dispatcher: this._dispatcher } : undefined; }
 
   async init() {
@@ -47,10 +47,10 @@ export class BinanceCollector extends BaseCollector {
       this._dispatcher = makeProxyAgent(ProxyAgent, config.binanceProxy);
       log.info('[binance] routing via proxy', { proxy: new URL(config.binanceProxy).host });
     } catch (e) {
-      log.warn('[binance] proxy setup failed (run `npm install` for undici?) — connecting directly', { e: String(e) });
+      log.warn('[binance] proxy setup failed (run `npm install` for undici?) - connecting directly', { e: String(e) });
     }
   }
-  // All-market stream is path-based — no subscribe frame, no app ping (protocol ping is auto-answered).
+  // All-market stream is path-based - no subscribe frame, no app ping (protocol ping is auto-answered).
   parse(raw) {
     const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString() : String(raw);
     let j; try { j = JSON.parse(text); } catch { return []; }

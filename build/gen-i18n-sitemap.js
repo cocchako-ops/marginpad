@@ -1,7 +1,7 @@
 /* Dedicated sitemap for the translated SEO pages that carry real per-language prose:
    /<lang>/<a>-vs-<b>/ (exchange comparisons), /<lang>/guides/<slug>/, and the translated
    /<lang>/<best-for-slug>/ cases. These pages exist on disk with self-canonical + full
-   hreflang, but were not listed in any sitemap — this surfaces them to search engines.
+   hreflang, but were not listed in any sitemap - this surfaces them to search engines.
    Kept SEPARATE from the main sitemap.xml so the core pages stay the primary signal.
    Only lists files that actually exist on disk (no 404s) and only bestfor slugs that are
    genuinely translated (the newest cases fall back to English and are excluded).
@@ -9,12 +9,12 @@
 const fs = require('fs');
 const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
-// 2026-08-18: emptied deliberately — the translated SEO pages this sitemap listed were removed
+// 2026-08-18: emptied deliberately - the translated SEO pages this sitemap listed were removed
 // (1,008 pages, 47 pageviews and 7 Google visits in 90 days). A sitemap that lists redirects or
 // 404s wastes crawl budget and is a quality signal in itself. Restore alongside the generators.
 // was: const LANGS = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
 const LANGS = [];
-const { CASES } = require('./data/bestfor-cases-i18n');   // CASES[lang][slug] — authoritative translated set
+const { CASES } = require('./data/bestfor-cases-i18n');   // CASES[lang][slug] - authoritative translated set
 const today = new Date().toISOString().slice(0, 10);
 const exists = p => fs.existsSync(path.join(p, 'index.html'));
 
@@ -35,7 +35,7 @@ for (const lang of LANGS) {
   if (fs.existsSync(gdir)) for (const g of fs.readdirSync(gdir)) {
     if (exists(path.join(gdir, g))) { add(`https://marginpad.io/${lang}/guides/${g}/`, '0.5'); nGuide++; }
   }
-  // best-for  /<lang>/<slug>/  — only genuinely translated slugs
+  // best-for  /<lang>/<slug>/  - only genuinely translated slugs
   const tr = CASES[lang] || {};
   for (const slug of Object.keys(tr)) {
     if (exists(path.join(base, slug))) { add(`https://marginpad.io/${lang}/${slug}/`, '0.5'); nBest++; }

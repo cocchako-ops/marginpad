@@ -1,4 +1,4 @@
-/* Spanish site layer — HTML segmenter shared by extract.js / check.js / gen-pages.js (2026-09-12).
+/* Spanish site layer - HTML segmenter shared by extract.js / check.js / gen-pages.js (2026-09-12).
    No parser dependency: a tolerant tokenizer for our own generated markup.
    A SEGMENT is the smallest run of text + inline elements inside a block container, kept as raw HTML
    ("Practice on <b>live</b> prices" is ONE segment) so a translator sees whole sentences.
@@ -39,7 +39,7 @@ function tokenize(src) {
     const selfClosing = /\/\s*$/.test(attrsRaw);
     flushText(lt);
     if (!close && RAW.has(name) && !selfClosing) {
-      // raw body until matching close (svg may nest — count depth for svg only)
+      // raw body until matching close (svg may nest - count depth for svg only)
       let depth = 1, k = e, re = new RegExp('<(/?)' + name + '\\b', 'ig'); re.lastIndex = e; let mm, endTag = -1;
       while ((mm = re.exec(src))) { if (mm[1]) { depth--; if (depth === 0) { endTag = mm.index; break; } } else if (name === 'svg') depth++; }
       const closeEnd = endTag === -1 ? n : src.indexOf('>', endTag) + 1;

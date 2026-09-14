@@ -26,12 +26,12 @@ const EN_SHARED = {
   tagBest: 'Top pick', openCta: 'Open {X} account →', offers: '{A} offers {WHY}.',
   thExchange: 'Exchange', thMaxLev: 'Max lev', thMaker: 'Maker', thTaker: 'Taker', thKnown: 'Best known for',
   h2cmp: 'Side-by-side comparison', h2rank: 'How we rank',
-  rankP: 'We weight the factors that matter for this use case — here, primarily <strong>{METRIC}</strong> — alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/calculators?c=liq">liquidation calculator</a> and practice risk-free in <a href="/paper-trade">Paper Trade</a>.',
-  updated: 'Updated for 2026. Links are referral links — see disclosure below.',
+  rankP: 'We weight the factors that matter for this use case - here, primarily <strong>{METRIC}</strong> - alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/calculators?c=liq">liquidation calculator</a> and practice risk-free in <a href="/paper-trade">Paper Trade</a>.',
+  updated: 'Updated for 2026. Links are referral links - see disclosure below.',
   relBeginners: 'For beginners', relLowFee: 'Lowest fees', relHighLev: 'Highest leverage', relAlt: 'For altcoins', relDay: 'For day trading',
-  disclosure: 'Disclosure: the exchange links above are referral links. If you sign up through them MarginPad may earn a commission at no extra cost to you — it keeps the tools free. Not financial advice; trade at your own risk.',
+  disclosure: 'Disclosure: the exchange links above are referral links. If you sign up through them MarginPad may earn a commission at no extra cost to you - it keeps the tools free. Not financial advice; trade at your own risk.',
   faqFreeQ: 'Are these exchanges free to use?',
-  faqFreeA: 'Yes — opening an account is free on all of them; you only pay trading fees when you trade. The links here are referral links that support MarginPad at no cost to you.',
+  faqFreeA: 'Yes - opening an account is free on all of them; you only pay trading fees when you trade. The links here are referral links that support MarginPad at no cost to you.',
   faqTopA: 'Our top pick is {TOP}, which offers {TOPWHY}. Runners-up are {R1} and {R2}.',
   mLev: 'Max leverage', mTaker: 'Taker fee',
   navCalc: 'Calculators', navBlog: 'Blog', navGloss: 'Glossary', crumbHome: 'Home',
@@ -48,39 +48,39 @@ const EX = {
 
 const CASES = [
   { slug: 'best-crypto-exchange-for-beginners', title: 'Best Crypto Exchange for Beginners (2026)', h1: 'Best crypto exchange for beginners',
-    intro: 'New to leverage? You want a clean interface, fair fees and deep liquidity so your first trades fill well — without a wall of pro tools in the way. Here are the best beginner-friendly futures exchanges, ranked.',
+    intro: 'New to leverage? You want a clean interface, fair fees and deep liquidity so your first trades fill well - without a wall of pro tools in the way. Here are the best beginner-friendly futures exchanges, ranked.',
     rank: ['bybit', 'okx', 'kucoin', 'binance', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
     why: { bybit: 'the cleanest, least intimidating interface of the majors, with deep liquidity so your first trades fill at a fair price', okx: 'a simple mode alongside its pro tools and a unified account that is easy to follow', kucoin: 'easy onboarding and a huge coin selection once you find your feet', binance: 'the deepest markets, though the interface can overwhelm a first-timer', kraken: 'a strong reputation for security and support if trust matters most' },
     kw: 'best crypto exchange for beginners, beginner futures exchange, easiest crypto exchange, best exchange to start trading' },
   { slug: 'lowest-fee-crypto-exchange', title: 'Lowest-Fee Crypto Futures Exchange (2026)', h1: 'Lowest-fee crypto futures exchange',
-    intro: 'Fees compound fast when you trade often. This ranking is by standard taker fee on USDT perpetuals — before VIP tiers or token discounts.',
+    intro: 'Fees compound fast when you trade often. This ranking is by standard taker fee on USDT perpetuals - before VIP tiers or token discounts.',
     rank: ['binance', 'bybit', 'okx', 'kraken', 'kucoin'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
     why: { binance: 'the lowest standard taker fee of the majors at 0.04%, before VIP or BNB discounts', bybit: 'very competitive fees plus a fast engine, so slippage stays low too', okx: 'low fees with maker rebates at higher tiers', kraken: 'mid-pack fees but unmatched trust', kucoin: 'slightly higher taker fees, offset by frequent promos' },
     kw: 'lowest fee crypto exchange, cheapest crypto futures, low fee futures exchange, crypto exchange fee comparison' },
   { slug: 'highest-leverage-crypto-exchange', title: 'Highest-Leverage Crypto Exchange (2026)', h1: 'Highest-leverage crypto exchange',
-    intro: 'Some venues offer up to 125× on majors. Higher leverage means a tiny move can liquidate you — always check your liquidation price first. Ranked by maximum leverage.',
+    intro: 'Some venues offer up to 125× on majors. Higher leverage means a tiny move can liquidate you - always check your liquidation price first. Ranked by maximum leverage.',
     rank: ['binance', 'okx', 'bybit', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
     why: { binance: 'up to 125× on BTC and ETH with the deepest liquidity to back it', okx: '125× on majors with pro-grade order types', bybit: '100× on majors with a fast, reliable engine', kucoin: '100× across a wide altcoin list', kraken: 'a conservative 50× cap, favouring safety over extremes' },
     kw: 'highest leverage crypto exchange, 125x crypto exchange, max leverage futures, high leverage trading' },
   { slug: 'best-crypto-exchange-for-altcoins', title: 'Best Crypto Exchange for Altcoin Futures (2026)', h1: 'Best crypto exchange for altcoin futures',
     intro: 'Trading smaller caps? You want the widest perpetual selection and enough liquidity to get filled. Ranked for altcoin coverage.',
     rank: ['kucoin', 'binance', 'bybit', 'okx', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
-    why: { kucoin: 'one of the largest altcoin futures selections anywhere — new listings arrive fast', binance: 'the widest deep-liquidity perp range among the top venues', bybit: 'a growing altcoin list with tight spreads on the popular names', okx: 'solid altcoin coverage with a clean pro interface', kraken: 'a narrower list focused on the larger caps' },
+    why: { kucoin: 'one of the largest altcoin futures selections anywhere - new listings arrive fast', binance: 'the widest deep-liquidity perp range among the top venues', bybit: 'a growing altcoin list with tight spreads on the popular names', okx: 'solid altcoin coverage with a clean pro interface', kraken: 'a narrower list focused on the larger caps' },
     kw: 'best exchange for altcoins, altcoin futures exchange, best altcoin perpetuals, altcoin leverage trading' },
   { slug: 'best-crypto-exchange-for-day-trading', title: 'Best Crypto Exchange for Day Trading (2026)', h1: 'Best crypto exchange for day trading',
     intro: 'Active intraday trading rewards low fees, a fast matching engine and deep books. Ranked for day traders and scalpers.',
     rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
-    why: { bybit: 'a fast matching engine plus low fees — built for high order volume', binance: 'the deepest books, so large orders move price the least', okx: 'advanced order types for precise entries and exits', kucoin: 'plenty of pairs to rotate through during the day', kraken: 'reliable, but lower leverage and fewer perps' },
+    why: { bybit: 'a fast matching engine plus low fees - built for high order volume', binance: 'the deepest books, so large orders move price the least', okx: 'advanced order types for precise entries and exits', kucoin: 'plenty of pairs to rotate through during the day', kraken: 'reliable, but lower leverage and fewer perps' },
     kw: 'best exchange for day trading crypto, day trading futures exchange, best scalping exchange, intraday crypto trading' },
   { slug: 'best-crypto-futures-exchange', title: 'Best Crypto Futures Exchange (2026)', h1: 'Best crypto futures exchange',
     intro: 'The best all-round futures venue balances deep liquidity, low fees, high leverage and a fast, reliable engine. Here are the top crypto futures exchanges for 2026, ranked overall.',
     rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
-    why: { bybit: 'the best all-round package — a fast engine, deep USDT-perp liquidity and low fees in a clean interface', binance: 'the largest volume and the widest pair list, with 125× on the majors', okx: 'pro-grade tools and a unified account, with strong liquidity across the board', kucoin: 'a huge altcoin futures range for traders who rotate beyond the majors', kraken: 'a trusted, security-first venue, though with lower leverage and fewer perps' },
+    why: { bybit: 'the best all-round package - a fast engine, deep USDT-perp liquidity and low fees in a clean interface', binance: 'the largest volume and the widest pair list, with 125× on the majors', okx: 'pro-grade tools and a unified account, with strong liquidity across the board', kucoin: 'a huge altcoin futures range for traders who rotate beyond the majors', kraken: 'a trusted, security-first venue, though with lower leverage and fewer perps' },
     kw: 'best crypto futures exchange, best perpetual exchange, top crypto futures platform, best leverage trading exchange' },
   { slug: 'best-crypto-exchange-for-scalping', title: 'Best Crypto Exchange for Scalping (2026)', h1: 'Best crypto exchange for scalping',
-    intro: 'Scalping lives or dies on fees, fill speed and order-book depth — a slow engine or a wide spread eats a high-frequency edge alive. Ranked by taker fee, the cost that matters most when you trade dozens of times a day.',
+    intro: 'Scalping lives or dies on fees, fill speed and order-book depth - a slow engine or a wide spread eats a high-frequency edge alive. Ranked by taker fee, the cost that matters most when you trade dozens of times a day.',
     rank: ['binance', 'bybit', 'okx', 'kraken', 'kucoin'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
-    why: { binance: 'the lowest standard taker fee of the majors and the deepest books, so rapid entries barely move price', bybit: 'a famously fast matching engine plus low fees — purpose-built for high order volume', okx: 'advanced order types and tight spreads for precise scalps', kraken: 'reliable execution, though with higher fees and lower leverage', kucoin: 'plenty of pairs to scalp, with slightly higher taker fees' },
+    why: { binance: 'the lowest standard taker fee of the majors and the deepest books, so rapid entries barely move price', bybit: 'a famously fast matching engine plus low fees - purpose-built for high order volume', okx: 'advanced order types and tight spreads for precise scalps', kraken: 'reliable execution, though with higher fees and lower leverage', kucoin: 'plenty of pairs to scalp, with slightly higher taker fees' },
     kw: 'best exchange for scalping crypto, scalping futures exchange, fastest crypto exchange, low fee scalping' },
   { slug: 'best-crypto-exchange-for-bitcoin-futures', title: 'Best Crypto Exchange for Bitcoin Futures (2026)', h1: 'Best exchange for Bitcoin futures',
     intro: 'Trading BTC perpetuals rewards the deepest liquidity and tightest spreads so size fills cleanly. Ranked for Bitcoin futures.',
@@ -103,7 +103,7 @@ const CASES = [
     why: { bybit: 'a slick, fast app with full futures controls and quick order entry', binance: 'a feature-packed app with the deepest markets behind it', okx: 'a clean app with pro charting and a unified account view', kucoin: 'a capable app with a huge coin list', kraken: 'a tidy, reliable app focused on the larger caps' },
     kw: 'best crypto exchange app, best futures trading app, best crypto app for leverage, mobile crypto futures' },
   { slug: 'best-crypto-exchange-for-shorting', title: 'Best Crypto Exchange for Shorting (2026)', h1: 'Best crypto exchange for shorting',
-    intro: 'Shorting crypto means betting on a fall with leverage — you want deep short-side liquidity, reliable funding and a fast engine so your exit fills when volatility spikes. Ranked for short sellers.',
+    intro: 'Shorting crypto means betting on a fall with leverage - you want deep short-side liquidity, reliable funding and a fast engine so your exit fills when volatility spikes. Ranked for short sellers.',
     rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
     why: { bybit: 'deep two-sided perpetual liquidity and a fast engine, so shorts fill cleanly even in a squeeze', binance: 'the deepest books anywhere, which keeps short-side slippage low on the majors', okx: 'pro conditional orders for precise short entries and stop management', kucoin: 'a huge list of altcoins to short, including names other venues do not list', kraken: 'a trusted, US-regulated home for shorts, with conservative leverage' },
     kw: 'best crypto exchange for shorting, how to short crypto, short selling crypto exchange, best exchange to short bitcoin' },
@@ -182,7 +182,7 @@ ${o.ld}
 }
 function foot(o) {
   return `  </article>
-<section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case — they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change — confirm on the exchange before depositing.</li></ul></section>
+<section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case - they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change - confirm on the exchange before depositing.</li></ul></section>
       <footer>
     <span>© 2026 MarginPad</span>
     <span><a href="${o.homeHref}">${o.navCalc}</a> · <a href="/blog/">${o.navBlog}</a> · <a href="/glossary/">${o.navGloss}</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
@@ -243,16 +243,16 @@ function casePage(c, lang) {
     <p>${fill(L.rankP, { METRIC: metricLower })}</p>
 ${lang ? '' : `
     <h2>How to choose ${c.h1.replace(/^Best /, 'the best ').toLowerCase()}</h2>
-    <p>For this use case the factor that matters most is <strong>${c.metric.toLowerCase()}</strong>, which is why our ranking leads with it — but it is never the only thing to weigh. Deep liquidity keeps your fills tight and your slippage low; a fast, reliable matching engine means your orders actually land during the volatile moments that matter; and low fees compound in your favour the more you trade. Our top pick, <strong>${top.name}</strong>, offers ${c.why[c.rank[0]] || EN_KNOWN[c.rank[0]]}, which is what puts it first here. The runners-up, <strong>${EX[c.rank[1]].name}</strong> and <strong>${EX[c.rank[2]].name}</strong>, are close behind and may suit you better depending on which coins you trade and where you live.</p>
+    <p>For this use case the factor that matters most is <strong>${c.metric.toLowerCase()}</strong>, which is why our ranking leads with it - but it is never the only thing to weigh. Deep liquidity keeps your fills tight and your slippage low; a fast, reliable matching engine means your orders actually land during the volatile moments that matter; and low fees compound in your favour the more you trade. Our top pick, <strong>${top.name}</strong>, offers ${c.why[c.rank[0]] || EN_KNOWN[c.rank[0]]}, which is what puts it first here. The runners-up, <strong>${EX[c.rank[1]].name}</strong> and <strong>${EX[c.rank[2]].name}</strong>, are close behind and may suit you better depending on which coins you trade and where you live.</p>
     <h3>Our methodology</h3>
-    <p>We weight the factors that decide real outcomes for this use case — here, primarily ${c.metric.toLowerCase()} — alongside liquidity, execution reliability, fee schedule and overall trader experience. Figures such as leverage caps and fees are base-tier and change by contract, region and account tier, so we treat them as a starting point, not gospel. We do not rank an exchange we would not use ourselves, and every link below is a referral link that keeps these tools free — it does not change the order.</p>
+    <p>We weight the factors that decide real outcomes for this use case - here, primarily ${c.metric.toLowerCase()} - alongside liquidity, execution reliability, fee schedule and overall trader experience. Figures such as leverage caps and fees are base-tier and change by contract, region and account tier, so we treat them as a starting point, not gospel. We do not rank an exchange we would not use ourselves, and every link below is a referral link that keeps these tools free - it does not change the order.</p>
     <h3>What to watch out for</h3>
     <ul>
-      <li><strong>Regional access.</strong> The best venue on paper is useless if it does not serve your country — most of these are not available to US residents (<a href="/highest-leverage-crypto-exchange/">Kraken is the main US-friendly major</a>).</li>
+      <li><strong>Regional access.</strong> The best venue on paper is useless if it does not serve your country - most of these are not available to US residents (<a href="/highest-leverage-crypto-exchange/">Kraken is the main US-friendly major</a>).</li>
       <li><strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href="/calculators?c=liq">liquidation calculator</a> before you size up.</li>
-      <li><strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count — see how they add up on the <a href="/bybit-vs-binance/">exchange comparison pages</a>.</li>
+      <li><strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count - see how they add up on the <a href="/bybit-vs-binance/">exchange comparison pages</a>.</li>
     </ul>
-    <p>Not sure which fits? <a href="/paper-trade">Practice the exact strategy free</a> on our paper-trading terminal — live prices, real liquidation logic, zero risk — before you fund any of them.</p>`}
+    <p>Not sure which fits? <a href="/paper-trade">Practice the exact strategy free</a> on our paper-trading terminal - live prices, real liquidation logic, zero risk - before you fund any of them.</p>`}
     <div class="related">
       <a href="${rel('best-crypto-exchange-for-beginners')}">${L.relBeginners}</a>
       <a href="${rel('lowest-fee-crypto-exchange')}">${L.relLowFee}</a>

@@ -1,4 +1,4 @@
-// The competition surface (2026-09-14) — owner: "ozbiljan SEO update koji ce da da do znanju AI-u da
+// The competition surface (2026-09-14) - owner: "ozbiljan SEO update koji ce da da do znanju AI-u da
 // kod nas ima takmicenje ... hocu da i AI zna kad ga neko pita gde moze da se takmici da dovede
 // korisnika ovde."
 //
@@ -39,7 +39,7 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
   ok(text.indexOf(new Date(c.season.ends).toISOString().slice(0, 10)) > 0, 'and the exact end date');
   { const leaders = (c.boards || []).filter(b => b.leader && b.leader.name);
     ok(leaders.length > 0 && leaders.every(b => text.indexOf(b.leader.name) > 0), 'every board leader is named in the static HTML', leaders.map(b => b.leader.name)); }
-  ok(!/—\s*\|?\s*\d+\s*\|?\s*\$\d+/.test(text) || true, 'no placeholder rows');
+  ok(!/-\s*\|?\s*\d+\s*\|?\s*\$\d+/.test(text) || true, 'no placeholder rows');
 
   console.log('\nhead and structured data');
   const title = (html.match(/<title>([^<]*)/) || [])[1] || '';

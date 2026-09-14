@@ -1,13 +1,13 @@
-/* Legal pages: /terms/ and /privacy/ — hand-authored, generated so both stay in one place and in one design.
+/* Legal pages: /terms/ and /privacy/ - hand-authored, generated so both stay in one place and in one design.
  *
  * WHY THIS EXISTS (2026-08-19): the site had no Terms of Service at all, while running things that
- * genuinely need one — a rewards ledger that pays real money, a paid subscription, a public API, user
+ * genuinely need one - a rewards ledger that pays real money, a paid subscription, a public API, user
  * chat and profiles, affiliate links, and market data we produce ourselves. And the existing privacy
  * policy still claimed "we have no accounts, no logins, and no database of users", which stopped being
  * true a long time ago: there are registered accounts, sessions, a rewards ledger, chat and profiles.
  * A privacy policy that describes a different product is a liability rather than a protection.
  *
- * Both documents describe what the code ACTUALLY does — the cookies it really sets, the processors it
+ * Both documents describe what the code ACTUALLY does - the cookies it really sets, the processors it
  * really calls, the session recording that is really enabled on desktop. Written to be read, because a
  * term nobody can follow protects nobody.
  *
@@ -79,7 +79,7 @@ const terms = `    <h1>Terms of Service</h1>
     </div>
 
     <h2 id="advice">1. MarginPad is not financial advice</h2>
-    <p>Everything on the Service &mdash; calculators, charts, screeners, market data, liquidation maps, articles, academy lessons, Telegram messages and anything produced by our AI features &mdash; is <strong>general information and educational material only</strong>. It is not investment advice, not a recommendation to buy or sell anything, not a solicitation, and it is not tailored to your circumstances, your finances or your risk tolerance.</p>
+    <p>Everything on the Service - calculators, charts, screeners, market data, liquidation maps, articles, academy lessons, Telegram messages and anything produced by our AI features - is <strong>general information and educational material only</strong>. It is not investment advice, not a recommendation to buy or sell anything, not a solicitation, and it is not tailored to your circumstances, your finances or your risk tolerance.</p>
     <p>We are not a broker, not an exchange, not an investment firm and not a licensed financial adviser in any jurisdiction. We do not hold client money and we never execute a real trade on your behalf.</p>
     <p>Leveraged trading carries a high risk of losing money rapidly. Most retail accounts lose money trading derivatives. Decisions you take after reading anything here are entirely your own.</p>
 
@@ -133,7 +133,7 @@ const terms = `    <h1>Terms of Service</h1>
 
     <h2 id="affiliate">11. Affiliate links and third parties</h2>
     <p>The Service contains <strong>affiliate links</strong>. If you open an account through one, we may receive a commission; you pay the same either way. Being linked, listed or compared is not an endorsement, and a commission does not make an exchange safe or suitable for you.</p>
-    <p>We do not control third-party venues and we are <strong>not responsible for them</strong> &mdash; their security, solvency, execution, fees, geographic restrictions, account decisions or support. Any dispute is between you and them. Verify a platform's licence and status yourself before depositing.</p>
+    <p>We do not control third-party venues and we are <strong>not responsible for them</strong> - their security, solvency, execution, fees, geographic restrictions, account decisions or support. Any dispute is between you and them. Verify a platform's licence and status yourself before depositing.</p>
 
     <h2 id="uptime">12. Availability and changes</h2>
     <p>The Service is provided <strong>as-is and as-available</strong>, with no uptime guarantee. Features may change or be withdrawn. We may amend these terms; material changes will be reflected in the date at the top, and continuing to use the Service after that constitutes acceptance.</p>
@@ -149,7 +149,7 @@ const terms = `    <h1>Terms of Service</h1>
     <p>You agree to indemnify us against claims arising from your breach of these terms, your content, or your unlawful use of the Service.</p>
 
     <h2 id="law">14. Governing law and contact</h2>
-    <p class="lgl-note"><b>PLACEHOLDER &mdash; complete before relying on this document.</b> The operating entity and the governing law and forum must be stated here, and these terms should be reviewed by a lawyer qualified in that jurisdiction. Until that is done, treat this page as a statement of intent rather than a settled contract.</p>
+    <p class="lgl-note"><b>PLACEHOLDER - complete before relying on this document.</b> The operating entity and the governing law and forum must be stated here, and these terms should be reviewed by a lawyer qualified in that jurisdiction. Until that is done, treat this page as a statement of intent rather than a settled contract.</p>
     <p>If any provision is found unenforceable, the rest continues to apply. Our failure to enforce a term is not a waiver of it.</p>
     <p>Questions about these terms: <a href="/contact/">contact us</a>. See also our <a href="/privacy/">Privacy Policy</a>.</p>
 `;
@@ -170,7 +170,7 @@ const privacy = `    <h1>Privacy Policy</h1>
       <thead><tr><th>What</th><th>When</th><th>Why</th></tr></thead>
       <tbody>
         <tr><td>A device identifier (<code>mp_did</code> cookie, 2 years)</td><td>Every visit</td><td>To count returning visitors without an account, and to detect abuse of the rewards programme</td></tr>
-        <tr><td>Pages visited, referrer, country, device and browser type</td><td>Every visit</td><td>Analytics &mdash; which pages work and where visitors come from</td></tr>
+        <tr><td>Pages visited, referrer, country, device and browser type</td><td>Every visit</td><td>Analytics - which pages work and where visitors come from</td></tr>
         <tr><td>IP address</td><td>Every request</td><td>Seen by our infrastructure; used for country detection, rate limiting and abuse prevention</td></tr>
         <tr><td>Email address</td><td>If you create an account</td><td>Sign-in codes, account notices, and messages you ask for</td></tr>
         <tr><td>Session cookies (<code>mp_sess</code>, <code>mp_uid</code>, <code>mp_un</code>)</td><td>While signed in</td><td>To keep you signed in and show your own data</td></tr>
@@ -182,7 +182,7 @@ const privacy = `    <h1>Privacy Policy</h1>
     </table></div>
 
     <h2>Analytics and session recording</h2>
-    <p>We use <strong>Google Analytics</strong> and <strong>Yandex Metrica</strong>. Yandex Metrica includes <strong>Webvisor, which records how a page is used &mdash; movement, scrolling and clicks &mdash; and is enabled on wider screens</strong>. We use it to find broken layouts and confusing flows. We also run <strong>Sentry</strong>, which captures error reports when something breaks, and those reports can include the page you were on.</p>
+    <p>We use <strong>Google Analytics</strong> and <strong>Yandex Metrica</strong>. Yandex Metrica includes <strong>Webvisor, which records how a page is used - movement, scrolling and clicks - and is enabled on wider screens</strong>. We use it to find broken layouts and confusing flows. We also run <strong>Sentry</strong>, which captures error reports when something breaks, and those reports can include the page you were on.</p>
     <p>You can block all three with any standard content blocker, and the site works normally when you do.</p>
 
     <h2>Who else processes your data</h2>
@@ -192,7 +192,7 @@ const privacy = `    <h1>Privacy Policy</h1>
         <tr><td>Cloudflare</td><td>Hosting, storage and delivery of the whole Service</td></tr>
         <tr><td>Google Analytics, Yandex Metrica</td><td>Traffic analytics and session recording</td></tr>
         <tr><td>Sentry</td><td>Error reporting</td></tr>
-        <tr><td>Resend</td><td>Sending email &mdash; sign-in codes and notices</td></tr>
+        <tr><td>Resend</td><td>Sending email - sign-in codes and notices</td></tr>
         <tr><td>NOWPayments</td><td>Processing Premium subscription payments</td></tr>
         <tr><td>Telegram</td><td>Bot messages, if you choose to link it</td></tr>
       </tbody>

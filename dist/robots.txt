@@ -21,7 +21,7 @@ Allow: /api/symbols
 Disallow: /telegram/
 Disallow: /chat/
 
-# AI search crawlers are welcome — we want MarginPad to be cited
+# AI search crawlers are welcome - we want MarginPad to be cited
 User-agent: GPTBot
 Allow: /
 

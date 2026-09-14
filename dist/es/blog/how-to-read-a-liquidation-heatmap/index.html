@@ -24,7 +24,7 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 <script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
-<title>Cómo leer un mapa de calor de liquidaciones (guía cripto) — MarginPad</title>
+<title>Cómo leer un mapa de calor de liquidaciones (guía cripto) - MarginPad</title>
 <meta name="description" content="Aprende a leer un mapa de calor de liquidaciones cripto: qué significan las zonas de liquidación, por qué los niveles de alto apalancamiento se agrupan cerca del precio y cómo operarlos." />
 <meta name="keywords" content="liquidation heatmap, crypto liquidation heatmap, how to read liquidation heatmap, liquidation levels, liquidation zones, liquidity magnets, crypto futures, leverage liquidation" />
 <link rel="canonical" href="https://marginpad.io/es/blog/how-to-read-a-liquidation-heatmap/" />
@@ -45,7 +45,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué muestra realmente un mapa de calor de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"Superpone niveles de precio de liquidación estimados sobre el gráfico de precio, resaltando las zonas donde los long o short apalancados se cerrarían de forma forzada. Las áreas densas marcan dónde probablemente se concentra mucho apalancamiento y dónde podría agruparse la compra o venta forzada."}},{"@type":"Question","name":"¿Por qué los niveles de liquidación se agrupan cerca del precio actual?","acceptedAnswer":{"@type":"Answer","text":"Porque las posiciones de alto apalancamiento se liquidan con movimientos mínimos. Una posición a 100x se elimina con un movimiento de apenas un 1%, así que su nivel de liquidación queda justo al lado de la entrada. La banda concentrada justo por encima y por debajo del precio corresponde en su mayoría a traders de alto apalancamiento."}},{"@type":"Question","name":"¿Son precisos los mapas de calor de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"Son un modelo, no una lectura directa del libro de órdenes. Estiman dónde probablemente se concentra el apalancamiento asumiendo entradas y configuraciones de apalancamiento habituales. No pueden ver el tamaño real de la posición, el modo de margen ni los stops, así que trátalos como liquidez probable, no como una certeza."}},{"@type":"Question","name":"¿Las liquidaciones long están por encima o por debajo del precio?","acceptedAnswer":{"@type":"Answer","text":"Las liquidaciones long se sitúan por debajo del precio actual porque los long pierden dinero cuando el precio cae. Las liquidaciones short se sitúan por encima del precio actual porque los short pierden dinero cuando el precio sube. Una banda densa por debajo del precio indica fragilidad a la baja; una banda densa por encima indica potencial de short squeeze."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Cómo leer un mapa de calor de liquidaciones","item":"https://marginpad.io/es/blog/how-to-read-a-liquidation-heatmap/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -94,7 +94,7 @@
 <p>Lo más importante de entender es la relación entre apalancamiento y distancia. Cuanto mayor el apalancamiento, más cerca está el precio de liquidación del precio de entrada. A <code>100x</code>, una posición se barre con un movimiento en su contra de aproximadamente 1%. A <code>50x</code> hacen falta cerca de 2%, a <code>25x</code> cerca de 4%, y a <code>10x</code> cerca de 10%.</p>
 <p>Como a los traders de alto apalancamiento los liquidan movimientos diminutos, sus niveles de liquidación quedan justo al lado del precio actual. Por eso la banda inmediatamente por encima y por debajo de la vela suele ser la parte más concurrida y reactiva de cualquier mapa de calor. Si quieres el panorama completo de cómo escala esta distancia, consulta <a href="/es/blog/crypto-leverage-explained/">apalancamiento explicado</a>. La conclusión práctica: los niveles más cercanos al precio son los de alto apalancamiento, y son los primeros en verse golpeados ante cualquier movimiento brusco.</p>
 
-<div class="callout"><div class="k">VERLO EN VIVO</div><p style="margin-bottom:14px">El mapa de calor interactivo de MarginPad grafica velas reales con el nivel de liquidación de cada apalancamiento — desplázate, haz zoom y pasa el cursor para ver los precios exactos.</p><a class="cta" href="/es/heatmap">Abrir el mapa de calor de liquidaciones →</a></div>
+<div class="callout"><div class="k">VERLO EN VIVO</div><p style="margin-bottom:14px">El mapa de calor interactivo de MarginPad grafica velas reales con el nivel de liquidación de cada apalancamiento - desplázate, haz zoom y pasa el cursor para ver los precios exactos.</p><a class="cta" href="/es/heatmap">Abrir el mapa de calor de liquidaciones →</a></div>
 
 <h2>Cómo actúan los clústeres como imanes y como soporte o resistencia</h2>
 <p>Los traders suelen describir los clústeres de liquidación como <strong>imanes</strong>. La lógica es que las liquidaciones pendientes son un conjunto de órdenes garantizadas. Un clúster de liquidaciones de longs por debajo del precio es un conjunto de ventas a mercado pendientes; un clúster de liquidaciones de shorts por encima del precio es un conjunto de compras a mercado pendientes. Los creadores de mercado y los grandes jugadores tienen un incentivo para empujar el precio hacia esa liquidez pendiente, porque les permite llenar tamaño y disparar una cascada.</p>
@@ -126,7 +126,7 @@
 <h2>Uniendo todo</h2>
 <p>Un mapa de calor de liquidaciones no te dirá el futuro, pero te muestra dónde el mercado es estructuralmente frágil y dónde es probable que aparezca flujo forzado. Lee primero los cúmulos más cercanos y de mayor apalancamiento, observa cómo interactúa el precio con las bandas densas verdes y azules, y recuerda siempre que estás viendo una estimación de dónde se concentra el apalancamiento, no un libro de órdenes certificado. Usado así, se convierte en una de las herramientas de contexto más afiladas del kit de un trader de futuros.</p>
     <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -153,6 +153,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

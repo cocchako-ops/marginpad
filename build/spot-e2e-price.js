@@ -54,6 +54,6 @@ const guard = async (q) => (await fetch(ORIGIN + '/api/admin/spotguard?' + q, { 
 
   console.log(out.join('\n'));
   const fails = out.filter(l => l.startsWith('FAIL')).length;
-  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' — ' + fails + ' FAIL' : ''));
+  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' - ' + fails + ' FAIL' : ''));
   process.exit(fails ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

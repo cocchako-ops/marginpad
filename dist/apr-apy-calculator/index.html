@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
-<title>APR to APY Calculator — Compounding Frequency Truth | MarginPad</title>
+<title>APR to APY Calculator - Compounding Frequency Truth | MarginPad</title>
 <meta name="description" content="Free APR to APY converter: any rate and compounding frequency turned into the true annual yield. See what daily compounding really adds." />
 <meta name="keywords" content="apr apy calculator, apr to apy, apy converter crypto" />
 <link rel="canonical" href="https://marginpad.io/apr-apy-calculator/" />
@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/apr-apy-calculator/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/apr-apy-calculator/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="APR to APY Calculator — Compounding Frequency Truth | MarginPad" />
+<meta property="og:title" content="APR to APY Calculator - Compounding Frequency Truth | MarginPad" />
 <meta property="og:description" content="Free APR to APY converter: any rate and compounding frequency turned into the true annual yield. See what daily compounding really adds." />
 <meta property="og:url" content="https://marginpad.io/apr-apy-calculator/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/apr-apy-calculator.jpg" />
@@ -67,9 +67,9 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"APR &harr; APY Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/apr-apy-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"APR &harr; APY Calculator","item":"https://marginpad.io/apr-apy-calculator/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which number should I compare products by?","acceptedAnswer":{"@type":"Answer","text":"Convert everything to APY and compare like for like — and remember quoted crypto yields float; today APY is a snapshot, not a promise."}},{"@type":"Question","name":"Does funding-rate APR work the same way?","acceptedAnswer":{"@type":"Answer","text":"Funding settles every 8 hours (n = 1,095/year), so small per-interval rates annualize aggressively — the funding-cost calculator does that conversion."}},{"@type":"Question","name":"Why is realized yield lower than APY?","acceptedAnswer":{"@type":"Answer","text":"Reward tokens sell below quote, rates decay as pools fill, and claim fees eat small positions. Treat advertised APY as a ceiling."}}]}</script>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"APR to APY Calculator — Compounding Frequency Truth","url":"https://marginpad.io/apr-apy-calculator/","dateModified":"2026-09-10T19:56:57.367Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/apr-apy-calculator.jpg" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which number should I compare products by?","acceptedAnswer":{"@type":"Answer","text":"Convert everything to APY and compare like for like - and remember quoted crypto yields float; today APY is a snapshot, not a promise."}},{"@type":"Question","name":"Does funding-rate APR work the same way?","acceptedAnswer":{"@type":"Answer","text":"Funding settles every 8 hours (n = 1,095/year), so small per-interval rates annualize aggressively - the funding-cost calculator does that conversion."}},{"@type":"Question","name":"Why is realized yield lower than APY?","acceptedAnswer":{"@type":"Answer","text":"Reward tokens sell below quote, rates decay as pools fill, and claim fees eat small positions. Treat advertised APY as a ceiling."}}]}</script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"APR to APY Calculator - Compounding Frequency Truth","url":"https://marginpad.io/apr-apy-calculator/","dateModified":"2026-09-10T19:56:57.367Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/apr-apy-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -82,20 +82,20 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <div class="calc"><div class="cgrid"><div class="f"><label for="apr">APR %</label><input id="apr" type="number" inputmode="decimal" value="12" step="0.1"></div><div class="f"><label for="freq">Compounds</label><select id="freq"><option value="365">Daily</option><option value="52">Weekly</option><option value="12">Monthly</option><option value="1">Yearly (none)</option></select></div><div class="f"><label for="amt">Amount (USD)</label><input id="amt" type="number" inputmode="decimal" value="10000"></div></div><div class="res" id="res"></div></div>
 <h2>How it is calculated</h2>
 <div class="frm">APY = (1 + APR/n)^n &minus; 1</div>
-<p>APR is the simple rate; APY includes compounding. Platforms quote whichever looks better — lending desks advertise APY, borrow costs get quoted as APR. At crypto-native double digits the gap is real money: 50% APR compounded daily is <strong>64.8% APY</strong>.</p>
+<p>APR is the simple rate; APY includes compounding. Platforms quote whichever looks better - lending desks advertise APY, borrow costs get quoted as APR. At crypto-native double digits the gap is real money: 50% APR compounded daily is <strong>64.8% APY</strong>.</p>
 <h2>Worked example</h2>
-<div class="ex"><b>12% APR</b> compounded daily = <b>12.75% APY</b> — $1,275 instead of $1,200 on $10,000.</div>
+<div class="ex"><b>12% APR</b> compounded daily = <b>12.75% APY</b> - $1,275 instead of $1,200 on $10,000.</div>
 <h2>FAQ</h2>
-<div class="faq"><details><summary>Which number should I compare products by?</summary><p>Convert everything to APY and compare like for like — and remember quoted crypto yields float; today APY is a snapshot, not a promise.</p></details><details><summary>Does funding-rate APR work the same way?</summary><p>Funding settles every 8 hours (n = 1,095/year), so small per-interval rates annualize aggressively — the funding-cost calculator does that conversion.</p></details><details><summary>Why is realized yield lower than APY?</summary><p>Reward tokens sell below quote, rates decay as pools fill, and claim fees eat small positions. Treat advertised APY as a ceiling.</p></details></div>
+<div class="faq"><details><summary>Which number should I compare products by?</summary><p>Convert everything to APY and compare like for like - and remember quoted crypto yields float; today APY is a snapshot, not a promise.</p></details><details><summary>Does funding-rate APR work the same way?</summary><p>Funding settles every 8 hours (n = 1,095/year), so small per-interval rates annualize aggressively - the funding-cost calculator does that conversion.</p></details><details><summary>Why is realized yield lower than APY?</summary><p>Reward tokens sell below quote, rates decay as pools fill, and claim fees eat small positions. Treat advertised APY as a ceiling.</p></details></div>
 <h2>Related tools</h2>
 <div class="rel"><a href="/crypto-funding-cost-calculator/">Funding cost</a><a href="/crypto-compound-calculator/">Compound calculator</a><a href="/defi/">DeFi TVL</a><a href="/crypto-roi-calculator/">ROI calculator</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
 <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
-<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var a=+document.getElementById('apr').value/100,f=+document.getElementById('freq').value,amt=+document.getElementById('amt').value;var r=document.getElementById('res');if(!(a>=0)){r.innerHTML='';return;}var apy=Math.pow(1+a/f,f)-1;r.innerHTML='<div class="rrow big"><span class="k">APY (effective annual yield)</span><span class="v up">'+(apy*100).toFixed(2)+'%</span></div><div class="rrow"><span class="k">On '+amt.toLocaleString()+' USD / year</span><span class="v up">+'+(amt*apy).toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Compounding adds</span><span class="v">+'+((apy-a)*100).toFixed(2)+'% vs simple APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

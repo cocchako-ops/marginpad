@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Geld ohne Mittelsmann",
-     "p": "Bitcoin entstand 2009 als Geld, das keine Bank und kein Staat kontrolliert. Statt einer Bank, die das Verzeichnis führt, wem was gehört, halten Tausende Computer weltweit identische Kopien davon — dieses geteilte Verzeichnis heißt Blockchain."
+     "p": "Bitcoin entstand 2009 als Geld, das keine Bank und kein Staat kontrolliert. Statt einer Bank, die das Verzeichnis führt, wem was gehört, halten Tausende Computer weltweit identische Kopien davon - dieses geteilte Verzeichnis heißt Blockchain."
     },
     {
      "h": "Warum der Markt nie schläft",
-     "p": "Aktienmärkte öffnen und schließen. Krypto handelt 24 Stunden am Tag, 7 Tage die Woche, überall auf der Welt gleichzeitig. Preise können sich am Sonntag um 3 Uhr morgens heftig bewegen — genau deshalb nutzen Trader Alerts und Stop-Losses, statt den ganzen Tag auf Charts zu starren."
+     "p": "Aktienmärkte öffnen und schließen. Krypto handelt 24 Stunden am Tag, 7 Tage die Woche, überall auf der Welt gleichzeitig. Preise können sich am Sonntag um 3 Uhr morgens heftig bewegen - genau deshalb nutzen Trader Alerts und Stop-Losses, statt den ganzen Tag auf Charts zu starren."
     },
     {
      "h": "Tausende Coins, wenige die zählen",
-     "p": "Bitcoin (BTC) ist der größte und bewegt den ganzen Markt. Ethereum (ETH) ist die Nummer zwei. Jenseits der Top-Handvoll gibt es Tausende kleinerer Coins (Altcoins) — die meisten sind deutlich riskanter und weniger liquide. Als Anfänger kannst du alles Wichtige mit BTC und ETH lernen."
+     "p": "Bitcoin (BTC) ist der größte und bewegt den ganzen Markt. Ethereum (ETH) ist die Nummer zwei. Jenseits der Top-Handvoll gibt es Tausende kleinerer Coins (Altcoins) - die meisten sind deutlich riskanter und weniger liquide. Als Anfänger kannst du alles Wichtige mit BTC und ETH lernen."
     }
    ],
    "quiz": [
@@ -35,7 +35,7 @@
      "o": [
       "Um 17 Uhr New Yorker Zeit",
       "Am Wochenende",
-      "Nie — er handelt 24/7",
+      "Nie - er handelt 24/7",
       "An Feiertagen"
      ]
     },
@@ -43,7 +43,7 @@
      "q": "Mit welchen Coins lernst du als Anfänger am sinnvollsten?",
      "o": [
       "Brandneue Coins mit riesigen %-Gewinnen",
-      "BTC und ETH — die größten und liquidesten",
+      "BTC und ETH - die größten und liquidesten",
       "Was gerade auf Social Media trendet",
       "Der billigste Coin pro Einheit"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "Wo Trading stattfindet",
-     "p": "Eine Börse ist ein Marktplatz, der Käufer und Verkäufer zusammenbringt — Binance, Coinbase, Kraken und Bybit sind Börsen. Kaufst du dort Bitcoin, aktualisiert die Börse ihr internes Verzeichnis; die Coins liegen in der Verwahrung der Börse, bis du sie abhebst."
+     "p": "Eine Börse ist ein Marktplatz, der Käufer und Verkäufer zusammenbringt - Binance, Coinbase, Kraken und Bybit sind Börsen. Kaufst du dort Bitcoin, aktualisiert die Börse ihr internes Verzeichnis; die Coins liegen in der Verwahrung der Börse, bis du sie abhebst."
     },
     {
      "h": "Spot vs. Derivate",
-     "p": "Den echten Coin zu kaufen heißt Spot-Trading — er gehört dir, und dein maximaler Verlust ist, was du bezahlt hast. Derivate (wie die Futures aus Kurs 2) sind Kontrakte, die den Preis abbilden, ohne dass du den Coin besitzt — sie erlauben Hebel, der in beide Richtungen wirkt."
+     "p": "Den echten Coin zu kaufen heißt Spot-Trading - er gehört dir, und dein maximaler Verlust ist, was du bezahlt hast. Derivate (wie die Futures aus Kurs 2) sind Kontrakte, die den Preis abbilden, ohne dass du den Coin besitzt - sie erlauben Hebel, der in beide Richtungen wirkt."
     },
     {
      "h": "Not your keys, not your coins",
-     "p": "Ein Wallet ist der Ort, an dem Krypto lebt, wenn es wirklich dir gehört — kontrolliert durch einen geheimen Schlüssel, den nur du hast. Coins auf einer Börse sind ein Schuldschein dieser Börse. Für aktive Trading-Beträge ist das okay, aber die Geschichte (Mt. Gox, FTX) zeigt, warum große Bestände in dein eigenes Wallet gehören."
+     "p": "Ein Wallet ist der Ort, an dem Krypto lebt, wenn es wirklich dir gehört - kontrolliert durch einen geheimen Schlüssel, den nur du hast. Coins auf einer Börse sind ein Schuldschein dieser Börse. Für aktive Trading-Beträge ist das okay, aber die Geschichte (Mt. Gox, FTX) zeigt, warum große Bestände in dein eigenes Wallet gehören."
     }
    ],
    "quiz": [
@@ -72,7 +72,7 @@
      "q": "Was ist Spot-Trading?",
      "o": [
       "Auf den Preis wetten mit geliehenem Geld",
-      "Den echten Coin kaufen — er gehört dir",
+      "Den echten Coin kaufen - er gehört dir",
       "Eine Art Wallet",
       "Handel nur zu bestimmten Zeiten"
      ]
@@ -89,7 +89,7 @@
     {
      "q": "Wie viel kannst du maximal verlieren, wenn du Spot für $100 kaufst?",
      "o": [
-      "$100 — was du bezahlt hast",
+      "$100 - was du bezahlt hast",
       "Mehr als $100",
       "Nichts, Spot ist risikofrei",
       "Hängt vom Hebel ab"
@@ -107,7 +107,7 @@
     },
     {
      "h": "Finde es selbst",
-     "prompt": "Tippe auf den OBEREN DOCHT der Kerze — die Linie, die den höchsten berührten Preis zeigt.",
+     "prompt": "Tippe auf den OBEREN DOCHT der Kerze - die Linie, die den höchsten berührten Preis zeigt.",
      "p": "Bevor du weitergehst, beweise es deinen Augen. Ein Tipp genügt."
     },
     {
@@ -116,7 +116,7 @@
     },
     {
      "h": "Volumen ist der Lügendetektor",
-     "p": "Volumen zeigt, wie viel tatsächlich gehandelt wurde. Eine Preisbewegung mit hohem Volumen bedeutet echte Beteiligung; dieselbe Bewegung mit dünnem Volumen ist fragil und dreht oft wieder. Der Preis sagt dir, was passiert ist — das Volumen, wie sehr du es glauben solltest."
+     "p": "Volumen zeigt, wie viel tatsächlich gehandelt wurde. Eine Preisbewegung mit hohem Volumen bedeutet echte Beteiligung; dieselbe Bewegung mit dünnem Volumen ist fragil und dreht oft wieder. Der Preis sagt dir, was passiert ist - das Volumen, wie sehr du es glauben solltest."
     }
    ],
    "quiz": [
@@ -142,7 +142,7 @@
      "q": "Eine große Preisbewegung bei sehr niedrigem Volumen ist…",
      "o": [
       "Das stärkstmögliche Signal",
-      "Fragil — wenige Teilnehmer",
+      "Fragil - wenige Teilnehmer",
       "Unmöglich",
       "Immer der Beginn eines Trends"
      ]
@@ -159,11 +159,11 @@
     },
     {
      "h": "Liquidität: Kommst du überhaupt wieder raus?",
-     "p": "Liquidität ist, wie viel du kaufen oder verkaufen kannst, ohne den Preis zu bewegen. BTC absorbiert Millionen Dollar pro Sekunde; ein kleiner Altcoin kann durch einen einzigen großen Verkauf 10% abstürzen. Illiquide Coins sind leicht zu kaufen und brutal zu verkaufen — genau dann, wenn du es am dringendsten musst."
+     "p": "Liquidität ist, wie viel du kaufen oder verkaufen kannst, ohne den Preis zu bewegen. BTC absorbiert Millionen Dollar pro Sekunde; ein kleiner Altcoin kann durch einen einzigen großen Verkauf 10% abstürzen. Illiquide Coins sind leicht zu kaufen und brutal zu verkaufen - genau dann, wenn du es am dringendsten musst."
     },
     {
      "h": "Slippage",
-     "p": "Kaufst du per Market-Order, zahlst du, was Verkäufer gerade verlangen. In einem dünnen Markt schiebt deine eigene Order den Preis — die Differenz zwischen dem Preis, den du sahst, und dem, den du bekamst, ist Slippage. Sie ist ein echter Kostenfaktor, wächst mit der Positionsgröße und schrumpft mit der Liquidität."
+     "p": "Kaufst du per Market-Order, zahlst du, was Verkäufer gerade verlangen. In einem dünnen Markt schiebt deine eigene Order den Preis - die Differenz zwischen dem Preis, den du sahst, und dem, den du bekamst, ist Slippage. Sie ist ein echter Kostenfaktor, wächst mit der Positionsgröße und schrumpft mit der Liquidität."
     }
    ],
    "quiz": [
@@ -202,15 +202,15 @@
    "cards": [
     {
      "h": "Ein kleines Boot auf einem großen Ozean",
-     "p": "Der gesamte Kryptomarkt ist winzig im Vergleich zu Aktien oder Anleihen, und ein großer Teil wird mit Hebel gehandelt. Dieselbe Geldwelle, die den S&P 500 kaum bewegt, kann Bitcoin mehrere Prozent bewegen — und kleinere Coins um ein Vielfaches mehr."
+     "p": "Der gesamte Kryptomarkt ist winzig im Vergleich zu Aktien oder Anleihen, und ein großer Teil wird mit Hebel gehandelt. Dieselbe Geldwelle, die den S&P 500 kaum bewegt, kann Bitcoin mehrere Prozent bewegen - und kleinere Coins um ein Vielfaches mehr."
     },
     {
      "h": "News, Liquidität und Zwangsverkäufer",
-     "p": "Große Bewegungen kombinieren meist drei Dinge: einen Auslöser (News, eine Makro-Zahl), dünne Liquidität (Nächte, Wochenenden) und Zwangsverkäufe von gehebelten Tradern, die liquidiert werden. Diese dritte Zutat — die du in Kurs 2 studierst — ist der Grund, warum Krypto-Crashs so schnell und so tief sind."
+     "p": "Große Bewegungen kombinieren meist drei Dinge: einen Auslöser (News, eine Makro-Zahl), dünne Liquidität (Nächte, Wochenenden) und Zwangsverkäufe von gehebelten Tradern, die liquidiert werden. Diese dritte Zutat - die du in Kurs 2 studierst - ist der Grund, warum Krypto-Crashs so schnell und so tief sind."
     },
     {
      "h": "Volatilität ist das ganze Spiel",
-     "p": "Volatilität ist kein Fehler — sie ist der Grund, warum Trader hier sind. Aber sie ist symmetrisch: Dieselbe 10%-Bewegung, die ein gehebeltes Konto verdoppelt, löscht auch eines aus. Jede Lektion nach dieser handelt eigentlich davon, Volatilität lange genug zu überleben, um von ihr zu profitieren."
+     "p": "Volatilität ist kein Fehler - sie ist der Grund, warum Trader hier sind. Aber sie ist symmetrisch: Dieselbe 10%-Bewegung, die ein gehebeltes Konto verdoppelt, löscht auch eines aus. Jede Lektion nach dieser handelt eigentlich davon, Volatilität lange genug zu überleben, um von ihr zu profitieren."
     }
    ],
    "quiz": [
@@ -249,7 +249,7 @@
    "cards": [
     {
      "h": "Der Dollar, der on-chain lebt",
-     "p": "Ein Stablecoin ist ein Krypto-Token, der immer genau $1 wert sein soll — USDT und USDC sind die Riesen. Sie existieren, damit Trader Dollar innerhalb von Krypto halten können: Gewinne parken, der Volatilität entkommen und alles andere in einer stabilen Einheit bepreisen."
+     "p": "Ein Stablecoin ist ein Krypto-Token, der immer genau $1 wert sein soll - USDT und USDC sind die Riesen. Sie existieren, damit Trader Dollar innerhalb von Krypto halten können: Gewinne parken, der Volatilität entkommen und alles andere in einer stabilen Einheit bepreisen."
     },
     {
      "h": "Was BTC/USDT wirklich bedeutet",
@@ -257,7 +257,7 @@
     },
     {
      "h": "Stabil heißt nicht risikofrei",
-     "p": "Ein Stablecoin ist nur so gut wie das, was ihn deckt. Depegs sind passiert — am bekanntesten Terra UST, das 2022 auf null kollabierte. Für Trading-Guthaben haben sich die großen Emittenten gehalten, aber wisse, was du hältst: einen in Dollar einlösbaren Token, nicht Dollar selbst."
+     "p": "Ein Stablecoin ist nur so gut wie das, was ihn deckt. Depegs sind passiert - am bekanntesten Terra UST, das 2022 auf null kollabierte. Für Trading-Guthaben haben sich die großen Emittenten gehalten, aber wisse, was du hältst: einen in Dollar einlösbaren Token, nicht Dollar selbst."
     }
    ],
    "quiz": [
@@ -296,15 +296,15 @@
    "cards": [
     {
      "h": "Maker, Taker, Spread",
-     "p": "Jeder Trade kostet. Die Taker-Gebühr (sofort den Spread kreuzen, Market-Orders) ist höher; die Maker-Gebühr (ruhende Limit-Orders, die Liquidität hinzufügen) ist niedriger — manchmal sogar ein Rabatt. Der Spread selbst — die Lücke zwischen bestem Geld- und Briefkurs — ist ebenfalls ein Kostenfaktor."
+     "p": "Jeder Trade kostet. Die Taker-Gebühr (sofort den Spread kreuzen, Market-Orders) ist höher; die Maker-Gebühr (ruhende Limit-Orders, die Liquidität hinzufügen) ist niedriger - manchmal sogar ein Rabatt. Der Spread selbst - die Lücke zwischen bestem Geld- und Briefkurs - ist ebenfalls ein Kostenfaktor."
     },
     {
      "h": "Warum Gebühren bei Futures härter treffen",
-     "p": "Futures-Gebühren fallen auf den NOTIONAL an, nicht auf deine Margin. Bei 20x Hebel sind 0.055% Taker-Gebühr 1.1% deiner Margin pro Seite — über 2% pro Hin und Zurück. Zehn Trades am Tag zu diesem Satz sind eine Gebührenrechnung, der kaum eine Strategie davonläuft."
+     "p": "Futures-Gebühren fallen auf den NOTIONAL an, nicht auf deine Margin. Bei 20x Hebel sind 0.055% Taker-Gebühr 1.1% deiner Margin pro Seite - über 2% pro Hin und Zurück. Zehn Trades am Tag zu diesem Satz sind eine Gebührenrechnung, der kaum eine Strategie davonläuft."
     },
     {
      "h": "Die Overtrading-Todesspirale",
-     "p": "Die meisten verlierenden Anfänger verlieren nicht an falscher Richtung — sie bluten durch Gebühren und Spread aus, weil sie zu oft handeln. Weniger, bessere Trades mit Limit-Einstiegen ist nicht nur Disziplin-Rat; es ist Arithmetik. Zähle deine Gebühren wöchentlich im Journal und behandle sie als Position gegen dich."
+     "p": "Die meisten verlierenden Anfänger verlieren nicht an falscher Richtung - sie bluten durch Gebühren und Spread aus, weil sie zu oft handeln. Weniger, bessere Trades mit Limit-Einstiegen ist nicht nur Disziplin-Rat; es ist Arithmetik. Zähle deine Gebühren wöchentlich im Journal und behandle sie als Position gegen dich."
     }
    ],
    "quiz": [
@@ -347,11 +347,11 @@
     },
     {
      "h": "Narrative rotieren, Gier bleibt konstant",
-     "p": "Jeder Zyklus krönt neue Geschichten — ICOs, DeFi, NFTs, AI-Coins. Die Geschichte ändert sich; das Muster nicht: eine echte Innovation, ein spekulativer Rausch weit darüber hinaus, ein Kollaps, der die schwachen Projekte tötet, und eine Basis für den nächsten Zyklus aus den Überlebenden."
+     "p": "Jeder Zyklus krönt neue Geschichten - ICOs, DeFi, NFTs, AI-Coins. Die Geschichte ändert sich; das Muster nicht: eine echte Innovation, ein spekulativer Rausch weit darüber hinaus, ein Kollaps, der die schwachen Projekte tötet, und eine Basis für den nächsten Zyklus aus den Überlebenden."
     },
     {
      "h": "Wo Zyklen dein Trading treffen",
-     "p": "Du kannst Zyklen nicht präzise timen, aber dich grob verorten: Ist die Gier extrem, empfiehlt dein Friseur Coins, schlagen 100x-Memecoins alles andere? Spätzyklische Bedingungen sind der Moment, in dem Risikoreduktion am wichtigsten ist — genau dann, wenn sie sich am unnötigsten anfühlt."
+     "p": "Du kannst Zyklen nicht präzise timen, aber dich grob verorten: Ist die Gier extrem, empfiehlt dein Friseur Coins, schlagen 100x-Memecoins alles andere? Spätzyklische Bedingungen sind der Moment, in dem Risikoreduktion am wichtigsten ist - genau dann, wenn sie sich am unnötigsten anfühlt."
     }
    ],
    "quiz": [
@@ -378,7 +378,7 @@
      "o": [
       "Wenn alle ängstlich sind",
       "In spätzyklischer Euphorie",
-      "Nie — immer maximales Risiko",
+      "Nie - immer maximales Risiko",
       "Nur in Bärenmärkten"
      ]
     }
@@ -390,15 +390,15 @@
    "cards": [
     {
      "h": "Wenn es Renditen verspricht, bist du das Produkt",
-     "p": "Garantierte 2% pro Tag. Ein Trading-Bot ohne Verlustmonate. Ein Fremder, der anbietet, dein Geld zu verwalten. Jedes davon ist ein Scam, immer, ohne Ausnahme — echtes Trading hat Verlustphasen, und niemand mit einer Gelddruckmaschine teilt sie mit Fremden."
+     "p": "Garantierte 2% pro Tag. Ein Trading-Bot ohne Verlustmonate. Ein Fremder, der anbietet, dein Geld zu verwalten. Jedes davon ist ein Scam, immer, ohne Ausnahme - echtes Trading hat Verlustphasen, und niemand mit einer Gelddruckmaschine teilt sie mit Fremden."
     },
     {
      "h": "Die Klassiker: Rug Pulls und Phishing",
-     "p": "Ein Rug Pull ist ein Token, dessen Macher die Liquidität abziehen, sobald Käufer einsteigen — endemisch bei frischen Micro-Caps. Phishing ist eine gefälschte Börsen- oder Wallet-Seite, die deinen Login oder deine Seed-Phrase abgreift. Setze Lesezeichen auf echte Seiten; klicke nie Login-Links aus Nachrichten."
+     "p": "Ein Rug Pull ist ein Token, dessen Macher die Liquidität abziehen, sobald Käufer einsteigen - endemisch bei frischen Micro-Caps. Phishing ist eine gefälschte Börsen- oder Wallet-Seite, die deinen Login oder deine Seed-Phrase abgreift. Setze Lesezeichen auf echte Seiten; klicke nie Login-Links aus Nachrichten."
     },
     {
      "h": "Grundhygiene, die 95% davon stoppt",
-     "p": "Nutze 2FA (eine Authenticator-App, nicht SMS) auf jeder Börse. Teile deine Seed-Phrase mit niemandem, niemals — kein Support-Mitarbeiter braucht sie. Sei paranoid bei Direktnachrichten: Echte Plattformen schreiben dich nicht zuerst an. Langweilige Regeln, und sie sind das ganze Spiel."
+     "p": "Nutze 2FA (eine Authenticator-App, nicht SMS) auf jeder Börse. Teile deine Seed-Phrase mit niemandem, niemals - kein Support-Mitarbeiter braucht sie. Sei paranoid bei Direktnachrichten: Echte Plattformen schreiben dich nicht zuerst an. Langweilige Regeln, und sie sind das ganze Spiel."
     }
    ],
    "quiz": [
@@ -431,7 +431,7 @@
     }
    ],
    "try": {
-    "p": "Du hast Krypto-Grundlagen abgeschlossen — den ganzen Kurs. Öffne JETZT das Paper-Trading-Terminal: Beobachte Live-Preise, und wenn du dich bereit fühlst, platziere deinen ersten Trade mit Spielgeld.",
+    "p": "Du hast Krypto-Grundlagen abgeschlossen - den ganzen Kurs. Öffne JETZT das Paper-Trading-Terminal: Beobachte Live-Preise, und wenn du dich bereit fühlst, platziere deinen ersten Trade mit Spielgeld.",
     "label": "Paper Trade öffnen →"
    }
   }

@@ -17,7 +17,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Dimensionamiento de posición en cripto: la regla de riesgo del 1% explicada (con fórmula) — MarginPad</title>
+<title>Dimensionamiento de posición en cripto: la regla de riesgo del 1% explicada (con fórmula) - MarginPad</title>
 <meta name="description" content="Cómo dimensionar posiciones de futuros cripto según el riesgo. La regla del 1%, la fórmula del tamaño de posición, y un ejemplo paso a paso para que cada pérdida se mantenga pequeña y consistente." />
 <meta name="keywords" content="crypto position sizing, position size calculator crypto, 1 percent risk rule, risk management crypto trading, how big should my position be" />
 <link rel="canonical" href="https://marginpad.io/es/blog/crypto-position-sizing-risk-management/" />
@@ -25,7 +25,7 @@
 <link rel="alternate" hreflang="en" href="https://marginpad.io/blog/crypto-position-sizing-risk-management/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/crypto-position-sizing-risk-management/" />
 <meta property="og:title" content="Dimensionamiento de posición en cripto: la regla de riesgo del 1% explicada" />
-<meta property="og:description" content="La fórmula de tamaño de posición basada en riesgo que mantiene pequeña cada pérdida — con un ejemplo resuelto." />
+<meta property="og:description" content="La fórmula de tamaño de posición basada en riesgo que mantiene pequeña cada pérdida - con un ejemplo resuelto." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://marginpad.io/es/blog/crypto-position-sizing-risk-management/" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="/assets/blog.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Dimensionamiento de posición en cripto: la regla de riesgo del 1% explicada","description":"Cómo dimensionar posiciones de futuros de cripto por riesgo, con la fórmula y un ejemplo práctico.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-08-20","mainEntityOfPage":"https://marginpad.io/es/blog/crypto-position-sizing-risk-management/"}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
 .mp-xr{margin:38px 0 6px}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
@@ -75,11 +75,11 @@
     <p>La mayoría de los traders explotan su cuenta no porque se equivoquen demasiado, sino porque apuestan demasiado grande cuando lo hacen. El <strong>dimensionamiento de posición</strong> resuelve eso. Responde una pregunta antes de cada operación: <em>¿cuántas monedas debería comprar para que, si me equivoco, pierda solo una cantidad pequeña y fija?</em></p>
 
     <h2>La regla del 1%</h2>
-    <p>La regla del 1% dice: <strong>nunca arriesgues más del 1% de tu cuenta en una sola operación.</strong> En una cuenta de $5,000, eso son $50 de riesgo por operación. Aquí, riesgo no significa tamaño de posición — significa la cantidad en dólares que pierdes si se activa tu stop-loss. Con un riesgo del 1% puedes equivocarte 10 veces seguidas y aun así conservar ~90% de tu cuenta intacta.</p>
+    <p>La regla del 1% dice: <strong>nunca arriesgues más del 1% de tu cuenta en una sola operación.</strong> En una cuenta de $5,000, eso son $50 de riesgo por operación. Aquí, riesgo no significa tamaño de posición - significa la cantidad en dólares que pierdes si se activa tu stop-loss. Con un riesgo del 1% puedes equivocarte 10 veces seguidas y aun así conservar ~90% de tu cuenta intacta.</p>
 
     <h2>La fórmula del tamaño de posición</h2>
     <div class="formula">Monto de riesgo = Cuenta × % de riesgo<br>Tamaño de posición = Monto de riesgo ÷ |Entrada − Stop|</div>
-    <p>Divides los dólares que estás dispuesto a perder entre la distancia (en precio) hasta tu stop-loss. Un stop ajustado te permite operar un tamaño más grande con el mismo riesgo; un stop amplio obliga a un tamaño más pequeño. El riesgo se mantiene constante en ambos casos — ese es todo el punto.</p>
+    <p>Divides los dólares que estás dispuesto a perder entre la distancia (en precio) hasta tu stop-loss. Un stop ajustado te permite operar un tamaño más grande con el mismo riesgo; un stop amplio obliga a un tamaño más pequeño. El riesgo se mantiene constante en ambos casos - ese es todo el punto.</p>
 
     <h2>Ejemplo resuelto</h2>
     <p>Cuenta de $5,000, riesgo del 1%, entrada long a $60,000, stop-loss a $58,800:</p>
@@ -89,25 +89,25 @@
       <div class="row"><span>Tamaño de posición</span><b>$50 ÷ $1,200 = 0.0417 BTC</b></div>
       <div class="row"><span>Valor nocional</span><b>$2,500</b></div>
     </div>
-    <p>Si el precio toca tu stop, pierdes exactamente $50 — ni un centavo más, sin importar lo aterradora que se vea la vela. Esa previsibilidad es lo que permite a los profesionales sobrevivir a largas rachas perdedoras.</p>
+    <p>Si el precio toca tu stop, pierdes exactamente $50 - ni un centavo más, sin importar lo aterradora que se vea la vela. Esa previsibilidad es lo que permite a los profesionales sobrevivir a largas rachas perdedoras.</p>
 
     <div class="callout">
       <div class="k">Hazlo automáticamente</div>
-      <p style="margin-bottom:14px">Ingresa tu saldo, % de riesgo, entrada y stop — obtén al instante el tamaño de posición exacto y el margen requerido.</p>
+      <p style="margin-bottom:14px">Ingresa tu saldo, % de riesgo, entrada y stop - obtén al instante el tamaño de posición exacto y el margen requerido.</p>
       <a class="cta" href="/es/calculators?c=size">Abrir la calculadora de tamaño de posición →</a>
     </div>
 
     <h2>El apalancamiento no es el tamaño de posición</h2>
-    <p>Un error común de principiante es confundir apalancamiento con riesgo. El apalancamiento solo cambia cuánto <em>margen</em> pones — no cambia cuánto pierdes si se activa tu stop. Tu pérdida la determinan el tamaño de posición y la distancia al stop, punto. Usa el menor apalancamiento que te permita abrir el tamaño que tu cálculo de riesgo permite, y mantén tu <a href="/es/blog/how-to-calculate-liquidation-price/">precio de liquidación</a> lejos de tu stop.</p>
+    <p>Un error común de principiante es confundir apalancamiento con riesgo. El apalancamiento solo cambia cuánto <em>margen</em> pones - no cambia cuánto pierdes si se activa tu stop. Tu pérdida la determinan el tamaño de posición y la distancia al stop, punto. Usa el menor apalancamiento que te permita abrir el tamaño que tu cálculo de riesgo permite, y mantén tu <a href="/es/blog/how-to-calculate-liquidation-price/">precio de liquidación</a> lejos de tu stop.</p>
 
     <h2>Preguntas frecuentes</h2>
     <h3>¿Qué tan grande debería ser mi posición en cripto?</h3>
-    <p>Lo suficientemente grande para que activar tu stop-loss cueste ~1% de tu cuenta — no más. Usa la fórmula de arriba o la calculadora.</p>
+    <p>Lo suficientemente grande para que activar tu stop-loss cueste ~1% de tu cuenta - no más. Usa la fórmula de arriba o la calculadora.</p>
     <h3>¿Qué % de riesgo debería usar?</h3>
     <p>1% es el estándar. Los traders agresivos suben hasta 2%; los conservadores usan 0.5%. Por encima del 2% por operación, una racha perdedora normal puede causar daño serio.</p>
 
         <div class="toolshow">
-      <div class="ts-head">Todo gratis en MarginPad — sin registro</div>
+      <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
         <a class="ts-card" href="/es/calculators?c=liq"><b>Calculadora de Liquidación</b><small>Conoce tu precio de salida</small></a> <a class="ts-card" href="/es/heatmap"><b>Mapa de Calor de Liquidaciones</b><small>Ve las zonas de peligro</small></a> <a class="ts-card" href="/es/paper-trade"><b>Planificador de Trades</b><small>Planea toda la operación</small></a> <a class="ts-card" href="/es/swap"><b>Crypto Swap</b><small>900+ monedas, sin cuenta</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Bot de Telegram</b><small>Precios y alertas en vivo</small></a> <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Registra operaciones, gana USDT</small></a>
       </div>
@@ -125,6 +125,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

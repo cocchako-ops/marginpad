@@ -1,4 +1,4 @@
-/* My Trades drawer + Trader Chat — shared widget styles (ported verbatim from the homepage).
+/* My Trades drawer + Trader Chat - shared widget styles (ported verbatim from the homepage).
    CSS vars are scoped to the widget roots so they don't override the host page's palette. */
 .jr-drawer,.jr-backdrop,#chatBox,#chatFab,.mp-toast{--bg:#0a0b0d;--bg-grain:#0d0f12;--panel:#111419;--panel-2:#161a21;--line:#232932;--line-bright:#2f3742;--ink:#e9e7df;--ink-dim:#9aa3ad;--ink-faint:#5c656f;--lime:#ffffff;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
 
@@ -23,10 +23,10 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .jr-x:hover{color:#5fe7b6;transform:scale(1.12);}
 .jr-grab{display:none;}
 @media(max-width:720px){
-  .jr-backdrop{background:rgba(5,6,8,.96);pointer-events:auto;}    /* mobile: full-screen drawer — keep the backdrop blocking + tap-to-close */
+  .jr-backdrop{background:rgba(5,6,8,.96);pointer-events:auto;}    /* mobile: full-screen drawer - keep the backdrop blocking + tap-to-close */
   .jr-drawer{width:100%;max-width:none;border-left:none;box-shadow:none;padding-bottom:calc(14px + env(safe-area-inset-bottom));}
   @keyframes jrIn{from{transform:translateY(26px);opacity:0;}to{transform:none;opacity:1;}}
-  .jr-grab{display:none!important;}                          /* no Back bar — a green ✕ in the corner closes it */
+  .jr-grab{display:none!important;}                          /* no Back bar - a green ✕ in the corner closes it */
   .jr-x{display:block;font-size:25px;line-height:1;color:#34d99a;padding:3px 7px;border-radius:9px;}
   .jr-x:active{background:rgba(46,189,133,.14);}
   /* mobile smoothness (PC is fine): promote the scroll container to its own GPU layer so momentum scroll is smooth,
@@ -138,7 +138,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ct-gate p{color:var(--ink-dim);font-size:14px;margin:0;line-height:1.5;}
 .ct-gate input,.ct-form input{background:var(--bg);border:1px solid var(--line-bright);border-radius:10px;padding:11px 13px;color:var(--ink);font-size:16px;font-family:inherit;width:100%;box-sizing:border-box;}
 .ct-gate button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;padding:11px;font-weight:700;font-family:'Space Mono',monospace;font-size:13px;cursor:pointer;}
-/* room selector — a compact chip that sits in the chat header, right of "Trader Chat" */
+/* room selector - a compact chip that sits in the chat header, right of "Trader Chat" */
 .ct-roomsel{position:relative;flex:none;}
 .ct-roomsel[hidden]{display:none!important;}
 .ct-roombtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:8px;padding:4px 8px 4px 6px;color:var(--ink);font:700 12px 'Space Mono',monospace;cursor:pointer;transition:border-color .15s,background .15s;}
@@ -170,8 +170,8 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ct-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
 .ct-msg{font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;}
 /* Send time, raised in front of the name so it reads as sitting above it without costing the row
-   an extra line — the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
-.ct-msg{position:relative;}/* The send time is its own line ABOVE the name, flush with the left edge — but absolutely positioned, so it paints into the 8px gap the message list already leaves between rows and costs the row no height. Because it is out of flow, the username still starts at the very left of the line. */
+   an extra line - the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
+.ct-msg{position:relative;}/* The send time is its own line ABOVE the name, flush with the left edge - but absolutely positioned, so it paints into the 8px gap the message list already leaves between rows and costs the row no height. Because it is out of flow, the username still starts at the very left of the line. */
 .ct-time{position:absolute;left:0;top:-8px;font:600 8.5px 'Space Mono',ui-monospace,monospace;color:#5a626b;line-height:8px;letter-spacing:.03em;white-space:nowrap;pointer-events:none;}
 .ct-msg b{font-weight:700;margin-right:5px;}
 .ct-user{cursor:pointer;}.ct-user:hover{text-decoration:underline;}
@@ -181,11 +181,11 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ct-form{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);}
 .ct-form button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;width:42px;flex-shrink:0;font-size:15px;cursor:pointer;}
 @media (max-width:720px){
-  #chatFab{display:none!important;}   /* the bottom nav already has a Chat button — no floating FAB on mobile */
+  #chatFab{display:none!important;}   /* the bottom nav already has a Chat button - no floating FAB on mobile */
   #chatBox{top:60px!important;bottom:calc(74px + env(safe-area-inset-bottom))!important;left:14px!important;right:14px!important;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;}
 }
 
-/* UX pass (2026-07): bottom-nav Trades badge (shared pages — rekt/rewards) */
+/* UX pass (2026-07): bottom-nav Trades badge (shared pages - rekt/rewards) */
 .mobnav [data-mn="journal"]{position:relative}
 .mn-badge{position:absolute;top:-3px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#2ebd85;color:#04110b;font:700 9.5px/15px 'Space Mono',monospace;text-align:center;box-shadow:0 0 8px rgba(46,189,133,.55)}
 /* partial-close sheet (shared pages) */
@@ -231,7 +231,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 
 .pp-times{margin-top:7px;font-family:'Space Mono',monospace;font-size:9.5px;color:#5c656f;letter-spacing:.02em}
 
-/* ticket legibility pass (owner: faint gray was hard to read) — brighten every faint element on .pp tickets */
+/* ticket legibility pass (owner: faint gray was hard to read) - brighten every faint element on .pp tickets */
 .pp-meta>div span{color:#c2cad2 !important}
 .pp-foot{color:#aab4be !important}
 .pp-times{color:#aab4be !important;font-size:10px}
@@ -274,7 +274,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .fb-mx:hover{border-color:#0ac2d6}
 .fb-mxs:empty{display:none}  /* the slot is filled when the fee window opens; empty it must take no space */
 
-/* premium gold ticket — base-scope overrides so the gold P&L / left stripe / Paper Trade win on every viewport (the earlier rules landed inside a media block) */
+/* premium gold ticket - base-scope overrides so the gold P&L / left stripe / Paper Trade win on every viewport (the earlier rules landed inside a media block) */
 .pp.pp-gold{border-left-color:#f0c35a!important;}.pp.pp-gold .pp-sym,.pp.pp-gold .pp-pnl .big{color:#f5cf6a!important;}.pp.pp-gold .pp-btns .pt{color:#1a1400!important;background:linear-gradient(180deg,#ffe08a,#efb63a)!important;border:1px solid #f0c35a!important;font-weight:800!important;}.pp.pp-gold .pp-btns .ch{color:#f0c35a!important;border-color:rgba(240,195,90,.5)!important;}.pp.pp-gold .pp-btns .ed{color:#e0b85a!important;border-color:rgba(240,195,90,.4)!important;}
 
 .bal-tgl{position:relative;width:32px;height:17px;border-radius:20px;border:1px solid rgba(240,195,90,.4);background:rgba(240,195,90,.09);cursor:pointer;padding:0;flex:none;transition:.15s;-webkit-appearance:none;appearance:none;vertical-align:middle;}.bal-tgl.on{background:linear-gradient(180deg,#ffe08a,#efb63a);border-color:#f0c35a;}.bal-tgl-k{position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:#8a7a52;transition:.15s;}.bal-tgl.on .bal-tgl-k{transform:translateX(15px);background:#1a1400;}
@@ -313,7 +313,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ctsg-post{width:100%;padding:9px 0;border-radius:9px;border:none;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:13px;cursor:pointer}
 .ctsg-err{color:#ff8a80;font-size:11.5px;margin-top:6px;min-height:14px}
 
-/* ══ Vault ticket skins (tsk-*) — journal .pp cards + shared-ticket viewer .mptk-card ══ */
+/* ══ Vault ticket skins (tsk-*) - journal .pp cards + shared-ticket viewer .mptk-card ══ */
 .pp.tsk-tkt_noir{background:linear-gradient(180deg,#101014,#0a0a0d);border-color:#3a3f4a;box-shadow:inset 0 1px 0 rgba(200,210,255,.14)}
 .pp.tsk-tkt_holo{border-color:#7fb6ff;background:linear-gradient(135deg,rgba(127,214,255,.08),rgba(199,146,255,.09) 45%,rgba(46,189,133,.08));box-shadow:0 0 22px -10px rgba(150,180,255,.5)}
 .pp.tsk-tkt_aurum{border-color:#c98f1b;background:linear-gradient(180deg,rgba(255,215,90,.12),rgba(22,17,8,.92));box-shadow:0 0 26px -10px rgba(255,200,60,.55),inset 0 1px 0 rgba(255,225,140,.28)}

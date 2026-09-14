@@ -1,4 +1,4 @@
-/* Exchange comparison pages (e.g. /bybit-vs-binance/) — high-intent SEO, affiliate to both.
+/* Exchange comparison pages (e.g. /bybit-vs-binance/) - high-intent SEO, affiliate to both.
    Now multilingual: writes the English page at /<a>-vs-<b>/ plus 12 translated variants
    at /<lang>/<a>-vs-<b>/ (hreflang cross-linked). Run: node build/gen-compare-pages.js */
 const VDATE = new Date().toISOString().slice(0, 10);
@@ -20,7 +20,7 @@ const EX = {
 };
 
 // Exchanges our collector actually subscribes to. KuCoin, Kraken and Bitget publish no public liquidation
-// websocket, so a pair of two of them has nothing to measure — those pages skip the measured section
+// websocket, so a pair of two of them has nothing to measure - those pages skip the measured section
 // entirely rather than shipping a "loading…" box that never resolves.
 const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1 };
 
@@ -28,10 +28,10 @@ const PAIRS = [
   ['bybit', 'binance'], ['binance', 'okx'], ['bybit', 'okx'],
   ['binance', 'kucoin'], ['bybit', 'kucoin'], ['kraken', 'binance'],
   ['okx', 'kucoin'], ['bybit', 'kraken'], ['okx', 'kraken'], ['kucoin', 'kraken'],
-  // 2026: Bitget (top-5 futures venue) + Gate (widest altcoin selection) — high-intent commercial queries
+  // 2026: Bitget (top-5 futures venue) + Gate (widest altcoin selection) - high-intent commercial queries
   ['bybit', 'bitget'], ['bitget', 'binance'], ['bitget', 'okx'], ['bitget', 'kucoin'],
   ['bybit', 'gate'], ['binance', 'gate'], ['bitget', 'gate'], ['gate', 'okx'], ['gate', 'kucoin'],
-  // complete the matrix — remaining high-intent pairs
+  // complete the matrix - remaining high-intent pairs
   ['bitget', 'kraken'], ['gate', 'kraken'],
 ];
 
@@ -46,22 +46,22 @@ const RTL = { ar: 1 };
 // English baseline (token templates), so every language uses the same builder.
 const EN = {
   titleSuf: ': Which Is Better for Crypto Futures? (2026)',
-  desc: '{A} vs {B} for crypto futures — max leverage, maker/taker fees, maintenance margin and liquidation handling, with a clear verdict on which fits which trader. Honest side-by-side.',
+  desc: '{A} vs {B} for crypto futures - max leverage, maker/taker fees, maintenance margin and liquidation handling, with a clear verdict on which fits which trader. Honest side-by-side.',
   q1: 'Is {A} or {B} cheaper for futures?',
   q1a: 'On base taker fees, {LT} is cheaper ({A} {AT} vs {B} {BT}). Both offer lower maker fees and tier discounts for higher volume.',
   q2: 'Which has higher leverage, {A} or {B}?',
   q2a: '{HL} offers higher maximum leverage ({A} up to {AL}x, {B} up to {BL}x). Higher leverage means liquidation sits closer to your entry.',
-  lead: 'A no-nonsense side-by-side of <strong>{A}</strong> and <strong>{B}</strong> for crypto futures — leverage, fees, maintenance margin and what each is actually good at. Whichever you pick, plan the trade first with our <a href="/calculators">free calculators</a>.',
+  lead: 'A no-nonsense side-by-side of <strong>{A}</strong> and <strong>{B}</strong> for crypto futures - leverage, fees, maintenance margin and what each is actually good at. Whichever you pick, plan the trade first with our <a href="/calculators">free calculators</a>.',
   thLev: 'Max leverage', thMaker: 'Maker fee (base)', thTaker: 'Taker fee (base)', thMmr: 'Maintenance margin', thKnown: 'Known for',
   open: 'Open {X} →',
   h2fees: 'Fees',
-  feesP: 'On base taker fees, <strong>{LT}</strong> is cheaper ({A} {AT} vs {B} {BT}). Both reward makers (resting limit orders) with lower fees and cut rates further as your 30-day volume grows. For most active traders the fee gap is small next to the cost of a single bad liquidation — which is why position sizing matters more than chasing the lowest fee. See <a href="/blog/maker-vs-taker-fees/">maker vs taker fees</a>.',
+  feesP: 'On base taker fees, <strong>{LT}</strong> is cheaper ({A} {AT} vs {B} {BT}). Both reward makers (resting limit orders) with lower fees and cut rates further as your 30-day volume grows. For most active traders the fee gap is small next to the cost of a single bad liquidation - which is why position sizing matters more than chasing the lowest fee. See <a href="/blog/maker-vs-taker-fees/">maker vs taker fees</a>.',
   h2lev: 'Leverage & liquidation',
   levP: '{HL} offers the higher cap ({A} up to <strong>{AL}×</strong>, {B} up to <strong>{BL}×</strong>), but the headline number is a trap: at {MAX}× a roughly 1% move liquidates you. The maintenance margin rate (≈{AMR} vs ≈{BMR}) also nudges your liquidation price. Check yours before entering with the <a href="/calculators?c=liq">liquidation calculator</a>, or the per-exchange pages: <a href="/{AK}-liquidation-calculator/">{A}</a> · <a href="/{BK}-liquidation-calculator/">{B}</a>.',
   h2pick: 'Which should you pick?',
-  pickP: 'If you want {AKNOWN}, go with <strong>{A}</strong>. If {BKNOWN} matters more, <strong>{B}</strong> fits better. Many traders keep accounts on both and route each trade to wherever the liquidity and funding are best on the day. There is no wrong answer — there is only an unplanned trade.',
+  pickP: 'If you want {AKNOWN}, go with <strong>{A}</strong>. If {BKNOWN} matters more, <strong>{B}</strong> fits better. Many traders keep accounts on both and route each trade to wherever the liquidity and funding are best on the day. There is no wrong answer - there is only an unplanned trade.',
   relAll: 'All calculators', relLiq: '{X} liquidation', relFunding: 'Funding fee',
-  disc: 'Fees and limits are approximate base-tier figures and change by tier, region and over time — confirm on each exchange. Exchange links are referral links; we may earn a commission at no cost to you. Educational, not financial advice.',
+  disc: 'Fees and limits are approximate base-tier figures and change by tier, region and over time - confirm on each exchange. Exchange links are referral links; we may earn a commission at no cost to you. Educational, not financial advice.',
   bothEq: 'both equally', both: 'both',
   navCalc: 'Calculators', navBlog: 'Blog', navGloss: 'Glossary', crumbHome: 'Home',
 };
@@ -157,7 +157,7 @@ const VSTAT_JS = `
 
 function foot(o) {
   return VSTAT_JS + `  </article>
-  <section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case — they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change — confirm on the exchange before depositing.</li></ul></section>
+  <section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case - they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change - confirm on the exchange before depositing.</li></ul></section>
   <footer>
     <span>© 2026 MarginPad</span>
     <span><a href="${o.homeHref}">${o.navCalc}</a> · <a href="/blog/">${o.navBlog}</a> · <a href="/glossary/">${o.navGloss}</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
@@ -189,7 +189,7 @@ function comparePage(ak, bk, lang) {
   const q3 = lang ? '' : `,{"@type":"Question","name":${JSON.stringify(`Which is better, ${a.name} or ${b.name}?`)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(`Neither is universally better. Pick ${a.name} for ${EN_KNOWN[ak]}; pick ${b.name} for ${EN_KNOWN[bk]}. ${lowerTaker === L.bothEq ? 'Base taker fees are the same' : lowerTaker + ' has the lower base taker fee'}, and ${higherLev} offers the higher leverage cap. Many traders keep both accounts and route each trade to the better venue that day.`)}}}`;
   const verdict = lang ? '' : `
     <div style="border:1px solid var(--line);border-left:4px solid #c2f64a;border-radius:12px;padding:16px 18px;margin:18px 0;background:rgba(194,246,74,.04)">
-      <div style="font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c2f64a;margin-bottom:8px">TL;DR — our verdict</div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c2f64a;margin-bottom:8px">TL;DR - our verdict</div>
       <p style="margin:0;font-size:15px;line-height:1.55">Pick <strong>${a.name}</strong> if you want ${EN_KNOWN[ak]}. Pick <strong>${b.name}</strong> if ${EN_KNOWN[bk]} matters more. ${lowerTaker === L.bothEq ? 'Base taker fees are identical' : `<strong>${lowerTaker}</strong> is cheaper on base taker fees`}; <strong>${higherLev}</strong> has the higher leverage cap. Not sure yet? <a href="/paper-trade">Practice the strategy free</a> before funding either.</p>
     </div>`;
   // EN-only deep sections: real fee cost + safety/regulation (translations keep the shorter version)
@@ -197,24 +197,24 @@ function comparePage(ak, bk, lang) {
   const feeMoney = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   // 573 eight-word phrases appeared on nearly every one of these 21 pages, which is what near-duplicate
   // detection keys on and why none of them ranked. The paragraphs below are selected by what actually
-  // separates THIS pair — the size of the fee gap, the leverage spread, the age difference, who serves US
-  // traders — so two pages only read alike when the two exchanges genuinely are alike.
+  // separates THIS pair - the size of the fee gap, the leverage spread, the age difference, who serves US
+  // traders - so two pages only read alike when the two exchanges genuinely are alike.
   const feeGap = Math.abs(aRt - bRt) * 100, cheaper = aRt < bRt ? a : b, pricier = aRt < bRt ? b : a;
   const levGap = Math.abs(a.lev - b.lev), older = a.founded <= b.founded ? a : b, newer = a.founded <= b.founded ? b : a;
   const ageGap = Math.abs(a.founded - b.founded);
   const feeIntro = feeGap < 1
-    ? `These two price the taker side within a rounding error of each other, so fees are the wrong axis to pick between them — the decision lives in leverage, listings and who will let you open an account. The arithmetic is still worth seeing, because it is paid on <em>notional</em> (the full leveraged size, not your margin) and charged twice per round trip:`
+    ? `These two price the taker side within a rounding error of each other, so fees are the wrong axis to pick between them - the decision lives in leverage, listings and who will let you open an account. The arithmetic is still worth seeing, because it is paid on <em>notional</em> (the full leveraged size, not your margin) and charged twice per round trip:`
     : feeGap > 30
-      ? `This is the one pairing on this site where the fee gap is large enough to decide the question on its own. ${cheaper.name} charges ${pct(cheaper.taker)} against ${pricier.name}'s ${pct(pricier.taker)}, and because the fee lands on <em>notional</em> — the whole leveraged position, not the margin behind it — and is paid entering and exiting, the difference compounds fast:`
-      : `Base fees look tiny until you notice they are charged on <em>notional</em> — the full leveraged position size rather than the margin you put up — and that every round trip pays them twice. On a <strong>$10,000</strong> position taken and closed at market:`;
+      ? `This is the one pairing on this site where the fee gap is large enough to decide the question on its own. ${cheaper.name} charges ${pct(cheaper.taker)} against ${pricier.name}'s ${pct(pricier.taker)}, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:`
+      : `Base fees look tiny until you notice they are charged on <em>notional</em> - the full leveraged position size rather than the margin you put up - and that every round trip pays them twice. On a <strong>$10,000</strong> position taken and closed at market:`;
   const feeAfter = feeGap < 1
     ? `Level on fees, then. What moves the needle instead is order type: resting <strong>maker</strong> limits cost less than taking the book on both venues, and both step rates down as 30-day volume grows. A trader who works limit orders pays less on the "expensive" venue than an impatient one pays on the "cheap" one.`
-    : `Over a hundred round trips that is <strong>${feeMoney(feeGap)}</strong> in ${cheaper.name}'s favour${feeGap > 30 ? ' — enough to notice on a small account' : ', which matters if you trade often and barely at all if you do not'}. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows.`;
+    : `Over a hundred round trips that is <strong>${feeMoney(feeGap)}</strong> in ${cheaper.name}'s favour${feeGap > 30 ? ' - enough to notice on a small account' : ', which matters if you trade often and barely at all if you do not'}. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows.`;
   const levPara = levGap === 0
-    ? `<p>Both cap out at <strong>${a.lev}x</strong>, so neither can save you from the other's worst-case position sizing. At that ceiling a move of roughly ${(100 / a.lev).toFixed(2)}% against you wipes the margin — which is why the cap is a marketing number and the size you actually choose is the risk decision.</p>`
+    ? `<p>Both cap out at <strong>${a.lev}x</strong>, so neither can save you from the other's worst-case position sizing. At that ceiling a move of roughly ${(100 / a.lev).toFixed(2)}% against you wipes the margin - which is why the cap is a marketing number and the size you actually choose is the risk decision.</p>`
     : `<p>${a.lev > b.lev ? a.name : b.name} advertises <strong>${Math.max(a.lev, b.lev)}x</strong> against ${a.lev > b.lev ? b.name : a.name}'s <strong>${Math.min(a.lev, b.lev)}x</strong>. Read that as a ceiling, not a recommendation: at ${Math.max(a.lev, b.lev)}x a move of about ${(100 / Math.max(a.lev, b.lev)).toFixed(2)}% against the position is enough to end it, against ${(100 / Math.min(a.lev, b.lev)).toFixed(2)}% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.</p>`;
   const ageLine = ageGap >= 4
-    ? `${older.name} has been running since ${older.founded}, ${ageGap} years longer than ${newer.name} (${newer.founded}) — a real difference when the question is who has already survived a full cycle and a bad week.`
+    ? `${older.name} has been running since ${older.founded}, ${ageGap} years longer than ${newer.name} (${newer.founded}) - a real difference when the question is who has already survived a full cycle and a bad week.`
     : `Both opened within ${ageGap === 0 ? 'the same year' : ageGap + ' year' + (ageGap > 1 ? 's' : '') + ' of each other'} (${a.name} ${a.founded}, ${b.name} ${b.founded}), so neither wins on track record alone.`;
   const deep = lang ? '' : `
     <h2>What the fees actually cost you</h2>
@@ -231,16 +231,16 @@ function comparePage(ak, bk, lang) {
     ${levPara}
 
 ${COVERED[ak] || COVERED[bk] ? `    <h2>Which venue is actually blowing traders up right now</h2>
-    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what ${COVERED[ak] && COVERED[bk] ? `${a.name} and ${b.name}` : `${COVERED[ak] ? a.name : b.name}`} liquidated in the last 24 hours, not an estimate or a vendor figure.${COVERED[ak] && COVERED[bk] ? ' It reloads on every visit — treat a single day as weather, not climate.' : ` ${COVERED[ak] ? b.name : a.name} does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.`}</p>
+    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what ${COVERED[ak] && COVERED[bk] ? `${a.name} and ${b.name}` : `${COVERED[ak] ? a.name : b.name}`} liquidated in the last 24 hours, not an estimate or a vendor figure.${COVERED[ak] && COVERED[bk] ? ' It reloads on every visit - treat a single day as weather, not climate.' : ` ${COVERED[ak] ? b.name : a.name} does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.`}</p>
     <div id="vstat" data-a="${ak}" data-b="${bk}" data-an="${a.name}" data-bn="${b.name}">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
     </div>
-    <p>A venue carrying a bigger share of the day's liquidations is not automatically the riskier place to trade — it usually means more leveraged size is open there. What the long/short split tells you is which way the crowd was leaning when it got taken out. The full nine-venue breakdown, updated continuously, sits on the <a href="/liquidations/">liquidation feed</a>, and the same numbers are free as JSON at <a href="/trading-api/"><code>/api/v1/venues</code></a>.</p>
+    <p>A venue carrying a bigger share of the day's liquidations is not automatically the riskier place to trade - it usually means more leveraged size is open there. What the long/short split tells you is which way the crowd was leaning when it got taken out. The full nine-venue breakdown, updated continuously, sits on the <a href="/liquidations/">liquidation feed</a>, and the same numbers are free as JSON at <a href="/trading-api/"><code>/api/v1/venues</code></a>.</p>
 ` : ''}
     <h2>Safety, regulation &amp; track record</h2>
     <p>${ageLine}</p>
     <p><strong>${a.name}</strong> ${a.safety}. <strong>${b.name}</strong> ${b.safety}.</p>
-    <p>${a.us || b.us ? `On US access: ${a.us && b.us ? 'both serve US traders (subject to state rules)' : (a.us ? a.name : b.name) + ' is the US-friendly option here, while ' + (a.us ? b.name : a.name) + ' does not serve US residents'}.` : 'Neither is available to US residents — a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> fits that case better.'} Whichever you choose, never keep more on any exchange than you are actively trading, enable withdrawal whitelists and two-factor authentication, and confirm current fees, leverage caps and regional availability on the exchange itself before funding.</p>`;
+    <p>${a.us || b.us ? `On US access: ${a.us && b.us ? 'both serve US traders (subject to state rules)' : (a.us ? a.name : b.name) + ' is the US-friendly option here, while ' + (a.us ? b.name : a.name) + ' does not serve US residents'}.` : 'Neither is available to US residents - a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> fits that case better.'} Whichever you choose, never keep more on any exchange than you are actively trading, enable withdrawal whitelists and two-factor authentication, and confirm current fees, leverage caps and regional availability on the exchange itself before funding.</p>`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}]}</script>`;
   return head({
     lang: code, dir: RTL[lang] ? 1 : 0, title, desc: F(L.desc), url, homeHref, hreflang: hreflang(ak, bk),
@@ -305,7 +305,7 @@ for (const [ak, bk] of PAIRS) {
 }
 console.log('done:', n, 'comparison pages (' + PAIRS.length + ' × 13 langs)');
 
-// keep sitemap.xml in sync — add any missing EN comparison URLs (lang variants are covered by hreflang)
+// keep sitemap.xml in sync - add any missing EN comparison URLs (lang variants are covered by hreflang)
 try {
   const smp = path.join(OUT, 'sitemap.xml');
   let sm = fs.readFileSync(smp, 'utf8');

@@ -9,7 +9,7 @@
    "cards": [
     {
      "h": "Trguj sa strujom, ne protiv nje",
-     "p": "Trend je niz viših maksimuma i viših minimuma (naviše) ili nižih maksimuma i nižih minimuma (naniže). Trgovati protiv jakog trenda jer nešto deluje \"previsoko\" ili \"prejeftino\" je donacija. Trend nije uvek u pravu — ali je u pravu češće od tvojih osećaja o njemu."
+     "p": "Trend je niz viših maksimuma i viših minimuma (naviše) ili nižih maksimuma i nižih minimuma (naniže). Trgovati protiv jakog trenda jer nešto deluje \"previsoko\" ili \"prejeftino\" je donacija. Trend nije uvek u pravu - ali je u pravu češće od tvojih osećaja o njemu."
     },
     {
      "h": "Uoči zonu tražnje",
@@ -18,7 +18,7 @@
     },
     {
      "h": "Konfluencija pobeđuje svaki pojedinačni signal",
-     "p": "Jedan nivo znači malo. Nivo koji se poklapa sa trend linijom, okruglim brojem i prethodnim maksimumom je konfluencija — više nezavisnih razloga koji pokazuju na istu zonu. Profesionalci čekaju konfluenciju; početnici reaguju na prvu liniju koju nacrtaju."
+     "p": "Jedan nivo znači malo. Nivo koji se poklapa sa trend linijom, okruglim brojem i prethodnim maksimumom je konfluencija - više nezavisnih razloga koji pokazuju na istu zonu. Profesionalci čekaju konfluenciju; početnici reaguju na prvu liniju koju nacrtaju."
     }
    ],
    "quiz": [
@@ -61,15 +61,15 @@
    "cards": [
     {
      "h": "Šta MA zapravo pokazuje",
-     "p": "Pokretni prosek crta prosečnu cenu zatvaranja poslednjih N sveća — skorašnje pamćenje tržišta kao jedna glatka linija. Cena iznad rastućeg MA je trend-zdrava; cena koja testeriše kroz ravan MA znači da trend ne postoji i trend alati će samo praviti šum."
+     "p": "Pokretni prosek crta prosečnu cenu zatvaranja poslednjih N sveća - skorašnje pamćenje tržišta kao jedna glatka linija. Cena iznad rastućeg MA je trend-zdrava; cena koja testeriše kroz ravan MA znači da trend ne postoji i trend alati će samo praviti šum."
     },
     {
      "h": "EMA vs SMA, i čuveni parovi",
-     "p": "Prosti MA (SMA) sve sveće meri jednako; eksponencijalni MA (EMA) brže reaguje na skorije cene. Podešavanja koja svi gledaju: EMA 9/21 za kratkoročni momentum, SMA 50/200 za veliku sliku. Rade delom ZATO što ih svi gledaju — samoispunjavajuće zone."
+     "p": "Prosti MA (SMA) sve sveće meri jednako; eksponencijalni MA (EMA) brže reaguje na skorije cene. Podešavanja koja svi gledaju: EMA 9/21 za kratkoročni momentum, SMA 50/200 za veliku sliku. Rade delom ZATO što ih svi gledaju - samoispunjavajuće zone."
     },
     {
      "h": "Ukrštanja: signal i kašnjenje",
-     "p": "Kad 50 pređe iznad 200 (golden cross), to potvrđuje da je uzlazni trend uspostavljen; obrnuto (death cross) potvrđuje silazni. Obrati pažnju na reč \"potvrđuje\" — MA po konstrukciji kasne. Govore ti sa koje strane da trguješ, ne tačan trenutak za klik."
+     "p": "Kad 50 pređe iznad 200 (golden cross), to potvrđuje da je uzlazni trend uspostavljen; obrnuto (death cross) potvrđuje silazni. Obrati pažnju na reč \"potvrđuje\" - MA po konstrukciji kasne. Govore ti sa koje strane da trguješ, ne tačan trenutak za klik."
     }
    ],
    "quiz": [
@@ -77,7 +77,7 @@
      "q": "Pokretni prosek pokazuje…",
      "o": [
       "Cenu koju tržište očekuje u bliskoj budućnosti",
-      "Prosek skorijih zatvaranja — uglačan trend",
+      "Prosek skorijih zatvaranja - uglačan trend",
       "Volumen trgovanja",
       "Rezerve menjačnica"
      ]
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "Šta RSI meri",
-     "p": "RSI sabija poslednjih 14 sveća dobitaka i gubitaka u skalu 0-100. Iznad 70 tržište se zove prekupljeno, ispod 30 preprodato. Meri BRZINU poteza, ne njegovu ispravnost — tržište može biti prekupljeno i nastaviti da raste nedeljama."
+     "p": "RSI sabija poslednjih 14 sveća dobitaka i gubitaka u skalu 0-100. Iznad 70 tržište se zove prekupljeno, ispod 30 preprodato. Meri BRZINU poteza, ne njegovu ispravnost - tržište može biti prekupljeno i nastaviti da raste nedeljama."
     },
     {
      "h": "Početnička greška",
@@ -116,7 +116,7 @@
     },
     {
      "h": "Divergencija: koristan trik",
-     "p": "Kad cena napravi novi maksimum, a RSI niži maksimum, momentum se gasi ispod površine — to je bearish divergencija, rana zastavica opreza (ne dugme za prodaju). Obrnuto na minimumima je bullish divergencija. Divergencija plus ključni nivo plus konfluencija — e sad je to setap."
+     "p": "Kad cena napravi novi maksimum, a RSI niži maksimum, momentum se gasi ispod površine - to je bearish divergencija, rana zastavica opreza (ne dugme za prodaju). Obrnuto na minimumima je bullish divergencija. Divergencija plus ključni nivo plus konfluencija - e sad je to setap."
     }
    ],
    "quiz": [
@@ -142,7 +142,7 @@
      "q": "Samo po sebi, jedno očitavanje indikatora je…",
      "o": [
       "Kompletna strategija sama za sebe za većinu tradera",
-      "Slabo — treba mu konfluencija sa nivoima i trendom",
+      "Slabo - treba mu konfluencija sa nivoima i trendom",
       "Ilegalno za trgovanje",
       "Samo za profesionalce"
      ]
@@ -155,15 +155,15 @@
    "cards": [
     {
      "h": "Open interest: novac u igri",
-     "p": "Open interest (OI) broji ukupnu vrednost trenutno otvorenih fjučers pozicija. Rastući OI uz rastuću cenu = nov novac kupuje potez (zdravo). Rastuća cena uz OPADAJUĆI OI = shortovi se zatvaraju, ne nova tražnja — potez koji će verovatno stati. OI ti kaže KO pokreće potez."
+     "p": "Open interest (OI) broji ukupnu vrednost trenutno otvorenih fjučers pozicija. Rastući OI uz rastuću cenu = nov novac kupuje potez (zdravo). Rastuća cena uz OPADAJUĆI OI = shortovi se zatvaraju, ne nova tražnja - potez koji će verovatno stati. OI ti kaže KO pokreće potez."
     },
     {
      "h": "Long/short odnos",
-     "p": "Long/short odnos pokazuje na kojoj strani je masa. Ekstremna očitavanja su kontraška: kad su skoro svi već long, malo kupaca ostaje — a ogroman bazen likvidacionih cena sedi ispod, spreman da nahrani suprotan potez."
+     "p": "Long/short odnos pokazuje na kojoj strani je masa. Ekstremna očitavanja su kontraška: kad su skoro svi već long, malo kupaca ostaje - a ogroman bazen likvidacionih cena sedi ispod, spreman da nahrani suprotan potez."
     },
     {
      "h": "Sklop od tri signala",
-     "p": "Derivatski setap visokog ubeđenja slaže tri stvari: jednostran long/short odnos + rastući OI + funding koji plaća nagomilana strana. To je masa koja je pod polugom, raste i plaća da ostane — napeta opruga. Svaki signal sam je slab; zajedno su tržišni \"tell\"."
+     "p": "Derivatski setap visokog ubeđenja slaže tri stvari: jednostran long/short odnos + rastući OI + funding koji plaća nagomilana strana. To je masa koja je pod polugom, raste i plaća da ostane - napeta opruga. Svaki signal sam je slab; zajedno su tržišni \"tell\"."
     }
    ],
    "quiz": [
@@ -196,7 +196,7 @@
     }
    ],
    "try": {
-    "p": "Proveri živ long/short odnos i open interest — koja strana je nagomilana upravo sada?",
+    "p": "Proveri živ long/short odnos i open interest - koja strana je nagomilana upravo sada?",
     "label": "Long/Short Odnos →"
    }
   },
@@ -206,15 +206,15 @@
    "cards": [
     {
      "h": "Domino mehanizam",
-     "p": "Kad cena udari u likvidacioni nivo tradera sa polugom, menjačnica prinudno prodaje poziciju po tržišnoj ceni. Ta prodaja gura cenu dole — u SLEDEĆI klaster likvidacionih cena, okidajući još prinudnih prodaja. Gledaj domine ispod: jedan okidač, lanac prinudnih izlazaka."
+     "p": "Kad cena udari u likvidacioni nivo tradera sa polugom, menjačnica prinudno prodaje poziciju po tržišnoj ceni. Ta prodaja gura cenu dole - u SLEDEĆI klaster likvidacionih cena, okidajući još prinudnih prodaja. Gledaj domine ispod: jedan okidač, lanac prinudnih izlazaka."
     },
     {
      "h": "Zašto cena lovi određene nivoe",
-     "p": "Likvidacione cene se gomilaju na predvidivim mestima — odmah iza okruglih brojeva i očiglednih podrški, gde su mase sličnih tradera otvorile slične pozicije. Veliki igrači vide te klastere. Fitilj koji probije nivo, aktivira klaster i odmah se okrene — to je taj mehanizam na delu."
+     "p": "Likvidacione cene se gomilaju na predvidivim mestima - odmah iza okruglih brojeva i očiglednih podrški, gde su mase sličnih tradera otvorile slične pozicije. Veliki igrači vide te klastere. Fitilj koji probije nivo, aktivira klaster i odmah se okrene - to je taj mehanizam na delu."
     },
     {
      "h": "Gledanje goriva",
-     "p": "Živi likvidacioni fidovi pokazuju kaskade dok se dešavaju — nalet prinudno zatvorenih longova označava kapitulaciona dna pouzdanije od većine indikatora. Za tvoje trejdove lekcija je odbrambena: stavi likvidacionu cenu tamo gde je rutinski lov ne dohvata, ili još bolje, dimenzioniši da likvidacija bude nemoguća."
+     "p": "Živi likvidacioni fidovi pokazuju kaskade dok se dešavaju - nalet prinudno zatvorenih longova označava kapitulaciona dna pouzdanije od većine indikatora. Za tvoje trejdove lekcija je odbrambena: stavi likvidacionu cenu tamo gde je rutinski lov ne dohvata, ili još bolje, dimenzioniši da likvidacija bude nemoguća."
     }
    ],
    "quiz": [
@@ -247,7 +247,7 @@
     }
    ],
    "try": {
-    "p": "Gledaj kako prinudne likvidacije uživo stižu na Rekt — vidi kaskadni mehanizam svojim očima.",
+    "p": "Gledaj kako prinudne likvidacije uživo stižu na Rekt - vidi kaskadni mehanizam svojim očima.",
     "label": "Otvori Rekt →"
    }
   },
@@ -257,15 +257,15 @@
    "cards": [
     {
      "h": "Kripto trguje dolar i kamate",
-     "p": "Bitcoin je rizična imovina osetljiva na likvidnost: kad izgleda da će kamate pasti, novac teče ka riziku i kripto raste; \"više duže\" radi suprotno. Zato američki podatak o inflaciji može da pomeri Bitcoin u jednoj sekundi — algoritmi trenutno ponovo procenjuju celu putanju kamata."
+     "p": "Bitcoin je rizična imovina osetljiva na likvidnost: kad izgleda da će kamate pasti, novac teče ka riziku i kripto raste; \"više duže\" radi suprotno. Zato američki podatak o inflaciji može da pomeri Bitcoin u jednoj sekundi - algoritmi trenutno ponovo procenjuju celu putanju kamata."
     },
     {
      "h": "Događaji koji znače",
-     "p": "Šačica zakazanih objava pokreće najveće sate u kriptu: FOMC odluka Fed-a o kamatama, CPI i PCE podaci o inflaciji, i NFP izveštaj o zaposlenosti. Na kalendaru su nedeljama unapred — biti iznenađen nekim od njih je izbor. Ispod: kako izgleda 12:30 UTC na dan CPI."
+     "p": "Šačica zakazanih objava pokreće najveće sate u kriptu: FOMC odluka Fed-a o kamatama, CPI i PCE podaci o inflaciji, i NFP izveštaj o zaposlenosti. Na kalendaru su nedeljama unapred - biti iznenađen nekim od njih je izbor. Ispod: kako izgleda 12:30 UTC na dan CPI."
     },
     {
      "h": "Rizik od događaja je problem dimenzionisanja",
-     "p": "Ne možeš da predvidiš broj, ali možeš da ga preživiš: znaj vreme objave i dimenzioniši tako da te trenutni fitilj od 2-3% ne može likvidirati. Prva sveća posle objave je često lažnjak — profesionalci je puste da se odigra umesto da jure po najgorem spredu dana."
+     "p": "Ne možeš da predvidiš broj, ali možeš da ga preživiš: znaj vreme objave i dimenzioniši tako da te trenutni fitilj od 2-3% ne može likvidirati. Prva sveća posle objave je često lažnjak - profesionalci je puste da se odigra umesto da jure po najgorem spredu dana."
     }
    ],
    "quiz": [
@@ -307,7 +307,7 @@
     }
    ],
    "try": {
-    "p": "Otvori ekonomski kalendar i nađi sledeći FOMC ili CPI datum — postavi podsetnik pre nego što udari.",
+    "p": "Otvori ekonomski kalendar i nađi sledeći FOMC ili CPI datum - postavi podsetnik pre nego što udari.",
     "label": "Ekonomski Kalendar →"
    }
   },
@@ -317,15 +317,15 @@
    "cards": [
     {
      "h": "Šta su formacije zapravo",
-     "p": "Trouglovi, zastave, rejndžovi — ispod svake imenovane formacije je jedna fizička činjenica: volatilnost se KOMPRESUJE dok kupci i prodavci postižu privremeni dogovor, pa se ŠIRI kad jedna strana pobedi. Ime znači manje od prepoznavanja kompresije, jer ekspanzija sledi za njom."
+     "p": "Trouglovi, zastave, rejndžovi - ispod svake imenovane formacije je jedna fizička činjenica: volatilnost se KOMPRESUJE dok kupci i prodavci postižu privremeni dogovor, pa se ŠIRI kad jedna strana pobedi. Ime znači manje od prepoznavanja kompresije, jer ekspanzija sledi za njom."
     },
     {
      "h": "Formacije su verovatnoće, ne obećanja",
-     "p": "Trougao ne zna na koju stranu će se probiti. Formacije blago naginju šanse i — korisnije — daju ti čiste nivoe invalidacije: uđi na proboju, stop iza suprotne strane. Struktura R:R je pravi poklon, ne predviđanje."
+     "p": "Trougao ne zna na koju stranu će se probiti. Formacije blago naginju šanse i - korisnije - daju ti čiste nivoe invalidacije: uđi na proboju, stop iza suprotne strane. Struktura R:R je pravi poklon, ne predviđanje."
     },
     {
      "h": "Zamka: halucinacija formacija",
-     "p": "Bulji dovoljno dugo i svaki grafikon rađa formacije kao što oblaci rađaju lica. Sidri formacije u kontekst koji već imaš — trend, ključni nivoi, volumen na proboju. Udžbenička zastava protiv trenda višeg okvira, ni na kakvom nivou, samo je oblik."
+     "p": "Bulji dovoljno dugo i svaki grafikon rađa formacije kao što oblaci rađaju lica. Sidri formacije u kontekst koji već imaš - trend, ključni nivoi, volumen na proboju. Udžbenička zastava protiv trenda višeg okvira, ni na kakvom nivou, samo je oblik."
     }
    ],
    "quiz": [
@@ -364,15 +364,15 @@
    "cards": [
     {
      "h": "Tri mape jedne teritorije",
-     "p": "Dnevni grafikon određuje VREME (trend i ključne nivoe), četvoročasovni SETAP (strukturu koja se formira na tim nivoima), petnaestominutni OKIDAČ (precizan ulaz i stop). Jedno tržište, tri visine — konfuzija nastaje kad trguješ okidač bez vremena."
+     "p": "Dnevni grafikon određuje VREME (trend i ključne nivoe), četvoročasovni SETAP (strukturu koja se formira na tim nivoima), petnaestominutni OKIDAČ (precizan ulaz i stop). Jedno tržište, tri visine - konfuzija nastaje kad trguješ okidač bez vremena."
     },
     {
      "h": "Ritual odozgo nadole",
-     "p": "Uvek ovim redom: prvo dnevni (na koju stranu smem da trgujem?), pa 4H (da li se setap formira na bitnom nivou?), pa niži okvir (tačan ulaz, tačna invalidacija). Obrnuti redosled — naći uzbudljiv petominutni grafikon i izmisliti priču — tako nastaju donacije protiv trenda."
+     "p": "Uvek ovim redom: prvo dnevni (na koju stranu smem da trgujem?), pa 4H (da li se setap formira na bitnom nivou?), pa niži okvir (tačan ulaz, tačna invalidacija). Obrnuti redosled - naći uzbudljiv petominutni grafikon i izmisliti priču - tako nastaju donacije protiv trenda."
     },
     {
      "h": "Sukobi se rešavaju NAGORE",
-     "p": "Kad se okviri ne slažu, viši pobeđuje. Bullish 15-minutni unutar bearish dnevnog je odskok za prodaju, ne preokret za venčanje. Lomovi strukture se sporo penju nagore — poštuj veliku mapu dok se stvarno ne promeni."
+     "p": "Kad se okviri ne slažu, viši pobeđuje. Bullish 15-minutni unutar bearish dnevnog je odskok za prodaju, ne preokret za venčanje. Lomovi strukture se sporo penju nagore - poštuj veliku mapu dok se stvarno ne promeni."
     }
    ],
    "quiz": [
@@ -411,15 +411,15 @@
    "cards": [
     {
      "h": "Sadržaj tržišta",
-     "p": "Bitcoin dominacija (BTC.D) je Bitcoinov udeo u ukupnoj kripto kapitalizaciji. Rastuća dominacija: novac preferira BTC — altovi krvare čak i u zelenim tržištima. Opadajuća dominacija uz rastuće cene: apetit za rizikom se preliva napolje — klasičan potpis altseason-a."
+     "p": "Bitcoin dominacija (BTC.D) je Bitcoinov udeo u ukupnoj kripto kapitalizaciji. Rastuća dominacija: novac preferira BTC - altovi krvare čak i u zelenim tržištima. Opadajuća dominacija uz rastuće cene: apetit za rizikom se preliva napolje - klasičan potpis altseason-a."
     },
     {
      "h": "Ciklus rotacije",
-     "p": "Likvidnost tipično kaskadira: prvo u BTC, pa ETH, pa velike kapitalizacije, pa dugačak rep malih altova — svaki talas rizičniji od prethodnog. Kad mikro-kapovi krenu vertikalno, ciklus je kasni. Grafikoni dominacije ti pokazuju u kom si poglavlju."
+     "p": "Likvidnost tipično kaskadira: prvo u BTC, pa ETH, pa velike kapitalizacije, pa dugačak rep malih altova - svaki talas rizičniji od prethodnog. Kad mikro-kapovi krenu vertikalno, ciklus je kasni. Grafikoni dominacije ti pokazuju u kom si poglavlju."
     },
     {
      "h": "Trguj plimu, ne samo čamac",
-     "p": "Altcoin long je zapravo dve opklade: coin I plima dominacije. Jak alt setap protiv rastuće BTC.D je plivanje uzvodno. Proveri plimu pre trejda — to je jedan dodatni grafikon i sve preuokviri."
+     "p": "Altcoin long je zapravo dve opklade: coin I plima dominacije. Jak alt setap protiv rastuće BTC.D je plivanje uzvodno. Proveri plimu pre trejda - to je jedan dodatni grafikon i sve preuokviri."
     }
    ],
    "quiz": [
@@ -458,15 +458,15 @@
    "cards": [
     {
      "h": "Dnevni račun Wall Street-a",
-     "p": "Otkako su američki spot Bitcoin ETF-ovi lansirani 2024., institucionalna tražnja je postala merljiva: svaki priliv tera fond da kupi pravi BTC, svaki odliv tera na prodaju — objavljuje se dnevno. To je najjasniji prozor koji je kripto ikada imao u veliki, spori novac."
+     "p": "Otkako su američki spot Bitcoin ETF-ovi lansirani 2024., institucionalna tražnja je postala merljiva: svaki priliv tera fond da kupi pravi BTC, svaki odliv tera na prodaju - objavljuje se dnevno. To je najjasniji prozor koji je kripto ikada imao u veliki, spori novac."
     },
     {
      "h": "Spot tražnja vs pena od poluge",
-     "p": "Rast pokretan ETF prilivima skida prave coine sa tržišta — trajno gorivo. Rast uz odlive i skačući funding je poluga koja diže sopstvenu težinu — vrsta koja kaskadira (m5). Tokovi ti kažu u kom rastu stojiš."
+     "p": "Rast pokretan ETF prilivima skida prave coine sa tržišta - trajno gorivo. Rast uz odlive i skačući funding je poluga koja diže sopstvenu težinu - vrsta koja kaskadira (m5). Tokovi ti kažu u kom rastu stojiš."
     },
     {
      "h": "Trend, ne tik",
-     "p": "Jedan crven dan tokova znači malo; višenedeljska serija je režim. Kombinuj trend tokova sa fundingom i open interestom za punu sliku ko pokreće — isto razmišljanje od tri signala iz m4, sada sa institucionalnim slojem."
+     "p": "Jedan crven dan tokova znači malo; višenedeljska serija je režim. Kombinuj trend tokova sa fundingom i open interestom za punu sliku ko pokreće - isto razmišljanje od tri signala iz m4, sada sa institucionalnim slojem."
     }
    ],
    "quiz": [
@@ -483,7 +483,7 @@
      "q": "Rast uz ETF odlive i skačući funding pokreće…",
      "o": [
       "Velike institucije koje akumuliraju dugoročno",
-      "Poluga — pena sklona kaskadama",
+      "Poluga - pena sklona kaskadama",
       "Rudari",
       "Vlade"
      ]
@@ -505,11 +505,11 @@
    "cards": [
     {
      "h": "Merenje pulsa mase",
-     "p": "Merači sentimenta poput Fear & Greed indeksa sabijaju volatilnost, momentum, buku na mrežama i dominaciju u jedan broj. To je termometar za emociju — koristan baš zato što mase najviše greše na svojim emotivnim ekstremima."
+     "p": "Merači sentimenta poput Fear & Greed indeksa sabijaju volatilnost, momentum, buku na mrežama i dominaciju u jedan broj. To je termometar za emociju - koristan baš zato što mase najviše greše na svojim emotivnim ekstremima."
     },
     {
      "h": "Ekstremi su signali, sredina je šum",
-     "p": "Očitavanje 55 ti ne govori ništa. Ekstremna pohlepa kaže da se zakasneli gomilaju sa polugom — proveri funding i long/short odnos za potvrdu. Ekstreman strah označava kapitulacione zone gde prinudni prodavci završavaju, a strpljivi kupci počinju."
+     "p": "Očitavanje 55 ti ne govori ništa. Ekstremna pohlepa kaže da se zakasneli gomilaju sa polugom - proveri funding i long/short odnos za potvrdu. Ekstreman strah označava kapitulacione zone gde prinudni prodavci završavaju, a strpljivi kupci počinju."
     },
     {
      "h": "Koristi ga kao kočnicu, ne kao motor",
@@ -530,7 +530,7 @@
      "q": "Ekstremna pohlepa uz visok funding sugeriše…",
      "o": [
       "Siguran ulaz podržan širokom saglasnošću tržišta",
-      "Zakasnele longove sa polugom — povišen rizik od squeeze-a",
+      "Zakasnele longove sa polugom - povišen rizik od squeeze-a",
       "Nizak rizik",
       "Kupuj još"
      ]
@@ -546,7 +546,7 @@
     }
    ],
    "try": {
-    "p": "Proveri gde emocije tržišta stoje upravo sada — živ Fear & Greed sa istorijom.",
+    "p": "Proveri gde emocije tržišta stoje upravo sada - živ Fear & Greed sa istorijom.",
     "label": "Fear & Greed Indeks →"
    }
   },
@@ -556,15 +556,15 @@
    "cards": [
     {
      "h": "Jedna strana, svaki sloj",
-     "p": "Teza slaže sve što je ovaj kurs naučio u jedan pasus: trend i nivo višeg okvira (m1, m8), formacija ili struktura (m7), derivatsko pozicioniranje — funding, OI, long/short (m4, l5), makro kalendar (m6), i tokovi ili sentiment kao sloj režima (m10, m11)."
+     "p": "Teza slaže sve što je ovaj kurs naučio u jedan pasus: trend i nivo višeg okvira (m1, m8), formacija ili struktura (m7), derivatsko pozicioniranje - funding, OI, long/short (m4, l5), makro kalendar (m6), i tokovi ili sentiment kao sloj režima (m10, m11)."
     },
     {
      "h": "Pa polovina o riziku",
-     "p": "Druga polovina je Kurs 3: tačna invalidacija, R:R od bar 2, veličina iz pravila 1-2%, planirane parcijale i provera događaja. Teza bez polovine o riziku je mišljenje o tržištu — mišljenja su besplatna i koštaju najviše."
+     "p": "Druga polovina je Kurs 3: tačna invalidacija, R:R od bar 2, veličina iz pravila 1-2%, planirane parcijale i provera događaja. Teza bez polovine o riziku je mišljenje o tržištu - mišljenja su besplatna i koštaju najviše."
     },
     {
      "h": "Napiši je, istrguj je, oceni je",
-     "p": "Napiši tezu PRE ulaska, izvrši je kako je napisana, pa oceni PROCES u dnevniku — ne ishod. Savršeno izvršen gubitak je dobar trejd; srećan dobitak koji krši plan je loš, i naplatiće ti se kasnije. Ta petlja, ponavljana, jeste ceo zanat."
+     "p": "Napiši tezu PRE ulaska, izvrši je kako je napisana, pa oceni PROCES u dnevniku - ne ishod. Savršeno izvršen gubitak je dobar trejd; srećan dobitak koji krši plan je loš, i naplatiće ti se kasnije. Ta petlja, ponavljana, jeste ceo zanat."
     }
    ],
    "quiz": [
@@ -580,8 +580,8 @@
     {
      "q": "Teza bez invalidacije i dimenzionisanja je…",
      "o": [
-      "Efikasna — manje vremena na papirologiju",
-      "Samo mišljenje — ono skupo",
+      "Efikasna - manje vremena na papirologiju",
+      "Samo mišljenje - ono skupo",
       "Profesionalna",
       "Kompletna"
      ]
@@ -589,8 +589,8 @@
     {
      "q": "Trejdove treba ocenjivati po…",
      "o": [
-      "Samo ishodu — profit je ono što se broji",
-      "Procesu — da li je plan ispraćen?",
+      "Samo ishodu - profit je ono što se broji",
+      "Procesu - da li je plan ispraćen?",
       "Screenshotovima",
       "Osećajima"
      ]
@@ -606,7 +606,7 @@
     }
    ],
    "try": {
-    "p": "Napiši jednu punu tezu za bilo koji coin i izvrši je kao paper trejd — kompletna petlja, nula rizika.",
+    "p": "Napiši jednu punu tezu za bilo koji coin i izvrši je kao paper trejd - kompletna petlja, nula rizika.",
     "label": "Paper Trade →"
    }
   }

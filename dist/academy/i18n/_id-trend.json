@@ -47,7 +47,7 @@
      "q": "Di uptrend, harga jatuh di bawah low sebelumnya. Artinya…",
      "o": [
       "Downtrend pasti sudah dimulai",
-      "Tidak ada — hanya high yang menentukan tren",
+      "Tidak ada - hanya high yang menentukan tren",
       "Urutan uptrend-nya sudah jebol",
       "Trennya jadi makin kuat"
      ]
@@ -60,7 +60,7 @@
    "cards": [
     {
      "h": "Hubungkan low-nya di uptrend",
-     "p": "Di uptrend kamu menggambar trendline — garis tren — di bawah low pullback, karena di situlah pembeli terus bermunculan. Di downtrend kamu menggambarnya melintasi high pantulan. Dua titik menentukan sebuah garis, jadi dua sentuhan adalah minimum yang bisa kamu pakai. Itu juga versi paling lemah yang mungkin, dan ini alasannya."
+     "p": "Di uptrend kamu menggambar trendline - garis tren - di bawah low pullback, karena di situlah pembeli terus bermunculan. Di downtrend kamu menggambarnya melintasi high pantulan. Dua titik menentukan sebuah garis, jadi dua sentuhan adalah minimum yang bisa kamu pakai. Itu juga versi paling lemah yang mungkin, dan ini alasannya."
     },
     {
      "h": "Tiga sentuhan baru bikin menarik",
@@ -97,7 +97,7 @@
     {
      "q": "Harga menembus trendline-mu, jadi kamu gambar ulang lebih landai. Itu…",
      "o": [
-      "Praktik bagus — chart terus berkembang",
+      "Praktik bagus - chart terus berkembang",
       "Mencocokkan garis dengan yang kamu mau",
       "Wajib begitu sentuhan ketiga gagal",
       "Cara profesional mengelola risiko terbuka"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Kerumunan, bukan laser",
-     "p": "Support bukan satu harga. Dia pita tempat cukup banyak pembeli muncul untuk menghentikan penurunan — kadang di $100.00, kadang di $99.40, kadang setelah tusukan turun ke $98.80. Menggambar garis setebal satu piksel dan berharap harga menghormatinya sampai ke sen adalah cara umum terlempar dari ide yang sebenarnya baik-baik saja."
+     "p": "Support bukan satu harga. Dia pita tempat cukup banyak pembeli muncul untuk menghentikan penurunan - kadang di $100.00, kadang di $99.40, kadang setelah tusukan turun ke $98.80. Menggambar garis setebal satu piksel dan berharap harga menghormatinya sampai ke sen adalah cara umum terlempar dari ide yang sebenarnya baik-baik saja."
     },
     {
      "h": "Biarkan sumbu yang menentukan tepinya",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Buktikan dengan satu sentuhan",
-     "prompt": "Sentuh di mana saja di dalam zona support — pita tempat low-nya berkumpul.",
+     "prompt": "Sentuh di mana saja di dalam zona support - pita tempat low-nya berkumpul.",
      "p": "Satu sentuhan. Tak ada satu piksel yang benar di sini, dan itulah persis pelajarannya."
     },
     {
@@ -152,7 +152,7 @@
       "Levelmu memang salah",
       "Downtrend baru sudah dimulai",
       "Support kini sudah jadi resistance",
-      "Normal — levelnya zona, bukan garis"
+      "Normal - levelnya zona, bukan garis"
      ]
     }
    ]
@@ -200,7 +200,7 @@
     {
      "q": "Sebuah level sudah bertahan empat kali. Di sentuhan kelima dia…",
      "o": [
-      "Pasti bertahan — empat sentuhan mengonfirmasinya",
+      "Pasti bertahan - empat sentuhan mengonfirmasinya",
       "Otomatis berubah jadi trendline",
       "Bisa jebol tanpa peringatan sama sekali",
       "Menjamin breakout yang menguntungkanmu"
@@ -222,7 +222,7 @@
     },
     {
      "h": "Retest adalah tempat buktinya datang",
-     "p": "Flip — pergantian peran itu — baru terlihat saat retest, ketika harga kembali ke level yang jebol. Kalau pembeli mempertahankannya, kamu punya level sekaligus harga spesifik tepat di bawahnya tempat kamu akan salah. Kalau harga menyayat lurus kembali menembusnya, jebolnya cuma noise. Menunggu retest membuatmu melewatkan sebagian pergerakan. Dia juga menghapus tebak-tebakannya."
+     "p": "Flip - pergantian peran itu - baru terlihat saat retest, ketika harga kembali ke level yang jebol. Kalau pembeli mempertahankannya, kamu punya level sekaligus harga spesifik tepat di bawahnya tempat kamu akan salah. Kalau harga menyayat lurus kembali menembusnya, jebolnya cuma noise. Menunggu retest membuatmu melewatkan sebagian pergerakan. Dia juga menghapus tebak-tebakannya."
     }
    ],
    "quiz": [
@@ -289,7 +289,7 @@
     {
      "q": "Sebuah level jebol dengan volume luar biasa rendah. Kamu sebaiknya…",
      "o": [
-      "Anggap ringan — sedikit yang ikut serta",
+      "Anggap ringan - sedikit yang ikut serta",
       "Anggap terkonfirmasi, volume itu noise",
       "Anggap pembalikan kini dijamin",
       "Gandakan posisi demi menangkap pergerakannya"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Salah main permainan itu mahal",
-     "p": "Terapkan aturan tren di dalam range dan kamu membeli setiap dorongan di tepi atas dan menjual setiap luruhan di tepi bawah — beli mahal jual murah berulang-ulang, membayar biaya setiap putaran. Terapkan aturan range ke pasar yang sedang tren dan kamu terus short melawan kekuatan. Menyebut nama keadaannya sebelum bertindak bukan PR yang opsional."
+     "p": "Terapkan aturan tren di dalam range dan kamu membeli setiap dorongan di tepi atas dan menjual setiap luruhan di tepi bawah - beli mahal jual murah berulang-ulang, membayar biaya setiap putaran. Terapkan aturan range ke pasar yang sedang tren dan kamu terus short melawan kekuatan. Menyebut nama keadaannya sebelum bertindak bukan PR yang opsional."
     },
     {
      "h": "Range menyempit sebelum berakhir",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Sebut trennya, tandai dua level",
-     "p": "Ucapkan urutannya keras-keras: high dan low yang makin tinggi, cerminannya, atau tidak keduanya, yang berarti range. Lalu tandai tepat dua zona mendatar — yang terdekat di atas harga dan yang terdekat di bawahnya. Dua. Kalau kamu sudah menggambar enam garis, kamu sudah membangun chart yang menyetujui apa pun yang kamu putuskan berikutnya."
+     "p": "Ucapkan urutannya keras-keras: high dan low yang makin tinggi, cerminannya, atau tidak keduanya, yang berarti range. Lalu tandai tepat dua zona mendatar - yang terdekat di atas harga dan yang terdekat di bawahnya. Dua. Kalau kamu sudah menggambar enam garis, kamu sudah membangun chart yang menyetujui apa pun yang kamu putuskan berikutnya."
     },
     {
      "h": "Selesaikan kalimatnya, lalu berhenti",
@@ -426,7 +426,7 @@
     },
     {
      "h": "Kebanyakan chart tak layak dapat pendapat",
-     "p": "Keluaran jujur dari rutin ini, sebagian besar waktu, adalah nihil. Tak ada tren yang jelas, tak ada level di dekatnya, tak ada yang spesifik untuk disalahi. Itu sebuah hasil, bukan kegagalan — rutinnya adalah filter, dan filter yang tak pernah menolak apa pun bukanlah filter. Tutup chart-nya dan lihat simbol lain."
+     "p": "Keluaran jujur dari rutin ini, sebagian besar waktu, adalah nihil. Tak ada tren yang jelas, tak ada level di dekatnya, tak ada yang spesifik untuk disalahi. Itu sebuah hasil, bukan kegagalan - rutinnya adalah filter, dan filter yang tak pernah menolak apa pun bukanlah filter. Tutup chart-nya dan lihat simbol lain."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Sebanyak yang bisa kamu temukan",
       "Enam, satu per timeframe",
-      "Dua — terdekat di atas dan di bawah",
+      "Dua - terdekat di atas dan di bawah",
       "Nol, trendline sudah cukup"
      ]
     },

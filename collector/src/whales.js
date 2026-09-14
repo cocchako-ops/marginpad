@@ -1,5 +1,5 @@
 // Hyperliquid whale tracker (2026-08-22, Coinglass independence phase D).
-// Hyperliquid IS the primary source — positions live on-chain and the public info API serves them;
+// Hyperliquid IS the primary source - positions live on-chain and the public info API serves them;
 // the aggregator we used to pay resold exactly this. Three feeds:
 //   positions: biggest open perp positions (>= $1M) across the leaderboard's top accounts
 //   alerts:    position changes between polls (opened / closed / flipped / grew or shrank >= 25%)
@@ -15,7 +15,7 @@
 //
 // It must be AGGREGATED, and that is a measurement, not a preference. Measured 2026-09-14 over one
 // hour across twelve of the largest wallets: 4,992 perp fills, median size $745, largest $88.6k.
-// A whale does not "buy $200k of BTC" in one fill — it is hundreds of slices from an execution algo.
+// A whale does not "buy $200k of BTC" in one fill - it is hundreds of slices from an execution algo.
 // Raw, this feed would be ~62,000 unreadable rows an hour. Grouping consecutive fills of the same
 // wallet + coin + direction inside GROUP_MS and keeping those over MIN_TRADE_USD turns the same hour
 // into 14 real trades, the largest being $2.0M of GOLD closed over 472 fills in fourteen minutes.
@@ -32,7 +32,7 @@ const ALERT_DELTA = 0.25;   // size change that counts as an alert
 const MAX_ALERTS = 60;
 
 // trade feed
-const FILL_TRACK_N = 60;    // fills are polled for the largest accounts only — see the weight note below
+const FILL_TRACK_N = 60;    // fills are polled for the largest accounts only - see the weight note below
 const FILL_SLICE = 15;      // wallets per tick …
 const FILL_TICK_MS = 30e3;  // … every 30 s = 30 wallets/min. userFillsByTime weighs 20 against the
                             // info API's 1200/min per IP, so this sits at ~600/min with the position
@@ -65,13 +65,13 @@ async function refreshLeaderboard() {
     const r = await fetch(LEADERBOARD_URL, { signal: AbortSignal.timeout(60000) });
     if (!r.ok) throw new Error('lb ' + r.status);
     const t0 = Date.now();
-    const j = await r.json(); // ~36MB parsed synchronously — on this 512MB box that is a real event-loop pause, so it is measured
+    const j = await r.json(); // ~36MB parsed synchronously - on this 512MB box that is a real event-loop pause, so it is measured
     const parseMs = Date.now() - t0; if (parseMs > 800) log.warn('[whales] slow leaderboard parse', { ms: parseMs });
     const rows = Array.isArray(j.leaderboardRows) ? j.leaderboardRows : [];
     if (rows.length < 1000) throw new Error('lb too small: ' + rows.length);
     // Every leaderboard row carries pnl / roi / volume for day, week, month and allTime, and until
     // 2026-09-14 all of it was thrown away and only the address kept. That is the whole track-record
-    // layer of the page — who is actually good, not merely large — and it costs nothing extra.
+    // layer of the page - who is actually good, not merely large - and it costs nothing extra.
     const clean = rows
       .map(x => ({ a: String(x.ethAddress || ''), v: +x.accountValue || 0, w: x.windowPerformances, n: x.displayName || null }))
       .filter(x => /^0x[0-9a-fA-F]{40}$/.test(x.a) && x.v > 0)
@@ -156,13 +156,13 @@ async function poll() {
       state.alerts = fresh.concat(state.alerts).slice(0, MAX_ALERTS);
     }
     prevByKey = nowByKey;
-    // the fill feed needs leverage, and a fill does not carry it — it lives on the POSITION. Keep the
+    // the fill feed needs leverage, and a fill does not carry it - it lives on the POSITION. Keep the
     // whole map (not just the published top 40) so a trade in a smaller position is still labelled.
     levByKey = new Map(found.filter(p => p.lev > 0).map(p => [p.user + '|' + p.sym, p.lev]));
 
     // ── by market: where the tracked whales actually are, against what the market is doing ──────
     // Published for EVERY market they hold, not just the 40 biggest positions, because the point of
-    // this table is the crowd — which side is loaded, how levered, and what it costs them per day.
+    // this table is the crowd - which side is loaded, how levered, and what it costs them per day.
     const byCoin = new Map();
     for (const p of found) {
       let c = byCoin.get(p.sym);
@@ -196,7 +196,7 @@ const alertOf = p => ({ user: p.user, sym: p.sym, long: p.long, liq: p.liq, val:
 
 // ── the trade feed ────────────────────────────────────────────────────────────────────────────────
 // dir on a perp fill is one of Open Long / Close Long / Open Short / Close Short / Long > Short /
-// Short > Long. Spot fills say Buy / Sell and their coin is an index like "@107" — this is a futures
+// Short > Long. Spot fills say Buy / Sell and their coin is an index like "@107" - this is a futures
 // feed, so they are dropped rather than guessed at.
 const DIRS = {
   'Open Long': { act: 'open', long: true }, 'Close Long': { act: 'close', long: true },
@@ -219,11 +219,11 @@ function publishGroup(g) {
   });
 }
 
-// A fill does not carry leverage — it lives on the position. The 4-minute position poll is both too
+// A fill does not carry leverage - it lives on the position. The 4-minute position poll is both too
 // slow and too narrow for this (it only keeps positions over $1M), so a closed group asks the chain
 // for the wallet's state directly. clearinghouseState weighs 2 against the 1200/min budget and this
 // runs a couple of times a minute, which is why it is affordable to ask at publish time instead of
-// printing "—" next to most rows (measured on the first live feed: 6 of 6 had no leverage).
+// printing "-" next to most rows (measured on the first live feed: 6 of 6 had no leverage).
 // A trade that CLOSED the whole position leaves nothing to read, and that is reported as unknown
 // rather than filled in with a number from somewhere else.
 async function drainPending() {
@@ -239,7 +239,7 @@ async function drainPending() {
         if (p.coin && v > 0) lev.set(String(p.coin), v);
         if (p.coin) held.set(String(p.coin), Math.abs(+p.positionValue || 0));
       }
-      // clearinghouseState answers for the main perp book only — a builder-deployed market (the chain
+      // clearinghouseState answers for the main perp book only - a builder-deployed market (the chain
       // lists those as "xyz:GOLD", "xyz:SP500") is not in it, so those rows keep an unknown leverage
       // and no position size. That is the honest answer, not a zero.
       for (const r of rows) if (r.user === u) { if (!r.lev) r.lev = lev.get(r.sym) || null; r.posUsd = Math.round(held.get(r.sym) || 0) || undefined; }
@@ -248,7 +248,7 @@ async function drainPending() {
   }
   // A group is published when it goes QUIET, so publication order is not the order things happened: a
   // fifteen-minute execution surfaces after short trades that started later. The feed is sorted by when
-  // the trade STARTED, which is the clock the row prints — the two must agree or the list reads as broken.
+  // the trade STARTED, which is the clock the row prints - the two must agree or the list reads as broken.
   for (const r of rows) state.fills.push(r);
   state.fills.sort((a, b) => b.ts - a.ts);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
@@ -277,7 +277,7 @@ function foldFills(user, rows) {
   if (newest) fillSeen.set(user, newest);
 }
 
-// A group is published once nothing has been added to it for GROUP_MS — otherwise a trade still being
+// A group is published once nothing has been added to it for GROUP_MS - otherwise a trade still being
 // executed would be printed at a third of its final size and never corrected.
 function flushGroups(now) {
   for (const [k, g] of openGroup) if (now - g.last > GROUP_MS) { publishGroup(g); openGroup.delete(k); }
@@ -323,7 +323,7 @@ export function stopWhales() { timers.forEach(t => clearInterval(t)); timers = [
 // because the whole feature is that aggregation and a copy of it in a test would prove nothing.
 export const _fillsTest = {
   foldFills, flushGroups, drainPending, state,
-  // publish without asking the chain for leverage — the grouping is what is under test here
+  // publish without asking the chain for leverage - the grouping is what is under test here
   flushLocal(now) { flushGroups(now); const rows = pending.splice(0, pending.length); for (const r of rows) state.fills.push(r); state.fills.sort((a, b) => b.ts - a.ts); if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS; },
   reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); pending.length = 0; levByKey = new Map(Object.entries(lev || {})); },
   consts: { GROUP_MS, MIN_TRADE_USD, MAX_FILLS, FILL_TRACK_N },

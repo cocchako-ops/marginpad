@@ -1,4 +1,4 @@
-/* /pivot-point-calculator/ (+ the other tool apps later) — multilingual rebuild from build/data/tools-i18n.js.
+/* /pivot-point-calculator/ (+ the other tool apps later) - multilingual rebuild from build/data/tools-i18n.js.
    English at /<slug>/ plus 12 translated variants at /<lang>/<slug>/ (hreflang). SHARED = topbar/footer chrome.
    Run: node build/gen-tools-pages.js */
 const fs = require('fs');

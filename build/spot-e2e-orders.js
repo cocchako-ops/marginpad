@@ -1,4 +1,4 @@
-// Demo Spot E2E (2026-09-03): limit orders — add/list/cancel, a crossed buy fills through the sweep at the market price, an uncrossed sell stays open, a sell with no funds fails with a note, the trade-modal Limit toggle and the open-orders list in a real browser.
+// Demo Spot E2E (2026-09-03): limit orders - add/list/cancel, a crossed buy fills through the sweep at the market price, an uncrossed sell stays open, a sell with no funds fails with a note, the trade-modal Limit toggle and the open-orders list in a real browser.
 const fs = require('fs'); const { withBrowser } = require('D:/part1/money-mission/build/e2e-browser.js');
 const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').split(/\r?\n/)[1].trim();
 const UID = 'spotord' + Date.now().toString(36).slice(-4); const B = 'https://marginpad.io/api/spot';

@@ -1,5 +1,5 @@
 /* Stale-tab notice E2E (2026-09-10).
-   A tab left open across a deploy keeps the bundles it loaded — nothing reloads on its own. That is how three
+   A tab left open across a deploy keeps the bundles it loaded - nothing reloads on its own. That is how three
    rounds of fixes to the winning-ticket line stayed invisible to the owner: the code was live, his tab was not.
    mp-auth compares the version it was loaded with against the one /api/announce reports and says so ONCE.
 

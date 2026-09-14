@@ -13,7 +13,7 @@
     },
     {
      "h": "Der Abwärtstrend ist das Spiegelbild",
-     "p": "Ein Abwärtstrend ist dieselbe Regel, umgedreht. Jede Erholung stoppt tiefer als die vorige. Jeder Absturz geht unter den vorigen. Tiefere Hochs, tiefere Tiefs. Nichts daran sagt, dass der Preis weiter fallen wird. Es beschreibt nur, was schon passiert ist — und zwar so, dass ein anderer Mensch es im selben Chart nachprüfen und dir zustimmen könnte."
+     "p": "Ein Abwärtstrend ist dieselbe Regel, umgedreht. Jede Erholung stoppt tiefer als die vorige. Jeder Absturz geht unter den vorigen. Tiefere Hochs, tiefere Tiefs. Nichts daran sagt, dass der Preis weiter fallen wird. Es beschreibt nur, was schon passiert ist - und zwar so, dass ein anderer Mensch es im selben Chart nachprüfen und dir zustimmen könnte."
     },
     {
      "h": "Benenne die Swings laut",
@@ -21,7 +21,7 @@
     },
     {
      "h": "Wann ein Trend aufhört, einer zu sein",
-     "p": "Ein Aufwärtstrend endet, wenn die Folge bricht: Der Preis macht ein Tief unter dem vorigen Tief. Das ist der ganze Test. Es heißt nicht, dass ein Abwärtstrend begonnen hat, und oft läuft der Preis danach wochenlang einfach seitwärts. Es heißt, dass der Grund, aus dem du es einen Aufwärtstrend genannt hast, weg ist — und jeder Plan, der auf diesem Grund stand, ebenfalls."
+     "p": "Ein Aufwärtstrend endet, wenn die Folge bricht: Der Preis macht ein Tief unter dem vorigen Tief. Das ist der ganze Test. Es heißt nicht, dass ein Abwärtstrend begonnen hat, und oft läuft der Preis danach wochenlang einfach seitwärts. Es heißt, dass der Grund, aus dem du es einen Aufwärtstrend genannt hast, weg ist - und jeder Plan, der auf diesem Grund stand, ebenfalls."
     }
    ],
    "quiz": [
@@ -47,7 +47,7 @@
      "q": "Im Aufwärtstrend fällt der Preis unter das vorige Tief. Das heißt…",
      "o": [
       "Ein Abwärtstrend hat definitiv begonnen",
-      "Nichts — nur Hochs definieren einen Trend",
+      "Nichts - nur Hochs definieren einen Trend",
       "Die Folge des Aufwärtstrends ist gebrochen",
       "Der Trend ist dadurch stärker geworden"
      ]
@@ -68,11 +68,11 @@
     },
     {
      "h": "Passend zeichnen ist Schummeln",
-     "p": "Eine Linie findest du immer. Verschieb den Start um eine Kerze, kipp sie um ein Grad, ignorier die zwei Berührungen, die sie ruinieren — und jeder Chart stützt jede Geschichte. Der ehrliche Test: Zeichne die Linie, bevor du eine Position hast, und zeichne sie nie neu, weil der Preis dir widersprochen hat. Hast du sie verschoben, hast du keine Linie mehr. Du hast einen Wunsch."
+     "p": "Eine Linie findest du immer. Verschieb den Start um eine Kerze, kipp sie um ein Grad, ignorier die zwei Berührungen, die sie ruinieren - und jeder Chart stützt jede Geschichte. Der ehrliche Test: Zeichne die Linie, bevor du eine Position hast, und zeichne sie nie neu, weil der Preis dir widersprochen hat. Hast du sie verschoben, hast du keine Linie mehr. Du hast einen Wunsch."
     },
     {
      "h": "Steile Linien brechen früher",
-     "p": "Eine Trendlinie mit flachem Winkel kann Monate halten, weil der Preis nur langsam weiter nach oben mahlen muss, um über ihr zu bleiben. Eine fast senkrechte Linie verlangt, dass der Markt ewig beschleunigt, und nichts beschleunigt ewig. Steile Linien brechen früh und oft, und dieser Bruch heißt meist, dass das Tempo abgekühlt ist — nicht, dass der Trend gedreht hat."
+     "p": "Eine Trendlinie mit flachem Winkel kann Monate halten, weil der Preis nur langsam weiter nach oben mahlen muss, um über ihr zu bleiben. Eine fast senkrechte Linie verlangt, dass der Markt ewig beschleunigt, und nichts beschleunigt ewig. Steile Linien brechen früh und oft, und dieser Bruch heißt meist, dass das Tempo abgekühlt ist - nicht, dass der Trend gedreht hat."
     }
    ],
    "quiz": [
@@ -97,7 +97,7 @@
     {
      "q": "Der Preis bricht deine Trendlinie, du zeichnest sie flacher. Das ist…",
      "o": [
-      "Gute Praxis — Charts verändern sich ständig",
+      "Gute Praxis - Charts verändern sich ständig",
       "Die Linie an das angepasst, was du willst",
       "Nötig, sobald die dritte Berührung fällt",
       "So managen Profis ihr laufendes Risiko"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Eine Menschenmenge, kein Laser",
-     "p": "Support (Unterstützung) ist kein einzelner Preis. Es ist ein Band, in dem genug Käufer auftauchten, um den Fall zu stoppen — mal bei $100.00, mal bei $99.40, mal nach einem Stich hinunter auf $98.80. Eine Linie von einem Pixel zu ziehen und zu erwarten, dass der Preis sie auf den Cent respektiert, ist ein verbreiteter Weg, aus einer eigentlich guten Idee geschüttelt zu werden."
+     "p": "Support (Unterstützung) ist kein einzelner Preis. Es ist ein Band, in dem genug Käufer auftauchten, um den Fall zu stoppen - mal bei $100.00, mal bei $99.40, mal nach einem Stich hinunter auf $98.80. Eine Linie von einem Pixel zu ziehen und zu erwarten, dass der Preis sie auf den Cent respektiert, ist ein verbreiteter Weg, aus einer eigentlich guten Idee geschüttelt zu werden."
     },
     {
      "h": "Lass die Dochte die Ränder setzen",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Beweis es mit einem Tipp",
-     "prompt": "Tippe irgendwo in die Support-Zone — das Band, in dem sich die Tiefs häufen.",
+     "prompt": "Tippe irgendwo in die Support-Zone - das Band, in dem sich die Tiefs häufen.",
      "p": "Ein Tipp. Es gibt hier kein einziges richtiges Pixel, und genau das ist die Lektion."
     },
     {
@@ -152,7 +152,7 @@
       "Dein Level war schlicht falsch",
       "Ein neuer Abwärtstrend hat begonnen",
       "Support ist jetzt zu Resistance geworden",
-      "Normal — das Level ist Zone, nicht Linie"
+      "Normal - das Level ist Zone, nicht Linie"
      ]
     }
    ]
@@ -175,7 +175,7 @@
     },
     {
      "h": "Ein Level ist keine Mauer",
-     "p": "Nichts davon lässt ein Level halten. Orders werden zurückgezogen, die Stimmung dreht, und ein Level, das den Preis viermal gestoppt hat, kann beim fünften Mal ohne jede Vorwarnung fallen. Der Wert eines Levels liegt nicht darin, dass der Preis dort stoppt. Er liegt darin, dass es dir einen konkreten Preis gibt, an dem deine Idee erledigt ist — und genau daraus besteht ein Plan."
+     "p": "Nichts davon lässt ein Level halten. Orders werden zurückgezogen, die Stimmung dreht, und ein Level, das den Preis viermal gestoppt hat, kann beim fünften Mal ohne jede Vorwarnung fallen. Der Wert eines Levels liegt nicht darin, dass der Preis dort stoppt. Er liegt darin, dass es dir einen konkreten Preis gibt, an dem deine Idee erledigt ist - und genau daraus besteht ein Plan."
     }
    ],
    "quiz": [
@@ -200,7 +200,7 @@
     {
      "q": "Ein Level hat viermal gehalten. Bei der fünften Berührung…",
      "o": [
-      "Muss es halten — vier Berührungen zählen",
+      "Muss es halten - vier Berührungen zählen",
       "Wird es automatisch zur Trendlinie",
       "Kann es ohne jede Vorwarnung fallen",
       "Garantiert es einen Breakout für dich"
@@ -214,7 +214,7 @@
    "cards": [
     {
      "h": "Gebrochene Resistance kann Support werden",
-     "p": "Der Preis mahlt sich dreimal in eine Decke — eine Resistance (Widerstand) — und schließt schließlich darüber. Oft stoppt der nächste Rücksetzer genau an dieser alten Decke, statt direkt wieder hindurchzufallen. Die Linie hat sich nicht geändert, die Rollen haben es. Umgekehrt passiert dasselbe: Ein Support, der bricht, wird häufig zu dem Level, das die nächste Erholung deckelt."
+     "p": "Der Preis mahlt sich dreimal in eine Decke - eine Resistance (Widerstand) - und schließt schließlich darüber. Oft stoppt der nächste Rücksetzer genau an dieser alten Decke, statt direkt wieder hindurchzufallen. Die Linie hat sich nicht geändert, die Rollen haben es. Umgekehrt passiert dasselbe: Ein Support, der bricht, wird häufig zu dem Level, das die nächste Erholung deckelt."
     },
     {
      "h": "Der Mechanismus, nicht die Magie",
@@ -289,7 +289,7 @@
     {
      "q": "Ein Level bricht auf ungewöhnlich dünnem Volumen. Du…",
      "o": [
-      "Nimmst es leicht — kaum jemand war dabei",
+      "Nimmst es leicht - kaum jemand war dabei",
       "Nimmst es als bestätigt, Volumen ist Rauschen",
       "Gehst von einer garantierten Umkehr aus",
       "Verdoppelst die Position für die Bewegung"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Das falsche Spiel zu spielen ist teuer",
-     "p": "Wendest du Trendregeln in einer Range an, kaufst du jeden Schub am oberen Rand und verkaufst jede Spülung am unteren — teuer kaufen, billig verkaufen, immer wieder, und jedes Mal Gebühren zahlen. Wendest du Range-Regeln in einem Trendmarkt an, shortest du ständig in die Stärke hinein. Den Zustand zu benennen, bevor du handelst, ist keine optionale Hausaufgabe."
+     "p": "Wendest du Trendregeln in einer Range an, kaufst du jeden Schub am oberen Rand und verkaufst jede Spülung am unteren - teuer kaufen, billig verkaufen, immer wieder, und jedes Mal Gebühren zahlen. Wendest du Range-Regeln in einem Trendmarkt an, shortest du ständig in die Stärke hinein. Den Zustand zu benennen, bevor du handelst, ist keine optionale Hausaufgabe."
     },
     {
      "h": "Ranges werden enger, bevor sie enden",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Benenne den Trend, markiere zwei Levels",
-     "p": "Sprich die Folge laut aus: höhere Hochs und höhere Tiefs, das Spiegelbild davon, oder keins von beidem, was Range heißt. Dann markiere genau zwei waagerechte Zonen — die nächste über dem Preis und die nächste darunter. Zwei. Hast du sechs Linien gezeichnet, hast du einen Chart gebaut, der zu allem passt, was du als Nächstes beschließt."
+     "p": "Sprich die Folge laut aus: höhere Hochs und höhere Tiefs, das Spiegelbild davon, oder keins von beidem, was Range heißt. Dann markiere genau zwei waagerechte Zonen - die nächste über dem Preis und die nächste darunter. Zwei. Hast du sechs Linien gezeichnet, hast du einen Chart gebaut, der zu allem passt, was du als Nächstes beschließt."
     },
     {
      "h": "Sprich den Satz zu Ende, dann hör auf",
@@ -426,7 +426,7 @@
     },
     {
      "h": "Die meisten Charts verdienen keine Meinung",
-     "p": "Das ehrliche Ergebnis dieser Routine ist meistens: nichts. Kein klarer Trend, kein Level in der Nähe, nichts Konkretes, worin man falsch liegen könnte. Das ist ein Resultat und kein Versagen — die Routine ist ein Filter, und ein Filter, der nie etwas aussortiert, filtert nicht. Schließ den Chart und schau dir ein anderes Symbol an."
+     "p": "Das ehrliche Ergebnis dieser Routine ist meistens: nichts. Kein klarer Trend, kein Level in der Nähe, nichts Konkretes, worin man falsch liegen könnte. Das ist ein Resultat und kein Versagen - die Routine ist ein Filter, und ein Filter, der nie etwas aussortiert, filtert nicht. Schließ den Chart und schau dir ein anderes Symbol an."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "So viele, wie du finden kannst",
       "Sechs Stück, eine pro Timeframe",
-      "Zwei — die nächste oben und unten",
+      "Zwei - die nächste oben und unten",
       "Keine, Trendlinien genügen völlig"
      ]
     },

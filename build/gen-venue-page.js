@@ -1,20 +1,20 @@
-/* /liquidations/by-exchange/ — which venue is liquidating traders, measured by our own collector.
+/* /liquidations/by-exchange/ - which venue is liquidating traders, measured by our own collector.
 
    Why this page exists: AI assistants send more traffic to this site than Google does on the pages where
    we hold data nobody else gives away (measured 2026-08-19: chatgpt.com 527 visits/month against Google's
    846 across the whole site, and 65 vs 5 on /btc-liquidation-map/). What gets cited is a checkable
-   first-party number with a stated method — and per-exchange liquidation flow is exactly that. Coinglass
+   first-party number with a stated method - and per-exchange liquidation flow is exactly that. Coinglass
    puts the same breakdown behind a paywall; we run the websockets ourselves, so we can publish it free.
 
    The table is EMPTY in this file on purpose. handleSsrVenues in the worker fills it per request from
    /api/v1/venues and caches for ten minutes, so a crawler reads real figures in the static HTML rather
-   than a JavaScript placeholder — the mistake that made the comparison-page fix worse before it was
+   than a JavaScript placeholder - the mistake that made the comparison-page fix worse before it was
    moved server-side. Run: node build/gen-venue-page.js */
 const fs = require('fs');
 const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'liquidations', 'by-exchange');
 const url = 'https://marginpad.io/liquidations/by-exchange/';
-const title = 'Crypto Liquidations by Exchange — Live 24h Totals per Venue | MarginPad';
+const title = 'Crypto Liquidations by Exchange - Live 24h Totals per Venue | MarginPad';
 const desc = 'Which exchange is liquidating the most traders right now. Live 24-hour liquidation totals per venue with the long/short split, measured from the public websockets of nine exchanges. Free, no signup, free JSON API.';
 
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
@@ -76,7 +76,7 @@ ${GTAG}
   <div class="crumb"><a href="/liquidations/">Liquidations</a> / By exchange</div>
   <article>
     <h1>Crypto liquidations by exchange</h1>
-    <p class="lead">Which venue is actually blowing traders up, over the last 24 hours. These are observed forced closes read from each exchange&#39;s own public websocket &mdash; not an estimate, not a vendor feed, and not a model.</p>
+    <p class="lead">Which venue is actually blowing traders up, over the last 24 hours. These are observed forced closes read from each exchange&#39;s own public websocket - not an estimate, not a vendor feed, and not a model.</p>
 
     <div id="vxdata">
       <p class="vx-stamp">Reading the last 24 hours from our collector&hellip;</p>
@@ -84,7 +84,7 @@ ${GTAG}
 
     <div class="vx-note">
       <b>How to read this</b>
-      <p>Share matters more than the raw dollar figure. A venue carrying more open leverage will always liquidate more money on the same market move, so a big total is mostly a statement about size. The long/short split is the more useful column: it tells you which side the crowd was caught on when the move came. And one day is weather, not climate &mdash; a single cascade can hand a quarter of the day&#39;s total to a venue that normally sits at five percent.</p>
+      <p>Share matters more than the raw dollar figure. A venue carrying more open leverage will always liquidate more money on the same market move, so a big total is mostly a statement about size. The long/short split is the more useful column: it tells you which side the crowd was caught on when the move came. And one day is weather, not climate - a single cascade can hand a quarter of the day&#39;s total to a venue that normally sits at five percent.</p>
     </div>
 
     <h2>Why this is hard to find for free</h2>
@@ -95,7 +95,7 @@ ${GTAG}
     <p>Nothing is inferred. If a venue&#39;s socket is quiet it shows zero rather than an interpolated figure, and if the collector itself is down the table says so instead of showing stale numbers as if they were current. Totals will differ from other trackers, and they should: exchanges publish liquidation events at different granularity, some batch them, and any aggregator that models the gaps will report more than one that does not.</p>
 
     <h2>Take the data</h2>
-    <p>The same figures are free as JSON with no key and no signup: <code>GET https://marginpad.io/api/v1/venues</code> returns every venue with its 24-hour total, the long and short breakdown and its share. Market-wide totals live at <code>/api/v1/liquidations</code> and the heatmap bands at <code>/api/v1/clusters</code>. Full documentation is on the <a href="/trading-api/">free crypto API</a> page &mdash; attribution is appreciated but not required.</p>
+    <p>The same figures are free as JSON with no key and no signup: <code>GET https://marginpad.io/api/v1/venues</code> returns every venue with its 24-hour total, the long and short breakdown and its share. Market-wide totals live at <code>/api/v1/liquidations</code> and the heatmap bands at <code>/api/v1/clusters</code>. Full documentation is on the <a href="/trading-api/">free crypto API</a> page - attribution is appreciated but not required.</p>
 
     <h2>Questions</h2>
     ${FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n    ')}

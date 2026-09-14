@@ -1,4 +1,4 @@
-/* /trading-competition/ — the page that IS the answer to "where can I compete in crypto trading".
+/* /trading-competition/ - the page that IS the answer to "where can I compete in crypto trading".
  *
  * Why it exists (measured 2026-09-14, before a word of it was written):
  *   - MarginPad pays $350 in prizes every fourteen days across six boards.
@@ -10,7 +10,7 @@
  *     referrals and /hyperliquid-whales/ 70%, while /coin/btc/ converts 0.1%. Narrow pages that ARE
  *     the answer get LINKED; broad pages get harvested. So this page is narrow and answers first.
  *
- * The live block (#compdata) is filled SERVER-side by handleSsrComp — crawlers run no JavaScript, and
+ * The live block (#compdata) is filled SERVER-side by handleSsrComp - crawlers run no JavaScript, and
  * a placeholder is worse than nothing. Run: node build/gen-competition-page.js
  */
 const fs = require('fs');
@@ -18,7 +18,7 @@ const path = require('path');
 
 const OUT = path.join(__dirname, '..', 'dist', 'trading-competition', 'index.html');
 const URLB = 'https://marginpad.io/trading-competition/';
-const TITLE = 'Crypto Trading Competition — Free Entry, Real Prizes Every 14 Days';
+const TITLE = 'Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days';
 const DESC = 'Join a free crypto futures trading competition. Six leaderboards, a $350 prize pool every 14 days, no deposit to enter. Paper boards are filled server-side against real exchange candles; one board pays for real Bybit volume.';
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
@@ -34,17 +34,17 @@ const FAQ = [
   ['Can I compete with real money instead of paper?',
    'Yes, on the Bybit volume board. It ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays the top five $200 a season on top of whatever the exchange itself rebates. Register that account’s UID on the season page to appear.'],
   ['When does the next season start?',
-   'Seasons run back to back with no gap, each one fourteen days, anchored to Monday. The live block at the top of this page shows which day of the current season it is and exactly when it ends — you can join mid-season and still place.'],
+   'Seasons run back to back with no gap, each one fourteen days, anchored to Monday. The live block at the top of this page shows which day of the current season it is and exactly when it ends - you can join mid-season and still place.'],
   ['Do I need to be in a particular country?',
    'The paper boards are open everywhere MarginPad is available. The Bybit volume board depends on Bybit being able to open an account for you, which excludes some countries including the United States.'],
 ];
 
 const BOARDS = [
   ['Highest ROE', 'The best return on a single closed trade in the season.', '$30', 'Paper'],
-  ['Green Days', 'The most days closed in profit — consistency, not one lucky trade.', '$30', 'Paper'],
+  ['Green Days', 'The most days closed in profit - consistency, not one lucky trade.', '$30', 'Paper'],
   ['Best Win Rate', 'The highest win rate, Wilson-ranked so a short streak cannot top it.', '$30', 'Paper'],
   ['Season XP', 'The most XP earned this season across trading, lessons and missions.', '$30', 'Paper'],
-  ['The Gold Room', 'A points score across wins and losses — the all-round board.', '$30', 'Paper'],
+  ['The Gold Room', 'A points score across wins and losses - the all-round board.', '$30', 'Paper'],
   ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad.', '$200', 'Real money'],
 ];
 
@@ -129,7 +129,7 @@ const ld = JSON.stringify({
   '@graph': [
     {
       '@type': 'Event',
-      name: 'MarginPad Season — crypto futures trading competition',
+      name: 'MarginPad Season - crypto futures trading competition',
       description: 'A free crypto futures trading competition run in continuous fourteen-day seasons. Six leaderboards, $350 in prizes per season. Five boards are scored from paper trades filled server-side against real exchange candles; one board ranks real Bybit futures volume.',
       url: URLB,
       eventStatus: 'https://schema.org/EventScheduled',
@@ -186,7 +186,7 @@ const html = `<!DOCTYPE html>
   <header>
     <div class="brand">
       <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+      <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
       <a href="/season/" class="hlink">SEASON</a>
@@ -208,7 +208,7 @@ const html = `<!DOCTYPE html>
     </div>
 
     <div class="cp-cta">
-      <a class="go" href="/season/">Enter the season — free →</a>
+      <a class="go" href="/season/">Enter the season - free →</a>
       <a href="/paper-trade">Try the terminal, no account</a>
     </div>
 
@@ -226,7 +226,7 @@ ${BOARDS.map(([n, w, p, e]) => `          <tr><td>${n}</td><td>${w}</td><td clas
 
     <h2>How to enter</h2>
     <ol class="cp-steps">
-      <li><b>Open the terminal.</b> <a href="/paper-trade">Paper Trade</a> works with no account at all — try it first if you want.</li>
+      <li><b>Open the terminal.</b> <a href="/paper-trade">Paper Trade</a> works with no account at all - try it first if you want.</li>
       <li><b>Create a free account.</b> Email and a sign-in code. No card, no deposit, no KYC.</li>
       <li><b>Trade.</b> Every trade you close counts toward the boards from that moment. There is no separate entry step and nothing to pay.</li>
       <li><b>Watch the boards.</b> <a href="/season/#boards">Live standings</a> update as trades close. A season is fourteen days and you can join on any day of it.</li>
@@ -234,11 +234,11 @@ ${BOARDS.map(([n, w, p, e]) => `          <tr><td>${n}</td><td>${w}</td><td clas
     </ol>
 
     <h2>Competing with real money</h2>
-    <p>The sixth board is different: it ranks members by <b>real futures volume traded on a Bybit account opened through MarginPad</b>, and pays the top five $200 a season — on top of whatever fee rebate the exchange itself gives you. It exists for traders who are already trading size and would rather be paid twice for it. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
+    <p>The sixth board is different: it ranks members by <b>real futures volume traded on a Bybit account opened through MarginPad</b>, and pays the top five $200 a season - on top of whatever fee rebate the exchange itself gives you. It exists for traders who are already trading size and would rather be paid twice for it. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
 
     <h2>Why the standings can be trusted</h2>
     <p>A paper-trading leaderboard is only worth entering if it cannot be gamed. Four things make this one hold:</p>
-    <p><b>Fills happen on the server.</b> When you open or close a position, the price comes from real exchange candles on our side — your browser reports nothing. A modified page cannot invent a fill or a price.</p>
+    <p><b>Fills happen on the server.</b> When you open or close a position, the price comes from real exchange candles on our side - your browser reports nothing. A modified page cannot invent a fill or a price.</p>
     <p><b>A win has to be a real win.</b> A trade counts as a win only with at least 5% ROE <em>and</em> a real price move of 0.2%, which removes the trick of opening and closing on noise at extreme leverage.</p>
     <p><b>The win-rate board is Wilson-ranked.</b> Five wins out of five does not outrank forty-two out of fifty. Confidence matters, not a short streak.</p>
     <p><b>Everything is public.</b> Standings, the prize table and the season dates are all visible to anyone, and the same numbers are available as <a href="/api/competition?pretty=1">a keyless JSON feed</a>.</p>
@@ -249,7 +249,7 @@ ${FAQ.map(([q, a]) => `      <details><summary>${q}</summary><p>${a}</p></detail
     </div>
 
     <div class="cp-cta">
-      <a class="go" href="/season/">Enter the season — free →</a>
+      <a class="go" href="/season/">Enter the season - free →</a>
       <a href="/trading-report/">See how you actually trade</a>
     </div>
 

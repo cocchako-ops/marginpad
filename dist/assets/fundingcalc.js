@@ -5,7 +5,7 @@
   function calc() {
     var notional = num('ffNotional'), rate = num('ffRate'), periods = num('ffPeriods');
     var out = document.getElementById('ffOut'), per = document.getElementById('ffPer'), note = document.getElementById('ffNote');
-    if (!isFinite(notional) || !isFinite(rate)) { if (out) out.textContent = '—'; if (per) per.textContent = '—'; if (note) note.textContent = '—'; return; }
+    if (!isFinite(notional) || !isFinite(rate)) { if (out) out.textContent = '-'; if (per) per.textContent = '-'; if (note) note.textContent = '-'; return; }
     if (!isFinite(periods) || periods < 0) periods = 1;
     // a positive funding rate: longs pay shorts. Sign flips for shorts.
     var dir = side === 'long' ? 1 : -1;

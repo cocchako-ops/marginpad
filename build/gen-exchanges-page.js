@@ -1,4 +1,4 @@
-/* /exchanges/ — deep, trader-focused comparison of every major crypto exchange. How each choice actually hits you
+/* /exchanges/ - deep, trader-focused comparison of every major crypto exchange. How each choice actually hits you
    mid-trade (fees→PnL, leverage→liquidation, liquidity→slippage, funding→hold cost, trust→your money's safety).
    Affiliate links throughout (rel=sponsored, click-tracked). Includes an honest KuCoin trust/reputation section. */
 const VDATE = new Date().toISOString().slice(0, 10);
@@ -12,12 +12,12 @@ const OUT = path.join(__dirname, '..', 'dist', 'exchanges');
 
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 const url = 'https://marginpad.io/exchanges/';
-const title = 'Crypto Exchange Comparison 2026 — Fees, Leverage, Liquidity & Trust';
-const desc = 'A trader-first comparison of every major crypto exchange — Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken and more. Real futures fees, max leverage, liquidity, KYC, US access and a hard look at trust and safety (including the KuCoin controversy). No fluff.';
+const title = 'Crypto Exchange Comparison 2026 - Fees, Leverage, Liquidity & Trust';
+const desc = 'A trader-first comparison of every major crypto exchange - Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken and more. Real futures fees, max leverage, liquidity, KYC, US access and a hard look at trust and safety (including the KuCoin controversy). No fluff.';
 const kw = 'crypto exchange comparison, best crypto futures exchange, bybit vs binance, lowest fee crypto exchange, best leverage exchange, kucoin safe, crypto exchange fees, best exchange for trading, moon trading platform, trade stocks and crypto in one account';
 const lg = id => id == null ? 'data:,' : 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png'; // null = no CMC logo (Hyperliquid): the empty data URL fails to decode, so the onerror letter mark renders with no network request
 
-// Editorial ratings are our take (0-100), meant for at-a-glance comparison — not financial advice. Fees are the
+// Editorial ratings are our take (0-100), meant for at-a-glance comparison - not financial advice. Fees are the
 // standard/base VIP-0 tier (VIP levels + the referral fee discount lower them). Pair counts & leverage are approximate.
 const EX = [
   { key: 'bybit', name: 'Bybit', logo: 521, color: '#f7a600', href: 'https://www.bybit.com/invite?ref=LZKBERJ',
@@ -29,8 +29,8 @@ const EX = [
   { key: 'hyperliquid', name: 'Hyperliquid', logo: null, mark: 'HL', color: '#5ee6c8', href: 'https://app.hyperliquid.xyz/join/MARGINPAD',
     lev: '50×', tk: '0.045%', mk: '0.015%', pairs: '150+', kyc: 'None (wallet)', us: 'No', bonus: '4% off fees with code MARGINPAD',
     r: { fees: 90, liq: 84, mkts: 74, lev: 62, trust: 82, easy: 66 }, badge: 'The on-chain perps exchange',
-    feel: 'Perps on a purpose-built chain instead of a company’s database. You connect a wallet, deposit USDC and trade an order book that anyone can read on-chain — positions, liquidations, funding, all public. Execution on majors is close to the big centralised books, funding settles hourly, and every account can hold sub-accounts with their own API keys, which is why bot builders like it. Fees drop with volume and a referred account pays 4% less from day one.',
-    pro: ['Non-custodial: your wallet, your keys, no withdrawal queue', 'Public on-chain order book, positions and liquidations', 'Hourly funding, sub-accounts with separate API keys', 'No KYC — a wallet is the account'],
+    feel: 'Perps on a purpose-built chain instead of a company’s database. You connect a wallet, deposit USDC and trade an order book that anyone can read on-chain - positions, liquidations, funding, all public. Execution on majors is close to the big centralised books, funding settles hourly, and every account can hold sub-accounts with their own API keys, which is why bot builders like it. Fees drop with volume and a referred account pays 4% less from day one.',
+    pro: ['Non-custodial: your wallet, your keys, no withdrawal queue', 'Public on-chain order book, positions and liquidations', 'Hourly funding, sub-accounts with separate API keys', 'No KYC - a wallet is the account'],
     con: ['Not available to US persons under its terms (the app geoblocks the US)', 'Thinner books on small alts than Binance/Bybit', 'You manage your own wallet security and gas'] },
   { key: 'binance', name: 'Binance', logo: 270, color: '#f0b90b', href: 'https://www.binance.com/register?ref=MAOZM9DS',
     lev: '125×', tk: '0.05%', mk: '0.02%', pairs: '400+', kyc: 'Required', us: 'Binance.US', bonus: '20% off fees for life + welcome voucher',
@@ -41,43 +41,43 @@ const EX = [
   { key: 'okx', name: 'OKX', logo: 294, color: '#cfd3da', href: 'https://okx.com/join/96160298',
     lev: '125×', tk: '0.05%', mk: '0.02%', pairs: '300+', kyc: 'Required', us: 'Limited', bonus: 'Up to 100 USDT + mystery boxes',
     r: { fees: 86, liq: 90, mkts: 82, lev: 88, trust: 85, easy: 62 }, badge: 'Pro tooling + strong liquidity',
-    feel: 'A serious trader’s exchange — excellent charting, unified account margin (spot, perps and options share collateral), and deep books just behind Binance/Bybit. Great if you run complex multi-leg positions or want one balance backing everything.',
-    pro: ['Unified account — one balance margins spot + perps + options', 'Deep liquidity, strong execution', 'Best-in-class built-in charts & tools'],
+    feel: 'A serious trader’s exchange - excellent charting, unified account margin (spot, perps and options share collateral), and deep books just behind Binance/Bybit. Great if you run complex multi-leg positions or want one balance backing everything.',
+    pro: ['Unified account - one balance margins spot + perps + options', 'Deep liquidity, strong execution', 'Best-in-class built-in charts & tools'],
     con: ['KYC required', 'Unified-margin model has a learning curve'] },
   { key: 'bitget', name: 'Bitget', logo: 513, color: '#00e7d8', href: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter',
     lev: '125×', tk: '0.06%', mk: '0.02%', pairs: '500+', kyc: 'Optional*', us: 'No', bonus: 'Up to 6,200 USDT + 20% off fees',
     r: { fees: 82, liq: 80, mkts: 88, lev: 88, trust: 74, easy: 84 }, badge: 'Copy-trading leader',
-    feel: 'Best-known for copy trading — you can mirror top futures traders automatically, which is handy while you learn. Liquidity on majors is solid (a notch below the top three) and the app is beginner-friendly. A large public insurance fund backs the derivatives engine.',
+    feel: 'Best-known for copy trading - you can mirror top futures traders automatically, which is handy while you learn. Liquidity on majors is solid (a notch below the top three) and the app is beginner-friendly. A large public insurance fund backs the derivatives engine.',
     pro: ['Deep copy-trading marketplace', 'Beginner-friendly app', 'Large published insurance fund'],
-    con: ['Liquidity thinner than Bybit/Binance on altcoins', 'Some listed perps are illiquid — mind slippage'] },
+    con: ['Liquidity thinner than Bybit/Binance on altcoins', 'Some listed perps are illiquid - mind slippage'] },
   { key: 'mexc', name: 'MEXC', logo: 544, color: '#1972ff', href: 'https://promote.mexc.com/r/GND4jI97o0',
     lev: '500×', tk: '0.02%', mk: '0.00%', pairs: '700+', kyc: 'Optional (light)', us: 'No', bonus: 'Up to 10,000 USDT + $20 gift',
     r: { fees: 94, liq: 62, mkts: 98, lev: 100, trust: 62, easy: 82 }, badge: 'Lowest fees + most pairs',
-    feel: 'The degen playground: the lowest taker fees around (often 0% maker), up to 500× leverage and the widest list of new/low-cap perps — you’ll find pairs here that exist nowhere else. The catch: those exotic books are thin, so slippage and wick-outs are real. Great for cheap majors trading and early listings, risky for size on small caps.',
-    pro: ['Lowest trading fees (0% maker on many pairs)', 'The most listings — catch new coins first', 'Extreme leverage available (up to 500×)'],
+    feel: 'The degen playground: the lowest taker fees around (often 0% maker), up to 500× leverage and the widest list of new/low-cap perps - you’ll find pairs here that exist nowhere else. The catch: those exotic books are thin, so slippage and wick-outs are real. Great for cheap majors trading and early listings, risky for size on small caps.',
+    pro: ['Lowest trading fees (0% maker on many pairs)', 'The most listings - catch new coins first', 'Extreme leverage available (up to 500×)'],
     con: ['Thin liquidity on exotic pairs → slippage & wick-outs', '500× is a liquidation trap for most', 'Lighter oversight than the top tier'] },
   { key: 'gate', name: 'Gate.io', logo: 302, color: '#17e6a1', href: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063',
     lev: '100×', tk: '0.05%', mk: '0.02%', pairs: '500+', kyc: 'Optional*', us: 'No', bonus: 'Up to 6,666 USDT + 20% off fees',
     r: { fees: 84, liq: 66, mkts: 95, lev: 80, trust: 70, easy: 70 }, badge: 'Huge altcoin selection',
-    feel: 'A veteran exchange with an enormous catalog — if a coin is tradeable anywhere, it’s probably on Gate. Publishes proof-of-reserves. Majors are fine; the long tail is where liquidity thins out, so treat small-cap perps with respect.',
+    feel: 'A veteran exchange with an enormous catalog - if a coin is tradeable anywhere, it’s probably on Gate. Publishes proof-of-reserves. Majors are fine; the long tail is where liquidity thins out, so treat small-cap perps with respect.',
     pro: ['One of the widest coin selections in crypto', 'Publishes Merkle-tree proof of reserves', 'Long track record'],
     con: ['Altcoin liquidity varies a lot', 'Interface feels dated in places'] },
   { key: 'kraken', name: 'Kraken', logo: 24, color: '#7b6cf6', href: 'https://invite.kraken.com/JDNW/guj2tf28',
-    lev: '50×', tk: '0.05%', mk: '0.02%', pairs: '50+', kyc: 'Required', us: 'Yes', bonus: 'Up to $200 — sign up & trade',
+    lev: '50×', tk: '0.05%', mk: '0.02%', pairs: '50+', kyc: 'Required', us: 'Yes', bonus: 'Up to $200 - sign up & trade',
     r: { fees: 78, liq: 78, mkts: 42, lev: 50, trust: 95, easy: 66 }, badge: 'Most trusted / US-friendly',
-    feel: 'The safety-first pick. Long, clean security record, strong regulatory standing, and one of the few solid options for US traders who want real derivatives. Fewer perps and lower max leverage — by design. If you value sleeping at night over 125×, this is your exchange.',
+    feel: 'The safety-first pick. Long, clean security record, strong regulatory standing, and one of the few solid options for US traders who want real derivatives. Fewer perps and lower max leverage - by design. If you value sleeping at night over 125×, this is your exchange.',
     pro: ['Best-in-class security & compliance track record', 'Available to US traders (Kraken Pro / futures)', 'Transparent, well-regulated operation'],
     con: ['Far fewer perp markets', 'Max 50× leverage', 'Full KYC required'] },
   { key: 'coinbase', name: 'Coinbase', logo: 89, color: '#1652f0', href: 'https://base.app/invite/chakko/FHSFNY5H',
     lev: '~10×', tk: '0.05%*', mk: '0.00%*', pairs: '30+', kyc: 'Required', us: 'Yes', bonus: 'Invite via Base App',
     r: { fees: 60, liq: 82, mkts: 30, lev: 20, trust: 98, easy: 74 }, badge: 'Most regulated (US)',
-    feel: 'The blue-chip, publicly-listed US exchange — the highest bar on regulation and custody. Derivatives are limited and leverage is low, and spot fees on the simple app are high (use Advanced Trade for lower fees). This is the “my funds are safe” choice, not the “max leverage” one.',
+    feel: 'The blue-chip, publicly-listed US exchange - the highest bar on regulation and custody. Derivatives are limited and leverage is low, and spot fees on the simple app are high (use Advanced Trade for lower fees). This is the “my funds are safe” choice, not the “max leverage” one.',
     pro: ['Publicly listed, most-regulated major (US)', 'Gold-standard custody & insurance', 'Simple on-ramp for beginners'],
     con: ['Very limited derivatives + low leverage', 'High fees on the basic app', 'Not a pro futures venue'] },
   { key: 'kucoin', name: 'KuCoin', logo: 311, color: '#23af91', href: 'https://www.kucoin.com/r/rf/VHP8AYKY',
     lev: '100×', tk: '0.06%', mk: '0.02%', pairs: '300+', kyc: 'Optional*', us: 'Banned', bonus: 'Up to 11,000 USDT rewards',
-    r: { fees: 78, liq: 60, mkts: 78, lev: 80, trust: 28, easy: 76 }, badge: 'Trust concerns — read below', warn: true,
-    feel: 'Once a popular altcoin-and-futures venue, KuCoin now carries serious reputation baggage (details in the trust section below). The product itself is usable — decent selection, familiar UI — but the questions around victim handling, KYC integrity and regulation are the real story here. Treat any funds you keep there as at-risk and do your own research.',
+    r: { fees: 78, liq: 60, mkts: 78, lev: 80, trust: 28, easy: 76 }, badge: 'Trust concerns - read below', warn: true,
+    feel: 'Once a popular altcoin-and-futures venue, KuCoin now carries serious reputation baggage (details in the trust section below). The product itself is usable - decent selection, familiar UI - but the questions around victim handling, KYC integrity and regulation are the real story here. Treat any funds you keep there as at-risk and do your own research.',
     pro: ['Wide altcoin & futures selection', 'Familiar, capable trading UI'],
     con: ['Serious trust & compliance controversies (see below)', 'Pleaded guilty in the US (2025); US-banned', 'On-chain investigators allege poor victim & law-enforcement cooperation'] },
 ];
@@ -205,11 +205,11 @@ const CSS = HEADER_CSS + `
 `;
 
 const faq = [
-  ['What is the best crypto exchange for futures trading?', 'For most futures traders, Bybit and Binance lead: Binance has the deepest liquidity (tightest spreads on majors) while Bybit offers a cleaner pro interface, fair mark-price liquidations and basic use without full KYC. OKX and Bitget are strong alternatives, and Bitget is the best for copy trading. The "best" depends on what matters to you — liquidity, fees, leverage, KYC or trust.'],
-  ['Which exchange has the lowest trading fees?', 'MEXC generally has the lowest base fees (often 0% maker and ~0.02% taker on futures). Most top exchanges sit around 0.02% maker / 0.05–0.06% taker at the base tier, and a referral link plus VIP volume tiers lower them further. But the lowest headline fee means little if the book is thin — slippage on an illiquid pair costs far more than a few basis points of fee.'],
-  ['Is KuCoin safe to use in 2026?', 'KuCoin carries real trust concerns. It pleaded guilty in the US in 2025 to operating an unlicensed money-transmitting business (nearly $300M in penalties) and is banned for US users. In 2026, on-chain investigator ZachXBT publicly accused it of poor cooperation with hack victims and law enforcement, and Austria’s regulator restricted new EU sign-ups. We list it for completeness but recommend caution and keeping minimal funds there — see the trust section on this page.'],
+  ['What is the best crypto exchange for futures trading?', 'For most futures traders, Bybit and Binance lead: Binance has the deepest liquidity (tightest spreads on majors) while Bybit offers a cleaner pro interface, fair mark-price liquidations and basic use without full KYC. OKX and Bitget are strong alternatives, and Bitget is the best for copy trading. The "best" depends on what matters to you - liquidity, fees, leverage, KYC or trust.'],
+  ['Which exchange has the lowest trading fees?', 'MEXC generally has the lowest base fees (often 0% maker and ~0.02% taker on futures). Most top exchanges sit around 0.02% maker / 0.05–0.06% taker at the base tier, and a referral link plus VIP volume tiers lower them further. But the lowest headline fee means little if the book is thin - slippage on an illiquid pair costs far more than a few basis points of fee.'],
+  ['Is KuCoin safe to use in 2026?', 'KuCoin carries real trust concerns. It pleaded guilty in the US in 2025 to operating an unlicensed money-transmitting business (nearly $300M in penalties) and is banned for US users. In 2026, on-chain investigator ZachXBT publicly accused it of poor cooperation with hack victims and law enforcement, and Austria’s regulator restricted new EU sign-ups. We list it for completeness but recommend caution and keeping minimal funds there - see the trust section on this page.'],
   ['Do I need KYC to trade crypto futures?', 'Some exchanges (Bybit, Bitget, Gate, MEXC, KuCoin) allow limited use without full KYC, usually with reduced withdrawal limits, while Binance, OKX, Kraken and Coinbase require full identity verification. KYC-free access is convenient but comes with trade-offs in limits and, sometimes, in how disputes are handled.'],
-  ['How does leverage affect me while trading?', 'Leverage multiplies both your gains and your liquidation risk. At 100×, a ~1% move against you wipes the position; at 500×, ~0.2% does. High max leverage is a marketing number — experienced traders rarely use more than 5–20×. Practice with our free paper-trading terminal first to feel how fast liquidation arrives before risking real money.'],
+  ['How does leverage affect me while trading?', 'Leverage multiplies both your gains and your liquidation risk. At 100×, a ~1% move against you wipes the position; at 500×, ~0.2% does. High max leverage is a marketing number - experienced traders rarely use more than 5–20×. Practice with our free paper-trading terminal first to feel how fast liquidation arrives before risking real money.'],
 ];
 const ld = `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(f => ({ '@type': 'Question', name: f[0], acceptedAnswer: { '@type': 'Answer', text: f[1] } })) })}</script>
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://marginpad.io/' }, { '@type': 'ListItem', position: 2, name: 'Exchange comparison', item: url }] })}</script>`;
@@ -248,7 +248,7 @@ ${ld}
   <header id="exHead">
     <div class="brand">
       <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
-      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+      <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
@@ -261,16 +261,16 @@ ${ld}
   <article>
     <div class="ex-eyebrow"><i></i>Updated 2026 · Trader-first</div>
     <h1>Crypto exchange comparison, from a trader’s seat</h1>
-    <p class="lead">Not another affiliate top-10. This compares every major exchange by the things you actually <em>feel</em> mid-trade: how fees eat your PnL, how leverage sets your liquidation, how thin liquidity slips your fills, how funding bleeds a held position — and, just as important, whether the venue can be <strong>trusted with your money</strong>. Includes an honest look at the KuCoin controversy.</p>
-    <div class="disc-top">Affiliate disclosure: some links below are referral links — they cost you nothing (often they add a fee discount or bonus) and help keep MarginPad’s tools free. Our ratings are our own editorial take, not paid placement. Not financial advice — always do your own research.</div>
+    <p class="lead">Not another affiliate top-10. This compares every major exchange by the things you actually <em>feel</em> mid-trade: how fees eat your PnL, how leverage sets your liquidation, how thin liquidity slips your fills, how funding bleeds a held position - and, just as important, whether the venue can be <strong>trusted with your money</strong>. Includes an honest look at the KuCoin controversy.</p>
+    <div class="disc-top">Affiliate disclosure: some links below are referral links - they cost you nothing (often they add a fee discount or bonus) and help keep MarginPad’s tools free. Our ratings are our own editorial take, not paid placement. Not financial advice - always do your own research.</div>
 
     <h2 class="h2">How each factor hits your trade</h2>
-    <div class="h2s">Before the table — what these numbers mean when real money is on the line.</div>
+    <div class="h2s">Before the table - what these numbers mean when real money is on the line.</div>
     <div class="fx">
-      <div class="fx-c"><b><i style="background:#c2f64a"></i>Fees</b><p>Charged on entry <em>and</em> exit, on the full leveraged size. Round-trip a $10k position at 0.05% and you’ve paid $10 before the trade even moves. Scalpers feel this most — a referral fee discount pays for itself fast.</p></div>
-      <div class="fx-c"><b><i style="background:#ffb020"></i>Leverage</b><p>Sets how far price can move before you’re liquidated. 100× ≈ 1% away; 500× ≈ 0.2%. A big “max lev” is marketing — what matters is the leverage <em>you</em> use and where your liq price lands.</p></div>
+      <div class="fx-c"><b><i style="background:#c2f64a"></i>Fees</b><p>Charged on entry <em>and</em> exit, on the full leveraged size. Round-trip a $10k position at 0.05% and you’ve paid $10 before the trade even moves. Scalpers feel this most - a referral fee discount pays for itself fast.</p></div>
+      <div class="fx-c"><b><i style="background:#ffb020"></i>Leverage</b><p>Sets how far price can move before you’re liquidated. 100× ≈ 1% away; 500× ≈ 0.2%. A big “max lev” is marketing - what matters is the leverage <em>you</em> use and where your liq price lands.</p></div>
       <div class="fx-c"><b><i style="background:#3fd8e6"></i>Liquidity</b><p>Thin books = slippage: your market order walks up the ladder and fills worse than you saw. On majors the top venues are near-perfect; on exotic alt-perps even a modest order can move price against you.</p></div>
-      <div class="fx-c"><b><i style="background:#2ebd85"></i>Funding rate</b><p>Perps charge funding every few hours to peg them to spot. Hold a crowded long and you pay the shorts — a slow bleed that can outweigh a small win. Same funding market-wide, but venues differ slightly.</p></div>
+      <div class="fx-c"><b><i style="background:#2ebd85"></i>Funding rate</b><p>Perps charge funding every few hours to peg them to spot. Hold a crowded long and you pay the shorts - a slow bleed that can outweigh a small win. Same funding market-wide, but venues differ slightly.</p></div>
       <div class="fx-c"><b><i style="background:#8a92ff"></i>Liq engine &amp; insurance</b><p>How the exchange closes underwater positions. A fair mark price and a fat insurance fund mean fewer unfair wick-outs and less auto-deleveraging (ADL) clawing back your winning trade.</p></div>
       <div class="fx-c"><b><i style="background:#ff5a4d"></i>Trust &amp; safety</b><p>The one that dwarfs the rest. Great fees mean nothing if you can’t withdraw. Regulation, proof-of-reserves, security record and how the venue treats victims decide whether your balance is really yours.</p></div>
     </div>
@@ -283,7 +283,7 @@ ${ld}
     <p style="font-size:11.5px;color:var(--ink-faint);font-family:'Space Mono',monospace;margin-top:8px">* “Optional” KYC = basic trading works with reduced withdrawal limits; full verification unlocks the rest.</p>
 
     <div class="cta-row">
-      <a class="go" href="/paper-trade">Practice on any pair — free, no signup →</a>
+      <a class="go" href="/paper-trade">Practice on any pair - free, no signup →</a>
       <a href="/calculators">Liquidation calculator</a>
       <a href="/screener">Live screener</a>
     </div>
@@ -291,9 +291,9 @@ ${ld}
     <div class="moonbox">
       <img src="/assets/moon.png" alt="Moon" width="46" height="46" loading="lazy">
       <div class="mb-t">
-        <span class="mb-tag">New partner — not a futures exchange</span>
-        <h3>Moon — call crypto, stocks, forex &amp; commodities up or down. 24/7.</h3>
-        <p>Moon isn't in the table above because it plays a different game: instead of an order book, you call any market up or down with leverage — including stocks, forex and commodities crypto exchanges don't carry — from one account, around the clock, with a public leaderboard and traders you can follow. MarginPad members can even cash <a href="/rewards/">rewards</a> out straight to a Moon account. Full breakdown in our <a href="/blog/moon-trading-platform-review/">Moon review</a>.</p>
+        <span class="mb-tag">New partner - not a futures exchange</span>
+        <h3>Moon - call crypto, stocks, forex &amp; commodities up or down. 24/7.</h3>
+        <p>Moon isn't in the table above because it plays a different game: instead of an order book, you call any market up or down with leverage - including stocks, forex and commodities crypto exchanges don't carry - from one account, around the clock, with a public leaderboard and traders you can follow. MarginPad members can even cash <a href="/rewards/">rewards</a> out straight to a Moon account. Full breakdown in our <a href="/blog/moon-trading-platform-review/">Moon review</a>.</p>
         <a class="mb-cta" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Create a Moon account →</a>
       </div>
     </div>
@@ -302,23 +302,23 @@ ${ld}
     <div class="h2s">Ranked roughly best-to-worst for an active futures trader. Bars are our 0–5 editorial scores.</div>
     ${EX.map(card).join('\n    ')}
 
-    <h2 class="h2">The KuCoin problem — an honest word</h2>
+    <h2 class="h2">The KuCoin problem - an honest word</h2>
     <div class="kbox">
       <h3>Why we flag KuCoin</h3>
-      <div class="kwho">Reported by on-chain investigator ZachXBT, US prosecutors and EU regulators. Presented as public reporting — do your own research.</div>
+      <div class="kwho">Reported by on-chain investigator ZachXBT, US prosecutors and EU regulators. Presented as public reporting - do your own research.</div>
       <div class="krow"><span class="kd">Jan 2025</span><span class="kt"><b>Pleaded guilty in the US</b> to operating an unlicensed money-transmitting business, agreeing to roughly <b>$300M</b> in penalties and forfeitures; prosecutors said prior AML/KYC failures let suspicious funds move through the platform. KuCoin is <b>banned for US users</b>.</span></div>
       <div class="krow"><span class="kd">Aug 2025</span><span class="kt">A user reported a <b>$250,000 theft</b> whose funds landed in five KuCoin deposit addresses allegedly opened with <b>purchased “mule” KYC</b>. When a community member spoke out, KuCoin reportedly <b>threatened legal action</b> over “false or unlawful statements.”</span></div>
       <div class="krow"><span class="kd">Feb 2026</span><span class="kt">Austria’s financial regulator (FMA) <b>barred KuCoin’s EU arm from onboarding new customers</b> after it reportedly lost its key anti-money-laundering and sanctions compliance officers.</span></div>
-      <div class="krow"><span class="kd">Apr–May 2026</span><span class="kt">ZachXBT asked KuCoin to explain how <b>$9.5M from a fake Ledger app</b> was laundered through <b>150+ KuCoin deposit addresses in a single week</b>, and later wrote that the exchange <b>“does not assist victims or law enforcement,”</b> calling the team “complicit” — alleging illicit funds flow freely as long as they generate fees.</span></div>
-      <div class="kfoot">None of this means the exchange will vanish tomorrow, and KuCoin disputes the characterizations — but the pattern (a US guilty plea, an EU onboarding ban, unpaid court awards and repeated victim-handling accusations) is exactly the kind of thing that precedes withdrawal problems. Our take: if you use it, keep <strong>minimal balances</strong>, withdraw profits promptly, and prefer a venue with a cleaner record. Sources: reporting via Cryptopolitan, BanklessTimes, Cryptoadventure and others (2025–2026).</div>
+      <div class="krow"><span class="kd">Apr–May 2026</span><span class="kt">ZachXBT asked KuCoin to explain how <b>$9.5M from a fake Ledger app</b> was laundered through <b>150+ KuCoin deposit addresses in a single week</b>, and later wrote that the exchange <b>“does not assist victims or law enforcement,”</b> calling the team “complicit” - alleging illicit funds flow freely as long as they generate fees.</span></div>
+      <div class="kfoot">None of this means the exchange will vanish tomorrow, and KuCoin disputes the characterizations - but the pattern (a US guilty plea, an EU onboarding ban, unpaid court awards and repeated victim-handling accusations) is exactly the kind of thing that precedes withdrawal problems. Our take: if you use it, keep <strong>minimal balances</strong>, withdraw profits promptly, and prefer a venue with a cleaner record. Sources: reporting via Cryptopolitan, BanklessTimes, Cryptoadventure and others (2025–2026).</div>
     </div>
 
     <h2>So which exchange should you actually use?</h2>
-    <p><strong>If liquidity and execution are everything</strong> — Binance, then Bybit and OKX. <strong>If you want to trade without full KYC</strong> — Bybit or Bitget for majors, MEXC for cheap fees and new listings (mind the thin books). <strong>If you’re learning</strong> — Bitget for copy trading, or just <a href="/paper-trade">paper-trade here first</a>. <strong>If you’re in the US or safety comes first</strong> — Kraken or Coinbase, accepting fewer markets and lower leverage. <strong>If you want markets beyond crypto</strong> — <a data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Moon</a> covers stocks, forex and commodities alongside crypto with simple up-or-down calls, 24/7 (see the spotlight above). And whatever you pick, the rule that matters more than any fee: <strong>don’t store what you can’t afford to lose on any exchange</strong> — they are for trading, not custody.</p>
-    <p>The smartest first move costs nothing: open our free <a href="/paper-trade">Paper Trade</a> terminal, run the exact setup you’re eyeing with live prices and real liquidation math, and see how it behaves before a cent of your money touches an exchange. Size your leverage with the <a href="/calculators">liquidation calculator</a>, watch the tape on the <a href="/screener">screener</a>, and only then go live — through whichever venue above fits how you actually trade.</p>
+    <p><strong>If liquidity and execution are everything</strong> - Binance, then Bybit and OKX. <strong>If you want to trade without full KYC</strong> - Bybit or Bitget for majors, MEXC for cheap fees and new listings (mind the thin books). <strong>If you’re learning</strong> - Bitget for copy trading, or just <a href="/paper-trade">paper-trade here first</a>. <strong>If you’re in the US or safety comes first</strong> - Kraken or Coinbase, accepting fewer markets and lower leverage. <strong>If you want markets beyond crypto</strong> - <a data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Moon</a> covers stocks, forex and commodities alongside crypto with simple up-or-down calls, 24/7 (see the spotlight above). And whatever you pick, the rule that matters more than any fee: <strong>don’t store what you can’t afford to lose on any exchange</strong> - they are for trading, not custody.</p>
+    <p>The smartest first move costs nothing: open our free <a href="/paper-trade">Paper Trade</a> terminal, run the exact setup you’re eyeing with live prices and real liquidation math, and see how it behaves before a cent of your money touches an exchange. Size your leverage with the <a href="/calculators">liquidation calculator</a>, watch the tape on the <a href="/screener">screener</a>, and only then go live - through whichever venue above fits how you actually trade.</p>
 
-<section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case — they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change — confirm on the exchange before depositing.</li></ul></section>
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:20px 0 6px">Fees, leverage and sign-up bonuses were last checked by us in ${CHECKED}, and all of them change often — the bonus figures in particular are promotional and vary by country, campaign and referral link, so treat them as a starting point and confirm the current offer on the exchange before depositing. Ratings are MarginPad’s editorial opinion. Links marked as referral are affiliate links. This page is information, not financial advice.</p>
+<section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case - they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change - confirm on the exchange before depositing.</li></ul></section>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:20px 0 6px">Fees, leverage and sign-up bonuses were last checked by us in ${CHECKED}, and all of them change often - the bonus figures in particular are promotional and vary by country, campaign and referral link, so treat them as a starting point and confirm the current offer on the exchange before depositing. Ratings are MarginPad’s editorial opinion. Links marked as referral are affiliate links. This page is information, not financial advice.</p>
   </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>

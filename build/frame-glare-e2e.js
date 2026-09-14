@@ -2,7 +2,7 @@
    vidi šta piše"). Opens the real card, wears every frame, and measures the ground luminance under the text: white text
    needs a dark ground. Root cause it guards against: mp-profile.js styles .lbm-card::before as a 3px level-colour bar,
    and a frame that re-boxes ::before (inset:3px;height:auto) inherited that BACKGROUND and stretched it across the whole
-   card — leviathan, emperor, magnetar and petrol measured 110 against a 37 baseline.   node build/frame-glare-e2e.js */
+   card - leviathan, emperor, magnetar and petrol measured 110 against a 37 baseline.   node build/frame-glare-e2e.js */
 // How readable is white text on the profile card under each frame? Screenshot the strip the name sits on, decode it
 // back inside Chrome, and report mean/peak luminance. White text needs a dark ground; a frame that lifts the mean is
 // the one that makes the card unreadable.
@@ -102,7 +102,7 @@ withBrowser(async b => {
     if (x.missing) { fail++; console.log('  FAIL ' + x.f + ': card not found ' + JSON.stringify(x)); return; }
     const good = x.reach <= x.room + 0.5;
     if (!good) fail++;
-    console.log((good ? '  ok   ' : '  FAIL ') + x.f.padEnd(11) + ' reaches ' + x.reach + 'px into ' + x.room + 'px of room' + (good ? '' : ' — CLIPPED BY THE SCREEN'));
+    console.log((good ? '  ok   ' : '  FAIL ') + x.f.padEnd(11) + ' reaches ' + x.reach + 'px into ' + x.room + 'px of room' + (good ? '' : ' - CLIPPED BY THE SCREEN'));
   });
   console.log(String.fromCharCode(10) + (rows.length - bright) + ' frames readable, ' + bright + ' too bright · ' + (fail - bright) + ' layout problems');
   process.exitCode = fail ? 1 : 0;

@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Quand personne ne gagne",
-     "p": "Un doji est une bougie qui clôture quasiment là où elle a ouvert — un long combat entre acheteurs et vendeurs qui se termine par un match nul. Seul, il signifie indécision. C'est sa POSITION qui lui donne du sens : un doji après une longue tendance dit que le camp gagnant est à court de conviction."
+     "p": "Un doji est une bougie qui clôture quasiment là où elle a ouvert - un long combat entre acheteurs et vendeurs qui se termine par un match nul. Seul, il signifie indécision. C'est sa POSITION qui lui donne du sens : un doji après une longue tendance dit que le camp gagnant est à court de conviction."
     },
     {
      "h": "Le contexte fait tout",
-     "p": "Un doji au milieu d'un range, c'est du bruit — de l'indécision dans l'indécision. Un doji sur une résistance clé après cinq bougies vertes, c'est un vrai signal : les acheteurs qui poussaient le prix vers le haut viennent d'échouer à aller plus loin. Même bougie, message complètement différent."
+     "p": "Un doji au milieu d'un range, c'est du bruit - de l'indécision dans l'indécision. Un doji sur une résistance clé après cinq bougies vertes, c'est un vrai signal : les acheteurs qui poussaient le prix vers le haut viennent d'échouer à aller plus loin. Même bougie, message complètement différent."
     },
     {
      "h": "Ne trade jamais le doji seul",
@@ -56,11 +56,11 @@
    "cards": [
     {
      "h": "La bougie de prise de pouvoir",
-     "p": "Un engulfing haussier, c'est une bougie rouge suivie d'une verte dont le corps l'avale entièrement. Tous ceux qui ont vendu pendant cette bougie rouge sont maintenant en perte — et le message est brutal : les acheteurs viennent de prendre le contrôle à ce prix."
+     "p": "Un engulfing haussier, c'est une bougie rouge suivie d'une verte dont le corps l'avale entièrement. Tous ceux qui ont vendu pendant cette bougie rouge sont maintenant en perte - et le message est brutal : les acheteurs viennent de prendre le contrôle à ce prix."
     },
     {
      "h": "Pourquoi l'engulfing fonctionne",
-     "p": "C'est de la mécanique de traders piégés, pas de la magie. Les vendeurs de la bougie avalée ont des positions perdantes ; leurs sorties (des rachats) ajoutent du carburant à la nouvelle direction. Plus la bougie avalée est grosse et plus le niveau est important, plus il y a de traders piégés — et plus le signal est fort."
+     "p": "C'est de la mécanique de traders piégés, pas de la magie. Les vendeurs de la bougie avalée ont des positions perdantes ; leurs sorties (des rachats) ajoutent du carburant à la nouvelle direction. Plus la bougie avalée est grosse et plus le niveau est important, plus il y a de traders piégés - et plus le signal est fort."
     },
     {
      "h": "La checklist d'un vrai engulfing",
@@ -103,7 +103,7 @@
    "cards": [
     {
      "h": "Le marteau",
-     "p": "Un marteau apparaît après une baisse : un petit corps en haut avec une longue mèche basse — au moins deux fois le corps. L'histoire : les vendeurs ont poussé le prix loin vers le bas pendant la séance, et les acheteurs l'ont ramené d'un coup. Cette longue mèche, c'est une cassure baissière ratée, écrite en une seule bougie."
+     "p": "Un marteau apparaît après une baisse : un petit corps en haut avec une longue mèche basse - au moins deux fois le corps. L'histoire : les vendeurs ont poussé le prix loin vers le bas pendant la séance, et les acheteurs l'ont ramené d'un coup. Cette longue mèche, c'est une cassure baissière ratée, écrite en une seule bougie."
     },
     {
      "h": "Trouve-le toi-même",
@@ -111,7 +111,7 @@
      "prompt": "Une de ces trois bougies est un marteau. Touche-la."
     },
     {
-     "h": "L'étoile filante — la même histoire, à l'envers",
+     "h": "L'étoile filante - la même histoire, à l'envers",
      "p": "Une étoile filante est l'image miroir au sommet d'un rallye : longue mèche HAUTE, petit corps en bas. Les acheteurs ont tenté de prolonger le rallye, se sont fait rejeter violemment, et la bougie a clôturé près de son plus bas. Sur une résistance, c'est un des setups short les plus propres que les bougies puissent imprimer."
     }
    ],
@@ -151,15 +151,15 @@
    "cards": [
     {
      "h": "Trois bougies, un retournement",
-     "p": "L'étoile du matin est un retournement en trois actes au plus bas : une forte bougie rouge (les vendeurs contrôlent), une bougie au corps minuscule (le combat cale — souvent un doji), puis une forte bougie verte qui clôture profondément dans la première (les acheteurs prennent le relais). L'étoile du soir est le même schéma inversé, au sommet."
+     "p": "L'étoile du matin est un retournement en trois actes au plus bas : une forte bougie rouge (les vendeurs contrôlent), une bougie au corps minuscule (le combat cale - souvent un doji), puis une forte bougie verte qui clôture profondément dans la première (les acheteurs prennent le relais). L'étoile du soir est le même schéma inversé, au sommet."
     },
     {
      "h": "Pourquoi trois valent mieux qu'une",
-     "p": "Une seule bougie peut être du bruit ; trois bougies consécutives qui racontent une histoire cohérente, c'est plus dur à truquer. La bougie du milieu est le pivot — le moment où le momentum est mort. La troisième bougie est la preuve. Sans cette forte clôture de la troisième, tu as une pause, pas un retournement."
+     "p": "Une seule bougie peut être du bruit ; trois bougies consécutives qui racontent une histoire cohérente, c'est plus dur à truquer. La bougie du milieu est le pivot - le moment où le momentum est mort. La troisième bougie est la preuve. Sans cette forte clôture de la troisième, tu as une pause, pas un retournement."
     },
     {
      "h": "Noter la qualité de l'étoile",
-     "p": "Plus forte quand : la bougie du milieu fait un gap ou se détache clairement, la troisième clôture au-delà du milieu de la première, et l'ensemble se trouve sur un niveau de ta carte. Comme toujours — la figure donne le déclencheur et l'invalidation (au-delà de l'extrême de l'étoile), le niveau donne la raison."
+     "p": "Plus forte quand : la bougie du milieu fait un gap ou se détache clairement, la troisième clôture au-delà du milieu de la première, et l'ensemble se trouve sur un niveau de ta carte. Comme toujours - la figure donne le déclencheur et l'invalidation (au-delà de l'extrême de l'étoile), le niveau donne la raison."
     }
    ],
    "quiz": [
@@ -167,7 +167,7 @@
      "q": "La bougie du milieu de l'étoile du matin représente…",
      "o": [
       "Une accélération soudaine dans le sens de la tendance",
-      "Le moment où le momentum cale — le pivot",
+      "Le moment où le momentum cale - le pivot",
       "Un jour férié",
       "Le volume"
      ]
@@ -184,7 +184,7 @@
     {
      "q": "Le stop d'une figure en étoile se place…",
      "o": [
-      "Nulle part — pas besoin de stop",
+      "Nulle part - pas besoin de stop",
       "Au-delà du point extrême de la figure",
       "Sur l'entrée",
       "Toujours à 1%"
@@ -198,7 +198,7 @@
    "cards": [
     {
      "h": "La bougie qui s'enroule",
-     "p": "Une inside bar tient entièrement dans le range de la bougie précédente — plus haut plus bas, plus bas plus haut. Le marché se comprime : les ranges rétrécissent, les deux camps attendent. Tu sais déjà depuis m7 ce que promet la compression : l'expansion. Un groupe d'inside bars, c'est un ressort qu'on remonte."
+     "p": "Une inside bar tient entièrement dans le range de la bougie précédente - plus haut plus bas, plus bas plus haut. Le marché se comprime : les ranges rétrécissent, les deux camps attendent. Tu sais déjà depuis m7 ce que promet la compression : l'expansion. Un groupe d'inside bars, c'est un ressort qu'on remonte."
     },
     {
      "h": "Le trade de cassure",
@@ -206,7 +206,7 @@
     },
     {
      "h": "Le piège à respecter",
-     "p": "Les cassures de compression ÉCHOUENT souvent — le premier mouvement est fréquemment le faux (tu le sais depuis le spring de a2). Protège-toi : privilégie les cassures dans le sens de la tendance de l'unité de temps supérieure, exige du volume, et ne cours jamais après une cassure qui revient aussitôt dans la bougie mère — ce retour à l'intérieur EST le signal d'échec."
+     "p": "Les cassures de compression ÉCHOUENT souvent - le premier mouvement est fréquemment le faux (tu le sais depuis le spring de a2). Protège-toi : privilégie les cassures dans le sens de la tendance de l'unité de temps supérieure, exige du volume, et ne cours jamais après une cassure qui revient aussitôt dans la bougie mère - ce retour à l'intérieur EST le signal d'échec."
     }
    ],
    "quiz": [
@@ -245,15 +245,15 @@
    "cards": [
     {
      "h": "Lire les mèches comme des empreintes",
-     "p": "Les mèches sont des prix rejetés — et leur emplacement te dit qui se fait rejeter. Des longues mèches basses répétées sur une même zone signifient que quelqu'un y absorbe la vente : chaque creux est acheté. Des mèches hautes répétées sur une zone signifient que l'offre est au-dessus et que chaque rallye est vendu."
+     "p": "Les mèches sont des prix rejetés - et leur emplacement te dit qui se fait rejeter. Des longues mèches basses répétées sur une même zone signifient que quelqu'un y absorbe la vente : chaque creux est acheté. Des mèches hautes répétées sur une zone signifient que l'offre est au-dessus et que chaque rallye est vendu."
     },
     {
      "h": "Les mèches d'épuisement",
-     "p": "Une ÉNORME mèche après un mouvement prolongé — bien plus grande que les bougies récentes — marque souvent l'épuisement : le dernier sursaut de la tendance a rencontré un mur d'ordres opposés (c'est la mèche de cascade de liquidations de m5, vue de près). Tendance + volume climax + mèche géante = le mouvement est probablement terminé pour l'instant."
+     "p": "Une ÉNORME mèche après un mouvement prolongé - bien plus grande que les bougies récentes - marque souvent l'épuisement : le dernier sursaut de la tendance a rencontré un mur d'ordres opposés (c'est la mèche de cascade de liquidations de m5, vue de près). Tendance + volume climax + mèche géante = le mouvement est probablement terminé pour l'instant."
     },
     {
      "h": "Les grappes de mèches dessinent tes niveaux pour toi",
-     "p": "Oublie les lignes tracées au feeling : les zones où plusieurs mèches piquent et se font rejeter SONT les supports et résistances du marché lui-même. Trace la zone sur les pointes des mèches, puis applique toute la boîte à outils — tendance, nœud de volume, positionnement — sur cette zone."
+     "p": "Oublie les lignes tracées au feeling : les zones où plusieurs mèches piquent et se font rejeter SONT les supports et résistances du marché lui-même. Trace la zone sur les pointes des mèches, puis applique toute la boîte à outils - tendance, nœud de volume, positionnement - sur cette zone."
     }
    ],
    "quiz": [
@@ -292,15 +292,15 @@
    "cards": [
     {
      "h": "Toute figure a un taux d'échec",
-     "p": "Les marteaux se font écraser. Les engulfings se font avaler. Dans l'environnement de chasse aux stops de la crypto (a1), les figures de manuel échouent EN PERMANENCE — parce que tout le monde les voit, et les ordres visibles sont de la nourriture. Accepter ça, c'est la différence entre un utilisateur de figures et une victime de figures."
+     "p": "Les marteaux se font écraser. Les engulfings se font avaler. Dans l'environnement de chasse aux stops de la crypto (a1), les figures de manuel échouent EN PERMANENCE - parce que tout le monde les voit, et les ordres visibles sont de la nourriture. Accepter ça, c'est la différence entre un utilisateur de figures et une victime de figures."
     },
     {
      "h": "La figure ratée EST une figure",
-     "p": "Voici le secret des pros : un signal RATÉ est souvent un meilleur signal. Un marteau haussier sur support qui casse vers le bas signifie que tous les acheteurs du marteau sont piégés — leurs stops alimentent le mouvement baissier. Trader l'échec (avec la foule piégée comme carburant) est souvent plus propre que trader le manuel."
+     "p": "Voici le secret des pros : un signal RATÉ est souvent un meilleur signal. Un marteau haussier sur support qui casse vers le bas signifie que tous les acheteurs du marteau sont piégés - leurs stops alimentent le mouvement baissier. Trader l'échec (avec la foule piégée comme carburant) est souvent plus propre que trader le manuel."
     },
     {
      "h": "Prépare-toi aux deux scénarios",
-     "p": "Règle pratique : sache à l'avance ce qui invalide la figure, et à quoi ressemblerait le trade d'échec. Si le plus bas du marteau casse, tu sors seulement — ou tu inverses ? Décider ça avant l'entrée transforme une figure d'une prière en un plan à deux branches."
+     "p": "Règle pratique : sache à l'avance ce qui invalide la figure, et à quoi ressemblerait le trade d'échec. Si le plus bas du marteau casse, tu sors seulement - ou tu inverses ? Décider ça avant l'entrée transforme une figure d'une prière en un plan à deux branches."
     }
    ],
    "quiz": [
@@ -343,11 +343,11 @@
     },
     {
      "h": "La séquence complète",
-     "p": "Du haut vers le bas : la tendance daily autorise la direction → le 4H montre un setup sur un niveau → le positionnement n'est pas saturé contre toi → ALORS tu zoomes et tu attends la bougie — l'engulfing, le marteau, l'étoile — comme déclencheur d'entrée avec invalidation intégrée. Les bougies sans cet empilement, c'est du jeu de hasard avec des étapes en plus."
+     "p": "Du haut vers le bas : la tendance daily autorise la direction → le 4H montre un setup sur un niveau → le positionnement n'est pas saturé contre toi → ALORS tu zoomes et tu attends la bougie - l'engulfing, le marteau, l'étoile - comme déclencheur d'entrée avec invalidation intégrée. Les bougies sans cet empilement, c'est du jeu de hasard avec des étapes en plus."
     },
     {
      "h": "Entraîne l'œil, puis fais confiance au process",
-     "p": "La reconnaissance de figures est une compétence qui se construit avec les répétitions — et le paper trading t'offre des répétitions illimitées gratuitement. Repère une figure, écris le plan à deux branches, exécute, note-le dans ton journal. Cent figures consignées plus tard, tu SAURAS lesquelles te paient — sur ton marché, sur ton unité de temps."
+     "p": "La reconnaissance de figures est une compétence qui se construit avec les répétitions - et le paper trading t'offre des répétitions illimitées gratuitement. Repère une figure, écris le plan à deux branches, exécute, note-le dans ton journal. Cent figures consignées plus tard, tu SAURAS lesquelles te paient - sur ton marché, sur ton unité de temps."
     }
    ],
    "quiz": [

@@ -2,7 +2,7 @@
 
    Measured 2026-08-19: only 113 of 445 indexable pages (25%) publish a date, and all of them are blog
    articles. Calculators, comparisons, hubs and landing pages publish nothing. That matters more for AI
-   assistants than for Google — asked a question about a fast-moving market, an assistant choosing between
+   assistants than for Google - asked a question about a fast-moving market, an assistant choosing between
    two sources will prefer the one that says when it was last checked, and ours mostly do not say.
 
    The date is the FILE'S OWN mtime, not the build date and not today. A page that has not changed in three

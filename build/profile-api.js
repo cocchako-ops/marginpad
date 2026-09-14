@@ -1,4 +1,4 @@
-// profile-api.js — external p50/p95 profiling of the most-called API routes (production).
+// profile-api.js - external p50/p95 profiling of the most-called API routes (production).
 // 12 samples per route, records CF-Cache-Status distribution so cold/warm split is visible.
 //   node build/profile-api.js [samplesPerRoute]
 const N = +process.argv[2] || 12;

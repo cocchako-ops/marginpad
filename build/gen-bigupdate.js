@@ -65,18 +65,18 @@ function levPage(L) {
   const url = `https://marginpad.io/${L}x-liquidation-calculator/`;
   const liq = entry * (1 - 1 / L + mmr / 100), dist = (1 / L - mmr / 100) * 100;
   const tone = L >= 50 ? 'extremely thin' : (L >= 20 ? 'thin' : 'moderate');
-  const risk = L >= 50 ? 'Only the smallest adverse move wipes you out — this is for experienced traders managing tight risk.'
+  const risk = L >= 50 ? 'Only the smallest adverse move wipes you out - this is for experienced traders managing tight risk.'
     : (L >= 20 ? 'The buffer is small, so a fast wick can liquidate you before a stop fills.' : 'The wider buffer gives a stop-loss room to work, which is why beginners are steered here.');
-  const title = `${L}x Liquidation Calculator — Crypto Futures Long & Short`;
+  const title = `${L}x Liquidation Calculator - Crypto Futures Long & Short`;
   const desc = `Free ${L}x liquidation calculator. See exactly where a ${L}x long or short is liquidated and how ${tone} the buffer is. Instant, private, no signup.`;
   const others = LEVS.filter(x => x !== L);
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${L}x Liquidation Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"At what percentage does a ${L}x position get liquidated?","acceptedAnswer":{"@type":"Answer","text":"Roughly ${dist.toFixed(2)}% against you — about 1/${L} of the price minus the maintenance margin. Fees and funding make the real number slightly closer."}},{"@type":"Question","name":"Is ${L}x leverage safe?","acceptedAnswer":{"@type":"Answer","text":"${L}x means a ~${dist.toFixed(1)}% move liquidates you. ${risk}"}}]}</script>`;
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"At what percentage does a ${L}x position get liquidated?","acceptedAnswer":{"@type":"Answer","text":"Roughly ${dist.toFixed(2)}% against you - about 1/${L} of the price minus the maintenance margin. Fees and funding make the real number slightly closer."}},{"@type":"Question","name":"Is ${L}x leverage safe?","acceptedAnswer":{"@type":"Answer","text":"${L}x means a ~${dist.toFixed(1)}% move liquidates you. ${risk}"}}]}</script>`;
   return head({ title, desc, url, crumb: `${L}x liquidation calculator`, bcName: `${L}x Liquidation Calculator`, ld,
     keywords: `${L}x liquidation calculator, ${L}x leverage calculator, ${L}x liquidation price, crypto ${L}x calculator, ${L}x futures liquidation` })
     + `
     <h1>${L}x Liquidation Calculator</h1>
-    <p class="lead">See exactly where a <b>${L}× leveraged</b> position gets liquidated — long or short, any entry. At ${L}×, liquidation sits only about <b>${dist.toFixed(2)}%</b> from your entry. Free and private.</p>
+    <p class="lead">See exactly where a <b>${L}× leveraged</b> position gets liquidated - long or short, any entry. At ${L}×, liquidation sits only about <b>${dist.toFixed(2)}%</b> from your entry. Free and private.</p>
     <div class="calc">
       <div class="calc-in">
         <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
@@ -85,8 +85,8 @@ function levPage(L) {
         <label>Maintenance margin rate (%)</label><input id="liqMmr" type="number" value="${mmr}" step="any">
       </div>
       <div class="calc-out">
-        <div class="col">Estimated liquidation price</div><div class="big" id="liqOut">—</div>
-        <div class="rr"><span>Distance from entry</span><b id="liqDist">—</b></div>
+        <div class="col">Estimated liquidation price</div><div class="big" id="liqOut">-</div>
+        <div class="rr"><span>Distance from entry</span><b id="liqDist">-</b></div>
       </div>
     </div>
     <h2>How far is liquidation at ${L}× leverage?</h2>
@@ -99,7 +99,7 @@ function levPage(L) {
     </div>
     <p>Always set your stop-loss <em>inside</em> that level. Learn more in <a href="/blog/crypto-leverage-explained/">crypto leverage explained</a> and <a href="/blog/what-is-liquidation-in-crypto/">how to avoid liquidation</a>.</p>
 
-    <h2>${L}× in context — liquidation distance by leverage</h2>
+    <h2>${L}× in context - liquidation distance by leverage</h2>
     <p>The same trade at different leverage levels, showing how much room each one gives before an isolated-margin long is liquidated (0.5% maintenance margin):</p>
     <table style="width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px">
       <thead><tr><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Leverage</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Move to liquidation</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Buffer</th></tr></thead>
@@ -108,16 +108,16 @@ function levPage(L) {
 
     <h2>Who ${L}× leverage is for</h2>
     <p>${L >= 50
-      ? `${L}× is high-conviction, tight-risk territory. A ~${dist.toFixed(1)}% wick against you ends the trade, and crypto prints wicks that size regularly — so ${L}× only makes sense for experienced traders scalping liquid pairs with a hard stop and a small slice of their book. If you cannot watch it, do not use it.`
+      ? `${L}× is high-conviction, tight-risk territory. A ~${dist.toFixed(1)}% wick against you ends the trade, and crypto prints wicks that size regularly - so ${L}× only makes sense for experienced traders scalping liquid pairs with a hard stop and a small slice of their book. If you cannot watch it, do not use it.`
       : (L >= 20
-        ? `${L}× is an intermediate level: enough amplification to matter, but the ~${dist.toFixed(1)}% buffer leaves almost no room for normal volatility. Use it only on liquid majors, with a stop-loss set before you enter and position size worked out from that stop — not the other way round.`
-        : `${L}× is the sensible starting range. The ~${dist.toFixed(1)}% buffer gives a stop-loss room to work without a routine pullback wiping you out, which is why disciplined traders — and every beginner — should live here far more often than at the 50–125× end.`)}</p>
+        ? `${L}× is an intermediate level: enough amplification to matter, but the ~${dist.toFixed(1)}% buffer leaves almost no room for normal volatility. Use it only on liquid majors, with a stop-loss set before you enter and position size worked out from that stop - not the other way round.`
+        : `${L}× is the sensible starting range. The ~${dist.toFixed(1)}% buffer gives a stop-loss room to work without a routine pullback wiping you out, which is why disciplined traders - and every beginner - should live here far more often than at the 50–125× end.`)}</p>
 
     <h2>How to survive ${L}× leverage</h2>
     <ul>
       <li><strong>Set the stop first.</strong> Decide your invalidation price, then size the position so that stop equals a fixed % of your account (1–2%). The <a href="/calculators?c=size">position-size calculator</a> does the math.</li>
-      <li><strong>Keep liquidation far from your stop.</strong> If liquidation and your stop are almost on top of each other, a wick can beat your stop to the punch — lower the leverage or widen the stop.</li>
-      <li><strong>Count fees and funding.</strong> Both eat margin and pull liquidation closer than the raw ${dist.toFixed(2)}% — model them with the <a href="/funding-fee-calculator/">funding calculator</a>.</li>
+      <li><strong>Keep liquidation far from your stop.</strong> If liquidation and your stop are almost on top of each other, a wick can beat your stop to the punch - lower the leverage or widen the stop.</li>
+      <li><strong>Count fees and funding.</strong> Both eat margin and pull liquidation closer than the raw ${dist.toFixed(2)}% - model them with the <a href="/funding-fee-calculator/">funding calculator</a>.</li>
       <li><strong>Rehearse it first.</strong> Open the same ${L}× trade on the <a href="/paper-trade">paper-trading terminal</a> at live prices, risk-free, until the liquidation behaviour is muscle memory.</li>
     </ul>
 
@@ -134,7 +134,7 @@ function levPage(L) {
 // ---------- funding fee calculator ----------
 function fundingPage() {
   const url = 'https://marginpad.io/funding-fee-calculator/';
-  const title = 'Funding Fee Calculator — Crypto Perpetual Futures';
+  const title = 'Funding Fee Calculator - Crypto Perpetual Futures';
   const desc = 'Free funding fee calculator for crypto perpetual futures. Work out what you pay or receive in funding for any position size, rate and number of periods.';
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Funding Fee Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is the funding fee calculated?","acceptedAnswer":{"@type":"Answer","text":"Funding fee = position notional value x funding rate, charged each funding interval (usually every 8 hours). A positive rate means longs pay shorts."}},{"@type":"Question","name":"Do I pay funding if I close before the funding time?","acceptedAnswer":{"@type":"Answer","text":"No. Funding is only exchanged at the funding timestamp. If your position is closed before it, you neither pay nor receive funding for that interval."}}]}</script>`;
@@ -142,22 +142,22 @@ function fundingPage() {
     keywords: 'funding fee calculator, funding rate calculator, perpetual funding calculator, crypto funding cost, futures funding fee' })
     + `
     <h1>Funding Fee Calculator</h1>
-    <p class="lead">Work out exactly what you'll pay — or receive — in funding on a perpetual futures position. Free, instant, runs in your browser.</p>
+    <p class="lead">Work out exactly what you'll pay - or receive - in funding on a perpetual futures position. Free, instant, runs in your browser.</p>
     <div class="calc">
       <div class="calc-in">
         <div class="seg" id="ffSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
-        <label>Position size — notional (USD)</label><input id="ffNotional" type="number" value="10000" step="any">
+        <label>Position size - notional (USD)</label><input id="ffNotional" type="number" value="10000" step="any">
         <label>Funding rate per interval (%)</label><input id="ffRate" type="number" value="0.01" step="any">
         <label>Number of funding intervals</label><input id="ffPeriods" type="number" value="3" step="any">
       </div>
       <div class="calc-out">
-        <div class="col">Total funding</div><div class="big" id="ffOut">—</div>
-        <div class="rr"><span>Per interval</span><b id="ffPer">—</b></div>
-        <div class="rr"><span>Direction</span><b id="ffNote">—</b></div>
+        <div class="col">Total funding</div><div class="big" id="ffOut">-</div>
+        <div class="rr"><span>Per interval</span><b id="ffPer">-</b></div>
+        <div class="rr"><span>Direction</span><b id="ffNote">-</b></div>
       </div>
     </div>
     <h2>How funding fees work</h2>
-    <p>Perpetual futures have no expiry, so exchanges use a <b>funding rate</b> to keep the contract price tethered to spot. Every funding interval — usually every 8 hours — longs and shorts exchange a payment based on the rate:</p>
+    <p>Perpetual futures have no expiry, so exchanges use a <b>funding rate</b> to keep the contract price tethered to spot. Every funding interval - usually every 8 hours - longs and shorts exchange a payment based on the rate:</p>
     <p><code>Funding = Notional × Funding rate</code>, each interval.</p>
     <p>When the rate is <b>positive</b>, longs pay shorts (the market is long-heavy). When it's <b>negative</b>, shorts pay longs. A negative output above means you <em>receive</em> funding.</p>
     <h2>Worked example</h2>
@@ -182,66 +182,66 @@ const TERMS = [
   ['Liquidation price', 'The price at which your position is liquidated. Long ≈ Entry × (1 − 1/Leverage + MMR).'],
   ['Leverage', 'Borrowed exposure that multiplies both gains and losses. 10× means $1 controls $10. See <a href="/blog/crypto-leverage-explained/">leverage explained</a>.'],
   ['Margin', 'The collateral you post to open and hold a leveraged position.'],
-  ['Initial margin', 'The collateral required to open a position — roughly notional ÷ leverage.'],
+  ['Initial margin', 'The collateral required to open a position - roughly notional ÷ leverage.'],
   ['Maintenance margin (MMR)', 'The minimum margin to keep a position open. Drop below it and you are liquidated.'],
   ['Isolated margin', 'Margin mode where only the margin assigned to a position is at risk. See <a href="/blog/cross-vs-isolated-margin/">cross vs isolated</a>.'],
   ['Cross margin', 'Margin mode where your whole balance backs the position, lowering liquidation risk but exposing more capital.'],
   ['Perpetual futures', 'A futures contract with no expiry, kept near spot by the funding mechanism.'],
   ['Funding rate', 'A periodic payment between longs and shorts on perpetuals. See the <a href="/funding-fee-calculator/">funding fee calculator</a>.'],
-  ['PnL', 'Profit and loss — the gain or loss on a position. See the <a href="/calculators?c=pnl">PnL calculator</a>.'],
-  ['ROI', 'Return on investment — the raw percentage the asset moved.'],
-  ['ROE', 'Return on equity — your return on posted margin, amplified by leverage. A 10% move at 10× ≈ 100% ROE.'],
+  ['PnL', 'Profit and loss - the gain or loss on a position. See the <a href="/calculators?c=pnl">PnL calculator</a>.'],
+  ['ROI', 'Return on investment - the raw percentage the asset moved.'],
+  ['ROE', 'Return on equity - your return on posted margin, amplified by leverage. A 10% move at 10× ≈ 100% ROE.'],
   ['Long', 'A position that profits when price rises.'],
   ['Short', 'A position that profits when price falls.'],
   ['Position size', 'How much of an asset you hold. Size it by risk with the <a href="/calculators?c=size">position size calculator</a>.'],
-  ['Notional value', 'The full market value of a position — size × price — not just the margin posted.'],
+  ['Notional value', 'The full market value of a position - size × price - not just the margin posted.'],
   ['Mark price', 'A smoothed reference price used to calculate unrealised PnL and trigger liquidations, less manipulable than last price.'],
   ['Index price', 'An average of spot prices across exchanges that anchors the mark price.'],
   ['Stop-loss', 'An order that closes a position at a set price to cap losses. See <a href="/blog/how-to-set-a-stop-loss/">how to set a stop-loss</a>.'],
   ['Take-profit', 'An order that closes a position at a target price to lock in gains. See the <a href="/#tp">take-profit calculator</a>.'],
   ['Risk/reward ratio', 'Reward divided by risk on a trade. See <a href="/blog/risk-reward-ratio-explained/">risk/reward explained</a>.'],
-  ['Break-even win rate', 'The win rate needed to break even at a given risk/reward — e.g. 33% at 2:1.'],
-  ['DCA', 'Dollar-cost averaging — building a position in tranches to smooth your entry. See the <a href="/#dca">DCA calculator</a>.'],
+  ['Break-even win rate', 'The win rate needed to break even at a given risk/reward - e.g. 33% at 2:1.'],
+  ['DCA', 'Dollar-cost averaging - building a position in tranches to smooth your entry. See the <a href="/#dca">DCA calculator</a>.'],
   ['Maker', 'An order that adds liquidity to the book (a resting limit order), usually with a lower fee. See <a href="/blog/maker-vs-taker-fees/">maker vs taker</a>.'],
   ['Taker', 'An order that removes liquidity (a market order), usually with a higher fee.'],
-  ['Open interest', 'The total value of outstanding futures contracts — a gauge of market participation.'],
+  ['Open interest', 'The total value of outstanding futures contracts - a gauge of market participation.'],
   ['Slippage', 'The difference between expected and executed price, worst in thin or fast markets.'],
-  ['ADL', 'Auto-deleveraging — when the insurance fund can\'t cover a liquidation, profitable opposing traders are partially closed.'],
+  ['ADL', 'Auto-deleveraging - when the insurance fund can\'t cover a liquidation, profitable opposing traders are partially closed.'],
   ['Insurance fund', 'A reserve that absorbs bankrupt liquidations so winners get paid in full.'],
   ['Basis', 'The gap between futures and spot price.'],
   ['Margin call', 'A warning that your margin is running low before liquidation. See <a href="/blog/what-is-a-margin-call/">what is a margin call</a>.'],
   ['Drawdown', 'The peak-to-trough drop in account equity.'],
   ['Hedge', 'A position taken to offset risk in another.'],
-  ['Spot', 'Buying the actual asset for immediate delivery — no leverage, no liquidation. See <a href="/blog/spot-vs-futures-trading/">spot vs futures</a>.'],
+  ['Spot', 'Buying the actual asset for immediate delivery - no leverage, no liquidation. See <a href="/blog/spot-vs-futures-trading/">spot vs futures</a>.'],
   ['Derivative', 'A contract whose value derives from an underlying asset, like futures or options.'],
-  ['Long/short ratio', 'The share of accounts (or positions) that are long versus short a contract. Extremes are contrarian signals — a heavily long crowd is fuel for a squeeze down. Live per-coin readings: <a href="/long-short/">long/short dashboard</a>.'],
+  ['Long/short ratio', 'The share of accounts (or positions) that are long versus short a contract. Extremes are contrarian signals - a heavily long crowd is fuel for a squeeze down. Live per-coin readings: <a href="/long-short/">long/short dashboard</a>.'],
   ['Liquidation cascade', 'A chain reaction where one wave of liquidations pushes price into the next cluster of liquidation levels, firing more forced orders in the same direction. Cascades explain why leveraged markets overshoot. See them mapped on the <a href="/btc-liquidation-map/">liquidation map</a> and measured daily in the <a href="/liquidations/">recap archive</a>.'],
-  ['Short squeeze', 'A sharp move UP fueled by shorts being forced to buy back — either stopped out or liquidated. Crowded shorts (negative funding, short-heavy positioning) are the fuel; the squeeze consumes it.'],
+  ['Short squeeze', 'A sharp move UP fueled by shorts being forced to buy back - either stopped out or liquidated. Crowded shorts (negative funding, short-heavy positioning) are the fuel; the squeeze consumes it.'],
   ['Long squeeze', 'The mirror of a short squeeze: a sharp move DOWN accelerated by longs being forced to sell. Most common after crowded, over-leveraged rallies with heavy positive funding.'],
   ['Stop hunt', 'A quick push through an obvious price level where many stop-losses and liquidations sit, which fills larger players at better prices before the market reverses. Obvious round numbers and recent lows/highs are the usual targets.'],
   ['Limit order', 'An order that rests in the book at your chosen price and only fills at that price or better. Pays the lower maker fee on most venues, but is not guaranteed to fill.'],
   ['Market order', 'An order that executes immediately against the best available prices in the book. Guaranteed to fill, but pays the taker fee and suffers <a href="/glossary/#slippage">slippage</a> in thin markets.'],
-  ['Post-only', 'An order flag that cancels your order instead of letting it execute as a taker — it guarantees you either make the market (lower fee) or do not trade at all.'],
+  ['Post-only', 'An order flag that cancels your order instead of letting it execute as a taker - it guarantees you either make the market (lower fee) or do not trade at all.'],
   ['Reduce-only', 'An order flag that can only shrink or close an existing position, never open or grow one. Standard protection on take-profit and stop orders so they cannot accidentally flip you.'],
-  ['Trailing stop', 'A stop-loss that follows the price at a set distance while the trade moves in your favour, then triggers when price retraces by that distance — locking in profit without a fixed exit.'],
+  ['Trailing stop', 'A stop-loss that follows the price at a set distance while the trade moves in your favour, then triggers when price retraces by that distance - locking in profit without a fixed exit.'],
   ['Unrealized PnL', 'The paper profit or loss of an OPEN position, marked against the current price. It changes every tick and is not yours until the position is closed or partially closed.'],
   ['Realized PnL', 'Profit or loss that has been locked in by closing (or partially closing) a position, after fees and funding. The number that actually changes your balance.'],
-  ['Partial close', 'Closing only part of a position — taking some profit or cutting some risk while keeping the rest of the trade on. The remaining position keeps the original entry price.'],
+  ['Partial close', 'Closing only part of a position - taking some profit or cutting some risk while keeping the rest of the trade on. The remaining position keeps the original entry price.'],
   ['Order book depth', 'How much resting buy and sell size sits at each price level. Deep books absorb large market orders with little <a href="/glossary/#slippage">slippage</a>; thin books gap. Depth is why the same trade costs more on a small exchange.'],
-  ['Liquidity', 'How easily size can be traded without moving the price. In futures it comes from order-book depth and active market makers. Majors like BTC are deeply liquid; small-cap perps are not — leverage there is far more dangerous.'],
-  ['Spread', 'The gap between the best bid and best ask. A cost you pay on every market order, on top of fees — tight on liquid majors, wide on illiquid pairs.'],
-  ['Funding interval', 'How often perpetual funding is exchanged between longs and shorts — every 8 hours on most venues (some use 1h or 4h). The quoted rate applies per interval, so holding costs compound across a day. Live rates: <a href="/funding/">funding dashboard</a>.'],
+  ['Liquidity', 'How easily size can be traded without moving the price. In futures it comes from order-book depth and active market makers. Majors like BTC are deeply liquid; small-cap perps are not - leverage there is far more dangerous.'],
+  ['Spread', 'The gap between the best bid and best ask. A cost you pay on every market order, on top of fees - tight on liquid majors, wide on illiquid pairs.'],
+  ['Funding interval', 'How often perpetual funding is exchanged between longs and shorts - every 8 hours on most venues (some use 1h or 4h). The quoted rate applies per interval, so holding costs compound across a day. Live rates: <a href="/funding/">funding dashboard</a>.'],
   ['Liquidation heatmap', 'A chart overlay estimating where liquidation levels cluster at each leverage tier, so you can see which price zones would fire the most forced orders. MarginPad&#39;s is at <a href="/heatmap">/heatmap</a>; per-coin maps at e.g. <a href="/btc-liquidation-map/">/btc-liquidation-map/</a>.'],
-  ['Fear &amp; Greed Index', 'A 0-100 composite of volatility, momentum, social and dominance data summarising crypto sentiment — extreme fear has historically marked better entries than extreme greed. Live reading: <a href="/fear-greed/">Fear &amp; Greed page</a>.'],
-  ['One-way vs hedge mode', 'One-way mode nets longs and shorts into a single position per contract; hedge mode lets you hold a long AND a short on the same contract simultaneously. Beginners should stay in one-way — hedge mode doubles fees and hides risk.'],
-  ['Entry price', 'The average price at which your position was opened, including any adds. Everything else — PnL, ROE, liquidation distance — is measured from it.'],
-  ['Wick', 'The thin line above or below a candle body showing the extreme prices touched inside the period. Wicks through liquidation clusters are how over-leveraged positions die in seconds — and why MarginPad&#39;s paper trading requires close-confirmation, not wick touches.'],
-  ['Volatility', 'How much and how fast price moves. Higher volatility means a wider liquidation buffer is needed for the same safety — a 1% daily-range coin and a 10% one cannot carry the same leverage.'],
+  ['Fear &amp; Greed Index', 'A 0-100 composite of volatility, momentum, social and dominance data summarising crypto sentiment - extreme fear has historically marked better entries than extreme greed. Live reading: <a href="/fear-greed/">Fear &amp; Greed page</a>.'],
+  ['One-way vs hedge mode', 'One-way mode nets longs and shorts into a single position per contract; hedge mode lets you hold a long AND a short on the same contract simultaneously. Beginners should stay in one-way - hedge mode doubles fees and hides risk.'],
+  ['Entry price', 'The average price at which your position was opened, including any adds. Everything else - PnL, ROE, liquidation distance - is measured from it.'],
+  ['Wick', 'The thin line above or below a candle body showing the extreme prices touched inside the period. Wicks through liquidation clusters are how over-leveraged positions die in seconds - and why MarginPad&#39;s paper trading requires close-confirmation, not wick touches.'],
+  ['Volatility', 'How much and how fast price moves. Higher volatility means a wider liquidation buffer is needed for the same safety - a 1% daily-range coin and a 10% one cannot carry the same leverage.'],
   ['Whale', 'A trader or wallet large enough to move the market. Large positions and their liquidations are visible in aggregate on <a href="/hyperliquid-whales/">whale tracking</a> and the <a href="/rekt/">live liquidation feed</a>.'],
 ];
 function glossaryPage() {
   const url = 'https://marginpad.io/glossary/';
-  const title = 'Crypto Futures Glossary — Leverage, Liquidation & Margin Terms';
+  const title = 'Crypto Futures Glossary - Leverage, Liquidation & Margin Terms';
   const desc = 'A plain-English glossary of crypto futures and leverage trading terms: liquidation, margin, funding rate, ROE, mark price and more.';
   const items = TERMS.map(t => ({ name: t[0], desc: t[1].replace(/<[^>]+>/g, '') }));
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"DefinedTermSet","name":"Crypto Futures Glossary","url":"${url}","hasDefinedTerm":[${items.map(i => `{"@type":"DefinedTerm","name":"${i.name.replace(/"/g, '')}","description":"${i.desc.replace(/"/g, '').replace(/×/g, 'x')}"}`).join(',')}]}</script>`;
@@ -249,7 +249,7 @@ function glossaryPage() {
     keywords: 'crypto futures glossary, leverage trading terms, liquidation meaning, funding rate meaning, margin terms crypto' })
     + `
     <h1>Crypto Futures Glossary</h1>
-    <p class="lead">Every term you'll meet trading leveraged crypto, in plain English — with links to the calculator or guide for each. ${TERMS.length} terms and counting.</p>
+    <p class="lead">Every term you'll meet trading leveraged crypto, in plain English - with links to the calculator or guide for each. ${TERMS.length} terms and counting.</p>
     <dl class="glossary">
 ${TERMS.map(t => `      <dt id="${t[0].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}">${t[0]}</dt>\n      <dd>${t[1]}</dd>`).join('\n')}
     </dl>

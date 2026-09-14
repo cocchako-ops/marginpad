@@ -31,6 +31,6 @@ const maxAge = (c) => { const m = /Max-Age=(\d+)/.exec(c || ''); return m ? +m[1
   const r3 = await me(''); const d3 = await r3.json(); const c3 = setCookies(r3);
   chk('/me without a cookie: user null, clears only the mp_li marker', d3.user === null && c3.some(c => /^mp_li=;/.test(c) && maxAge(c) === 0) && !c3.some(c => /^mp_sess=/.test(c)), { cookies: c3.map(c => c.split('=')[0]) });
   try { await fetch(ORIGIN + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: uidE, op: 'rm' }) }); } catch (e) {}
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

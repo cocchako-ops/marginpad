@@ -1,13 +1,13 @@
 /* Partner layer E2E (2026-09-09, owner: "poboljsaj referal klikove, ali da ne bude agresivno").
    Five changes, proved on production:
      1 MEASUREMENT  a click-out label must resolve to a real partner (PARTNERS in the worker). An injection string is
-                    recorded as 'other', never counted as money and never written to the money-click ring — measured
+                    recorded as 'other', never counted as money and never written to the money-click ring - measured
                     before the fix: 126 of ~380 exchange "clicks" in 30 days were SQL probes from one scanner.
      2 GEO ORDER    /api/geo answers the country (private cache, no store hop); the cards order themselves per reader
                     and venues that cannot onboard that country go last and say so. US: Coinbase/Kraken first.
      3 REWARDS      the payout note carries a real, TRACKED button to open the account a payout needs.
      4 AFTER A WIN  the newest winning ticket carries ONE dismissible line to the same pair; dismiss lasts a DAY
-                    (it was 7 days until 2026-09-10 — one X and the owner lost the line on his own site for a week).
+                    (it was 7 days until 2026-09-10 - one X and the owner lost the line on his own site for a week).
      5 EXACT PAIR   every link built by the shared table points at the coin, not at the exchange home page.
    The browser tests never click a partner link (that would write a real money click); they read hrefs and order.
    Run: node build/partner-e2e.js */
@@ -50,7 +50,7 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 140))); page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 140)); });
     // seeded on a REAL page of the origin (evaluateOnNewDocument runs while the document is still opaque, where
-    // localStorage throws) — mp_cc is the module's own 24h cache, which is how a reader elsewhere is simulated
+    // localStorage throws) - mp_cc is the module's own 24h cache, which is how a reader elsewhere is simulated
     await page.goto(ORIGIN + '/rewards/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 60000 });
     const seed = (cc, journal) => page.evaluate((cc, journal) => {
       try { localStorage.setItem('mp_cc', JSON.stringify({ cc: cc, ts: Date.now() })); } catch (e) {}
@@ -97,13 +97,13 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     await page.evaluate(() => { const b = document.querySelector('[data-mytrades]'); if (b) b.click(); }); await sleep(1600);
     await page.evaluate(() => { const t = document.querySelector('#jrDrawer [data-jt="closed"]'); if (t) t.click(); }); await sleep(1300);
     const back = await page.evaluate(() => ({ shown: !!document.querySelector('.mp-gl') }));
-    chk('terminal: a dismissal from yesterday has expired — the line is back', back.shown === true, back);
+    chk('terminal: a dismissal from yesterday has expired - the line is back', back.shown === true, back);
     await page.evaluate((h) => { try { localStorage.setItem('mp_golive_x', String(Date.now() - h * 3600000)); } catch (e) {} }, 1);
     await page.reload({ waitUntil: 'load', timeout: 90000 }); await sleep(6000);
     await page.evaluate(() => { const b = document.querySelector('[data-mytrades]'); if (b) b.click(); }); await sleep(1600);
     await page.evaluate(() => { const t = document.querySelector('#jrDrawer [data-jt="closed"]'); if (t) t.click(); }); await sleep(1300);
     const still = await page.evaluate(() => ({ shown: !!document.querySelector('.mp-gl') }));
-    chk('terminal: an X an hour ago still counts — it stays hidden for the rest of the day', still.shown === false, still);
+    chk('terminal: an X an hour ago still counts - it stays hidden for the rest of the day', still.shown === false, still);
     // a losing ticket never gets the line
     await seed('NG', JSON.stringify([Object.assign(tr('ETH', -12.5), { status: 'loss' })]));
     await page.goto(ORIGIN + '/paper-trade?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 });
@@ -126,7 +126,7 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     chk('rewards: the "how it works" step links there too', rw.step && /bybit\.com\/invite\?ref=LZKBERJ/.test(rw.stepHref || ''), { stepHref: rw.stepHref });
     await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
     await page.goto(ORIGIN + '/rewards/?cb=' + Date.now(), { waitUntil: 'load', timeout: 60000 }); await sleep(1500);
-    const ph = await page.evaluate(() => { const w = document.getElementById('wdNoteBybit'); if (!w) return { none: true }; // the payout block only exists once a member opens Withdraw — reveal the same DOM the member sees
+    const ph = await page.evaluate(() => { const w = document.getElementById('wdNoteBybit'); if (!w) return { none: true }; // the payout block only exists once a member opens Withdraw - reveal the same DOM the member sees
       const dash = document.getElementById('dash'), row = document.getElementById('wdAddrRow');
       if (dash) dash.hidden = false; if (row) row.hidden = false; w.hidden = false;
       const a = w.querySelector('.wd-go'); if (!a) return { none: true };
@@ -138,6 +138,6 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
   });
 
   for (const q of ['"di":"' + DID.slice(0, 8)]) { try { await fetch(ORIGIN + '/api/admin/activity?purge=' + encodeURIComponent(q), { method: 'POST', headers: H }); } catch (e) {} }
-  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' — ' + f + ' FAIL' : ''));
+  console.log(out.join('\n')); const f = out.filter(l => l.startsWith('FAIL')).length; console.log('\n' + (out.length - f) + '/' + out.length + ' PASS' + (f ? ' - ' + f + ' FAIL' : ''));
   process.exit(f ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

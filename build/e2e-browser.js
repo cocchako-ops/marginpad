@@ -9,7 +9,7 @@
 //   - finally (success OR throw)
 //   - SIGINT / SIGTERM (manual Ctrl-C, or a wrapper sending a signal)
 //   - process 'exit' (any other reason)
-//   - an INTERNAL timeout (default 4 min) that fires BEFORE an external Bash-tool timeout can SIGKILL node — because a
+//   - an INTERNAL timeout (default 4 min) that fires BEFORE an external Bash-tool timeout can SIGKILL node - because a
 //     hard external kill can't run our handlers, and would orphan the chrome tree. Self-terminating first avoids that.
 // Teardown is SURGICAL: `taskkill /F /T /PID <puppeteer-chrome-pid>` kills only OUR chrome tree by pid (never //IM,
 // never the user's default-profile browser). Every browser also gets a tagged userDataDir (mp-e2e-profile-*) so a

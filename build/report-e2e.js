@@ -1,5 +1,5 @@
 // Trading report E2E (2026-09-05). Opens and closes a known set of positions on a throwaway account, then checks
-// that the report says exactly what those trades were — not "a number came back", but the right number in the
+// that the report says exactly what those trades were - not "a number came back", but the right number in the
 // right bucket. Also checks the gate (anonymous refused) and that a thin window refuses to call itself a pattern.
 const fs = require('fs');
 const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').split(/\r?\n/)[1].trim();
@@ -73,7 +73,7 @@ async function trade(path, body) {
 
   // ── above the threshold: the finding that is actually worth paying for ────────────────────────────────────
   // Two bands with n >= 8 each. Every trade here is opened and closed immediately, so the only thing separating
-  // them is the round-trip fee — which scales with leverage. 50x must therefore measure clearly worse than 3x,
+  // them is the round-trip fee - which scales with leverage. 50x must therefore measure clearly worse than 3x,
   // and the report must SAY so, in a sentence, from the data.
   // /api/trade/open is rate limited to 20 opens per minute per account (a real guard, not a test artefact),
   // so the book is PACED and a refusal is waited out rather than silently losing a trade from the sample.
@@ -110,6 +110,6 @@ async function trade(path, body) {
 
   console.log(out.join('\n'));
   const p = out.filter(x => x[0] === 'P').length, f = out.filter(x => x[0] === 'F').length;
-  console.log('\nUID ' + UID + ' — pass ' + p + ' fail ' + f);
+  console.log('\nUID ' + UID + ' - pass ' + p + ' fail ' + f);
   if (f) process.exit(1);
 })().catch(e => { console.error(e); console.log(out.join('\n')); process.exit(1); });

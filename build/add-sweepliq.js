@@ -6,7 +6,7 @@ const DIST = path.join(__dirname, '..', 'dist');
 const LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
 const ANCHOR = '  tick();setInterval(tick,1000);';
 const SWEEP = `
-  function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
+  function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='-'&&e.entry>0;});if(!open.length)return;
     open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return;
       var lng=e.side!=='short',liq=liqOf(e),ageH=(Date.now()-e.ts)/3600000;
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5';

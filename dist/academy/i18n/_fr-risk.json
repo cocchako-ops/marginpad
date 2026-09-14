@@ -10,11 +10,11 @@
     {
      "h": "Risque une part, jamais le gâteau entier",
      "prompt": "Baisse ton risque par trade jusqu'à pouvoir survivre à au moins 30 pertes d'affilée.",
-     "p": "Les pros dimensionnent leurs positions pour qu'un trade perdant coûte une petite part fixe du compte — en général 1-2%. Regarde ce que ton réglage de risque fait à ta survie."
+     "p": "Les pros dimensionnent leurs positions pour qu'un trade perdant coûte une petite part fixe du compte - en général 1-2%. Regarde ce que ton réglage de risque fait à ta survie."
     },
     {
      "h": "Dimensionne à partir du stop, pas de l'avidité",
-     "p": "Le bon ordre : choisis où le trade est invalidé (ton niveau de stop-loss), mesure la distance entre l'entrée et le stop, puis dimensionne la position pour que cette distance corresponde à ton risque de 1-2%. La taille est le RÉSULTAT du calcul — jamais le point de départ."
+     "p": "Le bon ordre : choisis où le trade est invalidé (ton niveau de stop-loss), mesure la distance entre l'entrée et le stop, puis dimensionne la position pour que cette distance corresponde à ton risque de 1-2%. La taille est le RÉSULTAT du calcul - jamais le point de départ."
     },
     {
      "h": "Le levier est un outil, la taille est la décision",
@@ -51,7 +51,7 @@
     }
    ],
    "try": {
-    "p": "Dimensionne un vrai trade : compte, risque en %, entrée et stop — le calculateur te donne la taille de position exacte.",
+    "p": "Dimensionne un vrai trade : compte, risque en %, entrée et stop - le calculateur te donne la taille de position exacte.",
     "label": "Calculateur de taille de position →"
    }
   },
@@ -61,7 +61,7 @@
    "cards": [
     {
      "h": "Le stop va là où l'idée meurt",
-     "p": "Un stop-loss se place au prix où ta thèse de trade est prouvée fausse — sous le support que tu as acheté, au-delà du niveau qui invalide le setup. Le placer au « maximum de douleur que je peux tolérer » est à l'envers : le marché ne connaît pas et se fiche de ton seuil de douleur."
+     "p": "Un stop-loss se place au prix où ta thèse de trade est prouvée fausse - sous le support que tu as acheté, au-delà du niveau qui invalide le setup. Le placer au « maximum de douleur que je peux tolérer » est à l'envers : le marché ne connaît pas et se fiche de ton seuil de douleur."
     },
     {
      "h": "Prouve-le : place le stop",
@@ -70,11 +70,11 @@
     },
     {
      "h": "La chasse aux stops existe, la panique à son sujet non",
-     "p": "Le prix perce souvent les niveaux évidents en mèche, déclenche les stops regroupés, puis fait demi-tour. La solution n'est pas de retirer ton stop (ça transforme une petite perte en liquidation) — c'est de placer tes stops au-delà des chiffres ronds évidents et de dimensionner pour qu'un stop touché soit banal, pas dévastateur."
+     "p": "Le prix perce souvent les niveaux évidents en mèche, déclenche les stops regroupés, puis fait demi-tour. La solution n'est pas de retirer ton stop (ça transforme une petite perte en liquidation) - c'est de placer tes stops au-delà des chiffres ronds évidents et de dimensionner pour qu'un stop touché soit banal, pas dévastateur."
     },
     {
      "h": "Take-profit : décide tant que tu es lucide",
-     "p": "Un ordre take-profit encaisse le gain automatiquement. Décide de la sortie avant d'entrer, tant que tu es objectif — parce qu'après l'entrée, tu deviens la personne la moins objective devant ce graphique. Les take-profits partiels (fermer, disons, la moitié au premier objectif) sont un compromis légitime."
+     "p": "Un ordre take-profit encaisse le gain automatiquement. Décide de la sortie avant d'entrer, tant que tu es objectif - parce qu'après l'entrée, tu deviens la personne la moins objective devant ce graphique. Les take-profits partiels (fermer, disons, la moitié au premier objectif) sont un compromis légitime."
     }
    ],
    "quiz": [
@@ -84,7 +84,7 @@
       "Là où perdre ferait trop mal",
       "Là où l'idée de trade est prouvée fausse",
       "Le plus près possible de l'entrée",
-      "Nulle part — les stops c'est pour les lâches"
+      "Nulle part - les stops c'est pour les lâches"
      ]
     },
     {
@@ -107,25 +107,25 @@
     }
    ],
    "try": {
-    "p": "Ouvre une position en paper trading et attache-lui un vrai SL et un vrai TP — pratique tout le rituel sans aucun risque.",
+    "p": "Ouvre une position en paper trading et attache-lui un vrai SL et un vrai TP - pratique tout le rituel sans aucun risque.",
     "label": "Paper Trade →"
    }
   },
   {
    "id": "r3",
-   "t": "Risque:récompense — avoir tort avec profit",
+   "t": "Risque:récompense - avoir tort avec profit",
    "cards": [
     {
      "h": "Le ratio qui pardonne les erreurs",
-     "p": "Le risque:récompense compare ce que tu risques à ce que tu vises. Risquer 50 $ pour en gagner 150 $, c'est du 1:3. À 1:3, gagner seulement 3 trades sur 10 te laisse profitable — l'image ci-dessous, ce sont ces dix trades. Le ratio t'achète le droit d'avoir tort la plupart du temps."
+     "p": "Le risque:récompense compare ce que tu risques à ce que tu vises. Risquer 50 $ pour en gagner 150 $, c'est du 1:3. À 1:3, gagner seulement 3 trades sur 10 te laisse profitable - l'image ci-dessous, ce sont ces dix trades. Le ratio t'achète le droit d'avoir tort la plupart du temps."
     },
     {
      "h": "Taux de réussite et R:R s'échangent",
-     "p": "Les stratégies à fort taux de réussite ont généralement de petits gains ; les stratégies à fort R:R perdent souvent mais gagnent gros. Les deux fonctionnent ; aucune ne fonctionne avec une mauvaise combinaison (faible taux de réussite ET faible R:R — l'état par défaut du débutant impulsif). Sache à quel jeu joue ta stratégie."
+     "p": "Les stratégies à fort taux de réussite ont généralement de petits gains ; les stratégies à fort R:R perdent souvent mais gagnent gros. Les deux fonctionnent ; aucune ne fonctionne avec une mauvaise combinaison (faible taux de réussite ET faible R:R - l'état par défaut du débutant impulsif). Sache à quel jeu joue ta stratégie."
     },
     {
      "h": "L'espérance : le seul chiffre qui tranche",
-     "p": "Espérance = (taux de réussite × gain moyen) − (taux de perte × perte moyenne). Positive, l'approche gagne de l'argent sur beaucoup de trades ; négative, aucune taille de position ne peut la sauver. Un trade ne veut rien dire — l'espérance se mesure sur des dizaines."
+     "p": "Espérance = (taux de réussite × gain moyen) − (taux de perte × perte moyenne). Positive, l'approche gagne de l'argent sur beaucoup de trades ; négative, aucune taille de position ne peut la sauver. Un trade ne veut rien dire - l'espérance se mesure sur des dizaines."
     }
    ],
    "quiz": [
@@ -158,7 +158,7 @@
     }
    ],
    "try": {
-    "p": "Entre ton taux de réussite et ton R:R dans le calculateur de risque de ruine — vois ce que disent les maths sur tes chances de survie.",
+    "p": "Entre ton taux de réussite et ton R:R dans le calculateur de risque de ruine - vois ce que disent les maths sur tes chances de survie.",
     "label": "Calculateur de risque de ruine →"
    }
   },
@@ -169,15 +169,15 @@
     {
      "h": "Les pertes pèsent plus lourd que les gains",
      "prompt": "Creuse la perte et regarde ce que la récupération exige. Trouve la perte où il te faut +100% juste pour revenir à zéro.",
-     "p": "Perds 10% et il te faut 11% pour récupérer. Cette asymétrie n'est pas un slogan de poster motivant — c'est de l'arithmétique, et c'est la raison pour laquelle préserver le capital bat la chasse au profit."
+     "p": "Perds 10% et il te faut 11% pour récupérer. Cette asymétrie n'est pas un slogan de poster motivant - c'est de l'arithmétique, et c'est la raison pour laquelle préserver le capital bat la chasse au profit."
     },
     {
      "h": "Les séries sont normales, la ruine est optionnelle",
-     "p": "Même une stratégie qui gagne 60% du temps subira régulièrement des séries de 5 pertes — c'est de la probabilité, pas un échec. Qu'une série normale devienne fatale au compte dépend entièrement de la taille risquée par trade. Le dimensionnement transforme la variance en bruit ; le surdimensionnement la transforme en ruine."
+     "p": "Même une stratégie qui gagne 60% du temps subira régulièrement des séries de 5 pertes - c'est de la probabilité, pas un échec. Qu'une série normale devienne fatale au compte dépend entièrement de la taille risquée par trade. Le dimensionnement transforme la variance en bruit ; le surdimensionnement la transforme en ruine."
     },
     {
      "h": "Le piège du come-back",
-     "p": "Après une perte, l'envie est d'AUGMENTER la taille pour se refaire vite. C'est exactement l'inverse qu'il faut : une taille plus grosse après des pertes signifie que tes pires décisions reçoivent tes plus grosses mises. Les pros font le contraire — ils réduisent la taille en drawdown, et la remontent quand ça performe."
+     "p": "Après une perte, l'envie est d'AUGMENTER la taille pour se refaire vite. C'est exactement l'inverse qu'il faut : une taille plus grosse après des pertes signifie que tes pires décisions reçoivent tes plus grosses mises. Les pros font le contraire - ils réduisent la taille en drawdown, et la remontent quand ça performe."
     }
    ],
    "quiz": [
@@ -216,15 +216,15 @@
    "cards": [
     {
      "h": "Le revenge trading",
-     "p": "Le trade le plus cher de l'historique de n'importe quel débutant est celui placé 90 secondes après une perte douloureuse — surdimensionné, non planifié, motivé par le besoin de se refaire. Nomme ce schéma dès maintenant, et adopte la règle des pros : après un stop touché, aucun nouveau trade tant qu'un plan écrit n'existe pas."
+     "p": "Le trade le plus cher de l'historique de n'importe quel débutant est celui placé 90 secondes après une perte douloureuse - surdimensionné, non planifié, motivé par le besoin de se refaire. Nomme ce schéma dès maintenant, et adopte la règle des pros : après un stop touché, aucun nouveau trade tant qu'un plan écrit n'existe pas."
     },
     {
      "h": "Le FOMO achète le sommet",
-     "p": "Un coin déjà à +30% aujourd'hui semble le plus sûr à acheter — tout le monde est d'accord, le graphique le confirme. Mais entrer sur un mouvement vertical veut dire que ton stop est loin, ton R:R est catastrophique, et tu sers de liquidité de sortie aux acheteurs plus précoces. Les grands trades sont en général inconfortables à l'entrée, pas évidents."
+     "p": "Un coin déjà à +30% aujourd'hui semble le plus sûr à acheter - tout le monde est d'accord, le graphique le confirme. Mais entrer sur un mouvement vertical veut dire que ton stop est loin, ton R:R est catastrophique, et tu sers de liquidité de sortie aux acheteurs plus précoces. Les grands trades sont en général inconfortables à l'entrée, pas évidents."
     },
     {
      "h": "Le journal est un miroir",
-     "p": "Un journal de trading — chaque entrée, sortie, taille et raison — transforme des impressions vagues en schémas visibles : « mes trades du dimanche soir perdent tous », « je coupe toujours mes gagnants trop tôt ». C'est ingrat, et c'est l'outil d'amélioration le plus rapide qui existe en trading. Les trades en argent fictif comptent aussi."
+     "p": "Un journal de trading - chaque entrée, sortie, taille et raison - transforme des impressions vagues en schémas visibles : « mes trades du dimanche soir perdent tous », « je coupe toujours mes gagnants trop tôt ». C'est ingrat, et c'est l'outil d'amélioration le plus rapide qui existe en trading. Les trades en argent fictif comptent aussi."
     }
    ],
    "quiz": [
@@ -257,7 +257,7 @@
     }
    ],
    "try": {
-    "p": "Tes paper trades alimentent déjà un journal analytique gratuit — vois ton taux de réussite, tes séries et tes habitudes.",
+    "p": "Tes paper trades alimentent déjà un journal analytique gratuit - vois ton taux de réussite, tes séries et tes habitudes.",
     "label": "Journal de trading →"
    }
   },
@@ -267,7 +267,7 @@
    "cards": [
     {
      "h": "Le tilt : trader en état altéré",
-     "p": "Après deux ou trois pertes, ta chimie cérébrale change — le besoin de te refaire prend le pas sur le plan. Les joueurs de poker appellent ça le tilt, et ils le gèrent structurellement, pas à la volonté : quand une limite est atteinte, la session s'arrête. Aucune exception, pas de « juste un dernier trade »."
+     "p": "Après deux ou trois pertes, ta chimie cérébrale change - le besoin de te refaire prend le pas sur le plan. Les joueurs de poker appellent ça le tilt, et ils le gèrent structurellement, pas à la volonté : quand une limite est atteinte, la session s'arrête. Aucune exception, pas de « juste un dernier trade »."
     },
     {
      "h": "La limite de perte journalière",
@@ -275,7 +275,7 @@
     },
     {
      "h": "Rends-la mécanique",
-     "p": "Une règle dont tu dois te souvenir en plein tilt échouera. Écris la limite dans ton journal, dis-le à quelqu'un, mets une alarme — n'importe quoi qui fasse de l'arrêt le comportement par défaut plutôt qu'un choix. La constance ici vaut plus que n'importe quel indicateur que tu apprendras."
+     "p": "Une règle dont tu dois te souvenir en plein tilt échouera. Écris la limite dans ton journal, dis-le à quelqu'un, mets une alarme - n'importe quoi qui fasse de l'arrêt le comportement par défaut plutôt qu'un choix. La constance ici vaut plus que n'importe quel indicateur que tu apprendras."
     }
    ],
    "quiz": [
@@ -314,15 +314,15 @@
    "cards": [
     {
      "h": "Trois positions, un seul trade",
-     "p": "Long BTC, long ETH et long SOL, ça semble diversifié. Ça ne l'est pas : en période de stress, les corrélations crypto montent à presque 1 — tout chute ensemble. Tu ne tiens pas trois trades ; tu tiens un seul trade en taille triple, avec une surface de liquidation triple."
+     "p": "Long BTC, long ETH et long SOL, ça semble diversifié. Ça ne l'est pas : en période de stress, les corrélations crypto montent à presque 1 - tout chute ensemble. Tu ne tiens pas trois trades ; tu tiens un seul trade en taille triple, avec une surface de liquidation triple."
     },
     {
      "h": "La vraie diversification en crypto est rare",
-     "p": "En crypto, presque tout est un pari à levier sur la même marée (le Bitcoin et la liquidité mondiale). Certaines paires se décorrèlent par temps calme — et se recorrèlent exactement quand ça fait mal. Suppose corrélation = 1 dans tes calculs de risque et tu ne seras jamais surpris."
+     "p": "En crypto, presque tout est un pari à levier sur la même marée (le Bitcoin et la liquidité mondiale). Certaines paires se décorrèlent par temps calme - et se recorrèlent exactement quand ça fait mal. Suppose corrélation = 1 dans tes calculs de risque et tu ne seras jamais surpris."
     },
     {
      "h": "Compte ton exposition TOTALE",
-     "p": "Ta règle de risque par trade doit s'appliquer à la SOMME des positions corrélées. Trois longs à 1% de risque sur les majeures, c'est un pari à 3% sur un seul scénario. Soit tu réduis chaque taille, soit tu assumes et nommes la concentration — mais ne l'appelle jamais diversification."
+     "p": "Ta règle de risque par trade doit s'appliquer à la SOMME des positions corrélées. Trois longs à 1% de risque sur les majeures, c'est un pari à 3% sur un seul scénario. Soit tu réduis chaque taille, soit tu assumes et nommes la concentration - mais ne l'appelle jamais diversification."
     }
    ],
    "quiz": [
@@ -355,7 +355,7 @@
     }
    ],
    "try": {
-    "p": "Vois à quel point les majeures bougent réellement ensemble — la matrice de corrélation en direct le rend viscéral.",
+    "p": "Vois à quel point les majeures bougent réellement ensemble - la matrice de corrélation en direct le rend viscéral.",
     "label": "Matrice de corrélation →"
    }
   },
@@ -365,7 +365,7 @@
    "cards": [
     {
      "h": "Ton edge vit dans une poignée de trades",
-     "p": "Relis n'importe quel journal profitable et un schéma apparaît : l'essentiel du profit vient d'une minorité de setups de haute qualité, et l'essentiel des pertes du remplissage — trades d'ennui, presque-setups, entrées de revanche. L'amélioration de performance la plus rapide, c'est de supprimer le remplissage."
+     "p": "Relis n'importe quel journal profitable et un schéma apparaît : l'essentiel du profit vient d'une minorité de setups de haute qualité, et l'essentiel des pertes du remplissage - trades d'ennui, presque-setups, entrées de revanche. L'amélioration de performance la plus rapide, c'est de supprimer le remplissage."
     },
     {
      "h": "Définis le A+ avant de voir le graphique",
@@ -373,7 +373,7 @@
     },
     {
      "h": "L'ennui coûte cher",
-     "p": "Le marché punit le besoin d'action. Être flat est une position — souvent la meilleure. Les pros décrivent leur métier comme de l'attente ; les amateurs le décrivent comme du trading. La différence se voit directement dans les maths d'espérance apprises en r3."
+     "p": "Le marché punit le besoin d'action. Être flat est une position - souvent la meilleure. Les pros décrivent leur métier comme de l'attente ; les amateurs le décrivent comme du trading. La différence se voit directement dans les maths d'espérance apprises en r3."
     }
    ],
    "quiz": [
@@ -412,11 +412,11 @@
    "cards": [
     {
      "h": "Les entrées n'ont pas à être tout ou rien",
-     "p": "Entrer par paliers, c'est construire une position en plusieurs parts — un tiers au marché, un tiers à un meilleur niveau, un tiers sur confirmation. Tu échanges un peu de précision sur le prix moyen contre de la flexibilité, et aucune exécution isolée ne décide du trade."
+     "p": "Entrer par paliers, c'est construire une position en plusieurs parts - un tiers au marché, un tiers à un meilleur niveau, un tiers sur confirmation. Tu échanges un peu de précision sur le prix moyen contre de la flexibilité, et aucune exécution isolée ne décide du trade."
     },
     {
      "h": "Le piège de la martingale",
-     "p": "Renforcer une thèse GAGNANTE à des niveaux planifiés est une stratégie. Doubler sur un trade PERDANT pour baisser ton prix moyen — la martingale — c'est comme ça que les comptes meurent : ta taille est maximale exactement quand tu as le plus tort. La différence, c'est si les ajouts étaient planifiés avant l'entrée."
+     "p": "Renforcer une thèse GAGNANTE à des niveaux planifiés est une stratégie. Doubler sur un trade PERDANT pour baisser ton prix moyen - la martingale - c'est comme ça que les comptes meurent : ta taille est maximale exactement quand tu as le plus tort. La différence, c'est si les ajouts étaient planifiés avant l'entrée."
     },
     {
      "h": "Sortir par paliers reflète l'entrée",
@@ -459,11 +459,11 @@
    "cards": [
     {
      "h": "La ruine est une probabilité calculable",
-     "p": "Avec un taux de réussite, un R:R et un risque par trade, la probabilité que ton compte atteigne un jour un drawdown fatal se calcule — c'est le risque de ruine. Le constat brutal : à risque élevé par trade, même une stratégie réellement profitable porte une FORTE probabilité de ruine avant que l'edge ne paie."
+     "p": "Avec un taux de réussite, un R:R et un risque par trade, la probabilité que ton compte atteigne un jour un drawdown fatal se calcule - c'est le risque de ruine. Le constat brutal : à risque élevé par trade, même une stratégie réellement profitable porte une FORTE probabilité de ruine avant que l'edge ne paie."
     },
     {
      "h": "Même edge, destins différents",
-     "p": "Une stratégie à 50% de réussite et 1:2 à 2% de risque a une probabilité de ruine quasi nulle. La même stratégie à 15% de risque finira, avec forte probabilité, par croiser une série fatale. La stratégie n'a pas changé — seule la mise a changé. La survie est une propriété du dimensionnement, pas du talent."
+     "p": "Une stratégie à 50% de réussite et 1:2 à 2% de risque a une probabilité de ruine quasi nulle. La même stratégie à 15% de risque finira, avec forte probabilité, par croiser une série fatale. La stratégie n'a pas changé - seule la mise a changé. La survie est une propriété du dimensionnement, pas du talent."
     },
     {
      "h": "Fais tourner tes propres chiffres",
@@ -500,7 +500,7 @@
     }
    ],
    "try": {
-    "p": "Entre ton vrai taux de réussite et ton R:R dans le calculateur et bouge le curseur de risque — regarde tes chances de ruine évoluer.",
+    "p": "Entre ton vrai taux de réussite et ton R:R dans le calculateur et bouge le curseur de risque - regarde tes chances de ruine évoluer.",
     "label": "Calculateur de risque de ruine →"
    }
   },
@@ -510,7 +510,7 @@
    "cards": [
     {
      "h": "Les pilotes ne font pas confiance à leur mémoire. Toi non plus.",
-     "p": "Sous stress, les humains sautent des étapes — c'est pour ça que l'aviation fonctionne avec des checklists. Une checklist pré-trade externalise ta discipline : cinq questions répondues par écrit avant toute entrée, à chaque fois, surtout quand le setup semble urgent."
+     "p": "Sous stress, les humains sautent des étapes - c'est pour ça que l'aviation fonctionne avec des checklists. Une checklist pré-trade externalise ta discipline : cinq questions répondues par écrit avant toute entrée, à chaque fois, surtout quand le setup semble urgent."
     },
     {
      "h": "Les cinq questions",
@@ -518,7 +518,7 @@
     },
     {
      "h": "L'urgence est l'ennemie de la liste",
-     "p": "Les trades qui ont le plus besoin de la checklist sont ceux qui semblent trop urgents pour elle — le breakout vertical, le setup de revanche. Si un trade ne peut pas attendre soixante secondes pour cinq questions, ce n'est pas un trade ; c'est une impulsion avec un graphique en pièce jointe."
+     "p": "Les trades qui ont le plus besoin de la checklist sont ceux qui semblent trop urgents pour elle - le breakout vertical, le setup de revanche. Si un trade ne peut pas attendre soixante secondes pour cinq questions, ce n'est pas un trade ; c'est une impulsion avec un graphique en pièce jointe."
     }
    ],
    "quiz": [
@@ -557,15 +557,15 @@
    "cards": [
     {
      "h": "Le rituel hebdomadaire",
-     "p": "Une fois par semaine, relis chaque trade comme un coach qui revoit le match : l'entrée était-elle conforme au plan ? Et la sortie ? Quelle règle a été enfreinte, et combien ça a coûté ? Le but n'est pas l'auto-flagellation — c'est de trouver LA fuite répétée qui coûte le plus."
+     "p": "Une fois par semaine, relis chaque trade comme un coach qui revoit le match : l'entrée était-elle conforme au plan ? Et la sortie ? Quelle règle a été enfreinte, et combien ça a coûté ? Le but n'est pas l'auto-flagellation - c'est de trouver LA fuite répétée qui coûte le plus."
     },
     {
      "h": "Découpe les données",
-     "p": "Regroupe tes trades : par type de setup, par jour de la semaine, par session, par coin, par état émotionnel si tu le notes. Les fuites se cachent dans les agrégats et sautent aux yeux dans les découpages — les trades du dimanche soir qui perdent, un seul setup qui porte tout, les longs qui surperforment les shorts 3 contre 1."
+     "p": "Regroupe tes trades : par type de setup, par jour de la semaine, par session, par coin, par état émotionnel si tu le notes. Les fuites se cachent dans les agrégats et sautent aux yeux dans les découpages - les trades du dimanche soir qui perdent, un seul setup qui porte tout, les longs qui surperforment les shorts 3 contre 1."
     },
     {
      "h": "Élimine une fuite par semaine",
-     "p": "Ne corrige pas tout d'un coup. Choisis le schéma le plus coûteux, écris une règle contre lui, et vérifie la semaine suivante si elle a tenu. Composer de petites améliorations de process, c'est exactement comme composer du capital — lent, ennuyeux et déraisonnablement puissant."
+     "p": "Ne corrige pas tout d'un coup. Choisis le schéma le plus coûteux, écris une règle contre lui, et vérifie la semaine suivante si elle a tenu. Composer de petites améliorations de process, c'est exactement comme composer du capital - lent, ennuyeux et déraisonnablement puissant."
     }
    ],
    "quiz": [
@@ -598,7 +598,7 @@
     }
    ],
    "try": {
-    "p": "Tes paper trades alimentent déjà le journal analytique — ouvre-le et trouve ton schéma le plus coûteux.",
+    "p": "Tes paper trades alimentent déjà le journal analytique - ouvre-le et trouve ton schéma le plus coûteux.",
     "label": "Journal de trading →"
    }
   }

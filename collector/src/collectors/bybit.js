@@ -34,7 +34,7 @@ export class BybitCollector extends BaseCollector {
       if (top.length) this.subSymbols = top;
       log.info('[bybit] subscribing to top symbols', { count: this.subSymbols.length });
     } catch (e) {
-      log.warn('[bybit] failed to load tickers — using fallback symbol list', { e: String(e) });
+      log.warn('[bybit] failed to load tickers - using fallback symbol list', { e: String(e) });
     }
   }
 

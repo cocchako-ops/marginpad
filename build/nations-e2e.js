@@ -1,4 +1,4 @@
-// nations-e2e.js — proof for the NATIONS frames (The Vault, 2026-09-05): catalogue, gallery, previews, picker, try-on.
+// nations-e2e.js - proof for the NATIONS frames (The Vault, 2026-09-05): catalogue, gallery, previews, picker, try-on.
 //   node build/nations-e2e.js   (production; run after `npm run deploy`)
 const { withBrowser, newPage } = require('./e2e-browser.js');
 const fs = require('fs'), path = require('path');
@@ -6,7 +6,7 @@ const BASE = (process.argv.find(a => a.startsWith('--url=')) || '--url=https://m
 const OUT = path.join(__dirname, 'pt-shots'); fs.mkdirSync(OUT, { recursive: true });
 const wait = ms => new Promise(r => setTimeout(r, ms));
 let pass = 0, fail = 0; const fails = [];
-function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK   ' + name); } else { fail++; fails.push(name + (detail ? ' — ' + detail : '')); console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); } }
+function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK   ' + name); } else { fail++; fails.push(name + (detail ? ' - ' + detail : '')); console.log('  FAIL ' + name + (detail ? ' - ' + detail : '')); } }
 const IDS = ['ng', 'pk', 'us', 'in', 'id', 'rs', 'de', 'tr', 'th', 'ir', 'ph', 'za', 'nl', 'ca', 'pl', 'bd', 'gb', 'br', 'vn', 'ua',
   'et', 'ao', 'sg', 'it', 'ma', 'kw', 'al', 'fr', 'lk', 'ke', 'ro', 'jp', 'au', 'qa', 'bw', 'ye', 'np', 'eg', 'mr', 'ee', 'dz', 'ar', 'mx', 'kr', 'gh', 'sa', 'il', 'se', 'cn', 'ge'];
 (async () => {

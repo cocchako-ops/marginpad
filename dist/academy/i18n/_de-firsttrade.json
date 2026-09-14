@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Ein Trade sind drei Antworten",
-     "p": "Bevor du das Order-Ticket anfasst, müssen drei Fragen beantwortet sein: welche Richtung, bei welchem Preis du widerlegt bist und wie groß die Position ist. Richtung allein ist geraten. Richtung plus Falsch-Preis, aber ohne Größe, ist unfertig. Fehlt eine der drei, hast du noch keinen Trade — du hast einen Wunsch."
+     "p": "Bevor du das Order-Ticket anfasst, müssen drei Fragen beantwortet sein: welche Richtung, bei welchem Preis du widerlegt bist und wie groß die Position ist. Richtung allein ist geraten. Richtung plus Falsch-Preis, aber ohne Größe, ist unfertig. Fehlt eine der drei, hast du noch keinen Trade - du hast einen Wunsch."
     },
     {
      "h": "Richtung: long oder short",
-     "p": "Long heißt, du gewinnst, wenn der Preis steigt, und verlierst, wenn er fällt. Short ist das Spiegelbild: Du gewinnst, wenn er fällt. Bei Futures liegt zwischen beiden ein Klick, und keins von beiden ist das sicherere. Sag deine Richtung als schlichten Satz — long BTC — bevor irgendetwas anderes kommt, denn jedes weitere Feld auf dem Ticket hängt davon ab."
+     "p": "Long heißt, du gewinnst, wenn der Preis steigt, und verlierst, wenn er fällt. Short ist das Spiegelbild: Du gewinnst, wenn er fällt. Bei Futures liegt zwischen beiden ein Klick, und keins von beiden ist das sicherere. Sag deine Richtung als schlichten Satz - long BTC - bevor irgendetwas anderes kommt, denn jedes weitere Feld auf dem Ticket hängt davon ab."
     },
     {
      "h": "Invalidierung: wo du falsch liegst",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Margin, Notional, Menge",
-     "p": "Drei Zahlen beschreiben eine Position. Die Menge ist, wie viel vom Coin du kontrollierst, sagen wir 0.02 BTC. Das Notional ist diese Menge in Dollar: bei $50,000 pro BTC sind 0.02 BTC ein Notional von $1,000. Die Margin ist das Geld, das tatsächlich aus deinem Guthaben gesperrt wird — bei 10x Hebel auf dieser Position $100. Gewinn und Verlust folgen dem Notional, nie der Margin."
+     "p": "Drei Zahlen beschreiben eine Position. Die Menge ist, wie viel vom Coin du kontrollierst, sagen wir 0.02 BTC. Das Notional ist diese Menge in Dollar: bei $50,000 pro BTC sind 0.02 BTC ein Notional von $1,000. Die Margin ist das Geld, das tatsächlich aus deinem Guthaben gesperrt wird - bei 10x Hebel auf dieser Position $100. Gewinn und Verlust folgen dem Notional, nie der Margin."
     },
     {
      "h": "Was der Hebel wirklich verändert",
@@ -123,7 +123,7 @@
     },
     {
      "h": "Weiterer Stop heißt kleinere Größe",
-     "p": "Dieselben $50 Risiko kaufen eine $2,500-Position, wenn der Stop 2% entfernt ist, aber nur eine $1,000-Position bei 5%, denn $50 / 0.05 = $1,000. Das ist der Zielkonflikt, den niemand erwähnt: Ein Stop, der zur Beruhigung weit weg liegt, kostet dich Größe. Beide Versionen verlieren exakt $50, wenn du falsch liegst — und genau darum geht es."
+     "p": "Dieselben $50 Risiko kaufen eine $2,500-Position, wenn der Stop 2% entfernt ist, aber nur eine $1,000-Position bei 5%, denn $50 / 0.05 = $1,000. Das ist der Zielkonflikt, den niemand erwähnt: Ein Stop, der zur Beruhigung weit weg liegt, kostet dich Größe. Beide Versionen verlieren exakt $50, wenn du falsch liegst - und genau darum geht es."
     }
    ],
    "quiz": [
@@ -170,7 +170,7 @@
     },
     {
      "h": "Setz ihn selbst",
-     "prompt": "Das ist ein Long. Tippe dorthin, wo der Stop-Loss hingehört — knapp unter das Swing-Tief.",
+     "prompt": "Das ist ein Long. Tippe dorthin, wo der Stop-Loss hingehört - knapp unter das Swing-Tief.",
      "p": "Bevor du dem Feld vertraust, beweise, dass du das Level kennst. Ein Tipp."
     },
     {
@@ -222,12 +222,12 @@
     },
     {
      "h": "Das Verhältnis, das deine zwei Linien ergeben",
-     "p": "Dein Stop und dein Ziel legen ein Verhältnis fest, bevor der Trade beginnt. Einstieg $50,000, Stop $49,000, Ziel $52,000 riskiert $1,000, um $2,000 zu machen — ein Chance-Risiko-Verhältnis von 2:1. Bei 2:1 kommst du vor Gebühren auf null heraus, wenn du einen von drei Trades gewinnst. Das ist Arithmetik, kein Versprechen. Nichts sagt, dass das Ziel je erreicht wird. Prüf das Verhältnis, bevor du klickst."
+     "p": "Dein Stop und dein Ziel legen ein Verhältnis fest, bevor der Trade beginnt. Einstieg $50,000, Stop $49,000, Ziel $52,000 riskiert $1,000, um $2,000 zu machen - ein Chance-Risiko-Verhältnis von 2:1. Bei 2:1 kommst du vor Gebühren auf null heraus, wenn du einen von drei Trades gewinnst. Das ist Arithmetik, kein Versprechen. Nichts sagt, dass das Ziel je erreicht wird. Prüf das Verhältnis, bevor du klickst."
     }
    ],
    "quiz": [
     {
-     "q": "Einstieg $50,000, Stop $49,000, Ziel $52,000 — das Verhältnis ist…",
+     "q": "Einstieg $50,000, Stop $49,000, Ziel $52,000 - das Verhältnis ist…",
      "o": [
       "1:1",
       "1:2",
@@ -265,7 +265,7 @@
     },
     {
      "h": "Einstiegspreis und Mark Price",
-     "p": "Der Einstieg ist der Durchschnittspreis, zu dem du tatsächlich gefüllt wurdest, vor Gebühren. Der Mark Price ist der faire Referenzpreis der Börse, mit dem deine Position bewertet und die Liquidierung entschieden wird — meist an einen breiteren Index gebunden statt an den letzten Trade in einem einzelnen Buch. Das ist Absicht: Es macht es viel schwerer, einen einzelnen ausgerissenen Preis gegen dich zu verwenden."
+     "p": "Der Einstieg ist der Durchschnittspreis, zu dem du tatsächlich gefüllt wurdest, vor Gebühren. Der Mark Price ist der faire Referenzpreis der Börse, mit dem deine Position bewertet und die Liquidierung entschieden wird - meist an einen breiteren Index gebunden statt an den letzten Trade in einem einzelnen Buch. Das ist Absicht: Es macht es viel schwerer, einen einzelnen ausgerissenen Preis gegen dich zu verwenden."
     },
     {
      "h": "Unrealisiert heißt: noch nicht deins",
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Drei Antworten, dann das Ticket",
-     "p": "Long BTC, weil der Preis $50,000 gehalten hat. Falsch unter $49,000 — das ist die Invalidierung, und sie liegt exakt 2% entfernt. Risiko $50, das Notional ist also $50 / 0.02 = $2,500, und bei 10x sperrt das $250 Margin. Drei Antworten, entschieden und aufgeschrieben, bevor ein einziges Feld auf dem Ticket angefasst wurde."
+     "p": "Long BTC, weil der Preis $50,000 gehalten hat. Falsch unter $49,000 - das ist die Invalidierung, und sie liegt exakt 2% entfernt. Risiko $50, das Notional ist also $50 / 0.02 = $2,500, und bei 10x sperrt das $250 Margin. Drei Antworten, entschieden und aufgeschrieben, bevor ein einziges Feld auf dem Ticket angefasst wurde."
     },
     {
      "h": "Das Ticket ausfüllen",
-     "p": "Seite Kauf. Ordertyp Limit, Preis $50,000, also zahlst du die Maker-Gebühr und akzeptierst, dass sie vielleicht nie füllt. Größe $2,500 Notional, Hebel 10x. Tipp $49,000 ins Stop-Loss-Feld und $52,000 ins Take-Profit-Feld, bevor du abschickst — dieses Ziel steht 2:1 zu deinem Risiko. Lies das ganze Ticket einmal zurück, dann schick es ab."
+     "p": "Seite Kauf. Ordertyp Limit, Preis $50,000, also zahlst du die Maker-Gebühr und akzeptierst, dass sie vielleicht nie füllt. Größe $2,500 Notional, Hebel 10x. Tipp $49,000 ins Stop-Loss-Feld und $52,000 ins Take-Profit-Feld, bevor du abschickst - dieses Ziel steht 2:1 zu deinem Risiko. Lies das ganze Ticket einmal zurück, dann schick es ab."
     },
     {
      "h": "Nach dem Fill: nichts tun",

@@ -1,5 +1,5 @@
 /* Injects the Yandex.Metrica counter (110941944) right after <head> in every dist/*.html (idempotent).
-   Yandex loves sites it can "see" through Metrica — helps Yandex indexing/ranking + gives session replay (Webvisor).
+   Yandex loves sites it can "see" through Metrica - helps Yandex indexing/ranking + gives session replay (Webvisor).
    Mirrors add-gtag.js. Runs in build.js; also mirrored into gen-home-live.js so quick homepage deploys keep it. */
 const fs = require('fs'), path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');

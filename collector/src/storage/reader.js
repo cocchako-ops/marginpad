@@ -1,5 +1,5 @@
 // Reader worker thread. Owns its own read-only SQLite connection and runs the read queries that the API
-// serves, so a slow whole-day aggregate can no longer pause the main thread — the thread that reads the
+// serves, so a slow whole-day aggregate can no longer pause the main thread - the thread that reads the
 // exchange websockets. The main thread talks to it through storage.async (see ./index.js).
 import { parentPort, workerData } from 'node:worker_threads';
 import { createSqliteStorage } from './sqlite.js';

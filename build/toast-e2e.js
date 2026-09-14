@@ -1,9 +1,9 @@
 /* One notification channel E2E (2026-09-10).
-   Owner: "there are two versions of the popups and one crosses the other — move everything to the side ones,
+   Owner: "there are two versions of the popups and one crosses the other - move everything to the side ones,
    and let their frame be the colour/theme of the user's level."
 
-   Measured before: the side stack (#mpxpT) sat at bottom:16px, UNDER the phone tab bar (.mpbn) — a +15 XP card
-   printed over TRADES and CHAT — while every other notice was a separate bottom-CENTRE card that landed on top
+   Measured before: the side stack (#mpxpT) sat at bottom:16px, UNDER the phone tab bar (.mpbn) - a +15 XP card
+   printed over TRADES and CHAT - while every other notice was a separate bottom-CENTRE card that landed on top
    of the trade form.
 
    This proves: every notification renders in the ONE side stack, nothing lands over the form or the tab bar,
@@ -112,7 +112,7 @@ const rgbOf = (hex) => { const h = hex.replace('#', ''); return 'rgb(' + parseIn
           chk('the toast frame wears the ' + k + ' colour', String(r.border).indexOf(want.split(',')[0].trim()) >= 0 && r.col === hex, { level: k, want: hex, border: r.border });
         }
         // A notice floats over the trade panel on a wide screen. It may cover the Open button for a few seconds,
-        // but it must never EAT the click — the host is see-through and only a card with a button takes events.
+        // but it must never EAT the click - the host is see-through and only a card with a button takes events.
         const clicks = await EV(async () => {
           window.mpToast({ msg: 'plain notice', ms: 9000, key: 'p1' });
           window.mpToast({ msg: 'with a button', ms: 9000, key: 'p2', dismissible: true });
@@ -185,6 +185,6 @@ const rgbOf = (hex) => { const h = hex.replace('#', ''); return 'rgb(' + parseIn
     try { await post('/api/admin/e2euser', { uid: uidE, op: 'rm' }); } catch (e) {}
   }
   const bad = out.filter(l => l.slice(0, 4) === 'FAIL').length;
-  console.log('\nUID ' + uidE + ' — pass ' + (out.length - bad) + ' fail ' + bad);
+  console.log('\nUID ' + uidE + ' - pass ' + (out.length - bad) + ' fail ' + bad);
   process.exit(bad ? 1 : 0);
 })();

@@ -9,7 +9,7 @@
    "cards": [
     {
      "h": "Trading harga tanpa memiliki koin",
-     "p": "Kontrak futures adalah kesepakatan yang mengikuti harga sebuah koin. Kamu tak pernah memiliki Bitcoin-nya — kamu memegang posisi yang untung atau rugi persis mengikuti pergerakan harga. Versi favorit kripto adalah perpetual futures (perp), tanpa tanggal kedaluwarsa: bisa dipegang selama marginmu bertahan."
+     "p": "Kontrak futures adalah kesepakatan yang mengikuti harga sebuah koin. Kamu tak pernah memiliki Bitcoin-nya - kamu memegang posisi yang untung atau rugi persis mengikuti pergerakan harga. Versi favorit kripto adalah perpetual futures (perp), tanpa tanggal kedaluwarsa: bisa dipegang selama marginmu bertahan."
     },
     {
      "h": "Long dan short",
@@ -17,7 +17,7 @@
     },
     {
      "h": "Kenapa perp mendominasi kripto",
-     "p": "Perpetual futures adalah produk paling banyak ditradingkan di kripto — volume harian perp mengerdilkan spot. Populer justru karena dua fitur yang membuatnya berbahaya: leverage dan kemampuan short. Semua di kursus ini ada karena apa yang akan kamu pelajari di dua pelajaran berikutnya."
+     "p": "Perpetual futures adalah produk paling banyak ditradingkan di kripto - volume harian perp mengerdilkan spot. Populer justru karena dua fitur yang membuatnya berbahaya: leverage dan kemampuan short. Semua di kursus ini ada karena apa yang akan kamu pelajari di dua pelajaran berikutnya."
     }
    ],
    "quiz": [
@@ -25,7 +25,7 @@
      "q": "Saat membeli perpetual futures, kamu memiliki…",
      "o": [
       "Koin aslinya",
-      "Posisi yang mengikuti harga — tanpa koin",
+      "Posisi yang mengikuti harga - tanpa koin",
       "Sebagian kecil kepemilikan exchange itu sendiri",
       "Wallet"
      ]
@@ -56,7 +56,7 @@
    "cards": [
     {
      "h": "Margin dan pengali",
-     "p": "Leverage memungkinkanmu mengendalikan posisi lebih besar dari uangmu. Setor margin $100 di leverage 10× dan kamu mengendalikan posisi $1,000. Setiap 1% pergerakan harga, posisimu untung atau rugi $10 — yaitu 10% dari uangMU. Pengali berlaku untuk rugi persis seperti untuk untung."
+     "p": "Leverage memungkinkanmu mengendalikan posisi lebih besar dari uangmu. Setor margin $100 di leverage 10× dan kamu mengendalikan posisi $1,000. Setiap 1% pergerakan harga, posisimu untung atau rugi $10 - yaitu 10% dari uangMU. Pengali berlaku untuk rugi persis seperti untuk untung."
     },
     {
      "h": "Rasakan: geser leverage-nya",
@@ -65,7 +65,7 @@
     },
     {
      "h": "Matematika jujur 100×",
-     "p": "Di leverage 100×, pergerakan 1% melawanmu menghapus 100% margin. Bitcoin bergerak 1% secara rutin — beberapa kali sehari. Itu bukan crash pasar; itu noise latar. Leverage tinggi tidak membuat strategi lebih baik — hanya memampatkan waktu sampai goyangan normal mengeluarkanmu."
+     "p": "Di leverage 100×, pergerakan 1% melawanmu menghapus 100% margin. Bitcoin bergerak 1% secara rutin - beberapa kali sehari. Itu bukan crash pasar; itu noise latar. Leverage tinggi tidak membuat strategi lebih baik - hanya memampatkan waktu sampai goyangan normal mengeluarkanmu."
     }
    ],
    "quiz": [
@@ -108,7 +108,7 @@
    "cards": [
     {
      "h": "Apa itu likuidasi",
-     "p": "Saat posisi ber-leverage kehilangan hampir semua marginnya, exchange menutupnya paksa demi melindungi diri — itulah likuidasi. Posisimu hilang, marginmu hilang, dan tak ada pemulihan meski harga memantul sedetik kemudian. Ini harga terpenting di layarmu."
+     "p": "Saat posisi ber-leverage kehilangan hampir semua marginnya, exchange menutupnya paksa demi melindungi diri - itulah likuidasi. Posisimu hilang, marginmu hilang, dan tak ada pemulihan meski harga memantul sedetik kemudian. Ini harga terpenting di layarmu."
     },
     {
      "h": "Giliranmu: buat jadi aman",
@@ -117,7 +117,7 @@
     },
     {
      "h": "\"Nanti juga balik\" tidak berlaku di sini",
-     "p": "Holder spot bisa menahan penurunan 30% dan menunggu bertahun-tahun. Trader futures yang terlikuidasi tidak bisa — posisinya sudah tidak ada. Asimetri inilah PERBEDAAN utama spot dan leverage: spot menghukum yang tidak sabar pelan-pelan, leverage mengeksekusi seketika."
+     "p": "Holder spot bisa menahan penurunan 30% dan menunggu bertahun-tahun. Trader futures yang terlikuidasi tidak bisa - posisinya sudah tidak ada. Asimetri inilah PERBEDAAN utama spot dan leverage: spot menghukum yang tidak sabar pelan-pelan, leverage mengeksekusi seketika."
     }
    ],
    "quiz": [
@@ -126,7 +126,7 @@
      "o": [
       "Otomatis mendapat posisimu kembali di harga sama",
       "Mendapat separuh margin kembali",
-      "Tidak mendapat apa-apa — posisinya sudah hilang",
+      "Tidak mendapat apa-apa - posisinya sudah hilang",
       "Berutang pada exchange"
      ]
     },
@@ -150,7 +150,7 @@
     }
    ],
    "try": {
-    "p": "Hitung harga likuidasi sungguhan: entry, leverage, arah — lihat persis di mana posisi mati.",
+    "p": "Hitung harga likuidasi sungguhan: entry, leverage, arah - lihat persis di mana posisi mati.",
     "label": "Kalkulator Likuidasi →"
    }
   },
@@ -160,15 +160,15 @@
    "cards": [
     {
      "h": "Rumus P&L dalam bahasa sederhana",
-     "p": "Untung atau rugimu = ukuran posisi × persentase pergerakan harga. ROE — return on equity — adalah P&L itu diukur terhadap marginmu. Geser pergerakan harga di bawah dan lihat kedua angka bereaksi di 10× dengan margin $100."
+     "p": "Untung atau rugimu = ukuran posisi × persentase pergerakan harga. ROE - return on equity - adalah P&L itu diukur terhadap marginmu. Geser pergerakan harga di bawah dan lihat kedua angka bereaksi di 10× dengan margin $100."
     },
     {
      "h": "Short bukan kejahatan, dia alat",
-     "p": "Short — untung dari penurunan — awalnya terasa tidak alami. Tapi pasar turun lebih cepat daripada naik (turun pakai lift, naik pakai tangga), dan trader yang hanya bisa long buta di separuh pasar. Di akun paper, latih keduanya sampai tak ada yang terasa istimewa."
+     "p": "Short - untung dari penurunan - awalnya terasa tidak alami. Tapi pasar turun lebih cepat daripada naik (turun pakai lift, naik pakai tangga), dan trader yang hanya bisa long buta di separuh pasar. Di akun paper, latih keduanya sampai tak ada yang terasa istimewa."
     },
     {
      "h": "Biaya dan funding menggerogoti terus",
-     "p": "Setiap buka dan tutup membayar biaya atas nosional, dan perpetual saling menukar pembayaran funding berkala antara long dan short (pelajaran berikutnya). Di leverage tinggi, biaya kecil ini menumpuk jadi angin sakal berarti — satu lagi alasan diam-diam kenapa overtrader kalah."
+     "p": "Setiap buka dan tutup membayar biaya atas nosional, dan perpetual saling menukar pembayaran funding berkala antara long dan short (pelajaran berikutnya). Di leverage tinggi, biaya kecil ini menumpuk jadi angin sakal berarti - satu lagi alasan diam-diam kenapa overtrader kalah."
     }
    ],
    "quiz": [
@@ -196,7 +196,7 @@
       "Hanya marginmu",
       "Ukuran nosional penuh posisi",
       "Hanya profit",
-      "Tidak ada — futures gratis"
+      "Tidak ada - futures gratis"
      ]
     }
    ]
@@ -211,11 +211,11 @@
     },
     {
      "h": "Funding sebagai termometer kerumunan",
-     "p": "Funding positif ekstrem berarti kerumunan berat di long DAN membayar demi hak istimewa itu — secara historis tanda bahaya, karena trade yang penuh sesak terurai dengan kasar. Funding negatif ekstrem menandai short yang penuh sesak, bahan bakar short squeeze."
+     "p": "Funding positif ekstrem berarti kerumunan berat di long DAN membayar demi hak istimewa itu - secara historis tanda bahaya, karena trade yang penuh sesak terurai dengan kasar. Funding negatif ekstrem menandai short yang penuh sesak, bahan bakar short squeeze."
     },
     {
      "h": "Dia menumpuk",
-     "p": "Funding 0.01% per 8 jam terdengar bukan apa-apa — tapi itu sekitar 11% setahun atas nosional, dan di 10× itu beban tahunan tiga digit atas margin. Pemegang posisi yang mengabaikan funding mendapati P&L-nya bocor diam-diam."
+     "p": "Funding 0.01% per 8 jam terdengar bukan apa-apa - tapi itu sekitar 11% setahun atas nosional, dan di 10× itu beban tahunan tiga digit atas margin. Pemegang posisi yang mengabaikan funding mendapati P&L-nya bocor diam-diam."
     }
    ],
    "quiz": [
@@ -232,7 +232,7 @@
      "q": "Funding positif ekstrem biasanya menandakan…",
      "o": [
       "Reli yang dijamin",
-      "Sisi long penuh sesak — risiko squeeze",
+      "Sisi long penuh sesak - risiko squeeze",
       "Periode panjang volatilitas rendah di depan",
       "Gangguan exchange"
      ]
@@ -248,7 +248,7 @@
     }
    ],
    "try": {
-    "p": "Lihat funding live di 160+ pasangan — temukan tarif paling ekstrem sekarang.",
+    "p": "Lihat funding live di 160+ pasangan - temukan tarif paling ekstrem sekarang.",
     "label": "Tarif Funding →"
    }
   },
@@ -258,11 +258,11 @@
    "cards": [
     {
      "h": "Tiga alat, tiga tugas",
-     "p": "Order market tereksekusi seketika dengan apa pun yang ditawarkan order book — kamu membayar spread dan slippage bila ada. Order limit menyebut hargamu dan menunggu. Order stop terpicu saat harga melintasi sebuah level. Gambar di bawah menunjukkan ketiganya hidup di order book."
+     "p": "Order market tereksekusi seketika dengan apa pun yang ditawarkan order book - kamu membayar spread dan slippage bila ada. Order limit menyebut hargamu dan menunggu. Order stop terpicu saat harga melintasi sebuah level. Gambar di bawah menunjukkan ketiganya hidup di order book."
     },
     {
      "h": "Market: kecepatan bayar harga. Limit: harga bayar kesabaran.",
-     "p": "Pakai order market saat masuk atau keluar SEKARANG lebih penting dari harga persis — sadari slippage terburuk saat pergerakan liar. Entry profesional kebanyakan limit: bisa saja tak pernah tereksekusi, tapi kalau iya, di hargamu atau lebih baik, biasanya dengan biaya lebih rendah."
+     "p": "Pakai order market saat masuk atau keluar SEKARANG lebih penting dari harga persis - sadari slippage terburuk saat pergerakan liar. Entry profesional kebanyakan limit: bisa saja tak pernah tereksekusi, tapi kalau iya, di hargamu atau lebih baik, biasanya dengan biaya lebih rendah."
     },
     {
      "h": "Stop: otomasi yang menyelamatkan akun",
@@ -305,11 +305,11 @@
    "cards": [
     {
      "h": "Dua cara menopang posisi",
-     "p": "Margin isolated memagari jumlah tetap untuk satu posisi — kalau terlikuidasi, kamu hanya kehilangan pagar itu. Margin cross membiarkan SELURUH saldo futures menopang setiap posisi — lebih longgar sebelum likuidasi, tapi satu ledakan bisa membawa seluruh akun."
+     "p": "Margin isolated memagari jumlah tetap untuk satu posisi - kalau terlikuidasi, kamu hanya kehilangan pagar itu. Margin cross membiarkan SELURUH saldo futures menopang setiap posisi - lebih longgar sebelum likuidasi, tapi satu ledakan bisa membawa seluruh akun."
     },
     {
      "h": "Kapan masing-masing masuk akal",
-     "p": "Isolated adalah default pemula dan pilihan jujur untuk trade berisiko: kerusakannya sudah ditentukan. Cross cocok untuk portofolio ter-hedge dan trader berpengalaman yang mengelola margin aktif. Memakai cross agar trade buruk hidup lebih lama bukan strategi — itu pemakaman lebih besar."
+     "p": "Isolated adalah default pemula dan pilihan jujur untuk trade berisiko: kerusakannya sudah ditentukan. Cross cocok untuk portofolio ter-hedge dan trader berpengalaman yang mengelola margin aktif. Memakai cross agar trade buruk hidup lebih lama bukan strategi - itu pemakaman lebih besar."
     },
     {
      "h": "Periksa sebelum klik",
@@ -339,7 +339,7 @@
      "q": "Memakai cross untuk menunda trade yang rugi adalah…",
      "o": [
       "Manajemen risiko profesional tingkat tinggi",
-      "Pemakaman lebih besar yang menunggu — bukan strategi",
+      "Pemakaman lebih besar yang menunggu - bukan strategi",
       "Kewajiban dari exchange",
       "Gratis"
      ]
@@ -352,15 +352,15 @@
    "cards": [
     {
      "h": "Dua harga di layar yang sama",
-     "p": "Last price adalah transaksi terbaru di exchange-MU. Mark price adalah campuran nilai wajar dari beberapa exchange plus indeks spot. Berbeda tipis di pasar tenang — dan berarti di pasar liar atau di bursa tipis."
+     "p": "Last price adalah transaksi terbaru di exchange-MU. Mark price adalah campuran nilai wajar dari beberapa exchange plus indeks spot. Berbeda tipis di pasar tenang - dan berarti di pasar liar atau di bursa tipis."
     },
     {
      "h": "Likuidasi memakai mark price",
-     "p": "Exchange melikuidasi berdasarkan MARK, bukan last. Ini melindungimu: satu sumbu manipulasi di satu bursa tak bisa melikuidasi posisi di mana-mana. Ini juga menjelaskan kebingungan klasik — kamu bisa terlikuidasi padahal sumbu di chart-mu tak menyentuh levelmu, karena mark price sampai ke sana."
+     "p": "Exchange melikuidasi berdasarkan MARK, bukan last. Ini melindungimu: satu sumbu manipulasi di satu bursa tak bisa melikuidasi posisi di mana-mana. Ini juga menjelaskan kebingungan klasik - kamu bisa terlikuidasi padahal sumbu di chart-mu tak menyentuh levelmu, karena mark price sampai ke sana."
     },
     {
      "h": "Yang mana yang dipantau",
-     "p": "Keputusan trading: last price (di sanalah order-mu tereksekusi). Matematika bertahan hidup: mark price (itu yang dipakai likuidasi dan P&L belum terealisasi). Platform serius menampilkan keduanya — pelajari di mana platformmu menampilkan mark, dan pasang alarm di situ, bukan di sumbu candle."
+     "p": "Keputusan trading: last price (di sanalah order-mu tereksekusi). Matematika bertahan hidup: mark price (itu yang dipakai likuidasi dan P&L belum terealisasi). Platform serius menampilkan keduanya - pelajari di mana platformmu menampilkan mark, dan pasang alarm di situ, bukan di sumbu candle."
     }
    ],
    "quiz": [
@@ -368,7 +368,7 @@
      "q": "Likuidasi dipicu oleh…",
      "o": [
       "Harga transaksi terakhir di exchange-mu",
-      "Mark price — nilai wajar multi-exchange",
+      "Mark price - nilai wajar multi-exchange",
       "Harga entry-mu",
       "Pembukaan harian"
      ]
@@ -399,7 +399,7 @@
    "cards": [
     {
      "h": "Kenapa likuidasi bukan persis 100 ÷ leverage",
-     "p": "Exchange mensyaratkan penyangga keselamatan — maintenance margin (biasanya sekitar 0.5% nosional) — yang disisihkan setiap saat. Likuidasi menyala saat ekuitasmu jatuh KE penyangga itu, bukan ke nol. Jadi long 10x terlikuidasi sekitar −9.5%, bukan tepat −10%."
+     "p": "Exchange mensyaratkan penyangga keselamatan - maintenance margin (biasanya sekitar 0.5% nosional) - yang disisihkan setiap saat. Likuidasi menyala saat ekuitasmu jatuh KE penyangga itu, bukan ke nol. Jadi long 10x terlikuidasi sekitar −9.5%, bukan tepat −10%."
     },
     {
      "h": "Posisi lebih besar, penyangga lebih besar",
@@ -407,7 +407,7 @@
     },
     {
      "h": "Likuidasi parsial",
-     "p": "Untuk posisi besar banyak exchange melikuidasi per iris — menutup sebagian posisi untuk mengembalikan margin di atas maintenance, alih-alih meledakkan semuanya sekaligus. Membantu, tapi jangan diandalkan: saat likuidasi parsial menyelamatkanmu, trade-nya sudah gagal."
+     "p": "Untuk posisi besar banyak exchange melikuidasi per iris - menutup sebagian posisi untuk mengembalikan margin di atas maintenance, alih-alih meledakkan semuanya sekaligus. Membantu, tapi jangan diandalkan: saat likuidasi parsial menyelamatkanmu, trade-nya sudah gagal."
     }
    ],
    "quiz": [
@@ -415,7 +415,7 @@
      "q": "Long 10x terlikuidasi kira-kira di…",
      "o": [
       "Tepat −10%, seperti kata rumus leverage sederhana",
-      "Sekitar −9.5% — maintenance margin menyala lebih dulu",
+      "Sekitar −9.5% - maintenance margin menyala lebih dulu",
       "−5%",
       "−20%"
      ]
@@ -446,7 +446,7 @@
    "cards": [
     {
      "h": "Trade dimulai setelah entry",
-     "p": "Pemula terobsesi pada entry; profesional mengelola apa yang terjadi setelahnya. Posisi yang hidup adalah rangkaian keputusan: tesisnya masih berlaku? invalidasinya bergeser? ukurannya masih pas? Mengelola bukan mengutak-atik — dia mengeksekusi rencana yang ditulis sebelum entry."
+     "p": "Pemula terobsesi pada entry; profesional mengelola apa yang terjadi setelahnya. Posisi yang hidup adalah rangkaian keputusan: tesisnya masih berlaku? invalidasinya bergeser? ukurannya masih pas? Mengelola bukan mengutak-atik - dia mengeksekusi rencana yang ditulis sebelum entry."
     },
     {
      "h": "Tutup parsial: bayar dirimu sendiri",
@@ -454,7 +454,7 @@
     },
     {
      "h": "Stop di breakeven: trade gratis, hati-hati",
-     "p": "Saat harga sudah bergerak berarti untukmu, memindah stop ke entry membuat trade bebas risiko — secara psikologis tak ternilai. Lakukan terlalu dini dan noise biasa melemparmu dari trade bagus. Beri ruang: breakeven SETELAH target pertama, bukan di menit hijau pertama."
+     "p": "Saat harga sudah bergerak berarti untukmu, memindah stop ke entry membuat trade bebas risiko - secara psikologis tak ternilai. Lakukan terlalu dini dan noise biasa melemparmu dari trade bagus. Beri ruang: breakeven SETELAH target pertama, bukan di menit hijau pertama."
     }
    ],
    "quiz": [
@@ -470,7 +470,7 @@
     {
      "q": "Memindah stop ke breakeven membuat trade…",
      "o": [
-      "Bebas risiko (kecuali gap) — tapi terlalu dini dan noise melemparmu",
+      "Bebas risiko (kecuali gap) - tapi terlalu dini dan noise melemparmu",
       "Dijamin berakhir untung apa pun yang terjadi setelahnya",
       "Ilegal",
       "Lebih ber-leverage"
@@ -479,7 +479,7 @@
     {
      "q": "Waktu yang tepat mengelola posisi adalah…",
      "o": [
-      "Tidak pernah — selalu pasang dan lupakan",
+      "Tidak pernah - selalu pasang dan lupakan",
       "Sesuai rencana yang ditulis SEBELUM entry",
       "Setiap kali posisi mulai terasa menakutkan atau menggairahkan",
       "Setiap 30 detik"
@@ -493,15 +493,15 @@
    "cards": [
     {
      "h": "Mitos: leverage lebih tinggi = profit lebih besar",
-     "p": "Profit datang dari UKURAN posisi dikali pergerakan harga. Leverage hanya menentukan berapa margin yang kamu setor untuk ukuran itu. Posisi $1,000 menghasilkan $30 yang sama pada pergerakan 3% baik di 2x maupun 50x — versi 50x hanya terlikuidasi 25 kali lebih cepat."
+     "p": "Profit datang dari UKURAN posisi dikali pergerakan harga. Leverage hanya menentukan berapa margin yang kamu setor untuk ukuran itu. Posisi $1,000 menghasilkan $30 yang sama pada pergerakan 3% baik di 2x maupun 50x - versi 50x hanya terlikuidasi 25 kali lebih cepat."
     },
     {
      "h": "Mitos: profesional pakai leverage maksimal",
-     "p": "Meja trading profesional rutin memakai leverage efektif satu digit. Tombol 100x ada karena menguntungkan exchange, bukan pengguna. Leverage tinggi adalah alat efisiensi likuiditas untuk hedger dan scalper yang dihitung dalam detik — bukan mesin kekayaan."
+     "p": "Meja trading profesional rutin memakai leverage efektif satu digit. Tombol 100x ada karena menguntungkan exchange, bukan pengguna. Leverage tinggi adalah alat efisiensi likuiditas untuk hedger dan scalper yang dihitung dalam detik - bukan mesin kekayaan."
     },
     {
      "h": "Pemakaian jujur leverage",
-     "p": "Leverage membuatmu menyimpan lebih sedikit modal di exchange (yang bisa diretas, bisa dibekukan) untuk eksposur sama — itu efisiensi modal. Dipakai dengan ukuran posisi mungil, dia sah. Dipakai memaksimalkan ukuran, dia mengubah volatilitas normal jadi kehancuran pasti — dengan pengatur waktu."
+     "p": "Leverage membuatmu menyimpan lebih sedikit modal di exchange (yang bisa diretas, bisa dibekukan) untuk eksposur sama - itu efisiensi modal. Dipakai dengan ukuran posisi mungil, dia sah. Dipakai memaksimalkan ukuran, dia mengubah volatilitas normal jadi kehancuran pasti - dengan pengatur waktu."
     }
    ],
    "quiz": [
@@ -509,7 +509,7 @@
      "q": "Dua trader memegang posisi $1,000 sama; satu 2x, satu 50x. Pergerakan menguntungkan 3% membayar…",
      "o": [
       "Trader 50x dua puluh lima kali lebih banyak uang",
-      "Keduanya ~$30 sama — leverage tak mengubah ukuran",
+      "Keduanya ~$30 sama - leverage tak mengubah ukuran",
       "Trader 2x lebih banyak",
       "Tidak ada di 2x"
      ]
@@ -540,11 +540,11 @@
    "cards": [
     {
      "h": "Setiap angka, terurai",
-     "p": "Tiket posisi menampilkan: arah dan leverage (LONG 10x), harga entry, mark price, ukuran atau nosional, margin, harga likuidasi, P&L belum terealisasi, dan ROE. Sekarang kamu mengenal semuanya. Kalau ada angka di tiket hidup yang membingungkan, jangan tambah ukuran — uraikan dulu."
+     "p": "Tiket posisi menampilkan: arah dan leverage (LONG 10x), harga entry, mark price, ukuran atau nosional, margin, harga likuidasi, P&L belum terealisasi, dan ROE. Sekarang kamu mengenal semuanya. Kalau ada angka di tiket hidup yang membingungkan, jangan tambah ukuran - uraikan dulu."
     },
     {
      "h": "Dua angka terpenting",
-     "p": "Harga likuidasi (seberapa jauh kematian?) dan ukuran posisi (berapa rugiku per pergerakan 1%?). P&L dan ROE adalah turunan — keduanya mengikuti dua input itu. Trader yang hanya menatap angka hijau/merah mengelola perasaan; yang menatap jarak likuidasi dan ukuran mengelola risiko."
+     "p": "Harga likuidasi (seberapa jauh kematian?) dan ukuran posisi (berapa rugiku per pergerakan 1%?). P&L dan ROE adalah turunan - keduanya mengikuti dua input itu. Trader yang hanya menatap angka hijau/merah mengelola perasaan; yang menatap jarak likuidasi dan ukuran mengelola risiko."
     },
     {
      "h": "Latihan kelulusan",
@@ -581,7 +581,7 @@
     }
    ],
    "try": {
-    "p": "Buka posisi paper dan baca setiap kolom di tiket — entry, ukuran, margin, likuidasi, jarak. Sepuluh detik, nol kebingungan.",
+    "p": "Buka posisi paper dan baca setiap kolom di tiket - entry, ukuran, margin, likuidasi, jarak. Sepuluh detik, nol kebingungan.",
     "label": "Paper Trade →"
    }
   }

@@ -9,19 +9,19 @@
    "cards": [
     {
      "h": "Een positie is een open weddenschap",
-     "p": "Voordat je handelt sta je flat: je bezit niets en er kan je niets gebeuren. Op het moment dat je koopt of verkoopt heb je een positie — een open weddenschap met een richting en een grootte. Die blijft open, wint en verliest bij elke prijsbeweging, tot je hem sluit. Traders zeggen 'ik zit in een positie' zoals jij zou zeggen 'ik heb hier geld op staan'."
+     "p": "Voordat je handelt sta je flat: je bezit niets en er kan je niets gebeuren. Op het moment dat je koopt of verkoopt heb je een positie - een open weddenschap met een richting en een grootte. Die blijft open, wint en verliest bij elke prijsbeweging, tot je hem sluit. Traders zeggen 'ik zit in een positie' zoals jij zou zeggen 'ik heb hier geld op staan'."
     },
     {
      "h": "Long betekent dat je hem hoger wilt",
-     "p": "Long gaan betekent dat je winst maakt als de prijs stijgt. Koop Bitcoin op $60,000, verkoop op $63,000, en je verdiende $3,000 per munt — dat is een long. Er wordt niets geleend en er is niets exotisch aan; het is kopen, met een naam. Bijna iedereen begint hier, omdat het aansluit bij hoe we al over bezit denken. 'Long BTC' betekent simpelweg: ik ben gepositioneerd voor een stijgende prijs."
+     "p": "Long gaan betekent dat je winst maakt als de prijs stijgt. Koop Bitcoin op $60,000, verkoop op $63,000, en je verdiende $3,000 per munt - dat is een long. Er wordt niets geleend en er is niets exotisch aan; het is kopen, met een naam. Bijna iedereen begint hier, omdat het aansluit bij hoe we al over bezit denken. 'Long BTC' betekent simpelweg: ik ben gepositioneerd voor een stijgende prijs."
     },
     {
      "h": "Short wint als de prijs daalt",
-     "p": "Een short is de spiegel. Je verkoopt eerst op een hoge prijs en koopt later terug op een lagere, en het verschil is voor jou. Short op $60,000, terugkopen op $57,000, en je hield $3,000 per munt over terwijl de markt daalde. Bij futures wisselen er helemaal geen munten van eigenaar — je houdt een contract dat uitbetaalt als de prijs daalt. Zo verdienen traders geld in een dalende markt."
+     "p": "Een short is de spiegel. Je verkoopt eerst op een hoge prijs en koopt later terug op een lagere, en het verschil is voor jou. Short op $60,000, terugkopen op $57,000, en je hield $3,000 per munt over terwijl de markt daalde. Bij futures wisselen er helemaal geen munten van eigenaar - je houdt een contract dat uitbetaalt als de prijs daalt. Zo verdienen traders geld in een dalende markt."
     },
     {
      "h": "Grootte maakt de zin af",
-     "p": "Richting alleen is geen positie. 'Long BTC' zegt niets over wat een beweging je kost; 'long BTC, $500' wel. Positiegrootte is het geld dat aan het werk is, en het bepaalt wat elke beweging van 1% waard is: $500 die 1% beweegt is $5, winst of verlies. Beginners ruziën over richting en negeren grootte — precies de helft die de schade bepaalt."
+     "p": "Richting alleen is geen positie. 'Long BTC' zegt niets over wat een beweging je kost; 'long BTC, $500' wel. Positiegrootte is het geld dat aan het werk is, en het bepaalt wat elke beweging van 1% waard is: $500 die 1% beweegt is $5, winst of verlies. Beginners ruziën over richting en negeren grootte - precies de helft die de schade bepaalt."
     }
    ],
    "quiz": [
@@ -44,7 +44,7 @@
      ]
     },
     {
-     "q": "Beiden zijn long BTC — één $200, één $2,000. Een beweging van 1% is waard:",
+     "q": "Beiden zijn long BTC - één $200, één $2,000. Een beweging van 1% is waard:",
      "o": [
       "$2 en $20",
       "$2 voor allebei",
@@ -60,15 +60,15 @@
    "cards": [
     {
      "h": "Bull en bear gaan over richting",
-     "p": "Een bullmarkt is een lange periode van stijgende prijzen; een bearmarkt een lange periode van dalende. De dieren komen van hoe ze aanvallen: een stier gooit zijn horens omhoog, een beer slaat met zijn poot omlaag. Noem jezelf bullish en je verwacht omhoog; bearish, omlaag. Dit zijn trage woorden — ze beschrijven maanden, niet deze middag."
+     "p": "Een bullmarkt is een lange periode van stijgende prijzen; een bearmarkt een lange periode van dalende. De dieren komen van hoe ze aanvallen: een stier gooit zijn horens omhoog, een beer slaat met zijn poot omlaag. Noem jezelf bullish en je verwacht omhoog; bearish, omlaag. Dit zijn trage woorden - ze beschrijven maanden, niet deze middag."
     },
     {
      "h": "Pump en dump gaan over snelheid",
-     "p": "Een pump is een snelle stijging, een dump een snelle daling. Geen van beide zegt iets over het waarom. Let wel op: 'pump and dump' als één uitdrukking benoemt een opzet — een groep koopt stilletjes een kleine munt, promoot hem luid en verkoopt dan aan de kopers die ze aantrokken. De stijging is echt, en de uitstap is van hen, niet van jou."
+     "p": "Een pump is een snelle stijging, een dump een snelle daling. Geen van beide zegt iets over het waarom. Let wel op: 'pump and dump' als één uitdrukking benoemt een opzet - een groep koopt stilletjes een kleine munt, promoot hem luid en verkoopt dan aan de kopers die ze aantrokken. De stijging is echt, en de uitstap is van hen, niet van jou."
     },
     {
      "h": "Correctie, crash, en het verschil",
-     "p": "De gangbare afspraak: een daling van ongeveer 10% vanaf een recente top heet een correctie, en een val van 20% of meer is een bearmarkt. Een crash is geen omvang maar een snelheid — het grootste deel van de val komt in uren of dagen. In crypto is een dag van 10% doodgewoon, dus mensen lenen deze woorden losjes. Vraag om het getal, niet om het zelfstandig naamwoord."
+     "p": "De gangbare afspraak: een daling van ongeveer 10% vanaf een recente top heet een correctie, en een val van 20% of meer is een bearmarkt. Een crash is geen omvang maar een snelheid - het grootste deel van de val komt in uren of dagen. In crypto is een dag van 10% doodgewoon, dus mensen lenen deze woorden losjes. Vraag om het getal, niet om het zelfstandig naamwoord."
     },
     {
      "h": "Deze woorden beschrijven, ze voorspellen nooit",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Marge is jouw geld erin",
-     "p": "Marge is het geld dat je inlegt om een positie aan te houden. Notioneel is de volledige grootte die die positie beheert. Leg $100 marge in om $1,000 aan Bitcoin te beheren, en $100 is je marge, $1,000 je notioneel. Elke fee, elke winst en elk verlies wordt berekend over het notioneel en landt daarna in je marge — precies daarom voelen kleine percentages enorm."
+     "p": "Marge is het geld dat je inlegt om een positie aan te houden. Notioneel is de volledige grootte die die positie beheert. Leg $100 marge in om $1,000 aan Bitcoin te beheren, en $100 is je marge, $1,000 je notioneel. Elke fee, elke winst en elk verlies wordt berekend over het notioneel en landt daarna in je marge - precies daarom voelen kleine percentages enorm."
     },
     {
      "h": "Hefboom is de verhouding",
@@ -119,7 +119,7 @@
     },
     {
      "h": "Liquidatie is de gedwongen uitstap",
-     "p": "Je verliezen komen uit je marge. Als het verlies er bijna alles van heeft opgegeten, sluit de exchange de positie voor je, want het geleende deel moet beschermd worden. Dat is liquidatie. Het is geen waarschuwing — het is het einde van die positie, tegen welke prijs de markt op dat moment ook heeft. Op 10x is ruwweg een beweging van 10% tegen je genoeg."
+     "p": "Je verliezen komen uit je marge. Als het verlies er bijna alles van heeft opgegeten, sluit de exchange de positie voor je, want het geleende deel moet beschermd worden. Dat is liquidatie. Het is geen waarschuwing - het is het einde van die positie, tegen welke prijs de markt op dat moment ook heeft. Op 10x is ruwweg een beweging van 10% tegen je genoeg."
     },
     {
      "h": "Welke staat in de winst",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Marktorder: snelheid boven prijs",
-     "p": "Een marktorder zegt: neem welke prijs er nu ook beschikbaar is. Hij wordt direct gevuld — een fill is het moment waarop je order echt een positie wordt — omdat hij accepteert wat de andere kant op dit moment vraagt. Je komt altijd binnen. Je krijgt niet altijd de prijs die je zag. Gebruik hem als erin zitten belangrijker is dan precies zijn."
+     "p": "Een marktorder zegt: neem welke prijs er nu ook beschikbaar is. Hij wordt direct gevuld - een fill is het moment waarop je order echt een positie wordt - omdat hij accepteert wat de andere kant op dit moment vraagt. Je komt altijd binnen. Je krijgt niet altijd de prijs die je zag. Gebruik hem als erin zitten belangrijker is dan precies zijn."
     },
     {
      "h": "Limietorder: prijs boven snelheid",
@@ -171,7 +171,7 @@
     },
     {
      "h": "Een stop is een trigger",
-     "p": "Een stop is nog geen order — het is een instructie die er een wordt zodra de prijs een niveau raakt dat jij koos. Een stop-loss staat onder een longpositie en sluit hem als de prijs daar komt, waarmee de schade begrensd is. Een take-profit doet hetzelfde aan de winnende kant. Geen van beide garandeert de exacte prijs: eenmaal getriggerd worden ze meestal tegen marktprijs gevuld."
+     "p": "Een stop is nog geen order - het is een instructie die er een wordt zodra de prijs een niveau raakt dat jij koos. Een stop-loss staat onder een longpositie en sluit hem als de prijs daar komt, waarmee de schade begrensd is. Een take-profit doet hetzelfde aan de winnende kant. Geen van beide garandeert de exacte prijs: eenmaal getriggerd worden ze meestal tegen marktprijs gevuld."
     },
     {
      "h": "Spread en slippage",
@@ -214,7 +214,7 @@
    "cards": [
     {
      "h": "FOMO en FUD",
-     "p": "FOMO is fear of missing out — angst om het te missen: de drang om te kopen omdat het al zonder jou omhoog gaat. FUD is fear, uncertainty and doubt — angst, onzekerheid en twijfel: de drang om te verkopen omdat iets slecht klinkt. Allebei benoemen ze een emotie, geen feit over de markt. En allebei worden ze als beschuldiging gebruikt — je voorzichtigheid FUD noemen is een manier om je te laten stoppen met nadenken."
+     "p": "FOMO is fear of missing out - angst om het te missen: de drang om te kopen omdat het al zonder jou omhoog gaat. FUD is fear, uncertainty and doubt - angst, onzekerheid en twijfel: de drang om te verkopen omdat iets slecht klinkt. Allebei benoemen ze een emotie, geen feit over de markt. En allebei worden ze als beschuldiging gebruikt - je voorzichtigheid FUD noemen is een manier om je te laten stoppen met nadenken."
     },
     {
      "h": "HODL, paper hands, diamond hands",
@@ -222,11 +222,11 @@
     },
     {
      "h": "Whales en retail",
-     "p": "Een whale is een houder die groot genoeg is dat zijn eigen kopen of verkopen de prijs beweegt. Retail betekent iedereen die klein is — jij vrijwel zeker, en daar zit niets beledigends in. Het nuttige is de asymmetrie: een whale moet zijn uitstap plannen, want grootte kan niet stil vertrekken, terwijl jij er met één klik uit bent."
+     "p": "Een whale is een houder die groot genoeg is dat zijn eigen kopen of verkopen de prijs beweegt. Retail betekent iedereen die klein is - jij vrijwel zeker, en daar zit niets beledigends in. Het nuttige is de asymmetrie: een whale moet zijn uitstap plannen, want grootte kan niet stil vertrekken, terwijl jij er met één klik uit bent."
     },
     {
      "h": "Capitulatie, en wie het woord gebruikt",
-     "p": "Capitulatie is het moment waarop houders stoppen met hopen en tegen elke prijs verkopen: zwaar volume, een gewelddadige daling, dan uitputting. Het wordt altijd pas achteraf vastgesteld. Dat is de eerlijke grens van elk woord in deze les — ze beschrijven massagevoel goed en voorspellen niets. Gebruikt iemand er een om je te vertellen wat je nu moet doen, vraag dan welke positie diegene aanhoudt."
+     "p": "Capitulatie is het moment waarop houders stoppen met hopen en tegen elke prijs verkopen: zwaar volume, een gewelddadige daling, dan uitputting. Het wordt altijd pas achteraf vastgesteld. Dat is de eerlijke grens van elk woord in deze les - ze beschrijven massagevoel goed en voorspellen niets. Gebruikt iemand er een om je te vertellen wat je nu moet doen, vraag dan welke positie diegene aanhoudt."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
    "cards": [
     {
      "h": "Steun en weerstand zijn zones",
-     "p": "Steun is een prijsgebied waar kopers herhaaldelijk zijn opgedoken en een daling stopten. Weerstand is waar verkopers herhaaldelijk een stijging stopten. Het zijn zones, geen lijnen — een niveau op $60,000 betekent in werkelijkheid ergens tussen $59,800 en $60,200. Ze doen ertoe omdat genoeg traders ernaar kijken en er handelen, en precies daarom breken ze uiteindelijk."
+     "p": "Steun is een prijsgebied waar kopers herhaaldelijk zijn opgedoken en een daling stopten. Weerstand is waar verkopers herhaaldelijk een stijging stopten. Het zijn zones, geen lijnen - een niveau op $60,000 betekent in werkelijkheid ergens tussen $59,800 en $60,200. Ze doen ertoe omdat genoeg traders ernaar kijken en er handelen, en precies daarom breken ze uiteindelijk."
     },
     {
      "h": "Trend en range",
@@ -277,7 +277,7 @@
     },
     {
      "h": "Elk niveau heeft een timeframe nodig",
-     "p": "Een timeframe is hoeveel tijd één candle beslaat — 5 minuten, 4 uur, een dag. Steun getekend op een 5-minutengrafiek is onzichtbaar op de daggrafiek. Dezelfde markt kan op 5 minuten in een downtrend zitten en op de daggrafiek in een uptrend, en beide uitspraken zijn waar. Zegt iemand 'de trend', dan is het ontbrekende woord: welk timeframe."
+     "p": "Een timeframe is hoeveel tijd één candle beslaat - 5 minuten, 4 uur, een dag. Steun getekend op een 5-minutengrafiek is onzichtbaar op de daggrafiek. Dezelfde markt kan op 5 minuten in een downtrend zitten en op de daggrafiek in een uptrend, en beide uitspraken zijn waar. Zegt iemand 'de trend', dan is het ontbrekende woord: welk timeframe."
     }
    ],
    "quiz": [
@@ -316,11 +316,11 @@
    "cards": [
     {
      "h": "Volume telt, liquiditeit absorbeert",
-     "p": "Volume is hoeveel er in een periode echt verhandeld is — een feit over het verleden. Liquiditeit is hoeveel er op dit moment in het orderboek klaarligt — een feit over het heden. Een munt kan een dag met enorm volume hebben en toch dun zijn, zodat een verkoop van $50,000 hem nog steeds meerdere procenten laat zakken. Volume vertelt je over interesse; liquiditeit vertelt je of je eruit kunt."
+     "p": "Volume is hoeveel er in een periode echt verhandeld is - een feit over het verleden. Liquiditeit is hoeveel er op dit moment in het orderboek klaarligt - een feit over het heden. Een munt kan een dag met enorm volume hebben en toch dun zijn, zodat een verkoop van $50,000 hem nog steeds meerdere procenten laat zakken. Volume vertelt je over interesse; liquiditeit vertelt je of je eruit kunt."
     },
     {
      "h": "Volatiliteit meet beweging, geen richting",
-     "p": "Volatiliteit is hoeveel de prijs beweegt, in welke richting dan ook. Een munt die 5% per dag schommelt is vijf keer zo volatiel als een die 1% schommelt, of die dagen nu groen of rood zijn. Daarom doet hefboom hier zoveel: je afstand tot liquidatie ligt vast, en volatiliteit bepaalt hoe vaak de prijs die afstand aflegt. Hoge volatiliteit is niet slecht — ze is sneller, in beide richtingen."
+     "p": "Volatiliteit is hoeveel de prijs beweegt, in welke richting dan ook. Een munt die 5% per dag schommelt is vijf keer zo volatiel als een die 1% schommelt, of die dagen nu groen of rood zijn. Daarom doet hefboom hier zoveel: je afstand tot liquidatie ligt vast, en volatiliteit bepaalt hoe vaak de prijs die afstand aflegt. Hoge volatiliteit is niet slecht - ze is sneller, in beide richtingen."
     },
     {
      "h": "Market cap is niet het geïnvesteerde geld",
@@ -354,7 +354,7 @@
      "q": "'Meer kopers dan verkopers' is:",
      "o": [
       "Hoe elke prijsstijging ontstaat",
-      "Onmogelijk — elke trade heeft beide",
+      "Onmogelijk - elke trade heeft beide",
       "Een andere manier om hoog volume te zeggen",
       "Een maat voor de diepte van het orderboek"
      ]
@@ -367,7 +367,7 @@
    "cards": [
     {
      "h": "Shill en ape",
-     "p": "Shillen is een munt promoten die je zelf al bezit, bij mensen die hem van jou zullen kopen. Het woord wordt meestal gekscherend gezegd, en dat is precies de truc — het laat een belangenconflict klinken als een karaktertrek. Apen is groot instappen zonder onderzoek, verpakt als moed. Beide woorden laten een dure fout klinken als een levensstijl."
+     "p": "Shillen is een munt promoten die je zelf al bezit, bij mensen die hem van jou zullen kopen. Het woord wordt meestal gekscherend gezegd, en dat is precies de truc - het laat een belangenconflict klinken als een karaktertrek. Apen is groot instappen zonder onderzoek, verpakt als moed. Beide woorden laten een dure fout klinken als een levensstijl."
     },
     {
      "h": "Rug pull, moon, 100x",

@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "O imposto da discricionariedade",
-     "p": "Cada decisão discricionária é uma chance de tilt, FOMO e viés retrospectivo vazarem para dentro. Um sistema — regras fixas para setup, entrada, saída e tamanho — remove a decisão no momento de máxima emoção. A maioria dos traders não precisa de instintos melhores; precisa de menos oportunidades de usá-los."
+     "p": "Cada decisão discricionária é uma chance de tilt, FOMO e viés retrospectivo vazarem para dentro. Um sistema - regras fixas para setup, entrada, saída e tamanho - remove a decisão no momento de máxima emoção. A maioria dos traders não precisa de instintos melhores; precisa de menos oportunidades de usá-los."
     },
     {
      "h": "Regras tornam resultados mensuráveis",
      "p": "Se suas entradas são humores, suas revisões de diário são astrologia. Se suas entradas são regras, cada trade é um ponto de dado: ESTE setup, executado ASSIM, produz ESTA expectativa. Só o trading baseado em regras pode de fato melhorar, porque só ele pode ser medido."
     },
     {
-     "h": "A discricionariedade tem lugar — na prancheta",
-     "p": "A habilidade não some; ela se muda. Você usa o julgamento para PROJETAR e REVISAR as regras — semanalmente, com calma, longe dos preços ao vivo. A máquina (ou o checklist) executa. Julgamento na mesa, disciplina no gatilho."
+     "h": "A discricionariedade tem lugar - na prancheta",
+     "p": "A habilidade não some; ela se muda. Você usa o julgamento para PROJETAR e REVISAR as regras - semanalmente, com calma, longe dos preços ao vivo. A máquina (ou o checklist) executa. Julgamento na mesa, disciplina no gatilho."
     }
    ],
    "quiz": [
@@ -34,7 +34,7 @@
      "q": "Entradas por humor tornam seu diário…",
      "o": [
       "Muito mais divertido de ler no fim da semana",
-      "Imensurável — não há o que comparar",
+      "Imensurável - não há o que comparar",
       "Mais curto",
       "Perfeito"
      ]
@@ -43,7 +43,7 @@
      "q": "No trading sistemático, o julgamento humano pertence…",
      "o": [
       "Ao gatilho ao vivo, onde as decisões reais acontecem",
-      "À prancheta — construir e revisar regras",
+      "À prancheta - construir e revisar regras",
       "A lugar nenhum",
       "Aos grupos de chat"
      ]
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "A pergunta mais barata do trading",
-     "p": "Antes de arriscar um centavo — ou mesmo tempo de papel — você pode perguntar à história: se eu tivesse operado exatamente estas regras no último ano, o que teria acontecido? Isso é um backtest. Ele não promete o futuro, mas executa regras com zero viés retrospectivo e zero piedade."
+     "p": "Antes de arriscar um centavo - ou mesmo tempo de papel - você pode perguntar à história: se eu tivesse operado exatamente estas regras no último ano, o que teria acontecido? Isso é um backtest. Ele não promete o futuro, mas executa regras com zero viés retrospectivo e zero piedade."
     },
     {
      "h": "O que um backtest realmente diz",
-     "p": "Não \"isto vai dar dinheiro\" — e sim o PERFIL da estratégia: taxa de acerto, R médio, pior sequência de perdas, drawdown mais fundo, quantos trades por mês. Você já sabe de r10 que esses números, com o dimensionamento, decidem a sobrevivência. O backtest os entrega em minutos."
+     "p": "Não \"isto vai dar dinheiro\" - e sim o PERFIL da estratégia: taxa de acerto, R médio, pior sequência de perdas, drawdown mais fundo, quantos trades por mês. Você já sabe de r10 que esses números, com o dimensionamento, decidem a sobrevivência. O backtest os entrega em minutos."
     },
     {
      "h": "Respeite seus limites",
-     "p": "Backtests assumem execuções aos preços históricos — spread, slippage e funding reais serão piores. Trate resultados de backtest como o teto OTIMISTA, subtraia custos mentalmente e só confie em perfis que sobrevivem a esse corte com folga."
+     "p": "Backtests assumem execuções aos preços históricos - spread, slippage e funding reais serão piores. Trate resultados de backtest como o teto OTIMISTA, subtraia custos mentalmente e só confie em perfis que sobrevivem a esse corte com folga."
     }
    ],
    "quiz": [
@@ -81,7 +81,7 @@
      "q": "Resultados de backtest versus ao vivo são normalmente…",
      "o": [
       "Idênticos",
-      "Otimistas — custos reais pioram o ao vivo",
+      "Otimistas - custos reais pioram o ao vivo",
       "Pessimistas, porque backtests subcontam vitórias",
       "Aleatórios"
      ]
@@ -97,7 +97,7 @@
     }
    ],
    "try": {
-    "p": "Rode seu primeiro backtest de verdade — regras de cruzamento de EMA ou RSI em dados de qualidade, um clique, estatísticas completas.",
+    "p": "Rode seu primeiro backtest de verdade - regras de cruzamento de EMA ou RSI em dados de qualidade, um clique, estatísticas completas.",
     "label": "Backtester de Estratégias →"
    }
   },
@@ -107,7 +107,7 @@
    "cards": [
     {
      "h": "O backtest perfeito que nunca funciona",
-     "p": "Ajuste os parâmetros de uma estratégia por tempo suficiente e ela caberá PERFEITAMENTE no passado — porque memorizou o ruído, não aprendeu o sinal. Isso é overfitting: quanto mais bonita a curva do backtest depois de muito ajuste, mais desconfiado você deve ficar."
+     "p": "Ajuste os parâmetros de uma estratégia por tempo suficiente e ela caberá PERFEITAMENTE no passado - porque memorizou o ruído, não aprendeu o sinal. Isso é overfitting: quanto mais bonita a curva do backtest depois de muito ajuste, mais desconfiado você deve ficar."
     },
     {
      "h": "Sintomas",
@@ -154,7 +154,7 @@
    "cards": [
     {
      "h": "Nunca avalie nos dados de treino",
-     "p": "A cura para o overfitting é disciplina de teste: projete e ajuste as regras numa fatia da história (in-sample), depois rode-as INTOCADAS numa fatia que elas nunca viram (out-of-sample). Só o resultado out-of-sample conta — é o mais perto do futuro que se pode comprar."
+     "p": "A cura para o overfitting é disciplina de teste: projete e ajuste as regras numa fatia da história (in-sample), depois rode-as INTOCADAS numa fatia que elas nunca viram (out-of-sample). Só o resultado out-of-sample conta - é o mais perto do futuro que se pode comprar."
     },
     {
      "h": "Walk-forward: repita a honestidade",
@@ -162,7 +162,7 @@
     },
     {
      "h": "Paper trading é o out-of-sample final",
-     "p": "Depois dos testes, rode o sistema em preços ao vivo com dinheiro fictício — o único conjunto de dados que não dá para espiar: o presente. Se backtest, out-of-sample E papel concordam, você tem algo. Se discordam, acredite no mais vivo."
+     "p": "Depois dos testes, rode o sistema em preços ao vivo com dinheiro fictício - o único conjunto de dados que não dá para espiar: o presente. Se backtest, out-of-sample E papel concordam, você tem algo. Se discordam, acredite no mais vivo."
     }
    ],
    "quiz": [
@@ -209,7 +209,7 @@
     },
     {
      "h": "Teste a máquina como uma estratégia",
-     "p": "Um bot pode perder dinheiro de dois jeitos: regras ruins ou código ruim. Teste-os separadamente — as regras no backtester, o código contra uma API de paper trading onde um bug não custa nada. Só depois de ambos sobreviverem o dinheiro real entra em cena — pequeno primeiro."
+     "p": "Um bot pode perder dinheiro de dois jeitos: regras ruins ou código ruim. Teste-os separadamente - as regras no backtester, o código contra uma API de paper trading onde um bug não custa nada. Só depois de ambos sobreviverem o dinheiro real entra em cena - pequeno primeiro."
     }
    ],
    "quiz": [
@@ -242,7 +242,7 @@
     }
    ],
    "try": {
-    "p": "O MarginPad tem uma API REST gratuita de paper trading feita exatamente para isso — teste um bot com risco zero.",
+    "p": "O MarginPad tem uma API REST gratuita de paper trading feita exatamente para isso - teste um bot com risco zero.",
     "label": "Docs da Bot API →"
    }
   },
@@ -252,15 +252,15 @@
    "cards": [
     {
      "h": "Automação não é abandono",
-     "p": "Um sistema rodando precisa de painel e coleira: checagens diárias de que as execuções batem com as intenções, de que o risco por trade é o configurado, de que o regime do mercado ainda lembra aquele para o qual ele foi construído. A deriva silenciosa — nos custos, na volatilidade, na sua própria aderência às regras — mata devagar."
+     "p": "Um sistema rodando precisa de painel e coleira: checagens diárias de que as execuções batem com as intenções, de que o risco por trade é o configurado, de que o regime do mercado ainda lembra aquele para o qual ele foi construído. A deriva silenciosa - nos custos, na volatilidade, na sua própria aderência às regras - mata devagar."
     },
     {
      "h": "Defina a morte de antemão",
-     "p": "Antes de colocar no ar, escreva os critérios de desligamento: um drawdown máximo (digamos 15%), uma sequência de perdas além da pior do backtest, ou uma quebra de regime. Bateu em qualquer um, o sistema PARA — sem renegociar com a esperança. Você aprendeu isso pessoalmente em r6; máquinas merecem a mesma disciplina."
+     "p": "Antes de colocar no ar, escreva os critérios de desligamento: um drawdown máximo (digamos 15%), uma sequência de perdas além da pior do backtest, ou uma quebra de regime. Bateu em qualquer um, o sistema PARA - sem renegociar com a esperança. Você aprendeu isso pessoalmente em r6; máquinas merecem a mesma disciplina."
     },
     {
      "h": "Incidentes vão acontecer",
-     "p": "Exchanges caem, APIs dão timeout, uma config errada dobra seu tamanho. Assuma incidentes, e eles só te surpreenderão de leve: limites de posição no nível da exchange, alertas em cada execução e um DESLIGA geral manual acessível do celular. Engenharia entediante — é assim que a segurança se parece."
+     "p": "Exchanges caem, APIs dão timeout, uma config errada dobra seu tamanho. Assuma incidentes, e eles só te surpreenderão de leve: limites de posição no nível da exchange, alertas em cada execução e um DESLIGA geral manual acessível do celular. Engenharia entediante - é assim que a segurança se parece."
     }
    ],
    "quiz": [
@@ -268,7 +268,7 @@
      "q": "Critérios de desligamento devem ser definidos…",
      "o": [
       "Logo depois do primeiro drawdown sério da conta",
-      "Antes de colocar no ar — sem renegociação",
+      "Antes de colocar no ar - sem renegociação",
       "Nunca",
       "Pela exchange"
      ]
@@ -299,15 +299,15 @@
    "cards": [
     {
      "h": "Vantagens são sazonais",
-     "p": "Nenhum sistema funciona para sempre — tendências acabam, regimes de volatilidade viram, multidões se adaptam. Profissionais rodam um pequeno PORTFÓLIO de sistemas não correlacionados: um seguidor de tendência, um de reversão à média, talvez um colhedor de funding. Quando um dorme, outro normalmente come."
+     "p": "Nenhum sistema funciona para sempre - tendências acabam, regimes de volatilidade viram, multidões se adaptam. Profissionais rodam um pequeno PORTFÓLIO de sistemas não correlacionados: um seguidor de tendência, um de reversão à média, talvez um colhedor de funding. Quando um dorme, outro normalmente come."
     },
     {
      "h": "Aposentando um sistema",
-     "p": "A habilidade mais difícil: desligar uma estratégia que você ama. Os critérios são as mesmas regras de desligamento de s6, mais um — se a razão estrutural pela qual ela funcionava desapareceu (mudança de taxa, mudança de regime, todo mundo fazendo igual), aposente-a enquanto ainda tem dignidade. Histórico é história, não direito adquirido."
+     "p": "A habilidade mais difícil: desligar uma estratégia que você ama. Os critérios são as mesmas regras de desligamento de s6, mais um - se a razão estrutural pela qual ela funcionava desapareceu (mudança de taxa, mudança de regime, todo mundo fazendo igual), aposente-a enquanto ainda tem dignidade. Histórico é história, não direito adquirido."
     },
     {
      "h": "O ofício, completo",
-     "p": "Olhe o arco: mecânica (cursos 1-2), sobrevivência (3), leitura da fita (4-5)… e agora um processo que roda sem os seus humores. Automatizando ou ficando manual, o destino é o mesmo: uma vantagem escrita, medida e revisada — e um trader calmo o bastante para segui-la."
+     "p": "Olhe o arco: mecânica (cursos 1-2), sobrevivência (3), leitura da fita (4-5)… e agora um processo que roda sem os seus humores. Automatizando ou ficando manual, o destino é o mesmo: uma vantagem escrita, medida e revisada - e um trader calmo o bastante para segui-la."
     }
    ],
    "quiz": [
@@ -315,7 +315,7 @@
      "q": "Profissionais rodam vários sistemas porque…",
      "o": [
       "Mais sistemas sempre parece mais chique e sério",
-      "Vantagens são sazonais — o portfólio suaviza a curva",
+      "Vantagens são sazonais - o portfólio suaviza a curva",
       "As exchanges exigem",
       "Bots ficam solitários"
      ]
@@ -340,7 +340,7 @@
     }
    ],
    "try": {
-    "p": "O loop completo agora é seu — rode-o onde os erros são grátis, e deixe os níveis marcarem a estrada.",
+    "p": "O loop completo agora é seu - rode-o onde os erros são grátis, e deixe os níveis marcarem a estrada.",
     "label": "Paper Trade →"
    }
   }

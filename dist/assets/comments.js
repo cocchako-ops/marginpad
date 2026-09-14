@@ -1,4 +1,4 @@
-/* MarginPad blog comments — loads + posts comments for the current /blog/<slug>/ page */
+/* MarginPad blog comments - loads + posts comments for the current /blog/<slug>/ page */
 (function () {
   var m = location.pathname.match(/\/blog\/([a-z0-9-]+)\/?$/i);
   if (!m) return;
@@ -29,7 +29,7 @@
       .then(function (res) {
         if (btn) { btn.disabled = false; btn.textContent = 'Post comment'; }
         if (res && res.ok) { document.getElementById('cmText').value = ''; loadC(); }
-        else { alert(res && res.error === 'rate' ? 'Too many comments from your connection — please try again later.' : 'Could not post your comment. Please try again.'); }
+        else { alert(res && res.error === 'rate' ? 'Too many comments from your connection - please try again later.' : 'Could not post your comment. Please try again.'); }
       }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = 'Post comment'; } });
   });
   loadC();

@@ -1,4 +1,4 @@
-// check-formulas.js — P1 mp-core drift guard. In a no-build vanilla codebase the liquidation/PnL formulas
+// check-formulas.js - P1 mp-core drift guard. In a no-build vanilla codebase the liquidation/PnL formulas
 // exist as inline copies across the client bundles (they can't share an import). This script makes drift
 // IMPOSSIBLE to miss: (1) the worker must have exactly ONE canonical implementation (mpcLiq) and zero inline
 // copies; (2) every known client copy must match its verbatim literal (count-asserted per file); (3) the
@@ -7,14 +7,14 @@
 const fs = require('fs');
 const R = (p) => fs.readFileSync(require('path').join(__dirname, '..', p), 'utf8');
 let fails = 0;
-const must = (name, cond, detail) => { if (cond) console.log('  OK  ' + name); else { console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); fails++; } };
+const must = (name, cond, detail) => { if (cond) console.log('  OK  ' + name); else { console.log('  FAIL ' + name + (detail ? ' - ' + detail : '')); fails++; } };
 
 console.log('[worker] canonical mpcLiq:');
 const w = R('src/worker.js');
 must('mpcLiq defined once', w.split('function mpcLiq(').length - 1 === 1);
 must('zero inline liq copies outside mpcLiq', w.split('(1 - (1 - mmr) / lev)').length - 1 === 1, 'found ' + (w.split('(1 - (1 - mmr) / lev)').length - 1));
 must('all fill paths call mpcLiq', w.split('mpcLiq(entry, lev, mmr, long)').length - 1 >= 5, 'call sites: ' + (w.split('mpcLiq(entry, lev, mmr, long)').length - 1));
-must('server fee literal ×4', w.split('(+t.feeRate || 0)').length - 1 === 4, 'count ' + (w.split('(+t.feeRate || 0)').length - 1)); // was 5 — the sync-guard recompute site went away when client syncs stopped being able to close srv trades (P0.6)
+must('server fee literal ×4', w.split('(+t.feeRate || 0)').length - 1 === 4, 'count ' + (w.split('(+t.feeRate || 0)').length - 1)); // was 5 - the sync-guard recompute site went away when client syncs stopped being able to close srv trades (P0.6)
 must('server fund settlement ×3 (+1 partial)', w.split('- (+t.fund || 0)').length - 1 === 3 && w.split('- (+part.fund || 0)').length - 1 === 1, 'counts t:' + (w.split('- (+t.fund || 0)').length - 1) + ' part:' + (w.split('- (+part.fund || 0)').length - 1)); // same removal as the fee site above
 
 console.log('[clients] verbatim formula literals (drift = count mismatch):');
@@ -38,7 +38,7 @@ for (const [file, checks] of CLIENT) {
   for (const [name, lit, count] of checks) {
     const n = s.split(lit).length - 1;
     if (count == null) must(file + ' :: ' + name, n >= 1, 'count ' + n);
-    else must(file + ' :: ' + name + ' ×' + count, n === count, 'count ' + n + ' (expected ' + count + ' — a copy was added/edited: update this manifest AND verify the math matches mpcLiq)');
+    else must(file + ' :: ' + name + ' ×' + count, n === count, 'count ' + n + ' (expected ' + count + ' - a copy was added/edited: update this manifest AND verify the math matches mpcLiq)');
   }
 }
 
@@ -51,5 +51,5 @@ must('long 1000x @65000 → within 0.1% of entry', (() => { const l = mpcLiq(650
 must('never inverts at 200x+', mpcLiq(100, 200, 0.005, true) < 100 && mpcLiq(100, 200, 0.005, false) > 100);
 
 console.log('');
-if (fails) { console.log('DRIFT GUARD: ' + fails + ' FAILURE(S) — trading math is out of sync.'); process.exit(1); }
+if (fails) { console.log('DRIFT GUARD: ' + fails + ' FAILURE(S) - trading math is out of sync.'); process.exit(1); }
 console.log('DRIFT GUARD: all formulas in sync (worker canonical + ' + CLIENT.length + ' client bundles verified).');

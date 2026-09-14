@@ -12,7 +12,7 @@ let objText = i18nSrc.slice(s + 'var T = '.length, e).trim();
 objText = objText.replace(/;\s*$/, '');
 const T = eval('(' + objText + ')'); // trusted local file
 // also merge every EXTRA dictionary so generated pages translate the newer keys
-// (single loop covering all suffixes — keep in sync with build/gen-i18n-assets.js)
+// (single loop covering all suffixes - keep in sync with build/gen-i18n-assets.js)
 for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']) {
   const startMark = 'var EXTRA' + suffix + ' = {';
   const endMark = 'for (var _L' + suffix + ' in EXTRA' + suffix + ')';
@@ -30,18 +30,18 @@ const TVLOC = { es: 'es', pt: 'pt_BR', fr: 'fr', de: 'de_DE', ru: 'ru', tr: 'tr'
 
 // SEO title + description per language (keyword-focused)
 const SEO = {
-  es: { t: 'MarginPad — Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo', d: 'Practicá futuros cripto con precios reales y dinero de mentira, calculá liquidación y tamaño de posición, mirá las liquidaciones en vivo de 9 exchanges, screener, calendario y academia. Gratis, sin registro.' },
-  pt: { t: 'MarginPad — Terminal grátis de futuros cripto: paper trading, calculadoras e liquidações ao vivo', d: 'Treine futuros cripto com preços reais e dinheiro de mentira, calcule liquidação e tamanho de posição, veja as liquidações ao vivo de 9 corretoras, screener, calendário e academia. Grátis, sem cadastro.' },
-  fr: { t: 'MarginPad — Terminal gratuit de futures crypto : paper trading, calculatrices et liquidations en direct', d: 'Entraîne-toi aux futures crypto à prix réels avec de l\'argent fictif, calcule liquidation et taille de position, suis les liquidations en direct de 9 plateformes, screener, calendrier et académie. Gratuit, sans inscription.' },
-  de: { t: 'MarginPad — Kostenloses Krypto-Futures-Terminal: Paper Trading, Rechner und Live-Liquidationen', d: 'Übe Krypto-Futures zu echten Kursen mit Spielgeld, berechne Liquidationspreis und Positionsgröße, verfolge Live-Liquidationen von 9 Börsen, Screener, Kalender und Akademie. Kostenlos, ohne Anmeldung.' },
-  ru: { t: 'MarginPad — бесплатный терминал крипто-фьючерсов: paper trading, калькуляторы и ликвидации в реальном времени', d: 'Тренируйтесь на крипто-фьючерсах по реальным ценам с виртуальными деньгами, считайте ликвидацию и размер позиции, смотрите ликвидации с 9 бирж в реальном времени, скринер, календарь и академию. Бесплатно, без регистрации.' },
-  tr: { t: 'MarginPad — Ücretsiz kripto vadeli işlem terminali: paper trading, hesaplayıcılar ve canlı likidasyonlar', d: 'Gerçek fiyatlarla sahte parayla kripto vadeli işlem pratiği yap, likidasyon ve pozisyon boyutunu hesapla, 9 borsadan canlı likidasyonları izle, tarayıcı, takvim ve akademi. Ücretsiz, kayıtsız.' },
-  zh: { t: 'MarginPad — 免费加密合约终端：模拟交易、计算器与实时爆仓数据', d: '用真实价格和虚拟资金练习加密合约，计算强平价格与仓位，查看 9 家交易所的实时爆仓、筛选器、财经日历和学院。免费，无需注册。' },
-  ja: { t: 'MarginPad — 無料の暗号資産先物ターミナル：ペーパートレード、計算ツール、ライブ清算データ', d: '実際の価格と仮想資金で暗号資産先物を練習し、清算価格とポジションサイズを計算、9 取引所のライブ清算、スクリーナー、経済カレンダー、アカデミー。無料・登録不要。' },
-  ko: { t: 'MarginPad — 무료 암호화폐 선물 터미널: 페이퍼 트레이딩, 계산기, 실시간 청산 데이터', d: '실제 가격과 가상 자금으로 암호화폐 선물을 연습하고, 청산가와 포지션 크기를 계산하고, 9개 거래소의 실시간 청산, 스크리너, 경제 캘린더, 아카데미까지. 무료, 가입 불필요.' },
-  ar: { t: 'MarginPad — منصة مجانية لعقود الكريبتو الآجلة: تداول تجريبي، حاسبات وتصفيات مباشرة', d: 'تدرّب على عقود الكريبتو الآجلة بأسعار حقيقية ومال افتراضي، احسب سعر التصفية وحجم المركز، تابع التصفيات المباشرة من 9 منصات، والماسح، والتقويم، والأكاديمية. مجانًا وبلا تسجيل.' },
-  id: { t: 'MarginPad — Terminal futures kripto gratis: paper trading, kalkulator, dan likuidasi live', d: 'Latih futures kripto dengan harga nyata dan uang virtual, hitung likuidasi dan ukuran posisi, pantau likuidasi live dari 9 bursa, screener, kalender, dan akademi. Gratis, tanpa daftar.' },
-  nl: { t: 'MarginPad — Gratis crypto-futuresterminal: paper trading, calculators en live liquidaties', d: 'Oefen crypto-futures tegen echte prijzen met nepgeld, bereken liquidatie en positiegrootte, volg live liquidaties van 9 beurzen, screener, kalender en academie. Gratis, zonder registratie.' },
+  es: { t: 'MarginPad - Terminal gratuito de futuros cripto: paper trading, calculadoras y liquidaciones en vivo', d: 'Practicá futuros cripto con precios reales y dinero de mentira, calculá liquidación y tamaño de posición, mirá las liquidaciones en vivo de 9 exchanges, screener, calendario y academia. Gratis, sin registro.' },
+  pt: { t: 'MarginPad - Terminal grátis de futuros cripto: paper trading, calculadoras e liquidações ao vivo', d: 'Treine futuros cripto com preços reais e dinheiro de mentira, calcule liquidação e tamanho de posição, veja as liquidações ao vivo de 9 corretoras, screener, calendário e academia. Grátis, sem cadastro.' },
+  fr: { t: 'MarginPad - Terminal gratuit de futures crypto : paper trading, calculatrices et liquidations en direct', d: 'Entraîne-toi aux futures crypto à prix réels avec de l\'argent fictif, calcule liquidation et taille de position, suis les liquidations en direct de 9 plateformes, screener, calendrier et académie. Gratuit, sans inscription.' },
+  de: { t: 'MarginPad - Kostenloses Krypto-Futures-Terminal: Paper Trading, Rechner und Live-Liquidationen', d: 'Übe Krypto-Futures zu echten Kursen mit Spielgeld, berechne Liquidationspreis und Positionsgröße, verfolge Live-Liquidationen von 9 Börsen, Screener, Kalender und Akademie. Kostenlos, ohne Anmeldung.' },
+  ru: { t: 'MarginPad - бесплатный терминал крипто-фьючерсов: paper trading, калькуляторы и ликвидации в реальном времени', d: 'Тренируйтесь на крипто-фьючерсах по реальным ценам с виртуальными деньгами, считайте ликвидацию и размер позиции, смотрите ликвидации с 9 бирж в реальном времени, скринер, календарь и академию. Бесплатно, без регистрации.' },
+  tr: { t: 'MarginPad - Ücretsiz kripto vadeli işlem terminali: paper trading, hesaplayıcılar ve canlı likidasyonlar', d: 'Gerçek fiyatlarla sahte parayla kripto vadeli işlem pratiği yap, likidasyon ve pozisyon boyutunu hesapla, 9 borsadan canlı likidasyonları izle, tarayıcı, takvim ve akademi. Ücretsiz, kayıtsız.' },
+  zh: { t: 'MarginPad - 免费加密合约终端：模拟交易、计算器与实时爆仓数据', d: '用真实价格和虚拟资金练习加密合约，计算强平价格与仓位，查看 9 家交易所的实时爆仓、筛选器、财经日历和学院。免费，无需注册。' },
+  ja: { t: 'MarginPad - 無料の暗号資産先物ターミナル：ペーパートレード、計算ツール、ライブ清算データ', d: '実際の価格と仮想資金で暗号資産先物を練習し、清算価格とポジションサイズを計算、9 取引所のライブ清算、スクリーナー、経済カレンダー、アカデミー。無料・登録不要。' },
+  ko: { t: 'MarginPad - 무료 암호화폐 선물 터미널: 페이퍼 트레이딩, 계산기, 실시간 청산 데이터', d: '실제 가격과 가상 자금으로 암호화폐 선물을 연습하고, 청산가와 포지션 크기를 계산하고, 9개 거래소의 실시간 청산, 스크리너, 경제 캘린더, 아카데미까지. 무료, 가입 불필요.' },
+  ar: { t: 'MarginPad - منصة مجانية لعقود الكريبتو الآجلة: تداول تجريبي، حاسبات وتصفيات مباشرة', d: 'تدرّب على عقود الكريبتو الآجلة بأسعار حقيقية ومال افتراضي، احسب سعر التصفية وحجم المركز، تابع التصفيات المباشرة من 9 منصات، والماسح، والتقويم، والأكاديمية. مجانًا وبلا تسجيل.' },
+  id: { t: 'MarginPad - Terminal futures kripto gratis: paper trading, kalkulator, dan likuidasi live', d: 'Latih futures kripto dengan harga nyata dan uang virtual, hitung likuidasi dan ukuran posisi, pantau likuidasi live dari 9 bursa, screener, kalender, dan akademi. Gratis, tanpa daftar.' },
+  nl: { t: 'MarginPad - Gratis crypto-futuresterminal: paper trading, calculators en live liquidaties', d: 'Oefen crypto-futures tegen echte prijzen met nepgeld, bereken liquidatie en positiegrootte, volg live liquidaties van 9 beurzen, screener, kalender en academie. Gratis, zonder registratie.' },
 };
 
 const escText = v => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -56,7 +56,7 @@ const HREFLANG = [
 // Homepage copy string-map (build/data/home-i18n/<lang>.json = { "<EN text node>": "<translation>" }).
 // The bento homepage (dist/index.html) carries NO data-i18n attributes, so the data-i18n loop below can't touch it.
 // This map translates its visible text nodes directly (exact >text< boundary, whitespace-tolerant, longest-first)
-// WITHOUT modifying dist/demo-home — zero risk to the homepage's structure/JS. Translations are used verbatim
+// WITHOUT modifying dist/demo-home - zero risk to the homepage's structure/JS. Translations are used verbatim
 // (agents produce HTML-ready text, keeping entities/brands/tickers as-is), so no double-escaping.
 const HOME = {};
 for (const l of LANGS) {

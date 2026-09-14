@@ -1,4 +1,4 @@
-/* MarginPad — optional passwordless sign-in (email → 6-digit code).
+/* MarginPad - optional passwordless sign-in (email → 6-digit code).
    Self-contained: injects its own modal + styles, wires any [data-auth-open] trigger,
    updates any [data-auth-status] label, and exposes window.mpAuth. Anonymous use is unaffected. */
 (function () {
@@ -14,7 +14,7 @@
     return '';
   }
   function esc(s) { return String(s).replace(/[<>&]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]; }); }
-  // clean line-icon set (currentColor stroke) — replaces the emoji buttons
+  // clean line-icon set (currentColor stroke) - replaces the emoji buttons
   var ICONS = {
     bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
     chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
@@ -38,7 +38,7 @@
   function avatarHtml(av, cls) { av = av || ''; if (/^data:image\//.test(av)) return '<img class="mpa-av-img' + (cls ? ' ' + cls : '') + '" src="' + esc(av) + '" alt="">'; if (av) return '<span class="mpa-av-emoji' + (cls ? ' ' + cls : '') + '">' + esc(av) + '</span>'; return ''; }
   window.mpAvatarHtml = avatarHtml;
   /* shared tier insignia (SVG, no emoji): faceted gem for Diamond, hexagon+star medal otherwise */
-  // Prestige stars (2026-09-06): one small star per 100k XP past Legendary, drawn as SVG (never a glyph — a
+  // Prestige stars (2026-09-06): one small star per 100k XP past Legendary, drawn as SVG (never a glyph - a
   // text star turns into an emoji on some platforms). Sits right after the level badge everywhere it shows.
   window.mpPrestigeSvg = window.mpPrestigeSvg || function (n, col) { n = Math.min(9, +n || 0); if (!n) return ''; col = col || '#ff7a1a';
     var one = '<svg viewBox="0 0 24 24" width="9" height="9" style="display:inline-block;vertical-align:-1px;margin-left:1px"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="' + col + '"/></svg>';
@@ -149,7 +149,7 @@
     + '.mpa-btn{width:100%;margin-top:11px;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:14.5px;border:none;border-radius:11px;padding:13px;cursor:pointer;transition:filter .15s}'
     + '.mpa-btn:hover{filter:brightness(1.06)}'
     + '.mpa-svg{width:18px;height:18px;flex:none;display:block}'
-    // 2×2 tile grid for the social actions — one calm accent, monochrome icons
+    // 2×2 tile grid for the social actions - one calm accent, monochrome icons
     + '.mpa-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 0}'
     + '.mpa-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:#0f131a;border:1px solid #222a35;border-radius:11px;padding:6px 10px 5px;cursor:pointer;color:#cfd5dc;transition:border-color .15s,background .15s,transform .05s}'
     + '.mpa-tile .mpa-svg{width:20px;height:20px;color:#7f8a97;transition:color .15s}'
@@ -157,7 +157,7 @@
     + '.mpa-tile-l{font-size:13px;font-weight:700;letter-spacing:.01em}'
     + '.mpa-tile-dot{position:absolute;top:10px;right:11px;min-width:17px;height:17px;line-height:17px;padding:0 4px;box-sizing:border-box;text-align:center;background:#38bdf8;color:#04121c;border-radius:9px;font-size:10.5px;font-weight:800;font-family:ui-monospace,Consolas,monospace}'
     + '.mpa-tile-dot[hidden]{display:none}'
-    // single-line secondary rows (edit, xp) — quiet, with a chevron
+    // single-line secondary rows (edit, xp) - quiet, with a chevron
     + '.mpa-row2{display:flex;align-items:center;gap:10px;width:100%;margin-top:5px;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:6px 11px;cursor:pointer;color:#cfd5dc;font-size:13.5px;font-weight:600;text-align:left;transition:border-color .15s,background .15s}'
     + '.mpa-row2:hover{border-color:#33404f;background:#131923}.mpa-row2 .mpa-svg{width:18px;height:18px;color:#7f8a97}.mpa-row2 span{flex:1}.mpa-row2 .mpa-svg:last-child{width:15px;height:15px;color:#556170}'
     // footer: support + sign out as quiet links
@@ -210,7 +210,7 @@
     + '.mpa-lvl-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--lc),#ffffff88);transition:width .6s ease}'
     + '.mpa-lvl-link{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:11px;font-weight:700;color:#c2f64a;text-decoration:none}.mpa-lvl-link:hover{text-decoration:underline}'
     + '.mpa-lvl-link:hover{background:rgba(194,246,74,.08)}'
-    /* ===== header profile card v2 (2026-09-12, owner: "cooler, and solve the space better") — ONE identity header
+    /* ===== header profile card v2 (2026-09-12, owner: "cooler, and solve the space better") - ONE identity header
        (avatar in the level ring, name + chips, email, level line, XP bar) instead of four stacked boxes; four measured
        season numbers as a divided strip; the four social actions in ONE row; the five settings rows as ONE grouped list;
        Support / Sign out as quiet text. Desktop: centred card 376 px. Phone: a bottom sheet with a grab handle. ===== */
@@ -358,15 +358,15 @@
     + '.mpa-nf-b{flex:1;min-width:0;font-size:13px;line-height:1.45;color:#c7cdd4}.mpa-nf-ago{display:block;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace;margin-top:3px}'
     + '.mpa-badge{display:inline-block;min-width:16px;height:16px;line-height:16px;padding:0 4px;margin-left:6px;background:#ff5a4d;color:#fff;border-radius:9px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle}'
     + '.mpa-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5a4d;margin-left:5px;vertical-align:middle}'
-    // glowing notification ping pinned to the account button's corner — an unread message from the MarginPad team
+    // glowing notification ping pinned to the account button's corner - an unread message from the MarginPad team
     // must be impossible to miss (a static inline dot wasn't)
     + '.mpa-ping{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff5a4d;border:2px solid #0a0b0d;z-index:6;pointer-events:none;animation:mpaPing 1.5s ease-out infinite}'
     + '@keyframes mpaPing{0%{box-shadow:0 0 0 0 rgba(255,90,77,.75),0 0 8px rgba(255,90,77,.9)}70%{box-shadow:0 0 0 10px rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}100%{box-shadow:0 0 0 0 rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}}'
     + '@media(prefers-reduced-motion:reduce){.mpa-ping{animation:none;box-shadow:0 0 8px rgba(255,90,77,.9)}}'
-    // profile-card frame cosmetics — applied to the real card (.lbm-card) AND the customize-panel swatch (.mpa-fr-sw)
+    // profile-card frame cosmetics - applied to the real card (.lbm-card) AND the customize-panel swatch (.mpa-fr-sw)
     + '@property --mpAng{syntax:"<angle>";initial-value:0deg;inherits:false}'
     + '@keyframes mpaSpin{to{--mpAng:360deg}}'
-    // --- LEVEL TIERS (earned by XP) — restrained, escalate softly ---
+    // --- LEVEL TIERS (earned by XP) - restrained, escalate softly ---
     + '.lbm-card.frame-silver,.mpa-fr-sw.frame-silver{border-color:#c3cdda;box-shadow:0 0 0 1px rgba(195,205,218,.55),0 16px 54px -24px rgba(195,205,218,.42)}'
     + '.lbm-card.frame-gold,.mpa-fr-sw.frame-gold{border-color:#ffcf3f;box-shadow:0 0 0 1px rgba(255,207,63,.55),0 0 24px -14px rgba(255,207,63,.4),0 16px 54px -24px rgba(255,207,63,.4)}'
     + '.lbm-card.frame-platinum,.mpa-fr-sw.frame-platinum{border-color:#8fe6ff;box-shadow:0 0 0 1px rgba(143,230,255,.6),0 0 28px -12px rgba(143,230,255,.42),inset 0 1px 0 rgba(255,255,255,.14),0 16px 54px -24px rgba(143,230,255,.4)}'
@@ -374,7 +374,7 @@
     + '@keyframes mpaDiaHalo{0%,100%{box-shadow:0 0 0 1px rgba(190,160,255,.6),0 0 36px -10px rgba(157,120,255,.5),0 0 90px -32px rgba(120,190,255,.48),inset 0 0 46px -24px rgba(200,180,255,.6),0 22px 70px -28px rgba(0,0,0,.8)}50%{box-shadow:0 0 0 1px rgba(220,200,255,.95),0 0 62px -4px rgba(170,135,255,.8),0 0 150px -24px rgba(140,205,255,.7),inset 0 0 50px -20px rgba(215,200,255,.9),0 22px 70px -28px rgba(0,0,0,.8)}}'
     + '.lbm-card.frame-legendary,.mpa-fr-sw.frame-legendary{position:relative;border-color:transparent;box-shadow:0 0 0 1px rgba(255,150,50,.8),0 0 54px -8px rgba(255,120,30,.65),0 0 130px -30px rgba(255,90,20,.55),inset 0 0 50px -24px rgba(255,180,90,.62),0 24px 74px -28px rgba(0,0,0,.82);animation:mpaFrLeg 3.4s ease-in-out infinite}'
     + '@keyframes mpaFrLeg{0%,100%{box-shadow:0 0 0 1px rgba(255,150,50,.6),0 0 40px -12px rgba(255,120,30,.5),0 0 100px -34px rgba(255,90,20,.42),inset 0 0 50px -24px rgba(255,180,90,.5),0 24px 74px -28px rgba(0,0,0,.82)}50%{box-shadow:0 0 0 1px rgba(255,196,90,.95),0 0 78px -4px rgba(255,140,40,.85),0 0 170px -22px rgba(255,105,25,.7),inset 0 0 54px -18px rgba(255,205,120,.85),0 24px 74px -28px rgba(0,0,0,.82)}}'
-    // --- PREMIUM (paid) — animated glow / spinning aurora ring ---
+    // --- PREMIUM (paid) - animated glow / spinning aurora ring ---
     + '.lbm-card.frame-neon,.mpa-fr-sw.frame-neon{border-color:#c2f64a;box-shadow:0 0 0 1px #c2f64a,0 0 42px -6px rgba(194,246,74,.6);animation:mpaFrNeon 2.6s ease-in-out infinite}'
     + '@keyframes mpaFrNeon{0%,100%{box-shadow:0 0 0 1px #c2f64a,0 0 30px -8px rgba(194,246,74,.5)}50%{box-shadow:0 0 0 1px #d8ff6a,0 0 58px -4px rgba(194,246,74,.9)}}'
     + '.lbm-card.frame-aurora,.mpa-fr-sw.frame-aurora{position:relative;border-color:transparent;box-shadow:0 0 40px -14px rgba(139,92,255,.5),0 18px 60px -26px rgba(0,0,0,.7)}'
@@ -397,17 +397,17 @@
     + '.lbm-card.frame-blood::after,.mpa-fr-sw.frame-blood::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#ff8a8a,#5a0a0a 45%,#ff4d4d 62%,#2a0404 88%,#c92a2a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     + '.lbm-card.frame-matrix,.mpa-fr-sw.frame-matrix{border-color:#39ff7a;box-shadow:0 0 0 1px rgba(57,255,122,.6),0 0 40px -8px rgba(57,255,122,.45)}'
     + '.lbm-card.frame-matrix::after,.mpa-fr-sw.frame-matrix::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:repeating-linear-gradient(0deg,#0a2313 0 3px,#1fda66 3px 4px,#0a2313 4px 8px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    + '.lbm-card.frame-ice,.mpa-fr-sw.frame-ice{border-color:#35c0e8;box-shadow:0 0 0 1px rgba(53,192,232,.75),0 0 40px -10px rgba(20,150,200,.6),inset 0 1px 0 rgba(200,240,255,.25)}'/* uniqueness pass 2026-08-16: SATURATED arctic cyan — was pale blue, statically identical to platinum/streak100 */
+    + '.lbm-card.frame-ice,.mpa-fr-sw.frame-ice{border-color:#35c0e8;box-shadow:0 0 0 1px rgba(53,192,232,.75),0 0 40px -10px rgba(20,150,200,.6),inset 0 1px 0 rgba(200,240,255,.25)}'/* uniqueness pass 2026-08-16: SATURATED arctic cyan - was pale blue, statically identical to platinum/streak100 */
     + '.lbm-card.frame-ice::after,.mpa-fr-sw.frame-ice::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#a8f0ff,#1690c0 40%,#5fd8f8 58%,#0a5a80 84%,#35c0e8);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    + '.lbm-card.frame-ember,.mpa-fr-sw.frame-ember{border-color:#2a2320;box-shadow:0 0 0 1px rgba(70,55,45,.9),0 0 30px -10px rgba(255,80,20,.4);animation:mpaFrLeg 3.4s ease-in-out infinite}'/* uniqueness pass 2026-08-16: SMOLDERING charcoal with thin fire cracks — was a plain orange ring lost between streak30/inferno/legendary; "smoldering" is coals, not flames */
+    + '.lbm-card.frame-ember,.mpa-fr-sw.frame-ember{border-color:#2a2320;box-shadow:0 0 0 1px rgba(70,55,45,.9),0 0 30px -10px rgba(255,80,20,.4);animation:mpaFrLeg 3.4s ease-in-out infinite}'/* uniqueness pass 2026-08-16: SMOLDERING charcoal with thin fire cracks - was a plain orange ring lost between streak30/inferno/legendary; "smoldering" is coals, not flames */
     + '.lbm-card.frame-ember::after,.mpa-fr-sw.frame-ember::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:repeating-conic-gradient(from 15deg,#1a1412 0 22deg,#ff3d00 22deg 24deg,#2a201a 24deg 46deg,#ff7a1a 46deg 47.5deg,#16100c 47.5deg 70deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     + '.lbm-card.frame-sakura,.mpa-fr-sw.frame-sakura{border-color:#ffb7c9;box-shadow:0 0 0 1px rgba(255,183,201,.6),0 0 30px -12px rgba(255,150,180,.45)}'
     + '.lbm-card.frame-sakura::after,.mpa-fr-sw.frame-sakura::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(150deg,#fff1f4,#ff9fbb 40%,#ffe3ea 58%,#c96a86 84%,#ffc7d6);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    + '.lbm-card.frame-void,.mpa-fr-sw.frame-void{border-color:#0a0512;box-shadow:0 0 46px 8px rgba(0,0,0,.85),0 0 0 1px rgba(90,60,140,.4),inset 0 0 46px -20px rgba(10,2,20,.95)}'/* uniqueness pass 2026-08-16: the light-EATER — the only frame that darkens around itself instead of glowing (was a violet glow ring, statically identical to singularity) */
+    + '.lbm-card.frame-void,.mpa-fr-sw.frame-void{border-color:#0a0512;box-shadow:0 0 46px 8px rgba(0,0,0,.85),0 0 0 1px rgba(90,60,140,.4),inset 0 0 46px -20px rgba(10,2,20,.95)}'/* uniqueness pass 2026-08-16: the light-EATER - the only frame that darkens around itself instead of glowing (was a violet glow ring, statically identical to singularity) */
     + '.lbm-card.frame-void::after,.mpa-fr-sw.frame-void::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#050208,#1a0d2e 30%,#241238 50%,#0a0512 70%,#050208);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
     + '.lbm-card.frame-sovereign,.mpa-fr-sw.frame-sovereign{border-color:transparent;box-shadow:0 0 0 1px rgba(255,244,214,.7),0 0 64px -10px rgba(255,228,150,.6),inset 0 0 40px -26px rgba(255,240,200,.5)}'
     + '.lbm-card.frame-sovereign::after,.mpa-fr-sw.frame-sovereign::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#fff8e1,#d4af37,#ffffff,#b8860b,#fff8e1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 8s linear infinite}'
-    + '.lbm-card.frame-eclipse,.mpa-fr-sw.frame-eclipse{border-color:#0c0804;box-shadow:0 0 0 1px rgba(60,35,10,.8),0 0 64px -6px rgba(255,120,20,.6),inset 0 0 36px -22px rgba(255,140,40,.3)}'/* uniqueness pass 2026-08-16: a BLACK ring with one burning corona crescent — the ring itself stays dark (a black sun), unlike every other orange frame */
+    + '.lbm-card.frame-eclipse,.mpa-fr-sw.frame-eclipse{border-color:#0c0804;box-shadow:0 0 0 1px rgba(60,35,10,.8),0 0 64px -6px rgba(255,120,20,.6),inset 0 0 36px -22px rgba(255,140,40,.3)}'/* uniqueness pass 2026-08-16: a BLACK ring with one burning corona crescent - the ring itself stays dark (a black sun), unlike every other orange frame */
     + '.lbm-card.frame-eclipse::after,.mpa-fr-sw.frame-eclipse::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ffb35a 0deg 26deg,#ff7a10 40deg,#0a0705 70deg,#070503 300deg,#ff9a2a 340deg,#ffb35a 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
     + '.lbm-card.frame-inferno,.mpa-fr-sw.frame-inferno{position:relative;border-color:transparent;box-shadow:0 0 0 1px rgba(255,120,30,.7),0 0 40px -8px rgba(255,100,20,.6),inset 0 0 44px -24px rgba(255,140,50,.6);animation:mpaFire 1.7s ease-in-out infinite}'
     + '@keyframes mpaFire{0%,100%{box-shadow:0 0 0 1px rgba(255,120,30,.6),0 0 34px -10px rgba(255,100,20,.5),inset 0 0 44px -24px rgba(255,140,50,.5)}28%{box-shadow:0 0 0 1px rgba(255,165,62,.9),0 0 54px -6px rgba(255,120,30,.78),inset 0 0 48px -20px rgba(255,175,72,.72)}52%{box-shadow:0 0 0 1px rgba(255,130,35,.68),0 0 40px -9px rgba(255,105,22,.58),inset 0 0 46px -22px rgba(255,150,60,.58)}76%{box-shadow:0 0 0 1px rgba(255,185,85,.95),0 0 64px -4px rgba(255,135,38,.85),inset 0 0 52px -16px rgba(255,195,95,.8)}}'
@@ -423,13 +423,13 @@
     + '.lbm-card.frame-operative,.mpa-fr-sw.frame-operative{border-color:#8a9a4a;box-shadow:0 0 0 1px rgba(138,154,74,.6),0 0 26px -12px rgba(169,185,106,.5),inset 0 0 30px -22px rgba(169,185,106,.4)}'
     + '.lbm-card.frame-operative::after,.mpa-fr-sw.frame-operative::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:repeating-linear-gradient(45deg,#5a6630 0 10px,#2c3318 10px 20px,#a9b96a 20px 22px,#2c3318 22px 32px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     /* ---- F5 long-haul progression frames (2026-08-15) ---- */
-    + '.lbm-card.frame-mission500,.mpa-fr-sw.frame-mission500{border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.65),0 0 30px -12px rgba(255,215,90,.5),inset 0 0 30px -22px rgba(255,215,90,.35)}'/* uniqueness pass 2026-08-16: BLACK+GOLD hazard tape at -45deg — was olive stripes at 45deg, statically identical to operative camo */
+    + '.lbm-card.frame-mission500,.mpa-fr-sw.frame-mission500{border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.65),0 0 30px -12px rgba(255,215,90,.5),inset 0 0 30px -22px rgba(255,215,90,.35)}'/* uniqueness pass 2026-08-16: BLACK+GOLD hazard tape at -45deg - was olive stripes at 45deg, statically identical to operative camo */
     + '.lbm-card.frame-mission500::after,.mpa-fr-sw.frame-mission500::after{content:"";position:absolute;inset:-1.6px;border-radius:inherit;padding:1.6px;pointer-events:none;z-index:6;background:repeating-linear-gradient(-45deg,#ffd75a 0 10px,#14120a 10px 20px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    + '.lbm-card.frame-og180,.mpa-fr-sw.frame-og180{border-color:#b87333;box-shadow:0 0 0 1px rgba(184,115,51,.6),0 0 28px -12px rgba(58,160,138,.5),inset 0 0 34px -24px rgba(58,160,138,.4)}'/* uniqueness pass 2026-08-16: ANTIQUE copper with verdigris patina (OG = aged bronze) — was plain bronze, statically identical to dwell10/streak7 */
+    + '.lbm-card.frame-og180,.mpa-fr-sw.frame-og180{border-color:#b87333;box-shadow:0 0 0 1px rgba(184,115,51,.6),0 0 28px -12px rgba(58,160,138,.5),inset 0 0 34px -24px rgba(58,160,138,.4)}'/* uniqueness pass 2026-08-16: ANTIQUE copper with verdigris patina (OG = aged bronze) - was plain bronze, statically identical to dwell10/streak7 */
     + '.lbm-card.frame-og180::after,.mpa-fr-sw.frame-og180::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(150deg,#e0956a,#7a4520 25%,#3aa08a 45%,#b87333 62%,#1e6a58 80%,#c98a52);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    + '.lbm-card.frame-xp100k,.mpa-fr-sw.frame-xp100k{border-color:transparent;box-shadow:0 0 0 1px rgba(201,48,42,.7),0 0 54px -10px rgba(255,90,60,.5),inset 0 0 40px -24px rgba(255,215,90,.4)}'/* uniqueness pass 2026-08-16: CENTURION = Roman legion crimson + gold banded segments — was lime, statically identical to the premium neon frame */
+    + '.lbm-card.frame-xp100k,.mpa-fr-sw.frame-xp100k{border-color:transparent;box-shadow:0 0 0 1px rgba(201,48,42,.7),0 0 54px -10px rgba(255,90,60,.5),inset 0 0 40px -24px rgba(255,215,90,.4)}'/* uniqueness pass 2026-08-16: CENTURION = Roman legion crimson + gold banded segments - was lime, statically identical to the premium neon frame */
     + '.lbm-card.frame-xp100k::after,.mpa-fr-sw.frame-xp100k::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:6;background:repeating-conic-gradient(from var(--mpAng,0deg),#c9302a 0 24deg,#ffd75a 24deg 45deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 7s linear infinite}'
-    + '.lbm-card.frame-closer2k,.mpa-fr-sw.frame-closer2k{border-color:transparent;box-shadow:0 0 0 1px rgba(255,59,48,.7),0 0 50px -8px rgba(220,30,20,.55),inset 0 0 40px -24px rgba(255,80,70,.45);animation:mpaFrLeg 3s ease-in-out infinite}'/* uniqueness pass 2026-08-16: OVERCLOCK = redline tachometer, a white needle arc chasing around a deep red ring — was an orange conic lost among the fire frames */
+    + '.lbm-card.frame-closer2k,.mpa-fr-sw.frame-closer2k{border-color:transparent;box-shadow:0 0 0 1px rgba(255,59,48,.7),0 0 50px -8px rgba(220,30,20,.55),inset 0 0 40px -24px rgba(255,80,70,.45);animation:mpaFrLeg 3s ease-in-out infinite}'/* uniqueness pass 2026-08-16: OVERCLOCK = redline tachometer, a white needle arc chasing around a deep red ring - was an orange conic lost among the fire frames */
     + '.lbm-card.frame-closer2k::after,.mpa-fr-sw.frame-closer2k::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#ffffff 0 34deg,#ff3b30 34deg 60deg,#8a1410 100deg,#c9302a 200deg,#4a0a06 300deg,#ff3b30 340deg,#ffffff 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 4s linear infinite}'
     + '.lbm-card.frame-dwell500,.mpa-fr-sw.frame-dwell500{border-color:#6a4a2e;box-shadow:0 0 0 1px rgba(150,105,60,.65),0 0 40px -12px rgba(190,140,80,.5),inset 0 0 40px -24px rgba(120,80,40,.6)}'
     + '.lbm-card.frame-dwell500::after,.mpa-fr-sw.frame-dwell500::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#2a1a0c,#8a5c30 18%,#e0c090 30%,#4a2f16 46%,#b8895a 62%,#2a1a0c 78%,#caa06a 90%,#2a1a0c);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 11s linear infinite}'
@@ -441,7 +441,7 @@
     + '.lbm-card.frame-singularity::after,.mpa-fr-sw.frame-singularity::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#020108,#5a3cff 8%,#00d0ff 16%,#ffffff 19%,#7a5cff 28%,#020108 44%,#2a1a6a 58%,#00a0ff 70%,#020108 84%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 3.5s linear infinite}'
     + '.lbm-card.frame-singularity::before,.mpa-fr-sw.frame-singularity::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;background:radial-gradient(60% 60% at 50% 50%,transparent 55%,rgba(90,60,220,.12) 78%,rgba(0,208,255,.10) 100%)}'
     + '.lbm-card{--fs:1}'
-    // On a phone the card is ~354px inside a 390px screen, leaving 18px a side — less than the 25px the full-size
+    // On a phone the card is ~354px inside a 390px screen, leaving 18px a side - less than the 25px the full-size
     // ornament reaches, so it was being clipped by the viewport (owner's screenshots, 2026-09-13). Scale it to fit.
     + '@media(max-width:560px){.lbm-card{--fs:.62}}'
     + '.prev.lbm-card{--fs:.34}'
@@ -451,7 +451,7 @@
     + '.lbm-card.frame-midas,.mpa-fr-sw.frame-midas{border-color:transparent;box-shadow:0 0 0 1px rgba(255,240,190,.85),0 0 70px -6px rgba(255,205,90,.7),0 0 130px -30px rgba(255,180,40,.45),inset 0 0 46px -20px rgba(255,230,160,.6)}'
     + '.lbm-card.frame-midas::after,.mpa-fr-sw.frame-midas::after{content:"";position:absolute;inset:-2.8px;border-radius:inherit;padding:2.8px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#fff8e1,#ffd75a 12%,#8a5c00 26%,#ffec9a 38%,#d4af37 52%,#fffdf4 62%,#b8860b 76%,#ffe98a 88%,#fff8e1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 6s linear infinite}'
     + '.lbm-card.frame-midas::before,.mpa-fr-sw.frame-midas::before{content:"";position:absolute;inset:3px;border-radius:inherit;pointer-events:none;z-index:6;box-shadow:inset 0 0 0 1.4px rgba(255,220,130,.8),inset 0 0 24px -10px rgba(255,210,110,.6)}'
-    /* ---- REAL TRADER — the apex (2026-08-15): profit-green fire in a gold storm; fastest ring on the site + breathing glow + rising sparks ---- */
+    /* ---- REAL TRADER - the apex (2026-08-15): profit-green fire in a gold storm; fastest ring on the site + breathing glow + rising sparks ---- */
     + '.lbm-card.frame-realtrader,.mpa-fr-sw.frame-realtrader{border-color:transparent;box-shadow:0 0 0 1px rgba(255,246,214,.9),0 0 60px -6px rgba(46,230,168,.65),0 0 130px -18px rgba(255,215,90,.6),inset 0 0 50px -18px rgba(46,230,168,.5);animation:mpaFire 2.2s ease-in-out infinite}'
     + '.lbm-card.frame-realtrader::after,.mpa-fr-sw.frame-realtrader::after{content:"";position:absolute;inset:-3px;border-radius:inherit;padding:3px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#04130c,#2ee6a8 10%,#fff9e0 20%,#ffd75a 32%,#04130c 44%,#2ee6a8 56%,#ffffff 66%,#ffd75a 78%,#04130c 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 2.5s linear infinite}'
     + '.lbm-card.frame-realtrader::before,.mpa-fr-sw.frame-realtrader::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:6;background:radial-gradient(2.4px 2.4px at 20% 86%,rgba(46,230,168,.95),transparent 60%),radial-gradient(1.8px 1.8px at 55% 93%,rgba(255,215,90,.9),transparent 60%),radial-gradient(2px 2px at 80% 80%,rgba(255,255,255,.85),transparent 60%),radial-gradient(1.5px 1.5px at 38% 96%,rgba(46,230,168,.85),transparent 60%),linear-gradient(0deg,rgba(46,230,168,.14),transparent 55%);background-repeat:no-repeat;animation:mpaEmber 1.9s linear infinite}'
@@ -464,21 +464,21 @@
     + '.lbm-card.frame-streak7,.mpa-fr-sw.frame-streak7{border-color:#ffb84a;box-shadow:0 0 0 1px rgba(255,184,74,.55),0 0 30px -12px rgba(255,150,50,.5)}'
     + '.lbm-card.frame-streak7::after,.mpa-fr-sw.frame-streak7::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(15deg,#ffdf8a,#b85c00 45%,#ffb84a 65%,#5a2a00 90%,#ffcf6a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     + '.lbm-card.frame-streak30,.mpa-fr-sw.frame-streak30{border-color:#ff6a2a;box-shadow:0 0 0 1px rgba(255,106,42,.6),0 0 44px -8px rgba(255,80,20,.55);animation:mpaFrLeg 3s ease-in-out infinite}'
-    + '.lbm-card.frame-streak30::after,.mpa-fr-sw.frame-streak30::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(10deg,#ffd75a,#5a5a62 25%,#ff6a2a 45%,#2e2e34 70%,#c92a00 85%,#ffae4a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'/* uniqueness pass 2026-08-16: WILDFIRE = flame banded with smoke grey — separates it from inferno/legendary orange rings */
-    + '.lbm-card.frame-streak100,.mpa-fr-sw.frame-streak100{border-color:#ffffff;box-shadow:0 0 0 1px rgba(255,255,255,.85),0 0 70px -8px rgba(230,245,255,.7),inset 0 0 40px -26px rgba(255,255,255,.55)}'/* uniqueness pass 2026-08-16: ETERNAL FLAME = WHITE-hot plasma, the only pure-white ring — was pale blue, statically identical to ice/platinum */
+    + '.lbm-card.frame-streak30::after,.mpa-fr-sw.frame-streak30::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(10deg,#ffd75a,#5a5a62 25%,#ff6a2a 45%,#2e2e34 70%,#c92a00 85%,#ffae4a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'/* uniqueness pass 2026-08-16: WILDFIRE = flame banded with smoke grey - separates it from inferno/legendary orange rings */
+    + '.lbm-card.frame-streak100,.mpa-fr-sw.frame-streak100{border-color:#ffffff;box-shadow:0 0 0 1px rgba(255,255,255,.85),0 0 70px -8px rgba(230,245,255,.7),inset 0 0 40px -26px rgba(255,255,255,.55)}'/* uniqueness pass 2026-08-16: ETERNAL FLAME = WHITE-hot plasma, the only pure-white ring - was pale blue, statically identical to ice/platinum */
     + '.lbm-card.frame-streak100::after,.mpa-fr-sw.frame-streak100::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ffffff,#f2fbff 30%,#dfeef6 50%,#ffffff 70%,#eef8ff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 6.5s linear infinite}'
     + '.lbm-card.frame-champion,.mpa-fr-sw.frame-champion{border-color:transparent;box-shadow:0 0 0 1px rgba(255,215,90,.8),0 0 70px -8px rgba(255,200,60,.65),inset 0 0 44px -24px rgba(255,220,120,.55)}'
-    + '.lbm-card.frame-champion::after,.mpa-fr-sw.frame-champion::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ffd75a,#ffffff 10%,#c98f1b 22%,#fff3c0 45%,#ffd75a 58%,#ffffff 66%,#c98f1b 78%,#ffd75a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 5.5s linear infinite}'/* uniqueness pass 2026-08-16: white diamond flashes in the gold band — statically separates champion from founder/owner/gold uniform-gold rings */
-    // --- DEADEYE — Win-Rate season #1: gunmetal scope ring with a red-dot sweep (uniqueness pass 2026-08-16: was green ticks, statically collided with matrix/jade) ---
+    + '.lbm-card.frame-champion::after,.mpa-fr-sw.frame-champion::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ffd75a,#ffffff 10%,#c98f1b 22%,#fff3c0 45%,#ffd75a 58%,#ffffff 66%,#c98f1b 78%,#ffd75a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 5.5s linear infinite}'/* uniqueness pass 2026-08-16: white diamond flashes in the gold band - statically separates champion from founder/owner/gold uniform-gold rings */
+    // --- DEADEYE - Win-Rate season #1: gunmetal scope ring with a red-dot sweep (uniqueness pass 2026-08-16: was green ticks, statically collided with matrix/jade) ---
     + '.lbm-card.frame-deadeye,.mpa-fr-sw.frame-deadeye{border-color:transparent;box-shadow:0 0 0 1px rgba(154,163,173,.75),0 0 44px -12px rgba(154,163,173,.45),inset 0 0 36px -26px rgba(255,59,48,.35)}'
     + '.lbm-card.frame-deadeye::after,.mpa-fr-sw.frame-deadeye::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ff3b30 0 10deg,rgba(255,59,48,.35) 10deg 16deg,transparent 16deg 360deg),repeating-conic-gradient(from var(--mpAng,0deg),#cdd3da 0 2deg,rgba(42,48,56,.85) 2deg 30deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
-    // --- OVERDRIVE — XP season #1: electric fuchsia voltage, the fastest spin on the site (uniqueness pass 2026-08-16: was violet-cyan, statically identical to the premium aurora frame; fuchsia is used by NO other frame) ---
+    // --- OVERDRIVE - XP season #1: electric fuchsia voltage, the fastest spin on the site (uniqueness pass 2026-08-16: was violet-cyan, statically identical to the premium aurora frame; fuchsia is used by NO other frame) ---
     + '.lbm-card.frame-overdrive,.mpa-fr-sw.frame-overdrive{border-color:transparent;box-shadow:0 0 0 1px rgba(255,42,208,.8),0 0 70px -8px rgba(255,42,208,.55),inset 0 0 44px -24px rgba(255,42,208,.45)}'
     + '.lbm-card.frame-overdrive::after,.mpa-fr-sw.frame-overdrive::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ff2ad0,#ffffff 12%,#a01470 28%,#ff8af0 45%,#ff2ad0 58%,#ffffff 66%,#7a0e54 82%,#ff2ad0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 3.2s linear infinite}'
-    // --- TYCOON — Spot Bank season #1: deep emerald ring with solid gold corner caps, static and heavy (uniqueness pass 2026-08-16: was a green-gold conic, statically collided with realtrader; corner-cap structure is shared only with royal, in a different palette) ---
+    // --- TYCOON - Spot Bank season #1: deep emerald ring with solid gold corner caps, static and heavy (uniqueness pass 2026-08-16: was a green-gold conic, statically collided with realtrader; corner-cap structure is shared only with royal, in a different palette) ---
     + '.lbm-card.frame-tycoon,.mpa-fr-sw.frame-tycoon{border-color:transparent;box-shadow:0 0 0 1px rgba(10,92,56,.9),0 0 56px -10px rgba(46,189,133,.55),inset 0 0 44px -24px rgba(255,215,90,.35)}'
     + '.lbm-card.frame-tycoon::after,.mpa-fr-sw.frame-tycoon::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:repeating-conic-gradient(from 25deg,#ffd75a 0 40deg,transparent 40deg 90deg),linear-gradient(160deg,#0a5c38,#2ebd85 45%,#063a24 80%,#0a5c38);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
-    // --- FOUNDER — rich gold + diagonal shine sweep (above premium) ---
+    // --- FOUNDER - rich gold + diagonal shine sweep (above premium) ---
     + '.lbm-card.frame-gold,.mpa-fr-sw.frame-gold{position:relative}'
     + '.lbm-card.frame-gold::before,.mpa-fr-sw.frame-gold::before{content:"";position:absolute;inset:0;height:auto;border-radius:inherit;pointer-events:none;z-index:6;background:linear-gradient(115deg,transparent 40%,rgba(255,220,120,.13) 47%,rgba(255,240,190,.32) 50%,rgba(255,220,120,.13) 53%,transparent 60%);background-size:250% 100%;background-repeat:no-repeat;background-position:170% 0;animation:mpaShine 7s linear infinite}'
     + '.lbm-card.frame-platinum,.mpa-fr-sw.frame-platinum{position:relative}'
@@ -489,7 +489,7 @@
     + '@keyframes mpGold{to{background-position:200% center}}'
     + '.lbm-card.frame-founder,.mpa-fr-sw.frame-founder{position:relative;border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.7),0 0 42px -8px rgba(255,198,74,.58),inset 0 0 44px -30px rgba(255,226,132,.75),0 22px 66px -30px rgba(0,0,0,.8)}'
     + '@keyframes mpaShine{0%{background-position:170% 0}42%{background-position:-80% 0}100%{background-position:-80% 0}}'
-    // --- OWNER — spinning gold-jewel ring, layered halo, inner sheen: the crown jewel (chako, gladijator only) ---
+    // --- OWNER - spinning gold-jewel ring, layered halo, inner sheen: the crown jewel (chako, gladijator only) ---
     + '.lbm-card.frame-owner,.mpa-fr-sw.frame-owner{position:relative;border-color:transparent;box-shadow:0 0 0 1px rgba(255,232,140,calc(.65 + .3*var(--nvP,.5))),0 0 calc(30px + 26px*var(--nvP,.5)) -6px rgba(255,205,80,calc(.5 + .3*var(--nvP,.5))),0 0 110px -26px rgba(194,246,74,calc(.2 + .2*var(--nvP,.5))),inset 0 0 60px -26px rgba(255,238,164,.6),0 24px 70px -30px rgba(0,0,0,.92)}'
     + '.lbm-card.frame-owner::after,.mpa-fr-sw.frame-owner::after{content:"";position:absolute;inset:calc(-1 * var(--fw));border-radius:calc(18px + var(--fw));padding:var(--fw);pointer-events:none;z-index:7;background:conic-gradient(from var(--nvA,0deg),#4a3208,#c79a34 4%,#f6dd9a 8%,#fffdf2 11%,#e2bb56 16%,#7a5a14 21%,#1d2410 26%,#0d1206 30%,#1d2410 34%,#8a6a1c 39%,#f4c94a 44%,#fffdf2 48%,#f4c94a 52%,#8a6a1c 57%,#1d2410 62%,#0d1206 67%,#1d2410 71%,#7a5a14 76%,#e2bb56 81%,#fffdf2 88%,#c79a34 93%,#4a3208);box-shadow:inset 0 0 0 calc(1.3px * var(--fs,1)) rgba(0,0,0,.8),inset 0 0 calc(9px * var(--fs,1)) calc(2px * var(--fs,1)) rgba(0,0,0,.5),inset 0 0 0 calc(2.6px * var(--fs,1)) rgba(120,88,16,.9),0 0 0 1px rgba(0,0,0,.55);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}'
     + '.lbm-card.frame-owner::before,.mpa-fr-sw.frame-owner::before{content:"";position:absolute;inset:calc(-1 * var(--fg));border-radius:calc(18px + var(--fg));padding:var(--fo);pointer-events:none;z-index:6;background:radial-gradient(circle calc(13px * var(--fs,1)) at 50% 0%,rgba(246,255,222,calc(.85 + .15*var(--nvP,.5))) 0 calc(2.5px * var(--fs,1)),#c2f64a calc(2.5px * var(--fs,1)) calc(6px * var(--fs,1)),#7da31c calc(6px * var(--fs,1)) calc(9px * var(--fs,1)),#3f550a calc(9px * var(--fs,1)) calc(10.4px * var(--fs,1)),#ffe9a8 calc(10.4px * var(--fs,1)) calc(12.2px * var(--fs,1)),rgba(90,60,10,.95) calc(12.2px * var(--fs,1)) calc(13px * var(--fs,1)),transparent calc(13px * var(--fs,1))),radial-gradient(calc(2.4px * var(--fs,1)) calc(2.4px * var(--fs,1)) at 34% 0%,rgba(255,246,200,.95),transparent 62%),radial-gradient(calc(2.4px * var(--fs,1)) calc(2.4px * var(--fs,1)) at 66% 0%,rgba(255,246,200,.95),transparent 62%),radial-gradient(calc(16px * var(--fs,1)) 44% at 0% 44%,#12160a 0 54%,#ffde7e 54% 62%,rgba(255,222,126,.45) 62% 74%,transparent 88%),radial-gradient(calc(16px * var(--fs,1)) 44% at 100% 44%,#12160a 0 54%,#ffde7e 54% 62%,rgba(255,222,126,.45) 62% 74%,transparent 88%),repeating-linear-gradient(66deg,rgba(255,222,126,.8) 0 calc(1.6px * var(--fs,1)),transparent calc(1.6px * var(--fs,1)) calc(9px * var(--fs,1))) 0 22%/calc(26px * var(--fs,1)) 52% no-repeat,repeating-linear-gradient(-66deg,rgba(255,222,126,.8) 0 calc(1.6px * var(--fs,1)),transparent calc(1.6px * var(--fs,1)) calc(9px * var(--fs,1))) 100% 22%/calc(26px * var(--fs,1)) 52% no-repeat,linear-gradient(180deg,rgba(255,222,120,.95) 0 calc(2px * var(--fs,1)),#6d9418 calc(2px * var(--fs,1)) calc(9px * var(--fs,1)),#3f550a calc(9px * var(--fs,1)) calc(11px * var(--fs,1)),rgba(255,222,120,.95) calc(11px * var(--fs,1)) calc(13px * var(--fs,1)),transparent calc(13px * var(--fs,1))) 50% 100%/62% calc(13px * var(--fs,1)) no-repeat,radial-gradient(circle calc(8px * var(--fs,1)) at 50% 100%,#fffdf2 0 calc(3px * var(--fs,1)),#c2f64a calc(3px * var(--fs,1)) calc(5.5px * var(--fs,1)),#ffe9a8 calc(5.5px * var(--fs,1)) calc(7px * var(--fs,1)),transparent calc(7px * var(--fs,1))),radial-gradient(circle calc(5px * var(--fs,1)) at 0% 0%,#fffdf2 0 calc(2px * var(--fs,1)),#8a6a1c calc(2px * var(--fs,1)) calc(4px * var(--fs,1)),transparent calc(4px * var(--fs,1))),radial-gradient(circle calc(5px * var(--fs,1)) at 100% 0%,#fffdf2 0 calc(2px * var(--fs,1)),#8a6a1c calc(2px * var(--fs,1)) calc(4px * var(--fs,1)),transparent calc(4px * var(--fs,1))),radial-gradient(circle calc(5px * var(--fs,1)) at 0% 100%,#fffdf2 0 calc(2px * var(--fs,1)),#8a6a1c calc(2px * var(--fs,1)) calc(4px * var(--fs,1)),transparent calc(4px * var(--fs,1))),radial-gradient(circle calc(5px * var(--fs,1)) at 100% 100%,#fffdf2 0 calc(2px * var(--fs,1)),#8a6a1c calc(2px * var(--fs,1)) calc(4px * var(--fs,1)),transparent calc(4px * var(--fs,1)));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}'
@@ -508,7 +508,7 @@
     + '.mpa-fr-sw{height:30px;border-radius:7px;border:1px solid #2a3340;background:linear-gradient(150deg,#141922,#0d1017)}'
     + '.mpa-fr-nm{font:700 11px monospace;color:#e7ecf2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.mpa-fr-by{font-size:10px;color:#8b97a5;line-height:1.2}.mpa-fr.on .mpa-fr-by{color:#c2f64a}'
-    // PRO members: glossy gold name (replaces the old "PRO" chip — fits everywhere, never clipped on mobile)
+    // PRO members: glossy gold name (replaces the old "PRO" chip - fits everywhere, never clipped on mobile)
     + '.mp-progold{background:linear-gradient(100deg,#e0a52a 0%,#ffe07a 18%,#fff6c8 30%,#ffd75a 46%,#e0a52a 68%,#ffe98a 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;color:transparent !important;font-weight:800 !important;text-shadow:none !important;animation:mpGold 3.2s linear infinite}'
     + '@keyframes mpGold{to{background-position:200% center}}'
     
@@ -535,7 +535,7 @@
     + '.lbm-card.frame-cathedral::after,.mpa-fr-sw.frame-cathedral::after{content:"";position:absolute;inset:-3.4px;border-radius:inherit;padding:3.4px;pointer-events:none;z-index:7;background:conic-gradient(from 18deg,#0a0810 0 2.4deg,#e0244c 2.4deg 16deg,#ff8098 16deg 27deg,#ff3358 27deg 42deg,#8a0a24 42deg 65.6deg,#0a0810 65.6deg 68deg,#2a5ce8 68deg 82deg,#8fc4ff 82deg 93deg,#3d74ff 93deg 108deg,#0a1f6a 108deg 131.6deg,#0a0810 131.6deg 134deg,#18bd7c 134deg 147deg,#9dfbcf 147deg 158deg,#2ee6a8 158deg 172deg,#06553a 172deg 197.6deg,#0a0810 197.6deg 200deg,#ffb32a 200deg 213deg,#fff0bc 213deg 224deg,#ffca55 224deg 238deg,#8a5a06 238deg 261.6deg,#0a0810 261.6deg 264deg,#8e3ce8 264deg 278deg,#dcbaff 278deg 289deg,#a35cff 289deg 304deg,#3d0f78 304deg 329.6deg,#0a0810 329.6deg 332deg,#e0244c 332deg 344deg,#ff8098 344deg 356deg,#c01038 356deg 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     + '.lbm-card.frame-cathedral::before,.mpa-fr-sw.frame-cathedral::before{content:"";position:absolute;inset:1px;border-radius:inherit;pointer-events:none;z-index:5;box-shadow:inset 0 0 0 1.2px rgba(196,152,58,.42),inset 0 0 22px -8px rgba(255,214,140,.3);background:radial-gradient(54% 56% at 86% 2%,rgba(224,36,76,.3),transparent 66%),radial-gradient(50% 62% at 106% 60%,rgba(42,92,232,.28),transparent 66%),radial-gradient(62% 52% at 54% 108%,rgba(24,189,124,.26),transparent 66%),radial-gradient(52% 58% at -8% 76%,rgba(255,179,42,.26),transparent 66%),radial-gradient(50% 54% at 4% 2%,rgba(142,60,232,.28),transparent 66%),radial-gradient(66% 68% at 50% 50%,rgba(3,4,9,.62),transparent 72%);animation:mpaCathedral 6.4s ease-in-out infinite}'
     + '@keyframes mpaCathedral{0%,100%{opacity:.8}50%{opacity:1}}'
-    /* ===== NATIONS (2026-09-05): 20 country frames, $1.99 — generated from scratchpad nations.css by inject.js ===== */
+    /* ===== NATIONS (2026-09-05): 20 country frames, $1.99 - generated from scratchpad nations.css by inject.js ===== */
     + '.lbm-card[class*="frame-nat_"],.mpa-fr-sw[class*="frame-nat_"]{position:relative;border-color:transparent;box-shadow:0 0 0 1px var(--nr,rgba(255,255,255,.25)),0 0 34px -8px var(--ng,rgba(255,255,255,.4)),0 0 80px -30px var(--ng,rgba(255,255,255,.3)),inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 40px -26px var(--ng,rgba(255,255,255,.3)),0 18px 56px -26px rgba(0,0,0,.85);animation:mpaNation 5.2s ease-in-out infinite}'
     + '@property --mpShx{syntax:"<percentage>";initial-value:220%;inherits:false}'
     + '@keyframes mpaNatSheen{0%,55%{--mpShx:220%}100%{--mpShx:-160%}}'
@@ -714,9 +714,9 @@
     + '.lbm-card.bg-bg_orbit{background:radial-gradient(1.4px 1.4px at 18% 14%,rgba(255,255,255,.7),transparent 60%),radial-gradient(1.1px 1.1px at 46% 9%,rgba(220,232,255,.6),transparent 60%),radial-gradient(1.3px 1.3px at 74% 17%,rgba(255,255,255,.65),transparent 60%),radial-gradient(1px 1px at 88% 8%,rgba(220,232,255,.5),transparent 60%),radial-gradient(1px 1px at 62% 26%,rgba(255,255,255,.4),transparent 60%),radial-gradient(1.6px 1.6px at 26% 88%,rgba(255,206,140,.75),transparent 62%),radial-gradient(1.5px 1.5px at 44% 93%,rgba(255,214,150,.6),transparent 62%),radial-gradient(1.5px 1.5px at 63% 90%,rgba(255,200,130,.55),transparent 62%),radial-gradient(1.4px 1.4px at 79% 95%,rgba(255,210,140,.45),transparent 62%),radial-gradient(150% 150% at 50% 190%,#0a1622 0 86%,rgba(140,205,255,.9) 86% 87.4%,rgba(80,160,245,.32) 87.4% 90%,rgba(40,105,195,.1) 90% 94%,transparent 95%),linear-gradient(180deg,#04060c,#080a10)}'
     // ---- REGALIA (2026-09-13, from the crest the owner put in the folder): a cut ruby in a gold setting at the crown,
     // dark navy wings folded down both sides, a battle ribbon across the foot, gold stars. Everything is gradient
-    // furniture on the two pseudo-elements — a card frame has no room for real ornament, so each piece is placed where
+    // furniture on the two pseudo-elements - a card frame has no room for real ornament, so each piece is placed where
     // it reads at the real card size: the gem at the top centre, the ribbon in the bottom eighth, the wings on the
-    // outer thirds. Motion (the ring turning, the gem breathing) is driven from JS, never @keyframes — see the sweep
+    // outer thirds. Motion (the ring turning, the gem breathing) is driven from JS, never @keyframes - see the sweep
     // at the tail of this file; --nvA is the ring angle and --nvP the 0-1 pulse.
     + '.lbm-card.frame-regalia,.mpa-fr-sw.frame-regalia{position:relative;border-color:transparent;box-shadow:0 0 0 1px rgba(226,178,74,.9),0 0 calc(26px + 18px*var(--nvP,.5)) -8px rgba(198,26,44,calc(.45 + .3*var(--nvP,.5))),0 0 90px -28px rgba(226,178,74,.6),inset 0 0 60px -22px rgba(120,8,20,.75),0 24px 70px -30px rgba(0,0,0,.92)}'
     + '.lbm-card.frame-regalia::after,.mpa-fr-sw.frame-regalia::after{content:"";position:absolute;inset:calc(-1 * var(--fw));border-radius:calc(18px + var(--fw));padding:var(--fw);pointer-events:none;z-index:7;background:conic-gradient(from var(--nvA,0deg),#4a3208,#c79a34 4%,#f6dd9a 8%,#fff6d2 11%,#d9a93c 16%,#7a5a14 21%,#243056 26%,#0e1428 30%,#243056 34%,#8a6a1c 39%,#e2bb56 44%,#fff6d2 48%,#e2bb56 52%,#8a6a1c 57%,#243056 62%,#0e1428 67%,#243056 71%,#7a5a14 76%,#d9a93c 81%,#fff6d2 88%,#c79a34 93%,#4a3208);box-shadow:inset 0 0 0 calc(1.3px * var(--fs,1)) rgba(0,0,0,.8),inset 0 0 calc(9px * var(--fs,1)) calc(2px * var(--fs,1)) rgba(0,0,0,.5),inset 0 0 0 calc(2.6px * var(--fs,1)) rgba(120,84,18,.9),0 0 0 1px rgba(0,0,0,.55);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}'
@@ -740,11 +740,11 @@
     + '.lbm-card.frame-supernova::before,.mpa-fr-sw.frame-supernova::before{content:"";position:absolute;inset:calc(-1 * var(--fg));border-radius:calc(18px + var(--fg));padding:var(--fo);pointer-events:none;z-index:6;opacity:calc(.5 + .5*var(--nvP,.5));background:radial-gradient(circle calc(11px * var(--fs,1)) at 50% 0%,rgba(255,248,220,.95) 0 calc(3px * var(--fs,1)),rgba(255,182,46,.9) calc(3px * var(--fs,1)) calc(6.5px * var(--fs,1)),rgba(255,77,42,.7) calc(6.5px * var(--fs,1)) calc(9px * var(--fs,1)),transparent calc(11px * var(--fs,1))),radial-gradient(calc(2.6px * var(--fs,1)) calc(2.6px * var(--fs,1)) at 22% 0%,rgba(169,255,234,.9),transparent 60%),radial-gradient(calc(2.6px * var(--fs,1)) calc(2.6px * var(--fs,1)) at 78% 0%,rgba(255,46,168,.85),transparent 60%),radial-gradient(calc(2.2px * var(--fs,1)) calc(2.2px * var(--fs,1)) at 12% 100%,rgba(122,60,255,.85),transparent 60%),radial-gradient(calc(2.2px * var(--fs,1)) calc(2.2px * var(--fs,1)) at 88% 100%,rgba(37,211,255,.85),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}'
     + '.mpa-fr-sw.frame-supernova{--nvP:.7}'
     // picker surfaces keep the carved band only: at thumbnail scale the outer silhouette collapses into a stray
-    // coloured line above the tile. LAST in the sheet on purpose — it ties on specificity with the per-frame rules.
+    // coloured line above the tile. LAST in the sheet on purpose - it ties on specificity with the per-frame rules.
     + '.prev.frame-regalia::before,.prev.frame-owner::before,.prev.frame-supernova::before,.mpa-fr-sw.frame-regalia::before,.mpa-fr-sw.frame-owner::before,.mpa-fr-sw.frame-supernova::before{content:none}'
     + '@media(prefers-reduced-motion:reduce){.mp-progold{animation:none;background-position:30% center}}'
     /* The message-action sheet and the reaction chips. They live HERE because the code that creates them lives
-       here too, and mp-auth is the one bundle on every page — a page without home.css would otherwise show an
+       here too, and mp-auth is the one bundle on every page - a page without home.css would otherwise show an
        unstyled sheet (2026-09-14). The room chat keeps its own copy of the .ct-* rules for the same reason. */
     + '.ct-sheet{position:fixed;z-index:2147483646;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}'
     + '.ct-sheet.on{opacity:1;transform:none}'
@@ -850,13 +850,13 @@
     var bk = bodyEl.querySelector('#mpaXpBack'); if (bk) bk.addEventListener('click', render);
     fetch('/api/auth/xphistory').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = '<div class="mpa-xp-empty">Please sign in again.</div>'; return; }
-      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> XP balance'; // NET balance (duel stakes now move Ticks, not XP, so this is simply earned XP) — was labeled "total XP earned", which read as "my earned total went DOWN" after staking a duel
+      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> XP balance'; // NET balance (duel stakes now move Ticks, not XP, so this is simply earned XP) - was labeled "total XP earned", which read as "my earned total went DOWN" after staking a duel
       var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4), sp = (d.spent || []).slice(0, 3); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join('') + sp.map(function (x) { return '<span class="mpa-xp-chip neg">' + esc(XPN[x.src] || x.src) + ' <b>' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
       var list = bodyEl.querySelector('#mpaXpList'); if (!list) return;
       var log = (d.log || []);
-      if (!log.length) { list.innerHTML = '<div class="mpa-xp-empty">No XP yet — close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'; return; }
+      if (!log.length) { list.innerHTML = '<div class="mpa-xp-empty">No XP yet - close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'; return; }
       list.innerHTML = log.map(function (e) { var amt = +e.amt || 0, pos = amt >= 0; var lbl = XPN[e.src] || e.src || 'XP'; return '<div class="mpa-xp-r"><span class="mpa-xp-amt ' + (pos ? 'pos' : 'neg') + '">' + (pos ? '+' : '') + amt + '</span><span class="mpa-xp-b"><span class="mpa-xp-lbl">' + esc(lbl) + '</span>' + (e.note ? '<span class="mpa-xp-note">' + esc(e.note) + '</span>' : '') + '</span><span class="mpa-xp-ago">' + xpAgo(e.ts) + '</span></div>'; }).join('');
-    }).catch(function () { var l = bodyEl.querySelector('#mpaXpList'); if (l) l.innerHTML = '<div class="mpa-xp-empty">Could not load your XP history — try again.</div>'; });
+    }).catch(function () { var l = bodyEl.querySelector('#mpaXpList'); if (l) l.innerHTML = '<div class="mpa-xp-empty">Could not load your XP history - try again.</div>'; });
   }
   // ---- Direct messages (user↔user) ----
   function dmCol(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return 'hsl(' + (h % 360) + ',55%,55%)'; }
@@ -883,7 +883,7 @@
     fetch('/api/dm/inbox').then(function (r) { return r.json(); }).then(function (d) {
       var ib = bodyEl.querySelector('#mpaIb'); if (!ib) return;
       var th = (d && d.threads) || [];
-      if (!th.length) { ib.innerHTML = '<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat — you can message people you follow (or who follow you).</div>'; return; }
+      if (!th.length) { ib.innerHTML = '<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat - you can message people you follow (or who follow you).</div>'; return; }
       ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + dmCol(t.name) + '">' + esc((t.name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
     }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = '<div class="mpa-xp-empty">Could not load your messages.</div>'; });
@@ -892,7 +892,7 @@
      The gesture and the sheet are the shared ones above; this is only what is specific to a DM: the sender may edit
      for the same fifteen minutes and delete at any time, either side may react, and everything goes through
      POST /api/dm/act, which resolves the caller from the session and decides there. A thread is polled rather than
-     pushed, so after an action the thread is simply re-pulled — the server's copy is the one that is drawn. */
+     pushed, so after an action the thread is simply re-pulled - the server's copy is the one that is drawn. */
   var DM_RX = ['\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDE22'], dmWho = '';
   function dmRxHtml(rx, id) {
     if (!rx) return ''; if (typeof rx === 'string') { try { rx = JSON.parse(rx); } catch (e) { return ''; } }
@@ -939,7 +939,7 @@
     })();
     var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), send = bodyEl.querySelector('#mpaDmSend'), warn = bodyEl.querySelector('#mpaDmWarn');
     var lastKey = '';
-    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi</div>'; lastKey = ''; return; }
+    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet - say hi</div>'; lastKey = ''; return; }
       // re-render only when the thread changed; keep the reader's place unless they were already at the bottom (2026-09-12: the thread loaded ONCE and a reply never appeared until the chat was closed and reopened)
       // an edit or a reaction changes no count and no timestamp, so they join the key or the poll would never redraw
       var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length
@@ -967,8 +967,8 @@
       fetch('/api/dm/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, text: v }) }).then(function (r) { return r.json(); }).then(function (d) {
         send.disabled = false;
         if (d && d.ok) { if (scroll.querySelector('.mpa-dm-empty')) scroll.innerHTML = ''; var b = document.createElement('div'); b.className = 'mpa-dbub me'; b.innerHTML = esc(v) + '<span class="t">now</span>'; scroll.appendChild(b); scroll.scrollTop = scroll.scrollHeight; if (warn) warn.innerHTML = ''; if (inp) inp.focus(); }
-        else { inp.value = old; var m = d && d.error === 'not_connected' ? 'Follow this trader first to message them.' : d && d.error === 'rate_limit' ? 'Slow down a moment.' : d && d.error === 'daily_limit' ? 'You’ve hit today’s message limit.' : d && d.error === 'restricted' ? 'Your account can’t send messages right now.' : d && d.error === 'need_username' ? 'Set a username first (in your profile).' : d && d.error === 'no_recipient' ? 'User not found.' : 'Could not send — try again.'; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">' + m + '</div>'; }
-      }).catch(function () { send.disabled = false; inp.value = old; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">Network error — try again.</div>'; });
+        else { inp.value = old; var m = d && d.error === 'not_connected' ? 'Follow this trader first to message them.' : d && d.error === 'rate_limit' ? 'Slow down a moment.' : d && d.error === 'daily_limit' ? 'You’ve hit today’s message limit.' : d && d.error === 'restricted' ? 'Your account can’t send messages right now.' : d && d.error === 'need_username' ? 'Set a username first (in your profile).' : d && d.error === 'no_recipient' ? 'User not found.' : 'Could not send - try again.'; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">' + m + '</div>'; }
+      }).catch(function () { send.disabled = false; inp.value = old; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">Network error - try again.</div>'; });
     }
     if (send) send.addEventListener('click', doSend);
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
@@ -990,7 +990,7 @@
     fetch('/api/lb/feed').then(function (r) { return r.json(); }).then(function (d) {
       var fd = bodyEl.querySelector('#mpaFd'); if (!fd) return;
       var ev = (d && d.feed) || [];
-      if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? 'No trades yet from the traders you follow — check back soon.' : 'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.') + '</div>'; return; }
+      if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? 'No trades yet from the traders you follow - check back soon.' : 'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.') + '</div>'; return; }
       fd.innerHTML = ev.map(function (e) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
         return '<div class="mpa-fd-r"><span class="mpa-ib-av" style="width:30px;height:30px;font-size:13px;background:' + dmCol(e.name) + '">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</span>'
           + '<div class="mpa-fd-b"><div class="mpa-fd-nm">' + badge + esc(e.name) + '</div><div class="mpa-fd-act">' + feedLine(e) + '</div></div>'
@@ -1003,7 +1003,7 @@
   var DTYPES = [
     { k: 'roe', nm: 'ROE Duel', ds: 'Highest single-trade ROE% wins', prem: false },
     { k: 'pnl', nm: 'Profit Duel', ds: 'Most realized profit ($) wins', prem: true },
-    { k: 'survival', nm: 'Survival', ds: 'Higher ending balance wins — blow up and you are out', prem: true },
+    { k: 'survival', nm: 'Survival', ds: 'Higher ending balance wins - blow up and you are out', prem: true },
     { k: 'streak', nm: 'Streak', ds: 'Longest run of winning trades wins', prem: true },
     { k: 'sniper', nm: 'Sniper', ds: 'Best ROE inside your first few trades', prem: true }
   ];
@@ -1018,9 +1018,9 @@
   };
   function dico(k) { return DICO[k] || (k === 'wr' ? DICO.roe : k === 'win' ? DICO.pnl : DICO.roe); }
   function durShort(ms) { return ({ '3600000': '1h', '86400000': '24h', '259200000': '3d', '604800000': '7d' })[String(ms)] || '7d'; }
-  var DRULE = { roe: 'Highest single-trade ROE% wins', wr: 'Best win rate wins (min 5 trades)', win: 'Biggest single winning trade wins', pnl: 'Most realized profit wins', survival: 'Higher ending balance wins — a blow-up loses', streak: 'Longest run of winning trades wins', sniper: 'Best ROE in your first few trades wins' };
+  var DRULE = { roe: 'Highest single-trade ROE% wins', wr: 'Best win rate wins (min 5 trades)', win: 'Biggest single winning trade wins', pnl: 'Most realized profit wins', survival: 'Higher ending balance wins - a blow-up loses', streak: 'Longest run of winning trades wins', sniper: 'Best ROE in your first few trades wins' };
   function _dm(v) { var a = Math.abs(+v || 0); return a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'K' : a.toFixed(a < 100 ? 2 : 0); } // compact money so a big score can never overflow the card
-  function duelScoreTxt(metric, v) { if (v == null) return '—';
+  function duelScoreTxt(metric, v) { if (v == null) return '-';
     if (metric === 'win' || metric === 'pnl') return (v >= 0 ? '+$' : '-$') + _dm(v);
     if (metric === 'survival') return '$' + _dm(v);
     if (metric === 'streak') return v + (v === 1 ? ' win' : ' wins');
@@ -1031,10 +1031,10 @@
   function duelTick(du) { Array.prototype.forEach.call(du.querySelectorAll('.mpa-dv[data-end]'), function (c) { var end = +c.getAttribute('data-end'), start = +c.getAttribute('data-start'), dur = +c.getAttribute('data-dur'); var tl = c.querySelector('.mpa-dv-tl'); if (tl) tl.textContent = duelTimeLeft(end); var bar = c.querySelector('.mpa-dv-bar i'); if (bar && dur > 0) bar.style.width = (Math.min(1, Math.max(0, (Date.now() - start) / dur)) * 100).toFixed(1) + '%'; }); }
   function renderDuels() {
     if (window._mpDuelT1) clearInterval(window._mpDuelT1); if (window._mpDuelT2) clearInterval(window._mpDuelT2);
-    var hhOn = (new Date()).getUTCHours() === 18; /* MIRROR: worker HH {hourUTC:18, durMin:60} — duel win-bonus doubles while it runs */
+    var hhOn = (new Date()).getUTCHours() === 18; /* MIRROR: worker HH {hourUTC:18, durMin:60} - duel win-bonus doubles while it runs */
     bodyEl.innerHTML = '<h3 class="mpa-h">Duels</h3>'
-      + (hhOn ? '<div style="font:700 11px \'Space Mono\',monospace;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#c2f64a);border-radius:8px;padding:6px 10px;margin:0 0 10px">HAPPY HOUR — duel win bonus is DOUBLED right now</div>' : '')
-      + '<p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader — or post an open challenge and let anyone take it. Best stat when the clock ends takes the pot.</p>'
+      + (hhOn ? '<div style="font:700 11px \'Space Mono\',monospace;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#c2f64a);border-radius:8px;padding:6px 10px;margin:0 0 10px">HAPPY HOUR - duel win bonus is DOUBLED right now</div>' : '')
+      + '<p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader - or post an open challenge and let anyone take it. Best stat when the clock ends takes the pot.</p>'
       + '<button class="mpa-send" id="mpaDuOpenPost" type="button" style="margin:0 0 12px">Post an open challenge</button>'
       + '<div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
     var bk = bodyEl.querySelector('#mpaDuBack'); if (bk) bk.addEventListener('click', render);
@@ -1055,7 +1055,7 @@
     var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' T</b>' : ''; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '<button class="mpa-du-y" data-durem="' + esc(x.id) + '" style="flex:0 0 auto;margin-left:8px" title="Same terms, straight back at them">Rematch</button></div>'; };
     var lobbyCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
       return '<div class="mpa-di">'
-        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.name) + (x.prem ? ' <span style="font:700 8px \'Space Mono\',monospace;color:#c2f64a">PRO</span>' : '') + '</b><span>Open ' + DMET[x.metric] + ' duel — first taker</span></div></div>'
+        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.name) + (x.prem ? ' <span style="font:700 8px \'Space Mono\',monospace;color:#c2f64a">PRO</span>' : '') + '</b><span>Open ' + DMET[x.metric] + ' duel - first taker</span></div></div>'
         + '<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>' + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : 'Any coin') + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' T' : 'None') + '</span></div>'
         + '<div class="mpa-di-acts"><button class="mpa-du-y" data-dutake="' + esc(x.id) + '">Take it' + (x.stake > 0 ? ' · stake ' + x.stake + ' T' : '') + '</button></div></div>'; };
     var myOpenCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">Your open challenge</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' T staked' : '') + ' · waiting for a taker</div></div><button class="mpa-du-n" data-ducxl="' + esc(x.id) + '" style="flex:0 0 auto">Cancel</button></div>'; };
@@ -1074,7 +1074,7 @@
         var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), mineOpen = all.filter(function (x) { return x.status === 'open'; }), done = all.filter(function (x) { return x.status === 'done'; });
         var html = '';
         if (inc.length) html += sec('Incoming challenges') + inc.map(incCard).join('');
-        if (lobby.length) html += sec('Open challenges — first taker wins the spot') + lobby.map(lobbyCard).join('');
+        if (lobby.length) html += sec('Open challenges - first taker wins the spot') + lobby.map(lobbyCard).join('');
         if (act.length) html += sec('Active') + act.map(vsCard).join('');
         if (mineOpen.length) html += sec('Your open posts') + mineOpen.map(myOpenCard).join('');
         if (pend.length) html += sec('Waiting for reply') + pend.map(pendCard).join('');
@@ -1115,10 +1115,10 @@
   }
   function duelNudge() { /* post-win momentum nudge -> duels (max 1/day) */
     try {
-      if (window.mpToast) { window.mpToast({ mark: '⚔', msg: 'On form. Put that streak on the line — challenge someone to a duel.', kind: 'record', ms: 9000, dismissible: true, key: 'duelnudge', action: { label: 'Duel', onClick: function () { try { open(); renderDuels(); } catch (e) {} } } }); return; }
+      if (window.mpToast) { window.mpToast({ mark: '⚔', msg: 'On form. Put that streak on the line - challenge someone to a duel.', kind: 'record', ms: 9000, dismissible: true, key: 'duelnudge', action: { label: 'Duel', onClick: function () { try { open(); renderDuels(); } catch (e) {} } } }); return; }
       var n = document.createElement('div');
       n.style.cssText = 'position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(8px);z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#151a12,#0d1014);border:1px solid rgba(245,166,35,.5);border-radius:14px;padding:11px 14px;box-shadow:0 18px 50px -18px rgba(0,0,0,.85),0 0 30px -14px rgba(245,166,35,.5);opacity:0;transition:opacity .3s,transform .3s;max-width:92vw';
-      n.innerHTML = '<span style="font:700 12.5px Familjen Grotesk,sans-serif;color:#e9e7df">On form. Put that streak on the line — challenge someone to a duel.</span><button type="button" style="flex:0 0 auto;background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:8px 13px;font:800 12px Familjen Grotesk,sans-serif;cursor:pointer">Duels</button><button type="button" aria-label="Dismiss" style="flex:0 0 auto;background:none;border:none;color:#5c656f;font-size:15px;cursor:pointer;padding:2px 4px">&#215;</button>';
+      n.innerHTML = '<span style="font:700 12.5px Familjen Grotesk,sans-serif;color:#e9e7df">On form. Put that streak on the line - challenge someone to a duel.</span><button type="button" style="flex:0 0 auto;background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:8px 13px;font:800 12px Familjen Grotesk,sans-serif;cursor:pointer">Duels</button><button type="button" aria-label="Dismiss" style="flex:0 0 auto;background:none;border:none;color:#5c656f;font-size:15px;cursor:pointer;padding:2px 4px">&#215;</button>';
       document.body.appendChild(n);
       requestAnimationFrame(function () { n.style.opacity = '1'; n.style.transform = 'translateX(-50%) translateY(0)'; });
       var kill = function () { n.style.opacity = '0'; setTimeout(function () { try { n.remove(); } catch (e) {} }, 320); };
@@ -1127,7 +1127,7 @@
       setTimeout(kill, 9000);
     } catch (e) {}
   }
-  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'daily_limit' ? ('Challenge limit for today (' + (d.cap || 5) + '). Back tomorrow' + (d.cap === 5 ? ' — Premium raises it to 20/day' : '') + '.') : e === 'open_cap' ? ('You already have an open challenge on the board' + (d.cap === 1 ? ' — Premium allows 3 at once' : '') + '. Cancel it or wait for a taker.') : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' — Premium raises it to 10' : '') + '.') : e === 'need_ticks' ? ('Not enough Ticks — you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? (d && d.teaser ? 'Your free premium-format duel for this week is used. Premium makes them unlimited.' : 'That is a Premium duel type.') : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
+  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'daily_limit' ? ('Challenge limit for today (' + (d.cap || 5) + '). Back tomorrow' + (d.cap === 5 ? ' - Premium raises it to 20/day' : '') + '.') : e === 'open_cap' ? ('You already have an open challenge on the board' + (d.cap === 1 ? ' - Premium allows 3 at once' : '') + '. Cancel it or wait for a taker.') : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' - Premium raises it to 10' : '') + '.') : e === 'need_ticks' ? ('Not enough Ticks - you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? (d && d.teaser ? 'Your free premium-format duel for this week is used. Premium makes them unlimited.' : 'That is a Premium duel type.') : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
   function renderDuelChallenge(name, isOpen) {
     name = String(name || '').replace(/[^a-zA-Z0-9_]/g, ''); if (!name && !isOpen) { renderDuels(); return; }
     ensurePrem(function (prem) {
@@ -1136,15 +1136,15 @@
       function upsell(reason) { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show(reason || 'Duels'); } }
       function draw() {
         var typeCards = DTYPES.map(function (t) { var locked = t.prem && !prem, on = C.type === t.k;
-          return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '"' + '>' + (locked ? '<span class="mpa-dt-pro">PRO · 1 free/wk</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join(''); /* premium formats stay pickable for free users — every account gets ONE premium-format duel a week (server enforces) */
+          return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '"' + '>' + (locked ? '<span class="mpa-dt-pro">PRO · 1 free/wk</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join(''); /* premium formats stay pickable for free users - every account gets ONE premium-format duel a week (server enforces) */
         var durSeg = DDUR.map(function (dd) { var locked = dd.v !== 604800000 && !prem; return '<b data-dur="' + dd.v + '" class="' + (C.dur === dd.v ? 'on' : '') + (locked ? ' lk' : '') + '" data-lk="' + (locked ? 1 : '') + '">' + dd.l + '</b>'; }).join('');
         var stkChips = DSTK.map(function (s) { var locked = !prem && s !== 0 && s !== 50; return '<button class="c' + (C.stake === s ? ' on' : '') + (locked ? ' lk' : '') + '" data-stk="' + s + '" data-lk="' + (locked ? 1 : '') + '">' + (s === 0 ? 'No stake' : s + ' T') + '</button>'; }).join('');
-        var html = isOpen ? '<h3 class="mpa-h">Open challenge</h3><p class="mpa-sub" style="margin:-4px 0 12px">No target — it goes on the board and the FIRST trader to take it is in. Winner locked when the clock runs out.</p>' : '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
+        var html = isOpen ? '<h3 class="mpa-h">Open challenge</h3><p class="mpa-sub" style="margin:-4px 0 12px">No target - it goes on the board and the FIRST trader to take it is in. Winner locked when the clock runs out.</p>' : '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
         html += '<div class="mpa-fld-l" style="margin-bottom:8px">Format</div><div class="mpa-dt-grid">' + typeCards + '</div>';
         html += '<div class="mpa-fld"><div class="mpa-fld-l">Duration' + (!prem ? ' <em>Premium unlocks faster rounds</em>' : '') + '</div><div class="mpa-seg">' + durSeg + '</div></div>';
         html += '<div class="mpa-fld"><div class="mpa-fld-l">XP wager' + (!prem ? ' <em>Premium sets any amount</em>' : '') + '</div><div class="mpa-stk">' + stkChips + '</div>' + (C.stake > 0 ? '<div class="mpa-stk-info"><span>Your XP: <b>' + xp.toLocaleString() + '</b></span><span>Winner takes <b>' + (C.stake * 2) + ' T</b></span></div>' : '') + '</div>';
         if (C.type === 'sniper') html += '<div class="mpa-fld"><div class="mpa-fld-l">Shots <em>first N trades count</em></div><div class="mpa-seg">' + [1, 2, 3, 4, 5].map(function (n) { return '<b data-mt="' + n + '" class="' + (C.maxTrades === n ? 'on' : '') + '">' + n + '</b>'; }).join('') + '</div></div>';
-        if (prem) html += '<div class="mpa-fld"><div class="mpa-fld-l">Lock to one coin <em>optional</em></div><input class="mpa-symin" id="mpaDuSym" maxlength="12" placeholder="e.g. BTC — blank = any coin" value="' + esc(C.sym) + '"></div>';
+        if (prem) html += '<div class="mpa-fld"><div class="mpa-fld-l">Lock to one coin <em>optional</em></div><input class="mpa-symin" id="mpaDuSym" maxlength="12" placeholder="e.g. BTC - blank = any coin" value="' + esc(C.sym) + '"></div>';
         html += '<button class="mpa-send" id="mpaDuSend">' + (isOpen ? 'Post to the board' : 'Send challenge') + '</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
         if (!prem) html += '<div class="mpa-ups"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, Tick stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type="button" id="mpaDuUps">Go Premium</button></div>';
         html += '<button class="mpa-link" id="mpaDuCancel" type="button" style="margin-top:10px">Cancel</button>';
@@ -1159,9 +1159,9 @@
         var snd = bodyEl.querySelector('#mpaDuSend'); if (snd) snd.addEventListener('click', function () {
           snd.disabled = true; var msg = bodyEl.querySelector('#mpaDuMsg'); if (msg) msg.innerHTML = 'Sending…';
           fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, open: isOpen ? 1 : 0, metric: C.type, dur: C.dur, stake: C.stake, sym: C.sym, maxTrades: C.maxTrades }) }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">' + (isOpen ? 'Posted. It is on the board — first taker starts the clock.' : 'Challenge sent to @' + esc(name) + '. It is waiting in their Duels.') + '</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
+            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">' + (isOpen ? 'Posted. It is on the board - first taker starts the clock.' : 'Challenge sent to @' + esc(name) + '. It is waiting in their Duels.') + '</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
             else { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">' + duelErr(d) + '</span>'; }
-          }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
+          }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
         });
       }
       draw();
@@ -1182,7 +1182,7 @@
       var out = ''; try { out = cv.toDataURL('image/webp', 0.72); } catch (e) {}
       if (!out || out.indexOf('data:image/webp') !== 0) out = cv.toDataURL('image/jpeg', 0.78);
       if (out.length > 58000) out = cv.toDataURL('image/jpeg', 0.6);
-      if (out.length > 58000) { cb(null, 'Could not compress that image — try a simpler one.'); return; }
+      if (out.length > 58000) { cb(null, 'Could not compress that image - try a simpler one.'); return; }
       cb(out, null);
     }; img.onerror = function () { cb(null, 'Could not read that image.'); }; img.src = fr.result; };
     fr.onerror = function () { cb(null, 'Could not read that file.'); };
@@ -1198,10 +1198,10 @@
         var cc = window.mpBal.cfg();
         bodyEl.innerHTML = '<button class="mpa-row2" id="mpaBalBack" type="button" style="margin-bottom:12px">' + ic('chev') + '<span>Back</span></button>'
           + '<h3 class="mpa-h">Balance Mode <span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px;vertical-align:2px">PREMIUM</span></h3>'
-          + '<p class="mpa-sub" style="margin:-2px 0 14px">Trade a real portfolio instead of unlimited paper money. Every trade draws its margin from your balance — blow it up and you feel it, exactly like a real account.</p>'
+          + '<p class="mpa-sub" style="margin:-2px 0 14px">Trade a real portfolio instead of unlimited paper money. Every trade draws its margin from your balance - blow it up and you feel it, exactly like a real account.</p>'
           + '<div class="bal-seg"><button type="button" data-balset="0" class="' + (on ? '' : 'off') + '">OFF</button><button type="button" data-balset="1" class="' + (on ? 'on' : '') + '">ON</button></div>'
-          + '<div class="bal-status ' + (on ? 'on' : '') + '">' + (on ? 'Balance Mode is <b>ON</b> — you\'re trading a <b>$' + cc.start.toLocaleString() + '</b> portfolio. It shows at the top of <b>My Trades</b>.' : 'Balance Mode is <b>OFF</b> — normal paper trading with no balance limit.') + '</div>'
-          + (on ? '<div class="bal-econ"><div class="bal-econ-h">How your balance grows</div><div class="bal-econ-r"><b>$10,000</b><span>to start — just for being VIP</span></div><div class="bal-econ-r"><b>+$10,000</b><span>every new day you show up and trade</span></div><div class="bal-econ-r"><b>+ bonus</b><span>from completing your daily missions</span></div></div>' : '')
+          + '<div class="bal-status ' + (on ? 'on' : '') + '">' + (on ? 'Balance Mode is <b>ON</b> - you\'re trading a <b>$' + cc.start.toLocaleString() + '</b> portfolio. It shows at the top of <b>My Trades</b>.' : 'Balance Mode is <b>OFF</b> - normal paper trading with no balance limit.') + '</div>'
+          + (on ? '<div class="bal-econ"><div class="bal-econ-h">How your balance grows</div><div class="bal-econ-r"><b>$10,000</b><span>to start - just for being VIP</span></div><div class="bal-econ-r"><b>+$10,000</b><span>every new day you show up and trade</span></div><div class="bal-econ-r"><b>+ bonus</b><span>from completing your daily missions</span></div></div>' : '')
           + (on ? '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:14px">' + ic('spark') + 'Reset balance to $10,000</button>' : '');
         var bk = bodyEl.querySelector('#mpaBalBack'); if (bk) bk.addEventListener('click', render);
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-balset]'), function (b) { b.addEventListener('click', function () { var want = b.getAttribute('data-balset') === '1'; window.mpBal.setCfg(want); draw(want); }); });
@@ -1249,10 +1249,10 @@
     { k: 'singularity', name: 'Singularity', by: 'Vault' },
     { k: 'midas', name: 'Midas', by: 'Vault' },
     { k: 'realtrader', name: 'Real Trader', by: 'Gifted by the house' },
-    { k: 'champion', name: 'Champion', by: 'Season #1 — Highest ROE' },
-    { k: 'deadeye', name: 'Deadeye', by: 'Season #1 — Win-Rate' },
-    { k: 'overdrive', name: 'Overdrive', by: 'Season #1 — XP' },
-    { k: 'tycoon', name: 'Tycoon', by: 'Season #1 — Green Days' },
+    { k: 'champion', name: 'Champion', by: 'Season #1 - Highest ROE' },
+    { k: 'deadeye', name: 'Deadeye', by: 'Season #1 - Win-Rate' },
+    { k: 'overdrive', name: 'Overdrive', by: 'Season #1 - XP' },
+    { k: 'tycoon', name: 'Tycoon', by: 'Season #1 - Green Days' },
     { k: 'nat_ng', name: 'Nigeria', by: 'Vault - Nations' },
     { k: 'nat_pk', name: 'Pakistan', by: 'Vault - Nations' },
     { k: 'nat_us', name: 'United States', by: 'Vault - Nations' },
@@ -1318,7 +1318,7 @@
     fetch('/api/auth/frames').then(function (r) { return r.json(); }).then(function (d) {
       var owned = (d && d.owned) || ['default']; var eq = (d && d.equipped) || 'default';
       var grid = bodyEl.querySelector('#mpaFrGrid'); if (!grid) return;
-      // yours first — equipped, then the rest you own, then everything still locked. The list you scroll
+      // yours first - equipped, then the rest you own, then everything still locked. The list you scroll
       // starts with the frames you can actually wear instead of burying them in catalogue order.
       var ordered = FRAMES.slice().sort(function (a, b) {
         var ra = (a.k === eq ? 0 : owned.indexOf(a.k) >= 0 ? 1 : 2);
@@ -1335,7 +1335,7 @@
             + '<div class="mpa-fr-nm">' + f.name + '</div>'
             + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
             + '</button>';
-        }).join('') || '<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more &mdash; switch to ALL to see what is out there.</div>';
+        }).join('') || '<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more - switch to ALL to see what is out there.</div>';
         var seg = bodyEl.querySelector('#mpaFrSeg');
         if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
         wire();
@@ -1361,8 +1361,8 @@
                   if (owned.indexOf(k) >= 0) { var by = x.querySelector('.mpa-fr-by'); if (by) by.textContent = (k === rd.frame ? 'Equipped' : 'Owned'); }
                 });
                 if (msg) msg.innerHTML = '<span style="color:#34d99a">Frame equipped! Your trader card is updated.</span>';
-              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip — try again.') + '</span>';
-            }).catch(function () { if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
+              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip - try again.') + '</span>';
+            }).catch(function () { if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
         });
       });
       }
@@ -1398,8 +1398,8 @@
       fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(function (r) { return r.json(); }).then(function (d) {
         sv.disabled = false;
         if (d && d.ok) { if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } if (msg) msg.innerHTML = '<span style="color:#34d99a">Saved! Your trader card is updated.</span>'; setTimeout(render, 1100); }
-        else { if (msg) msg.innerHTML = '<span style="color:#ffb347">Could not save — try again.</span>'; }
-      }).catch(function () { sv.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
+        else { if (msg) msg.innerHTML = '<span style="color:#ffb347">Could not save - try again.</span>'; }
+      }).catch(function () { sv.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
     });
   }
   // ---- Notifications center ----
@@ -1443,8 +1443,8 @@
       return;
     }
     if (ME) {
-      var hasU = !!ME.username; // once set, a username is permanent — no edit option
-      var fmtDate = function (ts) { if (!ts) return '—'; try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return '—'; } };
+      var hasU = !!ME.username; // once set, a username is permanent - no edit option
+      var fmtDate = function (ts) { if (!ts) return '-'; try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return '-'; } };
       var tradeCount = function () { try { var j = JSON.parse(localStorage.getItem('mp_journal') || '[]'); return Array.isArray(j) ? j.length : 0; } catch (e) { return 0; } };
  var lv = ME.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a', xp: ME.xp || 0, pct: 0, next: 'Silver', toNext: 2500 };
       var col = lv.col || '#c97f4a';
@@ -1477,7 +1477,7 @@
             + kpi('mpaKPnl', '…', 'Season P&amp;L', 'mute')
             + kpi('mpaFollowers', (xpLast && typeof xpLast.followers === 'number') ? String(xpLast.followers) : '…', 'Followers', '')
           + '</div>'
-          /* Daily Brief as a TODAY card with a live teaser (2026-09-12) — it was a bare "Daily Brief PREMIUM" row: 327 card opens, 5 brief opens in a day */
+          /* Daily Brief as a TODAY card with a live teaser (2026-09-12) - it was a bare "Daily Brief PREMIUM" row: 327 card opens, 5 brief opens in a day */
           + '<button class="mpa-tdy" id="mpaBrief" type="button"><span class="mpa-tdy-ic">' + svgDoc + '</span><span class="mpa-tdy-b"><span class="mpa-tdy-t">Daily Brief<i class="mpa-tdy-new" id="mpaTdyNew"' + ((window.mpBriefSeen && window.mpBriefSeen()) ? ' hidden' : '') + '>NEW</i><em>PREMIUM</em><s class="mpa-tdy-ago" id="mpaTdyAgo">' + briefAgoText(briefTeaserCached()) + '</s></span><span class="mpa-tdy-l" id="mpaTdyL">' + briefTeaserLine(briefTeaserCached()) + '</span></span>' + ic('chev') + '</button>' : '')
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:12px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347;margin-top:8px">You are muted in chat.</p>' : '')
@@ -1501,11 +1501,11 @@
         d = d || {}; var st = d.stats || {}, n = +st.closed || 0, tr = +st.trades || 0;
         var setK = function (id, v, cls) { var el = bodyEl.querySelector('#' + id); if (!el) return; el.textContent = v; el.className = cls || ''; };
         setK('mpaKTr', tr ? String(tr) : String(tradeCount()), tr ? '' : 'mute'); // season count from the store; the local journal only when the season is empty
-        setK('mpaKWr', n >= 5 ? Math.round(+st.winRate || 0) + '%' : '—', n >= 5 ? '' : 'mute'); // a win rate on fewer than 5 closes is noise, not a number
-        var pnl = +st.realized || 0; setK('mpaKPnl', n ? money(pnl) : '—', n ? (pnl >= 0 ? 'up' : 'dn') : 'mute');
+        setK('mpaKWr', n >= 5 ? Math.round(+st.winRate || 0) + '%' : '-', n >= 5 ? '' : 'mute'); // a win rate on fewer than 5 closes is noise, not a number
+        var pnl = +st.realized || 0; setK('mpaKPnl', n ? money(pnl) : '-', n ? (pnl >= 0 ? 'up' : 'dn') : 'mute');
         setK('mpaFollowers', typeof d.followers === 'number' ? String(d.followers) : '0', '');
         var ch = bodyEl.querySelector('#mpaIdChips'); if (ch) { if (d.otag) ch.innerHTML = '<i class="mpa-chip fnd">' + esc(String(d.otag).slice(0, 12)) + '</i>'; else if (d.premium || window._mpPrem === true) ch.innerHTML = '<i class="mpa-chip">PREMIUM</i>'; }
-      }).catch(function () { var setK = function (id, v) { var el = bodyEl.querySelector('#' + id); if (el) { el.textContent = v; el.className = 'mute'; } }; setK('mpaKTr', String(tradeCount())); setK('mpaKWr', '—'); setK('mpaKPnl', '—'); setK('mpaFollowers', '0'); }); } catch (e) {} }
+      }).catch(function () { var setK = function (id, v) { var el = bodyEl.querySelector('#' + id); if (el) { el.textContent = v; el.className = 'mute'; } }; setK('mpaKTr', String(tradeCount())); setK('mpaKWr', '-'); setK('mpaKPnl', '-'); setK('mpaFollowers', '0'); }); } catch (e) {} }
       if (hasU) briefTeaserGet(function (t) { var l = bodyEl.querySelector('#mpaTdyL'); if (l) l.innerHTML = briefTeaserLine(t); var a = bodyEl.querySelector('#mpaTdyAgo'); if (a) a.textContent = briefAgoText(t); });
       if (!hasU) {
         var sv = bodyEl.querySelector('#mpaSaveU'), ui = bodyEl.querySelector('#mpaUname');
@@ -1547,7 +1547,7 @@
     bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('t', 'Sign in or sign up') + '</h3><p class="mpa-sub">' + authT('h', 'Enter your email and we’ll send a 6-digit code. No password.') + '</p>'
       + '<input class="mpa-in" id="mpaEmail" type="email" inputmode="email" autocomplete="email" placeholder="' + authT('ph', 'you@email.com') + '">'
       + '<button class="mpa-btn" id="mpaSend" type="button">' + authT('send', 'Send code') + '</button><div class="mpa-msg"></div>'
-      + '<p class="mpa-foot">' + authT('opt', 'Optional — MarginPad works without an account. We use email only to save your progress.') + '</p>';
+      + '<p class="mpa-foot">' + authT('opt', 'Optional - MarginPad works without an account. We use email only to save your progress.') + '</p>';
     var em = bodyEl.querySelector('#mpaEmail'), sb = bodyEl.querySelector('#mpaSend');
     setTimeout(function () { em.focus(); }, 40);
     function send() {
@@ -1559,11 +1559,11 @@
           sb.disabled = false;
           if (d.ok) codeStep(v);
           else if (d.error === 'cooldown') setMsg('Wait ' + (d.wait || 30) + 's before requesting another code.', 'err');
-          else if (d.error === 'too_many') setMsg('Too many codes today — try again tomorrow.', 'err');
+          else if (d.error === 'too_many') setMsg('Too many codes today - try again tomorrow.', 'err');
           else if (d.error === 'email_not_configured') setMsg('Sign-in is not available right now.', 'err');
           else if (d.error === 'bad_email') setMsg('Enter a valid email.', 'err');
           else setMsg('Could not send the code. Try again.', 'err');
-        }).catch(function () { sb.disabled = false; setMsg('Network error — try again.', 'err'); });
+        }).catch(function () { sb.disabled = false; setMsg('Network error - try again.', 'err'); });
     }
     sb.addEventListener('click', send);
     em.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
@@ -1571,24 +1571,24 @@
 
   // Sign-in modal strings in the site's languages (2026-09-07 UX pass: a Spanish or Portuguese visitor met an English sign-in box on every page). Language = the page's own choice.
   var AUTH_T = {
-    es: { t: 'Iniciar sesión o registrarse', h: 'Escribí tu email y te mandamos un código de 6 dígitos. Sin contraseña.', ph: 'tu@email.com', send: 'Enviar código', opt: 'Opcional — MarginPad funciona sin cuenta. Usamos el email solo para guardar tu progreso.', inbox: 'Revisá tu correo', sent: 'Te enviamos un código de 6 dígitos a', spam: '¿No llegó? Mirá la carpeta de <b>spam</b>: a veces cae ahí.', verify: 'Verificar', back: '← usar otro email', bad: 'Escribí un email válido.', code6: 'Escribí el código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
-    pt: { t: 'Entrar ou criar conta', h: 'Digite seu e-mail e enviamos um código de 6 dígitos. Sem senha.', ph: 'voce@email.com', send: 'Enviar código', opt: 'Opcional — o MarginPad funciona sem conta. Usamos o e-mail só para guardar seu progresso.', inbox: 'Confira sua caixa de entrada', sent: 'Enviamos um código de 6 dígitos para', spam: 'Não chegou? Olhe a pasta de <b>spam</b>: às vezes cai lá.', verify: 'Verificar', back: '← usar outro e-mail', bad: 'Digite um e-mail válido.', code6: 'Digite o código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
-    de: { t: 'Anmelden oder registrieren', h: 'E-Mail eingeben, wir schicken einen 6-stelligen Code. Kein Passwort.', ph: 'du@email.com', send: 'Code senden', opt: 'Optional — MarginPad funktioniert ohne Konto. Die E-Mail dient nur zum Speichern deines Fortschritts.', inbox: 'Schau in dein Postfach', sent: 'Wir haben einen 6-stelligen Code geschickt an', spam: 'Nichts da? Prüfe den <b>Spam</b>-Ordner.', verify: 'Bestätigen', back: '← andere E-Mail verwenden', bad: 'Gib eine gültige E-Mail ein.', code6: 'Gib den 6-stelligen Code ein.', sending: 'Wird gesendet…', verifying: 'Wird geprüft…' },
-    fr: { t: 'Se connecter ou s’inscrire', h: 'Entre ton e-mail, on t’envoie un code à 6 chiffres. Pas de mot de passe.', ph: 'toi@email.com', send: 'Envoyer le code', opt: 'Facultatif — MarginPad fonctionne sans compte. L’e-mail sert seulement à sauvegarder ta progression.', inbox: 'Regarde ta boîte mail', sent: 'Nous avons envoyé un code à 6 chiffres à', spam: 'Rien reçu ? Regarde dans les <b>spams</b>.', verify: 'Vérifier', back: '← utiliser un autre e-mail', bad: 'Entre un e-mail valide.', code6: 'Entre le code à 6 chiffres.', sending: 'Envoi…', verifying: 'Vérification…' },
-    ru: { t: 'Войти или зарегистрироваться', h: 'Введите e-mail, мы пришлём 6-значный код. Без пароля.', ph: 'you@email.com', send: 'Отправить код', opt: 'Необязательно — MarginPad работает без аккаунта. E-mail нужен только чтобы сохранить прогресс.', inbox: 'Проверьте почту', sent: 'Мы отправили 6-значный код на', spam: 'Нет письма? Загляните в папку <b>спам</b>.', verify: 'Подтвердить', back: '← другой e-mail', bad: 'Введите корректный e-mail.', code6: 'Введите 6-значный код.', sending: 'Отправляем…', verifying: 'Проверяем…' },
-    tr: { t: 'Giriş yap veya kaydol', h: 'E-postanı yaz, 6 haneli bir kod gönderelim. Şifre yok.', ph: 'sen@email.com', send: 'Kod gönder', opt: 'İsteğe bağlı — MarginPad hesapsız da çalışır. E-postayı yalnızca ilerlemeni kaydetmek için kullanırız.', inbox: 'Gelen kutuna bak', sent: '6 haneli kodu şu adrese gönderdik:', spam: 'Gelmedi mi? <b>Spam</b> klasörüne bak.', verify: 'Doğrula', back: '← başka e-posta kullan', bad: 'Geçerli bir e-posta gir.', code6: '6 haneli kodu gir.', sending: 'Gönderiliyor…', verifying: 'Doğrulanıyor…' },
-    zh: { t: '登录或注册', h: '输入邮箱，我们会发送 6 位验证码。无需密码。', ph: 'you@email.com', send: '发送验证码', opt: '可选 — 不注册也能使用 MarginPad。邮箱只用于保存你的进度。', inbox: '请查看邮箱', sent: '我们已将 6 位验证码发送至', spam: '没收到？看看<b>垃圾邮件</b>文件夹。', verify: '验证', back: '← 换一个邮箱', bad: '请输入有效的邮箱。', code6: '请输入 6 位验证码。', sending: '发送中…', verifying: '验证中…' },
-    ja: { t: 'ログインまたは登録', h: 'メールアドレスを入力すると 6 桁のコードを送ります。パスワード不要。', ph: 'you@email.com', send: 'コードを送信', opt: '任意 — MarginPad はアカウントなしでも使えます。メールは進捗の保存にのみ使います。', inbox: '受信箱を確認してください', sent: '6 桁のコードを送信しました：', spam: '届かない場合は<b>迷惑メール</b>フォルダを確認してください。', verify: '確認', back: '← 別のメールを使う', bad: '有効なメールアドレスを入力してください。', code6: '6 桁のコードを入力してください。', sending: '送信中…', verifying: '確認中…' },
-    ko: { t: '로그인 또는 가입', h: '이메일을 입력하면 6자리 코드를 보내드려요. 비밀번호 없음.', ph: 'you@email.com', send: '코드 보내기', opt: '선택 사항 — 계정 없이도 MarginPad를 쓸 수 있어요. 이메일은 진행 상황 저장에만 사용합니다.', inbox: '받은편지함을 확인하세요', sent: '6자리 코드를 보냈어요:', spam: '안 왔나요? <b>스팸</b> 폴더를 확인해 보세요.', verify: '확인', back: '← 다른 이메일 사용', bad: '올바른 이메일을 입력하세요.', code6: '6자리 코드를 입력하세요.', sending: '보내는 중…', verifying: '확인 중…' },
-    ar: { t: 'تسجيل الدخول أو إنشاء حساب', h: 'اكتب بريدك الإلكتروني وسنرسل رمزًا من 6 أرقام. بلا كلمة مرور.', ph: 'you@email.com', send: 'إرسال الرمز', opt: 'اختياري — يعمل MarginPad بدون حساب. نستخدم البريد فقط لحفظ تقدمك.', inbox: 'تحقق من بريدك', sent: 'أرسلنا رمزًا من 6 أرقام إلى', spam: 'لم يصل؟ تحقق من مجلد <b>الرسائل غير المرغوبة</b>.', verify: 'تحقق', back: '← استخدام بريد آخر', bad: 'اكتب بريدًا إلكترونيًا صالحًا.', code6: 'اكتب الرمز المكوّن من 6 أرقام.', sending: 'جارٍ الإرسال…', verifying: 'جارٍ التحقق…' },
-    id: { t: 'Masuk atau daftar', h: 'Masukkan email, kami kirim kode 6 digit. Tanpa kata sandi.', ph: 'kamu@email.com', send: 'Kirim kode', opt: 'Opsional — MarginPad bisa dipakai tanpa akun. Email hanya untuk menyimpan progresmu.', inbox: 'Cek kotak masukmu', sent: 'Kami mengirim kode 6 digit ke', spam: 'Belum masuk? Cek folder <b>spam</b>.', verify: 'Verifikasi', back: '← pakai email lain', bad: 'Masukkan email yang valid.', code6: 'Masukkan kode 6 digit.', sending: 'Mengirim…', verifying: 'Memverifikasi…' },
-    nl: { t: 'Inloggen of registreren', h: 'Vul je e-mail in, we sturen een 6-cijferige code. Geen wachtwoord.', ph: 'jij@email.com', send: 'Code sturen', opt: 'Optioneel — MarginPad werkt zonder account. E-mail gebruiken we alleen om je voortgang op te slaan.', inbox: 'Check je inbox', sent: 'We hebben een 6-cijferige code gestuurd naar', spam: 'Niets ontvangen? Kijk in je <b>spam</b>-map.', verify: 'Bevestigen', back: '← ander e-mailadres', bad: 'Vul een geldig e-mailadres in.', code6: 'Vul de 6-cijferige code in.', sending: 'Versturen…', verifying: 'Controleren…' },
-    sr: { t: 'Prijava ili registracija', h: 'Upiši email i šaljemo ti kod od 6 cifara. Bez lozinke.', ph: 'ti@email.com', send: 'Pošalji kod', opt: 'Opciono — MarginPad radi i bez naloga. Email koristimo samo da sačuvamo tvoj napredak.', inbox: 'Proveri poštu', sent: 'Poslali smo kod od 6 cifara na', spam: 'Nije stigao? Pogledaj <b>spam</b> folder.', verify: 'Potvrdi', back: '← koristi drugi email', bad: 'Upiši ispravan email.', code6: 'Upiši kod od 6 cifara.', sending: 'Šaljem…', verifying: 'Proveravam…' }
+    es: { t: 'Iniciar sesión o registrarse', h: 'Escribí tu email y te mandamos un código de 6 dígitos. Sin contraseña.', ph: 'tu@email.com', send: 'Enviar código', opt: 'Opcional - MarginPad funciona sin cuenta. Usamos el email solo para guardar tu progreso.', inbox: 'Revisá tu correo', sent: 'Te enviamos un código de 6 dígitos a', spam: '¿No llegó? Mirá la carpeta de <b>spam</b>: a veces cae ahí.', verify: 'Verificar', back: '← usar otro email', bad: 'Escribí un email válido.', code6: 'Escribí el código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
+    pt: { t: 'Entrar ou criar conta', h: 'Digite seu e-mail e enviamos um código de 6 dígitos. Sem senha.', ph: 'voce@email.com', send: 'Enviar código', opt: 'Opcional - o MarginPad funciona sem conta. Usamos o e-mail só para guardar seu progresso.', inbox: 'Confira sua caixa de entrada', sent: 'Enviamos um código de 6 dígitos para', spam: 'Não chegou? Olhe a pasta de <b>spam</b>: às vezes cai lá.', verify: 'Verificar', back: '← usar outro e-mail', bad: 'Digite um e-mail válido.', code6: 'Digite o código de 6 dígitos.', sending: 'Enviando…', verifying: 'Verificando…' },
+    de: { t: 'Anmelden oder registrieren', h: 'E-Mail eingeben, wir schicken einen 6-stelligen Code. Kein Passwort.', ph: 'du@email.com', send: 'Code senden', opt: 'Optional - MarginPad funktioniert ohne Konto. Die E-Mail dient nur zum Speichern deines Fortschritts.', inbox: 'Schau in dein Postfach', sent: 'Wir haben einen 6-stelligen Code geschickt an', spam: 'Nichts da? Prüfe den <b>Spam</b>-Ordner.', verify: 'Bestätigen', back: '← andere E-Mail verwenden', bad: 'Gib eine gültige E-Mail ein.', code6: 'Gib den 6-stelligen Code ein.', sending: 'Wird gesendet…', verifying: 'Wird geprüft…' },
+    fr: { t: 'Se connecter ou s’inscrire', h: 'Entre ton e-mail, on t’envoie un code à 6 chiffres. Pas de mot de passe.', ph: 'toi@email.com', send: 'Envoyer le code', opt: 'Facultatif - MarginPad fonctionne sans compte. L’e-mail sert seulement à sauvegarder ta progression.', inbox: 'Regarde ta boîte mail', sent: 'Nous avons envoyé un code à 6 chiffres à', spam: 'Rien reçu ? Regarde dans les <b>spams</b>.', verify: 'Vérifier', back: '← utiliser un autre e-mail', bad: 'Entre un e-mail valide.', code6: 'Entre le code à 6 chiffres.', sending: 'Envoi…', verifying: 'Vérification…' },
+    ru: { t: 'Войти или зарегистрироваться', h: 'Введите e-mail, мы пришлём 6-значный код. Без пароля.', ph: 'you@email.com', send: 'Отправить код', opt: 'Необязательно - MarginPad работает без аккаунта. E-mail нужен только чтобы сохранить прогресс.', inbox: 'Проверьте почту', sent: 'Мы отправили 6-значный код на', spam: 'Нет письма? Загляните в папку <b>спам</b>.', verify: 'Подтвердить', back: '← другой e-mail', bad: 'Введите корректный e-mail.', code6: 'Введите 6-значный код.', sending: 'Отправляем…', verifying: 'Проверяем…' },
+    tr: { t: 'Giriş yap veya kaydol', h: 'E-postanı yaz, 6 haneli bir kod gönderelim. Şifre yok.', ph: 'sen@email.com', send: 'Kod gönder', opt: 'İsteğe bağlı - MarginPad hesapsız da çalışır. E-postayı yalnızca ilerlemeni kaydetmek için kullanırız.', inbox: 'Gelen kutuna bak', sent: '6 haneli kodu şu adrese gönderdik:', spam: 'Gelmedi mi? <b>Spam</b> klasörüne bak.', verify: 'Doğrula', back: '← başka e-posta kullan', bad: 'Geçerli bir e-posta gir.', code6: '6 haneli kodu gir.', sending: 'Gönderiliyor…', verifying: 'Doğrulanıyor…' },
+    zh: { t: '登录或注册', h: '输入邮箱，我们会发送 6 位验证码。无需密码。', ph: 'you@email.com', send: '发送验证码', opt: '可选 - 不注册也能使用 MarginPad。邮箱只用于保存你的进度。', inbox: '请查看邮箱', sent: '我们已将 6 位验证码发送至', spam: '没收到？看看<b>垃圾邮件</b>文件夹。', verify: '验证', back: '← 换一个邮箱', bad: '请输入有效的邮箱。', code6: '请输入 6 位验证码。', sending: '发送中…', verifying: '验证中…' },
+    ja: { t: 'ログインまたは登録', h: 'メールアドレスを入力すると 6 桁のコードを送ります。パスワード不要。', ph: 'you@email.com', send: 'コードを送信', opt: '任意 - MarginPad はアカウントなしでも使えます。メールは進捗の保存にのみ使います。', inbox: '受信箱を確認してください', sent: '6 桁のコードを送信しました：', spam: '届かない場合は<b>迷惑メール</b>フォルダを確認してください。', verify: '確認', back: '← 別のメールを使う', bad: '有効なメールアドレスを入力してください。', code6: '6 桁のコードを入力してください。', sending: '送信中…', verifying: '確認中…' },
+    ko: { t: '로그인 또는 가입', h: '이메일을 입력하면 6자리 코드를 보내드려요. 비밀번호 없음.', ph: 'you@email.com', send: '코드 보내기', opt: '선택 사항 - 계정 없이도 MarginPad를 쓸 수 있어요. 이메일은 진행 상황 저장에만 사용합니다.', inbox: '받은편지함을 확인하세요', sent: '6자리 코드를 보냈어요:', spam: '안 왔나요? <b>스팸</b> 폴더를 확인해 보세요.', verify: '확인', back: '← 다른 이메일 사용', bad: '올바른 이메일을 입력하세요.', code6: '6자리 코드를 입력하세요.', sending: '보내는 중…', verifying: '확인 중…' },
+    ar: { t: 'تسجيل الدخول أو إنشاء حساب', h: 'اكتب بريدك الإلكتروني وسنرسل رمزًا من 6 أرقام. بلا كلمة مرور.', ph: 'you@email.com', send: 'إرسال الرمز', opt: 'اختياري - يعمل MarginPad بدون حساب. نستخدم البريد فقط لحفظ تقدمك.', inbox: 'تحقق من بريدك', sent: 'أرسلنا رمزًا من 6 أرقام إلى', spam: 'لم يصل؟ تحقق من مجلد <b>الرسائل غير المرغوبة</b>.', verify: 'تحقق', back: '← استخدام بريد آخر', bad: 'اكتب بريدًا إلكترونيًا صالحًا.', code6: 'اكتب الرمز المكوّن من 6 أرقام.', sending: 'جارٍ الإرسال…', verifying: 'جارٍ التحقق…' },
+    id: { t: 'Masuk atau daftar', h: 'Masukkan email, kami kirim kode 6 digit. Tanpa kata sandi.', ph: 'kamu@email.com', send: 'Kirim kode', opt: 'Opsional - MarginPad bisa dipakai tanpa akun. Email hanya untuk menyimpan progresmu.', inbox: 'Cek kotak masukmu', sent: 'Kami mengirim kode 6 digit ke', spam: 'Belum masuk? Cek folder <b>spam</b>.', verify: 'Verifikasi', back: '← pakai email lain', bad: 'Masukkan email yang valid.', code6: 'Masukkan kode 6 digit.', sending: 'Mengirim…', verifying: 'Memverifikasi…' },
+    nl: { t: 'Inloggen of registreren', h: 'Vul je e-mail in, we sturen een 6-cijferige code. Geen wachtwoord.', ph: 'jij@email.com', send: 'Code sturen', opt: 'Optioneel - MarginPad werkt zonder account. E-mail gebruiken we alleen om je voortgang op te slaan.', inbox: 'Check je inbox', sent: 'We hebben een 6-cijferige code gestuurd naar', spam: 'Niets ontvangen? Kijk in je <b>spam</b>-map.', verify: 'Bevestigen', back: '← ander e-mailadres', bad: 'Vul een geldig e-mailadres in.', code6: 'Vul de 6-cijferige code in.', sending: 'Versturen…', verifying: 'Controleren…' },
+    sr: { t: 'Prijava ili registracija', h: 'Upiši email i šaljemo ti kod od 6 cifara. Bez lozinke.', ph: 'ti@email.com', send: 'Pošalji kod', opt: 'Opciono - MarginPad radi i bez naloga. Email koristimo samo da sačuvamo tvoj napredak.', inbox: 'Proveri poštu', sent: 'Poslali smo kod od 6 cifara na', spam: 'Nije stigao? Pogledaj <b>spam</b> folder.', verify: 'Potvrdi', back: '← koristi drugi email', bad: 'Upiši ispravan email.', code6: 'Upiši kod od 6 cifara.', sending: 'Šaljem…', verifying: 'Proveravam…' }
   };
   function authT(k, en) { var L = String(window.__mpLangCur || window.mpLang || (document.documentElement.lang || 'en')).slice(0, 2).toLowerCase(); var d = AUTH_T[L]; return (d && d[k]) || en; }
   function codeStep(email) {
     bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('inbox', 'Check your inbox') + '</h3><p class="mpa-sub">' + authT('sent', 'We sent a 6-digit code to') + ' <b>' + esc(email) + '</b>.</p>'
-      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">' + authT('spam', 'No email? Check your <b>spam / junk</b> folder — our codes sometimes land there.') + '</p>'
+      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">' + authT('spam', 'No email? Check your <b>spam / junk</b> folder - our codes sometimes land there.') + '</p>'
       + '<input class="mpa-in mpa-code" id="mpaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">'
       + '<button class="mpa-btn" id="mpaVerify" type="button">' + authT('verify', 'Verify') + '</button><div class="mpa-msg"></div>'
       + '<button class="mpa-link" id="mpaBack" type="button">' + authT('back', '← use a different email') + '</button>';
@@ -1602,11 +1602,11 @@
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
           if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
-          else if (d.error === 'bad_code') setMsg('Wrong code' + (d.left != null ? ' — ' + d.left + ' tries left' : '') + '.', 'err');
-          else if (d.error === 'expired' || d.error === 'no_code') setMsg('Code expired — request a new one.', 'err');
-          else if (d.error === 'too_many_attempts') setMsg('Too many tries — request a new code.', 'err');
+          else if (d.error === 'bad_code') setMsg('Wrong code' + (d.left != null ? ' - ' + d.left + ' tries left' : '') + '.', 'err');
+          else if (d.error === 'expired' || d.error === 'no_code') setMsg('Code expired - request a new one.', 'err');
+          else if (d.error === 'too_many_attempts') setMsg('Too many tries - request a new code.', 'err');
           else setMsg('Could not verify. Try again.', 'err');
-        }).catch(function () { vb.disabled = false; setMsg('Network error — try again.', 'err'); });
+        }).catch(function () { vb.disabled = false; setMsg('Network error - try again.', 'err'); });
     }
     vb.addEventListener('click', verify);
     ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') verify(); });
@@ -1647,18 +1647,18 @@
     var arr; try { arr = JSON.parse(j); } catch (e) { return; }
     if (!Array.isArray(arr)) return;
     lastJ = j;
-    arr = arr.filter(function (e) { return !(e && e.status === 'planned'); }); // plan-form drafts are not trades — never sync them (they re-appeared as $0 XRP opens in the activity feed, 2026-09-13)
+    arr = arr.filter(function (e) { return !(e && e.status === 'planned'); }); // plan-form drafts are not trades - never sync them (they re-appeared as $0 XRP opens in the activity feed, 2026-09-13)
     // send the most-recent ~200 trades (the server keeps the recent/best 100 anyway) so the payload stays bounded for heavy traders.
     var send = arr;
     if (arr.length > 200) { try {
-      // ALWAYS send every OPEN position — never let the 200-cap slice one out (an old open with a small ts used to be
+      // ALWAYS send every OPEN position - never let the 200-cap slice one out (an old open with a small ts used to be
       // dropped from the payload under sustained sync failure → the server never got it → it vanished on a device switch).
       var _isOpen = function (e) { return e && e.status !== 'win' && e.status !== 'loss'; };
       var _opens = arr.filter(_isOpen);
       var _closed = arr.filter(function (e) { return !_isOpen(e); }).sort(function (a, b) { return (+a.closeTs || +a.ts || 0) - (+b.closeTs || +b.ts || 0); });
       send = _opens.concat(_closed.slice(-Math.max(0, 200 - _opens.length)));
     } catch (e) { send = arr.slice(-200); } }
-    // NO keepalive here: keepalive caps the request BODY at 64KB and silently drops a large journal — that is why active traders' recent trades (and big wins) stopped reaching the server. The page is open during the interval sync, so keepalive isn't needed.
+    // NO keepalive here: keepalive caps the request BODY at 64KB and silently drops a large journal - that is why active traders' recent trades (and big wins) stopped reaching the server. The page is open during the interval sync, so keepalive isn't needed.
     try { fetch('/api/auth/trades', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ journal: send }) }); } catch (_) {}
   }
   // cross-device sync: pull the account's stored journal and MERGE it into this device's local journal (union by id; a closed result beats an open one), so every open trade shows on every device the user signs in on.
@@ -1667,7 +1667,7 @@
     var _ph = ''; try { _ph = sessionStorage.getItem('mp_pull_h') || ''; } catch (e) {}
     fetch('/api/auth/trades' + (_ph ? '?h=' + encodeURIComponent(_ph) : ''), { headers: { accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (d && d.h) { try { sessionStorage.setItem('mp_pull_h', d.h); } catch (e) {} }
-      if (d && d.same) return; // journal unchanged server-side — zero-cost pull (A1)
+      if (d && d.same) return; // journal unchanged server-side - zero-cost pull (A1)
       if (!d || !Array.isArray(d.journal) || !d.journal.length) return;
       var local = []; try { local = JSON.parse(localStorage.getItem('mp_journal') || '[]') || []; } catch (e) {} if (!Array.isArray(local)) local = [];
       var byId = {}, order = [];
@@ -1675,7 +1675,7 @@
         if (cc && !pc) { byId[id] = e; return; }                     // a close always beats an open
         // EXCEPTION (2026-08-11, phantom-liq heal): a local LIQUIDATION of an srv trade is only a CLAIM until the server
         // confirms it (sc). If the server still says OPEN 5+ minutes later, its candle-check refuted the claim (a real
-        // cross settles within one sweep) — take the server's open row back so the user's ticket un-liquidates. Manual
+        // cross settles within one sweep) - take the server's open row back so the user's ticket un-liquidates. Manual
         // closes (via /botclose) and non-srv trades keep the old local-wins rule.
         if (!cc && pc && prev.liquidated && !prev.sc && String(id).slice(0, 3) === 'srv' && (Date.now() - (+prev.closeTs || 0)) > 300000) { byId[id] = e; return; }
         if (!cc && pc) return;                                       // never let a stale server 'open' overwrite a locally-closed trade
@@ -1683,8 +1683,8 @@
         var pq = +prev.qty, cq = +e.qty; if (isFinite(pq) && isFinite(cq) && cq > pq) return; byId[id] = e; } // both open → keep the more-reduced (partial-close safe)
       local.forEach(put); d.journal.forEach(put); // server applied last → wins same-state ties; a stale local 'open' never overwrites a stored close
       var merged = order.map(function (id) { return byId[id]; });
-      // TWIN GUARD (2026-09-08, mirror of the server's in _syncJournal): a local OPEN row that is a copy of a server-filled position — same cid,
-      // or (old bundles) same symbol/side/leverage, margin within 5% and opened within 90 s — is dropped here too, otherwise the union
+      // TWIN GUARD (2026-09-08, mirror of the server's in _syncJournal): a local OPEN row that is a copy of a server-filled position - same cid,
+      // or (old bundles) same symbol/side/leverage, margin within 5% and opened within 90 s - is dropped here too, otherwise the union
       // above would keep resurrecting it on this device after the server had already dropped it.
       try {
         var _srv = merged.filter(function (e) { return e && String(e.id || '').slice(0, 3) === 'srv' && e.status !== 'win' && e.status !== 'loss'; });
@@ -1695,13 +1695,13 @@
           return !_srv.some(function (s) { return String(s.sym || '').toUpperCase() === sym && (s.side === 'short' ? 'short' : 'long') === side && (+s.lev || 1) === lev && Math.abs((+s.ts || 0) - ts) <= 90000 && (+s.margin || 0) > 0 && m > 0 && Math.abs(m - (+s.margin || 0)) / Math.max(m, +s.margin || 0) <= 0.05; });
         });
       } catch (e) {}
-      try { var _bt = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; for (var _i = 0; _i < merged.length; _i++) { var _e = merged[_i]; if (_e && _e.id && !_e.bal && _bt[_e.id]) _e.bal = _bt[_e.id]; } } catch (e) {} // restore the Balance-Mode session tag the server strips — keeps the gold ticket (pp-gold) + BAL badge stable across syncs (no flicker)
+      try { var _bt = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; for (var _i = 0; _i < merged.length; _i++) { var _e = merged[_i]; if (_e && _e.id && !_e.bal && _bt[_e.id]) _e.bal = _bt[_e.id]; } } catch (e) {} // restore the Balance-Mode session tag the server strips - keeps the gold ticket (pp-gold) + BAL badge stable across syncs (no flicker)
       merged.sort(function (a, b) { return (+a.ts || 0) - (+b.ts || 0); });
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device
       try { if (window.mpJStore) window.mpJStore(merged); else localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {} // shared writer: sheds oldest CLOSED rows if the device is full instead of silently dropping the whole merge
       lastJ = ''; // force the next push so the server gets this device's union too
       // NOTE: we deliberately DO NOT seed window.mpLivePrices[sym] from a trade's entry here. metrics() already falls back
-      // to each trade's OWN entry when there is no live price (→ P&L 0, no phantom -100%), so the seed was unnecessary — and
+      // to each trade's OWN entry when there is no live price (→ P&L 0, no phantom -100%), so the seed was unnecessary - and
       // HARMFUL: it wrote ONE trade's entry as the shared "live" price for the whole symbol, so with 2+ open trades on the
       // same coin (e.g. an old 1000× US at $0.0237 + a new 100× US at $0.047) the newer trade was measured against the older
       // trade's entry → −49% → instant liquidation. Real prices come from pollPrices/WS within ~3s; until then P&L just shows 0.
@@ -1719,10 +1719,10 @@
   }
   document.addEventListener('visibilitychange', function () { dwAccrue(); dwVis = document.visibilityState === 'visible'; dwSince = Date.now(); if (!dwVis) { dwFlush(); syncTrades(); } });
   window.addEventListener('pagehide', dwFlush);
-  setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync — flushed on pagehide + next visible tick
+  setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync - flushed on pagehide + next visible tick
   window.addEventListener('pagehide', function () { try { var j2 = localStorage.getItem('mp_journal') || ''; if (ME && j2 && j2 !== lastJ && j2.length < 60000 && navigator.sendBeacon) { lastJ = j2; navigator.sendBeacon('/api/auth/trades', new Blob([JSON.stringify({ journal: JSON.parse(j2) })], { type: 'application/json' })); } } catch (e) {} });
-  // pull the server journal periodically so trades opened elsewhere — cross-device AND via the Bot API — appear LIVE in My Trades
-  setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 40000); // server-journal pull: 40s (cross-device/bot sync doesn't need faster) — lowers steady-state load on the single 'main' UserStore DO, which reduces the reset/"internal error" rate
+  // pull the server journal periodically so trades opened elsewhere - cross-device AND via the Bot API - appear LIVE in My Trades
+  setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 40000); // server-journal pull: 40s (cross-device/bot sync doesn't need faster) - lowers steady-state load on the single 'main' UserStore DO, which reduces the reset/"internal error" rate
   document.addEventListener('visibilitychange', function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } });
 
   // ---- Web push (browser notifications for price alerts) ----
@@ -1761,21 +1761,21 @@
   /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
   (function () {
     var FEATS = [
-      ['8 exclusive indicators', 'Market Brain, Cascade Radar, Liquidation Magnet, Market Memory & more — signals built on our data that no other chart has.'],
-      ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped — desktop & mobile, unlimited.'],
-      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words — 50 questions a day.'],
+      ['8 exclusive indicators', 'Market Brain, Cascade Radar, Liquidation Magnet, Market Memory & more - signals built on our data that no other chart has.'],
+      ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.'],
+      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words - 50 questions a day.'],
       ['Balance Mode', 'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.'],
  ['Premium duels & lounge', 'Every duel format with Ticks stakes, up to 10 open challenges, and the Premium-only chat lounge.']
     ];
     function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
     var ov = null;
     function close() { if (ov) { ov.remove(); ov = null; } }
-    function payFromBalance(btn, note) { // one tap: the ledger debits $3.99 and Premium is on — no invoice, no redirect (owner 2026-09-02)
+    function payFromBalance(btn, note) { // one tap: the ledger debits $3.99 and Premium is on - no invoice, no redirect (owner 2026-09-02)
     var label = btn && btn.textContent; if (btn) { btn.disabled = true; btn.textContent = 'Activating...'; }
     fetch('/api/premium/paybalance', { method: 'POST', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
-      if (j && j.ok) { if (btn) btn.textContent = 'Premium is on — welcome'; if (note) note.textContent = 'Active until ' + new Date(j.until).toISOString().slice(0, 10) + '. Reloading...'; setTimeout(function () { location.reload(); }, 1400); return; }
+      if (j && j.ok) { if (btn) btn.textContent = 'Premium is on - welcome'; if (note) note.textContent = 'Active until ' + new Date(j.until).toISOString().slice(0, 10) + '. Reloading...'; setTimeout(function () { location.reload(); }, 1400); return; }
       if (btn) { btn.disabled = false; btn.textContent = label; }
-      if (note) note.textContent = (j && j.error === 'insufficient') ? ('Not enough balance — you have $' + (+j.balance || 0).toFixed(2) + '.') : (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'in_progress') ? 'Already processing — one moment.' : 'Could not activate. Please try again.';
+      if (note) note.textContent = (j && j.error === 'insufficient') ? ('Not enough balance - you have $' + (+j.balance || 0).toFixed(2) + '.') : (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'in_progress') ? 'Already processing - one moment.' : 'Could not activate. Please try again.';
     }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = 'Network error. Please try again.'; });
   }
   function checkoutPlan(plan, btn, note) {
@@ -1785,7 +1785,7 @@
       fetch('/api/premium/checkout' + (plan === 'founder' ? '?plan=founder' : ''), { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.invoice_url) { location.href = j.invoice_url; return; }
         if (btn) { btn.disabled = false; btn.textContent = label; }
-        if (note) note.textContent = (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'unconfigured') ? 'Crypto checkout is being switched on — please check back very soon.' : 'Could not start checkout. Please try again.';
+        if (note) note.textContent = (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'unconfigured') ? 'Crypto checkout is being switched on - please check back very soon.' : 'Could not start checkout. Please try again.';
       }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = 'Network error. Please try again.'; });
     }
     function show(reason) {
@@ -1808,14 +1808,14 @@
       var h = '<button class="mpprem-x" type="button" aria-label="Close">×</button>' +
         '<span class="mpprem-tag">MARGINPAD PREMIUM</span>' +
         '<h3>' + (reason || 'Unlock the full toolkit') + '</h3>' +
-        '<div class="mpprem-sub">Everything the pros use to read the market — one membership.</div>';
+        '<div class="mpprem-sub">Everything the pros use to read the market - one membership.</div>';
       FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
       h += '<div class="mpprem-price"><b>$3.99</b> / month</div>' +
-        '<button class="mpprem-buy" type="button">Pay with crypto — $3.99 / month</button>' +
-        '<button class="mpprem-bal" type="button" hidden style="display:block;width:100%;margin-top:8px;background:#151b23;border:1px solid #c2f64a66;color:#c2f64a;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer">Pay from my rewards balance — $3.99</button>' +
-        '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $35 once</button>' +
+        '<button class="mpprem-buy" type="button">Pay with crypto - $3.99 / month</button>' +
+        '<button class="mpprem-bal" type="button" hidden style="display:block;width:100%;margin-top:8px;background:#151b23;border:1px solid #c2f64a66;color:#c2f64a;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer">Pay from my rewards balance - $3.99</button>' +
+        '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder - lifetime access, $35 once</button>' +
         '<div style="text-align:center;font:700 11px \'Space Mono\',monospace;color:#ffd75a;margin-top:9px">The first 5 members lock in lifetime Premium.</div>' +
-        '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';
+        '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime - it simply won’t renew.</div>';
       card.innerHTML = h;
       ov.appendChild(card); document.body.appendChild(ov);
       card.querySelector('.mpprem-x').addEventListener('click', close);
@@ -1824,18 +1824,18 @@
       card.querySelector('.mpprem-buy').addEventListener('click', function () { checkoutPlan('monthly', this, note); });
       card.querySelector('.mpprem-founder').addEventListener('click', function () { checkoutPlan('founder', this, note); });
       var balBtn = card.querySelector('.mpprem-bal');
-      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 3.99) { balBtn.hidden = false; balBtn.textContent = 'Pay from my rewards balance — $3.99 (you have $' + bal.toFixed(2) + ')'; } }).catch(function () {}); }
+      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 3.99) { balBtn.hidden = false; balBtn.textContent = 'Pay from my rewards balance - $3.99 (you have $' + bal.toFixed(2) + ')'; } }).catch(function () {}); }
       if (balBtn) balBtn.addEventListener('click', function () { payFromBalance(this, note); });
     }
     window.mpPremium = { show: function (reason) { try { location.href = '/premium'; } catch (e) {} }, showModal: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };
   })();
 
-  /* ===== PRO cosmetic badge — gold "PRO" next to every premium username ([data-lbu]) across chat, leaderboards, profiles ===== */
+  /* ===== PRO cosmetic badge - gold "PRO" next to every premium username ([data-lbu]) across chat, leaderboards, profiles ===== */
   (function () {
     var PRO = null;
     try { var _pc = JSON.parse(localStorage.getItem('mp_proset') || 'null'); if (_pc && _pc.n && _pc.n.length) { PRO = {}; _pc.n.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); } } catch (e) {} // warm-cache the PRO set so mpIsPro() is ready SYNCHRONOUSLY on first paint → renderers gold names same-frame (no flash); load() refreshes it below
     function goldName(nm) { if (nm && nm.nodeType === 1 && !nm.hasAttribute('data-lvln') && !nm.classList.contains('mplvb') && !nm.classList.contains('mp-progold')) nm.classList.add('mp-progold'); }
-    function goldSlot(sl) { // the name sits right before a [data-lpro] slot — as an element (tm-nm) OR a bare text node (bento leaderboard rows)
+    function goldSlot(sl) { // the name sits right before a [data-lpro] slot - as an element (tm-nm) OR a bare text node (bento leaderboard rows)
       var prev = sl.previousSibling;
       while (prev && prev.nodeType === 3 && !(prev.nodeValue || '').trim()) prev = prev.previousSibling; // skip whitespace
       if (!prev) return;
@@ -1843,10 +1843,10 @@
       goldName(prev);
     }
     function scan() { if (!PRO || document.hidden) return;
-      // PRO members get a glossy GOLD name (no chip — the old badge got lost / didn't fit on mobile). A [data-lpro="name"] slot marks the name right before it (LEVEL / NAME).
+      // PRO members get a glossy GOLD name (no chip - the old badge got lost / didn't fit on mobile). A [data-lpro="name"] slot marks the name right before it (LEVEL / NAME).
       var slots = document.querySelectorAll('[data-lpro]:not([data-prodone])');
       for (var i = 0; i < slots.length; i++) { var sl = slots[i], su = (sl.getAttribute('data-lpro') || '').toLowerCase(); sl.setAttribute('data-prodone', '1'); if (su && PRO[su]) goldSlot(sl); }
-      // fallback: a [data-lbu] name element without a slot (chat) — gold the name itself, unless its row carries a slot
+      // fallback: a [data-lbu] name element without a slot (chat) - gold the name itself, unless its row carries a slot
       var els = document.querySelectorAll('[data-lbu]:not([data-pro])');
       for (var j = 0; j < els.length; j++) { var el = els[j], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { var pn = el.parentNode; if (pn && (pn.querySelector('[data-lpro]') || el.querySelector('[data-lpro]'))) continue; goldName(el); } } }
     function load() { if (document.hidden && PRO) return; fetch('/api/premium/badges', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.names) { PRO = {}; j.names.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); try { localStorage.setItem('mp_proset', JSON.stringify({ t: Date.now(), n: j.names })); } catch (e) {} scan(); } }).catch(function () {}); }
@@ -1856,17 +1856,17 @@
   })();
 
   /* ===== Balance Mode (Premium): trade a portfolio balance; the strip renders in My Trades (home.js + mp-trade.js) ===== */
-  /* Season stats reset — guard mirror of home.js/mp-trade.js (load order must not matter). 0 before Mon 2026-08-17 00:00 UTC. */
+  /* Season stats reset - guard mirror of home.js/mp-trade.js (load order must not matter). 0 before Mon 2026-08-17 00:00 UTC. */
   window.mpSsnStart = window.mpSsnStart || function () { var A = Date.UTC(2026, 6, 20), n = Date.now(); if (n < Date.UTC(2026, 7, 17)) return 0; return A + Math.floor((n - A) / 1209600000) * 1209600000; };
   window.mpBal = {
     _sid: function () { return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }, // unique Balance Mode session id
     cfg: function () { try { var c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); if (c && c.on) { if (!c.sid) { c.sid = this._sid(); try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} } return { on: true, start: (+c.start > 0 ? +c.start : 10000), since: +c.since || 0, sid: c.sid }; } } catch (e) {} return { on: false, start: 10000, since: 0, sid: '' }; },
     _emit: function () { try { window.dispatchEvent(new Event('mp-balmode')); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} },
-    setCfg: function (on, reset) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var fresh = reset || !prev.sid; var since = fresh ? Date.now() : (+prev.since || Date.now()); var sid = fresh ? this._sid() : prev.sid; var start = fresh ? 10000 : (+prev.start > 0 ? +prev.start : 10000); var today = new Date().toISOString().slice(0, 10); var topup = fresh ? today : (prev.topup || today); var ssn9 = fresh ? (window.mpSsnStart ? window.mpSsnStart() : 0) : (+prev.ssn || 0); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: start, since: since, sid: sid, topup: topup, ssn: ssn9 })); } catch (e) {} if (on) { try { this._dailyTopup(); } catch (e) {} } this._emit(); }, // no user-set amount anymore — VIP gets a fixed 10k base; _dailyTopup + grant() top it up
-    _dailyTopup: function () { var c; try { c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); } catch (e) { return; } if (!c || !c.on) return; var today = new Date().toISOString().slice(0, 10); var ssn = window.mpSsnStart ? window.mpSsnStart() : 0; if (ssn && (+c.ssn || 0) !== ssn) { c.start = 10000; c.sid = this._sid(); c.since = Date.now(); c.topup = today; c.ssn = ssn; try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); return c.start; } // season rollover (owner 2026-08-16: "sve se resetuje"): fresh $10,000 portfolio; open positions stay open — the old session's tags simply stop counting toward the new balance
-      if (c.topup === today) return; c.start = Math.min(250000, (+c.start || 10000) + 10000); c.topup = today; try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); return c.start; }, // +$10,000 once per NEW active day (not per calendar gap — away 30 days ≠ +300k), capped at 250k
+    setCfg: function (on, reset) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var fresh = reset || !prev.sid; var since = fresh ? Date.now() : (+prev.since || Date.now()); var sid = fresh ? this._sid() : prev.sid; var start = fresh ? 10000 : (+prev.start > 0 ? +prev.start : 10000); var today = new Date().toISOString().slice(0, 10); var topup = fresh ? today : (prev.topup || today); var ssn9 = fresh ? (window.mpSsnStart ? window.mpSsnStart() : 0) : (+prev.ssn || 0); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: start, since: since, sid: sid, topup: topup, ssn: ssn9 })); } catch (e) {} if (on) { try { this._dailyTopup(); } catch (e) {} } this._emit(); }, // no user-set amount anymore - VIP gets a fixed 10k base; _dailyTopup + grant() top it up
+    _dailyTopup: function () { var c; try { c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); } catch (e) { return; } if (!c || !c.on) return; var today = new Date().toISOString().slice(0, 10); var ssn = window.mpSsnStart ? window.mpSsnStart() : 0; if (ssn && (+c.ssn || 0) !== ssn) { c.start = 10000; c.sid = this._sid(); c.since = Date.now(); c.topup = today; c.ssn = ssn; try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); return c.start; } // season rollover (owner 2026-08-16: "sve se resetuje"): fresh $10,000 portfolio; open positions stay open - the old session's tags simply stop counting toward the new balance
+      if (c.topup === today) return; c.start = Math.min(250000, (+c.start || 10000) + 10000); c.topup = today; try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); return c.start; }, // +$10,000 once per NEW active day (not per calendar gap - away 30 days ≠ +300k), capped at 250k
     grant: function (n) { n = Math.max(0, Math.round(+n || 0)); if (!n) return; var c; try { c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); } catch (e) { return; } if (!c) return; c.start = Math.min(250000, (+c.start || 10000) + n); try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); }, // top up from daily missions / other systems
-    tag: function (e) { try { var c = this.cfg(); if (c.on && c.sid && e && e.id) { if (!e.bal) e.bal = c.sid; var m = {}; try { m = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) {} if (m[e.id] !== c.sid) { m[e.id] = c.sid; var ks = Object.keys(m); if (ks.length > 500) ks.slice(0, ks.length - 500).forEach(function (k) { delete m[k]; }); try { localStorage.setItem('mp_bal_tags', JSON.stringify(m)); } catch (x) {} } } } catch (_) {} return e; } // tag the trade for the current Balance Mode session — writes BOTH e.bal AND an id->sid map (mp_bal_tags) so the tag survives the server journal sync for signed-in/premium users
+    tag: function (e) { try { var c = this.cfg(); if (c.on && c.sid && e && e.id) { if (!e.bal) e.bal = c.sid; var m = {}; try { m = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) {} if (m[e.id] !== c.sid) { m[e.id] = c.sid; var ks = Object.keys(m); if (ks.length > 500) ks.slice(0, ks.length - 500).forEach(function (k) { delete m[k]; }); try { localStorage.setItem('mp_bal_tags', JSON.stringify(m)); } catch (x) {} } } } catch (_) {} return e; } // tag the trade for the current Balance Mode session - writes BOTH e.bal AND an id->sid map (mp_bal_tags) so the tag survives the server journal sync for signed-in/premium users
   };
   try { window.mpBal._dailyTopup(); } catch (e) {} // on load: give a returning VIP their +$10,000 for the new day
 
@@ -1940,8 +1940,8 @@
     function pad(n) { return (n < 10 ? '0' : '') + n; }
     function whenTxt(ts) { var d = new Date(ts || Date.now()); return MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + ' · ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ' UTC'; }
     function agoTxt(ts) { var m = Math.max(0, Math.round((Date.now() - (+ts || Date.now())) / 60000)); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; }
-    function whenHtml(ts) { return 'Updated <b>' + whenTxt(ts) + '</b> · ' + agoTxt(ts); } // owner 2026-09-12: "put last updated at, so people know how fresh it is — that builds trust"
-    function pxf(v) { v = +v; if (!isFinite(v)) return '—'; return v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v >= 1 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v.toPrecision(3); }
+    function whenHtml(ts) { return 'Updated <b>' + whenTxt(ts) + '</b> · ' + agoTxt(ts); } // owner 2026-09-12: "put last updated at, so people know how fresh it is - that builds trust"
+    function pxf(v) { v = +v; if (!isFinite(v)) return '-'; return v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v >= 1 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v.toPrecision(3); }
     function sg(c, dp) { c = +c; return (c >= 0 ? '+' : '') + c.toFixed(dp == null ? 1 : dp) + '%'; }
     function usd(v) { v = +v; var a = Math.abs(v); var s = a >= 1e12 ? (a / 1e12).toFixed(2) + 'T' : a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'k' : a.toFixed(0); return (v < 0 ? '-' : '') + '$' + s; }
     function money(v) { v = +v; return (v < 0 ? '−' : '+') + '$' + Math.abs(v).toFixed(2); }
@@ -1957,12 +1957,12 @@
       if (o.s === 402) { // free member: the market line is theirs, the rest is what Premium adds
         var t = j.teaser || null; when.innerHTML = whenHtml(t && t.at);
         body.innerHTML = biasHtml(t) + chipsHtml(null, t)
-          + '<div class="mpb-lock"><b>The full brief is a Premium benefit</b><ul><li>Your open positions: live P&amp;L, how far liquidation sits, whether funding runs against you</li><li>Your week from the trade ledger, with the pattern that costs you most</li><li>Where the setups are on the majors, derivatives, liquidations, movers, the calendar</li><li>Delivered every morning by push or Telegram, if you want it</li></ul><button type="button" id="mpbGo">Go Premium — $3.99 / month</button></div>'
-          + '<div class="mpb-foot">Market data measured by MarginPad. Educational only — not financial advice.</div>';
+          + '<div class="mpb-lock"><b>The full brief is a Premium benefit</b><ul><li>Your open positions: live P&amp;L, how far liquidation sits, whether funding runs against you</li><li>Your week from the trade ledger, with the pattern that costs you most</li><li>Where the setups are on the majors, derivatives, liquidations, movers, the calendar</li><li>Delivered every morning by push or Telegram, if you want it</li></ul><button type="button" id="mpbGo">Go Premium - $3.99 / month</button></div>'
+          + '<div class="mpb-foot">Market data measured by MarginPad. Educational only - not financial advice.</div>';
         var gb = body.querySelector('#mpbGo'); if (gb) gb.addEventListener('click', function () { kill(); if (window.mpPremium) window.mpPremium.show('Daily Brief'); });
         return;
       }
-      if (!j.ok) { body.innerHTML = '<div class="mpb-load">Could not load the brief — please try again.</div>'; return; }
+      if (!j.ok) { body.innerHTML = '<div class="mpb-load">Could not load the brief - please try again.</div>'; return; }
       var M = j.market || {}, mine = j.mine || [], you = j.you, prefs = j.prefs || { push: false, tg: false, h: 8 };
       when.innerHTML = whenHtml(M.at || j.at); when.title = 'Market picture computed at ' + new Date(M.at || j.at).toISOString().replace('T', ' ').slice(0, 16) + ' UTC, refreshed every hour. Your positions and your week are read live.';
       var h = biasHtml(M) + chipsHtml(M, j.teaser);
@@ -1971,7 +1971,7 @@
         var open9 = mine.reduce(function (a, p) { return a + (+p.pnl || 0); }, 0);
         h += sec('Your positions', mine.map(function (p, i) { // two lines: what and how much on top, the risk facts as chips that wrap under it (one line clipped at 390 px)
           var lng = p.side === 'long';
-          return '<div class="mpb-p' + (i ? '' : ' first') + '"><div class="mpb-p-top"><b class="sym">' + esc(p.symbol) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">$' + Math.round(p.margin) + ' margin</span><span class="num ' + ud(p.pnl) + '">' + (p.pnl == null ? '—' : money(p.pnl)) + (p.roe != null ? '<small>' + sg(p.roe) + ' ROE</small>' : '') + '</span></div><div class="mpb-p-sub">'
+          return '<div class="mpb-p' + (i ? '' : ' first') + '"><div class="mpb-p-top"><b class="sym">' + esc(p.symbol) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">$' + Math.round(p.margin) + ' margin</span><span class="num ' + ud(p.pnl) + '">' + (p.pnl == null ? '-' : money(p.pnl)) + (p.roe != null ? '<small>' + sg(p.roe) + ' ROE</small>' : '') + '</span></div><div class="mpb-p-sub">'
             + (p.entry > 0 ? '<span class="mpb-c">in at $' + pxf(p.entry) + '</span>' : '')
             + (p.liqDist != null ? '<span class="mpb-c' + (p.liqDist < 2 ? ' d' : p.liqDist < 5 ? ' w' : '') + '">liq ' + p.liqDist + '% away</span>' : '')
             + (p.fundingAgainst === true ? '<span class="mpb-c w">funding against you</span>' : p.fundingAgainst === false ? '<span class="mpb-c g">funding with you</span>' : '')
@@ -1982,10 +1982,10 @@
       // 2. your week
       if (you && you.week) {
         var W = you.week, Y = you.yesterday;
-        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '—') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '—') + '</b><span>Season P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '—') + '</b><span>Yesterday</span></div></div>';
+        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '-') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '-') + '</b><span>Season P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '-') + '</b><span>Yesterday</span></div></div>';
         var fnd = (you.findings || []).map(function (f) { return '<div class="mpb-find">' + esc(f.text) + '</div>'; }).join('');
-        if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + ' closes this week — too few to name a pattern. Trade, and the brief starts reading you.' : 'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.') + '</div>';
-        // the window is the season, not a rolling week — say which, so a one-day number is not read as seven
+        if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + ' closes this week - too few to name a pattern. Trade, and the brief starts reading you.' : 'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.') + '</div>';
+        // the window is the season, not a rolling week - say which, so a one-day number is not read as seven
         var dayN = (you.days || 1), dayTxt = dayN === 1 ? 'day 1 of the season' : 'season, day ' + dayN;
         h += sec('Your season', k4 + fnd, 'you', (j.streak ? j.streak + '-day streak · ' : '') + dayTxt);
       }
@@ -1993,7 +1993,7 @@
       h += sec('Next up', '<div class="mpb-todo" id="mpbTodo"><div class="mpb-note">Checking your season…</div></div>', 'next');
       // 4. setups
       var ops = M.setups || [];
-      h += sec('Where the setups are', ops.length ? ops.map(function (op, i) { var lng = op.dir === 'long'; return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(op.sym) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + esc(op.kind) + ' ' + (lng ? 'LONG' : 'SHORT') + '</span><span class="fill">' + esc(op.note) + '</span><span class="num' + (op.rsi >= 70 ? ' dn' : op.rsi <= 30 ? ' up' : '') + '">' + (op.rsi == null ? '' : 'RSI ' + op.rsi) + '<small>$' + pxf(op.price) + '</small></span></div>'; }).join('') : '<div class="mpb-note">No clean setup on the majors right now — the best trade is patience.</div>', '', 'Supertrend 1H + 4H · RSI 14');
+      h += sec('Where the setups are', ops.length ? ops.map(function (op, i) { var lng = op.dir === 'long'; return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(op.sym) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + esc(op.kind) + ' ' + (lng ? 'LONG' : 'SHORT') + '</span><span class="fill">' + esc(op.note) + '</span><span class="num' + (op.rsi >= 70 ? ' dn' : op.rsi <= 30 ? ' up' : '') + '">' + (op.rsi == null ? '' : 'RSI ' + op.rsi) + '<small>$' + pxf(op.price) + '</small></span></div>'; }).join('') : '<div class="mpb-note">No clean setup on the majors right now - the best trade is patience.</div>', '', 'Supertrend 1H + 4H · RSI 14');
       // 5. majors (paired with derivatives on a desktop: the card was 1,637 px tall in one column)
       var sMaj = '', sDv = '', sMv = '', sCal = '';
       var pair = function (a, b) { return (a && b) ? '<div class="mpb-two">' + a + b + '</div>' : (a || b); };
@@ -2029,7 +2029,7 @@
         h += sec('Hyperliquid whales', wh, '', (W.tracked || W.n) + ' tracked'); }
       // 9. delivery
       h += '<section class="mpb-s"><h4>Every morning<small>one line · push or Telegram</small></h4><div class="mpb-dl-row"><label class="mpb-tg"><input type="checkbox" id="mpbPush"' + (prefs.push ? ' checked' : '') + '> Browser push</label><label class="mpb-tg' + (j.tgLinked ? '' : ' off') + '"><input type="checkbox" id="mpbTg"' + (prefs.tg ? ' checked' : '') + (j.tgLinked ? '' : ' disabled') + '> Telegram' + (j.tgLinked ? '' : ' <small>connect in @MarginPadBot</small>') + '</label><span class="mpb-seg" id="mpbSeg"><b data-h="8"' + (prefs.h !== 16 ? ' class="on"' : '') + '>08:00 UTC</b><b data-h="16"' + (prefs.h === 16 ? ' class="on"' : '') + '>16:00 UTC</b></span></div><div class="mpb-dl-note" id="mpbDlNote"></div></section>';
-      h += '<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only — not financial advice.</div>';
+      h += '<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only - not financial advice.</div>';
       body.innerHTML = h;
       // next up: same rules as the homepage member card
       todoP.then(function (arr) {
@@ -2037,23 +2037,23 @@
         if (P && P.claimable) todo.push(['ok', 'Claim ' + P.claimable + ' pass reward' + (P.claimable > 1 ? 's' : ''), '/season/#pass']);
         if (D && D.day) { var td = D.me && D.me.today; if (!td && D.open) todo.push(['hot', 'Make today’s BTC call', '/season/#today']); }
         if (G && G.catalogue) { var pk = G.picks || []; pk.filter(function (x) { return x.done && !x.paid; }).forEach(function (x) { todo.push(['ok', 'Claim goal: ' + x.name, '/season/#today']); }); if (pk.length < 2) todo.push(['', 'Pick your season goal' + (pk.length ? '' : 's'), '/season/#today']); }
-        if (!todo.length) todo.push(['ok', 'All caught up — go trade', '/paper-trade']);
+        if (!todo.length) todo.push(['ok', 'All caught up - go trade', '/paper-trade']);
         el.innerHTML = todo.slice(0, 3).map(function (t, i) { return '<a class="' + t[0] + '" href="' + t[2] + '"><i>' + (i + 1) + '</i><span>' + esc(t[1]) + '</span>' + ic('chev') + '</a>'; }).join('');
       });
       // delivery switches
       var cur = { push: !!prefs.push, tg: !!prefs.tg, h: prefs.h === 16 ? 16 : 8 }, note = body.querySelector('#mpbDlNote');
       function say() { if (!note) return; note.className = 'mpb-dl-note'; note.textContent = (cur.push || cur.tg) ? 'On · ' + pad(cur.h) + ':00 UTC · ' + [cur.push ? 'push' : '', cur.tg ? 'Telegram' : ''].filter(Boolean).join(' + ') + ' · market bias, setups, the next event and your open book, with a link back here.' : 'Off. Turn on push or Telegram to get one line a day with a link back here.'; }
-      function save() { fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cur) }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { cur.push = !!d.prefs.push; cur.tg = !!d.prefs.tg; cur.h = d.prefs.h; say(); if (note) { note.className = 'mpb-dl-note ok'; note.textContent = 'Saved. ' + note.textContent; } } else if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Could not save — try again.'; } }).catch(function () { if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Network error — try again.'; } }); }
+      function save() { fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cur) }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { cur.push = !!d.prefs.push; cur.tg = !!d.prefs.tg; cur.h = d.prefs.h; say(); if (note) { note.className = 'mpb-dl-note ok'; note.textContent = 'Saved. ' + note.textContent; } } else if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Could not save - try again.'; } }).catch(function () { if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Network error - try again.'; } }); }
       say();
       var pushCb = body.querySelector('#mpbPush'), tgCb = body.querySelector('#mpbTg'), seg = body.querySelector('#mpbSeg');
       if (pushCb) pushCb.addEventListener('change', function () {
-        if (pushCb.checked) { if (!(window.mpPush && window.mpPush.supported && window.mpPush.supported())) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'This browser cannot receive push — use Telegram instead.'; } return; } if (note) { note.className = 'mpb-dl-note'; note.textContent = 'Asking the browser for permission…'; }
-          window.mpPush.enable().then(function () { cur.push = true; save(); }).catch(function (e2) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = e2 === 'denied' ? 'Push is blocked for this site in the browser settings.' : 'Could not enable push here — try Telegram.'; } }); }
+        if (pushCb.checked) { if (!(window.mpPush && window.mpPush.supported && window.mpPush.supported())) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'This browser cannot receive push - use Telegram instead.'; } return; } if (note) { note.className = 'mpb-dl-note'; note.textContent = 'Asking the browser for permission…'; }
+          window.mpPush.enable().then(function () { cur.push = true; save(); }).catch(function (e2) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = e2 === 'denied' ? 'Push is blocked for this site in the browser settings.' : 'Could not enable push here - try Telegram.'; } }); }
         else { cur.push = false; save(); }
       });
       if (tgCb) tgCb.addEventListener('change', function () { cur.tg = !!tgCb.checked; save(); });
       if (seg) seg.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-h]'); if (!b) return; cur.h = +b.getAttribute('data-h') === 16 ? 16 : 8; Array.prototype.forEach.call(seg.querySelectorAll('[data-h]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-h') === cur.h); }); if (cur.push || cur.tg) save(); else say(); });
-    }).catch(function () { body.innerHTML = '<div class="mpb-load">Could not load the brief — please try again.</div>'; });
+    }).catch(function () { body.innerHTML = '<div class="mpb-load">Could not load the brief - please try again.</div>'; });
   } };
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
@@ -2116,8 +2116,8 @@
       var col = lv.col || '#c2f64a';
       var conf = ''; for (var n = 0; n < 60; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c2f64a', col, '#ffd75a', '#38bdf8', '#ff6a3d'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> — earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div>'
-        + (function(){var UN={bronze:'Rewards + The Vault unlocked',silver:'Silver frame + bigger claims unlocked',gold:'Gold frame + bigger claims unlocked',platinum:'Platinum frame unlocked',diamond:'Diamond frame + withdrawal bonus unlocked',legendary:'Legendary frame + max perks unlocked'}[lv.k];return UN?('<a class="mpxp-unlock" href="/vault/" style="display:block;margin:10px auto 0;max-width:280px;padding:9px 14px;border:1px solid rgba(194,246,74,.4);border-radius:11px;background:rgba(194,246,74,.08);color:#c2f64a;font-size:12.5px;font-weight:700;text-decoration:none">'+UN+' — open The Vault →</a>'):'';})()
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> - earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div>'
+        + (function(){var UN={bronze:'Rewards + The Vault unlocked',silver:'Silver frame + bigger claims unlocked',gold:'Gold frame + bigger claims unlocked',platinum:'Platinum frame unlocked',diamond:'Diamond frame + withdrawal bonus unlocked',legendary:'Legendary frame + max perks unlocked'}[lv.k];return UN?('<a class="mpxp-unlock" href="/vault/" style="display:block;margin:10px auto 0;max-width:280px;padding:9px 14px;border:1px solid rgba(194,246,74,.4);border-radius:11px;background:rgba(194,246,74,.08);color:#c2f64a;font-size:12.5px;font-weight:700;text-decoration:none">'+UN+' - open The Vault →</a>'):'';})()
         + '<button class="mpxp-x" type="button">Back to work</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
@@ -2133,7 +2133,7 @@
       var crown = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none"><defs><linearGradient id="mpPgc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset="0.5" stop-color="#ffd75a"/><stop offset="1" stop-color="#e0a52a"/></linearGradient></defs><path d="M2.6 8.2l4.4 3.3L12 4l5 7.5 4.4-3.3-1.9 11.3H4.5L2.6 8.2z" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.5" stroke-linejoin="round"/><rect x="4.5" y="18.4" width="15" height="2.3" rx="0.7" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.4"/><circle cx="2.6" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="21.4" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="12" cy="4" r="1.6" fill="#ffe98a"/></svg>';
       ov.style.setProperty('--lc', col);
       var ck = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ffd75a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-      var perks = ['8 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts — 50/day', 'Balance Mode — real portfolio trading', 'Premium duels — all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
+      var perks = ['8 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts - 50/day', 'Balance Mode - real portfolio trading', 'Premium duels - all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
       var perksHtml = '<ul class="mpxp-perks">' + perks.map(function (p) { return '<li>' + ck + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
       ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + crown + '</div><div class="mpxp-up">Premium unlocked</div><div class="mpxp-nm mp-progold">MarginPad Premium</div><div class="mpxp-sub">You are now a <b>Premium member</b>. Here is everything you just unlocked:</div>' + perksHtml + '<a class="mpxp-x mpxp-see" href="/premium" target="_blank" rel="noopener">See everything you got →</a><button class="mpxp-x mpxp-x2" type="button">Start trading</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
@@ -2145,7 +2145,7 @@
       try { if (navigator.vibrate) navigator.vibrate([20, 40, 20, 40, 70]); } catch (e) {}
     }
     window.mpPremiumCelebrate = premiumCelebrate;
-    function giftCelebrate(fromUn, body9, link9) { // center-stage moment when someone gifts you a Vault item — a plain bell row undersold the most personal event on the site
+    function giftCelebrate(fromUn, body9, link9) { // center-stage moment when someone gifts you a Vault item - a plain bell row undersold the most personal event on the site
       // A MONEY gift lands here too (chat /gift $, owner credit, giveaway prizes) and used to be sent to The Vault to "equip it".
       // The notification's own link says which it is: /rewards/ = cash, anything else = an item.
       var cash9 = /^\/rewards/.test(String(link9 || ''));
@@ -2154,7 +2154,7 @@
       var conf = ''; for (var n = 0; n < 70; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c792ff', '#c2f64a', '#ffd75a', '#38bdf8', '#e6d1ff'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       var box = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none" stroke="#c792ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M4 10h16M12 10v10M8 10c-2 0-3-1.2-3-2.6C5 6 6.3 5 7.6 5 9.6 5 12 7.5 12 10c0-2.5 2.4-5 4.4-5C17.7 5 19 6 19 7.4 19 8.8 18 10 16 10"/></svg>';
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">' + (cash9 ? 'You got paid' : 'Gift received') + '</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + ' sent you ' + (cash9 ? 'money' : 'a gift') : (cash9 ? 'Money landed on your balance' : 'You got a gift')) + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="' + (cash9 ? '/rewards/' : '/vault/') + '">' + (cash9 ? 'Open rewards — see your balance' : 'Open The Vault — equip it') + ' →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">' + (cash9 ? 'You got paid' : 'Gift received') + '</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + ' sent you ' + (cash9 ? 'money' : 'a gift') : (cash9 ? 'Money landed on your balance' : 'You got a gift')) + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="' + (cash9 ? '/rewards/' : '/vault/') + '">' + (cash9 ? 'Open rewards - see your balance' : 'Open The Vault - equip it') + ' →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       var xb = ov.querySelector('.mpxp-x2'); if (xb) xb.addEventListener('click', close9);
@@ -2166,7 +2166,7 @@
       if (!ME) return;
       fetch('/api/auth/xp' + (fresh ? '?fresh=1' : '')).then(function (r) { return r.json(); }).then(function (d) {
         if (!d || !d.signedIn || !d.level) return;
-        // DM unread + duel pending badges — run on EVERY poll incl. the first (before the seed early-return below)
+        // DM unread + duel pending badges - run on EVERY poll incl. the first (before the seed early-return below)
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
         try { window.mpLvlNow = d.level; if (window.mpToastHost) window.mpToastHost(); } catch (e) {} // the toast frame wears the trader's level colour (Bronze -> Legendary)
@@ -2179,7 +2179,7 @@
         try { window.dispatchEvent(new CustomEvent('mp:xp', { detail: d })); } catch (e) {} // progress widgets (Road to Bronze, goals, records) re-render off this
         if (typeof d.notifUnread === 'number' && window.mpNotifBadge) { try { window.mpNotifBadge(d.notifUnread); } catch (e) {} }
         // GIFT CELEBRATION: an unseen 'gift' notification gets the center stage once (ts-dedup per device in localStorage).
-        // The notif list is fetched only when the unread count first appears or GROWS — never on every poll; the plain
+        // The notif list is fetched only when the unread count first appears or GROWS - never on every poll; the plain
         // GET does not mark anything seen, so the bell badge behavior is untouched.
         var nu9 = +d.notifUnread || 0;
         if (nu9 > 0 && (window.__mpGiftPrev == null || nu9 > window.__mpGiftPrev) && !window.__mpGiftBusy) { try {
@@ -2199,10 +2199,10 @@
           }).catch(function () { window.__mpGiftBusy = false; });
         } catch (e) { window.__mpGiftBusy = false; } }
         window.__mpGiftPrev = nu9;
-        // Premium upgrade celebration — SERVER-driven (d.premiumNew = premium && !prem_seen). Fires once regardless of
+        // Premium upgrade celebration - SERVER-driven (d.premiumNew = premium && !prem_seen). Fires once regardless of
         // WHEN the user became premium (owner grant / IPN that landed while offline → first login already premium, which
         // the old localStorage "non-premium -> premium transition" check silently missed). The server flag (prem_seen)
-        // is set only by the ack BELOW, AFTER the animation is shown — so a tab closed mid-animation just replays it next
+        // is set only by the ack BELOW, AFTER the animation is shown - so a tab closed mid-animation just replays it next
         // time (never a silent loss of the celebration).
         if (d.premiumNew && !window.__mpPremCelebrated) { try {
           window.__mpPremCelebrated = true;
@@ -2215,7 +2215,7 @@
           try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || 0 })); } catch (e) {}
           lastXp = d.xp; lastIdx = d.level.idx; return;
         }
-        // toast every log entry newer than the last seen ts (positives AND negatives — a silent -500 duel stake looked like "my XP is shrinking"), oldest-first
+        // toast every log entry newer than the last seen ts (positives AND negatives - a silent -500 duel stake looked like "my XP is shrinking"), oldest-first
         var fresh = (d.log || []).filter(function (e) { return e.ts > (stored.ts || 0) && (+e.amt) !== 0; }).sort(function (a, b) { return a.ts - b.ts; });
         fresh.slice(-4).forEach(function (e, ix) { setTimeout(function () { toast(+e.amt, e.src, (+e.amt) < 0 ? '#ff8a80' : d.level.col); }, ix * 550); });
         if (fresh.some(function (e) { return e.src === 'trade_win'; })) { try { var dn9 = 'mp_dnudge_' + new Date().toISOString().slice(0, 10); if (!localStorage.getItem(dn9)) { localStorage.setItem(dn9, '1'); setTimeout(duelNudge, 2800); } } catch (e) {} }
@@ -2239,9 +2239,9 @@
   })();
 
   var _liChk; try { _liChk = localStorage.getItem('mp_li_chk') === '1'; } catch (e) { _liChk = false; }
-  if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely — that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
+  if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely - that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
     fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); try { if (/[?&]brief=1(&|$)/.test(location.search)) setTimeout(function () { if (window.mpBrief) window.mpBrief.show(); }, 700); } catch (e) {} /* ?brief=1 = the morning push / Telegram deep link straight into the brief */
-      if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout — celebrate now (the 60s poll would otherwise lag)
+      if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout - celebrate now (the 60s poll would otherwise lag)
         setTimeout(function () { if (window.mpPremiumCelebrate) window.mpPremiumCelebrate(); }, 1000);
         try { var u = new URL(location.href); u.searchParams.delete('premium'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
       }
@@ -2290,7 +2290,7 @@
   window.addEventListener('mp-auth-change', function (e) { try { if (e.detail && e.detail.user && LS('clicked') && Date.now() - (+LS('clicked') || 0) < 3600000) { track('converted'); LS('clicked', ''); } } catch (e2) {} });
 })();
 
-/* ══════════ PENDING LIMIT ORDERS — one client, every surface (2026-09-05) ══════════
+/* ══════════ PENDING LIMIT ORDERS - one client, every surface (2026-09-05) ══════════
    A resting order is NOT a trade: it never enters mp_journal, so nothing that reads the journal (open-trade caps,
    My Trades stats, the leaderboard, the server sync) can mistake it for a position. It becomes a position only at
    fill, through the SAME path a market open takes.
@@ -2345,7 +2345,7 @@
     var dir = (lp > 0 && px > lp) ? 'up' : 'down';
     if (open.length >= MAX) return fail(T('otMax', 'You already have 20 orders waiting - cancel one first.'));
     if (!me()) { // guest: the order lives on this device and fills while the page is open
-      if (!(lp > 0)) return fail(T('mtWaitPx', 'Waiting for the live price — try again in a second.')); // dir is derived from the live price; without one a breakout level above the market would be filed as "down" and fill the moment a price arrived (2026-09-12)
+      if (!(lp > 0)) return fail(T('mtWaitPx', 'Waiting for the live price - try again in a second.')); // dir is derived from the live price; without one a breakout level above the market would be filed as "down" and fill the moment a price arrived (2026-09-12)
       var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1, dir: dir };
       setOpen(open.concat([g]));
       if (ok) ok(g);
@@ -2383,7 +2383,7 @@
           if (!d) return;
           var fills = (d.filled || []);
           // BACKOFF: normally the server agrees on the first ask and fills. It disagrees only when its price has
-          // not crossed yet (a different source, or an edge-cached read) — and then the local price can sit on the
+          // not crossed yet (a different source, or an edge-cached read) - and then the local price can sit on the
           // level for minutes, which would otherwise be one request every 3s forever against a single-instance DO.
           if (fills.length) sweepGap = 3000; else sweepGap = Math.min(30000, Math.round(sweepGap * 1.8));
           if (fills.length && Array.isArray(d.positions)) applyFills(d.positions, fills);
@@ -2454,7 +2454,7 @@
   setInterval(function () { if (!document.hidden && me() && open.length) refresh(); }, 90000);
 })();
 
-/* SCROLL CONTAINMENT FOR EVERY OPEN WINDOW (owner 2026-09-06: "focus stays on what is open — the page behind a chat, a
+/* SCROLL CONTAINMENT FOR EVERY OPEN WINDOW (owner 2026-09-06: "focus stays on what is open - the page behind a chat, a
    sheet, a modal must never scroll while I scroll the window"). One listener pair here, on the bundle every page loads,
    instead of wiring each of the ~25 overlays by hand: a wheel or touch inside a FIXED ancestor that is tall enough to be a
    window (nav bars, toasts and banners are short and stay untouched) scrolls the nearest scrollable panel inside that
@@ -2506,12 +2506,12 @@
 })();
 
 /* ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
-   PARTNER LAYER (2026-09-09) — one table for every surface that links out to an exchange, and the only place a
+   PARTNER LAYER (2026-09-09) - one table for every surface that links out to an exchange, and the only place a
    referral URL is built. Lives here because mp-auth.js is the one bundle on EVERY page (same exception as
    window.mpOrders); home.js, mp-trade.js, mp-screener.js, mp-calc.js and the bento homepage all consume it.
 
    Why it exists (measured over 30 days):
-     - the cards were in the SAME order for everyone, so a visitor in the US was shown Bybit and Binance first —
+     - the cards were in the SAME order for everyone, so a visitor in the US was shown Bybit and Binance first -
        neither onboards US retail. 17 US clicks went almost entirely to venues that cannot accept them.
      - the terminal is where intent is highest and it had NO link at all: /paper-trade converted 6 money clicks per
        1,000 pageviews against 64 on the homepage.
@@ -2522,18 +2522,18 @@
   'use strict';
   var U = function (s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); };
   // ref = the plain sign-up link; deep(sym) = the exact pair, which is the whole point of linking from a chart or a
-  // ticket. usOk = the venue onboards US retail (documented restriction, not a guess) — the rest go last there.
+  // ticket. usOk = the venue onboards US retail (documented restriction, not a guess) - the rest go last there.
   var P = {
     Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://www.bybit.com/invite?ref=LZKBERJ', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }, perk: 'fee discount' },
     Binance: { c: '#f0b90b', no: 'US,CA', ref: 'https://www.binance.com/register?ref=MAOZM9DS', deep: function (s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }, perk: '20% off fees' },
     Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?offer=marginpad', deep: null, perk: '24/7 markets' },
     // Hyperliquid (2026-09-11): on-chain perps DEX, API-first. The join link carries the referral; a /trade deep link would
-    // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US — a US
+    // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US - a US
     // click is a dead click, so it goes last there like Bybit does. Users get 4% off fees with code MARGINPAD.
     Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: '4% off fees with code MARGINPAD', code: 'MARGINPAD' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
-    OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing — the join page attributes (2026-09-13) */, perk: 'pro tools' },
+    OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing - the join page attributes (2026-09-13) */, perk: 'pro tools' },
     Gate: { c: '#3361ff', no: 'US', ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103', deep: function (s) { return 'https://www.gate.com/futures/USDT/' + s + '_USDT?ref=VFIWB10KUG'; }, perk: 'early listings' },
     KuCoin: { c: '#23af91', no: 'US', ref: 'https://www.kucoin.com/r/rf/VHP8AYKY', deep: function (s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }, perk: 'altcoins' },
     Kraken: { c: '#7b5cff', no: '', ref: 'https://invite.kraken.com/JDNW/guj2tf28', deep: null, perk: 'regulated' },
@@ -2542,7 +2542,7 @@
   };
   var REGION = { US: 'the US', CA: 'Canada' };
   // Display order per region. Outside the US this is OUR OWN measured click order (30 days: NG Bybit 70 / Moon 23 /
-  // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) — not an opinion about quality.
+  // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) - not an opinion about quality.
   var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
   var ORD = {
     us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
@@ -2569,7 +2569,7 @@
     cc: cc,
     ccNow: function () { if (_cc === null) _cc = readCc(); return _cc || ''; },
     rank: function (country) { var g = group(country); return (ORD[g] || ORD.def).slice(); },
-    // a venue that does not onboard this country at all — a documented restriction, so the card goes last and says so
+    // a venue that does not onboard this country at all - a documented restriction, so the card goes last and says so
     blocked: function (name, country) { var p = P[name], c = String(country || '').toUpperCase(); return !!(p && c && p.no && (',' + p.no + ',').indexOf(',' + c + ',') >= 0); },
     region: function (country) { return REGION[String(country || '').toUpperCase()] || ''; },
     url: function (name, sym) { var p = P[name]; if (!p) return ''; var s = U(sym); return (s && p.deep) ? p.deep(s) : p.ref; },
@@ -2621,7 +2621,7 @@
         var reg = mpEx.region(country); // '' outside the countries where we can state a restriction as fact
         deco.forEach(function (x) {
           if (x.off) x.el.classList.add('mp-ex-off');
-          // the caller gets the card first and returns true when it has said "not here" in its own markup — the default
+          // the caller gets the card first and returns true when it has said "not here" in its own markup - the default
           // note is only added when nobody else did, so the message can never appear twice on one card
           var labelled = false;
           if (typeof onEach === 'function') { try { labelled = onEach(x.el, x.n, x.off, country, reg, sorted.indexOf(x)) === true; } catch (e) {} }
@@ -2639,8 +2639,8 @@
       if (!t || !((+t.pnl) > 0) || !((+t.margin) > 0)) return '';
       var x = 0; try { x = +localStorage.getItem(GLX) || 0; } catch (e) {}
       // "Not now" means TODAY, not this week. It was 7 days: the owner pressed the X once and the line was gone
-      // from his own site for a week (2026-09-10). A day matches the rhythm of everything else here — the daily
-      // call, the daily missions, the daily top-up — and it still means one dismissal silences it completely for
+      // from his own site for a week (2026-09-10). A day matches the rhythm of everything else here - the daily
+      // call, the daily missions, the daily top-up - and it still means one dismissal silences it completely for
       // the rest of that day, which is the whole point of the X.
       if (Date.now() - x < 864e5) return '';
       var sym = U(t.sym); if (!sym) return '';
@@ -2650,7 +2650,7 @@
       css();
       return '<a class="mp-gl" style="--mpgl:' + p.c + '" data-mpex="' + name + '" href="' + mpEx.url(name, sym) + '" target="_blank" rel="sponsored noopener noreferrer">'
         + '<span class="mp-gl-d"></span>'
-        + '<span class="mp-gl-t"><i>+' + pct + '</i> on paper &mdash; trade <b>' + sym + '</b> for real on <b>' + name + '</b>' + (p.perk ? ', ' + p.perk : '') + '</span>'
+        + '<span class="mp-gl-t"><i>+' + pct + '</i> on paper - trade <b>' + sym + '</b> for real on <b>' + name + '</b>' + (p.perk ? ', ' + p.perk : '') + '</span>'
         + '<span class="mp-gl-go">&rarr;</span>'
         + '<button type="button" class="mp-gl-x" data-mpex-x="1" aria-label="Hide this">&#10005;</button></a>';
     } catch (e) { return ''; }
@@ -2668,9 +2668,9 @@
 })();
 
 /* ══════════ ONE notification channel (2026-09-10, owner: "there are two versions of the popups and one crosses
-   the other — move everything to the side ones, and let their frame carry the user's level colour") ══════════
+   the other - move everything to the side ones, and let their frame carry the user's level colour") ══════════
    Measured before: two independent systems ran at once. The side stack (#mpxpT: XP, records, follows) sat at
-   bottom:16px, i.e. UNDER the phone tab bar (.mpbn) — a +15 XP card covered TRADES and CHAT; and every other
+   bottom:16px, i.e. UNDER the phone tab bar (.mpbn) - a +15 XP card covered TRADES and CHAT; and every other
    notice (mpLimitToast, the copy toast, chartToast, the leverage warning, the duel nudge, a limit fill, the
    Telegram-import line) was a separate bottom-CENTRE card that landed on top of the trade form.
 
@@ -2681,10 +2681,10 @@
    This lives in mp-auth.js for the same reason window.mpOrders and window.mpEx do: it is the ONE bundle on every
    page. mp-auth is DEFERRED, so every caller looks it up at CALL time and keeps its own inline fallback. */
 (function () {
-  var HOST = 'mpxpT'; // the id the XP/record/follow toasts already use — one stack, not a second one
+  var HOST = 'mpxpT'; // the id the XP/record/follow toasts already use - one stack, not a second one
   var LVL = { unranked: '#5c6b7a', bronze: '#c97f4a', silver: '#b7c2d0', gold: '#ffcf3f', platinum: '#7ee0ff', diamond: '#8b5cff', legendary: '#ff7a1a' };
   var KIND = { info: '#c2f64a', warn: '#ff6258', good: '#2ebd85', xp: '#c2f64a', record: '#ffd75a', follow: '#38bdf8' };
-  var GUEST = '#c2f64a'; // signed out there is no level — the site accent stands in
+  var GUEST = '#c2f64a'; // signed out there is no level - the site accent stands in
   function hex2rgb(h) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); var n = parseInt(h, 16); return isFinite(n) ? [(n >> 16) & 255, (n >> 8) & 255, n & 255] : [194, 246, 74]; }
   function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
   // The trader's level colour, cached from the /api/auth/xp poll (window.mpLvlNow). Guests get the site accent.
@@ -2709,7 +2709,7 @@
       + '@media(max-width:560px){#' + HOST + '{right:10px;max-width:calc(100vw - 20px)}.mpxp{padding:9px 11px}}';
     (document.head || document.documentElement).appendChild(s);
   }
-  // Clear whatever sits at the bottom of the screen (the phone tab bar) by MEASURING it — a hardcoded offset was
+  // Clear whatever sits at the bottom of the screen (the phone tab bar) by MEASURING it - a hardcoded offset was
   // exactly how the old side stack ended up printing on top of TRADES and CHAT.
   window.mpBottomInset = function () { try { var bar = document.querySelector('.mpbn'); if (bar) { var r = bar.getBoundingClientRect(); if (r.height > 0 && r.bottom > innerHeight - 60) return Math.round(innerHeight - r.top) + 10; } } catch (e) {} return 16; };
   function baseBottom() {
@@ -2770,11 +2770,11 @@
 })();
 
 /* ══════════ "you are running an old version" (2026-09-10) ══════════════════════════════════════════════════
-   A tab left open across a deploy keeps the bundles it loaded — nothing reloads on its own. That is how three
+   A tab left open across a deploy keeps the bundles it loaded - nothing reloads on its own. That is how three
    rounds of fixes to the winning-ticket line stayed invisible to the owner: the code was live, his tab was not.
    mp-auth knows the version it was loaded with (its own ?v=), /api/announce carries the version the site serves
    now, and when they differ this says so ONCE, in the one notification channel, with a Reload button. No timers,
-   no popups, no automatic reload — a trader with an open position decides when the page reloads, not us. */
+   no popups, no automatic reload - a trader with an open position decides when the page reloads, not us. */
 (function () {
   var MINE = ""; try { var sc = document.currentScript || (function () { var l = document.querySelectorAll('script[src*="mp-auth.js"]'); return l[l.length - 1]; })(); MINE = ((sc && sc.src || "").match(/[?&]v=([a-f0-9]+)/) || [])[1] || ""; } catch (e) {}
   if (!MINE) return; // an unversioned load (dev, or a page that predates versioning): nothing to compare
@@ -2799,7 +2799,7 @@
       fetch("/api/announce", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { try { window.__mpAnn = j; } catch (e) {} check(j); }).catch(function () {});
     } catch (e) {}
   }
-  // once on load, and again when the tab is brought back — the moment a long-open tab is most likely to be stale
+  // once on load, and again when the tab is brought back - the moment a long-open tab is most likely to be stale
   if (document.readyState === "complete") setTimeout(ask, 2500); else addEventListener("load", function () { setTimeout(ask, 2500); });
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible" && !told) ask(); });
 })();
@@ -2839,7 +2839,7 @@
   } catch (e) {}
 })();
 
-/* SUPERNOVA — the apex frame's motion (2026-09-13). CSS @keyframes are invisible on the owner's Windows (animation
+/* SUPERNOVA - the apex frame's motion (2026-09-13). CSS @keyframes are invisible on the owner's Windows (animation
    effects off => prefers-reduced-motion: reduce), and this frame IS its motion, so a rAF loop writes the three custom
    properties the rules above read: --nvA (the plasma ring's angle), --nvP (0-1 core pulse) and --nvF (flare drift).
    The loop only exists while a .frame-supernova is in the document, stops with the tab hidden, and is picked up by a
@@ -2882,7 +2882,7 @@
    the identical gesture and the identical sheet. Each caller supplies only what differs: which rows are pressable,
    what the reader may do to this one, and what to run when they pick something.
 
-   window.mpLongPress(container, rowSelector, onPick)  — 480 ms hold, or right-click; cancels on a 10 px drag, and
+   window.mpLongPress(container, rowSelector, onPick)  - 480 ms hold, or right-click; cancels on a 10 px drag, and
      never fires on a link, a username or a button, because those already do something.
    window.mpMsgSheet({row, reactions, canEdit, canDelete, onReact, onEdit, onDelete, onCopy, text})               */
 (function () {
@@ -2919,7 +2919,7 @@
   };
   /* touchend fires a click a moment later; without the 450 ms grace the sheet shut the instant the finger lifted. */
   /* Lifting the finger produces a click, and that click would close the sheet the press had just opened. A grace
-     measured from the OPEN is not enough — a deliberate hold easily outlasts it — so the press marks its own release
+     measured from the OPEN is not enough - a deliberate hold easily outlasts it - so the press marks its own release
      click and this swallows exactly that one. */
   document.addEventListener('click', function (e) {
     if (!sheet) return;
@@ -2944,10 +2944,10 @@
   window.mpLongPress = function (box, sel, onPick) {
     if (!box || box._mpLp) return; box._mpLp = 1;
     var t = null, fired = false, xy = null;
-    /* A press must not steal what the row already does — a username opens a profile, a link is a link. A SHARED
+    /* A press must not steal what the row already does - a username opens a profile, a link is a link. A SHARED
        TRADE is different: it is rendered as a link (.ct-trade) or a card (.ct-sig) but it IS the message, so a hold
        has to reach it (owner 2026-09-14: "shared trades ... ako se prst zadrzi na njima, treba da moze da se ostavi
-       reakcija"). A tap still opens the ticket — the press swallows only its own release click. */
+       reakcija"). A tap still opens the ticket - the press swallows only its own release click. */
     var skip = function (n) {
       if (!n.closest) return false;
       if (n.closest('.ct-user') || n.closest('.ct-rxb') || n.closest('.mpa-rxb')) return true;
@@ -2969,12 +2969,12 @@
 })();
 
 /* ── haptics ─────────────────────────────────────────────────────────────────────────────────────────────────────
-   window.mpHaptic('step'|'tick'|'ok'|'warn') — a confirmation you can feel, for the few moments that earn one: a
+   window.mpHaptic('step'|'tick'|'ok'|'warn') - a confirmation you can feel, for the few moments that earn one: a
    position opening or closing, an order landing, each step of the leverage ladder. window.mpBuzz(pattern) is the raw
    form the older call sites use. It lives HERE, in the every-page bundle, because it used to live in home.js and every
    caller outside the six app-shell routes was silently dead (same exception as mpToast / mpOrders / mpEx).
 
-   Deliberately NOT gated on prefers-reduced-motion — the owner's machine has animation effects off and would never
+   Deliberately NOT gated on prefers-reduced-motion - the owner's machine has animation effects off and would never
    feel it, and a buzz is not motion on a screen. Off entirely with localStorage mp_haptics=0.
    navigator.vibrate does not exist on desktop or on iOS: there this is a property lookup and a return, no listeners,
    nothing loaded. The userActivation gate is what keeps Chrome from logging a blocked-vibrate warning. */

@@ -1,4 +1,4 @@
-/* /api/ (developer JSON API docs) + /widgets/ (embeddable calculator) — multilingual.
+/* /api/ (developer JSON API docs) + /widgets/ (embeddable calculator) - multilingual.
    English at /api/ & /widgets/ plus 12 translated variants at /<lang>/api/ & /<lang>/widgets/ (hreflang).
    Prose comes from build/data/aw-i18n.js (BUNDLES, via subagent translation); code/endpoints/JSON stay literal.
    Run: node build/gen-api-widgets-pages.js */
@@ -36,12 +36,12 @@ function apiPage(lang) {
 <head>${GTAG}
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>MarginPad API — free crypto data, paper-trading Bot API, MCP | MarginPad</title>
+<title>MarginPad API - free crypto data, paper-trading Bot API, MCP | MarginPad</title>
 <meta name="description" content="Every MarginPad API on one page: a free keyless crypto market-data API (prices, candles, screener, funding, open interest, liquidations, calendar), a paper-trading Bot API with REST, WebSocket, webhooks, trailing stops and limit/stop orders, a remote MCP server with 22 tools, OpenAPI 3.1 and one-file Python and JS clients." />
 <meta name="keywords" content="marginpad api, free crypto api, crypto price api no key, paper trading api, trading bot api, crypto liquidation api, funding rate api, mcp server crypto, openapi crypto, crypto calculator api" />
 <link rel="canonical" href="${url}" />
 ${hreflang('api')}
-<meta property="og:title" content="MarginPad API — free crypto data, paper-trading Bot API, MCP" />
+<meta property="og:title" content="MarginPad API - free crypto data, paper-trading Bot API, MCP" />
 <meta property="og:description" content="Keyless market data at 60 req/min (120–600 with a free key), a full paper-trading Bot API with webhooks and trailing stops, MCP with 22 tools, OpenAPI 3.1, Python and JS clients." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
@@ -109,7 +109,7 @@ ${hreflang('api')}
   <div class="crumb"><a href="${home}">${t.crumbHome}</a> / API</div>
   <article>
     <h1>MarginPad API</h1>
-    <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar &mdash; keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
+    <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar - keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
     <div class="chips"><span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>Premium · 600 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 23 tools</span><span>Bot API 2.4.0</span></div>
 
     <div class="ways">
@@ -119,8 +119,8 @@ ${hreflang('api')}
       <a class="way" href="/api/openapi.json"><b>Machine-readable</b><strong>OpenAPI 3.1 + clients</strong><span>The full spec with request and response schemas, and zero-dependency <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Spec &rarr;</em></a>
     </div>
 
-    <h2 id="data">Market data — <code>/api/v1/*</code>, keyless</h2>
-    <p>Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href="/trading-api/">/trading-api/</a>) on the same calls and they are metered against your key instead &mdash; 120 a minute, 600 on <a href="/premium/">Premium</a>. Full manual with examples: <a href="/free-crypto-api/">/free-crypto-api/</a>.</p>
+    <h2 id="data">Market data - <code>/api/v1/*</code>, keyless</h2>
+    <p>Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href="/trading-api/">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute, 600 on <a href="/premium/">Premium</a>. Full manual with examples: <a href="/free-crypto-api/">/free-crypto-api/</a>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>What you get</th></tr>
       ${row('GET', '/api/v1/price?symbol=BTC', 'Live price for one coin, aggregated across Binance / Bybit / OKX / Gate.')}
@@ -150,11 +150,11 @@ ${hreflang('api')}
 curl "https://marginpad.io/api/v1/screener"
 curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;interval=15"   # counts against your key, not your IP</pre>
 
-    <h2 id="bot">Paper-trading Bot API — <code>/api/bot/v1/*</code> and <code>/api/bot/v2/*</code></h2>
+    <h2 id="bot">Paper-trading Bot API - <code>/api/bot/v1/*</code> and <code>/api/bot/v2/*</code></h2>
     <p>Point a trading bot at real live prices and settle every trade in simulated dollars: isolated margin, leverage up to 1000&times;, liquidations confirmed on 1-minute candles, taker fees and funding charged like an exchange. Sign in with an email and mint a key on <a href="/trading-api/">/trading-api/</a>; positions live on your account and count for the season boards. <code>v1</code> response shapes are frozen; <code>v2</code> is the same API in the <code>{ ok, data, ts }</code> envelope. Auth: <code>X-API-Key</code>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>What it does</th></tr>
-      ${row('GET', '/api/bot/v1/price · /klines · /time · /markets', 'Fill price, candles, server clock (with <code>drift_ms</code>) and every tradable symbol with its leverage cap and fee — the first three need no key.')}
+      ${row('GET', '/api/bot/v1/price · /klines · /time · /markets', 'Fill price, candles, server clock (with <code>drift_ms</code>) and every tradable symbol with its leverage cap and fee - the first three need no key.')}
       ${row('POST', '/api/bot/v1/open', 'Market open at the live price with optional <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class="tag n">2.3</span>, <code>client_order_id</code> (idempotent retries) and <code>dry_run</code> <span class="tag n">2.3</span> (price it, write nothing).')}
       ${row('POST', '/api/bot/v1/open <i>type: limit | stop</i>', 'Resting orders that fill AT your level from 1m candles while the bot is offline: a limit below the market or a stop entry above it <span class="tag n">2.3</span>.')}
       ${row('GET', '/api/bot/v1/orders', 'Resting orders (with <code>type</code>) plus the last 20 that filled, expired or were cancelled.')}
@@ -175,7 +175,7 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
       <tr><td>Requests / minute per key (trading and market data)</td><td>120</td><td class="hl">600</td></tr>
       <tr><td>API keys · open positions · resting orders</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td></tr>
       <tr><td>Market data, WebSocket, MCP, limit &amp; stop orders, trailing stops, modify, dry run, venue fee schedules</td><td>included</td><td class="hl">included</td></tr>
-      <tr><td>Webhooks · AI market read · report breakdowns</td><td>&mdash;</td><td class="hl">3 hooks · 50/day · full report</td></tr>
+      <tr><td>Webhooks · AI market read · report breakdowns</td><td>-</td><td class="hl">3 hooks · 50/day · full report</td></tr>
     </table></div>
     <p>Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href="/trading-api/">/trading-api/</a>. Every change is logged at <a href="/api/changelog">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.4.0.</p>
 
@@ -195,13 +195,13 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
           <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
         </div>
       </div>
-      <span class="gl-note">Referral links &mdash; MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. Every API on this page stays free either way. Hyperliquid is not available to US persons under its terms.</span>
+      <span class="gl-note">Referral links - MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. Every API on this page stays free either way. Hyperliquid is not available to US persons under its terms.</span>
     </div>
 
-    <h2 id="mcp">MCP — use it from Claude, ChatGPT or Cursor</h2>
+    <h2 id="mcp">MCP - use it from Claude, ChatGPT or Cursor</h2>
     <p>Add <code>https://marginpad.io/mcp</code> as a remote MCP server (Streamable HTTP). Market-data tools need no key; set the header <code>X-API-Key</code> for the paper-trading tools. <b>23 tools:</b> get_price, get_klines, get_markets, get_screener, get_funding, get_open_interest, get_liquidations, get_fear_greed, get_economic_calendar, calc_liquidation, calc_position_size, paper_balance, paper_positions, paper_trades, paper_open, paper_close, paper_sltp, paper_modify_order, paper_fees, paper_report, paper_limit_order, paper_orders, paper_cancel_order.</p>
 
-    <h2 id="sdk">Clients — one file, zero dependencies</h2>
+    <h2 id="sdk">Clients - one file, zero dependencies</h2>
     <p><a href="/assets/sdk/marginpad.py">marginpad.py</a> (Python 3.8+, urllib only; <code>websockets</code> optional for the stream) and <a href="/assets/sdk/marginpad.js">marginpad.js</a> (Node 18+ or a browser). Both cover market data, every paper-trading call, ETag polling, 429 back-off, the WebSocket stream and webhook signature verification.</p>
     <pre>from marginpad import MarginPad
 mp = MarginPad("mpb_...")                              # key from /trading-api/
@@ -210,7 +210,7 @@ r = mp.open("BTC", "long", margin_usd=100, leverage=10, trail_pct=1.5,
             client_order_id="sig-1403")                # a retry can never open twice
 print(r["position"]["liq_price"], mp.report()["skill"])</pre>
 
-    <h2 id="calc">Calculators — <code>/api/*</code>, plain JSON</h2>
+    <h2 id="calc">Calculators - <code>/api/*</code>, plain JSON</h2>
     <p>${t.lead}</p>
     <pre>Base URL   https://marginpad.io/api
 Method     GET
@@ -290,7 +290,7 @@ Format     JSON   (also under /api/v1/calc/* in the { ok, data, ts } envelope)</
       if (!v || !a || !t) return;
       a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v); a.textContent = 'Open a ' + v + ' account →';
       if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
-      t.innerHTML = 'Bybit does not onboard traders in ' + reg + ', so this points at <b>' + v + '</b> instead — a venue that does, with a documented REST API.';
+      t.innerHTML = 'Bybit does not onboard traders in ' + reg + ', so this points at <b>' + v + '</b> instead - a venue that does, with a documented REST API.';
     });
   }, 100);
 })();

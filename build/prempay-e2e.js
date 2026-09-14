@@ -1,6 +1,6 @@
 /* Premium payment book E2E (2026-09-12). Owner: "on the Premium desk I want a list of who paid Premium, when and how much."
    Before this the only records were KV nowpay:* (90-day TTL), the ledger shoplog for balance payments and the current prem:sub
-   expiry — no durable book. Now every payment is ONE row in RewardLedger `prempay` (keyed by payment id, in the 6h backup),
+   expiry - no durable book. Now every payment is ONE row in RewardLedger `prempay` (keyed by payment id, in the 6h backup),
    read by GET /api/admin/prempay and drawn first on mp-ops Money > Premium desk.
 
    Proves: idempotent insert (an IPN retry can never double-count), e2e rows hidden from the owner's read unless asked,

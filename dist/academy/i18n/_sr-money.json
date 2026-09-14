@@ -17,11 +17,11 @@
     },
     {
      "h": "Gore deset, dole deset, nije nula",
-     "p": "Kreni od $100. Dodaj 10% i imaš $110. Sad oduzmi 10% — ali 10% od $110 je $11, ne $10. Završavaš na $99. Dobitak je meren u odnosu na $100, a gubitak u odnosu na $110, pa se ne poništavaju. Obrni redosled i opet sletiš na $99: $100 dole na $90, pa gore $9."
+     "p": "Kreni od $100. Dodaj 10% i imaš $110. Sad oduzmi 10% - ali 10% od $110 je $11, ne $10. Završavaš na $99. Dobitak je meren u odnosu na $100, a gubitak u odnosu na $110, pa se ne poništavaju. Obrni redosled i opet sletiš na $99: $100 dole na $90, pa gore $9."
     },
     {
      "h": "Procentne promene se množe",
-     "p": "Postoji prečica. Dobitak od 10% je množenje sa 1.10; gubitak od 10% je množenje sa 0.90. Uradi oba i dobiješ 1.10 puta 0.90, što je 0.99 — neto gubitak od 1%. Nanižeš tako ceo mesec trejdova i ono što je tvoj nalog stvarno uradio je to množenje, a ne sabiranje."
+     "p": "Postoji prečica. Dobitak od 10% je množenje sa 1.10; gubitak od 10% je množenje sa 0.90. Uradi oba i dobiješ 1.10 puta 0.90, što je 0.99 - neto gubitak od 1%. Nanižeš tako ceo mesec trejdova i ono što je tvoj nalog stvarno uradio je to množenje, a ne sabiranje."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Gubici kopaju dublju rupu",
-     "p": "Izgubi 50% od $1,000 i imaš $500. Da se vratiš na $1,000 moraš da dodaš $500 — a $500 je 100% od onoga što ti je ostalo. Gubitku od 50% treba dobitak od 100% da bi bio poništen. Gubitak i njegova popravka nisu iste veličine, i nikad nisu."
+     "p": "Izgubi 50% od $1,000 i imaš $500. Da se vratiš na $1,000 moraš da dodaš $500 - a $500 je 100% od onoga što ti je ostalo. Gubitku od 50% treba dobitak od 100% da bi bio poništen. Gubitak i njegova popravka nisu iste veličine, i nikad nisu."
     },
     {
      "h": "Tabela oporavka",
-     "p": "Provuci istu aritmetiku niz skalu. Minus 10% traži oko 11% nazad. Minus 20% traži 25%. Minus trećina traži 50%. Minus 50% traži 100%. Minus 80% ostavlja $200 od $1,000, pa ti treba $800 povrh tih $200 — to je 400%. Minus 90% traži 900%. Kriva se ne savija blago. Ona ide vertikalno."
+     "p": "Provuci istu aritmetiku niz skalu. Minus 10% traži oko 11% nazad. Minus 20% traži 25%. Minus trećina traži 50%. Minus 50% traži 100%. Minus 80% ostavlja $200 od $1,000, pa ti treba $800 povrh tih $200 - to je 400%. Minus 90% traži 900%. Kriva se ne savija blago. Ona ide vertikalno."
     },
     {
      "h": "Dokaži sam",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Šta ovo menja kod tebe",
-     "p": "Zato profesionalci prate drawdown — koliko je nalog pao ispod svoje najviše tačke — pažljivije nego prinose. Niz malih gubitaka je aritmetika koja se preživljava. Jedan veliki gubitak je druga kategorija problema. Sve posle ove kartice, od veličine pozicije do stop-lossova, postoji zato da bi pojedinačni gubici ostali dovoljno mali da oporavak ostane običan."
+     "p": "Zato profesionalci prate drawdown - koliko je nalog pao ispod svoje najviše tačke - pažljivije nego prinose. Niz malih gubitaka je aritmetika koja se preživljava. Jedan veliki gubitak je druga kategorija problema. Sve posle ove kartice, od veličine pozicije do stop-lossova, postoji zato da bi pojedinačni gubici ostali dovoljno mali da oporavak ostane običan."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Tri broja prave rezultat",
-     "p": "Profit i gubitak — P&L — dolazi od tačno tri broja: cene po kojoj si ušao, cene po kojoj si izašao, i koliko si jedinica držao. Ništa drugo ne ulazi u račun. Za long, opkladu da cena raste, P&L je izlazna cena minus ulazna cena, pomnoženo brojem jedinica."
+     "p": "Profit i gubitak - P&L - dolazi od tačno tri broja: cene po kojoj si ušao, cene po kojoj si izašao, i koliko si jedinica držao. Ništa drugo ne ulazi u račun. Za long, opkladu da cena raste, P&L je izlazna cena minus ulazna cena, pomnoženo brojem jedinica."
     },
     {
      "h": "Long, izračunat",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Pomak ne biraš",
-     "p": "Ne kontrolišeš da li će se Bitcoin danas pomeriti 2%. Kontrolišeš tačno jedan broj: koliko je tvoja pozicija velika. Sve ostalo — smer, tajming, volatilnost — je nagađanje ili poklon. Veličina pozicije je jedini ulaz u celom računu koji je potpuno tvoj, što je čini pravom odlukom koju donosiš."
+     "p": "Ne kontrolišeš da li će se Bitcoin danas pomeriti 2%. Kontrolišeš tačno jedan broj: koliko je tvoja pozicija velika. Sve ostalo - smer, tajming, volatilnost - je nagađanje ili poklon. Veličina pozicije je jedini ulaz u celom računu koji je potpuno tvoj, što je čini pravom odlukom koju donosiš."
     },
     {
      "h": "Isti pomak, bilo kakav ishod",
@@ -214,15 +214,15 @@
     },
     {
      "h": "Veličina dolazi od stopa",
-     "p": "Sad aritmetika ide unazad. Hoćeš da kupiš ETH na $2,000 sa stop-lossom na $1,960 — nalogom koji zatvara trejd ako cena padne dotle. Razdaljina je $40 po coinu. Rizikuješ ukupno $10, pa deli: $10 podeljeno sa $40 je 0.25 ETH. To je tvoja veličina, pozicija od $500."
+     "p": "Sad aritmetika ide unazad. Hoćeš da kupiš ETH na $2,000 sa stop-lossom na $1,960 - nalogom koji zatvara trejd ako cena padne dotle. Razdaljina je $40 po coinu. Rizikuješ ukupno $10, pa deli: $10 podeljeno sa $40 je 0.25 ETH. To je tvoja veličina, pozicija od $500."
     },
     {
      "h": "Širi stop, manja veličina",
-     "p": "Promeni jednu stvar. Stavi stop na $1,900 umesto toga, razdaljina od $100 po coinu. Rizik ostaje $10, pa veličina postaje $10 podeljeno sa $100, što je 0.1 ETH — pozicija od $200. Stop nije učinio trejd ni bezbednijim ni rizičnijim. Promenio je koliko coina smeš da držiš uz isti fiksni rizik."
+     "p": "Promeni jednu stvar. Stavi stop na $1,900 umesto toga, razdaljina od $100 po coinu. Rizik ostaje $10, pa veličina postaje $10 podeljeno sa $100, što je 0.1 ETH - pozicija od $200. Stop nije učinio trejd ni bezbednijim ni rizičnijim. Promenio je koliko coina smeš da držiš uz isti fiksni rizik."
     },
     {
      "h": "Zašto 1%, a ne 10%",
-     "p": "Na riziku od 1%, deset gubitaka zaredom te košta oko 10% naloga, a tabela oporavka kaže da rupa od 10% traži otprilike 11% za popravku. Na riziku od 10%, istih deset gubitaka ostavlja oko trećine onoga s čim si počeo — rupa iz koje treba oko 187% da se ispenješ. Isti trejdovi, isto umeće, druga aritmetika."
+     "p": "Na riziku od 1%, deset gubitaka zaredom te košta oko 10% naloga, a tabela oporavka kaže da rupa od 10% traži otprilike 11% za popravku. Na riziku od 10%, istih deset gubitaka ostavlja oko trećine onoga s čim si počeo - rupa iz koje treba oko 187% da se ispenješ. Isti trejdovi, isto umeće, druga aritmetika."
     }
    ],
    "quiz": [
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Provizije se naplaćuju na notional",
-     "p": "Provizija na fjučersima je procenat cele vrednosti pozicije — zvane notional — a ne gotovine koju si uložio. Otvori poziciju od $6,000 i taker provizija od 0.055% košta $3.30. Zatvori je i plaćaš ponovo. Proviziju nikad ne zanima koliko je tvog novca iza trejda. Ona vidi samo veličinu pozicije."
+     "p": "Provizija na fjučersima je procenat cele vrednosti pozicije - zvane notional - a ne gotovine koju si uložio. Otvori poziciju od $6,000 i taker provizija od 0.055% košta $3.30. Zatvori je i plaćaš ponovo. Proviziju nikad ne zanima koliko je tvog novca iza trejda. Ona vidi samo veličinu pozicije."
     },
     {
      "h": "Poluga množi proviziju",
-     "p": "Poluga omogućava da mali iznos tvoje gotovine — margina — kontroliše veću poziciju. Na 20x, pozicija od $6,000 traži $300 margine. Provizija od $3.30 je 0.055% pozicije, ali 1.1% tvojih $300. Pun krug, unutra i napolje, to je 2.2% tvoje margine nestalo pre nego što se cena uopšte pomerila."
+     "p": "Poluga omogućava da mali iznos tvoje gotovine - margina - kontroliše veću poziciju. Na 20x, pozicija od $6,000 traži $300 margine. Provizija od $3.30 je 0.055% pozicije, ali 1.1% tvojih $300. Pun krug, unutra i napolje, to je 2.2% tvoje margine nestalo pre nego što se cena uopšte pomerila."
     },
     {
      "h": "Spread i slippage takođe koštaju",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Ceo račun, jednom",
-     "p": "Nalog $1,000. Rizik 1%, dakle $10. Ulaz ETH na $2,000, stop $1,960, razdaljina $40. Veličina je $10 podeljeno sa $40, ili 0.25 ETH — pozicija od $500. Cilj $2,120 daje $120 po coinu, pa 0.25 coina donosi $30. To je 3R. Provizije za pun krug od 0.11% na $500 iznose $0.55, sitno pored $30."
+     "p": "Nalog $1,000. Rizik 1%, dakle $10. Ulaz ETH na $2,000, stop $1,960, razdaljina $40. Veličina je $10 podeljeno sa $40, ili 0.25 ETH - pozicija od $500. Cilj $2,120 daje $120 po coinu, pa 0.25 coina donosi $30. To je 3R. Provizije za pun krug od 0.11% na $500 iznose $0.55, sitno pored $30."
     },
     {
      "h": "Matematika ne predviđa",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Sad imaš ceo račun. Otvori kalkulatore i provuci svoje brojeve — nalog, rizik, razdaljina do stopa — dok ti računanje veličine ne postane automatsko.",
+    "p": "Sad imaš ceo račun. Otvori kalkulatore i provuci svoje brojeve - nalog, rizik, razdaljina do stopa - dok ti računanje veličine ne postane automatsko.",
     "label": "Otvori Kalkulatore →"
    }
   }

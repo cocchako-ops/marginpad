@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Sebuah trade adalah tiga jawaban",
-     "p": "Sebelum kamu menyentuh tiket order, tiga pertanyaan harus sudah punya jawaban: arah mana, di harga berapa kamu terbukti salah, dan seberapa besar posisinya. Arah saja adalah tebakan. Arah plus harga-salah tapi tanpa ukuran itu belum selesai. Kalau salah satu dari ketiganya hilang, kamu belum punya trade — kamu punya harapan."
+     "p": "Sebelum kamu menyentuh tiket order, tiga pertanyaan harus sudah punya jawaban: arah mana, di harga berapa kamu terbukti salah, dan seberapa besar posisinya. Arah saja adalah tebakan. Arah plus harga-salah tapi tanpa ukuran itu belum selesai. Kalau salah satu dari ketiganya hilang, kamu belum punya trade - kamu punya harapan."
     },
     {
      "h": "Arah: long atau short",
-     "p": "Long berarti kamu untung kalau harga naik dan rugi kalau turun. Short adalah cerminannya: kamu untung kalau harga turun. Di futures keduanya cuma berjarak satu klik, dan tak ada yang lebih aman di antaranya. Ucapkan arahmu sebagai kalimat biasa — long BTC — sebelum apa pun yang lain, karena setiap kolom lain di tiket bergantung padanya."
+     "p": "Long berarti kamu untung kalau harga naik dan rugi kalau turun. Short adalah cerminannya: kamu untung kalau harga turun. Di futures keduanya cuma berjarak satu klik, dan tak ada yang lebih aman di antaranya. Ucapkan arahmu sebagai kalimat biasa - long BTC - sebelum apa pun yang lain, karena setiap kolom lain di tiket bergantung padanya."
     },
     {
      "h": "Invalidasi: di mana kamu salah",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Margin, nosional, kuantitas",
-     "p": "Tiga angka menggambarkan satu posisi. Kuantitas adalah berapa banyak koin yang kamu kendalikan, katakanlah 0.02 BTC. Nosional adalah kuantitas itu dalam dolar: di $50,000 per BTC, 0.02 BTC adalah nosional $1,000. Margin adalah uang yang benar-benar terkunci dari saldomu — di leverage 10x pada posisi itu, $100. Untung dan rugi mengikuti nosional, tak pernah margin."
+     "p": "Tiga angka menggambarkan satu posisi. Kuantitas adalah berapa banyak koin yang kamu kendalikan, katakanlah 0.02 BTC. Nosional adalah kuantitas itu dalam dolar: di $50,000 per BTC, 0.02 BTC adalah nosional $1,000. Margin adalah uang yang benar-benar terkunci dari saldomu - di leverage 10x pada posisi itu, $100. Untung dan rugi mengikuti nosional, tak pernah margin."
     },
     {
      "h": "Apa yang sebenarnya leverage ubah",
@@ -170,7 +170,7 @@
     },
     {
      "h": "Pasang sendiri",
-     "prompt": "Ini long. Sentuh tempat stop-loss seharusnya berada — tepat di bawah swing low.",
+     "prompt": "Ini long. Sentuh tempat stop-loss seharusnya berada - tepat di bawah swing low.",
      "p": "Sebelum kamu memercayai kolomnya, buktikan kamu tahu levelnya. Satu sentuhan."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "Rasio yang diimplikasikan dua garismu",
-     "p": "Stop dan targetmu mengunci sebuah rasio sebelum trade-nya dimulai. Entry $50,000, stop $49,000, target $52,000 mempertaruhkan $1,000 untuk menghasilkan $2,000 — reward-to-risk 2:1. Di 2:1, menang satu dari tiga trade sudah impas sebelum biaya. Itu aritmetika, bukan janji. Tak ada yang bilang targetnya pernah tercapai. Cek rasionya sebelum kamu klik."
+     "p": "Stop dan targetmu mengunci sebuah rasio sebelum trade-nya dimulai. Entry $50,000, stop $49,000, target $52,000 mempertaruhkan $1,000 untuk menghasilkan $2,000 - reward-to-risk 2:1. Di 2:1, menang satu dari tiga trade sudah impas sebelum biaya. Itu aritmetika, bukan janji. Tak ada yang bilang targetnya pernah tercapai. Cek rasionya sebelum kamu klik."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Harga entry dan mark price",
-     "p": "Entry adalah harga rata-rata yang benar-benar kamu dapat, sebelum biaya. Mark price adalah harga acuan wajar milik exchange, dipakai untuk menilai posisimu dan menentukan likuidasi — biasanya berjangkar pada indeks yang lebih luas, bukan pada transaksi terakhir di satu order book. Itu disengaja: dia membuat satu cetakan harga aneh jauh lebih sulit dipakai melawanmu."
+     "p": "Entry adalah harga rata-rata yang benar-benar kamu dapat, sebelum biaya. Mark price adalah harga acuan wajar milik exchange, dipakai untuk menilai posisimu dan menentukan likuidasi - biasanya berjangkar pada indeks yang lebih luas, bukan pada transaksi terakhir di satu order book. Itu disengaja: dia membuat satu cetakan harga aneh jauh lebih sulit dipakai melawanmu."
     },
     {
      "h": "Belum terealisasi berarti belum jadi milikmu",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Mengisi tiketnya",
-     "p": "Sisi beli. Jenis order limit, harga $50,000, jadi kamu membayar biaya maker dan menerima bahwa dia mungkin tak pernah tereksekusi. Ukuran nosional $2,500, leverage 10x. Ketik $49,000 ke kolom stop-loss dan $52,000 ke kolom take-profit sebelum kamu submit — target itu 2:1 terhadap risikomu. Baca ulang seluruh tiketnya sekali, lalu submit."
+     "p": "Sisi beli. Jenis order limit, harga $50,000, jadi kamu membayar biaya maker dan menerima bahwa dia mungkin tak pernah tereksekusi. Ukuran nosional $2,500, leverage 10x. Ketik $49,000 ke kolom stop-loss dan $52,000 ke kolom take-profit sebelum kamu submit - target itu 2:1 terhadap risikomu. Baca ulang seluruh tiketnya sekali, lalu submit."
     },
     {
      "h": "Setelah tereksekusi, jangan lakukan apa-apa",

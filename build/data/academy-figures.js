@@ -47,7 +47,7 @@ const FIGS = {
   <text x="300" y="34" fill="${C.faint}" font-size="9" ${F} text-anchor="end">100</text>
   <polygon points="182,30 176,40 188,40" fill="${C.cyan}"/><line x1="182" y1="40" x2="182" y2="56" stroke="${C.cyan}" stroke-width="2"/>
   <text x="182" y="78" fill="${C.cyan}" font-size="9" ${F} text-anchor="middle">RSI ≈ 58 (neutral)</text>
-</svg>${cap('A momentum gauge 0–100. Above 70 = overbought, below 30 = oversold — alerts, not buy/sell signals.')}`,
+</svg>${cap('A momentum gauge 0–100. Above 70 = overbought, below 30 = oversold - alerts, not buy/sell signals.')}`,
 
   // ── MACD ──
   'macd': `<svg viewBox="0 0 320 150" role="img" aria-label="MACD lines and histogram">
@@ -87,7 +87,7 @@ const FIGS = {
   <line x1="${56+w*2.4}" y1="${y-3}" x2="${56+w*2.4}" y2="${y+19}" stroke="${C.red}" stroke-width="2"/>
   <text x="${56+w*2.4+6}" y="${y+12}" fill="${C.red}" font-size="9" ${F}>liq ${r[2]}</text>`;}).join('')}
   <text x="160" y="156" fill="${C.dim}" font-size="9" ${F} text-anchor="middle">green = room to move before liquidation</text>
-</svg>${cap('Higher leverage moves your liquidation price much closer to entry — a tiny move can wipe you out.')}`,
+</svg>${cap('Higher leverage moves your liquidation price much closer to entry - a tiny move can wipe you out.')}`,
 
   // ── P&L / ROE: notional vs margin ──
   'pnl-roe-notional': `<svg viewBox="0 0 320 150" role="img" aria-label="Notional vs margin at 5x">

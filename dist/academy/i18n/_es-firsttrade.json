@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Un trade son tres respuestas",
-     "p": "Antes de tocar el ticket de la orden, tres preguntas tienen que tener respuesta: qué dirección, a qué precio queda demostrado que te equivocaste y cuál es el tamaño de la posición. La dirección sola es una suposición. Dirección más precio de error pero sin tamaño está a medias. Si falta cualquiera de las tres, todavía no tienes un trade — tienes un deseo."
+     "p": "Antes de tocar el ticket de la orden, tres preguntas tienen que tener respuesta: qué dirección, a qué precio queda demostrado que te equivocaste y cuál es el tamaño de la posición. La dirección sola es una suposición. Dirección más precio de error pero sin tamaño está a medias. Si falta cualquiera de las tres, todavía no tienes un trade - tienes un deseo."
     },
     {
      "h": "Dirección: long o short",
-     "p": "Long significa que ganas si el precio sube y pierdes si baja. El short es el espejo: ganas si baja. En futuros los dos están a un clic de distancia, y ninguno es el seguro. Di tu dirección como una frase simple — long BTC — antes que nada, porque todos los demás campos del ticket dependen de ella."
+     "p": "Long significa que ganas si el precio sube y pierdes si baja. El short es el espejo: ganas si baja. En futuros los dos están a un clic de distancia, y ninguno es el seguro. Di tu dirección como una frase simple - long BTC - antes que nada, porque todos los demás campos del ticket dependen de ella."
     },
     {
      "h": "Invalidación: dónde te equivocas",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Margen, nocional, cantidad",
-     "p": "Tres números describen una misma posición. La cantidad es cuánta moneda controlas, digamos 0.02 BTC. El nocional es esa cantidad en dólares: a $50,000 por BTC, 0.02 BTC son $1,000 de nocional. El margen es el dinero que de verdad queda bloqueado de tu saldo — con apalancamiento 10x en esa posición, $100. La ganancia y la pérdida siguen al nocional, nunca al margen."
+     "p": "Tres números describen una misma posición. La cantidad es cuánta moneda controlas, digamos 0.02 BTC. El nocional es esa cantidad en dólares: a $50,000 por BTC, 0.02 BTC son $1,000 de nocional. El margen es el dinero que de verdad queda bloqueado de tu saldo - con apalancamiento 10x en esa posición, $100. La ganancia y la pérdida siguen al nocional, nunca al margen."
     },
     {
      "h": "Qué cambia el apalancamiento en realidad",
@@ -170,7 +170,7 @@
     },
     {
      "h": "Ponlo tú mismo",
-     "prompt": "Esto es un long. Toca dónde va el stop-loss — justo por debajo del mínimo del swing.",
+     "prompt": "Esto es un long. Toca dónde va el stop-loss - justo por debajo del mínimo del swing.",
      "p": "Antes de fiarte del campo, demuestra que conoces el nivel. Un solo toque."
     },
     {
@@ -222,7 +222,7 @@
     },
     {
      "h": "La proporción que implican tus dos líneas",
-     "p": "Tu stop y tu objetivo fijan una proporción antes de que empiece el trade. Entrada $50,000, stop $49,000, objetivo $52,000 arriesga $1,000 para ganar $2,000 — un beneficio/riesgo de 2:1. Con 2:1, ganar un trade de cada tres deja las cuentas a cero antes de comisiones. Eso es aritmética, no una promesa. Nada dice que el objetivo llegue a alcanzarse. Comprueba la proporción antes de hacer clic."
+     "p": "Tu stop y tu objetivo fijan una proporción antes de que empiece el trade. Entrada $50,000, stop $49,000, objetivo $52,000 arriesga $1,000 para ganar $2,000 - un beneficio/riesgo de 2:1. Con 2:1, ganar un trade de cada tres deja las cuentas a cero antes de comisiones. Eso es aritmética, no una promesa. Nada dice que el objetivo llegue a alcanzarse. Comprueba la proporción antes de hacer clic."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Precio de entrada y precio mark",
-     "p": "La entrada es el precio medio al que realmente te ejecutaste, antes de comisiones. El precio mark es el precio de referencia justo del exchange, que se usa para valorar tu posición y para decidir la liquidación — normalmente anclado a un índice más amplio en vez de a la última operación de un solo libro. Eso es deliberado: hace mucho más difícil que una sola impresión rara se use en tu contra."
+     "p": "La entrada es el precio medio al que realmente te ejecutaste, antes de comisiones. El precio mark es el precio de referencia justo del exchange, que se usa para valorar tu posición y para decidir la liquidación - normalmente anclado a un índice más amplio en vez de a la última operación de un solo libro. Eso es deliberado: hace mucho más difícil que una sola impresión rara se use en tu contra."
     },
     {
      "h": "No realizado significa que aún no es tuyo",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Rellenar el ticket",
-     "p": "Lado compra. Tipo de orden limit, precio $50,000, así que pagas la comisión maker y aceptas que puede no ejecutarse nunca. Tamaño $2,500 de nocional, apalancamiento 10x. Escribe $49,000 en el campo del stop-loss y $52,000 en el del take-profit antes de enviar — ese objetivo es 2:1 frente a tu riesgo. Relee el ticket entero una vez, y envía."
+     "p": "Lado compra. Tipo de orden limit, precio $50,000, así que pagas la comisión maker y aceptas que puede no ejecutarse nunca. Tamaño $2,500 de nocional, apalancamiento 10x. Escribe $49,000 en el campo del stop-loss y $52,000 en el del take-profit antes de enviar - ese objetivo es 2:1 frente a tu riesgo. Relee el ticket entero una vez, y envía."
     },
     {
      "h": "Después de la ejecución, no hagas nada",

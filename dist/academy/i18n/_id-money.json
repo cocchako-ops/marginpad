@@ -17,11 +17,11 @@
     },
     {
      "h": "Naik sepuluh, turun sepuluh, bukan impas",
-     "p": "Mulai dari $100. Tambah 10% dan kamu punya $110. Sekarang kurangi 10% — tapi 10% dari $110 adalah $11, bukan $10. Kamu berakhir di $99. Untungnya diukur terhadap $100 dan ruginya terhadap $110, jadi keduanya tidak saling menghapus. Balik urutannya dan kamu mendarat di $99 lagi: $100 turun ke $90, lalu naik $9."
+     "p": "Mulai dari $100. Tambah 10% dan kamu punya $110. Sekarang kurangi 10% - tapi 10% dari $110 adalah $11, bukan $10. Kamu berakhir di $99. Untungnya diukur terhadap $100 dan ruginya terhadap $110, jadi keduanya tidak saling menghapus. Balik urutannya dan kamu mendarat di $99 lagi: $100 turun ke $90, lalu naik $9."
     },
     {
      "h": "Perubahan persen itu dikalikan",
-     "p": "Ada jalan pintas. Untung 10% adalah mengalikan dengan 1.10; rugi 10% adalah mengalikan dengan 0.90. Lakukan keduanya dan kamu dapat 1.10 kali 0.90, yaitu 0.99 — rugi bersih 1%. Rangkai trade sebulan penuh dengan cara ini dan perkalian, bukan penjumlahan, itulah yang sebenarnya dilakukan akunmu."
+     "p": "Ada jalan pintas. Untung 10% adalah mengalikan dengan 1.10; rugi 10% adalah mengalikan dengan 0.90. Lakukan keduanya dan kamu dapat 1.10 kali 0.90, yaitu 0.99 - rugi bersih 1%. Rangkai trade sebulan penuh dengan cara ini dan perkalian, bukan penjumlahan, itulah yang sebenarnya dilakukan akunmu."
     }
    ],
    "quiz": [
@@ -60,11 +60,11 @@
    "cards": [
     {
      "h": "Rugi menggali lubang lebih dalam",
-     "p": "Rugi 50% dari $1,000 dan kamu punya $500. Untuk kembali ke $1,000 kamu harus menambah $500 — dan $500 adalah 100% dari sisa yang kamu pegang. Rugi 50% butuh untung 100% untuk menghapusnya. Kerugian dan perbaikannya tidak sama besar, dan tidak pernah sama."
+     "p": "Rugi 50% dari $1,000 dan kamu punya $500. Untuk kembali ke $1,000 kamu harus menambah $500 - dan $500 adalah 100% dari sisa yang kamu pegang. Rugi 50% butuh untung 100% untuk menghapusnya. Kerugian dan perbaikannya tidak sama besar, dan tidak pernah sama."
     },
     {
      "h": "Tabel pemulihan",
-     "p": "Jalankan aritmetika yang sama menuruni skalanya. Turun 10% butuh sekitar 11% balik. Turun 20% butuh 25%. Turun sepertiga butuh 50%. Turun 50% butuh 100%. Turun 80% menyisakan $200 dari $1,000, jadi kamu butuh $800 di atas $200 — itu 400%. Turun 90% butuh 900%. Kurvanya tidak melengkung lembut. Dia berdiri vertikal."
+     "p": "Jalankan aritmetika yang sama menuruni skalanya. Turun 10% butuh sekitar 11% balik. Turun 20% butuh 25%. Turun sepertiga butuh 50%. Turun 50% butuh 100%. Turun 80% menyisakan $200 dari $1,000, jadi kamu butuh $800 di atas $200 - itu 400%. Turun 90% butuh 900%. Kurvanya tidak melengkung lembut. Dia berdiri vertikal."
     },
     {
      "h": "Buktikan sendiri",
@@ -73,7 +73,7 @@
     },
     {
      "h": "Apa yang ini ubah tentang dirimu",
-     "p": "Inilah kenapa profesional mengawasi drawdown — seberapa jauh sebuah akun jatuh di bawah titik tertingginya — lebih ketat daripada return. Rentetan kerugian kecil adalah aritmetika yang bisa dilalui. Satu kerugian besar adalah kategori masalah yang berbeda. Semua yang datang setelah kartu ini, dari ukuran posisi sampai stop-loss, ada untuk menjaga kerugian tunggal tetap cukup kecil supaya pemulihannya tetap biasa saja."
+     "p": "Inilah kenapa profesional mengawasi drawdown - seberapa jauh sebuah akun jatuh di bawah titik tertingginya - lebih ketat daripada return. Rentetan kerugian kecil adalah aritmetika yang bisa dilalui. Satu kerugian besar adalah kategori masalah yang berbeda. Semua yang datang setelah kartu ini, dari ukuran posisi sampai stop-loss, ada untuk menjaga kerugian tunggal tetap cukup kecil supaya pemulihannya tetap biasa saja."
     }
    ],
    "quiz": [
@@ -112,7 +112,7 @@
    "cards": [
     {
      "h": "Tiga angka membentuk hasilnya",
-     "p": "Untung dan rugi — P&L — datang dari tepat tiga angka: harga saat kamu masuk, harga saat kamu keluar, dan berapa banyak unit yang kamu pegang. Tak ada lagi yang masuk ke perhitungannya. Untuk long, taruhan bahwa harga naik, P&L adalah harga keluar dikurangi harga masuk, dikali jumlah unit."
+     "p": "Untung dan rugi - P&L - datang dari tepat tiga angka: harga saat kamu masuk, harga saat kamu keluar, dan berapa banyak unit yang kamu pegang. Tak ada lagi yang masuk ke perhitungannya. Untuk long, taruhan bahwa harga naik, P&L adalah harga keluar dikurangi harga masuk, dikali jumlah unit."
     },
     {
      "h": "Sebuah long, dihitung tuntas",
@@ -163,7 +163,7 @@
    "cards": [
     {
      "h": "Kamu tak bisa memilih pergerakannya",
-     "p": "Kamu tak mengendalikan apakah Bitcoin bergerak 2% hari ini. Kamu mengendalikan tepat satu angka: seberapa besar posisimu. Semua yang lain — arah, waktu, volatilitas — adalah tebakan atau hadiah. Ukuran posisi adalah satu-satunya input di seluruh perhitungan yang sepenuhnya milikmu, dan itulah yang membuatnya jadi keputusan sungguhan yang sedang kamu ambil."
+     "p": "Kamu tak mengendalikan apakah Bitcoin bergerak 2% hari ini. Kamu mengendalikan tepat satu angka: seberapa besar posisimu. Semua yang lain - arah, waktu, volatilitas - adalah tebakan atau hadiah. Ukuran posisi adalah satu-satunya input di seluruh perhitungan yang sepenuhnya milikmu, dan itulah yang membuatnya jadi keputusan sungguhan yang sedang kamu ambil."
     },
     {
      "h": "Pergerakan sama, hasil sesukamu",
@@ -214,15 +214,15 @@
     },
     {
      "h": "Ukuran datang dari stop",
-     "p": "Sekarang aritmetikanya berjalan mundur. Kamu mau beli ETH di $2,000 dengan stop-loss di $1,960 — order yang menutup trade kalau harga jatuh ke situ. Jaraknya $40 per koin. Kamu mempertaruhkan total $10, jadi bagi: $10 dibagi $40 adalah 0.25 ETH. Itulah ukuranmu, posisi $500."
+     "p": "Sekarang aritmetikanya berjalan mundur. Kamu mau beli ETH di $2,000 dengan stop-loss di $1,960 - order yang menutup trade kalau harga jatuh ke situ. Jaraknya $40 per koin. Kamu mempertaruhkan total $10, jadi bagi: $10 dibagi $40 adalah 0.25 ETH. Itulah ukuranmu, posisi $500."
     },
     {
      "h": "Stop lebih lebar, ukuran lebih kecil",
-     "p": "Ubah satu hal. Taruh stop-nya di $1,900 saja, jarak $100 per koin. Risikonya tetap $10, jadi ukurannya jadi $10 dibagi $100, yaitu 0.1 ETH — posisi $200. Stop-nya tidak membuat trade-nya lebih aman atau lebih berisiko. Dia mengubah berapa banyak koin yang boleh kamu pegang pada risiko tetap yang sama."
+     "p": "Ubah satu hal. Taruh stop-nya di $1,900 saja, jarak $100 per koin. Risikonya tetap $10, jadi ukurannya jadi $10 dibagi $100, yaitu 0.1 ETH - posisi $200. Stop-nya tidak membuat trade-nya lebih aman atau lebih berisiko. Dia mengubah berapa banyak koin yang boleh kamu pegang pada risiko tetap yang sama."
     },
     {
      "h": "Kenapa 1% dan bukan 10%",
-     "p": "Pada risiko 1%, sepuluh kekalahan beruntun memakan sekitar 10% akun, dan tabel pemulihan bilang lubang 10% butuh sekitar 11% untuk diperbaiki. Pada risiko 10%, sepuluh kekalahan yang sama menyisakan sekitar sepertiga dari yang kamu mulai — lubang yang butuh sekitar 187% untuk dipanjat keluar. Trade sama, keahlian sama, aritmetika berbeda."
+     "p": "Pada risiko 1%, sepuluh kekalahan beruntun memakan sekitar 10% akun, dan tabel pemulihan bilang lubang 10% butuh sekitar 11% untuk diperbaiki. Pada risiko 10%, sepuluh kekalahan yang sama menyisakan sekitar sepertiga dari yang kamu mulai - lubang yang butuh sekitar 187% untuk dipanjat keluar. Trade sama, keahlian sama, aritmetika berbeda."
     }
    ],
    "quiz": [
@@ -359,11 +359,11 @@
    "cards": [
     {
      "h": "Biaya dikenakan atas nosional",
-     "p": "Biaya futures adalah persen dari seluruh nilai posisi — disebut nosional — bukan dari uang tunai yang kamu setor. Buka posisi $6,000 dan biaya taker 0.055% memakan $3.30. Tutup posisinya dan kamu membayar lagi. Biaya itu tak pernah bertanya berapa banyak uangmu sendiri di balik trade-nya. Dia hanya melihat ukuran posisinya."
+     "p": "Biaya futures adalah persen dari seluruh nilai posisi - disebut nosional - bukan dari uang tunai yang kamu setor. Buka posisi $6,000 dan biaya taker 0.055% memakan $3.30. Tutup posisinya dan kamu membayar lagi. Biaya itu tak pernah bertanya berapa banyak uangmu sendiri di balik trade-nya. Dia hanya melihat ukuran posisinya."
     },
     {
      "h": "Leverage mengalikan biayanya",
-     "p": "Leverage membuat sedikit uang tunaimu — marginnya — mengendalikan posisi yang lebih besar. Di 20x, posisi $6,000 butuh margin $300. Biaya $3.30 itu 0.055% dari posisinya tapi 1.1% dari $300 milikmu. Satu putaran penuh, masuk dan keluar, itu 2.2% marginmu lenyap sebelum harga bergerak sama sekali."
+     "p": "Leverage membuat sedikit uang tunaimu - marginnya - mengendalikan posisi yang lebih besar. Di 20x, posisi $6,000 butuh margin $300. Biaya $3.30 itu 0.055% dari posisinya tapi 1.1% dari $300 milikmu. Satu putaran penuh, masuk dan keluar, itu 2.2% marginmu lenyap sebelum harga bergerak sama sekali."
     },
     {
      "h": "Spread dan slippage juga memakan biaya",
@@ -414,7 +414,7 @@
     },
     {
      "h": "Semuanya sekaligus, sekali",
-     "p": "Akun $1,000. Risiko 1%, jadi $10. Entry ETH di $2,000, stop $1,960, jarak $40. Ukurannya $10 dibagi $40, atau 0.25 ETH — posisi $500. Target $2,120 memberi $120 per koin, jadi 0.25 koin menghasilkan $30. Itu 3R. Biaya putaran penuh 0.11% dari $500 jadinya $0.55, kecil di sebelah $30."
+     "p": "Akun $1,000. Risiko 1%, jadi $10. Entry ETH di $2,000, stop $1,960, jarak $40. Ukurannya $10 dibagi $40, atau 0.25 ETH - posisi $500. Target $2,120 memberi $120 per koin, jadi 0.25 koin menghasilkan $30. Itu 3R. Biaya putaran penuh 0.11% dari $500 jadinya $0.55, kecil di sebelah $30."
     },
     {
      "h": "Matematikanya tidak meramal",
@@ -451,7 +451,7 @@
     }
    ],
    "try": {
-    "p": "Sekarang kamu punya seluruh perhitungannya. Buka kalkulator dan jalankan angkamu sendiri — akun, risiko, jarak stop — sampai aritmetika penentuan ukuran terasa otomatis.",
+    "p": "Sekarang kamu punya seluruh perhitungannya. Buka kalkulator dan jalankan angkamu sendiri - akun, risiko, jarak stop - sampai aritmetika penentuan ukuran terasa otomatis.",
     "label": "Buka Kalkulator →"
    }
   }

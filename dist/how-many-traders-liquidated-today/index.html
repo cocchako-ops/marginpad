@@ -2,14 +2,14 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>How Many Traders Got Liquidated Today? — Live 24h Count | MarginPad</title>
+<title>How Many Traders Got Liquidated Today? - Live 24h Count | MarginPad</title>
 <meta name="description" content="The number of positions force-closed across nine crypto exchanges in the last 24 hours, counted from their own public liquidation feeds. Updated continuously, free, no signup.">
 <link rel="canonical" href="https://marginpad.io/how-many-traders-liquidated-today/">
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/how-many-traders-liquidated-today/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/how-many-traders-liquidated-today/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/how-many-traders-liquidated-today/" />
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
-<meta property="og:title" content="How Many Traders Got Liquidated Today? — Live 24h Count | MarginPad">
+<meta property="og:title" content="How Many Traders Got Liquidated Today? - Live 24h Count | MarginPad">
 <meta property="og:description" content="The number of positions force-closed across nine crypto exchanges in the last 24 hours, counted from their own public liquidation feeds. Updated continuously, free, no signup.">
 <meta property="og:url" content="https://marginpad.io/how-many-traders-liquidated-today/">
 <meta property="og:type" content="website">
@@ -40,7 +40,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <meta property="og:image" content="https://marginpad.io/assets/og/how-many-traders-liquidated-today.jpg" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/how-many-traders-liquidated-today.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -66,7 +66,7 @@
     <p style="margin:18px 0 26px"><a class="ask-cta" href="/rekt/">The live liquidation feed</a><a class="ask-cta alt" href="/liquidations/">Market totals</a><a class="ask-cta alt" href="/liquidations/by-exchange/">By exchange</a><a class="ask-cta alt" href="/heatmap">Liquidation heatmap</a></p>
 
     <h2>Why the count matters more than the dollars</h2>
-    <p>Almost every tracker publishes the dollar figure, because it is the bigger and more dramatic number. The <em>count</em> answers a different question: how many people it happened to. A quiet day where one whale loses forty million dollars and a violent day where twenty thousand retail positions are wiped out can print the same total, and they are not the same event. Divide the total by the count and you get the average position that died &mdash; usually a few thousand dollars, which is a better description of who trades leverage than any headline number.</p><p>A word on what this is not. It counts liquidation <em>events</em> published by the exchanges, and exchanges differ in how they publish: some emit one message per order filled while unwinding a position, so a single trader can appear more than once in a cascade. It is a measure of forced-close activity, not a headcount of distinct people, and nobody outside an exchange can produce the latter.</p>
+    <p>Almost every tracker publishes the dollar figure, because it is the bigger and more dramatic number. The <em>count</em> answers a different question: how many people it happened to. A quiet day where one whale loses forty million dollars and a violent day where twenty thousand retail positions are wiped out can print the same total, and they are not the same event. Divide the total by the count and you get the average position that died - usually a few thousand dollars, which is a better description of who trades leverage than any headline number.</p><p>A word on what this is not. It counts liquidation <em>events</em> published by the exchanges, and exchanges differ in how they publish: some emit one message per order filled while unwinding a position, so a single trader can appear more than once in a cascade. It is a measure of forced-close activity, not a headcount of distinct people, and nobody outside an exchange can produce the latter.</p>
 
     <h2>Method, in full</h2>
     <p>MarginPad runs its own collector subscribed to the public liquidation websocket of nine exchanges: Binance (USD- and coin-margined), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex. Every forced close is normalised to symbol, side, fill price and dollar notional, then aggregated over a rolling 24-hour window. These are observed events, not a model and not a vendor feed. Nothing is filled in when a venue goes quiet, and if the collector itself is down the page says so rather than showing yesterday&#39;s figures as if they were current.</p><p>Totals here will differ from other trackers, and they should. Venue sets differ, exchanges publish at different granularity, and any aggregator that models the gaps will report more than one that only counts what it saw. We only count what we saw.</p>
@@ -88,6 +88,6 @@
     <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

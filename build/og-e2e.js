@@ -1,9 +1,9 @@
-// Share cards (2026-09-14) — owner: "jel mozemo za svaki link da napravimo drugaciju i cool stranicu ...
+// Share cards (2026-09-14) - owner: "jel mozemo za svaki link da napravimo drugaciju i cool stranicu ...
 // da mami klik jer je to poenta."
 //
 // A link preview is rendered by a scraper that fetches the HTML and then fetches og:image. So every
 // check here does exactly that: read the raw page, take the URL it declares, fetch it, and confirm what
-// comes back is a real image of the right shape — and that two different pages do not declare the same one.
+// comes back is a real image of the right shape - and that two different pages do not declare the same one.
 //
 //   node build/og-e2e.js
 const fs = require('fs');
@@ -51,7 +51,7 @@ const SAMPLE = [
     const r = await fetch(img);
     const buf = Buffer.from(await r.arrayBuffer());
     const ct = r.headers.get('content-type') || '';
-    // JPEG SOF gives the real pixel size — a card that is not 1200x630 gets letterboxed by every platform
+    // JPEG SOF gives the real pixel size - a card that is not 1200x630 gets letterboxed by every platform
     let dim = null;
     for (let i = 2; i < buf.length - 9;) {
       if (buf[i] !== 0xFF) { i++; continue; }

@@ -1,4 +1,4 @@
-// test-multidevice.js — B4: multi-device journal-merge conflict rules, tested against PRODUCTION.
+// test-multidevice.js - B4: multi-device journal-merge conflict rules, tested against PRODUCTION.
 // Simulates two devices (same account, different local states) pushing /api/auth/trades and asserts
 // the DO merge invariants: closed-beats-stale-open, union-merge (a stale device can't delete), qty
 // can only shrink, and a client cannot fabricate pnl on a server-filled trade (recomputed from exit).
@@ -8,15 +8,15 @@ const UID = 'e2e-multidev';
 const BASE = 'https://marginpad.io';
 const HDR = { 'content-type': 'application/json', cookie: 'mp_uid=' + UID };
 let pass = 0, fail = 0;
-function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK  ' + name); } else { fail++; console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); } }
+function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK  ' + name); } else { fail++; console.log('  FAIL ' + name + (detail ? ' - ' + detail : '')); } }
 async function push(journal) { const r = await fetch(BASE + '/api/auth/trades', { method: 'POST', headers: HDR, body: JSON.stringify({ journal }) }); return r.json(); }
 async function pull() { const r = await fetch(BASE + '/api/auth/trades', { headers: HDR }); const d = await r.json(); return d.journal || []; }
 const find = (jn, id) => jn.filter(t => String(t.id) === String(id))[0];
 
 (async () => {
-  // /trades sync requires a real users row (anti-fabrication guard) — provision the e2e row first (idempotent, 'e2e-' prefix enforced server-side)
+  // /trades sync requires a real users row (anti-fabrication guard) - provision the e2e row first (idempotent, 'e2e-' prefix enforced server-side)
   const mk0 = await (await fetch(BASE + '/api/admin/mktestuser?uid=' + UID + '&key=' + KEY)).json();
-  if (!mk0.ok) { console.log('FATAL: mktestuser failed — ' + JSON.stringify(mk0)); process.exit(1); }
+  if (!mk0.ok) { console.log('FATAL: mktestuser failed - ' + JSON.stringify(mk0)); process.exit(1); }
   const S = Date.now().toString(36);
   const mk = (id, over) => Object.assign({ id, ts: Date.now(), sym: 'BTC', side: 'long', entry: 50000, lev: 10, margin: 20, qty: 20 * 10 / 50000, notional: 200, liq: 45025, status: 'open', pnl: null }, over);
 
@@ -59,6 +59,6 @@ const find = (jn, id) => jn.filter(t => String(t.id) === String(id))[0];
   jn = await pull();
   ok('fabricated srv trade dropped', !find(jn, 'srvFAKE' + S));
 
-  console.log('\n' + pass + ' passed, ' + fail + ' failed' + (fail ? '' : ' — multi-device merge rules hold'));
+  console.log('\n' + pass + ' passed, ' + fail + ' failed' + (fail ? '' : ' - multi-device merge rules hold'));
   process.exit(fail ? 1 : 0);
 })();

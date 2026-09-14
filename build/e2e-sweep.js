@@ -1,13 +1,13 @@
 /* Remove what E2E runs leave in LIVE data, so the owner's numbers are the owner's numbers (2026-09-14).
 
    Suites mint throwaway members and some of them post into the global room. Every suite removes its own member at the
-   end, but a crash mid-run leaves one behind, and a chat message is never removed by the suite that wrote it — 15 of
+   end, but a crash mid-run leaves one behind, and a chat message is never removed by the suite that wrote it - 15 of
    them were sitting in the room when this was written, and three accounts from older harnesses had been in Users for
    weeks (those could not be removed at all: the id sanitiser stripped the hyphen out of `e2e-vault1`).
 
    Run it after a test session:   node build/e2e-sweep.js          (add --dry to only list)
 
-   The filter is the naming the harnesses themselves use — `e2e…`, plus the few older prefixes — and every removal is
+   The filter is the naming the harnesses themselves use - `e2e…`, plus the few older prefixes - and every removal is
    printed. Nothing a real member wrote is touched.                                                                */
 'use strict';
 const fs = require('fs'), path = require('path');

@@ -1,4 +1,4 @@
-/* dist/search-index.json — a flat [{t:title,u:url}] index of every content page, built by scanning dist for index.html
+/* dist/search-index.json - a flat [{t:title,u:url}] index of every content page, built by scanning dist for index.html
    <title>s. The Browse search (homepage + the shared mp-nav drawer) lazy-loads it and suggests matching pages/guides
    as the user types. Auto-maintained: any new page with a <title> shows up next build. Skips language-variant dirs. */
 const fs = require('fs');
@@ -41,4 +41,4 @@ const seen = {};
 const list = out.filter(x => (seen[x.u] ? false : (seen[x.u] = 1)));
 list.sort((a, b) => a.u.length - b.u.length);
 fs.writeFileSync(path.join(DIST, 'search-index.json'), JSON.stringify(list));
-console.log('wrote dist/search-index.json — ' + list.length + ' pages indexed');
+console.log('wrote dist/search-index.json - ' + list.length + ' pages indexed');

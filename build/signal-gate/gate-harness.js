@@ -9,7 +9,7 @@ function fnSrc(name) { let i = src.indexOf('async function ' + name + '('); if (
 const K = JSON.parse(fs.readFileSync(__dirname + '/klines.json', 'utf8'));
 const g = globalThis;
 g._sanitizeSigBars = eval('(' + fnSrc('_sanitizeSigBars') + ')'); g._supertrend = eval('(' + fnSrc('_supertrend') + ')'); g._adxLast = eval('(' + fnSrc('_adxLast') + ')'); g._rsi = eval('(' + fnSrc('_rsi') + ')'); g._emaSeries = eval('(' + fnSrc('_emaSeries') + ')');
-g.DIV = '———'; g.TG_AFF_LINE = ''; g.J = o => o;
+g.DIV = '---'; g.TG_AFF_LINE = ''; g.J = o => o;
 let NOW = 0; const realNow = Date.now; Date.now = () => NOW;
 g.sigKlines = async (sym, iv) => { const all = K[String(iv)][sym].map(b => ({ ...b })); const per = iv * 60; const cur = Math.floor(NOW / 1000 / per) * per; const bars = all.filter(b => b.time <= cur).slice(-1000); _sanitizeSigBars(bars); const last = bars[bars.length - 1]; const closed = (last && last.time >= cur) ? bars.slice(0, -1) : bars; return { bars, closed }; };
 g.sigChannels = async () => ({ premium: 'PREM', balanced: 'BAL', fast: '' });

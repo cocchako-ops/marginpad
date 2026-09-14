@@ -2,7 +2,7 @@
    - hash the page content with all date stamps stripped out
    - if the content ACTUALLY changed since the last recorded build, bump dateModified to today,
      refresh the visible "Updated <Month> <Year>" meta text and the sitemap <lastmod> for that URL
-   - unchanged pages keep their old date (no fake freshness — auto-bumping everything would be
+   - unchanged pages keep their old date (no fake freshness - auto-bumping everything would be
      dishonest and is exactly what search engines penalize)
    First run seeds build/data/page-mod-hashes.json without bumping anything. Idempotent. */
 const fs = require('fs');
@@ -28,7 +28,7 @@ const strip = h => h
   .replace(/"dateModified":\s*"[0-9T:.Z-]+"/g, '"dateModified":""')
   .replace(/"datePublished":\s*"[0-9T:.Z-]+"/g, '"datePublished":""')
   .replace(/Updated\s+[A-Z][a-z]+\s+\d{4}/g, 'Updated')
-  .replace(/\?v=[0-9a-f]+/g, '?v='); // asset cache-busters change every bump run — not content
+  .replace(/\?v=[0-9a-f]+/g, '?v='); // asset cache-busters change every bump run - not content
 const sha = s => crypto.createHash('sha1').update(s).digest('hex');
 
 let manifest = {}, seeded = !fs.existsSync(MANIFEST);
@@ -47,7 +47,7 @@ for (const f of walk(DIST, [])) {
   const key = '/' + (rel === '' ? '' : rel + '/');
   const h = sha(strip(html));
   const prev = manifest[key];
-  if (prev === undefined) { manifest[key] = h; added++; continue; } // seed — never bump on first sight
+  if (prev === undefined) { manifest[key] = h; added++; continue; } // seed - never bump on first sight
   if (prev === h) { unchanged++; continue; }
   // real content change → stamp today
   let out = html.replace(/"dateModified":\s*"[0-9T:.Z-]+"/g, '"dateModified":"' + today + '"');

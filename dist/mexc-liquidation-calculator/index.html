@@ -17,7 +17,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>MEXC Liquidation Calculator (2026) — Long & Short, Any Leverage | MarginPad</title>
+<title>MEXC Liquidation Calculator (2026) - Long & Short, Any Leverage | MarginPad</title>
 <meta name="description" content="Free MEXC liquidation price calculator: see your exact liq price at 10x, 25x, 50x or any leverage, long or short, with MEXC's real maintenance margin. Instant, no signup." />
 <meta name="keywords" content="mexc liquidation calculator, mexc liquidation price, mexc futures calculator, mexc leverage calculator, mexc maintenance margin" />
 <link rel="canonical" href="https://marginpad.io/mexc-liquidation-calculator/" />
@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/mexc-liquidation-calculator/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
-<meta property="og:title" content="MEXC Liquidation Calculator (2026) — Long & Short, Any Leverage" />
+<meta property="og:title" content="MEXC Liquidation Calculator (2026) - Long & Short, Any Leverage" />
 <meta property="og:description" content="Free MEXC liquidation price calculator: see your exact liq price at 10x, 25x, 50x or any leverage, long or short, with MEXC's real maintenance margin. Instant, no signup." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/mexc-liquidation-calculator/" />
@@ -55,8 +55,8 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate my liquidation price on MEXC?","acceptedAnswer":{"@type":"Answer","text":"Enter entry price, leverage and direction. Liquidation = Entry x (1 - 1/Leverage + MMR) for a long and Entry x (1 + 1/Leverage - MMR) for a short."}},{"@type":"Question","name":"What is the maximum leverage on MEXC?","acceptedAnswer":{"@type":"Answer","text":"MEXC offers up to 500x leverage on flagship perpetuals. The maximum varies by contract, region and account tier."}},{"@type":"Question","name":"What are MEXC's trading fees?","acceptedAnswer":{"@type":"Answer","text":"MEXC's base USDT-perpetual fees are about 0.01% maker and 0.04% taker, before VIP tiers or token discounts. Funding is exchanged between longs and shorts every 8 hours."}},{"@type":"Question","name":"Is MEXC available in the US?","acceptedAnswer":{"@type":"Answer","text":"Not available to US residents. Global; not available to residents of the United States and several restricted jurisdictions."}},{"@type":"Question","name":"How do I avoid liquidation on MEXC?","acceptedAnswer":{"@type":"Answer","text":"Use lower leverage, set a stop-loss inside your liquidation level, and size positions from your stop distance rather than a round dollar figure."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"MEXC Liquidation Calculator","item":"https://marginpad.io/mexc-liquidation-calculator/"}]}</script>
 
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MEXC Liquidation Calculator (2026) — Long & Short, Any Leverage","url":"https://marginpad.io/mexc-liquidation-calculator/","dateModified":"2026-09-10T19:56:57.542Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MEXC Liquidation Calculator (2026) - Long & Short, Any Leverage","url":"https://marginpad.io/mexc-liquidation-calculator/","dateModified":"2026-09-10T19:56:57.542Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
@@ -70,7 +70,7 @@
   <div class="crumb"><a href="/">Home</a> / MEXC liquidation calculator</div>
   <article>
     <h1>MEXC Liquidation Calculator</h1>
-    <p class="lead">Find your exact liquidation price on MEXC futures — for any leverage, long or short. Free, instant, and private (it runs in your browser).</p>
+    <p class="lead">Find your exact liquidation price on MEXC futures - for any leverage, long or short. Free, instant, and private (it runs in your browser).</p>
     <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 14px" id="livePx"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price loading…</p>
     <div class="calc">
       <div class="calc-in">
@@ -80,21 +80,21 @@
         <label>Maintenance margin rate (%)</label><input id="liqMmr" type="number" value="0.5" step="any">
       </div>
       <div class="calc-out">
-        <div class="col">Estimated liquidation price</div><div class="big" id="liqOut">—</div>
-        <div class="rr"><span>Distance from entry</span><b id="liqDist">—</b></div>
+        <div class="col">Estimated liquidation price</div><div class="big" id="liqOut">-</div>
+        <div class="rr"><span>Distance from entry</span><b id="liqDist">-</b></div>
       </div>
     </div>
     <a class="exbtn" data-ex="MEXC" style="background:#1966ff;color:#ffffff" href="https://promote.mexc.com/r/GND4jI97o0" target="_blank" rel="sponsored noopener noreferrer">Trade on MEXC →</a>
     <span class="avail no">✕ Non-US · founded 2018</span>
 
     <h2>How liquidation works on MEXC</h2>
-    <p>MEXC lists over 1,000 perpetual contracts — the widest futures menu of any major venue — with headline leverage up to 500x on select majors and some of the lowest maker fees in the market. MEXC competes on breadth and price: more than 1,000 USDT-perpetual pairs (new listings appear here first), maker fees from 0.01% down to 0% on selected pairs, and up to 500x leverage on BTC-class majors. The flip side of 500x is a razor-thin liquidation buffer — at that leverage a roughly 0.2% adverse move ends the position, which is exactly what this calculator makes visible before you try it with money. Maintenance margin on BTC starts around 0.5% at retail position sizes and tiers up with size.</p>
-    <p>On MEXC, an isolated-margin position is liquidated when losses eat through your posted margin. The estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate — roughly <b>0.5%</b> on MEXC's flagship contracts. Because MEXC allows up to <b>500× leverage</b>, the liquidation buffer can get thin fast; the higher the leverage, the closer liquidation sits to your entry.</p>
+    <p>MEXC lists over 1,000 perpetual contracts - the widest futures menu of any major venue - with headline leverage up to 500x on select majors and some of the lowest maker fees in the market. MEXC competes on breadth and price: more than 1,000 USDT-perpetual pairs (new listings appear here first), maker fees from 0.01% down to 0% on selected pairs, and up to 500x leverage on BTC-class majors. The flip side of 500x is a razor-thin liquidation buffer - at that leverage a roughly 0.2% adverse move ends the position, which is exactly what this calculator makes visible before you try it with money. Maintenance margin on BTC starts around 0.5% at retail position sizes and tiers up with size.</p>
+    <p>On MEXC, an isolated-margin position is liquidated when losses eat through your posted margin. The estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate - roughly <b>0.5%</b> on MEXC's flagship contracts. Because MEXC allows up to <b>500× leverage</b>, the liquidation buffer can get thin fast; the higher the leverage, the closer liquidation sits to your entry.</p>
 
     <h2>MEXC liquidation distance by leverage</h2>
     <p>How far MEXC's price has to move against you before an isolated-margin long is liquidated, at 0.5% maintenance margin:</p>
     <table class="lvtab"><thead><tr><th>Leverage</th><th>Move to liquidation</th><th>Initial margin</th></tr></thead><tbody><tr><td>10×</td><td>−9.50%</td><td>10.00%</td></tr><tr><td>25×</td><td>−3.50%</td><td>4.00%</td></tr><tr><td>50×</td><td>−1.50%</td><td>2.00%</td></tr><tr><td>100×</td><td>−0.50%</td><td>1.00%</td></tr><tr><td>125×</td><td>−0.30%</td><td>0.80%</td></tr></tbody></table>
-    <p>At 500× — MEXC's cap on the majors — roughly a <b>0.20%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.</p>
+    <p>At 500× - MEXC's cap on the majors - roughly a <b>0.20%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.</p>
 
     <h2>Worked example</h2>
     <p>A 10× long on MEXC entered at <code>$60,000.00</code> with a 0.5% maintenance margin rate is liquidated at about:</p>
@@ -105,7 +105,7 @@
     <p>Set your stop-loss comfortably inside that level. See also the <a href="/blog/what-is-liquidation-in-crypto/">guide to avoiding liquidation</a> and <a href="/blog/how-to-avoid-liquidation-crypto/">seven ways traders get liquidated</a>.</p>
 
     <h2>Fees &amp; funding on MEXC</h2>
-    <p>MEXC's base USDT-perpetual fees are about <b>0.01% maker</b> and <b>0.04% taker</b>, before VIP tiers or token discounts — small on any single trade, but they compound if you trade often. On top of that, perpetuals charge <b>funding</b> every 8 hours: when the market is crowded long, longs pay shorts, and vice-versa. Funding is not part of the liquidation formula, but it drains (or tops up) your margin every cycle, so a heavily-funded position sits closer to liquidation than the raw price math suggests. Model it with the <a href="/funding-fee-calculator/">funding-fee calculator</a>.</p>
+    <p>MEXC's base USDT-perpetual fees are about <b>0.01% maker</b> and <b>0.04% taker</b>, before VIP tiers or token discounts - small on any single trade, but they compound if you trade often. On top of that, perpetuals charge <b>funding</b> every 8 hours: when the market is crowded long, longs pay shorts, and vice-versa. Funding is not part of the liquidation formula, but it drains (or tops up) your margin every cycle, so a heavily-funded position sits closer to liquidation than the raw price math suggests. Model it with the <a href="/funding-fee-calculator/">funding-fee calculator</a>.</p>
 
     <h2>How MEXC compares</h2>
     <p>Leverage caps and maintenance margins differ across venues, and both move your liquidation price. Here is MEXC against the other majors:</p>
@@ -114,15 +114,15 @@
 
     <h2>Where MEXC is available</h2>
     <p class="avail no" style="display:block;line-height:1.5;white-space:normal">Not available to US residents. Global; not available to residents of the United States and several restricted jurisdictions.</p>
-    <p>Availability, leverage caps and product access change with regulation and by region — always confirm on MEXC directly before funding an account. If MEXC is not available where you are, a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> may fit better. Practice the strategy either way on the free <a href="/paper-trade">paper-trading terminal</a> — no signup, real MEXC-style liquidation logic, zero risk.</p>
+    <p>Availability, leverage caps and product access change with regulation and by region - always confirm on MEXC directly before funding an account. If MEXC is not available where you are, a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> may fit better. Practice the strategy either way on the free <a href="/paper-trade">paper-trading terminal</a> - no signup, real MEXC-style liquidation logic, zero risk.</p>
 
     <h2>FAQ</h2>
     <h3>What is the maximum leverage on MEXC?</h3>
     <p>Up to <b>500×</b> on flagship perpetuals; the cap varies by contract, region and account tier.</p>
     <h3>How do I avoid liquidation on MEXC?</h3>
-    <p>Use lower leverage, set a stop-loss, and size by risk — see our <a href="/blog/crypto-position-sizing-risk-management/">position sizing guide</a>.</p>
+    <p>Use lower leverage, set a stop-loss, and size by risk - see our <a href="/blog/crypto-position-sizing-risk-management/">position sizing guide</a>.</p>
     <h3>Does MEXC use isolated or cross margin?</h3>
-    <p>MEXC offers both. This calculator estimates <b>isolated</b> margin (only the margin on that position is at risk). In <b>cross</b> margin your whole balance backs the trade, pushing liquidation further away — model that with the <a href="/calculators?c=cross">cross-margin calculator</a>.</p>
+    <p>MEXC offers both. This calculator estimates <b>isolated</b> margin (only the margin on that position is at risk). In <b>cross</b> margin your whole balance backs the trade, pushing liquidation further away - model that with the <a href="/calculators?c=cross">cross-margin calculator</a>.</p>
 
     <h2>More calculators</h2>
     <div class="related">
@@ -137,8 +137,8 @@
       <a href="/kraken-liquidation-calculator/">Kraken liquidation</a>
       <a href="/bitget-liquidation-calculator/">Bitget liquidation</a>
     </div>
-    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Fees, leverage caps and availability are approximate and change by tier, region and over time — confirm on MEXC. The MEXC link is a referral link; we may earn a commission at no cost to you.</p>
-<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b> — prefilled below';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Fees, leverage caps and availability are approximate and change by tier, region and over time - confirm on MEXC. The MEXC link is a referral link; we may earn a commission at no cost to you.</p>
+<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b> - prefilled below';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
   </article>
   <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
 <nav class="hublinks" data-hublinks aria-label="Liquidation calculators for other coins"><h2>Liquidation calculators for other coins</h2><div class="hl"><a href="/100x-liquidation-calculator/">100X</a><a href="/10x-liquidation-calculator/">10X</a><a href="/20x-liquidation-calculator/">20X</a><a href="/25x-liquidation-calculator/">25X</a><a href="/50x-liquidation-calculator/">50X</a><a href="/5x-liquidation-calculator/">5X</a><a href="/aave-liquidation-calculator/">AAVE</a><a href="/ada-liquidation-calculator/">ADA</a><a href="/algo-liquidation-calculator/">ALGO</a><a href="/ape-liquidation-calculator/">APE</a><a href="/apt-liquidation-calculator/">APT</a><a href="/arb-liquidation-calculator/">ARB</a><a href="/atom-liquidation-calculator/">ATOM</a><a href="/avax-liquidation-calculator/">AVAX</a><a href="/axs-liquidation-calculator/">AXS</a><a href="/bch-liquidation-calculator/">BCH</a><a href="/binance-liquidation-calculator/">BINANCE</a><a href="/bitget-liquidation-calculator/">BITGET</a><a href="/bnb-liquidation-calculator/">BNB</a><a href="/bonk-liquidation-calculator/">BONK</a><a href="/btc-liquidation-calculator/">BTC</a><a href="/bybit-liquidation-calculator/">BYBIT</a><a href="/crv-liquidation-calculator/">CRV</a><a href="/doge-liquidation-calculator/">DOGE</a><a href="/dot-liquidation-calculator/">DOT</a><a href="/ena-liquidation-calculator/">ENA</a><a href="/ens-liquidation-calculator/">ENS</a><a href="/etc-liquidation-calculator/">ETC</a><a href="/eth-liquidation-calculator/">ETH</a><a href="/fet-liquidation-calculator/">FET</a><a href="/fil-liquidation-calculator/">FIL</a><a href="/floki-liquidation-calculator/">FLOKI</a><a href="/gala-liquidation-calculator/">GALA</a><a href="/gate-liquidation-calculator/">GATE</a><a href="/grt-liquidation-calculator/">GRT</a><a href="/hbar-liquidation-calculator/">HBAR</a><a href="/hype-liquidation-calculator/">HYPE</a><a href="/hyperliquid-liquidation-calculator/">HYPERLIQUID</a><a href="/icp-liquidation-calculator/">ICP</a><a href="/imx-liquidation-calculator/">IMX</a><a href="/inj-liquidation-calculator/">INJ</a><a href="/jup-liquidation-calculator/">JUP</a><a href="/kas-liquidation-calculator/">KAS</a><a href="/kraken-liquidation-calculator/">KRAKEN</a><a href="/kucoin-liquidation-calculator/">KUCOIN</a><a href="/link-liquidation-calculator/">LINK</a><a href="/ltc-liquidation-calculator/">LTC</a><a href="/mana-liquidation-calculator/">MANA</a><a href="/matic-liquidation-calculator/">MATIC</a><a href="/mkr-liquidation-calculator/">MKR</a><a href="/near-liquidation-calculator/">NEAR</a><a href="/okx-liquidation-calculator/">OKX</a><a href="/ondo-liquidation-calculator/">ONDO</a><a href="/op-liquidation-calculator/">OP</a><a href="/ordi-liquidation-calculator/">ORDI</a><a href="/pepe-liquidation-calculator/">PEPE</a><a href="/rndr-liquidation-calculator/">RNDR</a><a href="/rune-liquidation-calculator/">RUNE</a><a href="/sand-liquidation-calculator/">SAND</a><a href="/sei-liquidation-calculator/">SEI</a><a href="/shib-liquidation-calculator/">SHIB</a><a href="/sol-liquidation-calculator/">SOL</a><a href="/stx-liquidation-calculator/">STX</a><a href="/sui-liquidation-calculator/">SUI</a><a href="/tao-liquidation-calculator/">TAO</a><a href="/tia-liquidation-calculator/">TIA</a><a href="/ton-liquidation-calculator/">TON</a><a href="/trx-liquidation-calculator/">TRX</a><a href="/uni-liquidation-calculator/">UNI</a><a href="/wif-liquidation-calculator/">WIF</a><a href="/wld-liquidation-calculator/">WLD</a><a href="/xlm-liquidation-calculator/">XLM</a><a href="/xmr-liquidation-calculator/">XMR</a><a href="/xrp-liquidation-calculator/">XRP</a><a href="/zec-liquidation-calculator/">ZEC</a></div></nav>
@@ -151,7 +151,7 @@
 </div>
 <script src="/assets/liqcalc.js"></script>
 <script>
-/* affiliate-click conversion signal — Google Ads + GA4 + admin dashboard. The revenue proxy ad bidding optimises toward. */
+/* affiliate-click conversion signal - Google Ads + GA4 + admin dashboard. The revenue proxy ad bidding optimises toward. */
 (function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
 Array.prototype.forEach.call(document.querySelectorAll('a.exbtn,[data-ex]'),function(a){a.addEventListener('click',function(){try{
 var ex=(a.getAttribute('data-ex')||a.textContent||'').replace(/Trade on|→/g,'').trim();
@@ -159,6 +159,6 @@ if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathna
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}});});})();
 </script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

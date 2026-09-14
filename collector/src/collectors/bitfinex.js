@@ -1,5 +1,5 @@
 // Bitfinex liquidations. Endpoint: wss://api-pub.bitfinex.com/ws/2
-// Channel: status, key 'liq:global' — a PUBLIC market-wide feed of every derivative liquidation.
+// Channel: status, key 'liq:global' - a PUBLIC market-wide feed of every derivative liquidation.
 // Verified live from this region. Each entry (prefixed "pos"):
 //   ["pos", POS_ID, MTS, _, SYMBOL, AMOUNT, BASE_PRICE, _, IS_MATCH, IS_MARKET_SOLD, _, PRICE_ACQUIRED]
 //   SYMBOL: tBTCF0:USTF0 -> BTC, tTONF0:USTF0 -> TON (perp = t<BASE>F0:USTF0).
@@ -17,7 +17,7 @@ export class BitfinexCollector extends BaseCollector {
     this.staleMs = 0;       // liquidations are sparse; don't event-stale
     // POS_ID -> first-seen ts. liq:global re-reports the SAME position many times while it is being
     // ground down (and re-lists everything in-progress in the snapshot on every reconnect), and each
-    // update carries a fresh MTS/price — so the DB dedup key (ts,price,qty) never catches it. One
+    // update carries a fresh MTS/price - so the DB dedup key (ts,price,qty) never catches it. One
     // 2314-BTC position was re-counted into ~$848M of phantom longs in a single day (found
     // 2026-08-21). A liquidation is ONE event: emit each POS_ID once, remember it for 7 days.
     this._seenPos = new Map();
@@ -47,7 +47,7 @@ export class BitfinexCollector extends BaseCollector {
         this._seenPos.set(posId, now);
       }
       const m = SYM_RE.exec(row[4] || ''); if (!m) continue;
-      // TESTBTC/TESTUSD etc. are Bitfinex PAPER-TRADING instruments — real fills, but not a real
+      // TESTBTC/TESTUSD etc. are Bitfinex PAPER-TRADING instruments - real fills, but not a real
       // market. They were inflating our 24h totals and one of them surfaced as "the single largest
       // liquidation" on /rekt/ (2026-08-17). Never emit them.
       if (/^TEST/i.test(m[1])) continue;

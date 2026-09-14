@@ -16,7 +16,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Liquidation Calculator Widget — MarginPad</title>
+<title>Liquidation Calculator Widget - MarginPad</title>
 <meta name="robots" content="noindex,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <style>
@@ -43,7 +43,7 @@
   .pb{display:block;text-align:center;margin-top:13px;font-size:11px;color:#5c656f;text-decoration:none}
   .pb:hover b{text-decoration:underline}.pb b{color:#c2f64a}
 </style>
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 </head><body>
@@ -52,8 +52,8 @@
   <div class="seg" id="seg"><button class="on" data-side="long" type="button">Long</button><button data-side="short" type="button">Short</button></div>
   <label>Entry price</label><input id="e" type="number" value="62000" step="any" inputmode="decimal">
   <label>Leverage</label><input id="l" type="number" value="10" step="any" inputmode="numeric">
-  <div class="out"><div class="l">Estimated liquidation price</div><div class="v" id="o">—</div><div class="d" id="dd">—</div></div>
-  <a class="pb" href="https://marginpad.io/?utm_source=widget&utm_medium=embed" target="_blank" rel="noopener"> Powered by <b>MarginPad</b> — free crypto futures tools</a>
+  <div class="out"><div class="l">Estimated liquidation price</div><div class="v" id="o">-</div><div class="d" id="dd">-</div></div>
+  <a class="pb" href="https://marginpad.io/?utm_source=widget&utm_medium=embed" target="_blank" rel="noopener"> Powered by <b>MarginPad</b> - free crypto futures tools</a>
 </div>
 <script>
 (function(){
@@ -61,8 +61,8 @@
   var coin=((q&&q.get('coin'))||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6)||'BTC';
   var $=function(i){return document.getElementById(i);},side='long';
   $('wcoin').textContent=coin;
-  function fmt(n){return isFinite(n)?(Math.abs(n)>=1?n.toLocaleString('en-US',{maximumFractionDigits:2}):n.toLocaleString('en-US',{maximumFractionDigits:6})):'—';}
-  function calc(){var e=parseFloat($('e').value),l=parseFloat($('l').value),m=0.005;if(!isFinite(e)||!isFinite(l)||l<=0){$('o').textContent='—';$('dd').textContent='—';return;}var liq=side==='long'?e*(1-(1-m)/l):e*(1+(1-m)/l);var d=(liq-e)/e*100;$('o').textContent='$'+fmt(liq);$('dd').textContent=(d>=0?'+':'')+d.toFixed(2)+'% from entry ('+Math.abs(d).toFixed(2)+'% '+(side==='long'?'down':'up')+')';}
+  function fmt(n){return isFinite(n)?(Math.abs(n)>=1?n.toLocaleString('en-US',{maximumFractionDigits:2}):n.toLocaleString('en-US',{maximumFractionDigits:6})):'-';}
+  function calc(){var e=parseFloat($('e').value),l=parseFloat($('l').value),m=0.005;if(!isFinite(e)||!isFinite(l)||l<=0){$('o').textContent='-';$('dd').textContent='-';return;}var liq=side==='long'?e*(1-(1-m)/l):e*(1+(1-m)/l);var d=(liq-e)/e*100;$('o').textContent='$'+fmt(liq);$('dd').textContent=(d>=0?'+':'')+d.toFixed(2)+'% from entry ('+Math.abs(d).toFixed(2)+'% '+(side==='long'?'down':'up')+')';}
   var seg=$('seg');seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['e','l'].forEach(function(i){$(i).addEventListener('input',calc);});
   fetch('https://marginpad.io/api/price?symbol='+coin).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;$('livePx').innerHTML='<span class="dot"></span>live <i>$'+p.toLocaleString('en-US',{maximumFractionDigits:p>=1?2:6})+'</i>';$('e').value=p;calc();}}).catch(function(){});

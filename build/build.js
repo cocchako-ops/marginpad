@@ -1,4 +1,4 @@
-/* MarginPad full site build — runs every generator in the correct order, stops on first error.
+/* MarginPad full site build - runs every generator in the correct order, stops on first error.
    Usage:  node build/build.js          (full rebuild of dist/, then `npx wrangler deploy`)
    For a quick homepage-only change, the manual flow in CLAUDE.md is faster:
      cp app/index.html dist/index.html && node build/add-gtag.js && node build/gen-i18n-pages.js && node build/add-sweepliq.js
@@ -13,14 +13,14 @@ function run(label, cmd) {
   execSync(cmd, { cwd: ROOT, stdio: 'inherit' });
 }
 
-// 1) tool-route shell — since go-live, app/index.html is NOT the homepage; it's the Paper-Trade/Charts/
+// 1) tool-route shell - since go-live, app/index.html is NOT the homepage; it's the Paper-Trade/Charts/
 //    Calculators/Screener shell served at /app. Stamp the home.css/home.js ?v= hash on it FIRST, then copy
 //    it to dist/app.html so the shell ships the fresh bundle.
 run('Version-stamp home.css/home.js', 'node build/bump-home-assets.js');
 process.stdout.write('▸ copy tool shell app/index.html → dist/app.html\n');
 fs.copyFileSync(path.join(ROOT, 'app', 'index.html'), path.join(ROOT, 'dist', 'app.html'));
 
-// 1b) live homepage — render the hand-authored bento source (dist/demo-home/index.html) into dist/index.html
+// 1b) live homepage - render the hand-authored bento source (dist/demo-home/index.html) into dist/index.html
 //     (indexable, real SEO head + gtag + JSON-LD). The generators + gtag below operate on this dist/index.html.
 run('Live homepage (bento) from demo-home', 'node build/gen-home-live.js');
 
@@ -67,15 +67,15 @@ run('Blog i18n (pnl)', 'node build/gen-blog-i18n-pnl.js');
 run('Blog i18n (position size)', 'node build/gen-blog-i18n-size.js');
 run('Related-post links', 'node build/add-related.js');
 
-// 4) i18n assets — slim loader + per-language lazy packs (from build/i18n-master.js)
+// 4) i18n assets - slim loader + per-language lazy packs (from build/i18n-master.js)
 run('i18n assets (slim + packs)', 'node build/gen-i18n-assets.js');
 
-// 5) language homepages — translated copies of dist/index.html (must run AFTER the homepage copy)
+// 5) language homepages - translated copies of dist/index.html (must run AFTER the homepage copy)
 run('Language homepages', 'node build/gen-i18n-pages.js');
 // 5b) translate the bento homepage BODY into each language (post-processes the pages gen-i18n-pages just wrote)
 run('Language homepage body translation', 'node build/gen-home-i18n.js');
 
-// 6) (retired) add-sweepliq.js — the homepage JS now ships as the shared /assets/home.js bundle,
+// 6) (retired) add-sweepliq.js - the homepage JS now ships as the shared /assets/home.js bundle,
 //    so language homepages can never drift from it; the old string-anchored patcher is obsolete.
 
 // 7) swap Google Fonts → self-hosted fonts on every html (faster LCP, no external DNS)
@@ -110,7 +110,7 @@ run('Stamp updated dates (changed pages only)', 'node build/stamp-updated.js');
 // pages at once (that reads as refresh-spam). Stamping therefore always hashes rail-free content.
 run('Exchange rail on unmonetised pages', 'node build/add-exchange-rail.js');
 run('Hyperliquid partner card on its pages', 'node build/add-hyperliquid-card.js');
-// 11f) hub links for pages nothing linked to (per-coin maps/calculators, comparisons, translated hubs/posts) + og:image fallback — both idempotent, both before the charset pass.
+// 11f) hub links for pages nothing linked to (per-coin maps/calculators, comparisons, translated hubs/posts) + og:image fallback - both idempotent, both before the charset pass.
 run('Hub links for orphan pages', 'node build/add-hub-links.js');
 run('share cards', 'node build/add-og-image.js');
 // the feed injects <link rel=alternate> into every head, so it runs BEFORE fix-charset like the rest
@@ -123,7 +123,7 @@ run('rss + json feed', 'node build/gen-feed.js');
 run('dateModified stamps', 'node build/add-datemodified.js');
 run('Charset meta first in head', 'node build/fix-charset.js');
 
-// 12) build the Browse search content index — scans EVERY page's <title>, so it must run LAST
+// 12) build the Browse search content index - scans EVERY page's <title>, so it must run LAST
 run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 
 // 13) VERY LAST: ?v= content hashes on every shared bundle reference (generators + post-processors write bare
@@ -132,7 +132,7 @@ run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 run('Stamp bundle versions (?v=)', 'node build/bump-home-assets.js');
 
 // 14) SPANISH SITE (2026-09-12): /es/<path> twins written from the translated catalog (build/data/es/catalog.json) out of
-// the SAME English markup — after the stamper so the twins inherit the ?v= references. Missing strings fall back to English
+// the SAME English markup - after the stamper so the twins inherit the ?v= references. Missing strings fall back to English
 // and are listed by `node build/es/extract.js --chunks` for the translators.
 run('Spanish site (/es/ twins)', 'node build/es/gen-pages.js');
 

@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "La taxe du discrétionnaire",
-     "p": "Chaque décision discrétionnaire est une porte ouverte au tilt, au FOMO et au biais rétrospectif. Un système — des règles fixes pour le setup, l'entrée, la sortie et la taille — supprime la décision au moment où l'émotion est à son maximum. La plupart des traders n'ont pas besoin d'un meilleur instinct : ils ont besoin de moins d'occasions de s'en servir."
+     "p": "Chaque décision discrétionnaire est une porte ouverte au tilt, au FOMO et au biais rétrospectif. Un système - des règles fixes pour le setup, l'entrée, la sortie et la taille - supprime la décision au moment où l'émotion est à son maximum. La plupart des traders n'ont pas besoin d'un meilleur instinct : ils ont besoin de moins d'occasions de s'en servir."
     },
     {
      "h": "Des règles rendent les résultats mesurables",
      "p": "Si tes entrées sont des humeurs, tes revues de journal relèvent de l'astrologie. Si tes entrées sont des règles, chaque trade devient une donnée : CE setup, pris de CETTE façon, produit CETTE espérance de gain. Seul le trading basé sur des règles peut réellement s'améliorer, parce que lui seul peut se mesurer."
     },
     {
-     "h": "Le jugement a sa place — à la table de conception",
-     "p": "La compétence ne disparaît pas, elle se déplace. Tu utilises ton jugement pour CONCEVOIR et RÉVISER les règles — chaque semaine, au calme, loin des prix en direct. La machine (ou la checklist) exécute. Le jugement au bureau, la discipline au moment de cliquer."
+     "h": "Le jugement a sa place - à la table de conception",
+     "p": "La compétence ne disparaît pas, elle se déplace. Tu utilises ton jugement pour CONCEVOIR et RÉVISER les règles - chaque semaine, au calme, loin des prix en direct. La machine (ou la checklist) exécute. Le jugement au bureau, la discipline au moment de cliquer."
     }
    ],
    "quiz": [
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "La question la moins chère du trading",
-     "p": "Avant de risquer un centime — ou même du temps en paper trading — tu peux interroger l'histoire : si j'avais tradé exactement ces règles sur l'année écoulée, que se serait-il passé ? C'est ça, un backtest. Il ne promet rien sur l'avenir, mais il exécute les règles sans biais rétrospectif et sans pitié."
+     "p": "Avant de risquer un centime - ou même du temps en paper trading - tu peux interroger l'histoire : si j'avais tradé exactement ces règles sur l'année écoulée, que se serait-il passé ? C'est ça, un backtest. Il ne promet rien sur l'avenir, mais il exécute les règles sans biais rétrospectif et sans pitié."
     },
     {
      "h": "Ce qu'un backtest te dit vraiment",
-     "p": "Pas « ça va rapporter » — plutôt : le PROFIL de la stratégie. Taux de réussite, R moyen, pire série de pertes, drawdown maximal, nombre de trades par mois. Tu sais déjà depuis r10 que ces chiffres, combinés au sizing, décident de ta survie. Le backtest te les donne en quelques minutes."
+     "p": "Pas « ça va rapporter » - plutôt : le PROFIL de la stratégie. Taux de réussite, R moyen, pire série de pertes, drawdown maximal, nombre de trades par mois. Tu sais déjà depuis r10 que ces chiffres, combinés au sizing, décident de ta survie. Le backtest te les donne en quelques minutes."
     },
     {
      "h": "Respecte ses limites",
-     "p": "Un backtest suppose des exécutions aux prix historiques — le spread réel, le slippage et le funding seront pires. Considère les résultats de backtest comme le plafond OPTIMISTE, soustrais mentalement les coûts, et ne fais confiance qu'aux profils qui survivent à cette décote avec de la marge."
+     "p": "Un backtest suppose des exécutions aux prix historiques - le spread réel, le slippage et le funding seront pires. Considère les résultats de backtest comme le plafond OPTIMISTE, soustrais mentalement les coûts, et ne fais confiance qu'aux profils qui survivent à cette décote avec de la marge."
     }
    ],
    "quiz": [
@@ -81,8 +81,8 @@
      "q": "Les résultats de backtest comparés aux résultats en live sont généralement…",
      "o": [
       "Identiques",
-      "Optimistes — les coûts réels dégradent le live",
-      "Pessimistes — le live est toujours meilleur",
+      "Optimistes - les coûts réels dégradent le live",
+      "Pessimistes - le live est toujours meilleur",
       "Aléatoires"
      ]
     },
@@ -97,7 +97,7 @@
     }
    ],
    "try": {
-    "p": "Lance ton premier vrai backtest — croisement d'EMA ou règles RSI sur des données de qualité live, en un clic, avec les stats complètes.",
+    "p": "Lance ton premier vrai backtest - croisement d'EMA ou règles RSI sur des données de qualité live, en un clic, avec les stats complètes.",
     "label": "Backtester de stratégies →"
    }
   },
@@ -107,7 +107,7 @@
    "cards": [
     {
      "h": "Le backtest parfait qui ne marche jamais",
-     "p": "Ajuste les paramètres d'une stratégie assez longtemps et elle collera PARFAITEMENT au passé — parce qu'elle a mémorisé le bruit, pas appris le signal. C'est ça, l'overfitting : plus la courbe de backtest est belle après un réglage intensif, plus tu dois te méfier."
+     "p": "Ajuste les paramètres d'une stratégie assez longtemps et elle collera PARFAITEMENT au passé - parce qu'elle a mémorisé le bruit, pas appris le signal. C'est ça, l'overfitting : plus la courbe de backtest est belle après un réglage intensif, plus tu dois te méfier."
     },
     {
      "h": "Les symptômes",
@@ -154,7 +154,7 @@
    "cards": [
     {
      "h": "Ne note jamais sur les données d'entraînement",
-     "p": "Le remède à l'overfitting, c'est la discipline dans les tests : conçois et règle tes règles sur UNE tranche d'historique (in-sample), puis fais-les tourner SANS Y TOUCHER sur une tranche qu'elles n'ont jamais vue (out-of-sample). Seul le résultat out-of-sample compte — c'est ce qui se rapproche le plus de l'avenir que tu puisses acheter."
+     "p": "Le remède à l'overfitting, c'est la discipline dans les tests : conçois et règle tes règles sur UNE tranche d'historique (in-sample), puis fais-les tourner SANS Y TOUCHER sur une tranche qu'elles n'ont jamais vue (out-of-sample). Seul le résultat out-of-sample compte - c'est ce qui se rapproche le plus de l'avenir que tu puisses acheter."
     },
     {
      "h": "Walk-forward : répéter l'honnêteté",
@@ -162,7 +162,7 @@
     },
     {
      "h": "Le paper trading est l'ultime out-of-sample",
-     "p": "Après les tests, fais tourner le système sur les prix en direct avec de l'argent fictif — le seul jeu de données impossible à espionner : le présent. Si le backtest, l'out-of-sample ET le paper trading concordent, tu tiens quelque chose. S'ils divergent, crois le plus proche du live."
+     "p": "Après les tests, fais tourner le système sur les prix en direct avec de l'argent fictif - le seul jeu de données impossible à espionner : le présent. Si le backtest, l'out-of-sample ET le paper trading concordent, tu tiens quelque chose. S'ils divergent, crois le plus proche du live."
     }
    ],
    "quiz": [
@@ -209,7 +209,7 @@
     },
     {
      "h": "Teste la machine comme une stratégie",
-     "p": "Un bot peut perdre de l'argent de deux façons : mauvaises règles ou mauvais code. Teste-les séparément — les règles dans le backtester, le code contre une API de paper trading où un bug ne coûte rien. Ce n'est qu'une fois les deux validés que l'argent réel entre en jeu, petit d'abord."
+     "p": "Un bot peut perdre de l'argent de deux façons : mauvaises règles ou mauvais code. Teste-les séparément - les règles dans le backtester, le code contre une API de paper trading où un bug ne coûte rien. Ce n'est qu'une fois les deux validés que l'argent réel entre en jeu, petit d'abord."
     }
    ],
    "quiz": [
@@ -242,7 +242,7 @@
     }
    ],
    "try": {
-    "p": "MarginPad propose une API REST de paper trading gratuite conçue exactement pour ça — teste un bot avec zéro risque.",
+    "p": "MarginPad propose une API REST de paper trading gratuite conçue exactement pour ça - teste un bot avec zéro risque.",
     "label": "Docs API Bot →"
    }
   },
@@ -252,11 +252,11 @@
    "cards": [
     {
      "h": "Automatiser n'est pas abandonner",
-     "p": "Un système en marche a besoin d'un tableau de bord et d'une laisse : des vérifications quotidiennes que les exécutions correspondent aux intentions, que le risque par trade est celui que tu as fixé, que le régime de marché ressemble encore à celui pour lequel il a été construit. La dérive silencieuse — dans les coûts, la volatilité, ton propre respect des règles — tue lentement."
+     "p": "Un système en marche a besoin d'un tableau de bord et d'une laisse : des vérifications quotidiennes que les exécutions correspondent aux intentions, que le risque par trade est celui que tu as fixé, que le régime de marché ressemble encore à celui pour lequel il a été construit. La dérive silencieuse - dans les coûts, la volatilité, ton propre respect des règles - tue lentement."
     },
     {
      "h": "Définis la mort à l'avance",
-     "p": "Avant de déployer, écris les critères d'arrêt : un drawdown maximal (disons 15%), une série de pertes au-delà du pire du backtest, ou une rupture de régime. L'un d'eux est atteint et le système S'ARRÊTE — pas de renégociation avec l'espoir. Tu as appris ça pour toi-même en r6 ; les machines méritent la même discipline."
+     "p": "Avant de déployer, écris les critères d'arrêt : un drawdown maximal (disons 15%), une série de pertes au-delà du pire du backtest, ou une rupture de régime. L'un d'eux est atteint et le système S'ARRÊTE - pas de renégociation avec l'espoir. Tu as appris ça pour toi-même en r6 ; les machines méritent la même discipline."
     },
     {
      "h": "Les incidents arriveront",
@@ -276,7 +276,7 @@
     {
      "q": "Un système en marche a besoin…",
      "o": [
-      "D'aucune attention — il tourne tout seul",
+      "D'aucune attention - il tourne tout seul",
       "Des vérifications quotidiennes du comportement",
       "De plus de levier",
       "De secret"
@@ -299,15 +299,15 @@
    "cards": [
     {
      "h": "Les edges sont saisonniers",
-     "p": "Aucun système ne fonctionne éternellement — les tendances se terminent, les régimes de volatilité basculent, la foule s'adapte. Les professionnels font tourner un petit PORTEFEUILLE de systèmes décorrélés : un suiveur de tendance, un retour à la moyenne, peut-être un récolteur de funding. Quand l'un dort, un autre mange généralement."
+     "p": "Aucun système ne fonctionne éternellement - les tendances se terminent, les régimes de volatilité basculent, la foule s'adapte. Les professionnels font tourner un petit PORTEFEUILLE de systèmes décorrélés : un suiveur de tendance, un retour à la moyenne, peut-être un récolteur de funding. Quand l'un dort, un autre mange généralement."
     },
     {
      "h": "Mettre un système à la retraite",
-     "p": "La compétence la plus dure : éteindre une stratégie que tu aimes. Les critères sont les mêmes règles d'arrêt qu'en s6, plus un — si la raison structurelle qui la faisait marcher a disparu (un changement de frais, un changement de régime, tout le monde s'y met), retire-la tant qu'elle a encore sa dignité. Un track record, c'est de l'histoire, pas un droit acquis."
+     "p": "La compétence la plus dure : éteindre une stratégie que tu aimes. Les critères sont les mêmes règles d'arrêt qu'en s6, plus un - si la raison structurelle qui la faisait marcher a disparu (un changement de frais, un changement de régime, tout le monde s'y met), retire-la tant qu'elle a encore sa dignité. Un track record, c'est de l'histoire, pas un droit acquis."
     },
     {
      "h": "Le métier, au complet",
-     "p": "Regarde le parcours : la mécanique (cours 1-2), la survie (3), la lecture du marché (4-5)… et maintenant un process qui tourne sans tes humeurs. Que tu automatises ou restes manuel, la destination est la même : un edge écrit, mesuré, révisé — et un trader assez calme pour le suivre."
+     "p": "Regarde le parcours : la mécanique (cours 1-2), la survie (3), la lecture du marché (4-5)… et maintenant un process qui tourne sans tes humeurs. Que tu automatises ou restes manuel, la destination est la même : un edge écrit, mesuré, révisé - et un trader assez calme pour le suivre."
     }
    ],
    "quiz": [
@@ -340,7 +340,7 @@
     }
    ],
    "try": {
-    "p": "La boucle complète est à toi maintenant — fais-la tourner là où les erreurs sont gratuites, et laisse les niveaux suivre la route.",
+    "p": "La boucle complète est à toi maintenant - fais-la tourner là où les erreurs sont gratuites, et laisse les niveaux suivre la route.",
     "label": "Paper Trade →"
    }
   }

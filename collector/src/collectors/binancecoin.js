@@ -1,6 +1,6 @@
 // Binance COIN-margined futures liquidations. Endpoint: wss://dstream.binance.com/ws/!forceOrder@arr
 // Why this exists: Binance's USDT-margined futures WS (fstream) geo-restricts its market DATA in every region
-// we can reach (subscribe is ACKed but zero data) — even where coin-margined works. dstream (COIN-margined)
+// we can reach (subscribe is ACKed but zero data) - even where coin-margined works. dstream (COIN-margined)
 // is NOT gated and delivers directly, so it's our reachable Binance liquidation source. Verified live.
 //   Message: { e:'forceOrder', E, o:{ s:'BTCUSD_PERP', S:'SELL'|'BUY', q:<contracts>, p, ap, T } }
 // SIDE:  o.S === 'SELL' => a LONG was force-closed => long_liquidated; 'BUY' => short_liquidated.

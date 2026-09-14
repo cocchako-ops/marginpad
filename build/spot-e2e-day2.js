@@ -16,7 +16,7 @@ const admin = async (p) => (await fetch(ORIGIN + p, { headers: { 'x-admin-key': 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const e2euser = async (op) => (await fetch(ORIGIN + '/api/admin/e2euser', { method: 'POST', headers: { 'x-admin-key': K, 'content-type': 'application/json' }, body: JSON.stringify({ uid: UID, op }) })).json();
 (async () => {
-  // A. API — a REAL member row (the cron's watch list joins users; a SpotStore-only throwaway would never be walked)
+  // A. API - a REAL member row (the cron's watch list joins users; a SpotStore-only throwaway would never be walked)
   const mk = await e2euser('mk'); chk('A throwaway member minted', mk && mk.ok, mk);
   await api('/start', {}); await api('/link', {}); await api('/onramp', { usd: 400 });
   let r = await api('/wallet/create', {}); const addr = r.addr; chk('A wallet created', addr && addr.sol && addr.evm);
@@ -86,6 +86,6 @@ const e2euser = async (op) => (await fetch(ORIGIN + '/api/admin/e2euser', { meth
   const rm = await e2euser('rm'); chk('cleanup: member removed', rm && rm.ok, rm);
   console.log(out.join('\n'));
   const fails = out.filter(l => l.startsWith('FAIL')).length;
-  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' — ' + fails + ' FAIL' : '') + ' · uid ' + UID);
+  console.log('\n' + (out.length - fails) + '/' + out.length + ' PASS' + (fails ? ' - ' + fails + ' FAIL' : '') + ' · uid ' + UID);
   process.exit(fails ? 1 : 0);
 })().catch(e => { console.error('suite crashed', e); process.exit(1); });

@@ -1,4 +1,4 @@
-/* MarginPad ops v2 — one stylesheet, real file (2026-09-03). Dark palette shared with the site: bg #0a0b0d, lime #c2f64a, green #2ebd85, red #ff5a4d. */
+/* MarginPad ops v2 - one stylesheet, real file (2026-09-03). Dark palette shared with the site: bg #0a0b0d, lime #c2f64a, green #2ebd85, red #ff5a4d. */
 :root{--bg:#0a0b0d;--bg2:#0e1116;--panel:#10141a;--panel2:#141922;--line:#1c2230;--line2:#2a323c;--ink:#e8ecf1;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--green:#2ebd85;--red:#ff5a4d;--amber:#ffb347;--blue:#7fb2ff;--viol:#a78bfa;--mono:Consolas,'Space Mono',monospace;--sidew:232px}
 *{box-sizing:border-box;scrollbar-color:#2a323c #0a0b0d;scrollbar-width:thin}[hidden]{display:none!important}html{height:100%;color-scheme:dark}
 ::-webkit-scrollbar{width:10px;height:10px;background:#0a0b0d}::-webkit-scrollbar-thumb{background:#2a323c;border-radius:6px;border:2px solid #0a0b0d}::-webkit-scrollbar-thumb:hover{background:#3a4450}::-webkit-scrollbar-corner{background:#0a0b0d}

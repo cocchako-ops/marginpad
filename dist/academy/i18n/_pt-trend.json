@@ -21,7 +21,7 @@
     },
     {
      "h": "Quando uma tendência deixa de ser tendência",
-     "p": "Uma tendência de alta acaba quando a sequência quebra: o preço faz um fundo abaixo do fundo anterior. É esse o teste inteiro. Isso não significa que uma tendência de baixa começou, e muitas vezes o preço só anda de lado por semanas depois. Significa que o motivo pelo qual você a chamou de tendência de alta se foi — e qualquer plano construído sobre esse motivo se foi junto."
+     "p": "Uma tendência de alta acaba quando a sequência quebra: o preço faz um fundo abaixo do fundo anterior. É esse o teste inteiro. Isso não significa que uma tendência de baixa começou, e muitas vezes o preço só anda de lado por semanas depois. Significa que o motivo pelo qual você a chamou de tendência de alta se foi - e qualquer plano construído sobre esse motivo se foi junto."
     }
    ],
    "quiz": [
@@ -47,7 +47,7 @@
      "q": "Numa tendência de alta, o preço cai abaixo do fundo anterior. Isso significa…",
      "o": [
       "Que uma tendência de baixa com certeza começou",
-      "Nada — só os topos definem a tendência",
+      "Nada - só os topos definem a tendência",
       "Que a sequência de alta quebrou",
       "Que a tendência ficou mais forte"
      ]
@@ -97,7 +97,7 @@
     {
      "q": "O preço quebra sua linha e você a redesenha mais deitada. Isso é…",
      "o": [
-      "Boa prática — gráficos mudam sempre",
+      "Boa prática - gráficos mudam sempre",
       "Encaixar a linha no que você quer",
       "Obrigatório quando o terceiro toque falha",
       "Como profissionais gerenciam risco aberto"
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Uma multidão, não um laser",
-     "p": "Suporte não é um preço. É uma faixa onde compradores suficientes apareceram para segurar a queda — às vezes em $100.00, às vezes em $99.40, às vezes depois de uma espetada até $98.80. Desenhar uma linha de um pixel e esperar que o preço a respeite ao centavo é um jeito clássico de ser sacudido para fora de uma ideia que estava boa."
+     "p": "Suporte não é um preço. É uma faixa onde compradores suficientes apareceram para segurar a queda - às vezes em $100.00, às vezes em $99.40, às vezes depois de uma espetada até $98.80. Desenhar uma linha de um pixel e esperar que o preço a respeite ao centavo é um jeito clássico de ser sacudido para fora de uma ideia que estava boa."
     },
     {
      "h": "Deixe os pavios definirem as bordas",
@@ -119,12 +119,12 @@
     },
     {
      "h": "Prove com um toque",
-     "prompt": "Toque em qualquer ponto dentro da zona de suporte — a faixa onde os fundos se concentram.",
+     "prompt": "Toque em qualquer ponto dentro da zona de suporte - a faixa onde os fundos se concentram.",
      "p": "Um toque. Não existe um pixel certo aqui, e é exatamente essa a lição."
     },
     {
      "h": "Quando uma zona é larga demais",
-     "p": "Uma zona precisa ser apertada o bastante para se operar contra ela. Se os pavios se espalham por 2% do preço, seu stop tem que ficar além de tudo isso — e em muitos dias 2% é a variação inteira. Isso não é um nível, é um bairro. Anote e espere o preço te entregar um mais apertado."
+     "p": "Uma zona precisa ser apertada o bastante para se operar contra ela. Se os pavios se espalham por 2% do preço, seu stop tem que ficar além de tudo isso - e em muitos dias 2% é a variação inteira. Isso não é um nível, é um bairro. Anote e espere o preço te entregar um mais apertado."
     }
    ],
    "quiz": [
@@ -152,7 +152,7 @@
       "Seu nível estava simplesmente errado",
       "Uma nova tendência de baixa começou",
       "O suporte virou resistência agora",
-      "Normal — o nível é uma zona, não uma linha"
+      "Normal - o nível é uma zona, não uma linha"
      ]
     }
    ]
@@ -175,7 +175,7 @@
     },
     {
      "h": "Um nível não é uma parede",
-     "p": "Nada disso faz um nível segurar. Ordens são retiradas, o humor muda, e um nível que parou o preço quatro vezes pode falhar na quinta sem aviso nenhum. O valor de um nível não é o preço parar ali. É ele te dar um preço específico em que sua ideia acabou — e é disso que um plano é feito."
+     "p": "Nada disso faz um nível segurar. Ordens são retiradas, o humor muda, e um nível que parou o preço quatro vezes pode falhar na quinta sem aviso nenhum. O valor de um nível não é o preço parar ali. É ele te dar um preço específico em que sua ideia acabou - e é disso que um plano é feito."
     }
    ],
    "quiz": [
@@ -200,7 +200,7 @@
     {
      "q": "Um nível segurou quatro vezes. No quinto toque ele…",
      "o": [
-      "Tem que segurar — quatro toques confirmam",
+      "Tem que segurar - quatro toques confirmam",
       "Vira automaticamente uma linha de tendência",
       "Pode falhar sem aviso nenhum",
       "Garante um rompimento a seu favor"
@@ -289,7 +289,7 @@
     {
      "q": "Um nível rompe com volume anormalmente baixo. Você deve…",
      "o": [
-      "Levar pouco a sério — pouca gente participou",
+      "Levar pouco a sério - pouca gente participou",
       "Tratar como confirmado, volume é ruído",
       "Assumir que a reversão está garantida",
       "Dobrar a posição para pegar o movimento"
@@ -320,7 +320,7 @@
     },
     {
      "h": "Jogar o jogo errado sai caro",
-     "p": "Aplique regras de tendência dentro de um range e você compra cada impulso na borda de cima e vende cada lavada na borda de baixo — comprando caro e vendendo barato em looping, pagando taxa a cada volta. Aplique regras de range num mercado em tendência e você fica shortando contra a força. Nomear o estado antes de agir não é lição de casa opcional."
+     "p": "Aplique regras de tendência dentro de um range e você compra cada impulso na borda de cima e vende cada lavada na borda de baixo - comprando caro e vendendo barato em looping, pagando taxa a cada volta. Aplique regras de range num mercado em tendência e você fica shortando contra a força. Nomear o estado antes de agir não é lição de casa opcional."
     },
     {
      "h": "Ranges se apertam antes de acabar",
@@ -418,7 +418,7 @@
     },
     {
      "h": "Nomeie a tendência, marque dois níveis",
-     "p": "Diga a sequência em voz alta: topos e fundos mais altos, o espelho disso, ou nenhum dos dois, o que significa range. Depois marque exatamente duas zonas horizontais — a mais próxima acima do preço e a mais próxima abaixo. Duas. Se você desenhou seis linhas, construiu um gráfico que concorda com qualquer coisa que você decidir fazer."
+     "p": "Diga a sequência em voz alta: topos e fundos mais altos, o espelho disso, ou nenhum dos dois, o que significa range. Depois marque exatamente duas zonas horizontais - a mais próxima acima do preço e a mais próxima abaixo. Duas. Se você desenhou seis linhas, construiu um gráfico que concorda com qualquer coisa que você decidir fazer."
     },
     {
      "h": "Termine a frase e pare",
@@ -426,7 +426,7 @@
     },
     {
      "h": "A maioria dos gráficos não merece opinião",
-     "p": "A saída honesta dessa rotina, na maior parte das vezes, é nada. Sem tendência clara, sem nível por perto, nada específico sobre o que estar errado. Isso é um resultado, não um fracasso — a rotina é um filtro, e um filtro que nunca rejeita nada não está filtrando. Feche o gráfico e olhe outro símbolo."
+     "p": "A saída honesta dessa rotina, na maior parte das vezes, é nada. Sem tendência clara, sem nível por perto, nada específico sobre o que estar errado. Isso é um resultado, não um fracasso - a rotina é um filtro, e um filtro que nunca rejeita nada não está filtrando. Feche o gráfico e olhe outro símbolo."
     }
    ],
    "quiz": [
@@ -444,7 +444,7 @@
      "o": [
       "Quantas você conseguir achar",
       "Seis, uma por timeframe",
-      "Duas — a mais próxima acima e abaixo",
+      "Duas - a mais próxima acima e abaixo",
       "Nenhuma, linhas de tendência bastam"
      ]
     },

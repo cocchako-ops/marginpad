@@ -1,6 +1,6 @@
 /* Normalise the viewport meta on EVERY built page to a consistent app-like, no-pinch-zoom value.
    Many generators emitted plain "width=device-width, initial-scale=1.0" (pinch-zoomable) while the
-   homepage already disabled zoom — this unifies all of them. Idempotent. Run after all pages exist. */
+   homepage already disabled zoom - this unifies all of them. Idempotent. Run after all pages exist. */
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');

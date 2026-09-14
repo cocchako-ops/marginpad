@@ -71,7 +71,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     if (!only.length || only.includes('trading/live')) {
       await page.evaluate(() => { location.hash = 'trading/live'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.trd').length > 0)) break; }
       await page.evaluate(() => { const t = document.querySelector('.trd-h .t.up'); const h = t && t.closest('.trd-h'); if (h) h.click(); }); await sleep(600); // first trader that actually has an open position (the newest row may be flat: closes only)
-      const lv = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(x => /live prices/i.test(x.innerText)); return { traders: document.querySelectorAll('.trd').length, expanded: document.querySelectorAll('.trd-b .pos').length, prices: t ? +t.querySelector('.v').innerText.replace(/[^0-9]/g, '') : 0, tiles: document.querySelectorAll('.tile').length, dash: document.querySelectorAll('.trd-b .pos b').length ? Array.from(document.querySelectorAll('.trd-b .pos b')).filter(b => b.innerText.trim() === '—').length : -1 }; });
+      const lv = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(x => /live prices/i.test(x.innerText)); return { traders: document.querySelectorAll('.trd').length, expanded: document.querySelectorAll('.trd-b .pos').length, prices: t ? +t.querySelector('.v').innerText.replace(/[^0-9]/g, '') : 0, tiles: document.querySelectorAll('.tile').length, dash: document.querySelectorAll('.trd-b .pos b').length ? Array.from(document.querySelectorAll('.trd-b .pos b')).filter(b => b.innerText.trim() === '-').length : -1 }; });
       chk('live trades: trader rows expand to positions; base prices loaded (/api/prices pairs) so P&L is real', lv.traders > 0 && lv.expanded > 0 && lv.tiles >= 8 && lv.prices >= 20 && lv.dash <= 3, lv); // /api/prices carries ~24 majors; the rest fill in per symbol over time
       await page.evaluate(() => { document.querySelector('[data-v="markets"]').click(); }); await sleep(500);
       chk('live trades: markets view', await page.evaluate(() => document.querySelectorAll('.hb-r').length > 0));
@@ -173,7 +173,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await go('inbox/support', 'median reply'); await sleep(1500);
       const sp2 = await page.evaluate(() => ({ stats: (document.getElementById('supStats') || {}).innerText, waiting: document.querySelectorAll('.sup-row .sup-m').length, threads: document.querySelectorAll('.sup-row [data-em]').length }));
       chk('support: reply-time facts (median, oldest waiting, replied today) and repeat-contact badges', /median reply/.test(sp2.stats || '') && /oldest waiting/.test(sp2.stats || '') && sp2.waiting > 0, sp2);
-      // the first thread may belong to an email without an account (a visitor wrote in) — walk the rows until one has a card
+      // the first thread may belong to an email without an account (a visitor wrote in) - walk the rows until one has a card
       for (let ri = 0; ri < 6; ri++) { const clicked = await page.evaluate((i) => { const r = document.querySelectorAll('.sup-row')[i]; if (r) { r.click(); return true; } return false; }, ri); if (!clicked) break; let has = false; for (let w = 0; w < 16; w++) { await sleep(500); const s = await page.evaluate(() => { const b = document.querySelector('#supUser #ucBoards b'); const t = (document.getElementById('supUser') || {}).innerText || ''; return { ok: !!(b && !/…/.test(b.innerText) && b.innerText.length > 3), none: /No MarginPad account/.test(t) }; }); if (s.ok) { has = true; break; } if (s.none) break; } if (has) break; }
       const ub = await page.evaluate(() => ({ boards: (document.querySelector('#supUser #ucBoards b') || {}).innerText, last: /last trades/i.test((document.getElementById('supUser') || {}).innerText || ''), draft: !!document.getElementById('supBody') }));
       chk('user card: season board standing (ROE / WR / XP / Green) and last trades', /ROE/.test(ub.boards || '') && /WR/.test(ub.boards || '') && /XP/.test(ub.boards || '') && /Green/.test(ub.boards || ''), ub);
@@ -235,7 +235,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const p = await page.evaluate(() => ({ open: !document.getElementById('pal').hidden, items: Array.from(document.querySelectorAll('#palRes .pr')).map(x => x.innerText.replace(/\s+/g, ' ').slice(0, 40)) }));
     chk('palette opens with Ctrl+K and finds users for "kof"', p.open && p.items.some(x => /user/i.test(x)), p);
     await page.keyboard.press('Escape');
-    // phone — REACHABILITY, not existence: every native view must paint visible content at 390px without any click,
+    // phone - REACHABILITY, not existence: every native view must paint visible content at 390px without any click,
     // and Support must open a thread from a real tap on a visible row (the first phone release shipped an empty Support
     // because the panes were hidden until a JS click that only the test could make).
     await page.setViewport({ width: 390, height: 780, isMobile: true, hasTouch: true }); await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);

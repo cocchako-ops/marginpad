@@ -1,4 +1,4 @@
-/* Single source of truth for "which HTML files can reference the home/app bundle" — shared by
+/* Single source of truth for "which HTML files can reference the home/app bundle" - shared by
    bump-home-assets.js (the stamper) and check-home-hash.js (the guard) so the two can never drift onto
    different file sets. That drift is exactly the bug class the guard exists to catch, so the guard and the
    stamper MUST look at the same list. Covers app/index.html (the app-shell source) + all of dist/**.html. */

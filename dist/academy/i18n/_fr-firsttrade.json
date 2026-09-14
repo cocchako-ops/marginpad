@@ -9,11 +9,11 @@
    "cards": [
     {
      "h": "Un trade, c’est trois réponses",
-     "p": "Avant de toucher au ticket d’ordre, trois questions doivent avoir une réponse : dans quel sens, à quel prix tu as la preuve d’avoir tort, et quelle taille fait la position. Le sens tout seul est une devinette. Le sens plus un prix d’invalidation, mais sans taille, est inachevé. S’il manque l’une des trois, tu n’as pas encore un trade — tu as un souhait."
+     "p": "Avant de toucher au ticket d’ordre, trois questions doivent avoir une réponse : dans quel sens, à quel prix tu as la preuve d’avoir tort, et quelle taille fait la position. Le sens tout seul est une devinette. Le sens plus un prix d’invalidation, mais sans taille, est inachevé. S’il manque l’une des trois, tu n’as pas encore un trade - tu as un souhait."
     },
     {
      "h": "Le sens : long ou short",
-     "p": "Long veut dire que tu gagnes si le prix monte et que tu perds s’il baisse. Le short est le miroir : tu gagnes s’il baisse. Sur les futures, les deux sont à un clic l’un de l’autre, et aucun des deux n’est le plus sûr. Énonce ton sens comme une phrase simple — long BTC — avant toute chose, parce que tous les autres champs du ticket en dépendent."
+     "p": "Long veut dire que tu gagnes si le prix monte et que tu perds s’il baisse. Le short est le miroir : tu gagnes s’il baisse. Sur les futures, les deux sont à un clic l’un de l’autre, et aucun des deux n’est le plus sûr. Énonce ton sens comme une phrase simple - long BTC - avant toute chose, parce que tous les autres champs du ticket en dépendent."
     },
     {
      "h": "L’invalidation : l’endroit où tu as tort",
@@ -111,7 +111,7 @@
    "cards": [
     {
      "h": "Marge, notionnel, quantité",
-     "p": "Trois nombres décrivent une seule position. La quantité, c’est combien de coin tu contrôles, disons 0,02 BTC. Le notionnel, c’est cette quantité en dollars : à 50 000 $ le BTC, 0,02 BTC font un notionnel de 1 000 $. La marge, c’est l’argent réellement bloqué sur ton solde — à un levier de 10x sur cette position, 100 $. Le profit et la perte suivent le notionnel, jamais la marge."
+     "p": "Trois nombres décrivent une seule position. La quantité, c’est combien de coin tu contrôles, disons 0,02 BTC. Le notionnel, c’est cette quantité en dollars : à 50 000 $ le BTC, 0,02 BTC font un notionnel de 1 000 $. La marge, c’est l’argent réellement bloqué sur ton solde - à un levier de 10x sur cette position, 100 $. Le profit et la perte suivent le notionnel, jamais la marge."
     },
     {
      "h": "Ce que le levier change vraiment",
@@ -171,7 +171,7 @@
     {
      "h": "Place-le toi-même",
      "p": "Avant de faire confiance au champ, prouve que tu connais le niveau. Un seul tap.",
-     "prompt": "C’est un long. Tape là où va le stop-loss — juste sous le creux."
+     "prompt": "C’est un long. Tape là où va le stop-loss - juste sous le creux."
     },
     {
      "h": "Déplacer un stop coûte cher",
@@ -222,7 +222,7 @@
     },
     {
      "h": "Le ratio qu’impliquent tes deux lignes",
-     "p": "Ton stop et ton objectif fixent un ratio avant même que le trade commence. Entrée 50 000 $, stop 49 000 $, objectif 52 000 $ : tu risques 1 000 $ pour en gagner 2 000 $ — un ratio gain/risque de 2:1. À 2:1, gagner un trade sur trois te met à l’équilibre avant frais. C’est de l’arithmétique, pas une promesse. Rien ne dit que l’objectif sera atteint un jour. Vérifie le ratio avant de cliquer."
+     "p": "Ton stop et ton objectif fixent un ratio avant même que le trade commence. Entrée 50 000 $, stop 49 000 $, objectif 52 000 $ : tu risques 1 000 $ pour en gagner 2 000 $ - un ratio gain/risque de 2:1. À 2:1, gagner un trade sur trois te met à l’équilibre avant frais. C’est de l’arithmétique, pas une promesse. Rien ne dit que l’objectif sera atteint un jour. Vérifie le ratio avant de cliquer."
     }
    ],
    "quiz": [
@@ -265,7 +265,7 @@
     },
     {
      "h": "Prix d’entrée et mark price",
-     "p": "L’entrée, c’est le prix moyen auquel tu as réellement été exécuté, avant frais. Le mark price est le prix de référence juste de l’exchange, utilisé pour valoriser ta position et décider de la liquidation — en général adossé à un indice large plutôt qu’à la dernière transaction d’un seul carnet. C’est délibéré : ça rend une transaction isolée et bizarre bien plus difficile à utiliser contre toi."
+     "p": "L’entrée, c’est le prix moyen auquel tu as réellement été exécuté, avant frais. Le mark price est le prix de référence juste de l’exchange, utilisé pour valoriser ta position et décider de la liquidation - en général adossé à un indice large plutôt qu’à la dernière transaction d’un seul carnet. C’est délibéré : ça rend une transaction isolée et bizarre bien plus difficile à utiliser contre toi."
     },
     {
      "h": "Latent veut dire pas encore à toi",
@@ -363,7 +363,7 @@
     },
     {
      "h": "Remplir le ticket",
-     "p": "Sens : achat. Type d’ordre : limit, prix 50 000 $, donc tu paies les frais maker et tu acceptes qu’il puisse ne jamais être exécuté. Taille : 2 500 $ de notionnel, levier 10x. Tape 49 000 $ dans le champ stop-loss et 52 000 $ dans le champ take-profit avant de valider — cet objectif est à 2:1 contre ton risque. Relis tout le ticket une fois, puis valide."
+     "p": "Sens : achat. Type d’ordre : limit, prix 50 000 $, donc tu paies les frais maker et tu acceptes qu’il puisse ne jamais être exécuté. Taille : 2 500 $ de notionnel, levier 10x. Tape 49 000 $ dans le champ stop-loss et 52 000 $ dans le champ take-profit avant de valider - cet objectif est à 2:1 contre ton risque. Relis tout le ticket une fois, puis valide."
     },
     {
      "h": "Après l’exécution, ne fais rien",

@@ -9,15 +9,15 @@
    "cards": [
     {
      "h": "Cena se kreće ka nalozima",
-     "p": "Veliki igrači ne mogu da popune velike pozicije tamo gde je knjiga prazna — trebaju im nalozi koji čekaju kao druga strana. Klasteri stop-lossova i likvidacija JESU ti nalozi. Zato cena tako često probije očigledan nivo, popuni se tamo i okrene: išla je u kupovinu."
+     "p": "Veliki igrači ne mogu da popune velike pozicije tamo gde je knjiga prazna - trebaju im nalozi koji čekaju kao druga strana. Klasteri stop-lossova i likvidacija JESU ti nalozi. Zato cena tako često probije očigledan nivo, popuni se tamo i okrene: išla je u kupovinu."
     },
     {
      "h": "Tvoj stop je nečiji ulaz",
-     "p": "Tvoj stop-loss ispod podrške je prodajni nalog koji čeka da se desi. Hiljadu tradera koji ga stave na isto očigledno mesto stvara bazen garantovanih prodavaca — savršeno mesto da veliki kupac apsorbuje. To nije zavera; tako se velika veličina prosto puni."
+     "p": "Tvoj stop-loss ispod podrške je prodajni nalog koji čeka da se desi. Hiljadu tradera koji ga stave na isto očigledno mesto stvara bazen garantovanih prodavaca - savršeno mesto da veliki kupac apsorbuje. To nije zavera; tako se velika veličina prosto puni."
     },
     {
      "h": "Trguj to, ne boj se toga",
-     "p": "Ne možeš izbeći igru, ali možeš prestati da budeš najlakša meta: stavi invalidacije iza očiglednih bazena, očekuj \"sweep pa okret\" na čistim nivoima, i tretiraj fitilj kroz nivo koji se odmah povrati kao informaciju — neko se upravo popunio."
+     "p": "Ne možeš izbeći igru, ali možeš prestati da budeš najlakša meta: stavi invalidacije iza očiglednih bazena, očekuj \"sweep pa okret\" na čistim nivoima, i tretiraj fitilj kroz nivo koji se odmah povrati kao informaciju - neko se upravo popunio."
     }
    ],
    "quiz": [
@@ -56,15 +56,15 @@
    "cards": [
     {
      "h": "Priča se piše u bočnom kretanju",
-     "p": "Trendovi su rezultat; rejndžovi su uzrok. U rejndžu veliki igrači tiho grade (akumuliraju) ili istovaraju (distribuiraju) pozicije, ne pomerajući cenu protiv sebe. Smer proboja je obično odlučen mnogo pre nego što se desi — unutar rejndža."
+     "p": "Trendovi su rezultat; rejndžovi su uzrok. U rejndžu veliki igrači tiho grade (akumuliraju) ili istovaraju (distribuiraju) pozicije, ne pomerajući cenu protiv sebe. Smer proboja je obično odlučen mnogo pre nego što se desi - unutar rejndža."
     },
     {
      "h": "Čitanje rejndža",
-     "p": "Gledaj kako se cena ponaša na ivicama: ponovljeni prodori ispod minimuma koji se brzo oporave (sweep u tražnju) nagoveštavaju akumulaciju; rastovi koji propadaju na maksimumu uz opadajući volumen nagoveštavaju distribuciju. Sredina rejndža je šum — ivice su znak."
+     "p": "Gledaj kako se cena ponaša na ivicama: ponovljeni prodori ispod minimuma koji se brzo oporave (sweep u tražnju) nagoveštavaju akumulaciju; rastovi koji propadaju na maksimumu uz opadajući volumen nagoveštavaju distribuciju. Sredina rejndža je šum - ivice su znak."
     },
     {
      "h": "Spring i zamka",
-     "p": "Klasičan završetak: lažan proboj PROTIV pravog smera — spring — koji počisti stopove, popuni poslednju veličinu velikog igrača i okrene se u pravi potez. Ako naučiš da očekuješ zamku, zamka postaje tvoj ulaz umesto tvog izlaza."
+     "p": "Klasičan završetak: lažan proboj PROTIV pravog smera - spring - koji počisti stopove, popuni poslednju veličinu velikog igrača i okrene se u pravi potez. Ako naučiš da očekuješ zamku, zamka postaje tvoj ulaz umesto tvog izlaza."
     }
    ],
    "quiz": [
@@ -103,15 +103,15 @@
    "cards": [
     {
      "h": "Rupe u aukciji",
-     "p": "Kad se cena nasilno pomeri u jednom smeru, preskače nivoe — tamo se jedva trgovalo. Ta tanka zona je imbalans (često zvan fair value gap). Tržišta često kasnije posete te zone, jer su netrgovane cene nedovršen posao aukcije."
+     "p": "Kad se cena nasilno pomeri u jednom smeru, preskače nivoe - tamo se jedva trgovalo. Ta tanka zona je imbalans (često zvan fair value gap). Tržišta često kasnije posete te zone, jer su netrgovane cene nedovršen posao aukcije."
     },
     {
      "h": "Zašto dolazi do povrataka",
-     "p": "Ništa mistično: učesnici koji su propustili potez ostavljaju naloge u preskočenoj zoni, a market mejkeri koji su prodavali u skok žele da otkupe tamo gde je volumen bio tanak. Zona deluje kao magnet — ne zbog magije, nego jer se nalozi tamo gomilaju."
+     "p": "Ništa mistično: učesnici koji su propustili potez ostavljaju naloge u preskočenoj zoni, a market mejkeri koji su prodavali u skok žele da otkupe tamo gde je volumen bio tanak. Zona deluje kao magnet - ne zbog magije, nego jer se nalozi tamo gomilaju."
     },
     {
      "h": "Pošteno korišćenje imbalansa",
-     "p": "Imbalans je KANDIDAT zona za ulaske u smeru trenda — nikad garancija. Složi ga sa strukturom: imbalans koji se preklapa sa nivoom podrške i trendom višeg okvira je pravi setap; usamljeni gap na jednominutnom grafikonu je šum sa otmenim imenom."
+     "p": "Imbalans je KANDIDAT zona za ulaske u smeru trenda - nikad garancija. Složi ga sa strukturom: imbalans koji se preklapa sa nivoom podrške i trendom višeg okvira je pravi setap; usamljeni gap na jednominutnom grafikonu je šum sa otmenim imenom."
     }
    ],
    "quiz": [
@@ -154,11 +154,11 @@
     },
     {
      "h": "Prihvatanje i odbacivanje",
-     "p": "Cena koja uđe u čvor visokog volumena obično uspori i testeriše — tamo je obavljeno mnogo posla i opet privlači trgovanje. Cena koja uđe u čvor niskog volumena obično proseče brzo — tamo niko nije hteo da trguje ranije, pa neće ni sad. Ovo objašnjava mnoge brze poteze bolje od bilo kog indikatora."
+     "p": "Cena koja uđe u čvor visokog volumena obično uspori i testeriše - tamo je obavljeno mnogo posla i opet privlači trgovanje. Cena koja uđe u čvor niskog volumena obično proseče brzo - tamo niko nije hteo da trguje ranije, pa neće ni sad. Ovo objašnjava mnoge brze poteze bolje od bilo kog indikatora."
     },
     {
      "h": "Praktična upotreba",
-     "p": "Obeleži čvor najvišeg volumena skorašnjeg rejndža (point of control). Iznad njega, padovi u njega često nalaze kupce; ispod njega, rastovi u njega često nalaze prodavce. Kombinuj sa nivoima iz m1 — kad se volumenski čvor i strukturni nivo slože, našao si pravu zonu."
+     "p": "Obeleži čvor najvišeg volumena skorašnjeg rejndža (point of control). Iznad njega, padovi u njega često nalaze kupce; ispod njega, rastovi u njega često nalaze prodavce. Kombinuj sa nivoima iz m1 - kad se volumenski čvor i strukturni nivo slože, našao si pravu zonu."
     }
    ],
    "quiz": [
@@ -197,11 +197,11 @@
    "cards": [
     {
      "h": "Šta su fib nivoi",
-     "p": "Fibonacci retracement označava fiksne delove prethodnog poteza — 38.2%, 50%, 61.8%. Ne postoji fizički zakon koji tera cenu da ih poštuje. A ipak se često poštuju. Zašto? Jer milioni tradera crtaju iste nivoe i reaguju na njih — samoispunjavajuće ogledalo."
+     "p": "Fibonacci retracement označava fiksne delove prethodnog poteza - 38.2%, 50%, 61.8%. Ne postoji fizički zakon koji tera cenu da ih poštuje. A ipak se često poštuju. Zašto? Jer milioni tradera crtaju iste nivoe i reaguju na njih - samoispunjavajuće ogledalo."
     },
     {
      "h": "Pošten način korišćenja",
-     "p": "Tretiraj fibove kao MAPU gde drugi traderi očekuju reakcije, ne kao gravitaciju. Retracement od 61.8% u uzlaznom trendu je popularna zona kupovine — što je čini pravom zonom, šta god mislio o matematici. Samoispunjavajuće se ipak ispunjava."
+     "p": "Tretiraj fibove kao MAPU gde drugi traderi očekuju reakcije, ne kao gravitaciju. Retracement od 61.8% u uzlaznom trendu je popularna zona kupovine - što je čini pravom zonom, šta god mislio o matematici. Samoispunjavajuće se ipak ispunjava."
     },
     {
      "h": "Konfluencija, opet",
@@ -244,7 +244,7 @@
    "cards": [
     {
      "h": "Nije svako zeleno jednako",
-     "p": "Kad tržište odskoči, neki coini se oporave do novih maksimuma dok se drugi jedva odlepe od minimuma. Ta razlika — relativna snaga — jedna je od najtrajnijih prednosti u trejdingu: ono što je odbilo da padne u oluji obično vodi oporavak."
+     "p": "Kad tržište odskoči, neki coini se oporave do novih maksimuma dok se drugi jedva odlepe od minimuma. Ta razlika - relativna snaga - jedna je od najtrajnijih prednosti u trejdingu: ono što je odbilo da padne u oluji obično vodi oporavak."
     },
     {
      "h": "Jednostavno merenje",
@@ -252,7 +252,7 @@
     },
     {
      "h": "Jak sa plimom",
-     "p": "Kombinuj sa m9: u risk-on tržištu sa opadajućom dominacijom, longovanje relativno najjačih altova je pecanje tamo gde ima ribe — trend, plima i snaga poravnati. Longovanje najslabijeg coina jer je \"jeftin\" je tačno suprotan trejd sa nalepnicom popusta."
+     "p": "Kombinuj sa m9: u risk-on tržištu sa opadajućom dominacijom, longovanje relativno najjačih altova je pecanje tamo gde ima ribe - trend, plima i snaga poravnati. Longovanje najslabijeg coina jer je \"jeftin\" je tačno suprotan trejd sa nalepnicom popusta."
     }
    ],
    "quiz": [
@@ -291,11 +291,11 @@
    "cards": [
     {
      "h": "Volatilnost se grupiše",
-     "p": "Tržišta se smenjuju između režima: dugi periodi uskih, mirnih rejndžova i eksplozije nasilne ekspanzije. Volatilnost se grupiše — mir prati mir, oluja prati oluju — dok se režim ne slomi. Ista strategija ne može oba sveta da tretira identično."
+     "p": "Tržišta se smenjuju između režima: dugi periodi uskih, mirnih rejndžova i eksplozije nasilne ekspanzije. Volatilnost se grupiše - mir prati mir, oluja prati oluju - dok se režim ne slomi. Ista strategija ne može oba sveta da tretira identično."
     },
     {
      "h": "Prilagođavanje veličine i stopova",
-     "p": "U olujnom režimu, stop koji je prošle nedelje bio razuman sada sedi usred šuma — a veličina mora da se smanji da rizik ostane isti (veća razdaljina stopa × manja veličina = isti rizik od 1%). U mrtvo mirnim režimima proboji umiru iznova, dok povratak na prosek cveta."
+     "p": "U olujnom režimu, stop koji je prošle nedelje bio razuman sada sedi usred šuma - a veličina mora da se smanji da rizik ostane isti (veća razdaljina stopa × manja veličina = isti rizik od 1%). U mrtvo mirnim režimima proboji umiru iznova, dok povratak na prosek cveta."
     },
     {
      "h": "Provera režima",
@@ -307,7 +307,7 @@
      "q": "Volatilnost teži da…",
      "o": [
       "Da bude potpuno nasumična iz dana u dan",
-      "Se grupiše — mir prati mir, oluja prati oluju",
+      "Se grupiše - mir prati mir, oluja prati oluju",
       "Samo raste",
       "Samo pada"
      ]
@@ -338,15 +338,15 @@
    "cards": [
     {
      "h": "Od alata do sistema",
-     "p": "Sada držiš mnogo sočiva: struktura, likvidnost, rejndžovi, imbalansi, volumenski čvorovi, fibovi, relativna snaga, režimi — plus sve iz kurseva 1-4. Profesionalac ne koristi sve svuda; on definiše fiksan SKLOP koji mora da se poravna pre nego što trejd postoji."
+     "p": "Sada držiš mnogo sočiva: struktura, likvidnost, rejndžovi, imbalansi, volumenski čvorovi, fibovi, relativna snaga, režimi - plus sve iz kurseva 1-4. Profesionalac ne koristi sve svuda; on definiše fiksan SKLOP koji mora da se poravna pre nego što trejd postoji."
     },
     {
      "h": "Napravi svoj sklop",
-     "p": "Primer sklopa: trend višeg okvira + strukturni nivo + volumenski čvor koji se slaže + pozicioniranje koje nije nagomilano protiv tebe + nema crvenog kalendarskog događaja u prozoru. Pet provera. Tvoj sklop može biti drugačiji — bitno je da je NAPISAN i fiksan, da bi svaki trejd bio uporediv u dnevniku."
+     "p": "Primer sklopa: trend višeg okvira + strukturni nivo + volumenski čvor koji se slaže + pozicioniranje koje nije nagomilano protiv tebe + nema crvenog kalendarskog događaja u prozoru. Pet provera. Tvoj sklop može biti drugačiji - bitno je da je NAPISAN i fiksan, da bi svaki trejd bio uporediv u dnevniku."
     },
     {
      "h": "Manje, težih trejdova",
-     "p": "Pravi sklop filtrira brutalno: većina dana ne proizvede ništa, i to je dizajn. Trejdovi koji prođu nose više nezavisnih razloga — što je tačno ono što njihov R:R čini poštenim. To je most od znanja stvari do posedovanja prednosti."
+     "p": "Pravi sklop filtrira brutalno: većina dana ne proizvede ništa, i to je dizajn. Trejdovi koji prođu nose više nezavisnih razloga - što je tačno ono što njihov R:R čini poštenim. To je most od znanja stvari do posedovanja prednosti."
     }
    ],
    "quiz": [
@@ -379,7 +379,7 @@
     }
    ],
    "try": {
-    "p": "Otvori charts radni prostor i obeleži JEDAN kompletan sklop na bilo kom coinu: trend, nivo, volumenski čvor, i proveri pozicioniranje. Trejd nije potreban — samo čitanje.",
+    "p": "Otvori charts radni prostor i obeleži JEDAN kompletan sklop na bilo kom coinu: trend, nivo, volumenski čvor, i proveri pozicioniranje. Trejd nije potreban - samo čitanje.",
     "label": "Otvori Grafikone →"
    }
   }

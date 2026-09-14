@@ -10,11 +10,11 @@
     {
      "h": "Rizikuj krišku, nikad celu tortu",
      "prompt": "Spusti rizik po trejdu dok ne budeš mogao da preživiš bar 30 gubitaka zaredom.",
-     "p": "Profesionalci dimenzionišu pozicije tako da jedan gubitnički trejd košta fiksni mali deo naloga — obično 1-2%. Gledaj šta tvoje podešavanje rizika radi preživljavanju."
+     "p": "Profesionalci dimenzionišu pozicije tako da jedan gubitnički trejd košta fiksni mali deo naloga - obično 1-2%. Gledaj šta tvoje podešavanje rizika radi preživljavanju."
     },
     {
      "h": "Veličina iz stopa, ne iz pohlepe",
-     "p": "Ispravan redosled: izaberi gde je trejd pogrešan (nivo tvog stop-lossa), izmeri razdaljinu od ulaza do stopa, pa dimenzioniši poziciju tako da ta razdaljina bude tvojih 1-2% rizika. Veličina je REZULTAT računa — nikad polazna tačka."
+     "p": "Ispravan redosled: izaberi gde je trejd pogrešan (nivo tvog stop-lossa), izmeri razdaljinu od ulaza do stopa, pa dimenzioniši poziciju tako da ta razdaljina bude tvojih 1-2% rizika. Veličina je REZULTAT računa - nikad polazna tačka."
     },
     {
      "h": "Poluga je alat, veličina je odluka",
@@ -51,7 +51,7 @@
     }
    ],
    "try": {
-    "p": "Dimenzioniši pravi trejd: nalog, rizik %, ulaz i stop — kalkulator vraća tačnu veličinu pozicije.",
+    "p": "Dimenzioniši pravi trejd: nalog, rizik %, ulaz i stop - kalkulator vraća tačnu veličinu pozicije.",
     "label": "Kalkulator Veličine Pozicije →"
    }
   },
@@ -61,7 +61,7 @@
    "cards": [
     {
      "h": "Stop ide tamo gde ideja umire",
-     "p": "Stop-loss pripada ceni na kojoj je tvoja teza dokazano pogrešna — ispod podrške koju si kupio, iza nivoa koji invalidira setap. Postaviti ga na \"najviše bola koji mogu da podnesem\" je naopako: tržište ne zna i ne mari za tvoj prag bola."
+     "p": "Stop-loss pripada ceni na kojoj je tvoja teza dokazano pogrešna - ispod podrške koju si kupio, iza nivoa koji invalidira setap. Postaviti ga na \"najviše bola koji mogu da podnesem\" je naopako: tržište ne zna i ne mari za tvoj prag bola."
     },
     {
      "h": "Dokaži: postavi stop",
@@ -70,11 +70,11 @@
     },
     {
      "h": "Lov na stopove je stvaran, panika zbog njega nije",
-     "p": "Cena često fitiljem probije očigledne nivoe, aktivira nagomilane stopove, pa se okrene. Rešenje nije uklanjanje stopa (to pretvara mali gubitak u likvidaciju) — nego postavljanje stopova iza očiglednih okruglih brojeva i dimenzionisanje da izbacivanje bude dosadno, ne razorno."
+     "p": "Cena često fitiljem probije očigledne nivoe, aktivira nagomilane stopove, pa se okrene. Rešenje nije uklanjanje stopa (to pretvara mali gubitak u likvidaciju) - nego postavljanje stopova iza očiglednih okruglih brojeva i dimenzionisanje da izbacivanje bude dosadno, ne razorno."
     },
     {
      "h": "Take-profit: odluči dok si priseban",
-     "p": "Take-profit nalog automatski naplaćuje dobitak. Odluči izlaz pre ulaska, dok si objektivan — jer posle ulaska postaješ najmanje objektivna osoba koja gleda taj grafikon. Parcijalni take-profit (zatvoriti, recimo, pola na prvom cilju) je legitiman kompromis."
+     "p": "Take-profit nalog automatski naplaćuje dobitak. Odluči izlaz pre ulaska, dok si objektivan - jer posle ulaska postaješ najmanje objektivna osoba koja gleda taj grafikon. Parcijalni take-profit (zatvoriti, recimo, pola na prvom cilju) je legitiman kompromis."
     }
    ],
    "quiz": [
@@ -84,7 +84,7 @@
       "Gde bi gubitak previše boleo",
       "Gde je ideja trejda dokazano pogrešna",
       "Što bliže ulazu",
-      "Nigde — stopovi su za kukavice"
+      "Nigde - stopovi su za kukavice"
      ]
     },
     {
@@ -107,25 +107,25 @@
     }
    ],
    "try": {
-    "p": "Otvori paper poziciju i zakači joj pravi SL i TP — vežbaj ceo ritual sa nula rizika.",
+    "p": "Otvori paper poziciju i zakači joj pravi SL i TP - vežbaj ceo ritual sa nula rizika.",
     "label": "Paper Trade →"
    }
   },
   {
    "id": "r3",
-   "t": "Risk:reward — profitabilno grešiti",
+   "t": "Risk:reward - profitabilno grešiti",
    "cards": [
     {
      "h": "Odnos koji prašta greške",
-     "p": "Risk:reward poredi ono što rizikuješ sa onim što ciljaš da dobiješ. Rizikovati $50 da zaradiš $150 je 1:3. Na 1:3, dobijanje samo 3 od 10 trejdova te ostavlja u plusu — slika ispod je tih deset trejdova. Odnos ti kupuje pravo da grešiš većinu vremena."
+     "p": "Risk:reward poredi ono što rizikuješ sa onim što ciljaš da dobiješ. Rizikovati $50 da zaradiš $150 je 1:3. Na 1:3, dobijanje samo 3 od 10 trejdova te ostavlja u plusu - slika ispod je tih deset trejdova. Odnos ti kupuje pravo da grešiš većinu vremena."
     },
     {
      "h": "Win rate i R:R se razmenjuju",
-     "p": "Strategije sa visokim win rate-om obično imaju male dobitke; strategije sa visokim R:R često gube, ali dobijaju krupno. Obe rade; nijedna ne radi sa lošom kombinacijom (nizak win rate I nizak R:R — podrazumevano stanje impulsivnog početnika). Znaj koju igru tvoja strategija igra."
+     "p": "Strategije sa visokim win rate-om obično imaju male dobitke; strategije sa visokim R:R često gube, ali dobijaju krupno. Obe rade; nijedna ne radi sa lošom kombinacijom (nizak win rate I nizak R:R - podrazumevano stanje impulsivnog početnika). Znaj koju igru tvoja strategija igra."
     },
     {
      "h": "Očekivanje: jedini broj koji odlučuje",
-     "p": "Očekivanje = (win rate × prosečan dobitak) − (stopa gubitaka × prosečan gubitak). Pozitivno znači da pristup zarađuje kroz mnogo trejdova; negativno znači da ga nikakvo dimenzionisanje ne spasava. Jedan trejd ne znači ništa — očekivanje se meri kroz desetine."
+     "p": "Očekivanje = (win rate × prosečan dobitak) − (stopa gubitaka × prosečan gubitak). Pozitivno znači da pristup zarađuje kroz mnogo trejdova; negativno znači da ga nikakvo dimenzionisanje ne spasava. Jedan trejd ne znači ništa - očekivanje se meri kroz desetine."
     }
    ],
    "quiz": [
@@ -151,14 +151,14 @@
      "q": "Koliko trejdova treba da se proceni strategija?",
      "o": [
       "Jedan dobar",
-      "Desetine — očekivanje je statistika",
+      "Desetine - očekivanje je statistika",
       "Dva",
       "Ne može se izmeriti ni sa kakvom pravom tačnošću"
      ]
     }
    ],
    "try": {
-    "p": "Ubaci svoj win rate i R:R u Risk of Ruin kalkulator — vidi šta matematika kaže o tvojim šansama za preživljavanje.",
+    "p": "Ubaci svoj win rate i R:R u Risk of Ruin kalkulator - vidi šta matematika kaže o tvojim šansama za preživljavanje.",
     "label": "Risk of Ruin Kalkulator →"
    }
   },
@@ -169,15 +169,15 @@
     {
      "h": "Gubici su teži od dobitaka",
      "prompt": "Vuci gubitak dublje i gledaj šta oporavak zahteva. Nađi gubitak kod kog ti treba +100% samo da se vratiš.",
-     "p": "Izgubi 10% i treba ti 11% za oporavak. Ova asimetrija nije materijal za motivacioni poster — to je aritmetika, i razlog zašto očuvanje kapitala pobeđuje jurenje profita."
+     "p": "Izgubi 10% i treba ti 11% za oporavak. Ova asimetrija nije materijal za motivacioni poster - to je aritmetika, i razlog zašto očuvanje kapitala pobeđuje jurenje profita."
     },
     {
      "h": "Serije su normalne, propast je izborna",
-     "p": "Čak i strategija koja dobija 60% vremena redovno udara u serije od 5 gubitaka — to je verovatnoća, ne neuspeh. Da li normalna serija postane kraj naloga zavisi isključivo od veličine koju si rizikovao po trejdu. Dimenzionisanje pretvara varijansu u šum; predimenzionisanje u propast."
+     "p": "Čak i strategija koja dobija 60% vremena redovno udara u serije od 5 gubitaka - to je verovatnoća, ne neuspeh. Da li normalna serija postane kraj naloga zavisi isključivo od veličine koju si rizikovao po trejdu. Dimenzionisanje pretvara varijansu u šum; predimenzionisanje u propast."
     },
     {
      "h": "Zamka povratka",
-     "p": "Posle gubitka, poriv je da POVEĆAŠ veličinu da brzo vratiš. To je tačno naopako: veća veličina posle gubitaka znači da tvoje najgore odluke dobijaju tvoje najveće opklade. Profesionalci rade suprotno — smanje u drawdownu, povećaju kad ide."
+     "p": "Posle gubitka, poriv je da POVEĆAŠ veličinu da brzo vratiš. To je tačno naopako: veća veličina posle gubitaka znači da tvoje najgore odluke dobijaju tvoje najveće opklade. Profesionalci rade suprotno - smanje u drawdownu, povećaju kad ide."
     }
    ],
    "quiz": [
@@ -216,15 +216,15 @@
    "cards": [
     {
      "h": "Revenge trading",
-     "p": "Najskuplji trejd u istoriji svakog početnika je onaj otvoren 90 sekundi posle bolnog gubitka — predimenzionisan, neplaniran, vođen potrebom da se \"nadoknadi\". Imenuj taj obrazac sada i usvoji profesionalno pravilo: posle izbacivanja stopom, nema novog trejda dok ne postoji napisan plan."
+     "p": "Najskuplji trejd u istoriji svakog početnika je onaj otvoren 90 sekundi posle bolnog gubitka - predimenzionisan, neplaniran, vođen potrebom da se \"nadoknadi\". Imenuj taj obrazac sada i usvoji profesionalno pravilo: posle izbacivanja stopom, nema novog trejda dok ne postoji napisan plan."
     },
     {
      "h": "FOMO kupuje vrh",
-     "p": "Coin koji je danas već +30% deluje najsigurnije za kupovinu — svi se slažu, grafikon potvrđuje. Ali ulazak u vertikalan potez znači: stop ti je daleko, R:R ti je očajan, a ti si izlazna likvidnost ranijim kupcima. Sjajni trejdovi na ulazu obično deluju neprijatno, ne očigledno."
+     "p": "Coin koji je danas već +30% deluje najsigurnije za kupovinu - svi se slažu, grafikon potvrđuje. Ali ulazak u vertikalan potez znači: stop ti je daleko, R:R ti je očajan, a ti si izlazna likvidnost ranijim kupcima. Sjajni trejdovi na ulazu obično deluju neprijatno, ne očigledno."
     },
     {
      "h": "Dnevnik je ogledalo",
-     "p": "Trejding dnevnik — svaki ulaz, izlaz, veličina i razlog — pretvara maglovite osećaje u vidljive obrasce: \"moji nedeljni noćni trejdovi svi gube\", \"uvek sečem dobitnike prerano\". Neglamurozan je i najbrži alat samousavršavanja koji trejding ima. Trejdovi lažnim novcem se takođe računaju."
+     "p": "Trejding dnevnik - svaki ulaz, izlaz, veličina i razlog - pretvara maglovite osećaje u vidljive obrasce: \"moji nedeljni noćni trejdovi svi gube\", \"uvek sečem dobitnike prerano\". Neglamurozan je i najbrži alat samousavršavanja koji trejding ima. Trejdovi lažnim novcem se takođe računaju."
     }
    ],
    "quiz": [
@@ -257,7 +257,7 @@
     }
    ],
    "try": {
-    "p": "Tvoji paper trejdovi već pune besplatan analitički dnevnik — vidi svoj win rate, serije i navike.",
+    "p": "Tvoji paper trejdovi već pune besplatan analitički dnevnik - vidi svoj win rate, serije i navike.",
     "label": "Trejding Dnevnik →"
    }
   },
@@ -267,7 +267,7 @@
    "cards": [
     {
      "h": "Tilt: trgovanje u kompromitovanom stanju",
-     "p": "Posle dva-tri gubitka, hemija mozga ti se menja — potreba da vratiš pregazi plan. Pokeraši to zovu tilt i upravljaju njime strukturno, ne voljom: kad se limit dotakne, sesija se završava. Bez izuzetaka, bez \"još jedan trejd\"."
+     "p": "Posle dva-tri gubitka, hemija mozga ti se menja - potreba da vratiš pregazi plan. Pokeraši to zovu tilt i upravljaju njime strukturno, ne voljom: kad se limit dotakne, sesija se završava. Bez izuzetaka, bez \"još jedan trejd\"."
     },
     {
      "h": "Dnevni limit gubitka",
@@ -275,7 +275,7 @@
     },
     {
      "h": "Učini to mehaničkim",
-     "p": "Pravilo koga moraš da se setiš dok si u tiltu će propasti. Zapiši limit u dnevnik, reci nekome, navij alarm — bilo šta što prestanak čini podrazumevanim umesto izborom. Doslednost ovde vredi više od bilo kog indikatora koji ćeš ikada naučiti."
+     "p": "Pravilo koga moraš da se setiš dok si u tiltu će propasti. Zapiši limit u dnevnik, reci nekome, navij alarm - bilo šta što prestanak čini podrazumevanim umesto izborom. Doslednost ovde vredi više od bilo kog indikatora koji ćeš ikada naučiti."
     }
    ],
    "quiz": [
@@ -314,15 +314,15 @@
    "cards": [
     {
      "h": "Tri pozicije, jedan trejd",
-     "p": "Long BTC, long ETH i long SOL deluje diversifikovano. Nije: u stresu kripto korelacije idu na skoro 1 — sve pada zajedno. Ne držiš tri trejda; držiš jedan trejd u trostrukoj veličini, sa trostrukom površinom za likvidaciju."
+     "p": "Long BTC, long ETH i long SOL deluje diversifikovano. Nije: u stresu kripto korelacije idu na skoro 1 - sve pada zajedno. Ne držiš tri trejda; držiš jedan trejd u trostrukoj veličini, sa trostrukom površinom za likvidaciju."
     },
     {
      "h": "Prava diversifikacija u kriptu je retka",
-     "p": "Unutar kripta, skoro sve je opklada sa polugom na istu plimu (Bitcoin i globalna likvidnost). Neki parovi se dekorelišu u mirnim vremenima — i ponovo korelišu tačno kad boli. Pretpostavi korelaciju = 1 u svom računu rizika i nikad nećeš biti iznenađen."
+     "p": "Unutar kripta, skoro sve je opklada sa polugom na istu plimu (Bitcoin i globalna likvidnost). Neki parovi se dekorelišu u mirnim vremenima - i ponovo korelišu tačno kad boli. Pretpostavi korelaciju = 1 u svom računu rizika i nikad nećeš biti iznenađen."
     },
     {
      "h": "Broji svoju UKUPNU izloženost",
-     "p": "Pravilo rizika po trejdu mora da važi za ZBIR korelisanih pozicija. Tri longa po 1% rizika na majorima su opklada od 3% na jedan ishod. Ili dimenzioniši svaku manje, ili prihvati i imenuj koncentraciju — ali je nikad ne zovi diversifikacijom."
+     "p": "Pravilo rizika po trejdu mora da važi za ZBIR korelisanih pozicija. Tri longa po 1% rizika na majorima su opklada od 3% na jedan ishod. Ili dimenzioniši svaku manje, ili prihvati i imenuj koncentraciju - ali je nikad ne zovi diversifikacijom."
     }
    ],
    "quiz": [
@@ -355,7 +355,7 @@
     }
    ],
    "try": {
-    "p": "Vidi koliko se čvrsto majori zapravo kreću zajedno — živa korelaciona matrica to čini opipljivim.",
+    "p": "Vidi koliko se čvrsto majori zapravo kreću zajedno - živa korelaciona matrica to čini opipljivim.",
     "label": "Korelaciona Matrica →"
    }
   },
@@ -365,7 +365,7 @@
    "cards": [
     {
      "h": "Tvoja prednost živi u malo trejdova",
-     "p": "Pregledaj bilo koji profitabilan dnevnik i pojavljuje se obrazac: većina profita je došla iz manjine visokokvalitetnih setapova, a većina gubitaka iz punjenja — trejdovi iz dosade, skoro-setapovi, osvetnički ulasci. Najbrža nadogradnja performansi je brisanje punjenja."
+     "p": "Pregledaj bilo koji profitabilan dnevnik i pojavljuje se obrazac: većina profita je došla iz manjine visokokvalitetnih setapova, a većina gubitaka iz punjenja - trejdovi iz dosade, skoro-setapovi, osvetnički ulasci. Najbrža nadogradnja performansi je brisanje punjenja."
     },
     {
      "h": "Definiši A+ pre nego što vidiš grafikon",
@@ -373,7 +373,7 @@
     },
     {
      "h": "Dosada je skupa",
-     "p": "Tržište kažnjava potrebu za akcijom. Biti bez pozicije JESTE pozicija — često najbolja. Profesionalci opisuju svoj posao kao čekanje; amateri kao trgovanje. Razlika se direktno vidi u matematici očekivanja koju si naučio u r3."
+     "p": "Tržište kažnjava potrebu za akcijom. Biti bez pozicije JESTE pozicija - često najbolja. Profesionalci opisuju svoj posao kao čekanje; amateri kao trgovanje. Razlika se direktno vidi u matematici očekivanja koju si naučio u r3."
     }
    ],
    "quiz": [
@@ -399,7 +399,7 @@
      "q": "Biti bez pozicije je…",
      "o": [
       "Izgubljeno vreme koje ozbiljan trader ne sme sebi da priušti",
-      "Pozicija — često najbolja",
+      "Pozicija - često najbolja",
       "Samo za početnike",
       "Nemoguće"
      ]
@@ -412,11 +412,11 @@
    "cards": [
     {
      "h": "Ulasci ne moraju biti sve-ili-ništa",
-     "p": "Postepeni ulazak znači graditi poziciju u delovima — trećina po tržišnoj ceni, trećina na boljem nivou, trećina na potvrdi. Menjaš malo preciznosti prosečne cene za fleksibilnost, i nijedno pojedinačno izvršenje ne odlučuje trejd."
+     "p": "Postepeni ulazak znači graditi poziciju u delovima - trećina po tržišnoj ceni, trećina na boljem nivou, trećina na potvrdi. Menjaš malo preciznosti prosečne cene za fleksibilnost, i nijedno pojedinačno izvršenje ne odlučuje trejd."
     },
     {
      "h": "Martingejl zamka",
-     "p": "Postepeni ulazak u DOBITNIČKU tezu na planiranim nivoima je strategija. Dupliranje u GUBITNIČKI trejd da spustiš prosek — martingejl — je način na koji nalozi umiru: veličina ti je najveća tačno kad si najviše u krivu. Razlika je da li su dodavanja planirana pre ulaska."
+     "p": "Postepeni ulazak u DOBITNIČKU tezu na planiranim nivoima je strategija. Dupliranje u GUBITNIČKI trejd da spustiš prosek - martingejl - je način na koji nalozi umiru: veličina ti je najveća tačno kad si najviše u krivu. Razlika je da li su dodavanja planirana pre ulaska."
     },
     {
      "h": "Postepeni izlazak je ogledalo ulaska",
@@ -430,7 +430,7 @@
       "Coin",
       "Da li su dodavanja planirana pre ulaska",
       "Menjačnica",
-      "Nikakva — to su dva imena za istu stvar"
+      "Nikakva - to su dva imena za istu stvar"
      ]
     },
     {
@@ -459,11 +459,11 @@
    "cards": [
     {
      "h": "Propast je verovatnoća koju možeš izračunati",
-     "p": "Uz dat win rate, R:R i rizik po trejdu, šansa da tvoj nalog ikada udari u fatalni drawdown je izračunljiva — zove se risk of ruin. Brutalan uvid: pri visokom riziku po trejdu, čak i istinski profitabilna strategija nosi VISOKU šansu propasti pre nego što se prednost isplati."
+     "p": "Uz dat win rate, R:R i rizik po trejdu, šansa da tvoj nalog ikada udari u fatalni drawdown je izračunljiva - zove se risk of ruin. Brutalan uvid: pri visokom riziku po trejdu, čak i istinski profitabilna strategija nosi VISOKU šansu propasti pre nego što se prednost isplati."
     },
     {
      "h": "Ista prednost, različite sudbine",
-     "p": "Strategija sa 50% win rate-a i 1:2 na 2% rizika ima verovatnoću propasti blizu nule. Identična strategija na 15% rizika će, sa visokom verovatnoćom, na kraju udariti u ubilačku seriju. Strategija se nije promenila — samo veličina opklade. Preživljavanje je osobina dimenzionisanja, ne veštine."
+     "p": "Strategija sa 50% win rate-a i 1:2 na 2% rizika ima verovatnoću propasti blizu nule. Identična strategija na 15% rizika će, sa visokom verovatnoćom, na kraju udariti u ubilačku seriju. Strategija se nije promenila - samo veličina opklade. Preživljavanje je osobina dimenzionisanja, ne veštine."
     },
     {
      "h": "Izračunaj svoje brojeve",
@@ -500,7 +500,7 @@
     }
    ],
    "try": {
-    "p": "Ubaci svoj pravi win rate i R:R u kalkulator i vuci klizač rizika — gledaj kako se tvoje šanse propasti pomeraju.",
+    "p": "Ubaci svoj pravi win rate i R:R u kalkulator i vuci klizač rizika - gledaj kako se tvoje šanse propasti pomeraju.",
     "label": "Risk of Ruin Kalkulator →"
    }
   },
@@ -510,7 +510,7 @@
    "cards": [
     {
      "h": "Piloti ne veruju pamćenju. Ni ti nemoj.",
-     "p": "Pod stresom, ljudi preskaču korake — zato avijacija radi na kontrolnim listama. Lista pre trejda eksternalizuje tvoju disciplinu: pet pitanja odgovorenih napismeno pre svakog ulaska, svaki put, posebno kad setap deluje hitno."
+     "p": "Pod stresom, ljudi preskaču korake - zato avijacija radi na kontrolnim listama. Lista pre trejda eksternalizuje tvoju disciplinu: pet pitanja odgovorenih napismeno pre svakog ulaska, svaki put, posebno kad setap deluje hitno."
     },
     {
      "h": "Pet pitanja",
@@ -518,7 +518,7 @@
     },
     {
      "h": "Hitnost je neprijatelj liste",
-     "p": "Trejdovi kojima lista najviše treba su oni koji deluju prehitno za nju — vertikalni proboj, osvetnički setap. Ako trejd ne može da sačeka šezdeset sekundi za pet pitanja, to nije trejd; to je impuls sa zakačenim grafikonom."
+     "p": "Trejdovi kojima lista najviše treba su oni koji deluju prehitno za nju - vertikalni proboj, osvetnički setap. Ako trejd ne može da sačeka šezdeset sekundi za pet pitanja, to nije trejd; to je impuls sa zakačenim grafikonom."
     }
    ],
    "quiz": [
@@ -543,7 +543,7 @@
     {
      "q": "Trejd koji ne može da sačeka 60 sekundi za listu je…",
      "o": [
-      "Najbolja vrsta — prave prilike nikad ne čekaju",
+      "Najbolja vrsta - prave prilike nikad ne čekaju",
       "Impuls sa zakačenim grafikonom",
       "Garantovan profit",
       "Redak"
@@ -557,15 +557,15 @@
    "cards": [
     {
      "h": "Nedeljni ritual",
-     "p": "Jednom nedeljno, pročitaj svaki trejd kao trener koji gleda snimak utakmice: da li je ulaz bio po planu? Izlaz? Koje pravilo je prekršeno i šta je kršenje koštalo? Cilj nije samobičevanje — nego pronalaženje JEDNOG ponavljanog curenja koje najviše košta."
+     "p": "Jednom nedeljno, pročitaj svaki trejd kao trener koji gleda snimak utakmice: da li je ulaz bio po planu? Izlaz? Koje pravilo je prekršeno i šta je kršenje koštalo? Cilj nije samobičevanje - nego pronalaženje JEDNOG ponavljanog curenja koje najviše košta."
     },
     {
      "h": "Iseci podatke",
-     "p": "Grupiši trejdove: po vrsti setapa, danu u nedelji, sesiji, coinu, po emotivnom stanju ako ga beležiš. Curenja se kriju u zbirovima i iskaču iz kriški — nedeljni noćni trejdovi gube, jedan setap nosi sve, longovi tuku shortove 3 prema 1."
+     "p": "Grupiši trejdove: po vrsti setapa, danu u nedelji, sesiji, coinu, po emotivnom stanju ako ga beležiš. Curenja se kriju u zbirovima i iskaču iz kriški - nedeljni noćni trejdovi gube, jedan setap nosi sve, longovi tuku shortove 3 prema 1."
     },
     {
      "h": "Zatvori jedno curenje nedeljno",
-     "p": "Ne popravljaj sve odjednom. Izaberi jedan najskuplji obrazac, napiši jedno pravilo protiv njega i proveri sledeće nedelje da li je izdržalo. Slaganje sitnih poboljšanja procesa je isto kao slaganje kapitala — sporo, dosadno i nerazumno moćno."
+     "p": "Ne popravljaj sve odjednom. Izaberi jedan najskuplji obrazac, napiši jedno pravilo protiv njega i proveri sledeće nedelje da li je izdržalo. Slaganje sitnih poboljšanja procesa je isto kao slaganje kapitala - sporo, dosadno i nerazumno moćno."
     }
    ],
    "quiz": [
@@ -598,7 +598,7 @@
     }
    ],
    "try": {
-    "p": "Tvoji paper trejdovi već pune analitički dnevnik — otvori ga i nađi svoj najskuplji obrazac.",
+    "p": "Tvoji paper trejdovi već pune analitički dnevnik - otvori ga i nađi svoj najskuplji obrazac.",
     "label": "Trejding Dnevnik →"
    }
   }

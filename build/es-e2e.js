@@ -1,5 +1,5 @@
 /* Spanish site E2E (2026-09-13): the /es/ twins in production.
-   node build/es-e2e.js            — HTTP checks (twins, redirects, SSR twins, tool shell, hreflang both ways, sitemap, language ratio)
+   node build/es-e2e.js            - HTTP checks (twins, redirects, SSR twins, tool shell, hreflang both ways, sitemap, language ratio)
    Exit 1 on any failure.                                                                                                     */
 'use strict';
 const ORIGIN = process.env.MP_ORIGIN || 'https://marginpad.io';
@@ -31,7 +31,7 @@ const ratio = (h) => { const v = vis(h); const e = (v.match(EN) || []).length, s
   // 6. sitemap + robots
   { const r = await get('/sitemap-es.xml'); const n = (r.t.match(/<loc>/g) || []).length; ok(r.s === 200 && n > 300, 'sitemap-es.xml 200 with ' + n + ' urls'); ok(/<loc>https:\/\/marginpad\.io\/es\/paper-trade<\/loc>/.test(r.t), 'sitemap lists the tool twins'); const rb = await get('/robots.txt'); ok(/sitemap-es\.xml/.test(rb.t), 'robots.txt lists sitemap-es.xml'); }
   // 7. language ratio on a spread of twins
-  { const r = await get('/sitemap-es.xml'); const urls = (r.t.match(/<loc>([^<]+)<\/loc>/g) || []).map(x => x.replace(/<\/?loc>/g, '').replace(ORIGIN, '')).filter(u => !/paper-trade|charts|calculators|screener|heatmap|swap/.test(u)); const pick = []; for (let i = 0; i < urls.length && pick.length < 24; i += Math.max(1, Math.floor(urls.length / 24))) pick.push(urls[i]); let low = []; for (const u of pick) { const p = await get(u); if (p.s !== 200) { low.push(u + ' ' + p.s); continue; } const q = ratio(p.t); if (q.r < 0.75) low.push(u + ' ' + (q.r * 100).toFixed(0) + '%'); } ok(low.length === 0, 'twins read Spanish on a spread of ' + pick.length + ' pages' + (low.length ? ' — low: ' + low.join(', ') : '')); }
+  { const r = await get('/sitemap-es.xml'); const urls = (r.t.match(/<loc>([^<]+)<\/loc>/g) || []).map(x => x.replace(/<\/?loc>/g, '').replace(ORIGIN, '')).filter(u => !/paper-trade|charts|calculators|screener|heatmap|swap/.test(u)); const pick = []; for (let i = 0; i < urls.length && pick.length < 24; i += Math.max(1, Math.floor(urls.length / 24))) pick.push(urls[i]); let low = []; for (const u of pick) { const p = await get(u); if (p.s !== 200) { low.push(u + ' ' + p.s); continue; } const q = ratio(p.t); if (q.r < 0.75) low.push(u + ' ' + (q.r * 100).toFixed(0) + '%'); } ok(low.length === 0, 'twins read Spanish on a spread of ' + pick.length + ' pages' + (low.length ? ' - low: ' + low.join(', ') : '')); }
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

@@ -67,7 +67,7 @@ const PAGES = [
       ok(card.open, pth + ': the trader card opened');
       ok(card.open && !card.loading && card.text.length > 3, pth + ': the card filled with the trader (' + (card.text || '') + ')');
       ok(card.open && card.reachable && card.w > 200, pth + ': the card is really on screen (' + card.w + 'px)');
-      ok(errs.length === 0, pth + ': no page errors' + (errs.length ? ' — ' + errs[0].slice(0, 90) : ''));
+      ok(errs.length === 0, pth + ': no page errors' + (errs.length ? ' - ' + errs[0].slice(0, 90) : ''));
       await page.close();
     }
   }, { timeoutMs: 420000 });

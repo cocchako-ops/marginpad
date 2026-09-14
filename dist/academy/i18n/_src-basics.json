@@ -12,16 +12,16 @@
     {
      "h": "Money without a middleman",
      "v": "ledger",
-     "p": "Bitcoin was created in 2009 as money that no bank or government controls. Instead of one bank keeping the ledger of who owns what, thousands of computers around the world keep identical copies of it — that shared ledger is called a blockchain."
+     "p": "Bitcoin was created in 2009 as money that no bank or government controls. Instead of one bank keeping the ledger of who owns what, thousands of computers around the world keep identical copies of it - that shared ledger is called a blockchain."
     },
     {
      "h": "Why it never sleeps",
      "v": "clock",
-     "p": "Stock markets open and close. Crypto trades 24 hours a day, 7 days a week, everywhere on Earth at once. Prices can move violently at 3 AM on a Sunday — which is exactly why traders use alerts and stop-losses instead of watching charts all day."
+     "p": "Stock markets open and close. Crypto trades 24 hours a day, 7 days a week, everywhere on Earth at once. Prices can move violently at 3 AM on a Sunday - which is exactly why traders use alerts and stop-losses instead of watching charts all day."
     },
     {
      "h": "Thousands of coins, a few that matter",
-     "p": "Bitcoin (BTC) is the largest and moves the whole market. Ethereum (ETH) is second. Beyond the top handful, thousands of smaller coins (altcoins) exist — most are far riskier and less liquid. As a beginner, everything you need to learn can be learned on BTC and ETH."
+     "p": "Bitcoin (BTC) is the largest and moves the whole market. Ethereum (ETH) is second. Beyond the top handful, thousands of smaller coins (altcoins) exist - most are far riskier and less liquid. As a beginner, everything you need to learn can be learned on BTC and ETH."
     }
    ],
    "quiz": [
@@ -40,7 +40,7 @@
      "o": [
       "At 5 PM New York time",
       "On weekends",
-      "Never — it trades 24/7",
+      "Never - it trades 24/7",
       "During holidays"
      ],
      "a": 2
@@ -49,7 +49,7 @@
      "q": "As a beginner, which coins are the sensible place to learn?",
      "o": [
       "Brand-new coins with huge % gains",
-      "BTC and ETH — the largest and most liquid",
+      "BTC and ETH - the largest and most liquid",
       "Whatever is trending on social media",
       "The cheapest coin per unit"
      ],
@@ -63,17 +63,17 @@
    "cards": [
     {
      "h": "Where trading happens",
-     "p": "An exchange is a marketplace that matches buyers and sellers — Binance, Coinbase, Kraken and Bybit are exchanges. When you buy Bitcoin there, the exchange updates its internal ledger; the coins sit in the exchange custody until you withdraw them."
+     "p": "An exchange is a marketplace that matches buyers and sellers - Binance, Coinbase, Kraken and Bybit are exchanges. When you buy Bitcoin there, the exchange updates its internal ledger; the coins sit in the exchange custody until you withdraw them."
     },
     {
      "h": "Spot vs derivatives",
      "v": "spotderiv",
-     "p": "Buying the actual coin is called spot trading — you own it, and your maximum loss is what you paid. Derivatives (like the futures you will meet in Course 2) are contracts that track the price without owning the coin — they allow leverage, which cuts both ways."
+     "p": "Buying the actual coin is called spot trading - you own it, and your maximum loss is what you paid. Derivatives (like the futures you will meet in Course 2) are contracts that track the price without owning the coin - they allow leverage, which cuts both ways."
     },
     {
      "h": "Not your keys, not your coins",
      "v": "custody",
-     "p": "A wallet is where crypto lives when it is truly yours — controlled by a secret key only you hold. Coins left on an exchange are an IOU from that exchange. That is fine for active trading amounts, but history (Mt. Gox, FTX) shows why large holdings belong in your own wallet."
+     "p": "A wallet is where crypto lives when it is truly yours - controlled by a secret key only you hold. Coins left on an exchange are an IOU from that exchange. That is fine for active trading amounts, but history (Mt. Gox, FTX) shows why large holdings belong in your own wallet."
     }
    ],
    "quiz": [
@@ -81,7 +81,7 @@
      "q": "What is spot trading?",
      "o": [
       "Betting on price with borrowed money",
-      "Buying the actual coin — you own it",
+      "Buying the actual coin - you own it",
       "A type of wallet",
       "Trading only at specific times"
      ],
@@ -100,7 +100,7 @@
     {
      "q": "What is the maximum you can lose buying spot with $100?",
      "o": [
-      "$100 — what you paid",
+      "$100 - what you paid",
       "More than $100",
       "Nothing, spot is risk-free",
       "Depends on leverage"
@@ -123,7 +123,7 @@
      "act": {
       "kind": "tap",
       "viz": "tapcandle",
-      "prompt": "Tap the UPPER WICK of the candle — the line showing the highest price touched."
+      "prompt": "Tap the UPPER WICK of the candle - the line showing the highest price touched."
      },
      "p": "Before moving on, prove it to your eyes. One tap."
     },
@@ -135,7 +135,7 @@
     {
      "h": "Volume is the lie detector",
      "v": "volbars",
-     "p": "Volume shows how much was actually traded. A price move on high volume means real participation; the same move on thin volume is fragile and often reverses. Price tells you what happened — volume tells you how much to believe it."
+     "p": "Volume shows how much was actually traded. A price move on high volume means real participation; the same move on thin volume is fragile and often reverses. Price tells you what happened - volume tells you how much to believe it."
     }
    ],
    "quiz": [
@@ -163,7 +163,7 @@
      "q": "A big price move on very low volume is…",
      "o": [
       "The strongest possible signal",
-      "Fragile — fewer participants, often reverses",
+      "Fragile - fewer participants, often reverses",
       "Impossible",
       "Always the start of a trend"
      ],
@@ -183,11 +183,11 @@
     {
      "h": "Liquidity: can you actually get out?",
      "v": "depth",
-     "p": "Liquidity is how much you can buy or sell without moving the price. BTC absorbs millions of dollars per second; a small altcoin might crash 10% from a single large sell. Illiquid coins are easy to enter and brutal to exit — exactly when you most need to."
+     "p": "Liquidity is how much you can buy or sell without moving the price. BTC absorbs millions of dollars per second; a small altcoin might crash 10% from a single large sell. Illiquid coins are easy to enter and brutal to exit - exactly when you most need to."
     },
     {
      "h": "Slippage",
-     "p": "When you buy at market, you pay whatever sellers are asking right now. In a thin market, your own order pushes the price — the difference between the price you saw and the price you got is slippage. It is a real cost, and it grows with position size and shrinks with liquidity."
+     "p": "When you buy at market, you pay whatever sellers are asking right now. In a thin market, your own order pushes the price - the difference between the price you saw and the price you got is slippage. It is a real cost, and it grows with position size and shrinks with liquidity."
     }
    ],
    "quiz": [
@@ -195,7 +195,7 @@
      "q": "What determines a coin's real size?",
      "o": [
       "Price per coin",
-      "Market cap — price × circulating supply",
+      "Market cap - price × circulating supply",
       "How new it is",
       "Its ranking on social media"
      ],
@@ -230,15 +230,15 @@
     {
      "h": "A small boat on a big ocean",
      "v": "market",
-     "p": "Crypto's total market is tiny compared with stocks or bonds, and much of it trades with leverage. The same wave of money that barely moves the S&P 500 can move Bitcoin several percent — and smaller coins several times more."
+     "p": "Crypto's total market is tiny compared with stocks or bonds, and much of it trades with leverage. The same wave of money that barely moves the S&P 500 can move Bitcoin several percent - and smaller coins several times more."
     },
     {
      "h": "News, liquidity and forced sellers",
-     "p": "Big moves usually combine three things: a trigger (news, a macro number), thin liquidity (nights, weekends), and forced selling from leveraged traders being liquidated. That third ingredient — which you will study in Course 2 — is why crypto crashes are so fast and so deep."
+     "p": "Big moves usually combine three things: a trigger (news, a macro number), thin liquidity (nights, weekends), and forced selling from leveraged traders being liquidated. That third ingredient - which you will study in Course 2 - is why crypto crashes are so fast and so deep."
     },
     {
      "h": "Volatility is the whole game",
-     "p": "Volatility is not a bug — it is why traders are here. But it is symmetric: the same 10% move that doubles a leveraged account also erases one. Every lesson after this one is really about surviving volatility long enough to benefit from it."
+     "p": "Volatility is not a bug - it is why traders are here. But it is symmetric: the same 10% move that doubles a leveraged account also erases one. Every lesson after this one is really about surviving volatility long enough to benefit from it."
     }
    ],
    "quiz": [
@@ -266,7 +266,7 @@
      "q": "Volatility for a trader is…",
      "o": [
       "Pure risk to be avoided entirely",
-      "The opportunity AND the risk — survival is the skill",
+      "The opportunity AND the risk - survival is the skill",
       "Only a problem for beginners",
       "Illegal on regulated exchanges"
      ],
@@ -281,7 +281,7 @@
     {
      "h": "The dollar that lives on-chain",
      "v": "pairs",
-     "p": "A stablecoin is a crypto token designed to stay worth exactly $1 — USDT and USDC are the giants. They exist so traders can hold dollars inside crypto: park profits, escape volatility, and price everything else against a stable unit."
+     "p": "A stablecoin is a crypto token designed to stay worth exactly $1 - USDT and USDC are the giants. They exist so traders can hold dollars inside crypto: park profits, escape volatility, and price everything else against a stable unit."
     },
     {
      "h": "What BTC/USDT actually means",
@@ -289,7 +289,7 @@
     },
     {
      "h": "Stable does not mean risk-free",
-     "p": "A stablecoin is only as good as what backs it. Depegs have happened — most famously Terra UST collapsing to zero in 2022. For trading balances the big issuers have held up, but know what you hold: a token redeemable for dollars, not dollars themselves."
+     "p": "A stablecoin is only as good as what backs it. Depegs have happened - most famously Terra UST collapsing to zero in 2022. For trading balances the big issuers have held up, but know what you hold: a token redeemable for dollars, not dollars themselves."
     }
    ],
    "quiz": [
@@ -318,7 +318,7 @@
      "o": [
       "Literally dollars",
       "Risk-free by definition",
-      "Tokens backed by reserves — only as good as that backing",
+      "Tokens backed by reserves - only as good as that backing",
       "Guaranteed by governments"
      ],
      "a": 2
@@ -332,15 +332,15 @@
     {
      "h": "Maker, taker, spread",
      "v": "fees",
-     "p": "Every trade pays. The taker fee (crossing the spread instantly, market orders) is higher; the maker fee (resting limit orders that add liquidity) is lower — sometimes even a rebate. The spread itself — the gap between best bid and ask — is a cost too."
+     "p": "Every trade pays. The taker fee (crossing the spread instantly, market orders) is higher; the maker fee (resting limit orders that add liquidity) is lower - sometimes even a rebate. The spread itself - the gap between best bid and ask - is a cost too."
     },
     {
      "h": "Why fees hit futures harder",
-     "p": "Futures fees are charged on the NOTIONAL, not your margin. At 20x leverage, a 0.055% taker fee is 1.1% of your margin per side — over 2% round-trip. Ten trades a day at that rate is a fee bill few strategies can outrun."
+     "p": "Futures fees are charged on the NOTIONAL, not your margin. At 20x leverage, a 0.055% taker fee is 1.1% of your margin per side - over 2% round-trip. Ten trades a day at that rate is a fee bill few strategies can outrun."
     },
     {
      "h": "The overtrading death spiral",
-     "p": "Most losing beginners do not lose to bad direction — they bleed out on fees and spread from trading too often. Fewer, better trades with limit entries is not just discipline advice; it is arithmetic. Count your fees weekly in your journal and treat them as a position against you."
+     "p": "Most losing beginners do not lose to bad direction - they bleed out on fees and spread from trading too often. Fewer, better trades with limit entries is not just discipline advice; it is arithmetic. Count your fees weekly in your journal and treat them as a position against you."
     }
    ],
    "quiz": [
@@ -387,11 +387,11 @@
     },
     {
      "h": "Narratives rotate, greed is constant",
-     "p": "Each cycle crowns new stories — ICOs, DeFi, NFTs, AI coins. The story changes; the pattern does not: a real innovation, a speculative frenzy far beyond it, a collapse that kills the weak projects, and a base for the next cycle built from the survivors."
+     "p": "Each cycle crowns new stories - ICOs, DeFi, NFTs, AI coins. The story changes; the pattern does not: a real innovation, a speculative frenzy far beyond it, a collapse that kills the weak projects, and a base for the next cycle built from the survivors."
     },
     {
      "h": "Where cycles meet your trading",
-     "p": "You cannot time cycles precisely, but you can locate yourself roughly: is greed extreme, is your barber recommending coins, are 100x memecoins outperforming everything? Late-cycle conditions are when reducing risk matters most — exactly when it feels least necessary."
+     "p": "You cannot time cycles precisely, but you can locate yourself roughly: is greed extreme, is your barber recommending coins, are 100x memecoins outperforming everything? Late-cycle conditions are when reducing risk matters most - exactly when it feels least necessary."
     }
    ],
    "quiz": [
@@ -400,7 +400,7 @@
      "o": [
       "Accumulation",
       "Markdown",
-      "Distribution — into late euphoria",
+      "Distribution - into late euphoria",
       "Never"
      ],
      "a": 2
@@ -420,7 +420,7 @@
      "o": [
       "When everyone is fearful",
       "In late-cycle euphoria, when it feels least necessary",
-      "Never — always max risk",
+      "Never - always max risk",
       "Only in bear markets"
      ],
      "a": 1
@@ -433,15 +433,15 @@
    "cards": [
     {
      "h": "If it promises returns, it is the product",
-     "p": "Guaranteed 2% a day. A trading bot with no losing months. A stranger offering to manage your funds. Every one of these is a scam, always, without exception — real trading has losing periods, and nobody with a printing press shares it with strangers."
+     "p": "Guaranteed 2% a day. A trading bot with no losing months. A stranger offering to manage your funds. Every one of these is a scam, always, without exception - real trading has losing periods, and nobody with a printing press shares it with strangers."
     },
     {
      "h": "The classics: rug pulls and phishing",
-     "p": "A rug pull is a token whose creators drain the liquidity once buyers pile in — endemic among fresh micro-caps. Phishing is a fake exchange or wallet site harvesting your login or seed phrase. Bookmark real sites; never click login links from messages."
+     "p": "A rug pull is a token whose creators drain the liquidity once buyers pile in - endemic among fresh micro-caps. Phishing is a fake exchange or wallet site harvesting your login or seed phrase. Bookmark real sites; never click login links from messages."
     },
     {
      "h": "Basic hygiene that stops 95% of it",
-     "p": "Use 2FA (an authenticator app, not SMS) on every exchange. Never share a seed phrase with anyone, ever — no support agent needs it. Be paranoid about direct messages: real platforms do not DM you first. Boring rules, and they are the whole game."
+     "p": "Use 2FA (an authenticator app, not SMS) on every exchange. Never share a seed phrase with anyone, ever - no support agent needs it. Be paranoid about direct messages: real platforms do not DM you first. Boring rules, and they are the whole game."
     }
    ],
    "quiz": [
@@ -477,7 +477,7 @@
     }
    ],
    "try": {
-    "p": "You finished Crypto Basics — the whole course. NOW open the paper-trading terminal: watch live prices, and when you feel ready, place your first fake-money trade.",
+    "p": "You finished Crypto Basics - the whole course. NOW open the paper-trading terminal: watch live prices, and when you feel ready, place your first fake-money trade.",
     "label": "Open Paper Trade →",
     "href": "/paper-trade"
    }

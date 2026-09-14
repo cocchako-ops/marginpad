@@ -1,7 +1,7 @@
-/* POST-deploy smoke test against PRODUCTION (npm "postdeploy" hook — runs AFTER wrangler deploy). Staging is least
+/* POST-deploy smoke test against PRODUCTION (npm "postdeploy" hook - runs AFTER wrangler deploy). Staging is least
    faithful to prod exactly in static-asset serving (run_worker_first there), and that is the class of bug that has
    bitten before (a stale /paper-trade app-shell bundle caught only from the outside). This is the only thing that
-   sees it: 5 routes return 200 + a key marker, and — critically — the app-shell bundle referenced by /paper-trade
+   sees it: 5 routes return 200 + a key marker, and - critically - the app-shell bundle referenced by /paper-trade
    actually resolves (catches a stale/missing ?v= hash). Exits 1 on any failure so `npm run deploy` reports it.
    Override target with SMOKE_BASE=https://marginpad-staging.<acct>.workers.dev (+ SMOKE_AUTH for the staging gate). */
 const BASE = process.env.SMOKE_BASE || 'https://marginpad.io';
@@ -75,5 +75,5 @@ async function get(path) {
   fails.push(...inv);
 
   if (fails.length) { console.error('smoke-test: FAIL (' + BASE + ')'); fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
-  console.log('smoke-test: OK — ' + CHECKS.length + ' routes 200 + app-shell bundle resolves + 5 API invariants (' + BASE + ')');
+  console.log('smoke-test: OK - ' + CHECKS.length + ' routes 200 + app-shell bundle resolves + 5 API invariants (' + BASE + ')');
 })().catch(e => { console.error('smoke-test: FATAL ' + e.message); process.exit(1); });

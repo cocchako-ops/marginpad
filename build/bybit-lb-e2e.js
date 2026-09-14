@@ -10,7 +10,7 @@ let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ok  ' + m); } else { fail++; console.log('  FAIL ' + m); } };
 const j = async (p, opt) => { const r = await fetch(O + p, opt); let b = null; try { b = await r.json(); } catch (e) {} return { s: r.status, b }; };
 const AH = { 'x-admin-key': K, 'content-type': 'application/json' };
-const WS = Date.UTC(2026, 6, 20); // the first season on the grid — long over, never paid by payBybitPrizes (starts 2026-09-14)
+const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, never paid by payBybitPrizes (starts 2026-09-14)
 (async () => {
   // 1. public API
   const lb = await j('/api/reward/lb?cb=' + Date.now());

@@ -1,6 +1,6 @@
 /* Injects a fonts.gstatic.com preconnect into every dist HTML page that loads /assets/fonts.css.
    fonts.css @font-face points at fonts.gstatic.com, which the browser only discovers AFTER parsing
-   fonts.css — a late connection on the LCP (text) critical path. Preconnecting warms DNS+TLS in parallel.
+   fonts.css - a late connection on the LCP (text) critical path. Preconnecting warms DNS+TLS in parallel.
    Idempotent + safe to re-run after every build (pattern mirrors add-gtag.js). Run LAST.
    Run: node build/add-preconnect.js */
 const fs = require('fs');
