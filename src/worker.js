@@ -22515,7 +22515,18 @@ export class UserStore {
         for (const id of olds) { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', id); } catch (e) {} } try { sql.exec('DELETE FROM users WHERE id=?', id); } catch (e) {} }
         return this.j({ ok: true, removed: olds.length, ids: olds });
       }
-      if (b.op === 'rm') { for (const t of ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv']) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} } try { sql.exec('DELETE FROM porders WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} try { sql.exec('DELETE FROM botkeys2 WHERE uid=?', uid); } catch (e) {} try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {} return this.j({ ok: true, removed: uid }); } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
+      // Every UserStore table keyed to the account, not a hand-kept subset. The list used to stop at eighteen, so a
+      // throwaway E2E member left rows in lbbest (the source the PAID ROE board reads — lbaudit was reporting them
+      // as no_match noise), in xpseason/xpday, and — worse — a live row in `sessions`, so a deleted account's token
+      // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
+      if (b.op === 'rm') {
+        const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev'];
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs'];
+        for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
+        for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
+        try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {}
+        return this.j({ ok: true, removed: uid });
+      } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       if (b.op === 'sess') { // a real 2-hour member session for browser E2E (the site walked as a signed-in member, 2026-09-07) — e2e uids only, admin-gated upstream
         const tok = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x => x.toString(16).padStart(2, '0')).join('');

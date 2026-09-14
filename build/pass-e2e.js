@@ -184,12 +184,15 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
         sum: document.querySelectorAll('#proSum em').length, sumText: document.getElementById('proSum').textContent, sumOneLine: document.getElementById('proSum').getBoundingClientRect().height < 20, gmEmpty: document.getElementById('gm').children.length === 0, idleInputs: Array.from(document.querySelectorAll('input')).filter(i => i.placeholder && /name/i.test(i.placeholder)).length, usdCells: document.querySelectorAll('#road .rw.pro .x.usd').length, giftCells: document.querySelectorAll('#road .rw.pro .x.gift').length, supCells: document.querySelectorAll('#road .rw.pro .x.sup').length, premCells: document.querySelectorAll('#road .rw.pro .x.prem').length,
         redeemReach: !!(chit && cb.contains(chit)), redeemInBuy: !!document.querySelector('#buy #codeIn'), buyOpts: document.querySelectorAll('#buy .opt').length, giftBtn: !!gb, giftReach: !!(ghit && gb.contains(ghit)) };
     });
-    // Claim all: the road must update in place (same scroll position), every button gone, toast shown
+    // Claim all: the road must update in place (same scroll position), every button gone, toast shown.
+    // Toasts are read from the ONE side stack (#mpxpT in mp-auth.js), never this page's retired #tst card —
+    // every notice moved there on 2026-09-10 and these checks had been reading a dead element ever since, so
+    // the suite showed 2 failures for four days while the product was fine (found 2026-09-14).
     await p2.evaluate(() => { document.getElementById('claimAll').scrollIntoView({ block: 'center' }); });
     const before = await p2.evaluate(() => document.getElementById('roadWrap').scrollLeft);
     await p2.click('#claimAll');
-    await p2.waitForFunction("document.querySelectorAll('#road [data-claim]').length===0 && document.getElementById('tst').classList.contains('on')", { timeout: 20000 }).catch(() => {});
-    member.after = await p2.evaluate(() => ({ n: document.querySelectorAll('#road [data-claim]').length, scrollL: document.getElementById('roadWrap').scrollLeft, toast: document.getElementById('tst').textContent, claimed: document.querySelectorAll('#road .rw .done').length, claimAll: !document.getElementById('claimAll').hidden, toClaim: document.getElementById('meClaim').textContent }));
+    await p2.waitForFunction("document.querySelectorAll('#road [data-claim]').length===0 && (function(){var s=document.getElementById('mpxpT');return !!(s&&s.children.length)||!!(document.getElementById('tst')||{}).classList&&document.getElementById('tst').classList.contains('on');})()", { timeout: 20000 }).catch(() => {});
+    member.after = await p2.evaluate(() => ({ n: document.querySelectorAll('#road [data-claim]').length, scrollL: document.getElementById('roadWrap').scrollLeft, toast: (function(){var st=document.getElementById('mpxpT');var t=st?Array.prototype.map.call(st.children,function(c){return c.innerText||'';}).join(' '):'';return t||((document.getElementById('tst')||{}).textContent||'');})(), claimed: document.querySelectorAll('#road .rw .done').length, claimAll: !document.getElementById('claimAll').hidden, toClaim: document.getElementById('meClaim').textContent }));
     member.after.before = before;
     await p2.screenshot({ path: path.join(__dirname, 'vault-shots', 'pass-member.png') });
     // the skin-gift modal: open from the voucher row, pick a skin, name a member, send -> toast, voucher row reads SENT
@@ -203,9 +206,9 @@ const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInt
     member.gm.afterPick = await p2.evaluate(() => ({ sel: !!document.querySelector('#gmGrid .gi.sel'), sendOn: !document.getElementById('gmSend').disabled, allTickets: Array.from(document.querySelectorAll('#gmGrid .gi small')).every(s => /ticket/.test(s.textContent)) }));
     await p2.type('#gmTo', 'e2e_' + UID2);
     await p2.click('#gmSend');
-    await p2.waitForFunction("!document.getElementById('gm').classList.contains('on') && /got the/.test(document.getElementById('tst').textContent)", { timeout: 8000 }).catch(() => {});
+    await p2.waitForFunction("!document.getElementById('gm').classList.contains('on') && /got the/.test((function(){var st=document.getElementById('mpxpT');var t=st?Array.prototype.map.call(st.children,function(c){return c.innerText||'';}).join(' '):'';return t||((document.getElementById('tst')||{}).textContent||'');})())", { timeout: 8000 }).catch(() => {});
     await p2.waitForFunction("/SENT/.test(document.getElementById('gifts').textContent)", { timeout: 8000 }).catch(() => {}); // the voucher row repaints after the page re-pulls /api/pass, a beat after the toast
-    member.gm.sent = await p2.evaluate(() => ({ closed: !document.getElementById('gm').classList.contains('on'), toast: document.getElementById('tst').textContent, rowSent: /SENT/.test(document.getElementById('gifts').textContent), give0: /0 to give/.test(document.getElementById('gifts').textContent) }));
+    member.gm.sent = await p2.evaluate(() => ({ closed: !document.getElementById('gm').classList.contains('on'), toast: (function(){var st=document.getElementById('mpxpT');var t=st?Array.prototype.map.call(st.children,function(c){return c.innerText||'';}).join(' '):'';return t||((document.getElementById('tst')||{}).textContent||'');})(), rowSent: /SENT/.test(document.getElementById('gifts').textContent), give0: /0 to give/.test(document.getElementById('gifts').textContent) }));
     await ctx2.close();
   });
   chk('page: guest sees the gate and all 80 tier cells (40 x 2 tracks), no buy card, empty fill, no horizontal page scroll', guest && guest.gate && guest.tiers === 80 && guest.buyHidden && guest.fill === 0 && !guest.scrollsX && guest.ends !== '—', guest);
