@@ -170,6 +170,27 @@ function extract(src) {
     }
   }
   walk(root);
+
+  /* <meta> is a VOID element: build() never makes a node for one, so the META_NAMES / META_PROPS branch
+     inside walk() above was unreachable and no meta description was ever translated (2026-09-14 - it had
+     been shipping the English snippet on all 364 Spanish pages). The tokens exist, so scan those. */
+  {
+    const seen = new Set(attrs.map(a => a.s));
+    for (const tok of tokens) {
+      if (tok.t !== 'open') continue;   // the tokenizer marks the field `t`, and a void tag is still an open token
+      if (tok.name !== 'meta' || !tok.attrsRaw) continue;
+      const list = parseAttrs(tok.attrsRaw);
+      const get = k => { const a = list.find(x => x.name === k); return a ? (a.val || '') : ''; };
+      const nm = get('name').toLowerCase(), pr = get('property').toLowerCase();
+      if (!META_NAMES.has(nm) && !META_PROPS.has(pr)) continue;
+      const a = list.find(x => x.name === 'content');
+      if (!a || !a.val || !worthy(a.val)) continue;
+      const st = tok.attrsS + a.s;
+      if (seen.has(st)) continue;
+      seen.add(st);
+      attrs.push({ s: st, e: tok.attrsS + a.e, val: a.val, id: idOf(a.val), tag: 'meta', attr: 'content', a });
+    }
+  }
   return { segs, attrs, ld };
 }
 

@@ -101,6 +101,40 @@ function robots(txt) {
     ok(/Last updated:\s*\d{4}-\d{2}-\d{2}/.test(t), f + ' carries a date');
   }
 
+  console.log('\ncanonicals, redirects and the Spanish twins');
+  { // a twin that canonicalises to the English page tells Google not to index it at all
+    for (const pth of ['/es/premium/', '/es/rekt/', '/es/about/']) {
+      const h = (await get(pth)).t;
+      const c = (h.match(/<link rel="canonical" href="([^"]*)"/) || [])[1] || '';
+      ok(c === S + pth, pth + ' canonicalises to itself', c);
+    } }
+  { // the frozen language subpages are copies of an English page and must not compete with it
+    for (const pth of ['/de/funding/', '/tr/long-short/', '/ar/defi/']) {
+      const h = (await get(pth)).t;
+      const c = (h.match(/<link rel="canonical" href="([^"]*)"/) || [])[1] || '';
+      ok(/^https:\/\/marginpad\.io\/(funding|long-short|defi)\/$/.test(c), pth + ' canonicalises to the English original', c);
+    } }
+  { // a sitemap lists final URLs; anything in it that redirects wastes a crawl
+    const sm = (await get('/sitemap.xml')).t;
+    const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+    ok(!locs.some(l => /\/blog\/[a-z0-9-]+\/es\//.test(l)), 'no redirecting URL is listed in the sitemap');
+    const red = [];
+    for (const l of locs.slice(0, 40)) { const r = await fetch(l, { redirect: 'manual' }); if (r.status !== 200) red.push(r.status + ' ' + l.replace(S, '')); }
+    ok(red.length === 0, 'the first 40 sitemap URLs all answer 200', red.slice(0, 5));
+  }
+  { // every URL the AI layer names has to exist - the rule in CLAUDE.md, enforced
+    const t = (await get('/llms.txt')).t + '\n' + (await get('/llms-full.txt')).t;
+    const urls = [...new Set([...t.matchAll(/https:\/\/marginpad\.io[^\s)\]`,;"']*/g)].map(m => m[0].replace(/[.,:;*_)\]]+$/, '')))]
+      .filter(u => u.indexOf('<') < 0 && u.indexOf('whsink') < 0);
+    const bad = [];
+    for (let i = 0; i < urls.length; i += 12)
+      await Promise.all(urls.slice(i, i + 12).map(async u => {
+        try { const r = await fetch(u, { redirect: 'manual' }); if (r.status !== 200) bad.push(r.status + ' ' + u.replace(S, '')); }
+        catch (e) { bad.push('ERR ' + u); }
+      }));
+    ok(bad.length === 0, 'all ' + urls.length + ' URLs named in the AI layer answer 200', bad.slice(0, 6));
+  }
+
   console.log('\nseo-surface-e2e: pass ' + pass + '  fail ' + fail);
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });
