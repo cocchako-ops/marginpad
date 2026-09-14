@@ -612,7 +612,10 @@ ${ld}
     if(curve&&curve.length>2){
       var f=curve[0][1], l=curve[curve.length-1][1], dp=f>0?((l-f)/f*100):0;
       H+='<div class="wd-h3">Account value, last 30 days</div><div class="wd-curve">'+spark(curve,300,84)+
-        '<div class="wd-cfoot"><span>'+usd(f)+'</span><span class="'+(dp>=0?'':'')+'">'+fmtPct(dp)+'</span><span>'+usd(l)+'</span></div></div>';
+        '<div class="wd-cfoot"><span>'+usd(f)+'</span><span>'+fmtPct(dp)+'</span><span>'+usd(l)+'</span></div></div>'+
+        /* the curve can climb while the 30-day P&L above is negative: account value moves with deposits
+           and withdrawals too, and a reader comparing the two without this line reads it as a contradiction */
+        '<p class="wl-note" style="margin:6px 0 0">Account value moves with deposits and withdrawals as well as trading. The P&amp;L above is trading only.</p>';
     }
     var pos=j.pos||[];
     H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
