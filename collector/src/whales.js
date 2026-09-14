@@ -1,10 +1,26 @@
 // Hyperliquid whale tracker (2026-08-22, Coinglass independence phase D).
 // Hyperliquid IS the primary source — positions live on-chain and the public info API serves them;
-// the aggregator we used to pay resold exactly this. Two feeds:
+// the aggregator we used to pay resold exactly this. Three feeds:
 //   positions: biggest open perp positions (>= $1M) across the leaderboard's top accounts
 //   alerts:    position changes between polls (opened / closed / flipped / grew or shrank >= 25%)
+//   fills:     REAL executed trades with the exchange's own timestamp (2026-09-14, see below)
 // Leaderboard refresh is hourly (the file is ~36MB); position polls run every 4 minutes over the
 // tracked set, sequential with a small gap so we stay far under the info-API rate weight.
+//
+// ── the trade feed (2026-09-14, owner: "jedan prozor gde izbacuje da je neko kupio 200k BTC long po
+//    tom i tom leverage u to i to vreme") ────────────────────────────────────────────────────────
+// `alerts` above are a DIFF of two snapshots: the timestamp is when WE looked, not when the whale
+// traded, and a move inside one 4-minute window is invisible. userFillsByTime gives the exchange's
+// own fill time, price, size and direction, so the feed can say when something actually happened.
+//
+// It must be AGGREGATED, and that is a measurement, not a preference. Measured 2026-09-14 over one
+// hour across twelve of the largest wallets: 4,992 perp fills, median size $745, largest $88.6k.
+// A whale does not "buy $200k of BTC" in one fill — it is hundreds of slices from an execution algo.
+// Raw, this feed would be ~62,000 unreadable rows an hour. Grouping consecutive fills of the same
+// wallet + coin + direction inside GROUP_MS and keeping those over MIN_TRADE_USD turns the same hour
+// into 14 real trades, the largest being $2.0M of GOLD closed over 472 fills in fourteen minutes.
+// The group carries BOTH ends of that execution, because "13:00 to 13:14" is the honest answer to
+// when it happened.
 import { log } from './logger.js';
 
 const LEADERBOARD_URL = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
@@ -15,9 +31,25 @@ const TOP_POSITIONS = 40;   // what we publish
 const ALERT_DELTA = 0.25;   // size change that counts as an alert
 const MAX_ALERTS = 60;
 
-const state = { tracked: [], positions: [], alerts: [], ts: 0, lbTs: 0, lastErr: '' };
+// trade feed
+const FILL_TRACK_N = 60;    // fills are polled for the largest accounts only — see the weight note below
+const FILL_SLICE = 15;      // wallets per tick …
+const FILL_TICK_MS = 30e3;  // … every 30 s = 30 wallets/min. userFillsByTime weighs 20 against the
+                            // info API's 1200/min per IP, so this sits at ~600/min with the position
+                            // poll's ~77/min beside it. A full sweep of the 60 takes two minutes.
+const GROUP_MS = 120e3;     // fills of one wallet+coin+direction closer together than this are ONE trade
+const MIN_TRADE_USD = 250e3; // measured floor: ~14 trades/hour per twelve wallets (see the note above)
+const MAX_FILLS = 120;      // published ring
+const FILL_LOOKBACK_MS = 15 * 60e3; // first sight of a wallet: how far back we read
+
+const state = { tracked: [], positions: [], alerts: [], fills: [], ts: 0, lbTs: 0, fillTs: 0, lastErr: '', fillErr: '' };
 let prevByKey = null; // "user|coin" -> {val, long} from the previous poll (null on first run = no alerts)
 let timers = [];
+const fillSeen = new Map();   // user -> ms of the newest fill we have already read
+const openGroup = new Map();  // "user|coin|dir" -> the group still collecting fills
+let levByKey = new Map();     // "user|coin" -> leverage, filled by the position poll
+let fillCursor = 0;           // where the rotation stands
+let fill429 = 0;
 
 async function post(body, timeoutMs = 12000) {
   const r = await fetch(INFO_URL, {
@@ -92,6 +124,9 @@ async function poll() {
       state.alerts = fresh.concat(state.alerts).slice(0, MAX_ALERTS);
     }
     prevByKey = nowByKey;
+    // the fill feed needs leverage, and a fill does not carry it — it lives on the POSITION. Keep the
+    // whole map (not just the published top 40) so a trade in a smaller position is still labelled.
+    levByKey = new Map(found.filter(p => p.lev > 0).map(p => [p.user + '|' + p.sym, p.lev]));
     state.positions = found.slice(0, TOP_POSITIONS);
     state.ts = Date.now();
     state.lastErr = '';
@@ -99,12 +134,105 @@ async function poll() {
 }
 const alertOf = p => ({ user: p.user, sym: p.sym, long: p.long, liq: p.liq, val: p.val });
 
+// ── the trade feed ────────────────────────────────────────────────────────────────────────────────
+// dir on a perp fill is one of Open Long / Close Long / Open Short / Close Short / Long > Short /
+// Short > Long. Spot fills say Buy / Sell and their coin is an index like "@107" — this is a futures
+// feed, so they are dropped rather than guessed at.
+const DIRS = {
+  'Open Long': { act: 'open', long: true }, 'Close Long': { act: 'close', long: true },
+  'Open Short': { act: 'open', long: false }, 'Close Short': { act: 'close', long: false },
+  'Long > Short': { act: 'flip', long: false }, 'Short > Long': { act: 'flip', long: true },
+};
+
+function publishGroup(g) {
+  if (!(g.usd >= MIN_TRADE_USD)) return;
+  const d = DIRS[g.dir] || {};
+  state.fills.unshift({
+    user: g.user, sym: g.sym, act: d.act || '', long: !!d.long, dir: g.dir,
+    usd: Math.round(g.usd), sz: +g.sz.toFixed(6),
+    px: g.usd / g.sz,                       // size-weighted average fill price, not the last print
+    ts: g.first, tsEnd: g.last, n: g.n,     // both ends: a big trade executes over minutes
+    lev: levByKey.get(g.user + '|' + g.sym) || null,
+    pnl: g.pnl ? Math.round(g.pnl) : 0,     // realised, only meaningful on a close
+  });
+  if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
+}
+
+// Fold one wallet's fills into the open groups. Fills arrive newest-first from the API; we walk them
+// oldest-first so a group grows forward in time the way the execution actually ran.
+function foldFills(user, rows) {
+  const fills = rows
+    .filter(f => f && !String(f.coin || '').startsWith('@') && DIRS[f.dir])
+    .map(f => ({ sym: String(f.coin), dir: f.dir, t: +f.time || 0, px: +f.px || 0, sz: Math.abs(+f.sz) || 0, pnl: +f.closedPnl || 0 }))
+    .filter(f => f.t > 0 && f.px > 0 && f.sz > 0)
+    .sort((a, b) => a.t - b.t);
+  let newest = fillSeen.get(user) || 0;
+  for (const f of fills) {
+    if (f.t <= (fillSeen.get(user) || 0)) continue;   // already counted on an earlier sweep
+    if (f.t > newest) newest = f.t;
+    const k = user + '|' + f.sym + '|' + f.dir;
+    const g = openGroup.get(k);
+    if (g && f.t - g.last <= GROUP_MS) { g.usd += f.px * f.sz; g.sz += f.sz; g.last = f.t; g.n++; g.pnl += f.pnl; }
+    else {
+      if (g) { publishGroup(g); openGroup.delete(k); }
+      openGroup.set(k, { user, sym: f.sym, dir: f.dir, usd: f.px * f.sz, sz: f.sz, first: f.t, last: f.t, n: 1, pnl: f.pnl });
+    }
+  }
+  if (newest) fillSeen.set(user, newest);
+}
+
+// A group is published once nothing has been added to it for GROUP_MS — otherwise a trade still being
+// executed would be printed at a third of its final size and never corrected.
+function flushGroups(now) {
+  for (const [k, g] of openGroup) if (now - g.last > GROUP_MS) { publishGroup(g); openGroup.delete(k); }
+}
+
+async function pollFills() {
+  const universe = state.tracked.slice(0, FILL_TRACK_N);
+  if (!universe.length) return;
+  const now = Date.now();
+  try {
+    for (let i = 0; i < FILL_SLICE; i++) {
+      const user = universe[(fillCursor + i) % universe.length];
+      try {
+        const since = fillSeen.has(user) ? fillSeen.get(user) + 1 : now - FILL_LOOKBACK_MS;
+        const rows = await post({ type: 'userFillsByTime', user, startTime: since, aggregateByTime: true });
+        if (Array.isArray(rows)) foldFills(user, rows);
+      } catch (e) {
+        const s = String(e);
+        if (s.includes('429')) { fill429++; state.fillErr = 'rate limited x' + fill429; log.warn('[whales] fills rate limited', { user }); break; }
+      }
+      await new Promise(res => setTimeout(res, 40));
+    }
+    fillCursor = (fillCursor + FILL_SLICE) % universe.length;
+    flushGroups(now);
+    state.fillTs = now;
+    if (!fill429) state.fillErr = '';
+    // wallets we no longer track must not keep their cursor for ever
+    if (fillSeen.size > FILL_TRACK_N * 3) { const keep = new Set(universe); for (const k of fillSeen.keys()) if (!keep.has(k)) fillSeen.delete(k); }
+  } catch (e) { state.fillErr = String(e).slice(0, 120); log.warn('[whales] fills poll failed', { e: String(e).slice(0, 160) }); }
+}
+
 export function startWhales() {
-  (async () => { await refreshLeaderboard(); await poll(); })();
+  (async () => { await refreshLeaderboard(); await poll(); await pollFills(); })();
   timers.push(setInterval(refreshLeaderboard, 3600e3));
   timers.push(setInterval(poll, 240e3));
+  timers.push(setInterval(pollFills, FILL_TICK_MS));
   timers.forEach(t => t.unref?.());
   log.info('[whales] started');
 }
 export function stopWhales() { timers.forEach(t => clearInterval(t)); timers = []; }
-export function getWhales() { return { ts: state.ts, lbTs: state.lbTs, tracked: state.tracked.length, positions: state.positions, alerts: state.alerts, err: state.lastErr || undefined }; }
+// test hook: build/whale-fills-e2e.js runs the REAL grouping over real fills pulled from Hyperliquid,
+// because the whole feature is that aggregation and a copy of it in a test would prove nothing.
+export const _fillsTest = {
+  foldFills, flushGroups, state,
+  reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); levByKey = new Map(Object.entries(lev || {})); },
+  consts: { GROUP_MS, MIN_TRADE_USD, MAX_FILLS, FILL_TRACK_N },
+};
+export function getWhales() {
+  return {
+    ts: state.ts, lbTs: state.lbTs, tracked: state.tracked.length, positions: state.positions, alerts: state.alerts,
+    fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
+    err: state.lastErr || undefined, fillErr: state.fillErr || undefined,
+  };
+}

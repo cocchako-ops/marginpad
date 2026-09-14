@@ -2317,7 +2317,7 @@ async function handleCgHyper(url, env) {
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
  // positions >= $1M) — the chain is the primary source, no aggregator in between.
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
- const ck = new Request('https://marginpad.io/__whales_v2'); // bumped: source is now our collector
+ const ck = new Request('https://marginpad.io/__whales_v3'); // bumped: the response now carries the executed-trade feed
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { ts: Date.now(), active: false };
   try {
@@ -2332,11 +2332,15 @@ async function handleCgHyper(url, env) {
  out.agg = { longUsd, shortUsd, upnl, count: j.positions.length };
  out.alerts = (j.alerts || []).map(a => ({ user: a.user, sym: a.sym, long: a.long, liq: a.liq, val: a.val, ts: a.ts }));
  out.tracked = j.tracked;
+      // executed trades with Hyperliquid's OWN fill time (2026-09-14). alerts above are a snapshot diff and
+      // carry the time WE looked; these carry when the whale actually traded, grouped per execution.
+      out.fills = (j.fills || []).slice(0, 60);
+      out.fillTs = +j.fillTs || 0; out.fillWatch = +j.fillWatch || 0; out.fillMin = +j.fillMin || 0;
       out.active = true;
     }
     }
   } catch (e) {}
- const resp = jr(out, out.active ? 'public, max-age=120' : 'no-store');
+ const resp = jr(out, out.active ? 'public, max-age=45' : 'no-store'); // the trade feed is live; 120 s made the newest row stale on arrival
   if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
