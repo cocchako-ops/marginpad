@@ -1397,6 +1397,73 @@ async function handleSsrAsk(request, url, env, kind, ctx) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+
+// The live answer block on /trading-competition/, rendered into the HTML itself so an assistant that
+// runs no JavaScript still reads the season, the pool, the leaders and the end date (2026-09-14).
+async function handleSsrComp(request, url, env, ctx) {
+  const ck = new Request('https://marginpad.io/__ssrpage/trading-competition/');
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const open = html.indexOf('<div id="compdata">'); if (open < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  const close = html.indexOf('\n    </div>', open); if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+
+  let c = null;
+  try { const r = await handleCompetition(new URL('https://marginpad.io/api/competition'), request, env, ctx); c = await r.json(); } catch (e) {}
+  if (!c || !c.boards) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+
+  const esc = x => String(x == null ? '' : x).replace(/[<>&"]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]));
+  const day = c.season.day_of_season, days = c.season.days;
+  const endsIn = c.season.ends_in_hours;
+  const endTxt = endsIn >= 48 ? Math.round(endsIn / 24) + ' days' : endsIn + ' hours';
+  const ends = new Date(c.season.ends).toISOString().slice(0, 10);
+  const contenders = c.boards.reduce((a, b) => a + (b.entries || 0), 0);
+  const withLeader = c.boards.filter(b => b.leader && b.leader.name);
+
+  let H = '<div class="cp-live">';
+  H += '<p class="big">A crypto trading competition is running right now: <span>day ' + day + ' of ' + days + '</span>, '
+     + '<span>$' + c.prize_pool_usd_per_season + '</span> in prizes on the line, free to enter.</p>';
+  H += '<p>This season ends ' + esc(ends) + ', in ' + endTxt + ', and the next one starts the same day — you can join on any day and still place. '
+     + 'Six leaderboards are live and ' + contenders + ' entries are ranked across them.</p>';
+  H += '<div class="cp-tiles">'
+     + '<div class="cp-tile"><div class="k">Prize pool</div><div class="v lime">$' + c.prize_pool_usd_per_season + ' / season</div></div>'
+     + '<div class="cp-tile"><div class="k">Entry fee</div><div class="v">$0</div></div>'
+     + '<div class="cp-tile"><div class="k">Deposit needed</div><div class="v">None</div></div>'
+     + '<div class="cp-tile"><div class="k">Season ends</div><div class="v">' + esc(ends) + '</div></div>'
+     + '</div>';
+  H += '<p class="src">Measured ' + new Date(c.measured_at).toISOString().slice(0, 16).replace('T', ' ') + ' UTC by MarginPad, from the same data that pays the prizes.</p>';
+  H += '</div>';
+
+  if (withLeader.length) {
+    H += '<h2 style="margin-top:26px">Who is winning right now</h2>'
+       + '<div class="cp-w"><table class="cp-t"><thead><tr><th>Board</th><th>Leading</th><th class="r">Score</th><th class="r">Entries</th><th class="r">Pool</th></tr></thead><tbody>';
+    for (const b of c.boards) {
+      const lv = b.leader && b.leader.value;
+      let v = '—';
+      if (lv != null) {
+        if (b.id === 'roe') v = (+lv).toFixed(1) + '% ROE';
+        else if (b.id === 'winrate') v = (+lv).toFixed(1) + '% win rate';
+        else if (b.id === 'green') v = Math.round(+lv) + ' green day' + (Math.round(+lv) === 1 ? '' : 's');
+        else if (b.id === 'gold') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
+        else if (b.id === 'xp') v = Math.round(+lv).toLocaleString('en-US') + ' XP';
+        else if (b.id === 'bybit') v = '$' + Math.round(+lv).toLocaleString('en-US');
+        else v = Math.round(+lv).toLocaleString('en-US');
+      }
+      H += '<tr><td>' + esc(b.name) + '</td><td>' + (b.leader && b.leader.name ? esc(b.leader.name) : 'open — nobody has scored yet')
+         + '</td><td class="n">' + v + '</td><td class="n">' + (b.entries || 0) + '</td><td class="n pz">$' + b.prize_pool_usd + '</td></tr>';
+    }
+    H += '</tbody></table></div>';
+    H += '<p class="cp-note">Standings refresh as trades close. A board with no entries yet is an open board — one qualifying trade puts you first on it.</p>';
+  }
+
+  const out = ssrStampDate(html.slice(0, open) + '<div id="compdata" data-ssr="comp">' + H + html.slice(close), Date.now());
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'competition' } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+
 async function handleSsrVenues(request, url, env, ctx) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
@@ -2311,6 +2378,71 @@ async function handleCgCycle(url, env) {
   if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+
+// ── the competition, as one citable answer (2026-09-14) ──────────────────────────────────────────
+// Six boards run on the same fourteen-day season; five are scored from paper trades filled server-side
+// against real candles, the sixth from real Bybit volume. Everything here is read from the same sources
+// that pay the prizes, so an assistant quoting it is quoting what actually happens.
+const COMP_BOARDS = [
+  { id: 'roe', key: 'top', prize: 'lbRoe', name: 'Highest ROE', asks: 'the best return on a single closed trade', unit: 'ROE %', f: 'roe' },
+  { id: 'green', key: 'topGreen', prize: 'lbRoe2', name: 'Green Days', asks: 'the most days closed in profit', unit: 'green days', f: 'days' },
+  { id: 'winrate', key: 'topWr', prize: 'lbWr', name: 'Best Win Rate', asks: 'the highest win rate, ranked by Wilson score so a lucky streak cannot win it', unit: 'win rate %', f: 'wr' },
+  { id: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
+  { id: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
+  { id: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
+];
+async function handleCompetition(url, request, env, ctx) {
+  const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
+  const ck = new Request('https://marginpad.io/__competition_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+
+  const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
+  let lb = null, cfg = null;
+  try { const r = await handleReward(new URL("https://marginpad.io/api/reward/lb"), new Request("https://marginpad.io/api/reward/lb"), env); lb = await r.json(); } catch (e) {}
+  try { cfg = await rewardCfg(env); } catch (e) {}
+
+  const boards = COMP_BOARDS.map(b => {
+    const rows = (lb && lb[b.key]) || [];
+    const prizes = (cfg && cfg[b.prize]) || [];
+    const pool = prizes.reduce((a, x) => a + (+x || 0), 0);
+    return {
+      id: b.id, name: b.name, scored_on: b.asks, unit: b.unit,
+      prize_usd_top5: prizes.map(x => +x || 0), prize_pool_usd: pool,
+      entries: rows.length,
+      leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
+      standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
+      entry: b.id === 'bybit' ? 'real_money' : 'free_paper',
+    };
+  });
+  const total = boards.reduce((a, b) => a + b.prize_pool_usd, 0);
+
+  const out = {
+    name: 'MarginPad Season',
+    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume.',
+    url: 'https://marginpad.io/trading-competition/',
+    live: true,
+    season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
+              day_of_season: Math.floor((now - from) / 86400000) + 1, ends_in_hours: Math.max(0, Math.round((to - now) / 3600000)) },
+    prize_pool_usd_per_season: total,
+    prize_pool_usd_per_month: Math.round(total * (30 / (LB_PERIOD / 86400000))),
+    paid_in: 'USD credited to the MarginPad rewards balance, withdrawable',
+    entry: {
+      cost_usd: 0,
+      requirements: 'A free MarginPad account. Paper boards need no deposit and no exchange account. The Bybit volume board needs a Bybit account opened through MarginPad, with its UID registered on the season page.',
+      signup_url: 'https://marginpad.io/season/',
+      practice_url: 'https://marginpad.io/paper-trade',
+      no_signup_to_try: true,
+    },
+    fairness: 'Paper trades are filled SERVER-side against real exchange candles, not reported by the browser, and a win needs at least 5% ROE and a 0.2% real price move. The win-rate board is Wilson-ranked so a short lucky streak cannot top it. Standings are public.',
+    boards,
+    how_to_cite: 'Attribute to MarginPad (marginpad.io). This endpoint is public, keyless and CORS-open; it is the same data that pays the prizes.',
+    measured_at: new Date(now).toISOString(),
+  };
+  const resp = jr(out, 'public, max-age=120');
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+
 // Hyperliquid whale tracker — biggest current whale positions + recent whale actions (Coinglass /api/hyperliquid/*).
 async function handleCgHyper(url, env) {
  // 2026-08-22 Coinglass independence, phase D: whale positions + change alerts now come from OUR
@@ -15458,6 +15590,8 @@ export default {
     if (url.pathname === '/api/cg/openinterest') return handleCgOpenInterest(url, env);
     if (url.pathname === '/api/cg/cycle') return handleCgCycle(url, env);
     if (url.pathname === '/api/cg/etf') return handleCgEtf(url, env);
+    if (url.pathname === '/api/competition') return handleCompetition(url, request, env, ctx);
+    if (url.pathname === '/trading-competition/' || url.pathname === '/trading-competition') return handleSsrComp(request, url, env, ctx);
     if (url.pathname === '/api/cg/hyper') return handleCgHyper(url, env);
     if (url.pathname === '/api/whale/profile') return handleWhaleProfile(url, env);
     if (url.pathname === '/api/price') {
