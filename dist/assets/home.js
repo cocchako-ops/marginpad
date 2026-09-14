@@ -3066,7 +3066,13 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function LT(k,d){return (window.mpT&&window.mpT(k))||d;}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function getAddr(){try{var a=localStorage.getItem('mp_reward_addr')||'';return /^0x[0-9a-fA-F]{40}$/.test(a)?a:'';}catch(e){return '';}}
+  /* The 2 s catch-up loop below calls this seven times on every page load while mpAuth resolves, and it
+     used to rewrite the element each time whether anything had changed or not - seven flashes a load,
+     measured as 4 nodes out / 4 in every two seconds (2026-09-15). Nothing is touched now unless the
+     sign-in state actually moved. */
+  var _gateKey='';
   function renderGate(){if(!gate)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
+    var _k=me?('in:'+(me.username||me.email||'1')):'out'; if(_k===_gateKey)return; _gateKey=_k;
     if(!me){gate.className='lg-gate locked';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+LT('lgGateAnon','The Trade League is for registered users.')+' <button type="button" class="lg-signin" data-auth-open>'+LT('lgGateBtn','Sign in free to join')+'</button>';return;}
     gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','- close winning trades to climb.');}
  function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends"> 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}

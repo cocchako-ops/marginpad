@@ -87,3 +87,8 @@ h = h.replace("'/api/track?t=pageview&p=/demo-home/'", "'/api/track?t=pageview&p
 
 fs.writeFileSync(OUT, h);
 console.log('gen-home-live: wrote dist/index.html (live homepage from demo-home, indexable + gtag)');
+
+/* gen-home-live rewrites dist/index.html from demo-home, which drops anything the post-processors had
+   injected into the live file - the share-card size tags went missing that way on 2026-09-15 and only
+   og-e2e caught it. Say so here so the next person runs them. */
+console.log('gen-home-live: run `node build/add-og-image.js` and `node build/gen-feed.js` after this - this file is rewritten from scratch.');

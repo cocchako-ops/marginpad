@@ -72,9 +72,9 @@
     .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
     /* the drift is driven by the rAF loop at the foot of this page, not by @keyframes: the owner's
        Windows has animation effects off, which silences every @keyframes on his machine. */
-    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);transform:translate(calc(9vw * var(--d1,0)),calc(7vh * var(--d1,0)));}
-    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);transform:translate(calc(-8vw * var(--d2,0)),calc(-6vh * var(--d2,0)));}
-    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);transform:translate(calc(-7vw * var(--d3,0)),calc(6vh * var(--d3,0)));}
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);}
     #bgline{position:absolute;inset:0;width:100%;height:100%;}
   }
   /* au1 / au2 keyframes retired 2026-09-14 - the drift is on the rAF loop now, see the bgfx script. */
@@ -1257,14 +1257,25 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 
   // ---- live prices: tape (>=15 pairs: live majors + screener top-volume) + hero terminal ----
   var scrX=null; // extra pairs from the screener to widen the tape
+  var tapeNext=null;
+  (function(){ var el=document.getElementById('tape'); if(!el)return;
+    el.addEventListener('animationiteration',function(){ if(tapeNext){ el.innerHTML=tapeNext; tapeNext=null; } });
+  })();
   function buildTape(ps){
     var seen={},rows=[];
     ps.forEach(function(p){var sm=p.symbol.replace('USDT','');if(seen[sm])return;seen[sm]=1;rows.push({s:sm,p:+p.price,c:+p.changePct});});
     (scrX||[]).forEach(function(r){if(seen[r.s]||rows.length>=18)return;seen[r.s]=1;rows.push({s:r.s,p:+r.p,c:+r.chg});});
     if(rows.length<3)return;
     var html=rows.map(function(r){return '<span><b>'+r.s+'</b> $'+fmt(r.p)+' <span class="'+(r.c>=0?'up':'dn')+'">'+(r.c>=0?'+':'')+r.c.toFixed(2)+'%</span></span>';}).join('');
-    var el=document.getElementById('tape');el.innerHTML=html+html;
-    el.style.animationDuration=Math.max(28,rows.length*2.4)+'s'; // speed scales with content so it always visibly rolls
+    var el=document.getElementById('tape');
+    /* Same rule as the liquidation strip at the foot of the page: the scroll is a percentage of the
+       element's own width, so new text moves the loop point. The content waits for the wrap. This tape
+       measured clean before the change only because its symbols and digit counts happen to be stable -
+       one longer pair would have started it jumping too. */
+    tapeNext = html + html;
+    var dur=Math.max(28,rows.length*2.4)+'s';   // reassigning this restarts the animation, so only when it changes
+    if(el.style.animationDuration!==dur)el.style.animationDuration=dur;
+    if(!el.children.length){ el.innerHTML=tapeNext; tapeNext=null; }
   }
   fetch('/api/screener').then(function(r){return r.json();}).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
@@ -2062,18 +2073,20 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   (function(){
     if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
     var cv=document.getElementById('bgline');if(!cv)return;
-    /* three slow sines, one per blob, written as custom properties on .bgfx. A tick every 120 ms is
-       plenty for a 46-second drift and costs nothing beside the canvas that is already redrawing. */
+    /* The drift runs through the Web Animations API, not a timer and not @keyframes. WAAPI still plays
+       when the OS has animation effects off - that is why the breathing marks and the Supernova frame
+       use it - and Chrome hands a pure transform animation to the COMPOSITOR, so three 46vw blobs
+       under filter:blur(100px) cost the main thread nothing. The 120 ms interval this replaced was
+       writing style 25 times a second and was measured as the biggest source of churn on the page. */
     (function(){
-      var fx=document.querySelector('.bgfx'); if(!fx)return;
-      var t0=Date.now();
-      setInterval(function(){
-        if(document.hidden)return;
-        var t=(Date.now()-t0)/1000;
-        fx.style.setProperty('--d1',(0.5+0.5*Math.sin(t/46*Math.PI*2)).toFixed(4));
-        fx.style.setProperty('--d2',(0.5+0.5*Math.sin(t/58*Math.PI*2+1.7)).toFixed(4));
-        fx.style.setProperty('--d3',(0.5+0.5*Math.sin(t/70*Math.PI*2+3.1)).toFixed(4));
-      },120);
+      var blobs=[['.au1',9,7,46000,0],['.au2',-8,-6,58000,-9000],['.au3',-7,6,70000,-21000]];
+      blobs.forEach(function(b){
+        var el=document.querySelector('.bgfx '+b[0]); if(!el||!el.animate)return;
+        try{
+          el.animate([{transform:'translate(0,0)'},{transform:'translate('+b[1]+'vw,'+b[2]+'vh)'}],
+            {duration:b[3],iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:b[4]});
+        }catch(e){}
+      });
     })();
     var g=cv.getContext('2d'),W=0,H=0;
     function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
@@ -2165,14 +2178,24 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     q.innerHTML='<span class="mpq-cap"><i></i>LIVE LIQUIDATIONS</span><span class="mpq-win"><span class="mpq-trk" id="mpqT"></span></span>';
     document.body.appendChild(q);
     q.addEventListener('click',function(){location.href='/rekt/';});
-    var lastTs=0;
+    var lastTs=0, mpqNext=null;
+    (function(){ var t=document.getElementById('mpqT'); if(!t)return;
+      // the wrap is the one moment the reader cannot tell old content from new
+      t.addEventListener('animationiteration',function(){ if(mpqNext){ t.innerHTML=mpqNext; mpqNext=null; } });
+    })();
     function pull(){ if(document.hidden)return;
       fetch('/api/v1/feed').then(function(r){return r.json();}).then(function(d){
         var ev=(d&&d.events||[]).slice(0,16); if(!ev.length)return;
         if(ev[0].ts===lastTs)return; lastTs=ev[0].ts;
         var h=ev.map(function(e){var lg=e.side==='long_liquidated';
           return '<span class="mpq-it"><span class="ex">'+e.exchange+'</span> <b>'+e.symbol+'</b> <b class="'+(lg?'lg':'sh')+'">'+(lg?'LONG':'SHORT')+' REKT '+money(e.notional)+'</b> @'+fpx(e.price)+'</span>';}).join('');
-        var t=document.getElementById('mpqT'); if(t)t.innerHTML=h+h; /* duplicated for the seamless -50% loop */
+        var t=document.getElementById('mpqT'); if(!t)return;
+        /* The strip scrolls to -50% of its OWN width, with the content duplicated so the wrap is
+           invisible. Any text change moves that width, and the loop point moves with it: measured jumps
+           of 64px, 149px and 281px as items came and went. So the new content WAITS and is swapped in at
+           the seam, where position 0 and -50% look identical by construction. */
+        mpqNext = h + h;
+        if (!t.children.length) { t.innerHTML = mpqNext; mpqNext = null; }
       }).catch(function(){});
     }
     pull(); setInterval(pull,9000);
