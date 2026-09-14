@@ -2800,3 +2800,85 @@
     if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   } catch (e) {}
 })();
+
+/* ── message actions: the long press, and the sheet it opens (2026-09-14) ────────────────────────────────────────
+   Shared because the room chat (WebSocket, home.js + mp-trade.js) and direct messages (REST, this file) both need
+   the identical gesture and the identical sheet. Each caller supplies only what differs: which rows are pressable,
+   what the reader may do to this one, and what to run when they pick something.
+
+   window.mpLongPress(container, rowSelector, onPick)  — 480 ms hold, or right-click; cancels on a 10 px drag, and
+     never fires on a link, a username or a button, because those already do something.
+   window.mpMsgSheet({row, reactions, canEdit, canDelete, onReact, onEdit, onDelete, onCopy, text})               */
+(function () {
+  if (window.mpMsgSheet) return;
+  var sheet = null, sheetAt = 0, sheetRow = null, sheetTop = 0;
+  function close() { if (sheet && sheet.parentNode) sheet.parentNode.removeChild(sheet); sheet = null; sheetRow = null; }
+  window.mpMsgSheetClose = close;
+  window.mpMsgSheet = function (o) {
+    o = o || {}; if (!o.row) return; close();
+    var s = document.createElement('div'); s.className = 'ct-sheet'; s.setAttribute('role', 'menu');
+    var h = '', rx = o.reactions || [];
+    if (rx.length) { h += '<div class="ct-sh-rx">'; for (var i = 0; i < rx.length; i++) h += '<button type="button" data-sx="' + rx[i] + '">' + rx[i] + '</button>'; h += '</div>'; }
+    h += '<div class="ct-sh-a"><button type="button" data-sa="copy">Copy</button>';
+    if (o.canEdit) h += '<button type="button" data-sa="edit">Edit</button>';
+    if (o.canDelete) h += '<button type="button" data-sa="del" class="dz">Delete</button>';
+    h += '</div>';
+    s.innerHTML = h; document.body.appendChild(s); sheet = s; sheetAt = Date.now();
+    sheetRow = o.row; sheetTop = o.row.getBoundingClientRect().top;
+    try { var sel = window.getSelection && window.getSelection(); if (sel && sel.removeAllRanges) sel.removeAllRanges(); } catch (e) {}
+    var r = o.row.getBoundingClientRect(), sw = s.offsetWidth, sh = s.offsetHeight;
+    var left = Math.max(8, Math.min(window.innerWidth - sw - 8, r.left));
+    var top = r.top - sh - 8; if (top < 8) top = Math.min(window.innerHeight - sh - 8, r.bottom + 8);
+    s.style.left = left + 'px'; s.style.top = top + 'px'; s.classList.add('on');
+    s.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-sx],[data-sa]'); if (!b) return;
+      ev.preventDefault(); ev.stopPropagation();
+      var e2 = b.getAttribute('data-sx');
+      if (e2) { close(); if (o.onReact) o.onReact(e2); return; }
+      var a = b.getAttribute('data-sa'); close();
+      if (a === 'copy') { var t = o.text != null ? o.text : (o.row.innerText || ''); try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t); } catch (e) {} if (o.onCopy) o.onCopy(t); return; }
+      if (a === 'edit' && o.onEdit) o.onEdit();
+      if (a === 'del' && o.onDelete) o.onDelete();
+    });
+  };
+  /* touchend fires a click a moment later; without the 450 ms grace the sheet shut the instant the finger lifted. */
+  /* Lifting the finger produces a click, and that click would close the sheet the press had just opened. A grace
+     measured from the OPEN is not enough — a deliberate hold easily outlasts it — so the press marks its own release
+     click and this swallows exactly that one. */
+  document.addEventListener('click', function (e) {
+    if (!sheet) return;
+    if (window.__mpLpRelease && Date.now() - window.__mpLpRelease < 900) { window.__mpLpRelease = 0; return; }
+    if (Date.now() - sheetAt < 250) return;
+    if (!sheet.contains(e.target)) close();
+  }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  window.addEventListener('resize', close);
+  /* Closing on ANY scroll killed the sheet the moment the finger lifted: the release settles the message list by a
+     pixel or two and that counts as a scroll. Follow the row instead, and give up only once it has moved far enough
+     that the sheet is no longer pointing at it. */
+  window.addEventListener('scroll', function () {
+    if (!sheet || !sheetRow) return;
+    var r = sheetRow.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight || Math.abs(r.top - sheetTop) > 120) { close(); return; }
+    var sh = sheet.offsetHeight, top = r.top - sh - 8;
+    if (top < 8) top = Math.min(window.innerHeight - sh - 8, r.bottom + 8);
+    sheet.style.top = top + 'px';
+  }, true);
+
+  window.mpLongPress = function (box, sel, onPick) {
+    if (!box || box._mpLp) return; box._mpLp = 1;
+    var t = null, fired = false, xy = null;
+    var skip = function (n) { return !!(n.closest && (n.closest('a') || n.closest('.ct-user') || n.closest('button') || n.closest('.ct-rxb') || n.closest('.mpa-rxb'))); };
+    var rowOf = function (n) { return n.closest && n.closest(sel); };
+    box.addEventListener('touchstart', function (e) {
+      var row = rowOf(e.target); if (!row || skip(e.target)) return;
+      fired = false; xy = [e.touches[0].clientX, e.touches[0].clientY];
+      clearTimeout(t); t = setTimeout(function () { fired = true; try { if (navigator.vibrate) navigator.vibrate(12); } catch (_) {} onPick(row); }, 480);
+    }, { passive: true });
+    box.addEventListener('touchmove', function (e) { if (!xy || !e.touches[0]) return; if (Math.abs(e.touches[0].clientX - xy[0]) > 10 || Math.abs(e.touches[0].clientY - xy[1]) > 10) clearTimeout(t); }, { passive: true });
+    box.addEventListener('touchend', function () { clearTimeout(t); if (fired) window.__mpLpRelease = Date.now(); }, { passive: true });
+    box.addEventListener('touchcancel', function () { clearTimeout(t); }, { passive: true });
+    box.addEventListener('contextmenu', function (e) { var row = rowOf(e.target); if (!row || skip(e.target)) return; e.preventDefault(); onPick(row); });
+    box.addEventListener('click', function (e) { if (fired) { fired = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  };
+})();

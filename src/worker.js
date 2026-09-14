@@ -5775,7 +5775,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e9b0f966" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=789b7462" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12990,7 +12990,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '20ed9e51';
+const ASSET_V = 'c2f066fd';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -17578,11 +17578,18 @@ export default {
       const org = request.headers.get('origin') || '';
       if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
       // admin restrictions: a muted or chat-restricted user can't even open the socket (the client shows a "contact support" notice)
-      try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); } } catch (e) {}
+      // The same session read that gates mutes now also NAMES the member for the room. Authorship cannot come from
+      // the socket payload — the client picks its own `u` — so edit/delete/react are bound to this, server-side.
+      let chatUid = '', chatUn = '';
+      try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); if (su && su.id) { chatUid = String(su.id); chatUn = String(su.username || ''); } } } catch (e) {}
       if (chatInstOf(url) === 'room_PREMIUM') { try { const pf = await premiumFor(env, request); if (!pf || !pf.premium) return new Response('premium only', { status: 403 }); } catch (e) { return new Response('premium only', { status: 403 }); } } // premium-only lounge — enforced server-side, not just hidden client-side
       // A DO reset/migration mid-upgrade surfaces as a transient CF "internal error; reference=…" — catch it and return a
       // clean 503 so the client's ws.onclose just reconnects (3s) instead of the error hitting srverrlog/Sentry.
-      try { return await env.CHAT.get(env.CHAT.idFromName(chatInstOf(url))).fetch(request); }
+      try {
+        const fwd = new Request(request, { headers: new Headers(request.headers) });
+        if (chatUid) { fwd.headers.set('x-mp-cuid', chatUid); fwd.headers.set('x-mp-cun', chatUn); }
+        return await env.CHAT.get(env.CHAT.idFromName(chatInstOf(url))).fetch(fwd);
+      }
       catch (e) { return new Response('chat reconnecting', { status: 503 }); }
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
@@ -18610,6 +18617,25 @@ export class BotStream {
     return new Response(null, { status: 101, webSocket: client });
   }
 }
+// Chat message actions (2026-09-14, owner: "na dugacak klik da ponudi da je obrisem ili ispravim ... i emoji reakcija").
+// REACTIONS ARE A DELIBERATE EXCEPTION to the no-emoji rule: that rule governs MarginPad's own voice (UI copy, toasts,
+// Telegram, commits). A reaction is the reader's expression, like the message text itself, and the owner asked for it.
+// The set is fixed and short on purpose — six, the ones people actually use — so the picker stays one row on a phone
+// and nothing arbitrary can be stored.
+const CHAT_RX = ['\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDE22'];
+const CHAT_RX_SET = new Set(CHAT_RX);
+const CHAT_EDIT_MS = 15 * 60000;   // a typo fix, not a rewrite of history
+const CHAT_RX_MAX = 24;            // reactors stored per message: 150 messages x 24 x ~13 B stays far under the 128 KB key
+// A 12-char salted hash of the account id. The room needs to compare authors and a browser needs to know which
+// reactions are its own; neither needs the id itself, and a raw id would let anyone correlate accounts across rooms.
+function chatWho(uid) {
+  const s2 = 'mpchat:' + String(uid || '');
+  let h1 = 0x811c9dc5, h2 = 0x01000193;
+  for (let i = 0; i < s2.length; i++) { const c = s2.charCodeAt(i); h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0; h2 = Math.imul(h2 + c, 0x85ebca6b) >>> 0; }
+  return (h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0')).slice(0, 12);
+}
+const chatPub = (m) => { const o = { u: m.u, t: m.t, ts: m.ts }; if (m.id) o.id = m.id; if (m.a) o.a = m.a; if (m.admin) o.admin = true; if (m.ed) o.ed = m.ed; if (m.rx) o.rx = m.rx; return o; }; // never the raw author id
+const chatFind = (hist, id) => { const k = String(id || ''); if (!k) return -1; for (let i = hist.length - 1; i >= 0; i--) { const m = hist[i]; if (m && (m.id === k || String(m.ts) === k)) return i; } return -1; };
 export class ChatRoom {
   // CLASSIC WebSocket mode (2026-07-16): the hibernation API's acceptWebSocket() upgrade path started failing
   // platform-side with "internal error; reference=..." while every non-WS fetch to the same DO worked. This tiny
@@ -18623,10 +18649,10 @@ export class ChatRoom {
   async fetch(request) {
     const cp = new URL(request.url).pathname, cj = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
     if (cp.endsWith('/reset')) { await this.state.storage.put('hist', []); this.broadcast({ type: 'history', messages: [] }); return new Response('cleared'); }
-    if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
+    if (cp.endsWith('/history')) { return cj({ messages: ((await this.state.storage.get('hist')) || []).map(chatPub) }); }
     if (cp.endsWith('/last')) { const h = (await this.state.storage.get('hist')) || []; const l = h.length ? h[h.length - 1] : null; return cj({ ts: l ? +l.ts || 0 : 0, n: h.length }); } // public: latest message ts + count → drives the "new messages" glow (no content)
     if (cp.endsWith('/online')) return cj({ online: this.online(), ips: new Set(this.sessions.map(x => x.ip || '')).size }); // ops Here now: open chat sockets in this room (2026-09-08)
-    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
+    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: chatPub(m), online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/poll')) { // ops-launched chat poll: POST {q,opts[]} starts, {close:1} closes (results stay pinned)
       let b = {}; try { b = await request.json(); } catch (e) {}
       if (b.close) { const pl = await this.state.storage.get('poll'); if (pl) { pl.closed = 1; await this.state.storage.put('poll', pl); this.broadcast({ type: 'poll', poll: { id: pl.id, q: pl.q, opts: pl.opts, votes: pl.votes, closed: 1 } }); } return cj({ ok: true }); }
@@ -18639,7 +18665,7 @@ export class ChatRoom {
       this.broadcast({ type: 'poll', poll: { id: pl.id, q, opts, votes: pl.votes, closed: 0 } });
       return cj({ ok: true, id: pl.id });
     }
-    if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist }); return cj({ ok: true }); }
+    if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist.map(chatPub) }); return cj({ ok: true }); }
     if (cp.endsWith('/import')) { // recovery: merge a messages[] payload into hist (dedupe by ts+u, sort, cap 60)
       let b = {}; try { b = await request.json(); } catch (e) {}
       const inc = Array.isArray(b.messages) ? b.messages.filter(x => x && x.t && x.ts).slice(0, 120) : [];
@@ -18648,7 +18674,7 @@ export class ChatRoom {
       inc.forEach(x => { const k = x.ts + '|' + x.u; if (!seen.has(k)) { seen.add(k); hist.push({ u: String(x.u || 'anon').slice(0, 20), t: String(x.t).slice(0, 280), ts: +x.ts, ...(x.admin ? { admin: true } : {}) }); } });
       hist.sort((a, b2) => a.ts - b2.ts); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX);
       await this.state.storage.put('hist', hist);
-      this.broadcast({ type: 'history', messages: hist });
+      this.broadcast({ type: 'history', messages: hist.map(chatPub) });
       return cj({ ok: true, count: hist.length });
     }
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('expected websocket', { status: 426 });
@@ -18664,7 +18690,10 @@ export class ChatRoom {
     const pair = new WebSocketPair();
     const client = pair[0], server = pair[1];
     server.accept();
-    const sess = { ws: server, ip, last: 0 };
+    // Identity comes from the WORKER's session read (x-mp-cuid), never from the socket payload — the page chooses
+    // its own display name, so anything authorised by that name could be spoofed by anyone.
+    const cuid = request.headers.get('x-mp-cuid') || '';
+    const sess = { ws: server, ip, last: 0, uid: cuid, who: cuid ? chatWho(cuid) : '', un: request.headers.get('x-mp-cun') || '', act: 0 };
     this.sessions.push(sess);
     const self = this;
     server.addEventListener('message', async (ev) => {
@@ -18681,6 +18710,59 @@ export class ChatRoom {
           } } catch (e) {}
         return;
       }
+      // ── edit / delete / react ──────────────────────────────────────────────────────────────────────────────────
+      // Every one of these is authorised against the identity the WORKER resolved, not against anything the socket
+      // said. A guest (no session) can read the room but cannot touch a message, its own or anyone else's.
+      if (m && (m.type === 'edit' || m.type === 'del' || m.type === 'react')) {
+        const now2 = Date.now();
+        if (now2 - (sess.act || 0) < 300) return;            // one action per 300 ms per socket
+        sess.act = now2;
+        if (!sess.uid) { try { server.send(JSON.stringify({ type: 'actfail', why: 'signin' })); } catch (e) {} return; }
+        let hist2 = (await self.state.storage.get('hist')) || [];
+        const ix = chatFind(hist2, m.id);
+        if (ix < 0) { try { server.send(JSON.stringify({ type: 'actfail', why: 'gone' })); } catch (e) {} return; }
+        const tgt = hist2[ix];
+        const mine = !!(tgt.uid && tgt.uid === sess.uid);
+
+        if (m.type === 'react') {
+          const e2 = String(m.e || '');
+          if (!CHAT_RX_SET.has(e2)) return;                   // only the fixed set is storable
+          const rx = tgt.rx || {};
+          const list = Array.isArray(rx[e2]) ? rx[e2] : [];
+          const at = list.indexOf(sess.who);
+          if (at >= 0) list.splice(at, 1);                    // a second tap takes it back
+          else {
+            const total = Object.keys(rx).reduce((n, k) => n + ((rx[k] || []).length), 0);
+            if (total >= CHAT_RX_MAX) return;                 // bounded so hist can never outgrow the 128 KB key
+            list.push(sess.who);
+          }
+          if (list.length) rx[e2] = list; else delete rx[e2];
+          if (Object.keys(rx).length) tgt.rx = rx; else delete tgt.rx;
+          hist2[ix] = tgt;
+          await self.state.storage.put('hist', hist2);
+          self.broadcast({ type: 'react', id: tgt.id || String(tgt.ts), rx: tgt.rx || {} });
+          return;
+        }
+
+        if (m.type === 'del') {
+          if (!mine) { try { server.send(JSON.stringify({ type: 'actfail', why: 'notyours' })); } catch (e) {} return; }
+          hist2.splice(ix, 1);
+          await self.state.storage.put('hist', hist2);
+          self.broadcast({ type: 'deleted', id: tgt.id || String(tgt.ts) });
+          return;
+        }
+
+        // edit
+        if (!mine) { try { server.send(JSON.stringify({ type: 'actfail', why: 'notyours' })); } catch (e) {} return; }
+        if (now2 - (+tgt.ts || 0) > CHAT_EDIT_MS) { try { server.send(JSON.stringify({ type: 'actfail', why: 'late' })); } catch (e) {} return; }
+        const nt = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
+        if (!nt || nt === tgt.t) return;
+        tgt.t = nt; tgt.ed = now2;
+        hist2[ix] = tgt;
+        await self.state.storage.put('hist', hist2);
+        self.broadcast({ type: 'edited', id: tgt.id || String(tgt.ts), t: nt, ed: now2 });
+        return;
+      }
       if (!m || m.type !== 'msg') return;
       const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
       const user = String(m.u || 'anon').replace(/[<>&]/g, '').trim().slice(0, 20) || 'anon';
@@ -18689,11 +18771,13 @@ export class ChatRoom {
       if (now - sess.last < 1200) return; // 1 msg / 1.2s per connection
       if (sess.ip) { const pl = self.ipLast.get(sess.ip) || 0; if (now - pl < 1200) return; self.ipLast.set(sess.ip, now); if (self.ipLast.size > 500) self.ipLast.clear(); }
       sess.last = now;
-      const msg = { u: user, t: text, ts: now };
+      // `id` is what edit/delete/react address. Older rows have only ts, and chatFind() still accepts that.
+      const msg = { id: now.toString(36) + Math.random().toString(36).slice(2, 6), u: user, t: text, ts: now };
+      if (sess.who) { msg.a = sess.who; msg.uid = sess.uid; }   // uid is storage-only; chatPub() strips it
       let hist = (await self.state.storage.get('hist')) || [];
       hist.push(msg); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX);
       await self.state.storage.put('hist', hist);
-      self.broadcast({ type: 'msg', message: msg, online: self.online() }); try { evPush(self.env, null, 'chatmsg', String((msg.u || '?')).slice(0, 20) + ': ' + String(msg.t || '').slice(0, 36), '').catch(function () {}); } catch (e) {}
+      self.broadcast({ type: 'msg', message: chatPub(msg), online: self.online() }); try { evPush(self.env, null, 'chatmsg', String((msg.u || '?')).slice(0, 20) + ': ' + String(msg.t || '').slice(0, 36), '').catch(function () {}); } catch (e) {}
       // MISSION QUALITY GATE (owner 2026-08-15): the chat missions used to count a CLIENT beacon — "." spam farmed them.
       // The credit now comes from HERE, the only place that sees the real text, and only for messages with substance:
       // >=5 chars, >=3 letters/digits, >=3 distinct chars, not a repeat of this connection's recent texts. Junk still
@@ -18717,7 +18801,9 @@ export class ChatRoom {
     server.addEventListener('close', drop);
     server.addEventListener('error', drop);
     const hist = (await this.state.storage.get('hist')) || [];
-    try { server.send(JSON.stringify({ type: 'history', messages: hist, online: this.online() })); } catch (e) {}
+    // `me` is this browser's own author hash — the only way it can tell which reactions and messages are its own
+    // without the server ever handing out an account id.
+    try { server.send(JSON.stringify({ type: 'history', messages: hist.map(chatPub), online: this.online(), me: sess.who, rx: CHAT_RX, editMs: CHAT_EDIT_MS })); } catch (e) {}
     try { const pl = await this.state.storage.get('poll'); if (pl) server.send(JSON.stringify({ type: 'poll', poll: { id: pl.id, q: pl.q, opts: pl.opts, votes: pl.votes, closed: pl.closed || 0 } })); } catch (e) {}
     this.broadcast({ type: 'presence', online: this.online() });
     return new Response(null, { status: 101, webSocket: client });

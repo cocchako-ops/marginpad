@@ -2959,3 +2959,28 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 
 /* phone tap targets in the terminal header (measured 2026-09-12 at 390px: coin selector 52x21, asset class 69x21, timeframe 45x23 — under the 24px thumb minimum) */
 @media(max-width:720px){.ptt-chart-top .csel-trigger,.pt2-class,#ptTfBtn{min-height:32px;}}
+
+/* ── chat message actions (2026-09-14): the long-press sheet and the reaction chips ───────────────────────────── */
+.ct-sheet{position:fixed;z-index:2147483000;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}
+.ct-sheet.on{opacity:1;transform:none}
+.ct-sh-rx{display:flex;gap:2px}
+.ct-sh-rx button{width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}
+.ct-sh-rx button:hover,.ct-sh-rx button:focus-visible{background:#1e2531;transform:scale(1.14);outline:none}
+.ct-sh-a{display:flex;flex-direction:column;border-top:1px solid #232a34;padding-top:5px}
+.ct-sh-a button{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-radius:8px;background:none;color:var(--ink,#e9e7df);font:600 13px 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer}
+.ct-sh-a button:hover,.ct-sh-a button:focus-visible{background:#1e2531;outline:none}
+.ct-sh-a button.dz{color:#ff7a6b}
+/* Attached to the END of the message, inline, so a reaction never costs the row an extra line (owner 2026-09-14:
+   "emoji treba da se zakaci na poruku kroz neki buble cloud, a ne da zauzme ceo nov red"). */
+.ct-rx{display:inline-flex;flex-wrap:wrap;gap:3px;margin:-2px 0 -2px 6px;vertical-align:-3px}
+.ct-rxb{display:inline-flex;align-items:center;gap:2px;height:17px;padding:0 5px 0 3px;border-radius:999px;border:1px solid #2a323d;background:#1a212b;font-size:11px;line-height:1;cursor:pointer;color:var(--ink,#e9e7df);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.ct-rxb:hover{border-color:#3a4553}
+.ct-rxb i{font-style:normal;font-size:10px;font-weight:700;color:#98a2ae}
+.ct-rxb.on{border-color:rgba(194,246,74,.6);background:rgba(194,246,74,.12)}
+.ct-rxb.on i{color:#c2f64a}
+.ct-msg .ct-ed{font-size:10.5px;color:#6f7885;margin-left:5px}
+
+/* Holding a finger on a message opens the action sheet; it must not also select the word under the thumb, and iOS
+   must not raise its own callout over ours (owner 2026-09-14). Copying is an action IN the sheet. */
+.ct-msg{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ct-msg a,.ct-msg input,.ct-msg textarea{-webkit-user-select:auto;user-select:auto}

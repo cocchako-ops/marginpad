@@ -1961,7 +1961,44 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function mentionify(h){return h.replace(/(^|\s)@([a-zA-Z0-9_]{2,20})/g,function(mm,p,n){return p+'<b class="ct-user" data-lbu="'+n+'" role="button" tabindex="0" style="color:'+colorFor(n)+'">@'+n+'</b>';});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-3px;margin-right:4px;filter:drop-shadow(0 0 3px rgba(194,246,74,.55))"><path d="M12 1L14.83 3.3L18.47 3.1L19.4 6.62L22.46 8.6L21.15 12L22.46 15.4L19.4 17.38L18.47 20.9L14.83 20.7L12 23L9.17 20.7L5.53 20.9L4.6 17.38L1.54 15.4L2.85 12L1.54 8.6L4.6 6.62L5.53 3.1L9.17 3.3Z" fill="#c2f64a"/><path d="M7.7 12.3l2.9 2.9L16.4 9.3" fill="none" stroke="#0a0b0d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var _ts=+m.ts||0;var _hm=_ts?(function(x){var p=function(n){return n<10?'0'+n:''+n;};return p(x.getHours())+':'+p(x.getMinutes());})(new Date(_ts)):'';var _tm=_hm?'<span class="ct-time" title="'+new Date(_ts).toLocaleString()+'">'+_hm+'</span>':'';var who=_tm+(m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>');var _sg=window._mpParseSig&&window._mpParseSig(m.t);var _body=_sg?window._mpSigCardHtml(_sg):linkifyMsg(m.t);if(m.admin)_body=mentionify(_body);d.innerHTML=who+' '+_body;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+
+  /* ── message actions (owner 2026-09-14) ───────────────────────────────────────────────────────────────────────
+     MIRROR: byte-identical in home.js and mp-trade.js. The gesture and the sheet are shared (mp-auth.js); this is
+     only the room's own half — who owns a message, and how an action reaches the socket. */
+  var myWho='',rxSet=[],editMs=900000;
+  function msgById(id){if(!msgs)return null;var n=msgs.querySelectorAll('[data-mid]');for(var i=0;i<n.length;i++)if(n[i].getAttribute('data-mid')===String(id))return n[i];return null;}
+  function rxHtml(rx,mid){rx=rx||{};var k=Object.keys(rx);if(!k.length)return '';var h='<span class="ct-rx">';
+    for(var i=0;i<k.length;i++){var who=rx[k[i]]||[],mine=myWho&&who.indexOf(myWho)>=0;
+      h+='<button type="button" class="ct-rxb'+(mine?' on':'')+'" data-rx="'+esc(k[i])+'" data-rxm="'+esc(String(mid))+'" title="'+who.length+'">'+esc(k[i])+'<i>'+who.length+'</i></button>';}
+    return h+'</span>';}
+  function paintRx(mid,rx){var row=msgById(mid);if(!row)return;var old=row.querySelector('.ct-rx'),body=row.querySelector('.ct-body');var html=rxHtml(rx,mid);
+    if(old){if(html){var t=document.createElement('span');t.innerHTML=html;old.parentNode.replaceChild(t.firstChild,old);}else old.parentNode.removeChild(old);}
+    else if(html&&body)body.insertAdjacentHTML('beforeend',html);}
+  function chatNote(t){try{if(window.mpToast){window.mpToast({msg:t,ms:2200,key:'ctact'});return;}}catch(e){}try{sysMsg(esc(t));}catch(e){}}
+  function actSend(o){return !!(window.__mpChatAct&&window.__mpChatAct(o));}
+  function openSheet(row){
+    if(!row||!window.mpMsgSheet||!window.__mpChatAct)return;
+    var mid=row.getAttribute('data-mid'),own=row.getAttribute('data-own')==='1';
+    var body=row.querySelector('.ct-body');
+    var txt=body?(function(c){var x=c.cloneNode(true);var r=x.querySelector('.ct-rx');if(r)r.remove();var e2=x.querySelector('.ct-ed');if(e2)e2.remove();return (x.innerText||x.textContent||'').trim();})(body):'';
+    window.mpMsgSheet({row:row,text:txt,reactions:(myWho?rxSet:[]),
+      canEdit:own&&(Date.now()-(+row.getAttribute('data-ts')||0))<editMs,canDelete:own,
+      onReact:function(e2){actSend({type:'react',id:mid,e:e2});},
+      onCopy:function(){chatNote('Copied');},
+      onDelete:function(){if(window.confirm('Delete this message for everyone?'))actSend({type:'del',id:mid});},
+      onEdit:function(){var nt=window.prompt('Edit your message',txt);if(nt==null)return;nt=String(nt).replace(/\s+/g,' ').trim();if(!nt||nt===txt)return;actSend({type:'edit',id:mid,t:nt.slice(0,280)});}});
+  }
+  if(msgs&&!msgs._mpActs){msgs._mpActs=1;
+    if(window.mpLongPress)window.mpLongPress(msgs,'[data-mid]',openSheet);
+    else{var _lpW=setInterval(function(){if(window.mpLongPress){clearInterval(_lpW);window.mpLongPress(msgs,'[data-mid]',openSheet);}},150);setTimeout(function(){clearInterval(_lpW);},12000);}
+    msgs.addEventListener('click',function(e){
+      var rb=e.target.closest&&e.target.closest('.ct-rxb');
+      if(rb){e.preventDefault();e.stopPropagation();
+        if(!myWho){chatNote('Sign in to react');return;}
+        actSend({type:'react',id:rb.getAttribute('data-rxm'),e:rb.getAttribute('data-rx')});}
+    },true);
+  }
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var _ts=+m.ts||0;var _hm=_ts?(function(x){var p=function(n){return n<10?'0'+n:''+n;};return p(x.getHours())+':'+p(x.getMinutes());})(new Date(_ts)):'';var _tm=_hm?'<span class="ct-time" title="'+new Date(_ts).toLocaleString()+'">'+_hm+'</span>':'';var who=_tm+(m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>');var _sg=window._mpParseSig&&window._mpParseSig(m.t);var _body=_sg?window._mpSigCardHtml(_sg):linkifyMsg(m.t);if(m.admin)_body=mentionify(_body);var _mid=(m.id!=null?m.id:String(m.ts||''));d.setAttribute('data-mid',_mid);d.setAttribute('data-ts',String(+m.ts||0));if(m.a&&myWho&&m.a===myWho)d.setAttribute('data-own','1');d.innerHTML=who+' <span class="ct-body">'+_body+(m.ed?'<span class="ct-ed" title="edited">edited</span>':'')+rxHtml(m.rx,_mid)+'</span>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   /* click a username in chat → open that trader's profile card. MIRRORS the copy in mp-trade.js (deliberate duplication):
      the card lives in mp-profile.js, which most pages do not load, so fall back to the on-demand loader in mp-nav.js
      rather than doing nothing. Looked up at call time — these bundles parse in different orders. */
@@ -2007,9 +2044,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function connect(){
     if(ws)return;
     try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chat/ws?room='+encodeURIComponent(room));}catch(e){return;}
+    /* The chat lives in BOTH bundles and only one of them owns the live socket, so the action block cannot rely
+       on its own `ws`. This is a NARROW channel on purpose: it forwards the three message actions and nothing
+       else, so a script on the page still cannot post as the member. The server authorises each one against
+       the session behind the socket regardless. */
+    window.__mpChatAct=function(o){try{if(!o||['edit','del','react'].indexOf(o.type)<0)return false;if(!ws||ws.readyState!==1)return false;ws.send(JSON.stringify(o));return true;}catch(e){return false;}};
     ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
       if(d.type==='poll'||d.type==='pollv'){try{var pb=document.getElementById('ctPollBox');if(!pb){pb=document.createElement('div');pb.id='ctPollBox';msgs.parentNode.insertBefore(pb,msgs);}if(d.type==='poll'&&!d.poll){pb.innerHTML='';window.__ctPoll=null;}else{var P=d.type==='poll'?d.poll:(window.__ctPoll?Object.assign(window.__ctPoll,{votes:d.votes}):null);if(P){window.__ctPoll=P;var tot=0;P.votes.forEach(function(v){tot+=v;});var oh=P.opts.map(function(o,i){var pc=tot?Math.round(P.votes[i]/tot*100):0;var mi=window.__ctPollMy&&window.__ctPollMy.id===P.id?window.__ctPollMy.i:null;return '<button type="button" data-pvi="'+i+'" '+(P.closed?'disabled':'')+' style="display:block;width:100%;text-align:left;margin:4px 0;padding:7px 9px;background:'+(mi===i?'#1a2413':'#12161d')+';border:1px solid '+(mi===i?'#c2f64a':'#232b3a')+';border-radius:8px;color:#dbe4f5;font-size:12px;cursor:'+(P.closed?'default':'pointer')+';position:relative;overflow:hidden;font-family:inherit"><span style="position:absolute;left:0;top:0;bottom:0;width:'+pc+'%;background:rgba(194,246,74,.12)"></span><span style="position:relative">'+o+' <b style="float:right;color:#c2f64a">'+pc+'%</b></span></button>';}).join('');pb.innerHTML='<div style="background:#0d1014;border:1px solid #2a3345;border-radius:10px;padding:10px 12px;margin:8px 10px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:5px">'+(P.closed?'POLL · FINAL RESULTS':'LIVE POLL — tap to vote')+'</div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">'+P.q+'</div>'+oh+'<div style="font-size:10px;color:#5c6b84;margin-top:4px">'+tot+' vote'+(tot===1?'':'s')+'</div></div>';if(!P.closed&&!pb._pw){pb._pw=1;pb.addEventListener('click',function(ev){var b=ev.target.closest('[data-pvi]');if(!b||!window.__ctPoll||window.__ctPoll.closed)return;var i=+b.getAttribute('data-pvi');window.__ctPollMy={id:window.__ctPoll.id,i:i};try{ws.send(JSON.stringify({type:'vote',id:window.__ctPoll.id,i:i,u:user}));}catch(e){}});}}}}catch(e){}}
-      if(d.type==='history'){msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
+      if(d.type==='history'){if(typeof d.me==='string')myWho=d.me;if(Array.isArray(d.rx)&&d.rx.length)rxSet=d.rx;if(+d.editMs>0)editMs=+d.editMs;msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
+      else if(d.type==='edited'){var _r=msgById(d.id);if(_r){var _b=_r.querySelector('.ct-body');if(_b)_b.innerHTML=(window._mpParseSig&&window._mpParseSig(d.t))?window._mpSigCardHtml(window._mpParseSig(d.t)):linkifyMsg(d.t);if(!_r.querySelector('.ct-ed')&&_b)_b.insertAdjacentHTML('afterend','<span class="ct-ed" title="edited">edited</span>');}}
+      else if(d.type==='deleted'){var _r2=msgById(d.id);if(_r2&&_r2.parentNode)_r2.parentNode.removeChild(_r2);if(actFor===String(d.id))closeSheet();}
+      else if(d.type==='react'){paintRx(d.id,d.rx);}
+      else if(d.type==='actfail'){chatNote(d.why==='signin'?'Sign in to do that':d.why==='notyours'?'You can only change your own messages':d.why==='late'?'Too late to edit that one':'That message is gone');}
       else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(d.message&&d.message.u===user){markChatSeen();}else if(box.hidden&&d.message){chatAlert(true);}}
       else if(d.type==='presence'){setOnline(d.online);}};
  ws.onclose=function(ev){ws=null;if(ev&&ev.code===4001)return;/* replaced by a newer tab — reconnect only when this tab is visible again */if(joined)setTimeout(connect,3000);};
