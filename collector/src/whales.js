@@ -85,7 +85,7 @@ async function refreshLeaderboard() {
     // the best trader of the month is often not the biggest account
     state.best = clean
       .map(x => ({ a: x.a, v: Math.round(x.v), name: x.n, m: win(x.w, 'month'), a30: win(x.w, 'month').roi }))
-      .filter(x => x.m.vlm > 1e6)
+      .filter(x => x.m.vlm > 1e6 && x.v >= 1e4)   // a LIVE account: one that has been emptied prints "account $0" beside a huge return
       .sort((p, q) => q.m.pnl - p.m.pnl)
       .slice(0, 25)
       .map(x => ({ user: x.a, v: x.v, name: x.name, pnl: x.m.pnl, roi: x.m.roi, vlm: x.m.vlm }));

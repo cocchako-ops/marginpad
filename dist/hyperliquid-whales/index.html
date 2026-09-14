@@ -111,6 +111,7 @@
   .wl-trades{display:flex;flex-direction:column;gap:7px}
   .wl-tr{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;border-left-width:3px}
   .wl-tr.l{border-left-color:var(--grn)}.wl-tr.s{border-left-color:var(--red)}
+  .wl-tr[data-w]{cursor:pointer}.wl-tr[data-w]:hover{border-color:var(--lime)}
   .wl-tr .clock{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;flex:0 0 auto}
   .wl-tr .clock small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);letter-spacing:.02em}
   .wl-tr .say{min-width:0}
@@ -123,6 +124,7 @@
   .wl-tr.l .amt{color:var(--grn)}.wl-tr.s .amt{color:var(--red)}
   .wl-tr .amt small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint);margin-top:2px}
   .wl-lev{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(194,246,74,.14);color:var(--lime);margin-left:5px;vertical-align:1px}
+  .wl-lev2{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(194,246,74,.14);color:var(--lime);vertical-align:1px}
   .wl-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:9px 0 0;line-height:1.6}
   @media(max-width:560px){
     .wl-tr{grid-template-columns:auto 1fr;column-gap:9px;row-gap:5px;padding:9px 10px}
@@ -133,6 +135,106 @@
        screen it wraps to two lines rather than being cut off at the first one */
     .wl-tr .say .l2{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.5}
   }
+  /* -- views, filters, tables (2026-09-14 rebuild) -------------------------------------------- */
+  .wl-tabs{display:flex;gap:6px;margin:22px 0 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .wl-tabs::-webkit-scrollbar{display:none}
+  .wl-tabs button{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.03em;
+    padding:9px 14px;border-radius:10px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink-faint);cursor:pointer;transition:color .12s,border-color .12s,background .12s}
+  .wl-tabs button i{font-style:normal;font-size:10px;opacity:.65;margin-left:5px}
+  .wl-tabs button:hover{color:var(--ink);border-color:var(--lime)}
+  .wl-tabs button.on{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .wl-tabs button.on i{opacity:.8}
+  .wl-bar2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+  .wl-chips{display:flex;gap:5px;flex-wrap:wrap;min-width:0;flex:1}
+  .wl-chips button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;padding:5px 9px;border-radius:7px;
+    border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);cursor:pointer}
+  .wl-chips button:hover{color:var(--ink)}
+  .wl-chips button.on{background:rgba(194,246,74,.14);border-color:var(--lime);color:var(--lime)}
+  .wl-ctl{display:flex;gap:8px;flex-wrap:wrap;flex:0 0 auto}
+  .wl-seg{display:flex;border:1px solid var(--line-bright);border-radius:8px;overflow:hidden}
+  .wl-seg button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 10px;background:transparent;color:var(--ink-faint);border:0;cursor:pointer}
+  .wl-seg button.on{background:var(--lime);color:#0a0b0d}
+  .wl-sk{height:46px;border-radius:11px;margin-bottom:7px;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.07),rgba(255,255,255,.03))}
+  .wl-empty{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);text-align:center;padding:26px 14px;border:1px dashed var(--line-bright);border-radius:12px;line-height:1.7}
+  .wl-empty b{color:var(--ink);font-weight:700}
+  .wl-pr{cursor:pointer}
+  .wl-pr:hover{border-color:var(--lime)}
+  .wl-30{display:block;font-size:9px;color:var(--ink-faint);margin-top:2px}
+  .wl-30.up{color:var(--grn)}.wl-30.dn{color:var(--red)}
+  .wl-tbl.wide{overflow-x:auto}
+  .wl-thd.co,.wl-cr{display:grid;grid-template-columns:86px 58px minmax(190px,1fr) 68px 66px 100px 78px;gap:10px;align-items:center}
+  .wl-thd.be,.wl-br{display:grid;grid-template-columns:30px minmax(150px,1fr) 110px 82px 110px;gap:10px;align-items:center}
+  .wl-cr,.wl-br{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;margin-bottom:7px}
+  .wl-br{cursor:pointer}.wl-br:hover{border-color:var(--lime)}
+  .wl-cr .m{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-cr .m small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint)}
+  .wl-cr .chg{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;text-align:right}
+  .wl-cr .chg.up{color:var(--grn)}.wl-cr .chg.dn{color:var(--red)}
+  .wl-split{min-width:0}
+  .wl-split .sb{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.05)}
+  .wl-split .sb i{display:block;height:100%}
+  .wl-split .sb .l{background:var(--grn)}.wl-split .sb .s{background:var(--red)}
+  .wl-split .sl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;margin-top:4px}
+  .wl-split .sl .l{color:var(--grn)}.wl-split .sl .s{color:var(--red)}
+  .wl-num{font-family:'Space Mono',monospace;font-size:11.5px;text-align:right;color:var(--ink)}
+  .wl-num.dim{color:var(--ink-faint)}
+  .wl-num.up{color:var(--grn)}.wl-num.dn{color:var(--red)}
+  .wl-num small{display:block;font-size:9px;color:var(--ink-faint)}
+  @media(max-width:900px){
+    .wl-thd.co,.wl-thd.be{display:none}
+    .wl-cr{grid-template-columns:1fr 1fr;gap:8px}
+    .wl-cr .wl-split{grid-column:1/-1;order:9}
+    .wl-br{grid-template-columns:auto 1fr;gap:6px 10px}
+    .wl-br .wl-num{text-align:left}
+  }
+  /* -- the whale drawer ----------------------------------------------------------------------- */
+  [hidden]{display:none!important}   /* a display: rule of our own beats the UA hidden - the drawer shipped VISIBLE, covering the page at 390px */
+  .wl-dim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:2147483000}
+  .wl-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:#0d0f12;border-left:1px solid var(--line-bright);
+    z-index:2147483001;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+  @media(max-width:620px){.wl-drawer{width:100vw;top:auto;height:92vh;border-left:0;border-top:1px solid var(--line-bright);border-radius:16px 16px 0 0}}
+  .wd-h{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--line-bright);flex:0 0 auto}
+  .wd-id{min-width:0;flex:1}
+  .wd-adr{display:block;font-family:'Space Mono',monospace;font-size:14px;font-weight:800;color:var(--ink);word-break:break-all;line-height:1.35}
+  .wd-sub{display:block;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-top:4px}
+  .wd-x{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);font-size:13px;cursor:pointer}
+  .wd-x:hover{color:var(--ink);border-color:var(--lime)}
+  .wd-body{flex:1;overflow-y:auto;padding:14px 16px 30px}
+  .wd-h3{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ink-faint);text-transform:uppercase;margin:18px 0 8px}
+  .wd-h3:first-child{margin-top:0}
+  .wd-rec{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+  .wd-rec .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 8px;text-align:center;min-width:0}
+  .wd-rec .k{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);letter-spacing:.06em}
+  .wd-rec .v{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+  .wd-rec .v.up{color:var(--grn)}.wd-rec .v.dn{color:var(--red)}
+  .wd-rec .r{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);margin-top:2px}
+  .wd-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:7px}
+  .wd-tiles .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 10px}
+  .wd-tiles .k{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint)}
+  .wd-tiles .v{font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink);margin-top:2px}
+  .wd-curve{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px}
+  .wd-curve svg{display:block;width:100%;height:84px}
+  .wd-cfoot{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:6px}
+  .wd-p{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;margin-bottom:7px;border-left:3px solid var(--line-bright)}
+  .wd-p.l{border-left-color:var(--grn)}.wd-p.s{border-left-color:var(--red)}
+  .wd-p .t{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .wd-p .t b{font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink)}
+  .wd-p .t .sd{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:5px}
+  .wd-p.l .t .sd{background:rgba(46,189,133,.16);color:var(--grn)}.wd-p.s .t .sd{background:rgba(255,90,77,.16);color:var(--red)}
+  .wd-p .t .sz{margin-left:auto;font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink)}
+  .wd-p .g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+  .wd-p .g div{min-width:0}
+  .wd-p .g .k{font-family:'Space Mono',monospace;font-size:8.5px;color:var(--ink-faint);letter-spacing:.05em}
+  .wd-p .g .v{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wd-p .g .v.up{color:var(--grn)}.wd-p .g .v.dn{color:var(--red)}
+  .wd-p .lqb{height:4px;border-radius:3px;background:rgba(255,255,255,.06);margin-top:9px;overflow:hidden}
+  .wd-p .lqb i{display:block;height:100%;background:var(--grn)}
+  .wd-p .lqb i.warn{background:#f0b90b}.wd-p .lqb i.hot{background:var(--red)}
+  .wd-lnk{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .wd-lnk a,.wd-lnk button{flex:1;min-width:130px;text-align:center;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;
+    padding:10px 12px;border-radius:10px;border:1px solid var(--line-bright);background:transparent;color:var(--ink);text-decoration:none;cursor:pointer}
+  .wd-lnk a:hover,.wd-lnk button:hover{border-color:var(--lime);color:var(--lime)}
+  .wd-lnk a.go{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
@@ -178,28 +280,70 @@
       </div>
     </div>
 
-    <div class="wl-cols">
-      <div>
-        <div class="wl-h2">Biggest open positions <span class="n" id="wlPosN"></span></div>
-        <div class="wl-tbl">
-          <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Liq price</span><span class="r">uPnL</span></div>
-          <div id="wlPos"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading positions…</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="wl-h2">Latest whale moves</div>
-        <div class="wl-feed" id="wlFeed"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading…</div></div>
-      </div>
+    <!-- ── four views, one at a time. The page used to stack every panel on top of the reader at once
+         (owner 2026-09-14: "sad kad otvoris stranicu sve je nabacano i nista se ne vidi lepo"), and an
+         empty right-hand column sat there saying "No recent moves". ─────────────────────────────── -->
+    <div class="wl-tabs" role="tablist" aria-label="Whale views">
+      <button type="button" role="tab" data-view="pos" class="on">Positions <i id="wlTabPos"></i></button>
+      <button type="button" role="tab" data-view="trades">Trades <i id="wlTabTr"></i></button>
+      <button type="button" role="tab" data-view="coins">By market <i id="wlTabCo"></i></button>
+      <button type="button" role="tab" data-view="best">Best this month <i id="wlTabBe"></i></button>
     </div>
 
-    <div class="wl-tr-h">
-      <div class="wl-h2" style="margin:0">Whale trades, as they execute <span class="n" id="wlTrN"></span></div>
-      <div class="wl-tz" role="group" aria-label="Time zone">
-        <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
+    <!-- POSITIONS -->
+    <section class="wl-view" id="vPos">
+      <div class="wl-bar2">
+        <div class="wl-chips" id="wlSym" role="group" aria-label="Market"></div>
+        <div class="wl-ctl">
+          <div class="wl-seg" id="wlSide" role="group" aria-label="Side">
+            <button type="button" data-side="" class="on">ALL</button><button type="button" data-side="l">LONG</button><button type="button" data-side="s">SHORT</button>
+          </div>
+          <div class="wl-seg" id="wlSort" role="group" aria-label="Sort">
+            <button type="button" data-sort="val" class="on">SIZE</button><button type="button" data-sort="pnl">P&amp;L</button><button type="button" data-sort="liq">NEAR LIQ</button><button type="button" data-sort="lev">LEV</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="wl-trades" id="wlTrades"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading trades…</div></div>
-    <p class="wl-note" id="wlTrNote"></p>
+      <div class="wl-tbl">
+        <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Liq price</span><span class="r">Unrealized</span></div>
+        <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+      </div>
+      <p class="wl-note">Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it.</p>
+    </section>
+
+    <!-- TRADES -->
+    <section class="wl-view" id="vTrades" hidden>
+      <div class="wl-bar2">
+        <div class="wl-chips" id="wlTrSym" role="group" aria-label="Market"></div>
+        <div class="wl-ctl">
+          <div class="wl-seg" id="wlTrAct" role="group" aria-label="Action">
+            <button type="button" data-act="" class="on">ALL</button><button type="button" data-act="open">OPENED</button><button type="button" data-act="close">CLOSED</button>
+          </div>
+          <div class="wl-seg" id="wlTz" role="group" aria-label="Time zone">
+            <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
+          </div>
+        </div>
+      </div>
+      <div class="wl-trades" id="wlTrades"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+      <p class="wl-note" id="wlTrNote"></p>
+    </section>
+
+    <!-- BY MARKET -->
+    <section class="wl-view" id="vCoins" hidden>
+      <div class="wl-tbl wide">
+        <div class="wl-thd co"><span>Market</span><span class="r">24h</span><span>Whale money: long vs short</span><span class="cl r">Wallets</span><span class="cl r">Avg lev</span><span class="cl r">Funding / day</span><span class="cl r">Share of OI</span></div>
+        <div id="wlCoins"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+      </div>
+      <p class="wl-note">One row per market these whales hold. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now &mdash; a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
+    </section>
+
+    <!-- BEST THIS MONTH -->
+    <section class="wl-view" id="vBest" hidden>
+      <div class="wl-tbl">
+        <div class="wl-thd be"><span></span><span>Trader</span><span class="r">30-day P&amp;L</span><span class="cl r">Return</span><span class="cl r">Volume traded</span></div>
+        <div id="wlBest"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+      </div>
+      <p class="wl-note">Ranked by realised profit over the last thirty days across the <b>whole</b> Hyperliquid leaderboard, not only the accounts we track by size &mdash; the best trader of a month is usually not the biggest one. Click a row for the full book. <a href="/season/#boards">MarginPad runs its own season boards</a> if you would rather be measured than watched.</p>
+    </section>
 
     <div class="wl-cta">
       <a class="go" href="/paper-trade">Practice trading — free, no signup →</a>
@@ -215,6 +359,21 @@
 
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only — not financial advice.</p>
   </article>
+
+  <!-- ── one whale, everything we can say about them. Opened from any row on any view. ─────────── -->
+  <div class="wl-dim" id="wdDim" hidden></div>
+  <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Whale profile">
+    <div class="wd-h">
+      <div class="wd-id">
+        <span class="wd-adr" id="wdAdr">—</span>
+        <span class="wd-sub" id="wdSub"></span>
+      </div>
+      <button type="button" class="wd-x" id="wdX" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="wd-body" id="wdBody">
+      <div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>
+    </div>
+  </aside>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
 </div>
@@ -255,13 +414,30 @@
   function mkt(sym){ var i=String(sym||'').indexOf(':'); return i>0?String(sym).slice(i+1):String(sym||''); }
   function paintTrades(d){
     var box=document.getElementById('wlTrades'); if(!box)return;
-    var tr=d.fills||[];
-    var n=document.getElementById('wlTrN'); if(n)n.textContent=tr.length?'('+tr.length+')':'';
+    var all=d.fills||[];
+    var cnt={}; all.forEach(function(t){cnt[t.sym]=(cnt[t.sym]||0)+1;});
+    var syms=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];}).slice(0,8);
+    var chips=document.getElementById('wlTrSym');
+    if(chips&&chips.dataset.k!==syms.join(',')){
+      chips.dataset.k=syms.join(',');
+      chips.innerHTML='<button type="button" data-sym="" class="'+(TF.sym?'':'on')+'">ALL '+all.length+'</button>'+
+        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(TF.sym===x?' class="on"':'')+'>'+esc(mkt(x))+' '+cnt[x]+'</button>';}).join('');
+    }
+    var tr=all.filter(function(t){
+      if(TF.sym&&t.sym!==TF.sym)return false;
+      if(TF.act&&t.act!==TF.act)return false;
+      return true;
+    });
+    var n=document.getElementById('wlTabTr'); if(n)n.textContent=all.length?all.length:'';
     var note=document.getElementById('wlTrNote');
     if(note)note.textContent=tr.length||d.fillWatch
       ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution — a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
       : '';
-    if(!tr.length){ box.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k yet — the feed fills as the whales trade.</div>'; return; }
+    if(!tr.length){
+      box.innerHTML=all.length
+        ? '<div class="wl-empty">No trade matches that filter.<br><b>Clear it</b> to see all '+all.length+' recorded executions.</div>'
+        : '<div class="wl-empty">No trade over <b>$'+Math.round((d.fillMin||250000)/1000)+'k</b> recorded yet.<br>The feed fills as the whales trade — nothing smaller is shown, on purpose.</div>';
+      return; }
     box.innerHTML=tr.slice(0,28).map(function(t){
       var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
       var side=t.long?'long':'short';
@@ -271,7 +447,7 @@
       var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
                (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
                (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
-      return '<div class="wl-tr '+(t.long?'l':'s')+'" title="'+esc(t.sym)+' · '+esc(t.dir)+'">'
+      return '<div class="wl-tr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+esc(t.sym)+' · '+esc(t.dir)+' — open this wallet">'
         +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
         +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
         +'<span class="amt">'+usd(t.usd)+'<small>'+(t.sz>=1?(+t.sz).toLocaleString('en-US',{maximumFractionDigits:2}):(+t.sz).toFixed(4))+' '+m+'</small></span></div>';
@@ -285,49 +461,276 @@
     });
     [].forEach.call(g.querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-tz')===TZ);});
   })();
-  function paint(d){
-    window.__wlLast=d;
-    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&(d.active||(d.positions&&d.positions.length)));
-    if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
-    var g=d.agg||{};
-    var lo=+g.longUsd||0,sh=+g.shortUsd||0,tot=lo+sh||1;
-    document.getElementById('wlLongV').textContent=usd(lo);
-    document.getElementById('wlShortV').textContent=usd(sh);
-    var lp=lo/tot*100;
-    document.getElementById('wlBarL').style.width=lp.toFixed(1)+'%';
-    document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
-    document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
-    document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
-    document.getElementById('wlCount').textContent=(g.count||0).toLocaleString('en-US');
-    var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
-    var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
-    // positions
-    var pos=d.positions||[];
-    document.getElementById('wlPosN').textContent=pos.length?('· top '+pos.length):'';
-    var pe=document.getElementById('wlPos');pe.dataset.done='1';
-    pe.innerHTML=pos.map(function(p,i){
-      var liqD=(p.mark&&p.liq)?Math.abs(p.mark-p.liq)/p.mark*100:null;
-      var near=(liqD!=null&&liqD<8);
-      return '<div class="wl-pr">'+
+  /* ── state the views share ─────────────────────────────────────────────────────────────────── */
+  var VIEW='pos', F={sym:'',side:'',sort:'val'}, TF={sym:'',act:''};
+  function fmtPct(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
+  function fund8(f){ if(f==null)return '—'; var p=f*100; return (p>=0?'+':'')+p.toFixed(4)+'%'; }
+
+  /* ── POSITIONS ─────────────────────────────────────────────────────────────────────────────── */
+  function paintPos(d){
+    var box=document.getElementById('wlPos'); if(!box)return;
+    var all=d.positions||[], perf=d.perf||{};
+    /* the market chips are built from what is actually held, so they never offer an empty filter */
+    var counts={}; all.forEach(function(p){counts[p.sym]=(counts[p.sym]||0)+1;});
+    var syms=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,9);
+    var chips=document.getElementById('wlSym');
+    if(chips&&chips.dataset.k!==syms.join(',')){
+      chips.dataset.k=syms.join(',');
+      chips.innerHTML='<button type="button" data-sym="" class="'+(F.sym?'':'on')+'">ALL '+all.length+'</button>'+
+        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(F.sym===x?' class="on"':'')+'>'+esc(mkt(x))+' '+counts[x]+'</button>';}).join('');
+    }
+    var rows=all.filter(function(p){
+      if(F.sym&&p.sym!==F.sym)return false;
+      if(F.side==='l'&&!p.long)return false;
+      if(F.side==='s'&&p.long)return false;
+      return true;
+    });
+    var liqD=function(p){return (p.mark&&p.liq)?Math.abs(p.mark-p.liq)/p.mark*100:null;};
+    rows.sort(function(a,b){
+      if(F.sort==='pnl')return (b.pnl||0)-(a.pnl||0);
+      if(F.sort==='lev')return (b.lev||0)-(a.lev||0);
+      if(F.sort==='liq'){var x=liqD(a),y=liqD(b); if(x==null)return 1; if(y==null)return -1; return x-y;}
+      return b.val-a.val;
+    });
+    var n=document.getElementById('wlTabPos'); if(n)n.textContent=all.length?all.length:'';
+    if(!rows.length){ box.innerHTML='<div class="wl-empty">Nothing matches that filter.<br><b>Clear it</b> to see all '+all.length+' tracked positions.</div>'; return; }
+    box.innerHTML=rows.map(function(p,i){
+      var dd=liqD(p), near=(dd!=null&&dd<8);
+      var pr=perf[p.user]||perf[String(p.user).toLowerCase()];
+      var rec='';
+      if(pr&&pr.m&&pr.m.vlm>0){ var mp=pr.m.pnl; rec='<span class="wl-30 '+(mp>=0?'up':'dn')+'">30d '+spnl(mp)+'</span>'; }
+      return '<div class="wl-pr" data-w="'+esc(p.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
-        '<span class="wl-who"><a class="wl-adr" href="'+HL+esc(p.user)+'" target="_blank" rel="noopener">'+esc(shorta(p.user))+'</a>'+
-          '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(p.sym)+'</span></span>'+
+        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+
+          '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(mkt(p.sym))+'</span>'+rec+'</span>'+
         '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'—')+'</span>'+
         '<span class="wl-val">'+usd(p.val)+'</span>'+
-        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(liqD!=null?'<small>'+liqD.toFixed(1)+'% away</small>':'')+'</span>'+
+        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+'% away</small>':'')+'</span>'+
         '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
       '</div>';
-    }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No positions.</div>';
-    // feed
+    }).join('');
+  }
+
+  /* ── BY MARKET ─────────────────────────────────────────────────────────────────────────────── */
+  function paintCoins(d){
+    var box=document.getElementById('wlCoins'); if(!box)return;
+    var cs=d.coins||[];
+    var n=document.getElementById('wlTabCo'); if(n)n.textContent=cs.length?cs.length:'';
+    if(!cs.length){ box.innerHTML='<div class="wl-empty">The market breakdown is built on the four-minute position sweep.<br>It appears with the next one.</div>'; return; }
+    box.innerHTML=cs.map(function(c){
+      var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100;
+      var fd=c.fundDay;
+      return '<div class="wl-cr" data-sym="'+esc(c.sym)+'" role="button" tabindex="0">'+
+        '<span class="m">'+esc(mkt(c.sym))+'<small>'+px(c.mark)+'</small></span>'+
+        '<span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg==null?'—':fmtPct(c.chg))+'</span>'+
+        '<span class="wl-split"><span class="sb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span>'+
+          '<span class="sl"><span class="l">'+usd(c.longUsd)+' long</span><span class="s">'+usd(c.shortUsd)+' short</span></span></span>'+
+        '<span class="wl-num">'+c.n+'<small>'+c.longN+'L / '+c.shortN+'S</small></span>'+
+        '<span class="wl-num'+(c.lev>=20?' dn':'')+'">'+(c.lev?c.lev+'×':'—')+'</span>'+
+        '<span class="wl-num '+(fd==null?'dim':(fd>=0?'up':'dn'))+'">'+(fd==null?'—':spnl(fd))+'<small>'+fund8(c.fund)+'/h</small></span>'+
+        '<span class="wl-num dim">'+(c.oiShare==null?'—':c.oiShare+'%')+'<small>'+(c.oi?usd(c.oi):'')+'</small></span>'+
+      '</div>';
+    }).join('');
+  }
+
+  /* ── BEST THIS MONTH ───────────────────────────────────────────────────────────────────────── */
+  function paintBest(d){
+    var box=document.getElementById('wlBest'); if(!box)return;
+    var bs=d.best||[];
+    var n=document.getElementById('wlTabBe'); if(n)n.textContent=bs.length?bs.length:'';
+    if(!bs.length){ box.innerHTML='<div class="wl-empty">The month board is read from the Hyperliquid leaderboard, refreshed hourly.<br>It appears with the next refresh.</div>'; return; }
+    box.innerHTML=bs.map(function(b,i){
+      return '<div class="wl-br" data-w="'+esc(b.user)+'" role="button" tabindex="0">'+
+        '<span class="wl-rk">'+(i+1)+'</span>'+
+        '<span class="wl-who"><span class="wl-adr">'+esc(b.name?b.name:shorta(b.user))+'</span>'+
+          '<span class="wl-30">account '+usd(b.v)+'</span></span>'+
+        '<span class="wl-num '+(b.pnl>=0?'up':'dn')+'">'+spnl(b.pnl)+'</span>'+
+        '<span class="wl-num '+(b.roi>=0?'up':'dn')+'">'+fmtPct(b.roi*100)+'</span>'+
+        '<span class="wl-num dim">'+usd(b.vlm)+'</span>'+
+      '</div>';
+    }).join('');
+  }
+
+  /* ── the whale drawer: one wallet, everything we can say about it ───────────────────────────── */
+  var WD={open:false,a:''};
+  function spark(pts,w,h){
+    if(!pts||pts.length<2)return '';
+    var xs=pts.map(function(p){return p[0];}), ys=pts.map(function(p){return p[1];});
+    var x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
+    var y0=Math.min.apply(null,ys), y1=Math.max.apply(null,ys);
+    if(x1===x0)return ''; if(y1===y0){y0-=1;y1+=1;}
+    var X=function(v){return ((v-x0)/(x1-x0))*(w-2)+1;}, Y=function(v){return h-2-((v-y0)/(y1-y0))*(h-4);};
+    var dPath=pts.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1);}).join(' ');
+    var up=ys[ys.length-1]>=ys[0], col=up?'#2ebd85':'#ff5a4d';
+    var area=dPath+' L'+X(x1).toFixed(1)+' '+h+' L'+X(x0).toFixed(1)+' '+h+' Z';
+    var gid='g'+Math.random().toString(36).slice(2,7);
+    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true">'+
+      '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="'+col+'" stop-opacity=".28"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'+
+      '<path d="'+area+'" fill="url(#'+gid+')"/>'+
+      '<path d="'+dPath+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+  }
+  function recCell(k,w){
+    if(!w)return '<div class="c"><div class="k">'+k+'</div><div class="v">—</div></div>';
+    var v=w.pnl;
+    return '<div class="c"><div class="k">'+k+'</div><div class="v '+(v>=0?'up':'dn')+'">'+(v==null?'—':spnl(v))+'</div>'+
+      '<div class="r">'+(w.vlm?usd(w.vlm)+' vol':'')+'</div></div>';
+  }
+  function wdRender(j){
+    var body=document.getElementById('wdBody'); if(!body)return;
+    if(!j||!j.ok){ body.innerHTML='<div class="wl-empty">Hyperliquid returned nothing for this address right now.<br>It may hold no open perp position.</div>'; return; }
+    var H='';
+    H+='<div class="wd-h3">Track record (realised, from Hyperliquid)</div><div class="wd-rec">'+
+      recCell('24H',j.day)+recCell('7D',j.week)+recCell('30D',j.month)+recCell('ALL TIME',j.allTime)+'</div>';
+    if(j.equity){
+      H+='<div class="wd-tiles">'+
+        '<div class="c"><div class="k">ACCOUNT VALUE</div><div class="v">'+usd(j.equity)+'</div></div>'+
+        '<div class="c"><div class="k">POSITION SIZE</div><div class="v">'+usd(j.ntl||0)+'</div></div>'+
+        '<div class="c"><div class="k">MARGIN FREE</div><div class="v">'+usd(j.free||0)+'</div></div></div>';
+    }
+    var curve=j.month&&j.month.av&&j.month.av.length>2?j.month.av:(j.week&&j.week.av||null);
+    if(curve&&curve.length>2){
+      var f=curve[0][1], l=curve[curve.length-1][1], dp=f>0?((l-f)/f*100):0;
+      H+='<div class="wd-h3">Account value, last 30 days</div><div class="wd-curve">'+spark(curve,300,84)+
+        '<div class="wd-cfoot"><span>'+usd(f)+'</span><span class="'+(dp>=0?'':'')+'">'+fmtPct(dp)+'</span><span>'+usd(l)+'</span></div></div>';
+    }
+    var pos=j.pos||[];
+    H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
+    if(!pos.length) H+='<div class="wl-empty">Flat right now — no open perpetual position.</div>';
+    else H+=pos.map(function(p){
+      var dd=(p.liq&&p.entry)?null:null;
+      var mark=null; /* the profile does not carry a mark; the liq bar is drawn from entry vs liq */
+      var room=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
+      var bar=room!=null?Math.max(3,Math.min(100,room)):0;
+      var cls=room==null?'':(room<8?'hot':(room<20?'warn':''));
+      return '<div class="wd-p '+(p.long?'l':'s')+'">'+
+        '<div class="t"><b>'+esc(mkt(p.sym))+'</b><span class="sd">'+(p.long?'LONG':'SHORT')+'</span>'+
+          (p.lev?'<span class="sd" style="background:rgba(194,246,74,.14);color:var(--lime)">'+p.lev+'×'+(p.cross?' CROSS':' ISO')+'</span>':'')+
+          '<span class="sz">'+usd(p.val)+'</span></div>'+
+        '<div class="g">'+
+          '<div><div class="k">ENTRY</div><div class="v">'+px(p.entry)+'</div></div>'+
+          '<div><div class="k">LIQUIDATION</div><div class="v">'+px(p.liq)+'</div></div>'+
+          '<div><div class="k">UNREALIZED</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
+          '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'—')+'</div></div>'+
+        '</div>'+
+        (room!=null?'<div class="lqb"><i class="'+cls+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
+      '</div>';
+    }).join('');
+    var tr=j.trades||[];
+    if(tr.length){
+      H+='<div class="wd-h3">Recent executions we recorded</div>'+tr.slice(0,10).map(function(t){
+        var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+        return '<div class="wl-tr '+(t.long?'l':'s')+'" style="margin-bottom:6px">'+
+          '<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'+
+          '<span class="say"><span class="l1"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' <span class="wl-lev2">'+t.lev+'x</span>':'')+'</span>'+
+            '<span class="l2">avg '+px(t.px)+' · '+t.n+' fill'+(t.n===1?'':'s')+' · '+ago(t.tsEnd)+'</span></span>'+
+          '<span class="amt">'+usd(t.usd)+'</span></div>';
+      }).join('');
+    }
+    H+='<div class="wd-lnk">'+
+      '<a class="go" href="/paper-trade">Trade this setup risk-free →</a>'+
+      '<a href="'+HL+esc(j.a)+'" target="_blank" rel="noopener">Open on Hyperliquid</a>'+
+      '<button type="button" data-copy="'+esc(j.a)+'">Copy address</button></div>';
+    body.innerHTML=H;
+  }
+  function wdOpen(a){
+    a=String(a||'').toLowerCase(); if(!/^0x[0-9a-f]{40}$/.test(a))return;
+    WD.open=true; WD.a=a;
+    var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
+    if(dim)dim.hidden=false; if(dr)dr.hidden=false;
+    document.documentElement.style.overflow='hidden';
+    var ad=document.getElementById('wdAdr'); if(ad)ad.textContent=a;
+    var sub=document.getElementById('wdSub');
+    var d=window.__wlLast||{}, pr=(d.perf||{})[a];
+    if(sub)sub.textContent=pr?('tracked whale · account '+usd(pr.v)):'reading the chain…';
+    var body=document.getElementById('wdBody'); if(body)body.innerHTML='<div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>';
+    fetch('/api/whale/profile?a='+a).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(!WD.open||WD.a!==a)return;   /* the reader moved on before this landed */
+      if(sub&&j&&j.equity)sub.textContent='account '+usd(j.equity)+(j.ntl?' · '+usd(j.ntl)+' at risk':'');
+      wdRender(j);
+    }).catch(function(){ wdRender(null); });
+  }
+  function wdClose(){
+    WD.open=false;
+    var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
+    if(dim)dim.hidden=true; if(dr)dr.hidden=true;
+    document.documentElement.style.overflow='';
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    if(t.closest&&t.closest('#wdX'))return wdClose();
+    if(t.closest&&t.closest('#wdDim'))return wdClose();
+    var cp=t.closest&&t.closest('[data-copy]');
+    if(cp){ var v=cp.getAttribute('data-copy');
+      try{navigator.clipboard.writeText(v);}catch(_){}
+      var o=cp.textContent; cp.textContent='Copied'; setTimeout(function(){cp.textContent=o;},1200); return; }
+    var row=t.closest&&t.closest('[data-w]');
+    if(row&&!t.closest('a')){ wdOpen(row.getAttribute('data-w')); return; }
+    var cr=t.closest&&t.closest('.wl-cr[data-sym]');
+    if(cr){ F.sym=cr.getAttribute('data-sym'); setView('pos'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); return; }
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&WD.open)wdClose();
+    if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('data-w')){ e.preventDefault(); wdOpen(e.target.getAttribute('data-w')); }
+  });
+
+  /* ── views + filters ───────────────────────────────────────────────────────────────────────── */
+  function setView(v){
+    VIEW=v; try{localStorage.setItem('mp_wl_view',v);}catch(_){}
+    var map={pos:'vPos',trades:'vTrades',coins:'vCoins',best:'vBest'};
+    Object.keys(map).forEach(function(k){var el=document.getElementById(map[k]); if(el)el.hidden=(k!==v);});
+    [].forEach.call(document.querySelectorAll('.wl-tabs button'),function(b){b.classList.toggle('on',b.getAttribute('data-view')===v);});
+  }
+  function syncChips(){
+    [].forEach.call(document.querySelectorAll('#wlSym button'),function(b){b.classList.toggle('on',(b.getAttribute('data-sym')||'')===F.sym);});
+    [].forEach.call(document.querySelectorAll('#wlTrSym button'),function(b){b.classList.toggle('on',(b.getAttribute('data-sym')||'')===TF.sym);});
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.wl-tabs button[data-view]');
+    if(b)return setView(b.getAttribute('data-view'));
+    var seg;
+    if((seg=e.target.closest&&e.target.closest('#wlSide button')))
+      { F.side=seg.getAttribute('data-side')||''; [].forEach.call(seg.parentNode.children,function(x){x.classList.toggle('on',x===seg);}); if(window.__wlLast)paintPos(window.__wlLast); return; }
+    if((seg=e.target.closest&&e.target.closest('#wlSort button')))
+      { F.sort=seg.getAttribute('data-sort')||'val'; [].forEach.call(seg.parentNode.children,function(x){x.classList.toggle('on',x===seg);}); if(window.__wlLast)paintPos(window.__wlLast); return; }
+    if((seg=e.target.closest&&e.target.closest('#wlTrAct button')))
+      { TF.act=seg.getAttribute('data-act')||''; [].forEach.call(seg.parentNode.children,function(x){x.classList.toggle('on',x===seg);}); if(window.__wlLast)paintTrades(window.__wlLast); return; }
+    if((seg=e.target.closest&&e.target.closest('#wlTz button')))
+      { TZ=seg.getAttribute('data-tz'); try{localStorage.setItem('mp_wl_tz',TZ);}catch(_){}
+        [].forEach.call(seg.parentNode.children,function(x){x.classList.toggle('on',x===seg);}); if(window.__wlLast)paintTrades(window.__wlLast); return; }
+    var c;
+    if((c=e.target.closest&&e.target.closest('#wlSym button'))){ F.sym=c.getAttribute('data-sym')||''; syncChips(); if(window.__wlLast)paintPos(window.__wlLast); return; }
+    if((c=e.target.closest&&e.target.closest('#wlTrSym button'))){ TF.sym=c.getAttribute('data-sym')||''; syncChips(); if(window.__wlLast)paintTrades(window.__wlLast); return; }
+  });
+  (function(){ try{var v=localStorage.getItem('mp_wl_view'); if(v&&['pos','trades','coins','best'].indexOf(v)>=0)setView(v);}catch(_){ } })();
+
+  function paint(d){
+    window.__wlLast=d;
+    /* The banner is for a page with NOTHING to show. It used to appear whenever active was false,
+       which happens for the minutes after every collector restart even while trades are arriving
+       (owner 2026-09-14: "ovo 'Whale data is refreshing' stalno stoji"). */
+    var has=!!(d&&((d.positions&&d.positions.length)||(d.fills&&d.fills.length)||(d.coins&&d.coins.length)||(d.best&&d.best.length)));
+    var w=document.getElementById('wlWait'); if(w)w.hidden=has;
+    if(!d)return;
+    var g=d.agg||{};
+    var lo=+g.longUsd||0,sh=+g.shortUsd||0,tot=lo+sh||1;
+    if(lo||sh){
+      document.getElementById('wlLongV').textContent=usd(lo);
+      document.getElementById('wlShortV').textContent=usd(sh);
+      var lp=lo/tot*100;
+      document.getElementById('wlBarL').style.width=lp.toFixed(1)+'%';
+      document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
+      document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
+      document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
+      document.getElementById('wlCount').textContent=(g.count||0).toLocaleString('en-US');
+      var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
+      var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
+    }
+    if(d.positions&&d.positions.length)paintPos(d);
     paintTrades(d);
-    var al=d.alerts||[];var fe=document.getElementById('wlFeed');
-    fe.innerHTML=al.slice(0,22).map(function(a){
-      var arrow=a.long?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>':'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
-      return '<div class="wl-al '+(a.long?'l':'s')+'"><span class="ic">'+arrow+'</span>'+
-        '<span class="mid"><span class="t1"><b>'+esc(a.sym)+'</b> '+(a.long?'long':'short')+' · '+esc(shorta(a.user))+'</span>'+
-          '<span class="t2">liq '+px(a.liq)+' · '+ago(a.ts)+'</span></span>'+
-        '<span class="rt">'+usd(a.val)+'</span></div>';
-    }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No recent moves.</div>';
+    paintCoins(d);
+    paintBest(d);
+    syncChips();
   }
   function load(){fetch('/api/cg/hyper',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){paint(d||{});}).catch(function(){var w=document.getElementById('wlWait');if(w)w.hidden=false;});}
   load();setInterval(load,60000);

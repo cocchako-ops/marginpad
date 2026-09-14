@@ -2332,6 +2332,9 @@ async function handleCgHyper(url, env) {
       out.fills = j.fills.slice(0, 60);
       out.fillTs = +j.fillTs || 0; out.fillWatch = +j.fillWatch || 0; out.fillMin = +j.fillMin || 0;
  }
+ if (j && Array.isArray(j.coins)) out.coins = j.coins;      // per market: whale exposure vs funding / OI / volume
+ if (j && Array.isArray(j.best)) out.best = j.best;         // 30-day PnL board over the WHOLE leaderboard
+ if (j && j.perf) out.perf = j.perf;                        // track record per tracked wallet
  if (j && Array.isArray(j.positions) && j.positions.length) {
       let longUsd = 0, shortUsd = 0, upnl = 0;
  j.positions.forEach(p => { if (p.long) longUsd += p.val; else shortUsd += p.val; upnl += (+p.pnl || 0); });
@@ -2347,6 +2350,76 @@ async function handleCgHyper(url, env) {
   if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// One whale, everything we can say about them (2026-09-14, owner: "da vidi i kaze aha vidi sta je ovaj
+// uradio, zbog cega sta kako"). Three reads, joined: the chain's own portfolio history (equity curve +
+// realised PnL over a month), the wallet's open positions right now, and the executions our collector
+// already grouped. Edge-cached per address so a reader clicking through ten whales costs ten calls, not
+// ten thousand. Hyperliquid's info API is the only source — nothing here is inferred.
+async function handleWhaleProfile(url, env) {
+  const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
+  const a = String(url.searchParams.get('a') || '').toLowerCase();
+  if (!/^0x[0-9a-f]{40}$/.test(a)) return jr({ error: 'bad_address' }, 'no-store');
+  const ck = new Request('https://marginpad.io/__whale_prof_v1_' + a);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+
+  const hl = (body) => fetch('https://api.hyperliquid.xyz/info', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body), signal: AbortSignal.timeout(9000),
+  }).then(r => r.ok ? r.json() : null).catch(() => null);
+
+  const out = { a, ts: Date.now() };
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  const [pf, st, ours] = await Promise.all([
+    hl({ type: 'portfolio', user: a }),
+    hl({ type: 'clearinghouseState', user: a }),
+    base ? fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 60 } }).then(r => r.json()).catch(() => null) : null,
+  ]);
+
+  if (Array.isArray(pf)) {
+    const win = (k) => { const e = pf.find(x => x[0] === k); return e && e[1] || null; };
+    const shape = (w) => {
+      if (!w) return null;
+      const av = (w.accountValueHistory || []).map(x => [+x[0], +x[1]]).filter(x => x[0] > 0);
+      const pn = (w.pnlHistory || []).map(x => [+x[0], +x[1]]).filter(x => x[0] > 0);
+      return { vlm: Math.round(+w.vlm || 0), pnl: pn.length ? Math.round(pn[pn.length - 1][1]) : null,
+               av: av.slice(-60), pn: pn.slice(-60) };   // 60 points is a readable curve, not a data dump
+    };
+    out.day = shape(win('perpDay') || win('day'));
+    out.week = shape(win('perpWeek') || win('week'));
+    out.month = shape(win('perpMonth') || win('month'));
+    out.allTime = shape(win('perpAllTime') || win('allTime'));
+  }
+
+  if (st && st.marginSummary) {
+    out.equity = Math.round(+st.marginSummary.accountValue || 0);
+    out.used = Math.round(+st.marginSummary.totalMarginUsed || 0);
+    out.ntl = Math.round(+st.marginSummary.totalNtlPos || 0);
+    out.free = Math.round(+(st.withdrawable || 0));
+    out.pos = (st.assetPositions || []).map(ap => {
+      const p = ap.position || {}, szi = +p.szi || 0, val = Math.abs(+p.positionValue || 0);
+      return {
+        sym: String(p.coin || ''), long: szi > 0, sz: Math.abs(szi), val: Math.round(val),
+        entry: +p.entryPx || null, liq: +p.liquidationPx || null,
+        lev: +((p.leverage || {}).value) || null, cross: ((p.leverage || {}).type || '') === 'cross',
+        pnl: Math.round(+p.unrealizedPnl || 0),
+        roe: +p.returnOnEquity ? +(+p.returnOnEquity * 100).toFixed(1) : null,
+        fund: Math.round(+((p.cumFunding || {}).sinceOpen) || 0),   // what holding it has cost so far
+      };
+    }).filter(x => x.val > 0).sort((x, y) => y.val - x.val);
+  }
+
+  if (ours) {
+    out.trades = (ours.fills || []).filter(f => String(f.user || '').toLowerCase() === a).slice(0, 25);
+    const pr = (ours.perf || {})[a] || (ours.perf || {})[Object.keys(ours.perf || {}).find(k => k.toLowerCase() === a) || ''];
+    if (pr) out.perf = pr;
+    out.tracked = (ours.perf || {}).hasOwnProperty(a) || !!pr;
+  }
+  out.ok = !!(out.equity || (out.pos && out.pos.length) || out.month);
+  const resp = jr(out, out.ok ? 'public, max-age=90' : 'no-store');
+  if (out.ok) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+
 async function handleCgEtf(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   const ck = new Request('https://marginpad.io/__cg_etf_v3');
@@ -15386,6 +15459,7 @@ export default {
     if (url.pathname === '/api/cg/cycle') return handleCgCycle(url, env);
     if (url.pathname === '/api/cg/etf') return handleCgEtf(url, env);
     if (url.pathname === '/api/cg/hyper') return handleCgHyper(url, env);
+    if (url.pathname === '/api/whale/profile') return handleWhaleProfile(url, env);
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const ck = new Request('https://marginpad.io/__price_' + sym);
