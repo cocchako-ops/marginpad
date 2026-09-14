@@ -282,12 +282,12 @@
     + '.mpa-xp-list::-webkit-scrollbar-thumb:hover,.mpa-dm-scroll::-webkit-scrollbar-thumb:hover{background:#333d4a}'
     + '.mpa-ib{display:flex;flex-direction:column;max-height:min(56vh,440px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
     + '.mpa-ib::-webkit-scrollbar{width:9px}.mpa-ib::-webkit-scrollbar-track{background:#0a0d11}.mpa-ib::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
-    + '.mpa-ib-r{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid #1a2027;cursor:pointer;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}'
+    + '.mpa-ib-r{display:flex;align-items:flex-start;gap:10px;padding:11px 4px;border-bottom:1px solid #1a2027;cursor:pointer;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}'
     + '.mpa-ib-r:hover{background:rgba(255,255,255,.02)}'
-    + '.mpa-ib-av{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0b0d;font-size:14px}'
+    + '.mpa-ib-av{width:34px;height:34px;border-radius:50%;flex:none;align-self:center;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0b0d;font-size:14px}'
     + '.mpa-ib-b{flex:1;min-width:0}.mpa-ib-nm{font-size:13.5px;font-weight:700;color:#f2f0e9;display:flex;align-items:center;gap:4px}'
     + '.mpa-ib-last{font-size:12px;color:#7f8893;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}'
-    + '.mpa-ib-meta{flex:none;text-align:right;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}'
+    + '.mpa-ib-meta{flex:none;align-self:flex-start;margin-top:1px;padding-left:8px;text-align:right;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}'
     + '.mpa-ib-un{display:inline-block;min-width:18px;height:18px;line-height:18px;padding:0 5px;background:#38bdf8;color:#04121c;border-radius:9px;font-size:10.5px;font-weight:800;text-align:center;margin-top:3px}'
     + '.mpa-dmh{display:flex;align-items:center;gap:8px;margin:0 0 8px}.mpa-dmh .mpa-ib-av{width:30px;height:30px}.mpa-dmh .mpa-ib-nm{font-size:15px}'
     + '.mpa-dbub{max-width:82%;padding:9px 12px;border-radius:13px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}'
@@ -746,7 +746,7 @@
     /* The message-action sheet and the reaction chips. They live HERE because the code that creates them lives
        here too, and mp-auth is the one bundle on every page — a page without home.css would otherwise show an
        unstyled sheet (2026-09-14). The room chat keeps its own copy of the .ct-* rules for the same reason. */
-    + '.ct-sheet{position:fixed;z-index:2147483000;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}'
+    + '.ct-sheet{position:fixed;z-index:2147483646;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}'
     + '.ct-sheet.on{opacity:1;transform:none}'
     + '.ct-sh-rx{display:flex;gap:2px}'
     + '.ct-sh-rx button{width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}'
@@ -869,6 +869,14 @@
   window.mpDmBadge = dmSetBadge;
   function duelSetBadge(n) { n = +n || 0; window._mpDuelPending = n; setDot('mpaDuelBadge', n); refreshTrigDot(); }
   window.mpDuelBadge = duelSetBadge;
+  /* A few words and then an ellipsis (owner 2026-09-14: "ne mora da se vidi poslednja poruka ovoliko dugacko").
+     Cut on a word boundary where there is one, so the glance reads as a phrase rather than a severed word. */
+  function dmPreview(t) {
+    t = String(t || '').replace(/\s+/g, ' ').trim();
+    if (t.length <= 34) return t;
+    var cut = t.slice(0, 34), sp = cut.lastIndexOf(' ');
+    return (sp > 18 ? cut.slice(0, sp) : cut).replace(/[\s.,;:!?-]+$/, '') + '\u2026';
+  }
   function renderDmInbox() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Messages</h3><div class="mpa-ib" id="mpaIb"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaIbBack" type="button">← Back to profile</button>';
     var bk = bodyEl.querySelector('#mpaIbBack'); if (bk) bk.addEventListener('click', render);
@@ -876,7 +884,7 @@
       var ib = bodyEl.querySelector('#mpaIb'); if (!ib) return;
       var th = (d && d.threads) || [];
       if (!th.length) { ib.innerHTML = '<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat — you can message people you follow (or who follow you).</div>'; return; }
-      ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + dmCol(t.name) + '">' + esc((t.name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(t.last || '') + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
+      ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + dmCol(t.name) + '">' + esc((t.name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
     }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = '<div class="mpa-xp-empty">Could not load your messages.</div>'; });
   }
@@ -2934,7 +2942,16 @@
   window.mpLongPress = function (box, sel, onPick) {
     if (!box || box._mpLp) return; box._mpLp = 1;
     var t = null, fired = false, xy = null;
-    var skip = function (n) { return !!(n.closest && (n.closest('a') || n.closest('.ct-user') || n.closest('button') || n.closest('.ct-rxb') || n.closest('.mpa-rxb'))); };
+    /* A press must not steal what the row already does — a username opens a profile, a link is a link. A SHARED
+       TRADE is different: it is rendered as a link (.ct-trade) or a card (.ct-sig) but it IS the message, so a hold
+       has to reach it (owner 2026-09-14: "shared trades ... ako se prst zadrzi na njima, treba da moze da se ostavi
+       reakcija"). A tap still opens the ticket — the press swallows only its own release click. */
+    var skip = function (n) {
+      if (!n.closest) return false;
+      if (n.closest('.ct-user') || n.closest('.ct-rxb') || n.closest('.mpa-rxb')) return true;
+      if (n.closest('.ct-sig') || n.closest('.ct-trade')) return false;
+      return !!(n.closest('a') || n.closest('button'));
+    };
     var rowOf = function (n) { return n.closest && n.closest(sel); };
     box.addEventListener('touchstart', function (e) {
       var row = rowOf(e.target); if (!row || skip(e.target)) return;

@@ -366,7 +366,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .pp-eligf{margin-top:8px;padding-top:7px;border-top:1px solid #232932;font-size:11.5px}.pp-eligf a{color:#c2f64a;text-decoration:none}.pp-eligf a:hover{text-decoration:underline}
 
 /* ── chat message actions (2026-09-14): the long-press sheet and the reaction chips ───────────────────────────── */
-.ct-sheet{position:fixed;z-index:2147483000;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}
+.ct-sheet{position:fixed;z-index:2147483646;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}
 .ct-sheet.on{opacity:1;transform:none}
 .ct-sh-rx{display:flex;gap:2px}
 .ct-sh-rx button{width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}

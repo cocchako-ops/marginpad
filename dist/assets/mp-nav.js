@@ -412,9 +412,9 @@
       + '<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>'
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=a6622ed7', CHAT_CSS = '/assets/mp-trade.css?v=90d765d8', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=a6622ed7', CHAT_CSS = '/assets/mp-trade.css?v=e5146110', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
-    function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=90d765d8"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
+    function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=e5146110"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
     // the FAB is on the page from load (it is how a desktop visitor finds the chat); the bundle waits for the first click
     function ensureChat(cb) {
@@ -441,8 +441,8 @@
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=067e9a11', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=067e9a11"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=5e3365ea', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=5e3365ea"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
