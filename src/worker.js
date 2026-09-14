@@ -22610,7 +22610,10 @@ export class UserStore {
       return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
     }
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
-      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); if (b.op !== 'sweep' && (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid))) return this.j({ error: 'bad_uid' }, 400);
+      // The hyphen belongs in the allowed set: the older harness (/mktestuser) mints ids like `e2e-vault1`, and
+      // stripping it turned the id into one that matches no row — so `rm` answered ok and deleted nothing, and three
+      // of those accounts sat in Users for weeks (2026-09-14). The `e2e` prefix is still what gates this.
+      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24); if (b.op !== 'sweep' && (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid))) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
       if (b.op === 'sweep') { // remove every e2e_* member older than an hour: an E2E that crashed mid-run leaves its throwaway behind (goals-e2e 2026-09-06)
         const olds = this.rows("SELECT id FROM users WHERE username LIKE 'e2e\\_%' ESCAPE '\\' AND created < ?", Date.now() - 3600000).map(r => String(r.id));
