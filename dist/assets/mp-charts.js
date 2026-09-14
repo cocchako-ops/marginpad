@@ -1325,7 +1325,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(isFinite(_tp)&&((_lng&&_tp<=p)||(!_lng&&_tp>=p)))_tp=NaN;
       var d=jload();d.push(srvT||{id:cid||(String(Date.now())+'_'+Math.floor(Math.random()*1e4)),cid:cid||undefined,ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L))),status:'open',pnl:null});/* per-class taker fee (was hardcoded 0 → /charts quick-trades closed fee-free, inconsistent with the plan form; stocks/forex get their own rate) */
       if(window.mpLivePrices)window.mpLivePrices[sym]={p:(srvT?+srvT.entry:p),t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
-      try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){} // haptic on open (chart quick-trade)
+      try{window.mpHaptic&&window.mpHaptic('ok');}catch(e){} // the position is open (chart quick-trade)
       try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
       try{wins.forEach(updateMTBtn);}catch(e){}
       try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}

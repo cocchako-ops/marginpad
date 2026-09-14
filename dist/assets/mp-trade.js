@@ -175,7 +175,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     if(!window.mpEx||!window.mpEx.url)return '';
     var cc=window.mpEx.ccNow?window.mpEx.ccNow():''; if(window.mpEx.blocked&&window.mpEx.blocked('MEXC',cc))return '';
     var sym=String(e&&e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!sym)return '';
-    if(String(e.feeVenue||'').toLowerCase()==='mexc')return '';
+    var _mine=String(e.feeVenue||'').toLowerCase()==='mexc'; /* the trade already ran at MEXC's rate: confirm the saving instead of going silent (owner 2026-09-14) */
     var b=feeBrk(e);
     /* MIRROR of home.js (2026-09-12): the card prints what THIS round trip costs at MEXC's taker rate, not the fee already paid */
     var _rt=(+e.feeRate>0?+e.feeRate:0.00055),_mxT=(window.mpFeeVenues&&window.mpFeeVenues.mexc&&+window.mpFeeVenues.mexc.t>0)?+window.mpFeeVenues.mexc.t/100:0.0002;
@@ -184,6 +184,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     /* MEXC futures lists crypto only — an AAPL or EURUSD ticket has a fee window but no MEXC pair to point at, and
        the link would 404. Everything else shows, win or loss, down to a saving of one cent (owner 2026-09-14). */
     if(window.mpAssetClass&&window.mpAssetClass(sym)!=='crypto')return '';
+    if(_mine){ /* already on MEXC's rate \u2014 show what that choice saved against MarginPad's default */
+      var _def=_legs*(0.00055/_rt),_kept=_def-_legs;
+      if(!(_legs>0)||!(_kept>0.005))return '';
+      return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
+        +'<b>'+MT('jFeeMxF','You are on MEXC rates \u2014 this round trip cost')+' '+feeF(_legs)+' '+MT('jFeeMxG','instead of')+' '+feeF(_def)+', '+MT('jFeeMxH','saving you')+' '+feeF(_kept)+'</b>'
+        +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
+    }
     var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
       +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','instead of')+' '+feeF(_legs)+' \u2014 '+MT('jFeeMxC','you keep')+' '+feeF(_save)+'</b>'
@@ -905,7 +912,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     if(syncT)clearInterval(syncT);syncT=setInterval(function(){if(ov&&ov.classList.contains('on'))sync();else{clearInterval(syncT);syncT=null;}},1200);
   }
   function hide(){if(ov)ov.classList.remove('on');if(syncT){clearInterval(syncT);syncT=null;}}
- function done(){try{if(window.mpBuzz)window.mpBuzz([22]);else if(navigator.vibrate)(navigator.userActivation&&navigator.userActivation.hasBeenActive)&&navigator.vibrate(22);}catch(_){}
+ function done(){try{if(window.mpHaptic)window.mpHaptic('ok');else if(navigator.vibrate)(navigator.userActivation&&navigator.userActivation.hasBeenActive)&&navigator.vibrate(22);}catch(_){}
     try{if(window.mpJournalRender)window.mpJournalRender();}catch(_){}
     if(after)try{after();}catch(_){}}
   function go(){ var d=jload(),e=null;for(var i=0;i<d.length;i++)if(d[i].id===curId){e=d[i];break;}

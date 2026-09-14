@@ -19,8 +19,12 @@ const J = [
   { id: String(now - 30000) + '_4', sym: 'DOGE', side: 'long', lev: 2, margin: 2.5, qty: 2.5 * 2 / 0.4, entry: 0.4, exit: 0.402, ts: now - 1000000, closeTs: now - 30000, status: 'win', pnl: 0.02, feeRate: 0.00055, src: 'client' },
   // a stocks ticket: it HAS a fee window (0.02% stock rate) but MEXC futures has no such pair - no line, on purpose.
   { id: String(now - 20000) + '_5', sym: 'AAPL', side: 'long', lev: 5, margin: 100, qty: 100 * 5 / 250, entry: 250, exit: 248, ts: now - 900000, closeTs: now - 20000, status: 'loss', pnl: -4.1, feeRate: 0.0002, src: 'client' },
+  // A trade that ALREADY ran at MEXC's rate, because the reader picked MEXC in the fee-venue picker. This is the
+  // owner's own setup and the reason he saw nothing for weeks: the code answered "nothing to compare" with silence.
+  // It must now CONFIRM the saving against MarginPad's default rate, and still carry the referral link.
+  { id: String(now - 10000) + '_6', sym: 'SOL', side: 'long', lev: 100, margin: 100, qty: 98.58, entry: 101.44, exit: 102.2, ts: now - 800000, closeTs: now - 10000, status: 'win', pnl: 70.9, feeRate: 0.0002, feeVenue: 'mexc', src: 'srv' },
 ];
-const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE'];   // the seeded rows MEXC can actually quote
+const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE', 'SOL'];   // the seeded rows MEXC can actually quote
 (async () => {
   await withBrowser(async (browser) => {
     for (const cc of ['DE', 'US']) {
@@ -58,7 +62,7 @@ const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE'];   // the seeded rows MEXC can actual
       });
       console.log(cc, JSON.stringify(r));
       if (cc === 'DE') {
-        ok(r.closed === 5, 'five closed tickets rendered (' + r.closed + ')');
+        ok(r.closed === 6, 'six closed tickets rendered (' + r.closed + ')');
         ok(r.per.every(p => p.onCard === 0), 'no MEXC line on the ticket itself (owner: it does not belong there)');
         const withWin = r.per.filter(p => p.hasWindow);
         ok(withWin.length >= 4, 'every ticket carrying a fee rate has a fee window (' + withWin.length + ' of ' + r.per.length + '; a row with no stamped rate has no breakdown to show)');
@@ -66,7 +70,10 @@ const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE'];   // the seeded rows MEXC can actual
         ok(withWin.every(p => p.slot), 'each window carries the MEXC slot in its markup, not a finished line');
         const crypto = r.per.filter(p => CRYPTO_SYMS.indexOf(String(p.sym || '').trim().toUpperCase()) >= 0 && p.hasWindow);
         const stocks = r.per.filter(p => String(p.sym || '').trim().toUpperCase() === 'AAPL');
-        ok(crypto.length === 3, 'the three crypto tickets with a window are all present (' + crypto.map(p => p.sym).join(', ') + ')');
+        ok(crypto.length === 4, 'the four crypto tickets with a window are all present (' + crypto.map(p => p.sym).join(', ') + ')');
+        const onMexc = r.per.find(p => String(p.sym || '').trim().toUpperCase() === 'SOL');
+        ok(onMexc && onMexc.inPop === 1, 'a trade ALREADY priced at MEXC still shows a line rather than nothing', onMexc);
+        ok(onMexc && /on MEXC rates/i.test(onMexc.txt) && /saving you/i.test(onMexc.txt), 'and it confirms what that choice saved, against the default rate', onMexc && onMexc.txt);
         ok(crypto.every(p => p.filled), 'opening the window FILLS the slot - the line is not baked at render, when mpEx is still loading');
         ok(crypto.every(p => p.inPop === 1), 'every crypto fee window carries exactly one MEXC line, win and loss alike');
         const tiny = crypto.find(p => String(p.sym || '').trim().toUpperCase() === 'DOGE');
@@ -77,7 +84,7 @@ const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE'];   // the seeded rows MEXC can actual
         ok(crypto.every(p => p.hit), 'the line is clickable where it sits, not covered by anything');
         ok(crypto.every(p => /mexc\.com/.test(p.href) && /inviteCode=/.test(p.href)), 'and it carries our referral code');
       } else {
-        ok(r.closed === 5 && r.per.every(p => p.inPop === 0 && p.onCard === 0), 'US reader: no MEXC line anywhere, window or ticket (partner rule)');
+        ok(r.closed === 6 && r.per.every(p => p.inPop === 0 && p.onCard === 0), 'US reader: no MEXC line anywhere, window or ticket (partner rule)');
       }
       await ctx.close();
     }

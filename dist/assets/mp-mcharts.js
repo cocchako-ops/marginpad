@@ -573,7 +573,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         try{window.mpJStore(d);}catch(e){}
         if(window.mpLivePrices)window.mpLivePrices[tSym]={p:+P.entry,t:Date.now()};
         if(window.mpJournalRender)window.mpJournalRender();
-        try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
+        try{window.mpHaptic&&window.mpHaptic('ok');}catch(e){} // the position is open (mobile charts)
         try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
         try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
         try{if(typeof updMT==='function')updMT();}catch(e){}

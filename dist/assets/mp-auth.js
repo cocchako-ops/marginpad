@@ -2958,7 +2958,7 @@
     box.addEventListener('touchstart', function (e) {
       var row = rowOf(e.target); if (!row || skip(e.target)) return;
       fired = false; xy = [e.touches[0].clientX, e.touches[0].clientY];
-      clearTimeout(t); t = setTimeout(function () { fired = true; try { if (navigator.vibrate) navigator.vibrate(12); } catch (_) {} onPick(row); }, 480);
+      clearTimeout(t); t = setTimeout(function () { fired = true; if (window.mpHaptic) window.mpHaptic('tick'); onPick(row); }, 480);
     }, { passive: true });
     box.addEventListener('touchmove', function (e) { if (!xy || !e.touches[0]) return; if (Math.abs(e.touches[0].clientX - xy[0]) > 10 || Math.abs(e.touches[0].clientY - xy[1]) > 10) clearTimeout(t); }, { passive: true });
     box.addEventListener('touchend', function () { clearTimeout(t); if (fired) window.__mpLpRelease = Date.now(); }, { passive: true });
@@ -2966,4 +2966,36 @@
     box.addEventListener('contextmenu', function (e) { var row = rowOf(e.target); if (!row || skip(e.target)) return; e.preventDefault(); onPick(row); });
     box.addEventListener('click', function (e) { if (fired) { fired = false; e.preventDefault(); e.stopPropagation(); } }, true);
   };
+})();
+
+/* ── haptics ─────────────────────────────────────────────────────────────────────────────────────────────────────
+   window.mpHaptic('step'|'tick'|'ok'|'warn') — a confirmation you can feel, for the few moments that earn one: a
+   position opening or closing, an order landing, each step of the leverage ladder. window.mpBuzz(pattern) is the raw
+   form the older call sites use. It lives HERE, in the every-page bundle, because it used to live in home.js and every
+   caller outside the six app-shell routes was silently dead (same exception as mpToast / mpOrders / mpEx).
+
+   Deliberately NOT gated on prefers-reduced-motion — the owner's machine has animation effects off and would never
+   feel it, and a buzz is not motion on a screen. Off entirely with localStorage mp_haptics=0.
+   navigator.vibrate does not exist on desktop or on iOS: there this is a property lookup and a return, no listeners,
+   nothing loaded. The userActivation gate is what keeps Chrome from logging a blocked-vibrate warning. */
+(function () {
+  var P = { step: 7, tick: 12, ok: [15, 40, 15], warn: [22, 55, 22] };
+  var off = null, last = 0;
+  function fire(pattern, minGap) {
+    try {
+      if (!navigator.vibrate) return false;
+      if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
+      if (off) return false;
+      var ua = navigator.userActivation;
+      if (ua && !ua.hasBeenActive) return false;   // Chrome refuses (and warns) before the first interaction
+      var now = Date.now();
+      if (now - last < (minGap || 0)) return false;
+      last = now;
+      navigator.vibrate(pattern);
+      return true;
+    } catch (e) { return false; }
+  }
+  /* a dragged slider must tick per STEP of the ladder, never per frame of the drag */
+  window.mpHaptic = function (kind) { return fire(P[kind] || P.tick, kind === 'step' ? 45 : 0); };
+  if (!window.mpBuzz) window.mpBuzz = function (p) { return fire(p, 0); };
 })();

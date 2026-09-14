@@ -91,6 +91,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var s=+document.getElementById('start').value,re=+document.getElementById('ret').value/100,n=+document.getElementById('per').value;var u=document.getElementById('unit').value;var r=document.getElementById('res');if(!(s>0&&n>0)){r.innerHTML='';return;}var f=s*Math.pow(1+re,n),tot=(f/s-1)*100;r.innerHTML='<div class="rrow big"><span class="k">After '+n+' '+u+'s</span><span class="v">'+f.toLocaleString(undefined,{maximumFractionDigits:2})+' USD</span></div><div class="rrow"><span class="k">Total return</span><span class="v '+(tot>=0?'up':'dn')+'">'+(tot>=0?'+':'')+tot.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Same edge NOT compounded</span><span class="v">'+(s+s*re*n).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=8f6b6756"></script>
+<script defer src="/assets/mp-nav.js?v=182d623c"></script>
 </body>
 </html>
