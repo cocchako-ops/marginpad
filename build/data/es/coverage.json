@@ -270,6 +270,13 @@
   "missing": 0
  },
  {
+  "rel": "biggest-liquidation-today/index.html",
+  "cover": 0.17073170731707318,
+  "hit": 7,
+  "missing": 34,
+  "skipped": true
+ },
+ {
   "rel": "binance-liquidation-calculator/index.html",
   "cover": 1,
   "hit": 80,
@@ -1566,6 +1573,13 @@
   "missing": 0
  },
  {
+  "rel": "how-many-traders-liquidated-today/index.html",
+  "cover": 0.14634146341463414,
+  "hit": 6,
+  "missing": 35,
+  "skipped": true
+ },
+ {
   "rel": "hype-liquidation-calculator/index.html",
   "cover": 1,
   "hit": 63,
@@ -1630,6 +1644,13 @@
   "cover": 1,
   "hit": 48,
   "missing": 0
+ },
+ {
+  "rel": "is-funding-positive-or-negative/index.html",
+  "cover": 0.20930232558139536,
+  "hit": 9,
+  "missing": 34,
+  "skipped": true
  },
  {
   "rel": "journal/index.html",
@@ -1729,15 +1750,22 @@
  },
  {
   "rel": "liquidations/index.html",
-  "cover": 1,
+  "cover": 0.9428571428571428,
   "hit": 66,
-  "missing": 0
+  "missing": 4
  },
  {
   "rel": "long-short/index.html",
   "cover": 1,
   "hit": 35,
   "missing": 0
+ },
+ {
+  "rel": "longs-or-shorts-liquidated-more/index.html",
+  "cover": 0.16666666666666666,
+  "hit": 7,
+  "missing": 35,
+  "skipped": true
  },
  {
   "rel": "lowest-fee-crypto-exchange/index.html",

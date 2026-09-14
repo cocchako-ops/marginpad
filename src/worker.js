@@ -198,7 +198,7 @@ function handleOpenApi() {
     info: {
       title: 'MarginPad Free Crypto API',
       version: '2.6.0',
-      description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }.',
+      description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }, except the four liquidation-collector passthroughs (feed, liquidations/live, liquidations/recent, clusters), which return the raw collector object and are marked as such.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
     },
@@ -226,10 +226,10 @@ function handleOpenApi() {
       '/api/v1/long-short': { get: { tags: ['Derivatives'], summary: 'Long/short ratio', description: 'Aggregated long vs short account ratio for major coins. Crowd positioning.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/liquidations': { get: { tags: ['Derivatives'], summary: 'Liquidations', description: 'Aggregated 24h liquidation totals per coin (longs vs shorts) across all exchanges.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/venues': { get: { tags: ['Derivatives'], summary: 'Liquidations by exchange', description: '24h liquidation total, market share and long/short split per venue (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), measured from their public feeds by our own collector.', responses: { '200': { description: 'ok' } } } },
-      '/api/v1/feed': { get: { tags: ['Derivatives'], summary: 'Newest liquidation events', description: 'The latest liquidation events across all tracked symbols: {events:[{ts, exchange, symbol, side, price, qty, notional}]}. Seconds behind the exchanges (3 s edge cache). Poll every 3-5 s.', responses: { '200': { description: 'ok' } } } },
-      '/api/v1/liquidations/live': { get: { tags: ['Derivatives'], summary: 'Recent liquidations for one symbol', description: 'Raw recent liquidation events for one symbol; side is long_liquidated or short_liquidated, notional is USD.', parameters: [q('symbol', 'Coin ticker, e.g. BTC.', true, 'BTC'), q('limit', 'Max events, up to 1000.', false, '400')], responses: { '200': { description: 'ok' } } } },
-      '/api/v1/liquidations/recent': { get: { tags: ['Derivatives'], summary: 'Liquidation histogram', description: 'Time-bucketed long vs short liquidation dollars for one symbol — the source of the heatmap statistics.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC'), q('minutes', 'Window, up to 43200 (30 days).', false, '1440')], responses: { '200': { description: 'ok' } } } },
-      '/api/v1/clusters': { get: { tags: ['Derivatives'], summary: 'Liquidation clusters', description: 'Modelled price levels where liquidation liquidity is estimated to sit right now: {clusters:[{price, side, est_notional}]}.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/feed': { get: { tags: ['Derivatives'], summary: 'Newest liquidation events', description: 'The latest liquidation events across all tracked symbols: {events:[{ts, exchange, symbol, side, price, qty, notional}]}. Seconds behind the exchanges (3 s edge cache). Poll every 3-5 s. Passthrough from the liquidation collector: this route returns the raw object, NOT the { ok, data, ts } envelope.', responses: { '200': { description: 'Raw collector object (no envelope)' } } } },
+      '/api/v1/liquidations/live': { get: { tags: ['Derivatives'], summary: 'Recent liquidations for one symbol', description: 'Raw recent liquidation events for one symbol; side is long_liquidated or short_liquidated, notional is USD. Passthrough from the liquidation collector: this route returns the raw object, NOT the { ok, data, ts } envelope.', parameters: [q('symbol', 'Coin ticker, e.g. BTC.', true, 'BTC'), q('limit', 'Max events, up to 1000.', false, '400')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/liquidations/recent': { get: { tags: ['Derivatives'], summary: 'Liquidation histogram', description: 'Time-bucketed long vs short liquidation dollars for one symbol — the source of the heatmap statistics. Passthrough from the liquidation collector: this route returns the raw object, NOT the { ok, data, ts } envelope.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC'), q('minutes', 'Window, up to 43200 (30 days).', false, '1440')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/clusters': { get: { tags: ['Derivatives'], summary: 'Liquidation clusters', description: 'Modelled price levels where liquidation liquidity is estimated to sit right now: {clusters:[{price, side, est_notional}]}, with updatedAt as the measurement time. These are ESTIMATES from a model, not observed events. Passthrough from the liquidation collector: this route returns the raw object, NOT the { ok, data, ts } envelope.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/calendar': { get: { tags: ['Macro'], summary: 'Crypto economic calendar', description: 'FOMC, CPI, NFP, options expiry and crypto milestones with exact UTC timestamps. Omit params for the upcoming window; pass year for a full year incl. history.', parameters: [q('year', 'Full year 2023-2027 for the whole year incl. past events. Omit for the upcoming window.', false, '2026')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/fear-greed': { get: { tags: ['Macro'], summary: 'Fear & Greed index', description: 'Current crypto Fear & Greed value (0-100) and classification.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/coins': { get: { tags: ['Macro'], summary: 'Top coins by market cap', description: 'Top ~250 coins: price, market cap, 1h/24h/7d change, sparkline. Optional category filter.', parameters: [q('cat', 'CoinGecko category id, e.g. layer-1, decentralized-finance-defi, meme-token, artificial-intelligence.', false, 'layer-1')], responses: { '200': { description: 'ok' } } } },
@@ -240,9 +240,9 @@ function handleOpenApi() {
       '/api/latam/br': { get: { tags: ['Regional quotes'], summary: 'Bitcoin hoje (Brazil): BTC and USDT in reais per exchange', description: 'BTC/BRL and USDT/BRL on every exchange operating in Brazil, fees included, sorted by buy price; btcMid/usdtMid = medians; agio = ask ÷ (BTC/USD × dólar comercial) − 1 in percent per venue (dólar comercial from awesomeapi with Banco Central PTAX fallback; BTC/USD from MarginPad\'s own feed); own hourly history. Plain JSON, 60 s cache, stale:true on upstream failure. Human page: /bitcoin-hoje/.', responses: { '200': { description: '{ ok, ts, stale, n, btcMid, usdtMid, btcUsd, usdbrl, fair, agioMid, bestBuy, bestSell, btc:[{id,name,ask,bid,spread,agio}], usdt:[…], hist }' } } } },
       '/api/v1/calc/liquidation': { get: { tags: ['Calculators'], summary: 'Liquidation price', description: 'Compute the liquidation price for a leveraged position.', parameters: [q('entry', 'Entry price.', true, '60000'), q('leverage', 'Leverage, e.g. 10.', true, '10'), q('side', 'long or short.', false, 'long'), q('mmr', 'Maintenance margin rate in percent (default 0.5).', false, '0.5')], responses: { '200': { description: 'ok' } } } },
       '/api/v1/calc/position-size': { get: { tags: ['Calculators'], summary: 'Position size', description: 'Risk-based position size from account balance, risk %, entry and stop.', parameters: [q('balance', 'Account balance.', true, '10000'), q('risk', 'Risk percent of balance, e.g. 1.', true, '1'), q('entry', 'Entry price.', true, '60000'), q('stop', 'Stop-loss price.', true, '58000'), q('leverage', 'Optional leverage for margin required.', false, '10')], responses: { '200': { description: 'ok' } } } },
-      '/api/v1/calc/pnl': { get: { tags: ['Calculators'], summary: 'PnL / ROI', description: 'Profit/loss and ROI for a position.', parameters: [q('entry', 'Entry price.', true, '60000'), q('exit', 'Exit price.', true, '63000'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
-      '/api/v1/calc/risk-reward': { get: { tags: ['Calculators'], summary: 'Risk / reward', description: 'Risk-reward ratio from entry, stop and target.', responses: { '200': { description: 'ok' } } } },
-      '/api/v1/calc/take-profit': { get: { tags: ['Calculators'], summary: 'Take-profit price', description: 'Take-profit price for a target ROI/RR.', responses: { '200': { description: 'ok' } } } },
+      '/api/v1/calc/pnl': { get: { tags: ['Calculators'], summary: 'PnL / ROI', description: 'Profit/loss and ROI for a position. Size is the position size in units of the asset, not in dollars.', parameters: [q('entry', 'Entry price.', true, '60000'), q('exit', 'Exit price.', true, '63000'), q('size', 'Position size, in units of the asset.', true, '0.5'), q('leverage', 'Leverage multiple.', false, '10'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/calc/risk-reward': { get: { tags: ['Calculators'], summary: 'Risk / reward', description: 'Risk-reward ratio from entry, stop and target. Entry and stop must differ.', parameters: [q('entry', 'Entry price.', true, '60000'), q('stop', 'Stop-loss price.', true, '58000'), q('tp', 'Take-profit price.', true, '65000')], responses: { '200': { description: 'ok' } } } },
+      '/api/v1/calc/take-profit': { get: { tags: ['Calculators'], summary: 'Take-profit price', description: 'The price at which a position reaches a target return on equity.', parameters: [q('entry', 'Entry price, above zero.', true, '60000'), q('roe', 'Target return on equity, in percent.', true, '50'), q('leverage', 'Leverage multiple.', false, '10'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/price': { get: { tags: ['Paper trading'], summary: 'Paper price (keyless)', description: 'Fill price used by the paper-trading engine.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/time': { get: { tags: ['Paper trading'], summary: 'Server time (keyless)', description: 'Server clock. Pass client_ts to get drift_ms back — a bot bucketing candles against a drifting local clock builds bars nobody else sees.', parameters: [q('client_ts', 'Your unix ms, to measure drift.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/ServerTime' } } } } } } },
  '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (free 50 / Premium 200)' }, '429': { description: 'rate limited — see X-RateLimit-Reset and Retry-After' } } } },
@@ -1308,6 +1308,7 @@ async function handleSsrCalendar(request, url, env) {
   }))) + '</scr' + 'ipt>';
   html = html.slice(0, slot) + block + html.slice(slot + '<div id="calssr"></div>'.length);
   html = html.replace('</head>', ld + '</head>');
+  html = ssrStampDate(html, Date.now()); // this page was just rewritten with live events — the machine date must say so too
   const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
   try { await caches.default.put(ck, out.clone()); } catch (e) {}
   return out;
@@ -1413,7 +1414,7 @@ async function handleSsrVenues(request, url, env, ctx) {
   const NAMES = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
   if (!vs.length) {
     const down = '<p class="vx-stamp">Our collector is not reporting right now, so this table is empty rather than showing yesterday’s numbers as if they were current. The <a href="/liquidations/">market totals</a> come from a separate source and are unaffected.</p>';
-    html = html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + down + html.slice(close);
+    html = ssrStampDate(html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + down + html.slice(close), Date.now());
     return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=120' } });
   }
   const usd = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v);
@@ -1423,7 +1424,7 @@ async function handleSsrVenues(request, url, env, ctx) {
     ? '<p>Over the last 24 hours <strong>' + (NAMES[vs[0].venue] || vs[0].venue) + '</strong> liquidated the most at ' + usd(vs[0].total) + ', which is ' + vs[0].share + '% of everything our collector saw across nine venues (' + usd(d.total) + ' in total).</p>' : '';
   const inner = lead + '<div class="vx-wrap"><table class="vx"><thead><tr><th>Exchange</th><th>24h liquidated</th><th>Share</th><th>Longs</th><th>Shorts</th><th>Long / short</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
     + '<p class="vx-stamp">Measured by the MarginPad collector across nine exchange websockets &middot; rolling 24h &middot; ' + stamp + ' UTC</p>';
-  html = html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + inner + html.slice(close);
+  html = ssrStampDate(html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + inner + html.slice(close), Date.now());
   const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
   try { await caches.default.put(ck, out.clone()); } catch (e) {}
   return out;
@@ -1436,7 +1437,18 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
   if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
   const asset = await env.ASSETS.fetch(request);
   const ct = (asset.headers && asset.headers.get('content-type')) || '';
-  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  if (!asset.ok || ct.indexOf('text/html') < 0) {
+    // Only ONE order of each pair exists (/bybit-vs-okx/, never /okx-vs-bybit/), and nothing on the site links the
+    // reverse — but an outside link or a guessed URL lands on a 404 for a page we do have. Send it to the real one.
+    if (ak && bk && ak !== bk) {
+      try {
+        const alt = '/' + bk + '-vs-' + ak + '/';
+        const probe = await env.ASSETS.fetch(new Request(url.origin + alt));
+        if (probe.ok) return Response.redirect(url.origin + alt, 301);
+      } catch (e) {}
+    }
+    return asset;
+  }
   let html = '';
   try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
   const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
@@ -1466,7 +1478,7 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
   const stamp = new Date(d.ts || Date.now()).toISOString().slice(0, 16).replace('T', ' ');
   const inner = '<div class="vs-grid">' + col(an, A) + col(bn, B) + '</div>' + lead
     + '<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; ' + stamp + ' UTC</p>';
-  html = html.slice(0, open) + '<div id="vstat" data-ssr="1">' + inner + html.slice(close);
+  html = ssrStampDate(html.slice(0, open) + '<div id="vstat" data-ssr="1">' + inner + html.slice(close), Date.now());
 
   const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
   try { await caches.default.put(ck, out.clone()); } catch (e) {}
@@ -15617,7 +15629,11 @@ export default {
       const pvMap = {}; (pvBySrc || []).forEach(r => { pvMap[String(r.src || '')] = +r.n || 0; });
       const srcRows = bySrc.map(r => { const s = String(r.src || ''); const pv = pvMap[s] || 0; const n = +r.n || 0;
         return { src: s || '(before tracking)', clicks: n, pv, ctr: pv ? Math.round(n / pv * 1000) / 10 : null }; });
-      const body = JSON.stringify({ ae: !!byDayEx, byDayEx: byDayClean, byPage, byEx: byExClean, byCc, bySrc: srcRows, junk, usdPerClick: 0.45 });
+      // An Analytics Engine query that times out returns null, and every panel folded from it then renders as ZERO —
+      // which reads exactly like "nobody clicked anything". Say which queries failed and why, so an empty tab can
+      // never be mistaken for an empty day (found 2026-09-14 when partner-e2e caught byEx empty on a transient).
+      const aeFail = [['byDayEx', byDayEx], ['byPageEx', byPageEx], ['byEx', byEx], ['byCcEx', byCcEx], ['bySrcEx', bySrcEx], ['pvBySrc', pvBySrc]].filter(x => !x[1]).map(x => x[0]);
+      const body = JSON.stringify({ ae: !!byDayEx, aeFail, aeErr: aeFail.length ? String(aeQuery.lastErr || 'the analytics query returned nothing') : '', byDayEx: byDayClean, byPage, byEx: byExClean, byCc, bySrc: srcRows, junk, usdPerClick: 0.45 });
       if (byDayEx && byEx) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } })); } catch (e) {} // never cache an AE failure — it would pin an empty tab for 2 min
       return new Response(withClicks(body), { headers: jh2 });
     }

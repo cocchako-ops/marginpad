@@ -46,6 +46,11 @@
 <script id="api-reference" type="application/json" data-url="/api/openapi.json" data-configuration='{"theme":"kepler","layout":"classic","darkMode":true,"hideDarkModeToggle":true,"defaultHttpClient":{"targetKey":"python","clientKey":"requests"},"metaData":{"title":"MarginPad API Reference"},"searchHotKey":"k","showSidebar":true,"authentication":{"preferredSecurityScheme":"ApiKeyAuth"}}'></script>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.130/dist/browser/standalone.min.js" onerror="document.getElementById('fb').hidden=false"></script>
 <script>setTimeout(function(){ if(!document.querySelector('.scalar-app, .references-layout, .scalar-api-reference')) { var f=document.getElementById('fb'); if(f) f.hidden=false; } }, 9000);</script>
+<!-- Scalar renders the API title as its OWN <h1>, so once it mounts the page has two (measured 2026-09-14). Ours is
+     the static one a crawler reads; demote the injected one to h2 rather than dropping our heading, so the page still
+     has exactly one h1 whether or not the viewer loads. -->
+<script>(function(){function fix(){var n=document.querySelectorAll('#api-reference ~ * h1, .scalar-app h1, .references-layout h1, .scalar-api-reference h1');var c=0;for(var i=0;i<n.length;i++){var h=n[i];if(h.closest('.intro'))continue;var d=document.createElement('h2');d.className=h.className;d.innerHTML=h.innerHTML;if(h.id)d.id=h.id;h.parentNode.replaceChild(d,h);c++;}return c;}
+var t=0,iv=setInterval(function(){t++;fix();if(t>20)clearInterval(iv);},400);try{new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});}catch(e){}})();</script>
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
 <script defer src="/assets/mp-auth.js?v=20ed9e51"></script>
 <script defer src="/assets/mp-nav.js?v=e9b0f966"></script>

@@ -248,7 +248,11 @@
   function onAuth(u){ signedIn=!!u; gate(); if(signedIn)load(); }
   window.addEventListener('mp-auth-change',function(e){onAuth(e.detail&&e.detail.user);});
   if(window.mpAuth&&window.mpAuth.me){onAuth(window.mpAuth.me());}else{gate();}
-  try{var u='/api/track?t=pageview&p=/trading-report/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);fetch(u,{keepalive:true});}catch(e){}
+  /* sendBeacon, like every other page on the site. This was the ONE page still using fetch({keepalive}), and the
+     request was cancelled on every single load (measured 2026-09-14: ERR_ABORTED here, 204 everywhere else), so the
+     page has never recorded a pageview. location.pathname rather than a hard-coded path, so the /es/ twin counts as
+     itself instead of merging into this one. */
+  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}
 })();
 </script>
 <script defer src="/assets/sentry.js?v=42ed986c"></script>

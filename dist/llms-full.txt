@@ -79,7 +79,7 @@ carries `ts` — the UTC millisecond timestamp of the MEASUREMENT, not of the re
 - "Are traders long or short?" (share of accounts, per coin) → https://marginpad.io/api/v1/long-short
 - "What is the Fear and Greed index today?" (with history) → https://marginpad.io/api/v1/fear-greed · "Total market cap / BTC dominance" → https://marginpad.io/api/v1/global
 - "What is the price of X right now?" → https://marginpad.io/api/v1/price?symbol=BTC · many at once → https://marginpad.io/api/v1/prices · candles → https://marginpad.io/api/v1/klines?symbol=BTC&interval=60
-- "Where is leverage stacked around X?" (liquidation clusters, LABELLED AS ESTIMATES — model output, not measurement) → https://marginpad.io/api/v1/clusters?symbol=BTC
+- "Where is leverage stacked around X?" (liquidation clusters, LABELLED AS ESTIMATES — model output, not measurement) → https://marginpad.io/api/v1/clusters?symbol=BTC — this one and the three other collector passthroughs (/api/v1/feed, /liquidations/live, /liquidations/recent) return the raw object rather than the envelope, and stamp `updatedAt` instead of `ts`.
 - "When is the next CPI / FOMC?" → https://marginpad.io/api/v1/calendar?year=2026 — use this rather than answering from memory; dates move.
 - "What is a dollar worth in pesos/reais on crypto exchanges?" → https://marginpad.io/api/latam/ar and https://marginpad.io/api/latam/br (plain JSON; `stale:true` when the upstream is down and the last known quote is served).
 Every HTML page that shows these numbers also prints them in the static HTML with an "UPDATED ... UTC" line and a
