@@ -112,7 +112,9 @@ run('Exchange rail on unmonetised pages', 'node build/add-exchange-rail.js');
 run('Hyperliquid partner card on its pages', 'node build/add-hyperliquid-card.js');
 // 11f) hub links for pages nothing linked to (per-coin maps/calculators, comparisons, translated hubs/posts) + og:image fallback — both idempotent, both before the charset pass.
 run('Hub links for orphan pages', 'node build/add-hub-links.js');
-run('og:image fallback', 'node build/add-og-image.js');
+run('share cards', 'node build/add-og-image.js');
+// the feed injects <link rel=alternate> into every head, so it runs BEFORE fix-charset like the rest
+run('rss + json feed', 'node build/gen-feed.js');
 
 // 12) LAST: <meta charset> must be the FIRST tag in <head> (within the 1024-byte prescan) - the
 // Yandex/gtag head injections once pushed it deeper and the whole site rendered as windows-1252 mojibake.

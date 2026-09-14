@@ -2,10 +2,22 @@ User-agent: *
 Allow: /
 # keep crawl budget on real pages; data endpoints stay open so Google can render live numbers
 Disallow: /api/
+# The public, keyless data API. llms.txt tells assistants to fetch these mid-answer, and until
+# 2026-09-14 the blanket Disallow above hid every one of them from bingbot and Googlebot - which is
+# 71% of the crawling we actually get, and what feeds Copilot and Google's AI answers. A longer
+# matching rule wins in robots.txt, so these lines re-open exactly the endpoints we advertise.
+Allow: /api/v1/
+Allow: /api/competition
+Allow: /api/openapi
+Allow: /api/changelog
+Allow: /api/latam/
 Allow: /api/cg/
 Allow: /api/price
 Allow: /api/klines
 Allow: /api/screener
+Allow: /api/fng
+Allow: /api/calendar
+Allow: /api/symbols
 Disallow: /telegram/
 Disallow: /chat/
 
@@ -86,6 +98,8 @@ User-agent: Bingbot
 Allow: /
 
 # LLM-friendly summary of the whole site (tools, API, key facts): https://marginpad.io/llms.txt
+# Feeds
+Feed: https://marginpad.io/feed.xml
 Sitemap: https://marginpad.io/community/sitemap.xml
 Sitemap: https://marginpad.io/sitemap.xml
 Sitemap: https://marginpad.io/sitemap-i18n.xml
