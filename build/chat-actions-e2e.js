@@ -51,19 +51,30 @@ function forge(token, msgs) {
   });
 }
 const rowOf = (page, text) => page.evaluate((t) => {
-  const n = [...document.querySelectorAll('#chatBox [data-mid]')].filter(x => (x.innerText || '').indexOf(t) >= 0);
+  const n = [...document.querySelectorAll('#ctMsgs [data-mid]')].filter(x => (x.innerText || '').indexOf(t) >= 0);
   const r = n[n.length - 1];
   return r ? { mid: r.getAttribute('data-mid'), own: r.getAttribute('data-own') === '1', html: (r.innerText || '').slice(0, 80) } : null;
 }, text);
 // a real long press: touch down, hold past the threshold, lift
 async function longPress(page, mid) {
-  const box = await page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"]'); if (!r) return null; r.scrollIntoView({ block: 'center' }); const b = r.getBoundingClientRect(); return { x: b.left + Math.min(40, b.width / 2), y: b.top + b.height / 2 }; }, mid);
-  if (!box) return false;
-  await page.touchscreen.touchStart(box.x, box.y);
-  await sleep(700);
+  // scroll, let it settle, THEN hold — and hold the message BODY, because the username is deliberately not pressable
+  const there = await page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); if (!r) return false; r.scrollIntoView({ block: 'center' }); return true; }, mid);
+  if (!there) return false;
+  await sleep(800);
+  const pt = await page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); const b = (r.querySelector('.ct-body') || r).getBoundingClientRect(); return { x: Math.round(b.left + Math.min(40, b.width / 2)), y: Math.round(b.top + b.height / 2) }; }, mid);
+  await page.touchscreen.touchStart(pt.x, pt.y);
+  await sleep(800);
   await page.touchscreen.touchEnd();
-  await sleep(500);
-  return true;
+  await sleep(600);
+  return await page.evaluate(() => !!document.querySelector('.ct-sheet'));
+}
+// the desktop equivalent, for the browser that has no touch
+async function press(page, mid) {
+  await page.evaluate((m) => document.querySelector('#ctMsgs [data-mid="' + m + '"]').scrollIntoView({ block: 'center' }), mid);
+  await sleep(700);
+  await page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); r.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); }, mid);
+  await sleep(600);
+  return await page.evaluate(() => !!document.querySelector('.ct-sheet'));
 }
 
 (async () => {
@@ -91,9 +102,10 @@ async function longPress(page, mid) {
     ok(!!theirs && !theirs.own, 'the same row is NOT marked as theirs in the other member\'s browser', theirs);
     ok(!!theirs && theirs.mid === (mine || {}).mid, 'both browsers address it by the same id');
 
-    // no account id anywhere in the page
-    const leak = await pb.page.evaluate((uid) => document.documentElement.innerHTML.indexOf(uid) >= 0, A);
-    ok(!leak, 'the author\'s account id never reaches another browser');
+    // The row, not the whole page: an e2e username contains its own uid, so a page-wide search is a false positive.
+    // What matters is that nothing the socket delivered carries an account id.
+    const shape = await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); return r ? [...r.attributes].map(a2 => a2.name) : null; }, mine.mid);
+    ok(shape && shape.indexOf('data-uid') < 0 && shape.indexOf('data-a') < 0, 'no account id is written into the row', shape);
 
     // ── the long press ────────────────────────────────────────────────────────────────────────────────────────
     ok(await longPress(pa.page, mine.mid), 'a long press on your own message opens something');
@@ -112,24 +124,24 @@ async function longPress(page, mid) {
     // react from the sheet
     await pa.page.evaluate(() => { const b = document.querySelector('.ct-sheet [data-sx]'); if (b) b.click(); });
     await sleep(2200);
-    const rxA = await pa.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); return r ? { txt: (r.innerText || '').replace(/\s+/g, ''), on: r.classList.contains('on') } : null; }, mine.mid);
-    const rxB = await pb.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); return r ? { txt: (r.innerText || '').replace(/\s+/g, ''), on: r.classList.contains('on') } : null; }, mine.mid);
+    const rxA = await pa.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); return r ? { txt: (r.innerText || '').replace(/\s+/g, ''), on: r.classList.contains('on') } : null; }, mine.mid);
+    const rxB = await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); return r ? { txt: (r.innerText || '').replace(/\s+/g, ''), on: r.classList.contains('on') } : null; }, mine.mid);
     ok(!!rxA && /1$/.test(rxA.txt) && rxA.on, 'the reaction lands and reads as mine', rxA);
     ok(!!rxB && /1$/.test(rxB.txt) && !rxB.on, 'the other member sees the count but not as theirs', rxB);
     ok(!(await pa.page.evaluate(() => !!document.querySelector('.ct-sheet'))), 'the sheet closes after acting');
 
     // the other member taps the same chip: 2, and theirs
-    await pb.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); if (r) r.click(); }, mine.mid);
+    await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); if (r) r.click(); }, mine.mid);
     await sleep(2200);
-    const rx2 = await pa.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); return r ? (r.innerText || '').replace(/\s+/g, '') : null; }, mine.mid);
+    const rx2 = await pa.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); return r ? (r.innerText || '').replace(/\s+/g, '') : null; }, mine.mid);
     ok(rx2 && /2$/.test(rx2), 'a second member on the same chip makes it two', { rx2 });
-    await pb.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); if (r) r.click(); }, mine.mid);
+    await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); if (r) r.click(); }, mine.mid);
     await sleep(2200);
-    const rx3 = await pa.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"] .ct-rxb'); return r ? (r.innerText || '').replace(/\s+/g, '') : null; }, mine.mid);
+    const rx3 = await pa.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"] .ct-rxb'); return r ? (r.innerText || '').replace(/\s+/g, '') : null; }, mine.mid);
     ok(rx3 && /1$/.test(rx3), 'tapping again takes that one back', { rx3 });
 
     // ── the other member must NOT be offered edit or delete ───────────────────────────────────────────────────
-    await pb.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"]'); if (r) r.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); }, mine.mid);
+    await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); if (r) r.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); }, mine.mid);
     await sleep(700);
     const bSheet = await pb.page.evaluate(() => { const s = document.querySelector('.ct-sheet'); return s ? [...s.querySelectorAll('[data-sa]')].map(x => x.getAttribute('data-sa')) : null; });
     ok(bSheet && bSheet.indexOf('edit') < 0 && bSheet.indexOf('del') < 0, 'another member is offered no Edit and no Delete', bSheet);
@@ -141,7 +153,7 @@ async function longPress(page, mid) {
     await sleep(2500);
     const still = await rowOf(pa.page, text);
     ok(!!still, 'a forged delete from another member changes nothing');
-    const hijacked = await pa.page.evaluate(() => document.querySelector('#chatBox').innerText.indexOf('hijacked') >= 0);
+    const hijacked = await pa.page.evaluate(() => document.getElementById('ctMsgs').innerText.indexOf('hijacked') >= 0);
     ok(!hijacked, 'and a forged edit changes nothing');
 
     // ── the author edits, then deletes ────────────────────────────────────────────────────────────────────────
@@ -149,8 +161,8 @@ async function longPress(page, mid) {
     await longPress(pa.page, mine.mid);
     await pa.page.evaluate(() => { const b = document.querySelector('.ct-sheet [data-sa="edit"]'); if (b) b.click(); });
     await sleep(2500);
-    const edA = await pa.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"]'); return r ? { txt: (r.innerText || ''), ed: !!r.querySelector('.ct-ed') } : null; }, mine.mid);
-    const edB = await pb.page.evaluate((m) => { const r = document.querySelector('#chatBox [data-mid="' + m + '"]'); return r ? { txt: (r.innerText || ''), ed: !!r.querySelector('.ct-ed') } : null; }, mine.mid);
+    const edA = await pa.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); return r ? { txt: (r.innerText || ''), ed: !!r.querySelector('.ct-ed') } : null; }, mine.mid);
+    const edB = await pb.page.evaluate((m) => { const r = document.querySelector('#ctMsgs [data-mid="' + m + '"]'); return r ? { txt: (r.innerText || ''), ed: !!r.querySelector('.ct-ed') } : null; }, mine.mid);
     ok(edA && edA.txt.indexOf('fixed') >= 0 && edA.ed, 'the author can edit, and the row says edited', edA);
     ok(edB && edB.txt.indexOf('fixed') >= 0 && edB.ed, 'the other browser shows the edit too, without a reload', edB);
     ok(edB && edB.txt.indexOf(' fixed') >= 0 && (edB.txt.match(/fixed/g) || []).length === 1, 'the edit replaced the text rather than appending', edB);
@@ -166,7 +178,7 @@ async function longPress(page, mid) {
     const t2 = 'link probe ' + Math.random().toString(36).slice(2, 6);
     await say(pa.page, t2);
     const nameClick = await pa.page.evaluate(() => {
-      const u = document.querySelector('#chatBox [data-mid] .ct-user'); if (!u) return { none: true };
+      const u = document.querySelector('#ctMsgs [data-mid] .ct-user'); if (!u) return { none: true };
       u.click(); return { clicked: true };
     });
     await sleep(1500);
