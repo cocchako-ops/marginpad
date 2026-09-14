@@ -7,7 +7,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Rastreador de Ballenas de Hyperliquid — Las Mayores Posiciones en Vivo | MarginPad</title>
-<meta name="description" content="Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup." />
+<meta name="description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
 <meta name="keywords" content="hyperliquid whale tracker, hyperliquid whales, whale positions, crypto whale tracker, hyperliquid liquidation, whale long short, biggest crypto positions, whale alert" />
 <link rel="canonical" href="https://marginpad.io/es/hyperliquid-whales/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/hyperliquid-whales/" />
@@ -15,14 +15,14 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/hyperliquid-whales/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
-<meta property="og:title" content="Hyperliquid Whale Tracker — Biggest Whale Positions Live" />
-<meta property="og:description" content="Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup." />
+<meta property="og:title" content="Rastreador de Ballenas de Hyperliquid — Mayores Posiciones en Vivo" />
+<meta property="og:description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/hyperliquid-whales/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/hyperliquid-whales.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Hyperliquid Whale Tracker — Biggest Whale Positions Live" />
-<meta name="twitter:description" content="Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup." />
+<meta name="twitter:title" content="Rastreador de Ballenas de Hyperliquid — Mayores Posiciones en Vivo" />
+<meta name="twitter:description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/hyperliquid-whales.jpg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
@@ -288,11 +288,11 @@
     <!-- ── four views, one at a time. The page used to stack every panel on top of the reader at once
          (owner 2026-09-14: "sad kad otvoris stranicu sve je nabacano i nista se ne vidi lepo"), and an
          empty right-hand column sat there saying "No recent moves". ─────────────────────────────── -->
-    <div class="wl-tabs" role="tablist" aria-label="Whale views">
-      <button type="button" role="tab" data-view="pos" class="on">Positions <i id="wlTabPos"></i></button>
-      <button type="button" role="tab" data-view="trades">Trades <i id="wlTabTr"></i></button>
-      <button type="button" role="tab" data-view="coins">By market <i id="wlTabCo"></i></button>
-      <button type="button" role="tab" data-view="best">Best this month <i id="wlTabBe"></i></button>
+    <div class="wl-tabs" role="tablist" aria-label="Vistas de ballenas">
+      <button type="button" role="tab" data-view="pos" class="on">Posiciones <i id="wlTabPos"></i></button>
+      <button type="button" role="tab" data-view="trades">Operaciones <i id="wlTabTr"></i></button>
+      <button type="button" role="tab" data-view="coins">Por mercado <i id="wlTabCo"></i></button>
+      <button type="button" role="tab" data-view="best">Mejores este mes <i id="wlTabBe"></i></button>
     </div>
 
     <!-- POSITIONS -->
@@ -303,16 +303,16 @@
           <div class="wl-seg" id="wlSide" role="group" aria-label="Lado">
             <button type="button" data-side="" class="on">ALL</button><button type="button" data-side="l">LONG</button><button type="button" data-side="s">SHORT</button>
           </div>
-          <div class="wl-seg" id="wlSort" role="group" aria-label="Sort">
-            <button type="button" data-sort="val" class="on">SIZE</button><button type="button" data-sort="pnl">P&amp;L</button><button type="button" data-sort="liq">NEAR LIQ</button><button type="button" data-sort="lev">LEV</button>
+          <div class="wl-seg" id="wlSort" role="group" aria-label="Ordenar">
+            <button type="button" data-sort="val" class="on">SIZE</button><button type="button" data-sort="pnl">P&amp;L</button><button type="button" data-sort="liq">CERCA LIQ</button><button type="button" data-sort="lev">LEV</button>
           </div>
         </div>
       </div>
       <div class="wl-tbl">
-        <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Liq price</span><span class="r">Unrealized</span></div>
+        <div class="wl-thd"><span></span><span>Ballena / mercado</span><span class="cl" style="text-align:center">Apalanc.</span><span class="r">Tamaño</span><span class="cl r">Precio liq.</span><span class="r">No realizado</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it.</p>
+      <p class="wl-note">Haz clic en cualquier fila para abrir esa wallet: todo su libro, su historial de los últimos 30 días y cada ejecución que hemos registrado.</p>
     </section>
 
     <!-- TRADES -->
@@ -320,10 +320,10 @@
       <div class="wl-bar2">
         <div class="wl-chips" id="wlTrSym" role="group" aria-label="Mercado"></div>
         <div class="wl-ctl">
-          <div class="wl-seg" id="wlTrAct" role="group" aria-label="Action">
+          <div class="wl-seg" id="wlTrAct" role="group" aria-label="Acción">
             <button type="button" data-act="" class="on">ALL</button><button type="button" data-act="open">OPENED</button><button type="button" data-act="close">CLOSED</button>
           </div>
-          <div class="wl-seg" id="wlTz" role="group" aria-label="Time zone">
+          <div class="wl-seg" id="wlTz" role="group" aria-label="Zona horaria">
             <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
           </div>
         </div>
@@ -335,19 +335,19 @@
     <!-- BY MARKET -->
     <section class="wl-view" id="vCoins" hidden>
       <div class="wl-tbl wide">
-        <div class="wl-thd co"><span>Market</span><span class="r">24h</span><span>Whale money: long vs short</span><span class="cl r">Wallets</span><span class="cl r">Avg lev</span><span class="cl r">Funding / day</span><span class="cl r">Share of OI</span></div>
+        <div class="wl-thd co"><span>Mercado</span><span class="r">24h</span><span>Dinero de ballenas: long vs short</span><span class="cl r">Wallets</span><span class="cl r">Apalanc. prom.</span><span class="cl r">Funding / día</span><span class="cl r">% del OI</span></div>
         <div id="wlCoins"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">One row per market these whales hold. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now &mdash; a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
+      <p class="wl-note">Una fila por cada mercado en el que estas ballenas tienen posiciones. <b>Funding / día</b> es lo que su lado neto paga (rojo) o cobra (verde) en veinticuatro horas a la tasa que Hyperliquid cobra ahora mismo &mdash; un lado saturado es un lado caro. <b>% del OI</b> es cuánto del interés abierto total de ese mercado está en estas wallets.</p>
     </section>
 
     <!-- BEST THIS MONTH -->
     <section class="wl-view" id="vBest" hidden>
       <div class="wl-tbl">
-        <div class="wl-thd be"><span></span><span>Trader</span><span class="r">30-day P&amp;L</span><span class="cl r">Return</span><span class="cl r">Volume traded</span></div>
+        <div class="wl-thd be"><span></span><span>Trader</span><span class="r">P&amp;L 30 días</span><span class="cl r">Retorno</span><span class="cl r">Volumen operado</span></div>
         <div id="wlBest"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">Ranked by realised profit over the last thirty days across the <b>whole</b> Hyperliquid leaderboard, not only the accounts we track by size &mdash; the best trader of a month is usually not the biggest one. Click a row for the full book. <a href="/es/season/#boards">MarginPad runs its own season boards</a> if you would rather be measured than watched.</p>
+      <p class="wl-note">Ordenado por ganancia realizada en los últimos treinta días en <b>toda</b> la clasificación de Hyperliquid, no solo las cuentas que seguimos por tamaño &mdash; el mejor trader del mes normalmente no es el más grande. Haz clic en una fila para ver el libro completo. <a href="/es/season/#boards">MarginPad tiene sus propias tablas de temporada</a> si prefieres que te midan en lugar de que te observen.</p>
     </section>
 
     <div class="wl-cta">
@@ -364,7 +364,7 @@
 
   <!-- ── one whale, everything we can say about them. Opened from any row on any view. ─────────── -->
   <div class="wl-dim" id="wdDim" hidden></div>
-  <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Whale profile">
+  <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Perfil de ballena">
     <div class="wd-h">
       <div class="wd-id">
         <span class="wd-adr" id="wdAdr">—</span>
