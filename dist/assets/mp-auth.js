@@ -1422,7 +1422,7 @@
   }
   // Daily Brief teaser for the profile card: public market-only line, cached 5 min per browser so opening the card costs no request most of the time
   function briefTeaserLine(t) {
-    if (!t || !t.bias) return 'Today’s market, your positions and your week in one card';
+    if (!t || !t.bias) return 'Today’s market, your positions and your season in one card';
     var b = t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a';
     var parts = ['<b style="color:' + col + '">' + (b === 'bullish' ? 'Leans bullish' : b === 'bearish' ? 'Leans bearish' : 'Mixed market') + '</b>'];
     if (t.setups) parts.push(t.setups + ' setup' + (t.setups === 1 ? '' : 's'));
@@ -1982,10 +1982,12 @@
       // 2. your week
       if (you && you.week) {
         var W = you.week, Y = you.yesterday;
-        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '—') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '—') + '</b><span>7d P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '—') + '</b><span>Yesterday</span></div></div>';
+        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '—') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '—') + '</b><span>Season P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '—') + '</b><span>Yesterday</span></div></div>';
         var fnd = (you.findings || []).map(function (f) { return '<div class="mpb-find">' + esc(f.text) + '</div>'; }).join('');
         if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + ' closes this week — too few to name a pattern. Trade, and the brief starts reading you.' : 'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.') + '</div>';
-        h += sec('Your week', k4 + fnd, 'you', (j.streak ? j.streak + '-day streak' : ''));
+        // the window is the season, not a rolling week — say which, so a one-day number is not read as seven
+        var dayN = (you.days || 1), dayTxt = dayN === 1 ? 'day 1 of the season' : 'season, day ' + dayN;
+        h += sec('Your season', k4 + fnd, 'you', (j.streak ? j.streak + '-day streak · ' : '') + dayTxt);
       }
       // 3. next up (filled once the season endpoints answer)
       h += sec('Next up', '<div class="mpb-todo" id="mpbTodo"><div class="mpb-note">Checking your season…</div></div>', 'next');

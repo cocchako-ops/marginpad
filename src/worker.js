@@ -5775,7 +5775,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1ae0a051" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8f6b6756" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11988,7 +11988,10 @@ async function handleTrade(url, request, env, ctx) {
   }
   if (path === '/report' && request.method === 'GET') {
     const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
-    const rep = await usersDO(env, '/tradereport', { uid, days });
+    // ?since=<ms> asks for an exact window instead of a rolling one — what a season needs, and what makes the
+    // brief's own window checkable from outside (2026-09-14)
+    const since = +url.searchParams.get('since') || 0;
+    const rep = await usersDO(env, '/tradereport', { uid, days, since });
     if (!rep || rep.error) return jt(rep || { error: 'unavailable' }, 503);
     let prem = false; try { const pf = await premiumFor(env, request); prem = !!(pf && pf.premium); } catch (e) {}
     if (adminUid) prem = true; // owner/E2E inspection of a specific account
@@ -12990,7 +12993,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '5e3365ea';
+const ASSET_V = '98f62600';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -19810,14 +19813,18 @@ async function briefMine(env, uid, M) { // the reader's open paper positions, pr
     });
   } catch (e) { return []; }
 }
-async function briefYou(env, uid) { // the reader's own week from the tradeev ledger (the same source as /trading-report/), never the client journal
-  let rep = null; try { rep = await usersDO(env, '/tradereport', { uid, days: 7 }); } catch (e) {}
+async function briefYou(env, uid) { // the reader's own SEASON from the tradeev ledger (the same source as /trading-report/), never the client journal
+  // A rolling seven days crosses the season boundary — on day one of a season it is six days of the season that
+  // just ended and was already paid. The brief is about the season the reader is playing NOW.
+  const seasonStart = lbPeriodStart(Date.now());
+  const days = Math.max(1, Math.min(14, Math.ceil((Date.now() - seasonStart) / 86400000)));
+  let rep = null; try { rep = await usersDO(env, '/tradereport', { uid, days, since: seasonStart }); } catch (e) {}
   if (!rep || !rep.ok) return null;
   const dk = (ms) => new Date(ms).toISOString().slice(0, 10);
   const yd = dk(Date.now() - 86400000), td = dk(Date.now());
   const by = rep.byDay || [];
   let findings = []; try { findings = reportFindings(rep).filter(f => f.k !== 'thin').slice(0, 2).map(f => ({ k: f.k, text: f.text })); } catch (e) {}
-  return { week: rep.total || null, yesterday: by.filter(r => r.k === yd)[0] || null, today: by.filter(r => r.k === td)[0] || null, findings, skill: (rep.skill && rep.skill.week) || null, minN: REPORT_MIN_N, thin: !!(rep.total && rep.total.n < REPORT_MIN_N) };
+  return { seasonStart, days, week: rep.total || null, yesterday: by.filter(r => r.k === yd)[0] || null, today: by.filter(r => r.k === td)[0] || null, findings, skill: (rep.skill && rep.skill.week) || null, minN: REPORT_MIN_N, thin: !!(rep.total && rep.total.n < REPORT_MIN_N) };
 }
 async function briefPrefs(env, uid) { let cur = null; try { const d = await usersDO(env, '/prefsget', { uid, keys: ['brief'] }); cur = d && d.prefs && d.prefs.brief ? JSON.parse(d.prefs.brief.v || '{}') : null; } catch (e) {} return { push: !!(cur && cur.push), tg: !!(cur && cur.tg), h: (cur && +cur.h === 16) ? 16 : 8 }; }
 async function handleBrief(env, request, url) {
@@ -20901,7 +20908,11 @@ export class UserStore {
     if (path === '/tradereport') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       const days = Math.min(30, Math.max(1, +b.days || 30));
-      const since = Math.max(Date.now() - days * 86400000, this._resetTsOf(uid)); // a reset book starts its report from the reset (2.5)
+      // `days` is a ROLLING window, which is the wrong shape for a season: twelve hours into a new season, one day
+      // back still reaches yesterday, and yesterday belongs to the season that was already paid out. A caller that
+      // knows its own boundary passes `since` (2026-09-14).
+      const want = (+b.since > 0) ? +b.since : (Date.now() - days * 86400000);
+      const since = Math.max(want, this._resetTsOf(uid)); // a reset book starts its report from the reset (2.5)
       let rows = [];
       try { rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, tid, sl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? ORDER BY ts LIMIT 5000", uid, since); } catch (e) { return this.j({ error: 'unavailable' }); }
       const opens = {};
