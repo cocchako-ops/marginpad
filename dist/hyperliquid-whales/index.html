@@ -1,29 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Hyperliquid Whale Tracker — Biggest Whale Positions Live | MarginPad</title>
 <meta name="description" content="Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup." />
 <meta name="keywords" content="hyperliquid whale tracker, hyperliquid whales, whale positions, crypto whale tracker, hyperliquid liquidation, whale long short, biggest crypto positions, whale alert" />
 <link rel="canonical" href="https://marginpad.io/hyperliquid-whales/" />
-<link rel="alternate" hreflang="x-default" href="https://marginpad.io/hyperliquid-whales/" />
-<link rel="alternate" hreflang="en" href="https://marginpad.io/hyperliquid-whales/" />
-<link rel="alternate" hreflang="es" href="https://marginpad.io/es/hyperliquid-whales/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="Hyperliquid Whale Tracker — Biggest Whale Positions Live" />
@@ -117,6 +103,28 @@
   .wl-al .t2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px}
   .wl-al .rt{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;text-align:right;flex:0 0 auto}
   .wl-al.l .rt{color:var(--grn)}.wl-al.s .rt{color:var(--red)}
+  /* executed-trade feed (2026-09-14) */
+  .wl-tr-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+  .wl-tz{margin-left:auto;display:flex;gap:0;border:1px solid var(--line-bright);border-radius:8px;overflow:hidden;flex:0 0 auto}
+  .wl-tz button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 10px;background:transparent;color:var(--ink-faint);border:0;cursor:pointer}
+  .wl-tz button.on{background:var(--lime);color:#0a0b0d}
+  .wl-trades{display:flex;flex-direction:column;gap:7px}
+  .wl-tr{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;border-left-width:3px}
+  .wl-tr.l{border-left-color:var(--grn)}.wl-tr.s{border-left-color:var(--red)}
+  .wl-tr .clock{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;flex:0 0 auto}
+  .wl-tr .clock small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);letter-spacing:.02em}
+  .wl-tr .say{min-width:0}
+  .wl-tr .say .l1{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);line-height:1.45}
+  .wl-tr .say .l1 b{font-weight:800}
+  .wl-tr.l .say .l1 .act{color:var(--grn);font-weight:800}
+  .wl-tr.s .say .l1 .act{color:var(--red);font-weight:800}
+  .wl-tr .say .l2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-tr .amt{font-family:'Space Mono',monospace;font-size:14px;font-weight:800;text-align:right;flex:0 0 auto}
+  .wl-tr.l .amt{color:var(--grn)}.wl-tr.s .amt{color:var(--red)}
+  .wl-tr .amt small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint);margin-top:2px}
+  .wl-lev{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(194,246,74,.14);color:var(--lime);margin-left:5px;vertical-align:1px}
+  .wl-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:9px 0 0;line-height:1.6}
+  @media(max-width:560px){.wl-tr{grid-template-columns:auto 1fr;row-gap:6px}.wl-tr .amt{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:8px}.wl-tr .amt small{margin:0}}
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
@@ -124,22 +132,7 @@
   @media(min-width:861px){.wrap{max-width:1280px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Hyperliquid whale tracker?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time."}},{"@type":"Question","name":"Why watch whale positions?","acceptedAnswer":{"@type":"Answer","text":"Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not."}},{"@type":"Question","name":"Is the whale data live?","acceptedAnswer":{"@type":"Answer","text":"Yes. Positions and recent whale actions are read from the public on-chain API of Hyperliquid by the MarginPad whale tracker and refresh every few minutes. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates."}}]}</script>
-
-<script defer src="/assets/sentry.js?v=42ed986c"></script>
-<style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
-.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
-.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
-.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
-.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
-.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
-.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
-.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
-.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
-.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
-.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
-.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
-@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Whale Tracker — Biggest Whale Positions Live","url":"https://marginpad.io/hyperliquid-whales/","dateModified":"2026-09-11T11:39:32.519Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
 <div class="wrap">
@@ -191,6 +184,15 @@
       </div>
     </div>
 
+    <div class="wl-tr-h">
+      <div class="wl-h2" style="margin:0">Whale trades, as they execute <span class="n" id="wlTrN"></span></div>
+      <div class="wl-tz" role="group" aria-label="Time zone">
+        <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
+      </div>
+    </div>
+    <div class="wl-trades" id="wlTrades"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading trades…</div></div>
+    <p class="wl-note" id="wlTrNote"></p>
+
     <div class="wl-cta">
       <a class="go" href="/paper-trade">Practice trading — free, no signup →</a>
       <a href="/liquidations/">Liquidations</a>
@@ -204,21 +206,7 @@
     <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only — not financial advice.</p>
-  <div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
-<div class="mp-hl-e"><i></i>TRADE THE SAME BOOK AS THE WHALES</div>
-<div class="mp-hl-row">
-<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid &mdash; perps <b>on-chain</b>, with a fee discount from us.</div><p class="mp-hl-w">Every position on this page is on Hyperliquid, fully on-chain and readable by anyone &mdash; including yours, once you have one.</p></div>
-<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>off trading fees<br>for referred accounts</span></div><div class="mp-hl-code"><span>use code</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a></div>
-</div>
-<p class="mp-hl-d">Referral link &mdash; MarginPad may earn a commission if you open an account. The 4% fee discount is Hyperliquid&rsquo;s referral discount; you never pay more than you would going direct. Not available to US persons under Hyperliquid&rsquo;s terms.</p>
-</div>
-<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent='not available in '+(c==='US'?'the US':'your country');el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
-/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) — Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
-function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
-var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
-if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
-var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
-</article>
+  </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
 </div>
@@ -232,7 +220,65 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   function shorta(a){a=String(a||'');return a.length>10?a.slice(0,6)+'…'+a.slice(-4):a;}
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
   var HL='https://hypurrscan.io/address/';
+  /* ── whale trades (2026-09-14, owner: "da izbacuje da je neko kupio 200k BTC long po tom i tom leverage
+     u to i to vreme sa vremenskom zonom"). Every row is ONE execution: the collector groups the fills the
+     exchange reports, so the time is Hyperliquid's own, not the moment we polled. LOCAL is the default
+     because that is the reader's clock; the zone is named so the number is never ambiguous. */
+  var TZ=(function(){try{return localStorage.getItem('mp_wl_tz')==='utc'?'utc':'local';}catch(e){return 'local';}})();
+  var ZONE=(function(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){return '';}})();
+  function zoneAbbr(){ if(TZ==='utc')return 'UTC';
+    try{ var p=new Intl.DateTimeFormat('en-US',{timeZoneName:'short'}).formatToParts(new Date());
+      for(var i=0;i<p.length;i++)if(p[i].type==='timeZoneName')return p[i].value; }catch(e){}
+    var o=-new Date().getTimezoneOffset(),sg=o<0?'-':'+';o=Math.abs(o);
+    return 'UTC'+sg+String(Math.floor(o/60))+(o%60?':'+String(o%60).padStart(2,'0'):'');
+  }
+  function clock(ts){ var dt=new Date(ts);
+    if(TZ==='utc')return String(dt.getUTCHours()).padStart(2,'0')+':'+String(dt.getUTCMinutes()).padStart(2,'0')+':'+String(dt.getUTCSeconds()).padStart(2,'0');
+    return String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0')+':'+String(dt.getSeconds()).padStart(2,'0');
+  }
+  function dayOf(ts){ var dt=new Date(ts);
+    var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var t=TZ==='utc'?[dt.getUTCDate(),dt.getUTCMonth()]:[dt.getDate(),dt.getMonth()];
+    return t[0]+' '+mo[t[1]];
+  }
+  function took(a,b){ var s=Math.round((b-a)/1000); if(s<=1)return 'in one go';
+    if(s<60)return 'over '+s+'s'; var m=Math.floor(s/60); return 'over '+m+'m'+(s%60?' '+(s%60)+'s':''); }
+  /* a builder-deployed market is listed as "xyz:GOLD" on the chain — show the market, keep the builder in the title */
+  function mkt(sym){ var i=String(sym||'').indexOf(':'); return i>0?String(sym).slice(i+1):String(sym||''); }
+  function paintTrades(d){
+    var box=document.getElementById('wlTrades'); if(!box)return;
+    var tr=d.fills||[];
+    var n=document.getElementById('wlTrN'); if(n)n.textContent=tr.length?'('+tr.length+')':'';
+    var note=document.getElementById('wlTrNote');
+    if(note)note.textContent=tr.length||d.fillWatch
+      ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution — a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
+      : '';
+    if(!tr.length){ box.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k yet — the feed fills as the whales trade.</div>'; return; }
+    box.innerHTML=tr.slice(0,28).map(function(t){
+      var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+      var side=t.long?'long':'short';
+      var m=esc(mkt(t.sym));
+      var lev=t.lev?'<span class="wl-lev">'+t.lev+'x</span>':'';
+      var l1='<b>'+esc(shorta(t.user))+'</b> <span class="act">'+act+'</span> '+usd(t.usd)+' of <b>'+m+'</b> '+side+lev;
+      var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
+               (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
+               (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
+      return '<div class="wl-tr '+(t.long?'l':'s')+'" title="'+esc(t.sym)+' · '+esc(t.dir)+'">'
+        +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
+        +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
+        +'<span class="amt">'+usd(t.usd)+'<small>'+(t.sz>=1?(+t.sz).toLocaleString('en-US',{maximumFractionDigits:2}):(+t.sz).toFixed(4))+' '+m+'</small></span></div>';
+    }).join('');
+  }
+  (function(){ var g=document.querySelector('.wl-tz'); if(!g)return;
+    g.addEventListener('click',function(e){ var b=e.target.closest('button[data-tz]'); if(!b)return;
+      TZ=b.getAttribute('data-tz'); try{localStorage.setItem('mp_wl_tz',TZ);}catch(_){}
+      [].forEach.call(g.querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-tz')===TZ);});
+      if(window.__wlLast)paintTrades(window.__wlLast);
+    });
+    [].forEach.call(g.querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-tz')===TZ);});
+  })();
   function paint(d){
+    window.__wlLast=d;
     var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&(d.active||(d.positions&&d.positions.length)));
     if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
     var g=d.agg||{};
@@ -265,6 +311,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       '</div>';
     }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No positions.</div>';
     // feed
+    paintTrades(d);
     var al=d.alerts||[];var fe=document.getElementById('wlFeed');
     fe.innerHTML=al.slice(0,22).map(function(a){
       var arrow=a.long?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>':'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
@@ -279,7 +326,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=1fd60faa"></script>
-<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

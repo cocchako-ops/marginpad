@@ -169,7 +169,7 @@ function publishGroup(g) {
 async function drainPending() {
   if (!pending.length) return;
   const rows = pending.splice(0, pending.length);
-  const users = [...new Set(rows.filter(r => !r.lev).map(r => r.user))];
+  const users = [...new Set(rows.map(r => r.user))];
   for (const u of users.slice(0, 6)) {
     try {
       const st = await post({ type: 'clearinghouseState', user: u }, 8000);
@@ -179,7 +179,10 @@ async function drainPending() {
         if (p.coin && v > 0) lev.set(String(p.coin), v);
         if (p.coin) held.set(String(p.coin), Math.abs(+p.positionValue || 0));
       }
-      for (const r of rows) if (r.user === u && !r.lev) { r.lev = lev.get(r.sym) || null; r.posUsd = Math.round(held.get(r.sym) || 0); }
+      // clearinghouseState answers for the main perp book only — a builder-deployed market (the chain
+      // lists those as "xyz:GOLD", "xyz:SP500") is not in it, so those rows keep an unknown leverage
+      // and no position size. That is the honest answer, not a zero.
+      for (const r of rows) if (r.user === u) { if (!r.lev) r.lev = lev.get(r.sym) || null; r.posUsd = Math.round(held.get(r.sym) || 0) || undefined; }
     } catch (e) { /* no leverage is reported as unknown, never guessed */ }
     await new Promise(res => setTimeout(res, 40));
   }

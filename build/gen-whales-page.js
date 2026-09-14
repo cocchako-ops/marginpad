@@ -88,6 +88,28 @@ const CSS = HEADER_CSS + `
   .wl-al .t2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px}
   .wl-al .rt{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;text-align:right;flex:0 0 auto}
   .wl-al.l .rt{color:var(--grn)}.wl-al.s .rt{color:var(--red)}
+  /* executed-trade feed (2026-09-14) */
+  .wl-tr-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+  .wl-tz{margin-left:auto;display:flex;gap:0;border:1px solid var(--line-bright);border-radius:8px;overflow:hidden;flex:0 0 auto}
+  .wl-tz button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:5px 10px;background:transparent;color:var(--ink-faint);border:0;cursor:pointer}
+  .wl-tz button.on{background:var(--lime);color:#0a0b0d}
+  .wl-trades{display:flex;flex-direction:column;gap:7px}
+  .wl-tr{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;border-left-width:3px}
+  .wl-tr.l{border-left-color:var(--grn)}.wl-tr.s{border-left-color:var(--red)}
+  .wl-tr .clock{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;flex:0 0 auto}
+  .wl-tr .clock small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);letter-spacing:.02em}
+  .wl-tr .say{min-width:0}
+  .wl-tr .say .l1{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);line-height:1.45}
+  .wl-tr .say .l1 b{font-weight:800}
+  .wl-tr.l .say .l1 .act{color:var(--grn);font-weight:800}
+  .wl-tr.s .say .l1 .act{color:var(--red);font-weight:800}
+  .wl-tr .say .l2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-tr .amt{font-family:'Space Mono',monospace;font-size:14px;font-weight:800;text-align:right;flex:0 0 auto}
+  .wl-tr.l .amt{color:var(--grn)}.wl-tr.s .amt{color:var(--red)}
+  .wl-tr .amt small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint);margin-top:2px}
+  .wl-lev{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(194,246,74,.14);color:var(--lime);margin-left:5px;vertical-align:1px}
+  .wl-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:9px 0 0;line-height:1.6}
+  @media(max-width:560px){.wl-tr{grid-template-columns:auto 1fr;row-gap:6px}.wl-tr .amt{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:8px}.wl-tr .amt small{margin:0}}
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
@@ -182,6 +204,15 @@ ${ld}
       </div>
     </div>
 
+    <div class="wl-tr-h">
+      <div class="wl-h2" style="margin:0">Whale trades, as they execute <span class="n" id="wlTrN"></span></div>
+      <div class="wl-tz" role="group" aria-label="Time zone">
+        <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
+      </div>
+    </div>
+    <div class="wl-trades" id="wlTrades"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading trades…</div></div>
+    <p class="wl-note" id="wlTrNote"></p>
+
     <div class="wl-cta">
       <a class="go" href="/paper-trade">Practice trading — free, no signup →</a>
       <a href="/liquidations/">Liquidations</a>
@@ -209,7 +240,65 @@ ${ld}
   function shorta(a){a=String(a||'');return a.length>10?a.slice(0,6)+'…'+a.slice(-4):a;}
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
   var HL='https://hypurrscan.io/address/';
+  /* ── whale trades (2026-09-14, owner: "da izbacuje da je neko kupio 200k BTC long po tom i tom leverage
+     u to i to vreme sa vremenskom zonom"). Every row is ONE execution: the collector groups the fills the
+     exchange reports, so the time is Hyperliquid's own, not the moment we polled. LOCAL is the default
+     because that is the reader's clock; the zone is named so the number is never ambiguous. */
+  var TZ=(function(){try{return localStorage.getItem('mp_wl_tz')==='utc'?'utc':'local';}catch(e){return 'local';}})();
+  var ZONE=(function(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){return '';}})();
+  function zoneAbbr(){ if(TZ==='utc')return 'UTC';
+    try{ var p=new Intl.DateTimeFormat('en-US',{timeZoneName:'short'}).formatToParts(new Date());
+      for(var i=0;i<p.length;i++)if(p[i].type==='timeZoneName')return p[i].value; }catch(e){}
+    var o=-new Date().getTimezoneOffset(),sg=o<0?'-':'+';o=Math.abs(o);
+    return 'UTC'+sg+String(Math.floor(o/60))+(o%60?':'+String(o%60).padStart(2,'0'):'');
+  }
+  function clock(ts){ var dt=new Date(ts);
+    if(TZ==='utc')return String(dt.getUTCHours()).padStart(2,'0')+':'+String(dt.getUTCMinutes()).padStart(2,'0')+':'+String(dt.getUTCSeconds()).padStart(2,'0');
+    return String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0')+':'+String(dt.getSeconds()).padStart(2,'0');
+  }
+  function dayOf(ts){ var dt=new Date(ts);
+    var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var t=TZ==='utc'?[dt.getUTCDate(),dt.getUTCMonth()]:[dt.getDate(),dt.getMonth()];
+    return t[0]+' '+mo[t[1]];
+  }
+  function took(a,b){ var s=Math.round((b-a)/1000); if(s<=1)return 'in one go';
+    if(s<60)return 'over '+s+'s'; var m=Math.floor(s/60); return 'over '+m+'m'+(s%60?' '+(s%60)+'s':''); }
+  /* a builder-deployed market is listed as "xyz:GOLD" on the chain — show the market, keep the builder in the title */
+  function mkt(sym){ var i=String(sym||'').indexOf(':'); return i>0?String(sym).slice(i+1):String(sym||''); }
+  function paintTrades(d){
+    var box=document.getElementById('wlTrades'); if(!box)return;
+    var tr=d.fills||[];
+    var n=document.getElementById('wlTrN'); if(n)n.textContent=tr.length?'('+tr.length+')':'';
+    var note=document.getElementById('wlTrNote');
+    if(note)note.textContent=tr.length||d.fillWatch
+      ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution — a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
+      : '';
+    if(!tr.length){ box.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k yet — the feed fills as the whales trade.</div>'; return; }
+    box.innerHTML=tr.slice(0,28).map(function(t){
+      var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+      var side=t.long?'long':'short';
+      var m=esc(mkt(t.sym));
+      var lev=t.lev?'<span class="wl-lev">'+t.lev+'x</span>':'';
+      var l1='<b>'+esc(shorta(t.user))+'</b> <span class="act">'+act+'</span> '+usd(t.usd)+' of <b>'+m+'</b> '+side+lev;
+      var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
+               (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
+               (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
+      return '<div class="wl-tr '+(t.long?'l':'s')+'" title="'+esc(t.sym)+' · '+esc(t.dir)+'">'
+        +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
+        +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
+        +'<span class="amt">'+usd(t.usd)+'<small>'+(t.sz>=1?(+t.sz).toLocaleString('en-US',{maximumFractionDigits:2}):(+t.sz).toFixed(4))+' '+m+'</small></span></div>';
+    }).join('');
+  }
+  (function(){ var g=document.querySelector('.wl-tz'); if(!g)return;
+    g.addEventListener('click',function(e){ var b=e.target.closest('button[data-tz]'); if(!b)return;
+      TZ=b.getAttribute('data-tz'); try{localStorage.setItem('mp_wl_tz',TZ);}catch(_){}
+      [].forEach.call(g.querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-tz')===TZ);});
+      if(window.__wlLast)paintTrades(window.__wlLast);
+    });
+    [].forEach.call(g.querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-tz')===TZ);});
+  })();
   function paint(d){
+    window.__wlLast=d;
     var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&(d.active||(d.positions&&d.positions.length)));
     if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
     var g=d.agg||{};
@@ -242,6 +331,7 @@ ${ld}
       '</div>';
     }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No positions.</div>';
     // feed
+    paintTrades(d);
     var al=d.alerts||[];var fe=document.getElementById('wlFeed');
     fe.innerHTML=al.slice(0,22).map(function(a){
       var arrow=a.long?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>':'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
