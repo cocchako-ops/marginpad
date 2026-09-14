@@ -1280,16 +1280,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     /* MEXC futures lists crypto only — an AAPL or EURUSD ticket has a fee window but no MEXC pair to point at, and
        the link would 404. Everything else shows, win or loss, down to a saving of one cent (owner 2026-09-14). */
     if(window.mpAssetClass&&window.mpAssetClass(sym)!=='crypto')return '';
-    if(_mine){ /* already on MEXC's rate \u2014 show what that choice saved against MarginPad's default */
-      var _def=_legs*(0.00055/_rt),_kept=_def-_legs;
-      if(!(_legs>0)||!(_kept>0.005))return '';
+    if(_mine){ /* the trade already ran at MEXC's rate. Quote ONLY what was charged and the rate it was charged at \u2014 both
+                  numbers are in the panel right above. The first cut printed "instead of <MarginPad's default>", a figure
+                  nobody ever charged, and the owner read it as a wrong number, correctly (2026-09-14). */
+      if(!(_legs>0))return '';
+      var _rp=(_rt*100).toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
       return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
-        +'<b>'+MT('jFeeMxF','You are on MEXC rates \u2014 this round trip cost')+' '+feeF(_legs)+' '+MT('jFeeMxG','instead of')+' '+feeF(_def)+', '+MT('jFeeMxH','saving you')+' '+feeF(_kept)+'</b>'
+        +'<b>'+MT('jFeeMxF','You are trading at MEXC rates \u2014 this round trip cost')+' '+feeF(_legs)+' '+MT('jFeeMxG','in fees, at')+' '+_rp+'% '+MT('jFeeMxH','per side')+'</b>'
         +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
     }
     var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
-      +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','instead of')+' '+feeF(_legs)+' \u2014 '+MT('jFeeMxC','you keep')+' '+feeF(_save)+'</b>'
+      +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','in fees, not the')+' '+feeF(_legs)+' '+MT('jFeeMxC','you paid \u2014 a difference of')+' '+feeF(_save)+'</b>'
       +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
   }catch(_){return '';} }
   if(!window._mpFeeWired){window._mpFeeWired=1;

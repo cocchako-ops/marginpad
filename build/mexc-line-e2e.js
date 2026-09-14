@@ -55,7 +55,8 @@ const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE', 'SOL'];   // the seeded rows MEXC can
           per.push({ sym: (c.querySelector('.pp-sym') || {}).textContent, res: (c.querySelector('.pp-res') || {}).textContent,
             slot: !!slot, filled: !!(slot && slot.getAttribute('data-done')),
             hasWindow: !!pop, windowOpened: open, onCard: onCard, inPop: pop ? pop.querySelectorAll('.fb-mx').length : 0,
-            vis: !!(b && b.width > 0 && b.height > 0), hit: !!(hitEl && a && a.contains(hitEl)), href: a ? a.getAttribute('href') || '' : '', txt: ((pop && pop.querySelector('.fb-mx b') || {}).textContent || '').slice(0, 80) });
+            vis: !!(b && b.width > 0 && b.height > 0), hit: !!(hitEl && a && a.contains(hitEl)), href: a ? a.getAttribute('href') || '' : '', txt: ((pop && pop.querySelector('.fb-mx b') || {}).textContent || '').slice(0, 80),
+            legs: pop ? [...pop.querySelectorAll('.fb-r')].filter(r => /fee/i.test(r.textContent) && !/funding/i.test(r.textContent)).map(r => parseFloat(((r.querySelector('b') || {}).textContent || '').replace(/[^0-9.]/g, '')) || 0) : [] });
         }
         const cc = (() => { try { return window.mpEx && window.mpEx.ccNow ? window.mpEx.ccNow() : null; } catch (e) { return null; } })();
         return { cards: cards.length, closed: closed.length, per, cc };
@@ -73,7 +74,18 @@ const CRYPTO_SYMS = ['BTC', 'ETH', 'DOGE', 'SOL'];   // the seeded rows MEXC can
         ok(crypto.length === 4, 'the four crypto tickets with a window are all present (' + crypto.map(p => p.sym).join(', ') + ')');
         const onMexc = r.per.find(p => String(p.sym || '').trim().toUpperCase() === 'SOL');
         ok(onMexc && onMexc.inPop === 1, 'a trade ALREADY priced at MEXC still shows a line rather than nothing', onMexc);
-        ok(onMexc && /on MEXC rates/i.test(onMexc.txt) && /saving you/i.test(onMexc.txt), 'and it confirms what that choice saved, against the default rate', onMexc && onMexc.txt);
+        // owner 2026-09-14: "ovo 'instead of' kaze skroz pogresnu vrednost. Niko nije uzeo toliko fee." The first cut
+        // compared against what MarginPad's default WOULD have charged - a figure nobody charged, sitting under a panel
+        // of three real ones. A line on a trade already priced at MEXC may quote only numbers that panel itself shows.
+        ok(onMexc && /MEXC rates/i.test(onMexc.txt) && /in fees/i.test(onMexc.txt), 'a trade already at MEXC rates says what it really cost', onMexc && onMexc.txt);
+        ok(onMexc && !/instead of/i.test(onMexc.txt) && !/saving/i.test(onMexc.txt), 'and invents NO counterfactual charge', onMexc && onMexc.txt);
+        { const amts = String(onMexc && onMexc.txt || '').match(/\$[0-9][0-9,]*\.?[0-9]*/g) || [];
+          const sum = (onMexc && onMexc.legs || []).reduce((a, b) => a + b, 0);
+          const named = amts.map(x => parseFloat(x.replace(/[$,]/g, '')));
+          ok(amts.length === 1, 'exactly one dollar figure in the line (' + amts.join(', ') + ')');
+          ok(named.length === 1 && sum > 0 && Math.abs(named[0] - sum) < 0.011,
+            'and it equals the open + close fee the panel prints ($' + sum.toFixed(2) + ')', { named, legs: onMexc && onMexc.legs });
+          ok(/0\.02\s*%/.test(String(onMexc && onMexc.txt || '')), 'the line names the rate that was actually charged', onMexc && onMexc.txt); }
         ok(crypto.every(p => p.filled), 'opening the window FILLS the slot - the line is not baked at render, when mpEx is still loading');
         ok(crypto.every(p => p.inPop === 1), 'every crypto fee window carries exactly one MEXC line, win and loss alike');
         const tiny = crypto.find(p => String(p.sym || '').trim().toUpperCase() === 'DOGE');

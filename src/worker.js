@@ -4909,8 +4909,8 @@ async function handleTrack(url, request, env, ctx) {
   const type = (p.get('t') || 'event').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
   let label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
   // a click-out is a MEASUREMENT, so its label is resolved to a known partner before anything is counted (see PARTNERS)
-  let partner = '';
-  if (type === 'exchange' || type === 'tool') { partner = partnerOf(label); label = partner || 'other'; }
+  let partner = '', rawLabel = '';
+  if (type === 'exchange' || type === 'tool') { rawLabel = label; partner = partnerOf(label); label = partner || 'other'; }
   const inc = (k, ttl) => { try { const B = globalThis.__incB = globalThis.__incB || { m: new Map(), t: Date.now() }; const e = B.m.get(k) || { d: 0, ttl }; e.d++; if (ttl) e.ttl = ttl; B.m.set(k, e); if (B.m.size >= 12 || Date.now() - B.t > 20000) { const batch = B.m; globalThis.__incB = { m: new Map(), t: Date.now() }; if (ctx) ctx.waitUntil(kvIncFlush(env, batch)); } } catch (e) {} }; // A5: batched — one KV RMW per key per ~12 events/20s instead of per event
   // A SIGNED-IN user is a real person (they logged in with email) → always record their per-user activity (powers the
   // admin activity trail AND daily-mission verification), even if their UA looks bot-like. In-app browsers (WhatsApp,
@@ -5070,14 +5070,20 @@ async function handleTrack(url, request, env, ctx) {
     if (type === 'exchange' || type === 'tool') { // affiliate click-outs only (exchange = Bybit/Binance/…, tool = TradingView/Koinly/3Commas). NOT 'hotpair' — Trending now opens Paper Trade, it is not a money click.
       const d2 = new Date().toISOString().slice(0, 10);
       if (partner) { await inc('aff:total'); await inc('aff:day:' + d2, 3456000); }   // affiliate-click totals + daily series — REAL partners only
-      else await inc('aff:junk');                                                     // an unknown label: counted apart so the noise stays visible without polluting revenue
+      else { await inc('aff:junk'); await inc('affjunk:day:' + d2, 3456000);          // an unknown label: counted apart so the noise stays visible without polluting revenue
+        // and counted BY LABEL, because the raw label used to be overwritten with 'other' before anything recorded it
+        try { await inc('affjunk:lbl:' + ((rawLabel || '(empty)').toLowerCase().replace(/[^a-z0-9._-]/g, '') || 'blank').slice(0, 24), 3456000); } catch (e) {}
+      }
     }
     if (type === 'exchange' && partner) await inc('xpath:' + (p.get('p') || '/').slice(0, 48)); // which page/tool drove this exchange link-out (revenue path)
     // Signed-in trade beacons are DROPPED from the ring since 2026-09-06: the UserStore now writes the authoritative open/close/
     // sltp/order rows itself (every path — site, bot, MCP, sweep), so the client copy would only duplicate them. Guests keep
     // theirs: a guest's journal never reaches the server, the beacon is the only record he leaves.
     const _clientTrade = (type === 'paper' || type === 'close' || type === 'sltp' || type === 'limitorder') && !!getCookie(request, 'mp_uid');
-    if (!_clientTrade && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad')) { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    // A click-out that resolves to no partner is not a money click and not a reader action: it is a scanner hitting
+    // /api/track. It stays COUNTED (aff:junk + affjunk:day + affjunk:lbl) and gets one radar line, but never a row.
+    const _junkClick = (type === 'exchange' || type === 'tool') && !partner;
+    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad')) { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
         let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);
@@ -5775,7 +5781,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=182d623c" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=37f11f76" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -16912,6 +16918,15 @@ export default {
         const _pd = +(await env.STATS.get('probe:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
         if (_pd) { let muted = []; try { muted = (await env.STATS.list({ prefix: 'probe:ip:', limit: 50 })).keys.map(k => k.name.slice(9)); } catch (e) {}
           push9('probe', 'info', 'Injection scanner: ' + _pd + ' probe' + (_pd === 1 ? '' : 's') + ' today, counted and dropped (not SQL here)', muted.length ? muted.length + ' address' + (muted.length === 1 ? '' : 'es') + ' muted 24 h: ' + muted.map(ip => ip.replace(/\.\d+$/, '.x')).join(', ') : 'no address reached the mute threshold', '', _pd, now); }
+      } catch (e) {}
+      try { // click-outs that name no partner we work with (2026-09-14): counted, never shown as rows — one line says how many
+        const _ad = +(await env.STATS.get('affjunk:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
+        if (_ad) { let lbls = [];
+          try { const ks = (await env.STATS.list({ prefix: 'affjunk:lbl:', limit: 30 })).keys.map(k => k.name.slice(12));
+                const vs = await Promise.all(ks.map(k => env.STATS.get('affjunk:lbl:' + k)));
+                lbls = ks.map((k, i) => ({ k, n: +vs[i] || 0 })).sort((a, b) => b.n - a.n).slice(0, 5); } catch (e) {}
+          push9('affjunk', 'info', 'Click-outs naming no partner: ' + _ad + ' today, counted and dropped (not revenue)',
+            lbls.length ? 'labels: ' + lbls.map(x => x.k + ' x' + x.n).join(', ') : '', '', _ad, now); }
       } catch (e) {}
       const sevN = { red: 0, amber: 1, info: 2 }; radar.sort((a, b) => (sevN[a.sev] - sevN[b.sev]) || (b.n - a.n));
       // ---- rows: events (+ pageviews when asked or when one actor is traced), newest first; every row carries its resolved actor key ----
