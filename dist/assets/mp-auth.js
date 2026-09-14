@@ -742,7 +742,25 @@
     // picker surfaces keep the carved band only: at thumbnail scale the outer silhouette collapses into a stray
     // coloured line above the tile. LAST in the sheet on purpose — it ties on specificity with the per-frame rules.
     + '.prev.frame-regalia::before,.prev.frame-owner::before,.prev.frame-supernova::before,.mpa-fr-sw.frame-regalia::before,.mpa-fr-sw.frame-owner::before,.mpa-fr-sw.frame-supernova::before{content:none}'
-    + '@media(prefers-reduced-motion:reduce){.mp-progold{animation:none;background-position:30% center}}';
+    + '@media(prefers-reduced-motion:reduce){.mp-progold{animation:none;background-position:30% center}}'
+    /* The message-action sheet and the reaction chips. They live HERE because the code that creates them lives
+       here too, and mp-auth is the one bundle on every page — a page without home.css would otherwise show an
+       unstyled sheet (2026-09-14). The room chat keeps its own copy of the .ct-* rules for the same reason. */
+    + '.ct-sheet{position:fixed;z-index:2147483000;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}'
+    + '.ct-sheet.on{opacity:1;transform:none}'
+    + '.ct-sh-rx{display:flex;gap:2px}'
+    + '.ct-sh-rx button{width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}'
+    + '.ct-sh-rx button:hover,.ct-sh-rx button:focus-visible{background:#1e2531;transform:scale(1.14);outline:none}'
+    + '.ct-sh-a{display:flex;flex-direction:column;border-top:1px solid #232a34;padding-top:5px}'
+    + '.ct-sh-a button{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-radius:8px;background:none;color:#e9e7df;font:600 13px system-ui,sans-serif;cursor:pointer}'
+    + '.ct-sh-a button:hover,.ct-sh-a button:focus-visible{background:#1e2531;outline:none}'
+    + '.ct-sh-a button.dz{color:#ff7a6b}'
+    + '.mpa-rx{display:inline-flex;flex-wrap:wrap;gap:3px;margin:-2px 0 -2px 6px;vertical-align:-3px}'
+    + '.mpa-rxb{display:inline-flex;align-items:center;gap:2px;height:17px;padding:0 5px 0 3px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22);font-size:11px;line-height:1;cursor:pointer;color:inherit}'
+    + '.mpa-rxb i{font-style:normal;font-size:10px;font-weight:700;opacity:.75}'
+    + '.mpa-rxb.on{border-color:rgba(194,246,74,.65);background:rgba(194,246,74,.16)}'
+    + '.mpa-ded{font-size:10px;opacity:.55;margin-left:5px}'
+    + '.mpa-dbub{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var modal = document.createElement('div'); modal.className = 'mpa-modal'; modal.hidden = true;
@@ -862,6 +880,29 @@
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
     }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = '<div class="mpa-xp-empty">Could not load your messages.</div>'; });
   }
+  /* ── direct-message actions (2026-09-14) ───────────────────────────────────────────────────────────────────────
+     The gesture and the sheet are the shared ones above; this is only what is specific to a DM: the sender may edit
+     for the same fifteen minutes and delete at any time, either side may react, and everything goes through
+     POST /api/dm/act, which resolves the caller from the session and decides there. A thread is polled rather than
+     pushed, so after an action the thread is simply re-pulled — the server's copy is the one that is drawn. */
+  var DM_RX = ['\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDE22'], dmWho = '';
+  function dmRxHtml(rx, id) {
+    if (!rx) return ''; if (typeof rx === 'string') { try { rx = JSON.parse(rx); } catch (e) { return ''; } }
+    var k = Object.keys(rx || {}); if (!k.length) return '';
+    var h = '<span class="mpa-rx">';
+    for (var i = 0; i < k.length; i++) { var who = rx[k[i]] || [], mine = dmWho && who.indexOf(dmWho) >= 0;
+      h += '<button type="button" class="mpa-rxb' + (mine ? ' on' : '') + '" data-rx="' + esc(k[i]) + '" data-rxm="' + esc(String(id)) + '">' + esc(k[i]) + '<i>' + who.length + '</i></button>'; }
+    return h + '</span>';
+  }
+  function dmAct(body, after) {
+    fetch('/api/dm/act', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.ok) { if (d.who) dmWho = d.who; if (after) after(); return; }
+        var why = d && d.error;
+        try { if (window.mpToast) window.mpToast({ msg: why === 'notyours' ? 'You can only change your own messages' : why === 'late' ? 'Too late to edit that one' : why === 'gone' ? 'That message is gone' : 'That did not go through', ms: 2400, key: 'dmact' }); } catch (e) {}
+      }).catch(function () {});
+  }
   function renderDmThread(name) {
     name = String(name || '').replace(/[^a-zA-Z0-9_]/g, '');
     if (!name) { renderDmInbox(); return; }
@@ -869,18 +910,43 @@
       + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaDmScroll"><div class="mpa-dm-empty">Loading…</div></div><div id="mpaDmWarn"></div>'
       + '<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @' + esc(name) + '…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>';
     var bk = bodyEl.querySelector('#mpaDmBack'); if (bk) bk.addEventListener('click', renderDmInbox);
+    (function () {
+      var sc = bodyEl.querySelector('#mpaDmScroll'); if (!sc) return;
+      var reload = function () { try { pull(); } catch (e) {} };
+      if (window.mpLongPress) window.mpLongPress(sc, '[data-dmid]', function (row) {
+        var id = +row.getAttribute('data-dmid'), own = row.getAttribute('data-own') === '1';
+        var tx = row.querySelector('.mpa-dtx'), txt = tx ? (tx.innerText || tx.textContent || '') : '';
+        if (!id || !window.mpMsgSheet) return;
+        window.mpMsgSheet({ row: row, text: txt, reactions: DM_RX,
+          canEdit: own && (Date.now() - (+row.getAttribute('data-ts') || 0)) < 900000, canDelete: own,
+          onReact: function (e2) { dmAct({ id: id, act: 'react', e: e2 }, reload); },
+          onDelete: function () { if (window.confirm('Delete this message?')) dmAct({ id: id, act: 'del' }, reload); },
+          onEdit: function () { var nt = window.prompt('Edit your message', txt); if (nt == null) return; nt = String(nt).trim(); if (!nt || nt === txt) return; dmAct({ id: id, act: 'edit', txt: nt.slice(0, 1000) }, reload); } });
+      });
+      sc.addEventListener('click', function (e) {
+        var b2 = e.target.closest && e.target.closest('.mpa-rxb'); if (!b2) return;
+        e.preventDefault(); e.stopPropagation();
+        dmAct({ id: +b2.getAttribute('data-rxm'), act: 'react', e: b2.getAttribute('data-rx') }, reload);
+      }, true);
+    })();
     var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), send = bodyEl.querySelector('#mpaDmSend'), warn = bodyEl.querySelector('#mpaDmWarn');
     var lastKey = '';
     function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi</div>'; lastKey = ''; return; }
       // re-render only when the thread changed; keep the reader's place unless they were already at the bottom (2026-09-12: the thread loaded ONCE and a reply never appeared until the chat was closed and reopened)
-      var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length; if (key === lastKey) return; lastKey = key;
+      // an edit or a reaction changes no count and no timestamp, so they join the key or the poll would never redraw
+      var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length
+        + ':' + msgs.map(function (m) { return (m.ed || '') + (m.rx ? (typeof m.rx === 'string' ? m.rx : JSON.stringify(m.rx)).length : ''); }).join(''); if (key === lastKey) return; lastKey = key;
       var atBottom = (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight) < 40 || !scroll.children.length || !!scroll.querySelector('.mpa-dm-empty');
-      scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
+      scroll.innerHTML = msgs.map(function (m) {
+        return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '" data-dmid="' + (m.id || '') + '"' + (m.me ? ' data-own="1"' : '') + ' data-ts="' + (+m.ts || 0) + '">'
+          + '<span class="mpa-dtx">' + esc(m.txt) + '</span>' + (m.ed ? '<span class="mpa-ded">edited</span>' : '') + dmRxHtml(m.rx, m.id)
+          + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
     function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () {}); }
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? 'User not found.' : 'Could not load this chat.') + '</div>'; return; }
+      if (d.me) dmWho = d.me;
       if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); var av = bodyEl.querySelector('#mpaDmAv'); if (av) av.style.background = dmCol(d.other.name); }
       var canDm = d.canDm !== false;
       if (!canDm && !(d.messages && d.messages.length)) { if (warn) warn.innerHTML = '<div class="mpa-dm-warn">You can message this trader once you follow them (or they follow you). Open their profile and tap Follow first.</div>'; if (inp) inp.disabled = true; if (send) send.disabled = true; }

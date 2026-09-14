@@ -5775,7 +5775,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e1e20e79" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b0fd9afd" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12990,7 +12990,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving — build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'c2f066fd';
+const ASSET_V = '067e9a11';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -17437,6 +17437,10 @@ export default {
         try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'dm', rn, '')); } } catch (e) {}
         return resp; }
       if (sub === 'thread') { const r = await call('/dm/thread', { uid: su.id, withName: url.searchParams.get('with') || '' }); try { const xc = globalThis.__xpC; if (xc) xc.delete(tok); } catch (e) {} return r; } // the thread read just marked the dm notification seen: drop this token's 45 s /xp cache so the next badge poll does not resurrect it
+      // edit / delete / react on a message in a thread (2026-09-14). The caller is the session, never the payload.
+      if (sub === 'act' && request.method === 'POST') { let ab = {}; try { ab = await request.json(); } catch (e) {}
+        if (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0) return new Response('{"error":"restricted"}', { status: 403, headers: jh });
+        return call('/dm/act', { uid: su.id, id: ab.id, act: ab.act, e: ab.e, txt: ab.txt }); }
       if (sub === 'inbox') return call('/dm/inbox', { uid: su.id });
       if (sub === 'unread') return call('/dm/unread', { uid: su.id });
       return new Response('{"error":"not_found"}', { status: 404, headers: jh });
@@ -20014,7 +20018,8 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS refhit(referrer TEXT, campaign TEXT, src TEXT, ts INTEGER, url TEXT)'); // referral-link visits (clicks) for the Affiliate tab: who came, via which campaign, from where (host + exact post URL)
     try { s.exec('ALTER TABLE refhit ADD COLUMN url TEXT'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS ufollows(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, tname TEXT, ts INTEGER)'); // leaderboard follow (k = follower|target)
-    s.exec('CREATE TABLE IF NOT EXISTS dms(id INTEGER PRIMARY KEY AUTOINCREMENT, pair TEXT, from_uid TEXT, to_uid TEXT, txt TEXT, ts INTEGER, seen INTEGER DEFAULT 0)'); // user↔user direct messages (pair = the two uids sorted, joined by |)
+    s.exec('CREATE TABLE IF NOT EXISTS dms(id INTEGER PRIMARY KEY AUTOINCREMENT, pair TEXT, from_uid TEXT, to_uid TEXT, txt TEXT, ts INTEGER, seen INTEGER DEFAULT 0)');
+    for (const c of ['rx TEXT', 'ed INTEGER']) { try { s.exec('ALTER TABLE dms ADD COLUMN ' + c); } catch (e) {} } // reactions + edited-at (2026-09-14) // user↔user direct messages (pair = the two uids sorted, joined by |)
     try { s.exec('CREATE INDEX IF NOT EXISTS dms_pair ON dms(pair, ts)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS dms_to ON dms(to_uid, seen)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS unotifs(nid INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, ts INTEGER, kind TEXT, body TEXT, link TEXT, seen INTEGER DEFAULT 0)'); // social notifications (follow/mention/duel/dm), ring-buffered ~40/user
@@ -23481,6 +23486,37 @@ export class UserStore {
       if (!this.rows('SELECT 1 FROM dms WHERE to_uid=? AND from_uid=? AND seen=0 AND ts<? LIMIT 1', toId, from, now)[0]) this._pushNotif(toId, 'dm', '@' + me.username + ' sent you a message', 'dm:' + me.username);
       return this.j({ ok: true, msg: { me: true, txt, ts: now } });
     }
+    // Edit / delete / react on a direct message. Same rule as the room: the SESSION decides. `uid` here is the
+    // caller resolved by the worker from the cookie, never anything the page sent about itself.
+    if (path === '/dm/act') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const id = +((b && b.id) || 0), act = String((b && b.act) || '');
+      if (!uid || !id || ['edit', 'del', 'react'].indexOf(act) < 0) return this.j({ error: 'bad' }, 400);
+      const row = this.rows('SELECT id, pair, from_uid, to_uid, txt, ts, rx FROM dms WHERE id=?', id)[0];
+      if (!row) return this.j({ error: 'gone' }, 404);
+      if (String(row.from_uid) !== uid && String(row.to_uid) !== uid) return this.j({ error: 'notyours' }, 403); // not even in this thread
+      const mine = String(row.from_uid) === uid;
+      if (act === 'react') {
+        let rx = {}; try { rx = JSON.parse(row.rx || '{}') || {}; } catch (e) {}
+        const e2 = String((b && b.e) || '');
+        if (!CHAT_RX_SET.has(e2)) return this.j({ error: 'bad_emoji' }, 400);
+        const who = chatWho(uid), list = Array.isArray(rx[e2]) ? rx[e2] : [];
+        const at = list.indexOf(who);
+        if (at >= 0) list.splice(at, 1);
+        else { if (Object.keys(rx).reduce((n, k) => n + (rx[k] || []).length, 0) >= CHAT_RX_MAX) return this.j({ error: 'full' }, 429); list.push(who); }
+        if (list.length) rx[e2] = list; else delete rx[e2];
+        sql.exec('UPDATE dms SET rx=? WHERE id=?', Object.keys(rx).length ? JSON.stringify(rx) : null, id);
+        return this.j({ ok: true, id, rx });
+      }
+      if (!mine) return this.j({ error: 'notyours' }, 403);        // only the sender may edit or delete
+      if (act === 'del') { sql.exec('DELETE FROM dms WHERE id=?', id); return this.j({ ok: true, id, deleted: true }); }
+      if (Date.now() - (+row.ts || 0) > CHAT_EDIT_MS) return this.j({ error: 'late' }, 403);
+      const nt = String((b && b.txt) || '').replace(/\s+$/g, '').slice(0, 1000).trim();
+      if (!nt || nt === row.txt) return this.j({ error: 'empty' }, 400);
+      const now2 = Date.now();
+      sql.exec('UPDATE dms SET txt=?, ed=? WHERE id=?', nt, now2, id);
+      return this.j({ ok: true, id, txt: nt, ed: now2 });
+    }
     if (path === '/dm/thread') { // messages between uid and the user named withName (marks uid's incoming as seen)
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
       const withName = String((b && b.withName) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
@@ -23489,14 +23525,15 @@ export class UserStore {
       if (!ou) return this.j({ error: 'no_recipient' }, 404);
       const other = String(ou.id); if (other === uid) return this.j({ error: 'self' }, 400);
       const pair = [uid, other].sort().join('|');
-      const rows = this.rows('SELECT from_uid, txt, ts FROM dms WHERE pair=? ORDER BY ts ASC LIMIT 200', pair);
+      const rows = this.rows('SELECT id, from_uid, txt, ts, rx, ed FROM dms WHERE pair=? ORDER BY ts ASC LIMIT 200', pair);
+      const meWho = chatWho(uid);   // the reader's own author hash: the only way a chip can read as theirs
       sql.exec('UPDATE dms SET seen=1 WHERE pair=? AND to_uid=? AND seen=0', pair, uid);
       // Opening the thread IS reading the "@x sent you a message" notification (owner 2026-09-12): it used to stay lit until the bell
       // itself was opened, so a reader who went straight to Messages kept an unread mark for something they had already seen.
       try { sql.exec("UPDATE unotifs SET seen=1 WHERE uid=? AND kind='dm' AND seen=0 AND link=? COLLATE NOCASE", uid, 'dm:' + ou.username); } catch (e) {}
       const nun = (this.rows('SELECT COUNT(*) c FROM unotifs WHERE uid=? AND seen=0', uid)[0] || { c: 0 }).c;
       const L = xpLevelOf(ou.xp || 0);
-      return this.j({ ok: true, notifUnread: nun, other: { name: ou.username, level: { k: L.k, name: L.name, col: L.col } }, canDm: this._canDm(uid, other), messages: rows.map(r => ({ me: String(r.from_uid) === uid, txt: r.txt, ts: r.ts })) });
+      return this.j({ ok: true, notifUnread: nun, other: { name: ou.username, level: { k: L.k, name: L.name, col: L.col } }, canDm: this._canDm(uid, other), me: meWho, messages: rows.map(r => ({ id: r.id, me: String(r.from_uid) === uid, txt: r.txt, ts: r.ts, ed: r.ed || 0, rx: r.rx || null })) });
     }
     if (path === '/dm/inbox') { // the user's conversation list: other party, last message, unread count
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
