@@ -114,17 +114,25 @@
   .wl-tr .clock{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25;flex:0 0 auto}
   .wl-tr .clock small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);letter-spacing:.02em}
   .wl-tr .say{min-width:0}
-  .wl-tr .say .l1{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);line-height:1.45}
+  .wl-tr .say .l1{display:block;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);line-height:1.45}
   .wl-tr .say .l1 b{font-weight:800}
   .wl-tr.l .say .l1 .act{color:var(--grn);font-weight:800}
   .wl-tr.s .say .l1 .act{color:var(--red);font-weight:800}
-  .wl-tr .say .l2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-tr .say .l2{display:block;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .wl-tr .amt{font-family:'Space Mono',monospace;font-size:14px;font-weight:800;text-align:right;flex:0 0 auto}
   .wl-tr.l .amt{color:var(--grn)}.wl-tr.s .amt{color:var(--red)}
   .wl-tr .amt small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint);margin-top:2px}
   .wl-lev{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(194,246,74,.14);color:var(--lime);margin-left:5px;vertical-align:1px}
   .wl-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:9px 0 0;line-height:1.6}
-  @media(max-width:560px){.wl-tr{grid-template-columns:auto 1fr;row-gap:6px}.wl-tr .amt{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:8px}.wl-tr .amt small{margin:0}}
+  @media(max-width:560px){
+    .wl-tr{grid-template-columns:auto 1fr;column-gap:9px;row-gap:5px;padding:9px 10px}
+    .wl-tr .amt{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:8px;font-size:13px}
+    .wl-tr .amt small{margin:0}
+    .wl-tr .say .l1{font-size:12px}
+    /* the detail carries the useful part (avg price, how long it took, what was booked) — on a narrow
+       screen it wraps to two lines rather than being cut off at the first one */
+    .wl-tr .say .l2{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.5}
+  }
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
@@ -259,7 +267,7 @@
       var side=t.long?'long':'short';
       var m=esc(mkt(t.sym));
       var lev=t.lev?'<span class="wl-lev">'+t.lev+'x</span>':'';
-      var l1='<b>'+esc(shorta(t.user))+'</b> <span class="act">'+act+'</span> '+usd(t.usd)+' of <b>'+m+'</b> '+side+lev;
+      var l1='<b>'+esc(shorta(t.user))+'</b> <span class="act">'+act+'</span> <b>'+m+'</b> '+side+lev;
       var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
                (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
                (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
@@ -326,7 +334,7 @@
   (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js"></script>
-<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/mp-auth.js?v=1fd60faa"></script>
+<script defer src="/assets/mp-nav.js?v=37f11f76"></script>
 </body>
 </html>

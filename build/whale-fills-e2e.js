@@ -70,6 +70,9 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
     ok(!bad, 'the size is the sum of its own fills', bad);
   }
   ok(out.length <= consts.MAX_FILLS, 'the ring is capped (' + out.length + ' <= ' + consts.MAX_FILLS + ')');
+  // a group publishes when it goes quiet, so publication order is NOT the order things happened
+  { let bad = null; for (let i = 1; i < out.length; i++) if (out[i].ts > out[i - 1].ts) { bad = { i, a: out[i - 1].ts, b: out[i].ts }; break; }
+    ok(!bad, 'the feed is newest-first by the clock each row prints', bad); }
 
   // a fill already counted must never be counted twice — the rotation re-reads overlapping windows
   { const before = state.fills.length;

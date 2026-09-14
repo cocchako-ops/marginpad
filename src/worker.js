@@ -2325,6 +2325,13 @@ async function handleCgHyper(url, env) {
  if (base) {
  const r = await fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 60 } });
  const j = await r.json();
+ // the trade feed does NOT depend on the position poll: those run on different clocks (4 min vs 30 s) and
+ // for the first minutes after a collector restart the position list is empty while trades are already
+ // arriving. Gating the feed on positions blanked it for no reason.
+ if (j && Array.isArray(j.fills)) {
+      out.fills = j.fills.slice(0, 60);
+      out.fillTs = +j.fillTs || 0; out.fillWatch = +j.fillWatch || 0; out.fillMin = +j.fillMin || 0;
+ }
  if (j && Array.isArray(j.positions) && j.positions.length) {
       let longUsd = 0, shortUsd = 0, upnl = 0;
  j.positions.forEach(p => { if (p.long) longUsd += p.val; else shortUsd += p.val; upnl += (+p.pnl || 0); });
@@ -2332,10 +2339,6 @@ async function handleCgHyper(url, env) {
  out.agg = { longUsd, shortUsd, upnl, count: j.positions.length };
  out.alerts = (j.alerts || []).map(a => ({ user: a.user, sym: a.sym, long: a.long, liq: a.liq, val: a.val, ts: a.ts }));
  out.tracked = j.tracked;
-      // executed trades with Hyperliquid's OWN fill time (2026-09-14). alerts above are a snapshot diff and
-      // carry the time WE looked; these carry when the whale actually traded, grouped per execution.
-      out.fills = (j.fills || []).slice(0, 60);
-      out.fillTs = +j.fillTs || 0; out.fillWatch = +j.fillWatch || 0; out.fillMin = +j.fillMin || 0;
       out.active = true;
     }
     }

@@ -186,8 +186,11 @@ async function drainPending() {
     } catch (e) { /* no leverage is reported as unknown, never guessed */ }
     await new Promise(res => setTimeout(res, 40));
   }
-  rows.sort((a, b) => a.tsEnd - b.tsEnd);            // oldest first, so unshift leaves the newest on top
-  for (const r of rows) state.fills.unshift(r);
+  // A group is published when it goes QUIET, so publication order is not the order things happened: a
+  // fifteen-minute execution surfaces after short trades that started later. The feed is sorted by when
+  // the trade STARTED, which is the clock the row prints — the two must agree or the list reads as broken.
+  for (const r of rows) state.fills.push(r);
+  state.fills.sort((a, b) => b.ts - a.ts);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
 }
 
@@ -261,7 +264,7 @@ export function stopWhales() { timers.forEach(t => clearInterval(t)); timers = [
 export const _fillsTest = {
   foldFills, flushGroups, drainPending, state,
   // publish without asking the chain for leverage — the grouping is what is under test here
-  flushLocal(now) { flushGroups(now); const rows = pending.splice(0, pending.length); rows.sort((a, b) => a.tsEnd - b.tsEnd); for (const r of rows) state.fills.unshift(r); if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS; },
+  flushLocal(now) { flushGroups(now); const rows = pending.splice(0, pending.length); for (const r of rows) state.fills.push(r); state.fills.sort((a, b) => b.ts - a.ts); if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS; },
   reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); pending.length = 0; levByKey = new Map(Object.entries(lev || {})); },
   consts: { GROUP_MS, MIN_TRADE_USD, MAX_FILLS, FILL_TRACK_N },
 };
