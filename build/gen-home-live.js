@@ -23,7 +23,7 @@ let h = fs.readFileSync(SRC, 'utf8');
 const TITLE = 'MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations';
 const DESC = 'Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC.';
 const CANON = 'https://marginpad.io/';
-const OG_IMG = 'https://marginpad.io/assets/og.png';
+const OG_IMG = 'https://marginpad.io/assets/og/home.jpg';   // the homepage's own card (2026-09-14); every page has one now
 
 const GTAG = `<!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>`;

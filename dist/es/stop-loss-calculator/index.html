@@ -29,7 +29,7 @@
 <meta property="og:title" content="Stop-Loss & Take-Profit Calculator — R:R Targets | MarginPad" />
 <meta property="og:description" content="Free stop-loss calculator for crypto: exact stop price from your dollar risk and position size, plus 1R, 2R and 3R take-profit targets for clean risk-reward planning." />
 <meta property="og:url" content="https://marginpad.io/es/stop-loss-calculator/" />
-<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og/stop-loss-calculator.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css" />
@@ -69,7 +69,10 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de Stop-Loss y Take-Profit","item":"https://marginpad.io/es/stop-loss-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿El stop debe ir debajo del soporte o en mi número de riesgo?","acceptedAnswer":{"@type":"Answer","text":"Ambos, en orden: primero encuentra el nivel estructural que invalida la operación (debajo del soporte para longs, encima de la resistencia para shorts), y después calcula el tamaño de la POSICIÓN para que la pérdida en dólares en ese nivel sea igual a tu número de riesgo. Si la posición queda demasiado pequeña para importar, el setup es demasiado amplio — descártalo en lugar de apretar el stop hasta meterlo en el ruido."}},{"@type":"Question","name":"¿Qué relación riesgo-beneficio es buena?","acceptedAnswer":{"@type":"Answer","text":"Solo significa algo junto a tu tasa de acierto: R:R de equilibrio = (1 / tasa de acierto) - 1. Una tasa de acierto del 50% empata en 1:1, una del 33% necesita 2:1. La mayoría de los sistemas swing apuntan a ganadoras promedio de al menos 2R para que una tasa de acierto normal siga componiendo."}},{"@type":"Question","name":"¿Por qué mi stop se ejecutó a un precio peor?","acceptedAnswer":{"@type":"Answer","text":"Un stop-loss se convierte en una orden a mercado al tocarse, así que en movimientos rápidos o libros de órdenes delgados se ejecuta con slippage. En el paper trading de MarginPad los stops se resuelven en el cierre de la vela con confirmación, y en los exchanges reales puedes usar órdenes stop-limit para acotar el slippage a costa de que quizás no se ejecuten."}}]}</script>
 <script defer src="/assets/sentry.js?v=42ed986c"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Stop-Loss y Take-Profit — Objetivos R:R","url":"https://marginpad.io/es/stop-loss-calculator/","dateModified":"2026-09-10T19:56:57.575Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Stop-Loss y Take-Profit — Objetivos R:R","url":"https://marginpad.io/es/stop-loss-calculator/","dateModified":"2026-09-10T19:56:57.575Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/stop-loss-calculator.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
 <body>
 <div class="wrap">
 <h1>Calculadora de Stop-Loss y Take-Profit</h1>
