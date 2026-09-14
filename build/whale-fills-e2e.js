@@ -17,7 +17,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
 
 (async () => {
   const { _fillsTest } = await import(pathToFileURL(path.join(__dirname, '..', 'collector', 'src', 'whales.js')).href);
-  const { foldFills, flushGroups, state, reset, consts } = _fillsTest;
+  const { foldFills, flushLocal, state, reset, consts } = _fillsTest;
 
   // ── 1. the real grouping over real fills ────────────────────────────────────────────────────────
   console.log('\nthe grouping, run on real Hyperliquid fills');
@@ -35,7 +35,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
 
   reset({});
   for (const [u, rows] of Object.entries(raw)) foldFills(u, rows);
-  flushGroups(Date.now() + consts.GROUP_MS + 1);   // close every group so the whole hour is published
+  flushLocal(Date.now() + consts.GROUP_MS + 1);   // close every group so the whole hour is published
   const out = state.fills.slice();
   console.log('   ' + total + ' raw fills -> ' + out.length + ' trades over $' + (consts.MIN_TRADE_USD / 1000) + 'k');
 
@@ -74,7 +74,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
   // a fill already counted must never be counted twice — the rotation re-reads overlapping windows
   { const before = state.fills.length;
     for (const [u, rows] of Object.entries(raw)) foldFills(u, rows);
-    flushGroups(Date.now() + consts.GROUP_MS + 1);
+    flushLocal(Date.now() + consts.GROUP_MS + 1);
     ok(state.fills.length === before, 'replaying the same fills adds nothing (the cursor holds)', { before, after: state.fills.length });
   }
 
@@ -85,7 +85,7 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
       { coin: 'BTC', dir: 'Open Long', time: t0, px: '78000', sz: '3', closedPnl: '0' },
       { coin: 'BTC', dir: 'Open Long', time: t0 + 30e3, px: '78100', sz: '2', closedPnl: '0' },
     ]);
-    flushGroups(Date.now());
+    flushLocal(Date.now());
     const t = state.fills[0];
     ok(!!t && t.lev === 25, 'leverage is joined from the open position (a fill does not carry it)', t);
     ok(!!t && t.sz === 5 && Math.abs(t.usd - (78000 * 3 + 78100 * 2)) < 1, 'two fills 30 s apart are ONE trade', t);
@@ -98,28 +98,28 @@ const post = (body) => fetch('https://api.hyperliquid.xyz/info', {
       { coin: 'ETH', dir: 'Open Short', time: t0, px: '2500', sz: '120', closedPnl: '0' },
       { coin: 'ETH', dir: 'Open Short', time: t0 + consts.GROUP_MS + 5000, px: '2510', sz: '140', closedPnl: '0' },
     ]);
-    flushGroups(Date.now());
+    flushLocal(Date.now());
     ok(state.fills.length === 2, 'fills further apart than the window are two trades', state.fills.length);
   }
   // a trade under the floor is not published
   { reset({});
     foldFills('0xtest2', [{ coin: 'SOL', dir: 'Open Long', time: Date.now() - 3600e3, px: '100', sz: '10', closedPnl: '0' }]);
-    flushGroups(Date.now());
+    flushLocal(Date.now());
     ok(state.fills.length === 0, 'a $1k trade never reaches the feed');
   }
   // a group still filling is not published early
   { reset({});
     const now = Date.now();
     foldFills('0xtest3', [{ coin: 'BTC', dir: 'Open Long', time: now - 1000, px: '78000', sz: '10', closedPnl: '0' }]);
-    flushGroups(now);
+    flushLocal(now);
     ok(state.fills.length === 0, 'a trade still being executed is held back, not printed at part size');
-    flushGroups(now + consts.GROUP_MS + 1);
+    flushLocal(now + consts.GROUP_MS + 1);
     ok(state.fills.length === 1, 'and published once it has gone quiet');
   }
   // spot is dropped rather than guessed at
   { reset({});
     foldFills('0xtest4', [{ coin: '@107', dir: 'Sell', time: Date.now() - 3600e3, px: '80', sz: '100000', closedPnl: '0' }]);
-    flushGroups(Date.now());
+    flushLocal(Date.now());
     ok(state.fills.length === 0, 'a spot fill is dropped — this is a futures feed');
   }
 

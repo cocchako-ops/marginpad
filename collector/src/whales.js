@@ -144,10 +144,12 @@ const DIRS = {
   'Long > Short': { act: 'flip', long: false }, 'Short > Long': { act: 'flip', long: true },
 };
 
+const pending = [];   // groups that have closed and are waiting for their leverage before they are published
+
 function publishGroup(g) {
   if (!(g.usd >= MIN_TRADE_USD)) return;
   const d = DIRS[g.dir] || {};
-  state.fills.unshift({
+  pending.push({
     user: g.user, sym: g.sym, act: d.act || '', long: !!d.long, dir: g.dir,
     usd: Math.round(g.usd), sz: +g.sz.toFixed(6),
     px: g.usd / g.sz,                       // size-weighted average fill price, not the last print
@@ -155,6 +157,34 @@ function publishGroup(g) {
     lev: levByKey.get(g.user + '|' + g.sym) || null,
     pnl: g.pnl ? Math.round(g.pnl) : 0,     // realised, only meaningful on a close
   });
+}
+
+// A fill does not carry leverage — it lives on the position. The 4-minute position poll is both too
+// slow and too narrow for this (it only keeps positions over $1M), so a closed group asks the chain
+// for the wallet's state directly. clearinghouseState weighs 2 against the 1200/min budget and this
+// runs a couple of times a minute, which is why it is affordable to ask at publish time instead of
+// printing "—" next to most rows (measured on the first live feed: 6 of 6 had no leverage).
+// A trade that CLOSED the whole position leaves nothing to read, and that is reported as unknown
+// rather than filled in with a number from somewhere else.
+async function drainPending() {
+  if (!pending.length) return;
+  const rows = pending.splice(0, pending.length);
+  const users = [...new Set(rows.filter(r => !r.lev).map(r => r.user))];
+  for (const u of users.slice(0, 6)) {
+    try {
+      const st = await post({ type: 'clearinghouseState', user: u }, 8000);
+      const lev = new Map(), held = new Map();
+      for (const ap of (st.assetPositions || [])) {
+        const p = ap.position || {}, v = +((p.leverage || {}).value) || 0;
+        if (p.coin && v > 0) lev.set(String(p.coin), v);
+        if (p.coin) held.set(String(p.coin), Math.abs(+p.positionValue || 0));
+      }
+      for (const r of rows) if (r.user === u && !r.lev) { r.lev = lev.get(r.sym) || null; r.posUsd = Math.round(held.get(r.sym) || 0); }
+    } catch (e) { /* no leverage is reported as unknown, never guessed */ }
+    await new Promise(res => setTimeout(res, 40));
+  }
+  rows.sort((a, b) => a.tsEnd - b.tsEnd);            // oldest first, so unshift leaves the newest on top
+  for (const r of rows) state.fills.unshift(r);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
 }
 
@@ -206,6 +236,7 @@ async function pollFills() {
     }
     fillCursor = (fillCursor + FILL_SLICE) % universe.length;
     flushGroups(now);
+    await drainPending();
     state.fillTs = now;
     if (!fill429) state.fillErr = '';
     // wallets we no longer track must not keep their cursor for ever
@@ -225,8 +256,10 @@ export function stopWhales() { timers.forEach(t => clearInterval(t)); timers = [
 // test hook: build/whale-fills-e2e.js runs the REAL grouping over real fills pulled from Hyperliquid,
 // because the whole feature is that aggregation and a copy of it in a test would prove nothing.
 export const _fillsTest = {
-  foldFills, flushGroups, state,
-  reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); levByKey = new Map(Object.entries(lev || {})); },
+  foldFills, flushGroups, drainPending, state,
+  // publish without asking the chain for leverage — the grouping is what is under test here
+  flushLocal(now) { flushGroups(now); const rows = pending.splice(0, pending.length); rows.sort((a, b) => a.tsEnd - b.tsEnd); for (const r of rows) state.fills.unshift(r); if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS; },
+  reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); pending.length = 0; levByKey = new Map(Object.entries(lev || {})); },
   consts: { GROUP_MS, MIN_TRADE_USD, MAX_FILLS, FILL_TRACK_N },
 };
 export function getWhales() {
