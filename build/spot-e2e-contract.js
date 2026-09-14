@@ -19,7 +19,8 @@ const BONK = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', CAKE = '0x0e09fabb7
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage(); await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
     await page.setExtraHTTPHeaders({ 'x-admin-key': K });
     await page.evaluateOnNewDocument((uid) => { const of = window.fetch; window.fetch = function (u, o) { if (typeof u === 'string' && u.indexOf('/api/spot/') === 0 && !/\/(memes|memechart|chain|board)/.test(u)) u += (u.indexOf('?') > 0 ? '&' : '?') + 'uid=' + uid; return of.call(this, u, o); }; try { Object.defineProperty(window, 'mpAuth', { value: { me: () => ({ id: uid, username: uid }), ready: () => Promise.resolve(), on: () => {} }, writable: false, configurable: false }); } catch (e) {} }, UID);
-    const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 100)));
+    // a bare message cannot be chased: "Value is null" says nothing without the frame that threw it
+    const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 70) + ' @ ' + String(e.stack || '').split('\n').slice(1, 3).join(' | ').split('https://marginpad.io').join('').slice(0, 180)));
     await page.goto('https://marginpad.io/spot/?cb=' + Date.now(), { waitUntil: 'load', timeout: 90000 }); await new Promise(r => setTimeout(r, 3000));
     await page.evaluate(() => document.getElementById('stnWal').click()); await new Promise(r => setTimeout(r, 2000));
     await page.type('#memeQ', BONK); await new Promise(r => setTimeout(r, 3000));
@@ -44,5 +45,7 @@ const BONK = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', CAKE = '0x0e09fabb7
     chk('browser: zero page errors', errs.length === 0, errs);
     await ctx.close();
   });
-  console.log(out.join('\n')); console.log('UID', UID, 'pass', out.filter(x => x[0] === 'P').length, 'fail', out.filter(x => x[0] === 'F').length);
+  const failed = out.filter(x => x[0] === 'F').length;
+  console.log(out.join('\n')); console.log('UID', UID, 'pass', out.filter(x => x[0] === 'P').length, 'fail', failed);
+  process.exit(failed ? 1 : 0);   // it printed "fail 1" and still exited 0, so every batch run called this suite green
 })().catch(e => { console.error(e); console.log(out.join('\n')); process.exit(1); });

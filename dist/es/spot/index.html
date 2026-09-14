@@ -2000,7 +2000,23 @@
         if(chart){try{chart.remove();}catch(e){}}
         chart=LightweightCharts.createChart(host,{layout:{background:{color:'transparent'},textColor:'#98a1ac',fontSize:10},grid:{vertLines:{color:'rgba(255,255,255,.04)'},horzLines:{color:'rgba(255,255,255,.04)'}},timeScale:{borderColor:'#1e242e',timeVisible:true},rightPriceScale:{borderColor:'#1e242e'},handleScroll:true,handleScale:true});
         candle=chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',priceFormat:{type:'price',precision:T.price<0.01?8:(T.price<1?5:2),minMove:T.price<0.01?1e-8:(T.price<1?1e-5:0.01)}});
-        candle.setData(bars.map(function(b2){return {time:b2.time,open:b2.open,high:b2.high,low:b2.low,close:b2.close};}));
+        /* Lightweight Charts throws "Value is null" if ANY field of ANY bar is not a finite number, and the throw
+           lands in the .catch below, so one malformed candle out of three hundred wipes the whole chart and the
+           reader is told it failed. Every other engine on this site runs sanitizeBars() first; this one did not
+           (found 2026-09-14 via spot-e2e-contract, which had been reporting the throw and exiting 0 anyway).
+           Same discipline here: finite, positive, ordered, de-duplicated, and if too little survives say so. */
+        var clean=[],seen={};
+        for(var bi=0;bi<bars.length;bi++){var b2=bars[bi];if(!b2)continue;
+          var t2=+b2.time,o2=+b2.open,h2=+b2.high,l2=+b2.low,c2=+b2.close;
+          if(!isFinite(t2)||t2<=0)continue;
+          if(!isFinite(o2)||!isFinite(h2)||!isFinite(l2)||!isFinite(c2))continue;
+          if(o2<=0||h2<=0||l2<=0||c2<=0)continue;
+          if(h2<l2){var sw=h2;h2=l2;l2=sw;}
+          t2=Math.floor(t2);if(seen[t2])continue;seen[t2]=1;
+          clean.push({time:t2,open:o2,high:h2,low:l2,close:c2});}
+        clean.sort(function(x,y){return x.time-y.time;});
+        if(clean.length<2){host.innerHTML='<div class="ldg">'+L(T.kind==='meme'?'tm_young':'tm_nochart')+'</div>';if(chart){try{chart.remove();}catch(e){}chart=null;}return;}
+        candle.setData(clean);
         chart.timeScale().fitContent();
       }).catch(function(){host.innerHTML='<div class="ldg">'+L('tm_chartfail')+'</div>';});
     }).catch(function(){host.innerHTML='<div class="ldg">'+L('tm_libfail')+'</div>';});
