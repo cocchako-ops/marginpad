@@ -42,7 +42,7 @@ const MIN_TRADE_USD = 250e3; // measured floor: ~14 trades/hour per twelve walle
 const MAX_FILLS = 120;      // published ring
 const FILL_LOOKBACK_MS = 15 * 60e3; // first sight of a wallet: how far back we read
 
-const state = { tracked: [], positions: [], alerts: [], fills: [], ts: 0, lbTs: 0, fillTs: 0, lastErr: '', fillErr: '' };
+const state = { tracked: [], positions: [], alerts: [], fills: [], perf: {}, best: [], coins: [], ts: 0, lbTs: 0, fillTs: 0, lastErr: '', fillErr: '' };
 let prevByKey = null; // "user|coin" -> {val, long} from the previous poll (null on first run = no alerts)
 let timers = [];
 const fillSeen = new Map();   // user -> ms of the newest fill we have already read
@@ -69,12 +69,26 @@ async function refreshLeaderboard() {
     const parseMs = Date.now() - t0; if (parseMs > 800) log.warn('[whales] slow leaderboard parse', { ms: parseMs });
     const rows = Array.isArray(j.leaderboardRows) ? j.leaderboardRows : [];
     if (rows.length < 1000) throw new Error('lb too small: ' + rows.length);
-    state.tracked = rows
-      .map(x => ({ a: String(x.ethAddress || ''), v: +x.accountValue || 0 }))
+    // Every leaderboard row carries pnl / roi / volume for day, week, month and allTime, and until
+    // 2026-09-14 all of it was thrown away and only the address kept. That is the whole track-record
+    // layer of the page — who is actually good, not merely large — and it costs nothing extra.
+    const clean = rows
+      .map(x => ({ a: String(x.ethAddress || ''), v: +x.accountValue || 0, w: x.windowPerformances, n: x.displayName || null }))
       .filter(x => /^0x[0-9a-fA-F]{40}$/.test(x.a) && x.v > 0)
-      .sort((p, q) => q.v - p.v)
-      .slice(0, TRACK_N)
-      .map(x => x.a);
+      .sort((p, q) => q.v - p.v);
+    state.tracked = clean.slice(0, TRACK_N).map(x => x.a);
+    const win = (w, k) => { const e = (w || []).find(z => z[0] === k); const o = e && e[1] || {};
+      return { pnl: Math.round(+o.pnl || 0), roi: +(+o.roi || 0).toFixed(6), vlm: Math.round(+o.vlm || 0) }; };
+    state.perf = {};
+    for (const x of clean.slice(0, TRACK_N)) state.perf[x.a] = { v: Math.round(x.v), name: x.n, d: win(x.w, 'day'), w: win(x.w, 'week'), m: win(x.w, 'month'), a: win(x.w, 'allTime') };
+    // the month board is ranked over the WHOLE leaderboard, not just the accounts we track by size:
+    // the best trader of the month is often not the biggest account
+    state.best = clean
+      .map(x => ({ a: x.a, v: Math.round(x.v), name: x.n, m: win(x.w, 'month'), a30: win(x.w, 'month').roi }))
+      .filter(x => x.m.vlm > 1e6)
+      .sort((p, q) => q.m.pnl - p.m.pnl)
+      .slice(0, 25)
+      .map(x => ({ user: x.a, v: x.v, name: x.name, pnl: x.m.pnl, roi: x.m.roi, vlm: x.m.vlm }));
     state.lbTs = Date.now();
     log.info('[whales] leaderboard refreshed', { tracked: state.tracked.length });
   } catch (e) { state.lastErr = 'lb: ' + String(e).slice(0, 120); log.warn('[whales] leaderboard failed', { e: String(e).slice(0, 160) }); }
@@ -85,6 +99,24 @@ async function poll() {
   try {
     let mids = {};
     try { mids = await post({ type: 'allMids' }); } catch (e) { mids = {}; }
+    // funding, open interest and 24h volume for every market, in ONE call (weight 20, once per 4 min).
+    // This is the context that turns a position into a story: a crowded side paying to hold it.
+    let ctx = {};
+    try {
+      const mc = await post({ type: 'metaAndAssetCtxs' });
+      const uni = (mc && mc[0] && mc[0].universe) || [], cs = (mc && mc[1]) || [];
+      for (let i = 0; i < uni.length; i++) {
+        const c = cs[i]; if (!c) continue;
+        const mark = +c.markPx || 0, prev = +c.prevDayPx || 0;
+        ctx[String(uni[i].name)] = {
+          fund: +c.funding || 0,                         // per hour, as the exchange states it
+          oi: Math.round((+c.openInterest || 0) * mark), // contracts -> USD
+          vol: Math.round(+c.dayNtlVlm || 0),
+          chg: prev > 0 ? +(((mark - prev) / prev) * 100).toFixed(2) : null,
+          mark,
+        };
+      }
+    } catch (e) { /* context is a bonus; the board must render without it */ }
     const found = [];
     for (const user of state.tracked) {
       try {
@@ -127,6 +159,34 @@ async function poll() {
     // the fill feed needs leverage, and a fill does not carry it — it lives on the POSITION. Keep the
     // whole map (not just the published top 40) so a trade in a smaller position is still labelled.
     levByKey = new Map(found.filter(p => p.lev > 0).map(p => [p.user + '|' + p.sym, p.lev]));
+
+    // ── by market: where the tracked whales actually are, against what the market is doing ──────
+    // Published for EVERY market they hold, not just the 40 biggest positions, because the point of
+    // this table is the crowd — which side is loaded, how levered, and what it costs them per day.
+    const byCoin = new Map();
+    for (const p of found) {
+      let c = byCoin.get(p.sym);
+      if (!c) { c = { sym: p.sym, longUsd: 0, shortUsd: 0, n: 0, longN: 0, shortN: 0, levSum: 0, levN: 0, pnl: 0 }; byCoin.set(p.sym, c); }
+      if (p.long) { c.longUsd += p.val; c.longN++; } else { c.shortUsd += p.val; c.shortN++; }
+      c.n++; c.pnl += (+p.pnl || 0);
+      if (p.lev > 0) { c.levSum += p.lev * p.val; c.levN += p.val; }   // size-weighted, not a plain mean
+    }
+    state.coins = [...byCoin.values()].map(c => {
+      const k = ctx[c.sym] || {};
+      const tot = c.longUsd + c.shortUsd;
+      return {
+        sym: c.sym, longUsd: c.longUsd, shortUsd: c.shortUsd, net: c.longUsd - c.shortUsd, tot,
+        n: c.n, longN: c.longN, shortN: c.shortN,
+        lev: c.levN > 0 ? +(c.levSum / c.levN).toFixed(1) : null,
+        pnl: Math.round(c.pnl),
+        fund: k.fund != null ? k.fund : null, oi: k.oi || null, vol: k.vol || null, chg: k.chg != null ? k.chg : null, mark: k.mark || null,
+        // what the whales' own side pays (or earns) to hold for a day, at the current rate
+        fundDay: (k.fund != null && tot > 0) ? Math.round(k.fund * 24 * (c.longUsd - c.shortUsd)) : null,
+        // how much of the whole market's open interest these wallets are
+        oiShare: k.oi > 0 ? +((tot / k.oi) * 100).toFixed(1) : null,
+      };
+    }).sort((a, b) => b.tot - a.tot).slice(0, 40);
+
     state.positions = found.slice(0, TOP_POSITIONS);
     state.ts = Date.now();
     state.lastErr = '';
@@ -272,6 +332,7 @@ export function getWhales() {
   return {
     ts: state.ts, lbTs: state.lbTs, tracked: state.tracked.length, positions: state.positions, alerts: state.alerts,
     fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
+    coins: state.coins, best: state.best, perf: state.perf,
     err: state.lastErr || undefined, fillErr: state.fillErr || undefined,
   };
 }
