@@ -249,7 +249,9 @@ const FAMILY = { home: 'home', competition: 'competition', map: 'map', calc: 'ca
     if (!p.spa && /name="robots" content="[^"]*noindex/.test(html)) { skipped.push(p.rel + ' (noindex)'); continue; }
     const pl = plan(p.rel, html);
     if (!pl) { skipped.push(p.rel + ' (no title)'); continue; }
-    if (only.length && only.indexOf(FAMILY[pl.t] || pl.t) < 0) continue;
+    // a filter argument is a FAMILY ("article", "map"…) or a single page's SLUG. Family-only meant that editing
+    // one page's description forced a re-render of its whole family to refresh one card (2026-09-15).
+    if (only.length && only.indexOf(FAMILY[pl.t] || pl.t) < 0 && only.indexOf(slugOf(p.rel)) < 0) continue;
     jobs.push({ rel: p.rel, slug: slugOf(p.rel), t: pl.t, d: pl.d });
   }
   const byFam = {};

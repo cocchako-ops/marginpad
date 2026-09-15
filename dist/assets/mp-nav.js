@@ -44,7 +44,11 @@
     + '.mpnav-rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}'
     + ".mpnav-rt b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;}"
     + '.mpnav-rt small{color:#7f8893;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
-    + '.mpnav-more{display:flex;flex-wrap:wrap;gap:7px;}'
+    /* A CHIP GRID IS A GROUP, SO IT NEEDS MORE AIR AROUND IT THAN THE 7px BETWEEN ROWS (owner 2026-09-15:
+       "long short ratio i fear & greed su jako blizu sa karticom Markets", same for About/Contact vs
+       Comparisons). With no margin of its own the last chip line sat 0px from the full row underneath, so the
+       chips read as part of it. 15px below, 4px above = the group reads as one block, not as a ragged tail. */
+    + '.mpnav-more{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 15px;}'
     + '.mpnav-mrow{flex:1 1 calc(50% - 8px);display:flex;align-items:center;gap:9px;background:#111419;border:1px solid #232932;border-radius:12px;padding:11px 12px;color:#9aa3ad;text-decoration:none;font-size:14px;}'
     + '.mpnav-mrow svg{width:16px;height:16px;flex:0 0 auto;color:#7f8893;}'
     + '.mpnav-mrow:hover{color:#e9e7df;}'
