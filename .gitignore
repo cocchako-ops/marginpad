@@ -89,3 +89,6 @@ build/signal-gate/scan-trades.json
 sdk/python/dist/
 sdk/python/build/
 sdk/python/*.egg-info/
+
+# Browse drawer E2E screenshots (build/browse-e2e.js / shots)
+build/browse-shots/

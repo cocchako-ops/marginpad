@@ -3391,7 +3391,14 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var _bsY=0;
   function open(mode){bp.classList.toggle('aside',mode==='aside');if(searchEl){searchEl.value='';filterBrowse('');}loadSidx();bp.hidden=false;_bsY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_bsY)+'px';document.documentElement.classList.add('browse-lock');requestAnimationFrame(function(){bp.classList.add('open');if(mode==='aside'&&searchEl)setTimeout(function(){searchEl.focus();},250);});}
   function close(){bp.classList.remove('open');document.documentElement.classList.remove('browse-lock');document.body.style.top='';if(_bsY)window.scrollTo(0,_bsY);setTimeout(function(){bp.hidden=true;},300);}
-  window.__openBrowse=open;
+  /* ONE BROWSE DRAWER, SITE-WIDE (2026-09-15). This panel is the OLD menu: measured on the homepage, the app
+     shell and an SEO page, all three open mp-nav.js's drawer, so the only way in here was mp-mcharts' "back to
+     Browse" gesture - which then showed a stale, smaller menu (no Academy, Season, Vault, Levels, Demo Spot,
+     simulators, and 8 sections' worth of pages missing). Navigation is habit; it must never differ by entry
+     point. Resolved at CALL time, not now: home.js parses BEFORE the deferred mp-nav.js, so mpNavOpen does not
+     exist yet at this line (same rule as window.mpOrders). The local panel stays as the fallback for the tick
+     before mp-nav parses, and for any page that somehow ships home.js without it. */
+  window.__openBrowse=function(mode){if(window.mpNavOpen){try{window.mpNavOpen();return;}catch(e){}}open(mode);};
   var hm=document.getElementById('hmenuBtn');if(hm)hm.addEventListener('click',function(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}open('aside');});
   bp.addEventListener('click',function(e){var t=e.target;
     if(t===bp){close();return;} // click the dimmed area beside the drawer
