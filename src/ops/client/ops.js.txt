@@ -651,6 +651,14 @@
       + tile(N(c.refused), 'refused attempts', c.refused ? 'amber' : 'dim', c.refusedUsers ? N(c.refusedUsers) + ' different members' : 'nobody was refused')
       + tile(N(d.listed), 'UIDs on the affiliate list', 'dim', 'the allowlist that also gates withdrawals')
       + '</div>'
+      // ONE BYBIT UID, TWO MARGINPAD ACCOUNTS (2026-09-15). The board picks a keeper on its own - a banned account is
+      // dropped, then a name beats no name - but silently, and a silent pick is how a row sat on the public board with
+      // no username while the real member was told he had never registered. Named here so it is never invisible again.
+      + ((d.contested || []).length ? card('One UID, more than one account', '<div class="line" style="margin-bottom:6px">These Bybit UIDs are claimed by more than one MarginPad account. The board keeps the one named first; a banned account is never kept and never blocks a registration. Worth a look - the same Bybit account behind two members is either one person with a second account, or a UID typed in by someone it does not belong to.</div>'
+        + (d.contested || []).map(function (x) {
+          return '<div class="line"><span class="mono">' + esc(x.buid) + '</span> kept by <b>' + (x.keeperName ? esc(x.keeperName) : '<span class="meta">' + esc(String(x.keeper).slice(0, 8)) + '</span>') + '</b> · also claimed by '
+            + x.others.map(function (o) { return (o.name ? esc(o.name) : '<span class="mono meta">' + esc(String(o.uid).slice(0, 8)) + '</span>') + (o.banned ? ' <span class="badge red">banned</span>' : ' <span class="badge amber">live</span>'); }).join(', ') + '</div>';
+        }).join(''), N((d.contested || []).length) + ' contested', 'a live account on both sides is the one to act on') : '')
       + card('Registered UIDs', tbl([
         { h: 'member', f: function (r) { return (r.name ? userLink(r.name) : '<span class="mono meta">' + esc(String(r.uid || '').slice(0, 8)) + '</span>') + (r.e2e ? ' <span class="meta">test</span>' : ''); } }, // a payout-derived row can have no username; userLink would call that account "visitor"
         { h: 'bybit uid', mono: true, f: function (r) { return esc(r.buid); } },

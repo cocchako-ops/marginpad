@@ -11909,9 +11909,31 @@ async function bybitRegistrations(env) { // Bybit UID → {uid, name, ts, e2e}: 
   const map = new Map();
   try { const r = await usersDO(env, '/bybitlinks', {}); for (const x of (r && r.rows) || []) if (x.buid) map.set(String(x.buid), { uid: String(x.uid), name: x.name || '', ts: +x.ts || 0, e2e: /^e2e_/i.test(x.name || '') }); } catch (e) {}
   try {
-    const pm = await bybitLedger(env, '/payoutmap', { all: true }); const m = (pm && pm.map) || {};
-    const fresh = Object.keys(m).filter(a => /^[0-9]{5,15}$/.test(String(m[a])) && !map.has(String(m[a])));
-    if (fresh.length) { const prof = await resolveProfiles(env, fresh); for (const a of fresh) { const u = prof[String(a).replace(/^u:/, '')] || {}; map.set(String(m[a]), { uid: String(a).replace(/^u:/, ''), name: u.username || '', ts: 0, e2e: /^e2e_/i.test(u.username || '') }); } }
+    const pm = await bybitLedger(env, '/payoutmap', { all: true }); const m = (pm && pm.map) || {}; const ban = (pm && pm.ban) || {}; const cre = (pm && pm.cre) || {};
+    // A BANNED ACCOUNT MUST NOT HOLD A BOARD UID (2026-09-15). Mistrlefty withdrew to Bybit UID 577637675 and so did an
+    // older account of his that had been banned; this loop was a bare map.set, so whichever the SQL happened to return
+    // last won the UID - the banned one, whose username resolves to nothing. The board printed a rank with no name, the
+    // real account could not register (the page told him he already was, and the POST would have answered uid_taken),
+    // and payBybitPrizes would have skipped the row anyway. Banned accounts are dropped here, and two live accounts on
+    // one UID are settled by a rule with a REASON instead of row order: a name beats no name, then the OLDER account
+    // keeps it - the Bybit account was associated with that member first. Row order is not a rule, and picking by it
+    // silently moved a contested UID (582089101, Abdulsalam and Light, both live) from one member to the other the
+    // moment this function was touched. Whoever loses the tie is listed under `contested` on the ops Bybit desk.
+    const fresh = Object.keys(m).filter(a => /^[0-9]{5,15}$/.test(String(m[a])) && !map.has(String(m[a])) && !ban[a]).sort();
+    if (fresh.length) {
+      const prof = await resolveProfiles(env, fresh);
+      const born = {};
+      for (const a of fresh) {
+        const buid = String(m[a]), u = prof[String(a).replace(/^u:/, '')] || {}, name = u.username || '', ts = +cre[a] || 0;
+        const prev = map.get(buid);
+        if (prev) {
+          const better = (name && !prev.name) || (!!name === !!prev.name && ts && (!born[buid] || ts < born[buid]));
+          if (!better) continue;
+        }
+        born[buid] = ts;
+        map.set(buid, { uid: String(a).replace(/^u:/, ''), name: name, ts: 0, e2e: /^e2e_/i.test(name) });
+      }
+    }
   } catch (e) {}
   return map;
 }
@@ -15553,7 +15575,9 @@ async function handleReward(url, request, env) {
       }
       if (buid && !/^[0-9]{5,15}$/.test(buid)) { await bylog('bad_uid'); return jr({ error: 'bad_uid' }, 400); }
       if (buid && !allow9.has(buid) && !(/^e2e/i.test(uid9) && /^9999/.test(buid))) { await bylog('uid_not_ours'); return jr({ error: 'uid_not_ours', ref: BYBIT_REF_URL, hint: 'This Bybit UID was not opened through MarginPad. Open a Bybit account with our link, then link that UID.' }, 403); }
-      if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct); if (others.length) { await bylog('uid_taken'); return jr({ error: 'uid_taken' }, 409); } } catch (e) {} }
+      // A BANNED account holding the same UID must not block the live one (2026-09-15): the board skips it, so it cannot
+      // be "taken" by it either - otherwise the real owner is refused a registration nobody can benefit from.
+      if (buid) { try { const own = await bybitLedger(env, '/payoutmap', { uids: [buid] }); const bn = (own && own.ban) || {}; const others = ((own && own.owners && own.owners[buid]) || []).filter(a => a !== acct && !bn[a]); if (others.length) { await bylog('uid_taken'); return jr({ error: 'uid_taken' }, 409); } } catch (e) {} }
       const r9 = await usersDO(env, '/bybitlink', { uid: uid9, buid });
       if (!r9 || r9.error) { await bylog((r9 && r9.error) || 'unavailable'); return jr({ error: (r9 && r9.error) || 'unavailable' }, r9 && r9.error === 'uid_taken' ? 409 : 503); }
       await bylog('');
@@ -15562,8 +15586,24 @@ async function handleReward(url, request, env) {
     }
     let cur9 = ''; try { const pg = await usersDO(env, '/prefsget', { uid: uid9, keys: ['bybit_uid'] }); cur9 = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
     let src9 = cur9 ? 'linked' : '';
-    if (!cur9) { try { const pm = await bybitLedger(env, '/payoutmap', { accts: [acct] }); const pa = pm && pm.map && pm.map[acct]; if (pa && /^[0-9]{5,15}$/.test(String(pa))) { cur9 = String(pa); src9 = 'payout'; } } catch (e) {} }
-    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), listed: allow9.size > 0, ref: BYBIT_REF_URL });
+    // THE PAGE MUST NOT SAY "REGISTERED" WHEN THE BOARD WOULD NOT AGREE (2026-09-15). The payout fallback stands - a UID
+    // we have already paid to is a UID we know - but it is only this account's if the board would resolve it here too.
+    // It did not: another account held the same payout UID, so /season/ showed "you are in", HID the registration field
+    // (there is no input while eligible) and the board carried the row under the other account. The member could see the
+    // problem and had no way to act on it. A contested UID now falls through to the ordinary "not registered" state, so
+    // the field is offered; POST then answers uid_taken if it really is someone else's, which says what to do.
+    let conflict = false;
+    if (!cur9) {
+      try {
+        const pm = await bybitLedger(env, '/payoutmap', { accts: [acct] }); const pa = pm && pm.map && pm.map[acct];
+        if (pa && /^[0-9]{5,15}$/.test(String(pa))) {
+          const own = await bybitLedger(env, '/payoutmap', { uids: [String(pa)] }); const bn = (own && own.ban) || {};
+          const others = ((own && own.owners && own.owners[String(pa)]) || []).filter(a => a !== acct && !bn[a]);
+          if (others.length) conflict = true; else { cur9 = String(pa); src9 = 'payout'; }
+        }
+      } catch (e) {}
+    }
+    return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL });
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbCk = new Request('https://marginpad.io/__reward_lb_v8'); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
@@ -17190,10 +17230,31 @@ export default {
       const names = {}; try { const need = [...new Set(attempts.map(a => a.uid).filter(Boolean))].slice(0, 120); if (need.length) { const pr = await resolveProfiles(env, need.map(u => 'u:' + u)); for (const k in pr) names[k] = pr[k].username || ''; } } catch (e) {} // resolveProfiles wants 'u:<uid>' keys, the ring stores the bare uid
       attempts = attempts.map(a => ({ ...a, name: names[a.uid] || a.un || '', listed: a.buid ? allow.has(String(a.buid)) : null }));
       const refused = attempts.filter(a => a.err);
+      // A Bybit UID that more than one MarginPad account claims. The board settles it on its own now (banned accounts
+      // dropped, then a name beats no name), but it settles it SILENTLY - and one of these is why Mistrlefty's row sat
+      // on the board for a day with no username on it while he was being told he had never registered.
+      let contested = [];
+      try {
+        const uids = registered.map(r => r.buid).slice(0, 50);
+        if (uids.length) {
+          const own = await bybitLedger(env, '/payoutmap', { uids });
+          const bn = (own && own.ban) || {}, ow = (own && own.owners) || {};
+          for (const r of registered) {
+            const all = (ow[r.buid] || []).map(a => String(a).replace(/^u:/, ''));
+            const others = all.filter(a => a !== r.uid).map(a => ({ uid: a, banned: !!bn['u:' + a] }));
+            if (others.length) contested.push({ buid: r.buid, keeper: r.uid, keeperName: r.name, others });
+          }
+          if (contested.length) {
+            const need = [].concat(...contested.map(x => x.others.map(o => 'u:' + o.uid)));
+            const pr = await resolveProfiles(env, need);
+            contested.forEach(x => x.others.forEach(o => { o.name = (pr[o.uid] || {}).username || ''; }));
+          }
+        }
+      } catch (e) {}
       return J({
         ws, we: ws + LB_PERIOD, listed: allow.size, reportN: (up && (up.rows || []).length) || 0, reportTs: (up && up.ts) || 0, reportFinal: !!(up && up.final),
-        registered, attempts,
-        counts: { registered: registered.length, eligible: registered.filter(r => r.listed).length, inReport: registered.filter(r => r.vol != null).length, attempts: attempts.length, refused: refused.length, refusedUsers: new Set(refused.map(a => a.uid)).size },
+        registered, attempts, contested,
+        counts: { registered: registered.length, eligible: registered.filter(r => r.listed).length, inReport: registered.filter(r => r.vol != null).length, attempts: attempts.length, refused: refused.length, refusedUsers: new Set(refused.map(a => a.uid)).size, contested: contested.length },
       });
     }
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
@@ -20439,12 +20500,15 @@ export class RewardLedger {
       return this.j({ wins: rows.length, boards, last: rows.length ? (+rows[0].ts || 0) : 0 });
     }
     if (path === '/payoutmap') { // Bybit board (2026-09-13): {accts:[…]} → map{acct: payout_addr}; {uids:[…]} → owners{uid: [accts]} - eligibility + one UID, one account
+      // `ban` rides along for every address returned (2026-09-15). A BANNED account that withdrew to a Bybit UID used to
+      // claim that UID on the volume board and block the real owner from registering it - see bybitRegistrations.
       const accts = Array.isArray(body.accts) ? body.accts.slice(0, 600).map(String) : [], uids = Array.isArray(body.uids) ? body.uids.slice(0, 50).map(String) : [];
-      const map = {}, owners = {};
-      if (body.all) { try { this.rows("SELECT address, payout_addr FROM accounts WHERE payout_addr GLOB '[0-9]*' LIMIT 5000").forEach(r => { if (/^[0-9]{5,15}$/.test(String(r.payout_addr))) map[r.address] = String(r.payout_addr); }); } catch (e) {} }
-      for (let i = 0; i < accts.length; i += 40) { const part = accts.slice(i, i + 40); try { this.rows('SELECT address, payout_addr FROM accounts WHERE address IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(r => { if (r.payout_addr) map[r.address] = String(r.payout_addr); }); } catch (e) {} } // chunked: a large IN() silently returns nothing
-      for (const u of uids) { try { owners[u] = this.rows('SELECT address FROM accounts WHERE payout_addr=?', u).map(r => r.address); } catch (e) { owners[u] = []; } }
-      return this.j({ map, owners });
+      const map = {}, owners = {}, ban = {}, cre = {};
+      const note = r => { if (r.banned) ban[r.address] = 1; if (r.created) cre[r.address] = +r.created || 0; };
+      if (body.all) { try { this.rows("SELECT address, payout_addr, banned, created FROM accounts WHERE payout_addr GLOB '[0-9]*' LIMIT 5000").forEach(r => { if (/^[0-9]{5,15}$/.test(String(r.payout_addr))) { map[r.address] = String(r.payout_addr); note(r); } }); } catch (e) {} }
+      for (let i = 0; i < accts.length; i += 40) { const part = accts.slice(i, i + 40); try { this.rows('SELECT address, payout_addr, banned, created FROM accounts WHERE address IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(r => { if (r.payout_addr) { map[r.address] = String(r.payout_addr); note(r); } }); } catch (e) {} } // chunked: a large IN() silently returns nothing
+      for (const u of uids) { try { const rs = this.rows('SELECT address, banned, created FROM accounts WHERE payout_addr=?', u); rs.forEach(note); owners[u] = rs.map(r => r.address); } catch (e) { owners[u] = []; } }
+      return this.j({ map, owners, ban, cre });
     }
     if (path === '/lbbans') { return this.j({ banned: this.rows('SELECT address FROM lbban').map(r => r.address) }); } // ban list → worker applies it to the UserStore-derived board
     if (path === '/visit') { this.log('visit', acct || '', cc, dev, 0); return this.j({ ok: true }); } // someone opened the rewards page
