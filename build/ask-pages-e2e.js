@@ -3,7 +3,8 @@
 // page, and the document must stay well-formed - a surplus </div> once put the whole FAQ outside <article>.
 const { withBrowser } = require('./e2e-browser.js');
 const ORIGIN = 'https://marginpad.io';
-const SLUGS = ['how-many-traders-liquidated-today', 'longs-or-shorts-liquidated-more', 'biggest-liquidation-today', 'is-funding-positive-or-negative', 'where-can-i-test-a-trading-bot'];
+const SLUGS = ['how-many-traders-liquidated-today', 'longs-or-shorts-liquidated-more', 'biggest-liquidation-today', 'is-funding-positive-or-negative', 'where-can-i-test-a-trading-bot', 'mcp-server-for-crypto-trading'];
+const SIBN = SLUGS.length - 1; // each page links every OTHER page in the family. A COUNT, not a constant to restate: adding the sixth page turned fifteen checks red in a suite where nothing was actually wrong.
 let pass = 0, fail = 0;
 const chk = (n, ok, d) => { (ok ? pass++ : fail++); console.log((ok ? '  ok   ' : '  FAIL ') + n + (d !== undefined && (!ok || process.env.V) ? '   ' + JSON.stringify(d) : '')); };
 
@@ -21,7 +22,7 @@ const chk = (n, ok, d) => { (ok ? pass++ : fail++); console.log((ok ? '  ok   ' 
     chk(slug + ': the answer is in the served HTML, before any script runs', bigTxt.length > 8, { answer: bigTxt.slice(0, 64) });
     chk(slug + ': it names when and from what it was measured', prov >= 2 && /Measured|Medido/.test(h), { provItems: prov });
     chk(slug + ': the FAQ sits inside the article, not after it', h.indexOf('<details>') < h.indexOf('</article>'), { d: h.indexOf('<details>'), a: h.indexOf('</article>') });
-    chk(slug + ': it links the other four questions', (h.match(/class="sibs"/) || []).length === 1 && (h.match(/<div class="sibs">[\s\S]*?<\/div>/) || [''])[0].split('<li>').length - 1 === 4);
+    chk(slug + ': it links the other ' + SIBN + ' questions', (h.match(/class="sibs"/) || []).length === 1 && (h.match(/<div class="sibs">[\s\S]*?<\/div>/) || [''])[0].split('<li>').length - 1 === SIBN);
     chk(slug + ': structured data declares a dataset and the FAQ', /"@type":"Dataset"/.test(h) && /"@type":"FAQPage"/.test(h));
   }
 
@@ -47,7 +48,7 @@ const chk = (n, ok, d) => { (ok ? pass++ : fail++); console.log((ok ? '  ok   ' 
             doc: document.documentElement.scrollWidth, win: innerWidth,
           };
         });
-        chk(lab.padEnd(7) + ' ' + slug, r.fs >= 26 && r.inView && r.prov >= 2 && r.faqInArticle >= 4 && r.faqStyled && r.sibs === 4 && r.doc <= r.win + 1 && !errs.length, { ...r, errs: errs.slice(0, 1) });
+        chk(lab.padEnd(7) + ' ' + slug, r.fs >= 26 && r.inView && r.prov >= 2 && r.faqInArticle >= 4 && r.faqStyled && r.sibs === SIBN && r.doc <= r.win + 1 && !errs.length, { ...r, errs: errs.slice(0, 1) });
         await p.close();
       }
     }

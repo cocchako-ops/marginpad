@@ -89,6 +89,7 @@ if (has('liquidations')) {
     block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))),
     // the one-question pages (2026-09-14) - an orphan page is one an assistant never finds a route to
     block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?'], ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
+  b.push(block('Build on this data', 'Every liquidation on this page is in the free JSON API, and the same account can paper-trade against it through the Bot API or an MCP server.', [['/trading-api/', 'Paper-trading Bot API'], ['/free-crypto-api/', 'Free keyless market-data API'], ['/api-docs/', 'Live API reference']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))));
   if (inject(rel('liquidations'), null, b)) n++;
 }
 // 4) the exchanges page lists every head-to-head and every "best for" page
@@ -97,6 +98,33 @@ if (has('exchanges')) {
     block('Best exchange for…', '', BEST.map(x => ['/' + x + '/', x.replace(/^best-crypto-exchange-/, '').replace(/^for-/, '').replace(/-/g, ' ')])),
     block('Tools', '', [['/pnl-fee-checker/', 'PnL and fee checker'], ['/crypto-fee-calculator/', 'Fee calculator']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
   if (inject(rel('exchanges'), null, b)) n++;
+}
+// 4b) THE COIN PAGES ARE WHERE THE CRAWL BUDGET GOES, AND THEY SOLD NOTHING (2026-09-16).
+// Measured over 30 days: 39,655 crawler hits, 28,308 of them bingbot, and roughly 13,000 spent on six /coin/*
+// pages that turn 0.1% of crawls into an assistant referral (/coin/btc/ 5,342 crawls -> 7 visits, /coin/eth/
+// 2,045 -> 0). Over the same 30 days /trading-api/ - the page with four price tags on it - took ZERO crawls,
+// and not one coin page linked to it. A link from a page a crawler already walks 5,000 times is worth more
+// than a sitemap entry, which is the lesson /trading-api/ taught once already.
+const COINDIR = path.join(DIST, 'coin');
+const COINS = fs.existsSync(COINDIR) ? fs.readdirSync(COINDIR, { withFileTypes: true }).filter(e => e.isDirectory() && fs.existsSync(path.join(COINDIR, e.name, 'index.html'))).map(e => e.name).sort() : [];
+const API_LINKS = [
+  ['/trading-api/', 'Paper-trading Bot API - REST, WebSocket, webhooks'],
+  ['/free-crypto-api/', 'Free keyless market-data API'],
+  ['/api-docs/', 'Live API reference (try the calls)'],
+  ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?'],
+  ['/arena/', 'Bot leaderboard - what other bots are doing'],
+].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
+const API_INTRO = 'Every number on this page is available as free JSON, and the same account can run a paper-trading bot against it - no deposit, no KYC, and an MCP server for AI agents.';
+for (const c of COINS) {
+  const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
+  const b = [block('Build on this data', API_INTRO, API_LINKS)];
+  if (others.length) b.push(block('Other coins', '', others));
+  if (inject(path.join(COINDIR, c, 'index.html'), null, b)) n++;
+}
+// the two liquidation pages that take thousands of crawls and had no route to the API either
+for (const d of ['liquidation-statistics', 'liquidations/by-exchange']) {
+  const f = path.join(DIST, d, 'index.html');
+  if (fs.existsSync(f) && inject(f, null, [block('Build on this data', API_INTRO, API_LINKS)])) n++;
 }
 // 5) English hubs link their translations (and each translation links the English original + its siblings)
 for (const hub of HUBS) {

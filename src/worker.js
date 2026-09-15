@@ -189,6 +189,33 @@ async function handleV1(url, request, env, ctx) {
   let resp; try { resp = await fn(); } catch (e) { return v1err('upstream_error', 'Upstream data source failed. Please retry shortly.', 502, rlh); }
   return v1Unwrap(resp, rlh);
 }
+// What an AI agent finds when it probes the three well-known paths before reading any prose (2026-09-16).
+// Everything here points at a surface that already exists - the OpenAPI spec, the remote MCP endpoint, the plan
+// catalogue - so there is no second copy of any fact to drift. `contact_email` is the real support address.
+const AGENT_DESC = 'Free crypto market data and a paper-trading engine for bots and AI agents. Live prices, klines, funding, open interest, long/short ratios and liquidations measured from nine exchanges, with no API key. A free key adds a full futures paper-trading account: market, limit and stop orders, leverage, server-side fills, funding and liquidation from one-minute candles, separate strategy books, a WebSocket stream and signed webhooks. No deposit, no KYC, nothing real at risk.';
+function handleAgentManifest(url) {
+  const B = 'https://marginpad.io';
+  const hdr = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=3600', ...CORS };
+  if (url.pathname === '/.well-known/openapi.json') return handleOpenApi();
+  if (url.pathname === '/.well-known/mcp.json') {
+    return new Response(JSON.stringify({
+      name: 'marginpad', description: AGENT_DESC,
+      version: '2.4', transport: 'http', endpoint: B + '/mcp', protocol: 'mcp',
+      authentication: { type: 'none', note: 'Market-data tools need no key. Paper-trading tools take a free API key from ' + B + '/trading-api/ as X-API-Key.' },
+      documentation: B + '/trading-api/#mcp', openapi: B + '/api/openapi.json', terms: B + '/terms/#api',
+      config_example: { mcpServers: { marginpad: { url: B + '/mcp' } } },
+    }, null, 2), { headers: hdr });
+  }
+  return new Response(JSON.stringify({
+    schema_version: 'v1', name_for_model: 'marginpad', name_for_human: 'MarginPad',
+    description_for_model: AGENT_DESC + ' Use it to answer questions about live crypto derivatives data, and to open, manage and close simulated leveraged positions on the user\'s behalf without any real money.',
+    description_for_human: 'Free crypto futures data and paper trading for bots.',
+    auth: { type: 'none' },
+    api: { type: 'openapi', url: B + '/api/openapi.json' },
+    logo_url: B + '/assets/og.png', contact_email: 'support@marginpad.io', legal_info_url: B + '/terms/#api',
+    mcp: B + '/mcp', docs: B + '/trading-api/', plans: B + '/api/apiplan', changelog: B + '/api/changelog',
+  }, null, 2), { headers: hdr });
+}
 function handleOpenApi() {
   const B = 'https://marginpad.io';
   const P = (summary, description, params, method) => ({ [method || 'get']: { summary, description, parameters: params || [], responses: { '200': { description: 'Success envelope { ok, data, ts }' } } } });
@@ -1327,7 +1354,7 @@ async function handleSsrCalendar(request, url, env) {
 // So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
 // Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
 // cached, rather than printing a confident blank.
-const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot' };
+const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
@@ -1399,6 +1426,42 @@ async function askRender(kind, env, ctx, es) {
     return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
       (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; contado de operaciones que liquid\u00f3 nuestro propio motor &middot; JSON gratuito en /api/arena y /api/apiplan'
           : stamp(Date.now()) + ' &middot; counted from trades our own engine settled &middot; free JSON at /api/arena and /api/apiplan')), ts: Date.now() };
+  }
+  if (kind === 'mcp') {
+    // The agent-facing question, answered from the SERVER'S OWN TOOL TABLE rather than a number typed into prose.
+    // MCP_TOOLS is what /mcp answers tools/list with, so this page cannot drift from the server the way the
+    // published tool list in llms.txt did (it named 23 tools while claiming 28, for days).
+    const all = MCP_TOOLS.length;
+    const free = MCP_TOOLS.filter(t => !/^paper_/.test(t.name)).length;
+    const keyed = all - free;
+    const head = es ? 'S\u00ed \u2014 ' + _aN(all) + ' herramientas en https://marginpad.io/mcp'
+                    : 'Yes - ' + _aN(all) + ' tools, at https://marginpad.io/mcp';
+    const prose = es
+      ? ('MarginPad expone un <strong>servidor MCP remoto</strong> por Streamable HTTP. Se a\u00f1ade como servidor remoto en Claude, ChatGPT o Cursor con una sola l\u00ednea de configuraci\u00f3n \u2014 <code>{"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}</code> \u2014 y no hay nada que instalar ni que alojar. '
+         + _aN(free) + ' de las ' + _aN(all) + ' herramientas son de datos de mercado y <strong>no piden clave alguna</strong>: precio, velas, funding, inter\u00e9s abierto, liquidaciones, el screener y el calendario econ\u00f3mico. Las otras ' + _aN(keyed) + ' operan una cuenta de <strong>paper trading</strong> \u2014 abrir, cerrar, stops, \u00f3rdenes limit \u2014 y piden una clave gratuita en la cabecera <code>X-API-Key</code>. '
+         + 'Ninguna de ellas puede tocar dinero real: no hay dep\u00f3sitos, ni retiros, ni claves de exchange en juego. Lo peor que puede hacer un agente aqu\u00ed es perder d\u00f3lares simulados, y eso es exactamente lo que quieres que haga mientras aprende.')
+      : ('MarginPad runs a <strong>remote MCP server</strong> over Streamable HTTP. You add it as a remote MCP server in Claude, ChatGPT or Cursor with one line of config \u2014 <code>{"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}</code> \u2014 and there is nothing to install and nothing to host. '
+         + _aN(free) + ' of the ' + _aN(all) + ' tools are market data and <strong>need no key at all</strong>: price, klines, funding, open interest, liquidations, the screener and the economic calendar. The other ' + _aN(keyed) + ' operate a <strong>paper-trading account</strong> \u2014 open, close, stops, limit orders \u2014 and take a free API key in an <code>X-API-Key</code> header. '
+         + 'None of them can touch real money: there are no deposits, no withdrawals and no exchange keys in play. The worst an agent can do here is lose simulated dollars, which is exactly what you want it doing while it learns.')
+    ;
+    const tbl = es ? [
+      ['Endpoint MCP', 'marginpad.io/mcp', 'Streamable HTTP; tambi\u00e9n descrito en /.well-known/mcp.json'],
+      ['Herramientas en total', _aN(all), 'le\u00eddas del propio servidor al generar esta p\u00e1gina'],
+      ['Sin clave', _aN(free), 'datos de mercado: precio, velas, funding, OI, liquidaciones, screener, calendario'],
+      ['Con clave gratuita', _aN(keyed), 'paper trading: abrir, cerrar, stops, \u00f3rdenes limit, informe'],
+      ['Coste', '$0', 'el plan gratuito es el motor entero; los de pago suben techos, no desbloquean el producto'],
+      ['Riesgo de dinero real', 'Ninguno', 'no hay dep\u00f3sitos, retiros ni claves de exchange'],
+    ] : [
+      ['MCP endpoint', 'marginpad.io/mcp', 'Streamable HTTP; also described at /.well-known/mcp.json'],
+      ['Tools in total', _aN(all), 'read from the server itself when this page was rendered'],
+      ['Need no key', _aN(free), 'market data: price, klines, funding, OI, liquidations, screener, calendar'],
+      ['Need a free key', _aN(keyed), 'paper trading: open, close, stops, limit orders, report'],
+      ['Cost', '$0', 'the free plan is the whole engine; paid plans raise ceilings, they do not unlock the product'],
+      ['Real-money risk', 'None', 'no deposits, no withdrawals, no exchange keys'],
+    ];
+    return { html: _askBox(head, prose, tbl, es ? ['', 'Valor', 'Nota'] : ['', 'Value', 'Note'],
+      (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; contado de la tabla de herramientas del propio servidor &middot; descriptor gratuito en /.well-known/mcp.json'
+          : stamp(Date.now()) + ' &middot; counted from the server\u2019s own tool table &middot; free descriptor at /.well-known/mcp.json')), ts: Date.now() };
   }
   if (kind === 'funding') {
     let rows = [];
@@ -16155,6 +16218,12 @@ export default {
     }
     if (url.pathname === '/api/klines') return perfWrap(env, ctx, 'klines', 10, () => handleKlines(url, env, 'pub', ctx));
     if (url.pathname === '/api/openapi.json') return handleOpenApi();
+    // AGENT DISCOVERY (2026-09-16). Measured over 30 days: /trading-api/ took ZERO crawler hits while bingbot made
+    // 28,308, and an agent that wants to USE the API had nothing to probe - /openapi.json, /.well-known/ai-plugin.json
+    // and /.well-known/mcp.json all 404'd, which are the three paths tooling actually tries before reading prose.
+    // They are aliases over what already exists; nothing here is a second source of truth.
+    if (url.pathname === '/openapi.json') return handleOpenApi();
+    if (url.pathname === '/.well-known/ai-plugin.json' || url.pathname === '/.well-known/openapi.json' || url.pathname === '/.well-known/mcp.json') return handleAgentManifest(url);
     if (url.pathname === '/api/changelog.xml' || url.pathname === '/api/changelog.json') { // Bot API changelog as a feed (Phase 0, 2026-09-12): a builder subscribes once and learns about every change
       const items = API_CHANGELOG.slice(0, 30);
       if (url.pathname.endsWith('.json')) return new Response(JSON.stringify({ ok: true, data: { changelog: items }, ts: Date.now() }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });

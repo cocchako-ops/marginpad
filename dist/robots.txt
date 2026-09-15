@@ -11,6 +11,7 @@ Allow: /api/competition
 Allow: /api/arena
 Allow: /api/apiplan
 Allow: /api/openapi
+Allow: /api/status
 Allow: /api/changelog
 Allow: /api/latam/
 Allow: /api/cg/
