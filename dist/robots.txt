@@ -8,6 +8,7 @@ Disallow: /api/
 # matching rule wins in robots.txt, so these lines re-open exactly the endpoints we advertise.
 Allow: /api/v1/
 Allow: /api/competition
+Allow: /api/apiplan
 Allow: /api/openapi
 Allow: /api/changelog
 Allow: /api/latam/

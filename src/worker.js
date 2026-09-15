@@ -153,14 +153,14 @@ async function handleV1(url, request, env, ctx) {
     if (!a || a.error === 'bad_key') return v1err('invalid_api_key', 'This key does not exist. Drop the X-API-Key header to use the keyless limit, or mint one at https://marginpad.io/trading-api/', 401);
     if (a.error === 'revoked_key') return v1err('revoked_key', 'This key was revoked.', 401);
     rlh = { 'x-ratelimit-limit': String(a.limit || 0), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || ''), 'x-ratelimit-scope': 'key' };
-    if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 600 ? ' Premium raises every key to 600/minute: https://marginpad.io/premium/' : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 2000 ? ' API Pro raises every key to 600/minute and Max to 2000: ' + API_UPGRADE : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
     rl = { limited: false };
   } else {
     rl = v1Rate(ip);
     rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
     if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
   }
-  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.3', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key, 600/min on Premium, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
+  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.7', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.6.0',
+      version: '2.7.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }, except the four liquidation-collector passthroughs (feed, liquidations/live, liquidations/recent, clusters), which return the raw collector object and are marked as such.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -245,7 +245,7 @@ function handleOpenApi() {
       '/api/v1/calc/take-profit': { get: { tags: ['Calculators'], summary: 'Take-profit price', description: 'The price at which a position reaches a target return on equity.', parameters: [q('entry', 'Entry price, above zero.', true, '60000'), q('roe', 'Target return on equity, in percent.', true, '50'), q('leverage', 'Leverage multiple.', false, '10'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/price': { get: { tags: ['Paper trading'], summary: 'Paper price (keyless)', description: 'Fill price used by the paper-trading engine.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/time': { get: { tags: ['Paper trading'], summary: 'Server time (keyless)', description: 'Server clock. Pass client_ts to get drift_ms back - a bot bucketing candles against a drifting local clock builds bars nobody else sees.', parameters: [q('client_ts', 'Your unix ms, to measure drift.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/ServerTime' } } } } } } },
- '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (free 50 / Premium 200)' }, '429': { description: 'rate limited - see X-RateLimit-Reset and Retry-After' } } } },
+ '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (Free 50 / API Pro 200 / Max 500)' }, '429': { description: 'rate limited - see X-RateLimit-Reset and Retry-After' } } } },
       '/api/bot/v1/close': { post: { tags: ['Paper trading'], summary: 'Close a paper position', description: 'Close a simulated position fully or partially. P&L settles net of the round-trip taker fee and accrued funding.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CloseRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { $ref: '#/components/schemas/Position' }, remaining: { $ref: '#/components/schemas/Position' }, position: { $ref: '#/components/schemas/Position' } } } } } }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
       '/api/bot/v1/sltp': { post: { tags: ['Paper trading'], summary: 'Move stop-loss / take-profit', description: 'Change the stop or target on an OPEN position without closing it. Both are side-checked against the entry price. Pass null to clear one.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SltpRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
       '/api/bot/v1/orders': { get: { tags: ['Paper trading'], summary: 'List limit orders', description: 'Resting limit orders plus the last 20 that filled, expired or were cancelled (a filled one carries the position_id it created).', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
@@ -282,7 +282,7 @@ function handleOpenApi() {
       '/api/bot/v2/{endpoint}': { get: { tags: ['Paper trading'], summary: 'Same API, standard envelope', description: 'Every /api/bot/v1/* path has a /v2 twin: identical parameters and identical data, wrapped as {ok:true,data,ts} or {ok:false,error:{code,message},ts}. v1 response bodies are frozen and will not change; new work happens on v2. Swap v1 for v2 in the URL. There is also a WebSocket that OpenAPI cannot describe: wss://marginpad.io/api/bot/v2/stream?api_key=... pushes position opened/updated/closed events and mark prices, which replaces polling /positions entirely.', security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'endpoint', in: 'path', required: true, description: 'account | balance | positions | trades | markets | open | close | close_all | sltp | price | klines | time', schema: { type: 'string' }, example: 'account' }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Envelope' } } } } } } },
     },
     components: {
-      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Required for paper-trading endpoints; OPTIONAL on /api/v1/* data endpoints, where sending it moves the call from the 60/minute per-IP limit to the key’s own budget (120/minute free, 600/minute Premium). Mint a key at POST /api/bot/key while signed in, or on https://marginpad.io/trading-api/.' } },
+      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Required for paper-trading endpoints; OPTIONAL on /api/v1/* data endpoints, where sending it moves the call from the 60/minute per-IP limit to the key’s own budget (120/minute on Free, 600 on API Pro, 2000 on Max). Mint a key at POST /api/bot/key while signed in, or on https://marginpad.io/trading-api/.' } },
       schemas: {
         Envelope: { type: 'object', properties: { ok: { type: 'boolean' }, data: {}, error: { $ref: '#/components/schemas/ApiError' }, ts: { type: 'integer', description: 'Server unix ms' } }, required: ['ok', 'ts'] },
         ApiError: { type: 'object', description: 'code is a stable identifier you can branch on; message is prose and may be reworded.', properties: { code: { type: 'string', example: 'unknown_symbol' }, message: { type: 'string' }, symbol: { type: 'string' }, live: { type: 'number', description: 'On sl_wrong_side / tp_wrong_side: the live price, so a caller can correct and retry.' }, limit: {}, max: { type: 'integer' } }, required: ['code', 'message'] },
@@ -10138,6 +10138,21 @@ async function handleNowpayIpn(request, env) {
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
+    } else if (/^api_(pro|max)_[a-z0-9]{4,40}$/i.test(orderId)) {
+      // API plan paid in crypto (2026-09-15). Deliberately NOT a Premium grant: this touches api:sub and nothing else.
+      const ma = /^api_(pro|max)_([a-z0-9]{4,40})$/i.exec(orderId);
+      const pl = API_PLAN_BY_ID(ma[1]), auid = ma[2], payId = String(data.payment_id || data.id || '');
+      const dup = payId ? await env.STATS.get('np:done:' + payId) : null;
+      if (pl && !dup) {
+        if (payId) await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 });
+        const cur = await apiPlanOf(env, auid);
+        const base = Math.max(Date.now(), (cur.tier === pl.tier && cur.until) ? cur.until : 0); // buying early never burns days
+        const until = base + 30 * 86400000;
+        await apiPlanGrant(env, auid, pl.tier, until, 'paid');
+        try { await apiPayLog(env, { id: 'np:' + (payId || auid + ':' + Date.now()), ts: Date.now(), uid: auid, plan: pl.id, cents: Math.round((+data.price_amount || pl.cents / 100) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until, src: 'ipn' }); } catch (e) {}
+        try { await evPush(env, null, 'sale', 'api-' + pl.id + ' ($' + (data.price_amount || pl.cents / 100) + ')', '/trading-api/'); } catch (e) {}
+        await tgAdmin(env, '<b>API ' + pl.label + ' paid</b>\nUser <code>' + auid + '</code> · until ' + new Date(until).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''), { kind: 'api plan sold', sev: 'info' });
+      }
     } else if (/^ticks_[a-z0-9]{2,20}_[a-z0-9]{4,40}$/i.test(orderId)) {
       // Tick pack paid in crypto. The grant is idempotent in the DO itself (tickbuy PRIMARY KEY on the payment ref), so an
       // IPN retry or a duplicate delivery can never hand out the Ticks twice - the KV mark below is only a fast path.
@@ -10271,6 +10286,13 @@ async function premMarkName(env, uid) {
 async function premPayLog(env, row) {
   if (!env.REWARDS) return null;
   try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/prempay/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(row) })); return await r.json(); } catch (e) { return null; }
+}
+// The API-plan payment book (2026-09-15). Its own table, never prempay: a $19 API sale inside the Premium book would
+// silently change every figure on the Premium desk, which is the one place the owner reads who paid for what.
+async function apiPayLog(env, row) {
+  if (!env.REWARDS) return null;
+  const r2 = { id: String(row.id || ''), ts: +row.ts || Date.now(), acct: 'u:' + String(row.uid || ''), kind: String(row.plan || 'pro'), cents: Math.round(+row.cents || 0), via: String(row.via || ''), cur: String(row.cur || 'USD'), until: +row.until || 0, src: String(row.src || row.via || ''), note: String(row.note || '') };
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/apipay/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(r2) })); return await r.json(); } catch (e) { return null; }
 }
 // One-time import of what the site already knew before the book existed: KV nowpay:* (finished IPNs, 90-day TTL), the ledger's
 // shoplog premium1m debits (balance payments), and - for a live prem:sub with no record at all - a row DERIVED from the expiry
@@ -12310,6 +12332,15 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-15', version: '2.7.0', title: 'The API has its own plans. Premium no longer changes a single API limit.',
+    changes: [
+      { type: 'changed', breaking: true, text: 'API limits are no longer derived from a MarginPad Premium subscription. There are now three API plans: Free ($0 - 120 requests/minute per key, 3 keys, 50 open positions), Pro ($19/month - 600/minute, 10 keys, 200 open positions, 3 webhooks, 50 AI reads a day, full trading report) and Max ($49/month - 2000/minute, 30 keys, 500 open positions, 15 webhooks, 200 AI reads a day). GET /v1/usage reports your plan, when it ends and what every plan costs; GET /api/apiplan is the catalogue.' },
+      { type: 'changed', breaking: true, text: 'Webhooks and /v1/ai now answer 402 {"error":"plan_required","plan_needed":"pro"} instead of "premium_required" when the key is on Free. The old code is still described in the error dictionary so a 2.3 bot recognises it. /v1/report gained "plan" and "breakdowns"; its "premium" boolean is kept as a deprecated alias of "breakdowns" and still means exactly the same thing.' },
+      { type: 'unchanged', breaking: false, text: 'Nothing about Free got smaller: 120 requests/minute, the whole paper-trading engine, every fee venue, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data are exactly what they were. Market data stays keyless and free - that is not for sale.' },
+      { type: 'unchanged', breaking: false, text: 'Accounts that were already building on the API before this split keep Pro free until 30 September 2026. Every response from GET /v1/usage carries free_month.days_left, so nobody has to discover the change from a 429.' },
+    ],
+  },
+  {
     date: '2026-09-12', version: '2.6.0', title: 'Replay: run your bot through a past day on our own candles',
     changes: [
       { type: 'added', breaking: false, text: 'POST /v1/replay {symbol, day:"YYYY-MM-DD", speed} starts a replay of one past UTC day on this key’s book, on MarginPad’s 1-minute candles. speed = market seconds per real second (60 = a day in 24 minutes, max 600). From then on /v1/open, /positions, /close, /close_all, /account, /balance and /sltp made with that key act on a separate replay journal, priced at the candle under the cursor; stops, targets and liquidations are checked on every candle between two calls (high and low, never only the close), with the same fee and funding math as live.' },
@@ -12503,7 +12534,7 @@ const MCP_TOOLS = [
   { name: 'paper_fees', description: 'Which exchange fee schedule your paper fills are charged at: lists the venues we model (Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid) with their taker rate and the referral discount a MarginPad sign-up gets, and your current default. Pass set to change the default (a venue key, or "marginpad" for the default rate). Requires an API key.', path: () => '/api/bot/v2/fees', method: 'POST', auth: true, getWhenEmpty: true,
     body: (a) => ({ venue: a.set }),
     inputSchema: { type: 'object', properties: { set: { type: 'string', description: 'Omit to read. A venue key from the list, or "marginpad" to reset.' } } } },
-  { name: 'paper_report', description: 'The 30-day trading report for this account, measured from its own closed trades: totals and a skill score (free), win rate and return by coin, leverage band, side, hour and day plus written findings (Premium). Requires an API key.', path: (a) => '/api/bot/v2/report?days=' + Math.min(30, Math.max(1, +a.days || 30)), auth: true,
+  { name: 'paper_report', description: 'The 30-day trading report for this account, measured from its own closed trades: totals and a skill score (free), win rate and return by coin, leverage band, side, hour and day plus written findings (API Pro and above). Requires an API key.', path: (a) => '/api/bot/v2/report?days=' + Math.min(30, Math.max(1, +a.days || 30)), auth: true,
     inputSchema: { type: 'object', properties: { days: { type: 'number', description: '1-30, default 30' } } } },
   // 2.5 / 2.6 (2026-09-12): books, reset, equity, replay
   { name: 'paper_accounts', description: 'Every book (sub-account) of this account with lifetime numbers and the keys bound to it. A book is a separate journal, balance and report; a key minted with a book name trades that book. Requires an API key.', path: () => '/api/bot/v2/accounts', auth: true,
@@ -12607,29 +12638,68 @@ async function syncBotTiers(env) {
   let holders = [];
   try { const r = await users.fetch(new Request('https://do/bottierlist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); holders = (await r.json()).holders || []; } catch (e) { return { error: 'list_failed', detail: String(e && e.message || e) }; }
   if (!holders.length) return { error: 'no_holders' };
-  const allow = new Set(PREM_FOUNDERS);
-  try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
-  const now = Date.now();
   const out = [];
   for (const h of holders) {
-    let prem = (+h.premium || 0) > now;                                     // timed grant / IPN column
-    if (!prem && h.username && allow.has(String(h.username).toLowerCase())) prem = true; // owner allow-list
-    if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + h.uid)) || 0) > now; } catch (e) {} } // paid sub
-    out.push({ uid: h.uid, tier: prem ? 1 : 0 });
+    const p = await apiPlanOf(env, h.uid);   // api:sub ONLY - Premium standing is not consulted here any more
+    out.push({ uid: h.uid, tier: p.tier });
   }
   let applied = null;
   try { const r2 = await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: out }) })); applied = await r2.json(); } catch (e) { applied = { error: String(e && e.message || e) }; }
-  return { holders: holders.length, premium: out.filter(x => x.tier === 1).length, applied };
+  return { holders: holders.length, paid: out.filter(x => x.tier > 0).length, pro: out.filter(x => x.tier === 1).length, max: out.filter(x => x.tier === 2).length, applied };
 }
 // FREE vs PREMIUM (owner 2026-08-19). The rule behind these numbers: charge for what COSTS us, never for what
 // SAVES us. Rate limit, key count and open positions all consume the shared single-threaded trading store, so they
 // are the tier levers. The WebSocket is deliberately FREE on both tiers - gating it would push free users back onto
 // polling, which is the single most expensive thing they can do to us. Market data stays keyless and free forever;
 // that is what makes AI assistants recommend the API in the first place, and it is not for sale.
+// API PLANS (2026-09-15, owner: "API cemo da odvojimo od premium plana"). Until today the Bot API tier was DERIVED from
+// Premium standing, so a $3.99 consumer subscription bought 600 requests a minute - measured the day it changed, two
+// accounts were pulling 265,000 calls each on it. The API is now its own product with its own three plans, and Premium
+// buys nothing here. The only account that carries both is the one member who bought Founder before the split; his row
+// is an ordinary api:sub grant (src 'founder'), not a special case in the code.
+// The tier NUMBER is what every hot path reads (botkeys2.tier, denormalised) - 0 free, 1 pro, 2 max. Keep them ordered.
+const API_PLANS = [
+  { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0 },
+  { id: 'pro', tier: 1, cents: 1900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 50 },
+  { id: 'max', tier: 2, cents: 4900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 200 },
+];
+const API_PLAN_BY_ID = (id) => API_PLANS.filter((p) => p.id === String(id || '').toLowerCase())[0] || null;
 function BOT_TIER_LIMITS(tier) {
-  return (+tier === 1)
-    ? { rpm: 600, maxKeys: 10, maxOpen: 200, name: 'premium' }
-    : { rpm: 120, maxKeys: 3, maxOpen: 50, name: 'free' };
+  const t = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+tier || 0)));
+  const p = API_PLANS[t];
+  return { rpm: p.rpm, maxKeys: p.maxKeys, maxOpen: p.maxOpen, maxBooks: p.maxBooks, hooks: p.hooks, ai: p.ai, name: p.id, label: p.label, price_usd: p.cents / 100 };
+}
+// The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
+const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
+const API_UPGRADE_HINT = 'API Pro is $19 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads); Max is $49. Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
+// KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
+// nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
+async function apiPlanOf(env, uid) {
+  const none = { tier: 0, plan: 'free', until: 0, src: '', trial: false, days_left: null };
+  if (!uid || !env.STATS) return none;
+  let row = null; try { row = JSON.parse((await env.STATS.get('api:sub:' + String(uid))) || 'null'); } catch (e) {}
+  if (!row || !(+row.until > Date.now())) return none;
+  const tier = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+row.p || 0)));
+  if (!tier) return none;
+  const src = String(row.src || '');
+  return { tier, plan: API_PLANS[tier].id, until: +row.until, src, trial: src === 'trial', days_left: apiPlanDays(+row.until) };
+}
+const apiPlanDays = (until) => (+until > Date.now() ? Math.max(0, Math.ceil((+until - Date.now()) / 86400000)) : 0);
+// Write the plan AND push the tier onto the account's keys in the same breath. Without the push a buyer would wait up to
+// ten minutes for the reconcile cron - the worst possible moment to make a paying user wait (same lesson as revokeUserSessions).
+async function apiPlanGrant(env, uid, tier, until, src) {
+  const u = String(uid || ''); if (!u) return { error: 'no_uid' };
+  const t = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+tier || 0)));
+  const ttl = Math.max(60, Math.ceil(((+until || 0) - Date.now()) / 1000) + 7 * 86400);
+  try {
+    if (!t || !(+until > Date.now())) await env.STATS.delete('api:sub:' + u);
+    else await env.STATS.put('api:sub:' + u, JSON.stringify({ p: t, until: +until, src: String(src || 'paid'), ts: Date.now() }), ttl > 3e8 ? undefined : { expirationTtl: ttl });
+  } catch (e) { return { error: 'kv_failed', detail: String(e && e.message || e) }; }
+  try {
+    const users = env.USERS.get(env.USERS.idFromName('main'));
+    await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: [{ uid: u, tier: t }] }) }));
+  } catch (e) {}
+  return { ok: true, uid: u, tier: t, plan: API_PLANS[t].id, until: +until || 0, src: String(src || 'paid') };
 }
 // FNV-1a - short, stable fingerprint for the /positions ETag. Not security, just change detection.
 function botFnv(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h.toString(36); }
@@ -12650,7 +12720,8 @@ const BOT_ERR = {
   tp_wrong_side: 'Take-profit is on the wrong side of the entry price.',
   stop_wrong_side: 'A stop entry waits on the breakout side of the market (a long above it, a short below it).',
   trail_pct_invalid: 'trail_pct is a percent distance between 0.05 and 50.',
-  premium_required: 'This is a Premium feature: https://marginpad.io/premium/',
+  premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
+  plan_required: 'This is on API Pro ($19/month) and Max ($49/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -12713,14 +12784,16 @@ async function handleBot(url, request, env, ctx) {
     // act: list | create | rename | revoke (v2 key management). No act = the legacy shape, which still returns {key}
     // as the first field so the existing /trading-api page and any old caller keep working unchanged.
     const act = request.method === 'POST' ? String(b.act || '') : (url.searchParams.get('act') || '');
-    // Premium has TWO sources (the users column AND the KV allow-list) and only the worker can see both, so the
-    // tier is resolved HERE and written onto the account's keys. The auth hot path then reads it straight off the
-    // row - no KV lookup per call. Refreshed every time the user opens this endpoint, plus nightly by cron.
-    let tier = 0;
-    try { const st = await premiumFor(env, request); tier = st && st.premium ? 1 : 0; } catch (e) {}
-    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
+    // The API PLAN lives in KV (api:sub:<uid>) and only the worker can see it, so the tier is resolved HERE and written
+    // onto the account's keys. The auth hot path then reads it straight off the row - no KV lookup per call. Refreshed
+    // every time the user opens this endpoint, plus every 10 minutes by syncBotTiers.
+    // 2026-09-15: this used to read Premium. It does not any more - Premium buys nothing on the API.
+    const sub = await apiPlanOf(env, kuid);
+    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
+    if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; } // the countdown the page prints
+    r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
     return jb(r, 200);
   }
 
@@ -12772,7 +12845,7 @@ async function handleBot(url, request, env, ctx) {
     const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; botPresence(env, ctx, request, key, a, 'close'); }
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
     if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
     if (r.error === 'no_price') { // stale or wrong hint - fall through to the normal path rather than fail the close
       const a2 = await doCall('/botauth', { key, ep: 'close' });
       if (a2 && a2.limit) rl = { 'x-ratelimit-limit': String(a2.limit), 'x-ratelimit-remaining': String(a2.remaining != null ? a2.remaining : 0), 'x-ratelimit-reset': String(a2.reset || '') };
@@ -12790,7 +12863,7 @@ async function handleBot(url, request, env, ctx) {
   // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
   if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
-  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: 'Premium raises this key to 600 requests/minute, 10 keys and 200 open positions: https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
+  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   let uid = auth.uid; const uidLive = auth.uid;
   botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
   // ── REPLAY (2.6): while a replay runs on this key's book, its trading calls are routed to the replay journal and priced from the day's candles ──
@@ -13102,15 +13175,21 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/usage') { // "what plan am I on and how much of it have I used" - without this the only signal
     // a developer had was watching a header count down, which tells you nothing about what you are entitled to.
     const L = BOT_TIER_LIMITS(+auth.tier || 0);
-    const prem = +auth.tier === 1;
+    const paid = (+auth.tier || 0) > 0;
+    const sub = await apiPlanOf(env, uid);   // the plan row itself: when it ends, and whether it is the free month
     let days30 = null; try { const ur = await doCall('/botusage', { k: auth.k || key }); if (ur && ur.days) days30 = ur.days; } catch (e) {} // 2.5: this key's calls per day, with refused (429) counts
     return jb({
-      key_name: auth.name || '', plan: L.name, account: auth.book || 'main', usage_30d: days30,
-      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
-      features: { webhooks: prem ? WH_MAX : 0, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: prem, ai_market_read: prem ? '50/day (shared with the site)' : false, fee_venues: Object.keys(FEE_VENUES) },
+      key_name: auth.name || '', plan: L.name, plan_label: L.label, plan_price_usd: L.price_usd, account: auth.book || 'main', usage_30d: days30,
+      // The free month (owner 2026-09-15): the accounts that were already building on the API keep Pro until it ends,
+      // and every call tells them how long is left. A developer should never discover a downgrade from a 429.
+      plan_until: sub.until || null, plan_days_left: sub.until ? sub.days_left : null, plan_source: sub.src || (paid ? 'paid' : 'free'),
+      free_month: sub.trial ? { ends: new Date(sub.until).toISOString(), days_left: sub.days_left, note: 'You are on API Pro free until then because you were building on the API before plans existed. After that the key drops to Free (120 requests/minute) unless you pick a plan: ' + API_UPGRADE } : null,
+      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_books: L.maxBooks, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
+      features: { webhooks: L.hooks, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: paid, ai_market_read: L.ai ? L.ai + '/day' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
-      upgrade: L.name === 'free' ? 'https://marginpad.io/premium/' : null,
-      earn: L.name === 'free' ? 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' : null,
+      plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, ai_per_day: p.ai })),
+      upgrade: (+auth.tier || 0) < 2 ? API_UPGRADE : null,
+      note: 'API plans are separate from site Premium since 2026-09-15. A Premium subscription does not change any limit on this page.',
     });
   }
   if (path === '/v1/trades') { // the full closed-trade ledger - /positions is capped at 100, this pages through 30 days
@@ -13130,8 +13209,8 @@ async function handleBot(url, request, env, ctx) {
     return jb({ markets: out, count: out.length, note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close.' });
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
-  if (path === '/v1/webhooks') { // Premium: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'Webhooks are a Premium feature: https://marginpad.io/premium/ - the WebSocket stream (wss://marginpad.io/api/bot/v2/stream) is free on every plan.', upgrade: 'https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' }, 402);
+  if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($19/month, 3 hooks) and Max ($49/month, 15). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -13169,13 +13248,14 @@ async function handleBot(url, request, env, ctx) {
     const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
     const rep = await doCall('/tradereport', { uid, days });
     if (!rep || rep.error) return jb(rep || { error: 'unavailable' }, 503);
-    const prem = +auth.tier === 1;
-    if (!prem) return jb({ days: rep.days, total: rep.total, skill: rep.skill, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'], upgrade: 'https://marginpad.io/premium/' }, 200);
+    const paid = (+auth.tier || 0) > 0;
+    // `premium` is kept as a DEPRECATED alias of `breakdowns` so no bot written against 2.3 breaks on the plan split.
+    if (!paid) return jb({ days: rep.days, total: rep.total, skill: rep.skill, plan: 'free', breakdowns: false, premium: false, locked: ['byCoin', 'byLev', 'bySide', 'byHour', 'byDay', 'findings'], upgrade: API_UPGRADE, hint: API_UPGRADE_HINT }, 200);
     const { ok: _ok9, ...rest } = rep;
-    return jb(Object.assign({ premium: true, findings: reportFindings(rep) }, rest), 200);
+    return jb(Object.assign({ plan: BOT_TIER_LIMITS(+auth.tier || 0).name, breakdowns: true, premium: true, findings: reportFindings(rep) }, rest), 200);
   }
-  if (path === '/v1/ai' && request.method === 'POST') { // Premium: the chart panel's AI read, from the API. Same model, same prompt, same 50/day quota as the site.
-    if (+auth.tier !== 1) return jb({ error: 'premium_required', hint: 'AI market reads are a Premium feature: https://marginpad.io/premium/', upgrade: 'https://marginpad.io/premium/', earn: 'Premium can also be paid from your MarginPad rewards balance ($3.99 a month): season boards pay real USDT to the top five, daily missions pay a little every day, and the Premium page has a one-click pay-from-balance button once the balance covers it.' }, 402);
+  if (path === '/v1/ai' && request.method === 'POST') { // API Pro and above: the chart panel's AI read, from the API. Same model, same prompt, one shared daily quota with the site.
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'AI market reads are on API Pro (50 a day) and Max (200 a day). ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     if (!sym) return jb({ error: 'symbol_required' }, 400);
@@ -13184,7 +13264,8 @@ async function handleBot(url, request, env, ctx) {
     const brief = await aiBrief(sym, iv, env);
     if (!brief) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     const day = new Date().toISOString().slice(0, 10);
-    let LIMIT = 50; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = Math.max(LIMIT, c.limit); } catch (e) {}
+    let LIMIT = BOT_TIER_LIMITS(+auth.tier || 0).ai || 50; // Pro 50 a day, Max 200 - the plan sets the floor, ai:cfg can only raise it
+    try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = Math.max(LIMIT, c.limit); } catch (e) {}
     try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {}
     const resv = await doCall('/ailimit', { uid, limit: LIMIT, day });
     if (!resv) return jb({ error: 'unavailable' }, 503);
@@ -15345,6 +15426,7 @@ export default {
     const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };
     if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
     if (/^\/pass\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/season/#pass', 301); // 2026-09-06: the pass lives on the season page now (the old static page was removed so this is reached)
+    if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
     { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
     // SPANISH SITE (2026-09-12, owner: "ceo sajt na španski"): /es/<path> is a full twin of the English page, written by
     // build/es/gen-pages.js from the SAME markup with the text swapped through build/data/es/catalog.json. "/es/*" is in
@@ -15454,6 +15536,58 @@ export default {
         ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium - Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
         : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
       try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+      return J({ error: 'invoice_failed' }, 502);
+    }
+    // ---- API PLANS (2026-09-15, owner: "API cemo da odvojimo od premium plana") ---------------------------------
+    // Premium sells the SITE; these sell the API. Nothing below reads premium standing and nothing in the Premium
+    // routes touches api:sub - that separation is the whole point and must not be quietly re-joined later.
+    if (url.pathname === '/api/apiplan') { // the catalogue + where the caller stands. Public catalogue, personal part only when signed in.
+      const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
+      const mine = u && u.id ? await apiPlanOf(env, String(u.id)) : null;
+      return J({
+        plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai })),
+        current: mine ? { plan: mine.plan, tier: mine.tier, until: mine.until || null, days_left: mine.until ? mine.days_left : null, source: mine.src || 'free', free_month: mine.trial } : null,
+        signedIn: !!(u && u.id), crypto: !!env.NOWPAY_API_KEY,
+        note: 'API plans are separate from site Premium. Premium does not raise any API limit.',
+      });
+    }
+    if (url.pathname === '/api/apiplan/buy' && request.method === 'POST') { // one month straight from the rewards balance - same shape as /api/premium/paybalance and /api/ticks/buy
+      let ab = {}; try { ab = await request.json(); } catch (e) {}
+      const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
+      if (!u || !u.id) return J({ error: 'login_required' }, 401);
+      const pl = API_PLAN_BY_ID(ab.plan); if (!pl || !pl.cents) return J({ error: 'bad_plan', plans: API_PLANS.filter((p) => p.cents).map((p) => p.id) }, 400);
+      const uid = String(u.id);
+      const cur = await apiPlanOf(env, uid);
+      if (cur.tier > pl.tier) return J({ error: 'downgrade_blocked', hint: 'You are on ' + cur.plan + ' until ' + new Date(cur.until).toISOString().slice(0, 10) + '. Let it run out, then pick the smaller plan.' }, 409);
+      let deb = null;
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: pl.cents, item: 'api_' + pl.id, once: 120 }) })); deb = await r.json(); } catch (e) { deb = null; }
+      // `no_account` is what the ledger says when the caller has never claimed a reward. To the buyer that is the same
+      // thing as an empty balance, so it answers as `insufficient` - never make someone guess what "no_account" means.
+      if (!deb || !deb.ok) {
+        const e9 = deb && deb.error === 'no_account' ? 'insufficient' : (deb && deb.error === 'dup' ? 'in_progress' : (deb && deb.error) || 'ledger_unavailable');
+        return J({ error: e9, balance: e9 === 'insufficient' ? (deb && deb.balance != null ? +deb.balance / 100 : 0) : undefined, price_usd: pl.cents / 100, hint: e9 === 'insufficient' ? 'Pay with crypto instead, or earn the balance on the site (season boards and daily missions).' : undefined }, e9 === 'insufficient' ? 402 : e9 === 'in_progress' ? 429 : 503);
+      }
+      // a paid month always starts from the later of now and what the account already has, so buying early never burns days
+      const base = Math.max(Date.now(), (cur.tier === pl.tier && cur.until) ? cur.until : 0);
+      const until = base + 30 * 86400000;
+      const g = await apiPlanGrant(env, uid, pl.tier, until, 'paid');
+      if (!g || !g.ok) { // money left the ledger but the plan did not land - put it back, never silently keep it
+        try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: pl.cents, item: 'api_' + pl.id }) })); } catch (e) {}
+        return J({ error: 'grant_failed', refunded: true }, 503);
+      }
+      try { await apiPayLog(env, { id: 'bal:' + uid + ':' + Date.now(), ts: Date.now(), uid, plan: pl.id, cents: pl.cents, via: 'balance', until }); } catch (e) {}
+      try { await evPush(env, request, 'sale', 'api-' + pl.id + ' ($' + (pl.cents / 100).toFixed(2) + ', balance)', '/trading-api/'); } catch (e) {}
+      try { await tgAdmin(env, '<b>API ' + pl.label + ' bought</b> @' + (u.username || uid.slice(0, 8)) + ' · $' + (pl.cents / 100).toFixed(2) + ' (balance) · until ' + new Date(until).toISOString().slice(0, 10), { kind: 'api plan sold', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, plan: pl.id, until, days_left: apiPlanDays(until), balance: deb.balance != null ? +deb.balance / 100 : null });
+    }
+    if (url.pathname === '/api/apiplan/checkout' && request.method === 'POST') { // crypto: a NOWPayments invoice for one month; the IPN grants it
+      let cb = {}; try { cb = await request.json(); } catch (e) {}
+      const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
+      if (!u || !u.id) return J({ error: 'login_required' }, 401);
+      const pl = API_PLAN_BY_ID(cb.plan || url.searchParams.get('plan')); if (!pl || !pl.cents) return J({ error: 'bad_plan' }, 400);
+      if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
+      const body = { price_amount: pl.cents / 100, price_currency: 'usd', order_id: 'api_' + pl.id + '_' + String(u.id), order_description: 'MarginPad API ' + pl.label + ' - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/trading-api/?plan=ok', cancel_url: 'https://marginpad.io/trading-api/#plans' };
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', 'API ' + pl.label + ' $' + (pl.cents / 100).toFixed(2), '/trading-api/'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     // ---- TICK PACKS (2026-09-13): buy Ticks with the rewards balance or with crypto. The packs themselves and the
@@ -15951,6 +16085,51 @@ export default {
         }
         return new Response(JSON.stringify({ error: 'bad_kind' }), { status: 400, headers: jh });
       } catch (e) { return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh }); }
+    }
+    if (url.pathname === '/api/admin/apiplans' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // API-plan desk (2026-09-15): who is on which plan, until when, and the payment book. POST grants or revokes one.
+      const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (request.method === 'POST' && url.searchParams.get('purge') === 'e2e' && isAdminKey(env, adminKeyFrom(request, url))) { // E2E cleanup: e2e-prefixed accounts only, exactly like the Premium book
+        let n = 0; try { const l = await env.STATS.list({ prefix: 'api:sub:e2e', limit: 1000 }); for (const k of l.keys || []) { await env.STATS.delete(k.name); n++; } } catch (e) {}
+        let pd = null; try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/apipay/del', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prefix: 'u:e2e' }) })); pd = await r.json(); } catch (e) {}
+        return new Response(JSON.stringify({ ok: true, plans: n, payments: pd }), { headers: jh3 });
+      }
+      if (request.method === 'POST') {
+        let b = {}; try { b = JSON.parse(await request.text() || '{}'); } catch (e) {}
+        let uid = String(b.uid || '');
+        if (!uid && b.username) { try { const w = await usersDO(env, '/xpdiag', { username: String(b.username || '') }); uid = (w && w.user && w.user.id) || ''; } catch (e) {} }
+        if (!uid) return new Response(JSON.stringify({ error: 'no_user' }), { status: 400, headers: jh3 });
+        const pl = API_PLAN_BY_ID(b.plan || 'free');
+        if (!pl) return new Response(JSON.stringify({ error: 'bad_plan', plans: API_PLANS.map(p => p.id) }), { status: 400, headers: jh3 });
+        const until = pl.tier === 0 ? 0 : (+b.until || (Date.now() + Math.max(1, +b.days || 30) * 86400000));
+        const g = await apiPlanGrant(env, uid, pl.tier, until, String(b.src || 'owner'));
+        try { await tgAdmin(env, '<b>API plan set</b>\n<code>' + uid + '</code> -> <b>' + pl.id + '</b>' + (until ? ' until ' + new Date(until).toISOString().slice(0, 10) : ' (revoked)') + ' · ' + String(b.src || 'owner'), { kind: 'api plan set', sev: 'info' }); } catch (e) {}
+        return new Response(JSON.stringify(g), { headers: jh3 });
+      }
+      const rows = [];
+      try {
+        const l = await env.STATS.list({ prefix: 'api:sub:', limit: 1000 });
+        for (const k of l.keys || []) {
+          const uid = k.name.slice(8); let v = null; try { v = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
+          if (!v) continue;
+          const tier = Math.max(0, Math.min(2, Math.round(+v.p || 0)));
+          rows.push({ uid, plan: API_PLANS[tier].id, tier, until: +v.until || 0, days_left: apiPlanDays(+v.until || 0), src: String(v.src || ''), live: (+v.until || 0) > Date.now(), ts: +v.ts || 0 });
+        }
+      } catch (e) {}
+      const prof = {}; try { const ids = rows.map(r => r.uid); if (ids.length) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids }) })); const d = await r.json(); Object.assign(prof, (d && d.profiles) || {}); } } catch (e) {}
+      rows.forEach(r => { r.username = (prof[r.uid] && prof[r.uid].username) || ''; });
+      rows.sort((a, b2) => (b2.tier - a.tier) || (b2.until - a.until));
+      let pay = []; try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/apipay/list?n=1000')); pay = ((await r.json()) || {}).rows || []; } catch (e) {}
+      pay = pay.filter(r => url.searchParams.get('e2e') === '1' || !/^u:e2e/.test(r.acct));
+      const lifetime = pay.reduce((a, r) => a + (+r.cents || 0), 0);
+      return new Response(JSON.stringify({
+        plans: API_PLANS.map(p => ({ plan: p.id, price_usd: p.cents / 100, rpm: p.rpm })),
+        rows, live: rows.filter(r => r.live).length,
+        trials: rows.filter(r => r.live && r.src === 'trial').length,
+        paying: rows.filter(r => r.live && r.src === 'paid').length,
+        payments: pay, lifetimeUsd: Math.round(lifetime) / 100, mrrUsd: Math.round(rows.filter(r => r.live && r.src === 'paid').reduce((a, r) => a + (API_PLANS[r.tier].cents), 0)) / 100,
+        ts: Date.now(),
+      }), { headers: jh3 });
     }
     if (url.pathname === '/api/admin/prempay' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Premium payment book (2026-09-12): who paid, when, how much - every row from the ledger's prempay table, names resolved, totals by month and per payer. ?e2e=1 shows test rows; ?backfill=1 re-runs the import (idempotent).
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -19072,6 +19251,8 @@ export class RewardLedger {
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_acctlog_acct ON acctlog(acct, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS prempay(id TEXT PRIMARY KEY, ts INTEGER, acct TEXT, kind TEXT, cents INTEGER, via TEXT, cur TEXT, until INTEGER, src TEXT, note TEXT)'); // DURABLE Premium payment book (2026-09-12, owner: "who paid Premium, when and how much"): before it a payment lived only in KV nowpay:* (90-day TTL) / shoplog / the current prem:sub expiry. id = payment id, so an IPN retry or a backfill can never double-count. In the 6h backup.
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_prempay_acct ON prempay(acct, ts)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS apipay(id TEXT PRIMARY KEY, ts INTEGER, acct TEXT, kind TEXT, cents INTEGER, via TEXT, cur TEXT, until INTEGER, src TEXT, note TEXT)'); // DURABLE API-plan payment book (2026-09-15). Deliberately NOT prempay: that book answers "who paid for Premium" and an API sale in it would corrupt every total on the Premium desk. Same columns so one reader serves both.
+    try { s.exec('CREATE INDEX IF NOT EXISTS idx_apipay_acct ON apipay(acct, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS vidlock(vid TEXT PRIMARY KEY, address TEXT, ts INTEGER)'); // one address per device; admin can unlock
     s.exec('CREATE TABLE IF NOT EXISTS support(ts INTEGER, email TEXT, address TEXT, message TEXT)'); // contact-us submissions from the rewards page
     try { s.exec('ALTER TABLE support ADD COLUMN closed INTEGER NOT NULL DEFAULT 0'); } catch (e) {} // open vs closed ticket state for the admin Support tab
@@ -19204,6 +19385,23 @@ export class RewardLedger {
       const n = Math.min(2000, Math.max(10, +url.searchParams.get('n') || 500));
       let rows = []; try { rows = this.rows('SELECT id, ts, acct, kind, cents, via, cur, until, src, note FROM prempay ORDER BY ts DESC LIMIT ?', n).map(r => ({ id: r.id, ts: +r.ts || 0, acct: r.acct || '', kind: r.kind || '', cents: +r.cents || 0, via: r.via || '', cur: r.cur || '', until: +r.until || 0, src: r.src || '', note: r.note || '' })); } catch (e) {}
       return this.j({ rows });
+    }
+    if (path === '/apipay/add') { // one API-plan payment; idempotent on id, exactly like /prempay/add
+      const id = String(body.id || '').slice(0, 80), pacct = String(body.acct || '').slice(0, 60);
+      if (!id || !pacct) return this.j({ error: 'bad' }, 400);
+      if (this.rows('SELECT id FROM apipay WHERE id=?', id)[0]) return this.j({ ok: true, added: false });
+      sql.exec('INSERT INTO apipay(id,ts,acct,kind,cents,via,cur,until,src,note) VALUES(?,?,?,?,?,?,?,?,?,?)', id, Math.round(+body.ts || Date.now()), pacct, String(body.kind || 'pro').slice(0, 24), Math.max(0, Math.round(+body.cents || 0)), String(body.via || '').slice(0, 24), String(body.cur || '').slice(0, 12), Math.round(+body.until || 0), String(body.src || '').slice(0, 16), String(body.note || '').slice(0, 200));
+      return this.j({ ok: true, added: true });
+    }
+    if (path === '/apipay/list') {
+      const n = Math.min(2000, Math.max(10, +url.searchParams.get('n') || 500));
+      let rows = []; try { rows = this.rows('SELECT id, ts, acct, kind, cents, via, cur, until, src, note FROM apipay ORDER BY ts DESC LIMIT ?', n).map(r => ({ id: r.id, ts: +r.ts || 0, acct: r.acct || '', kind: r.kind || '', cents: +r.cents || 0, via: r.via || '', cur: r.cur || '', until: +r.until || 0, src: r.src || '', note: r.note || '' })); } catch (e) {}
+      return this.j({ rows });
+    }
+    if (path === '/apipay/del') { // E2E cleanup only
+      const pre = String(body.prefix || ''); if (!/^u:e2e/.test(pre)) return this.j({ error: 'bad' }, 400);
+      sql.exec('DELETE FROM apipay WHERE acct LIKE ?', pre + '%');
+      return this.j({ ok: true });
     }
     if (path === '/prempay/del') { // E2E cleanup only (the worker allows an e2e prefix and nothing else)
       const pre = String(body.prefix || ''); if (!/^u:e2e/.test(pre)) return this.j({ error: 'bad' }, 400);
@@ -20962,9 +21160,9 @@ export class UserStore {
     }
     if (path === '/botkey') { // list / create / rename / revoke / rotate the account's bot-API keys (v2: MANY per account)
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
-      // the worker resolves premium (it has both sources - the users column AND the KV allow-list) and passes the
-      // tier down; we write it onto every key the account owns so the hot auth path can read it for free.
-      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', (+b.tier === 1 ? 1 : 0), uid); } catch (e) {} }
+      // the worker resolves the account's API PLAN (KV api:sub - never Premium, split 2026-09-15) and passes the tier
+      // down; we write it onto every key the account owns so the hot auth path can read it for free.
+      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', Math.max(0, Math.min(2, Math.round(+b.tier || 0))), uid); } catch (e) {} }
       const tier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
       const LIM = BOT_TIER_LIMITS(tier);
       const MAX_KEYS = LIM.maxKeys;
@@ -20972,14 +21170,14 @@ export class UserStore {
       const nameOf = (v, fb) => { const s2 = String(v == null ? '' : v).replace(/[^\w .-]/g, '').trim().slice(0, 40); return s2 || fb; };
       const bookOf = (v) => String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
       const books = () => Array.from(new Set(list().filter(r => !r.revoked && r.book).map(r => r.book)));
-      const MAX_BOOKS = tier === 1 ? 5 : 1; // separate books besides the main account: free 1, Premium 5
+      const MAX_BOOKS = LIM.maxBooks; // separate books besides the main account: Free 1, Pro 5, Max 20
       const mint = (nm, bk) => { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys2(k,uid,name,created,calls,mint,rpm,revoked,tier,book) VALUES(?,?,?,?,0,0,0,0,?,?)', k, uid, nm, now, tier, bk || ''); return k; };
-      const plan = { tier: LIM.name, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, max_books: MAX_BOOKS, websocket: true };
+      const plan = { tier: LIM.name, label: LIM.label, price_usd: LIM.price_usd, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, max_books: MAX_BOOKS, webhooks: LIM.hooks, ai_per_day: LIM.ai, websocket: true };
       const act = String(b.act || '');
       if (act === 'create') {
         if (list().filter(r => !r.revoked).length >= MAX_KEYS) return this.j({ error: 'max_keys', max: MAX_KEYS });
         const bk = bookOf(b.book); if (bk === 'main') return this.j({ error: 'bad_book', hint: 'main is the account itself; leave book empty for it.' });
-        if (bk && books().indexOf(bk) < 0 && books().length >= MAX_BOOKS) return this.j({ error: 'max_books', max: MAX_BOOKS, books: books(), hint: MAX_BOOKS === 1 ? 'Free accounts get one separate book besides the main account; Premium gets five.' : 'Revoke the keys of a book you no longer use to free its slot.' });
+        if (bk && books().indexOf(bk) < 0 && books().length >= MAX_BOOKS) return this.j({ error: 'max_books', max: MAX_BOOKS, books: books(), hint: MAX_BOOKS === 1 ? 'Free accounts get one separate book besides the main account; API Pro gets five and Max twenty.' : 'Revoke the keys of a book you no longer use to free its slot.' });
         const k = mint(nameOf(b.name, (bk || 'key') + ' ' + (list().length + 1)), bk);
         return this.j({ key: k, created: now, book: bk, keys: list(), plan });
       }
@@ -21013,9 +21211,11 @@ export class UserStore {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'bad_request' });
       const act = String(b.act || 'list');
       const view = (h) => ({ id: h.id, url: h.url, secret: h.secret, events: String(h.events || '*') === '*' ? ['*'] : String(h.events).split(','), created: +h.created || 0, last_delivery_ts: +h.last || null, deliveries: +h.sent || 0, consecutive_failures: +h.fails || 0, active: !!(+h.ok), last_error: h.lastErr || null });
+      // the hook cap comes from the account's API plan (Pro 3, Max 15) - WH_MAX is only the floor for a row with no key left
+      const whMax = BOT_TIER_LIMITS(+(this.rows('SELECT tier FROM botkeys2 WHERE uid=? ORDER BY tier DESC LIMIT 1', uid)[0] || {}).tier || 0).hooks || WH_MAX;
       if (act === 'add') {
         const n = (this.rows('SELECT COUNT(*) n FROM botwh WHERE uid=?', uid)[0] || {}).n || 0;
-        if (n >= WH_MAX) return this.j({ error: 'too_many_webhooks', max: WH_MAX });
+        if (n >= whMax) return this.j({ error: 'too_many_webhooks', max: whMax });
         const id = 'wh' + this.rid().slice(0, 14), secret = 'whs_' + this.rid();
         const evs = Array.isArray(b.events) && b.events.length ? b.events.map(String).filter(x => WH_EVENTS.indexOf(x) >= 0) : null;
         sql.exec('INSERT INTO botwh(id,uid,url,secret,events,created,last,ok,fails,sent,lastErr) VALUES(?,?,?,?,?,?,NULL,1,0,0,NULL)', id, uid, String(b.url || '').slice(0, 512), secret, (evs && evs.length) ? evs.join(',') : '*', now);
@@ -21037,7 +21237,7 @@ export class UserStore {
       }
       const hooks = this.rows('SELECT * FROM botwh WHERE uid=? ORDER BY created', uid).map(view);
       const pending = (this.rows('SELECT COUNT(*) n FROM botwhq WHERE uid=?', uid)[0] || {}).n || 0;
-      return this.j({ ok: true, webhooks: hooks, pending, max: WH_MAX, events: WH_EVENTS });
+      return this.j({ ok: true, webhooks: hooks, pending, max: whMax, events: WH_EVENTS });
     }
     if (path === '/webhook/drain') { // worker: take a batch of due deliveries; each is leased for 2 minutes so two drains never double-send
       const take = Math.min(100, Math.max(1, +b.take || 50)), hookOnly = b.hook ? String(b.hook) : null;
@@ -21269,7 +21469,7 @@ export class UserStore {
     if (path === '/bottierset') {
       const set = Array.isArray(b.set) ? b.set.slice(0, 500) : [];
       let n = 0;
-      for (const x of set) { if (!x || !x.uid) continue; try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', (+x.tier === 1 ? 1 : 0), String(x.uid), (+x.tier === 1 ? 1 : 0)); n++; } catch (e) {} }
+      for (const x of set) { if (!x || !x.uid) continue; const t = Math.max(0, Math.min(2, Math.round(+x.tier || 0))); try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', t, String(x.uid), t); n++; } catch (e) {} }
       return this.j({ ok: true, checked: n });
     }
     // ── Bot API 2.5 (2026-09-12): books, reset, equity, arena ────────────────────────────────────────────────────────

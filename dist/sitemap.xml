@@ -446,7 +446,6 @@
   <url><loc>https://marginpad.io/status/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://marginpad.io/api-docs/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/arena/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/api-builder/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://marginpad.io/how-many-traders-liquidated-today/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/longs-or-shorts-liquidated-more/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/biggest-liquidation-today/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>

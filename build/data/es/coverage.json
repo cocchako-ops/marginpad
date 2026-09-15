@@ -90,12 +90,6 @@
   "missing": 0
  },
  {
-  "rel": "api-builder/index.html",
-  "cover": 0.972972972972973,
-  "hit": 36,
-  "missing": 1
- },
- {
   "rel": "api-docs/index.html",
   "cover": 1,
   "hit": 16,
@@ -104,7 +98,7 @@
  {
   "rel": "api/index.html",
   "cover": 1,
-  "hit": 133,
+  "hit": 137,
   "missing": 0
  },
  {
@@ -697,15 +691,15 @@
  },
  {
   "rel": "blog/how-to-avoid-liquidation/index.html",
-  "cover": 0.9891304347826086,
-  "hit": 91,
-  "missing": 1
+  "cover": 1,
+  "hit": 92,
+  "missing": 0
  },
  {
   "rel": "blog/how-to-calculate-liquidation-price/index.html",
-  "cover": 0.975609756097561,
-  "hit": 80,
-  "missing": 2
+  "cover": 1,
+  "hit": 82,
+  "missing": 0
  },
  {
   "rel": "blog/how-to-calculate-pnl/index.html",
@@ -847,9 +841,9 @@
  },
  {
   "rel": "blog/mica-stablecoins-vs-usdt/index.html",
-  "cover": 0.9791666666666666,
-  "hit": 47,
-  "missing": 1
+  "cover": 1,
+  "hit": 48,
+  "missing": 0
  },
  {
   "rel": "blog/moon-trading-platform-review/index.html",
@@ -943,9 +937,9 @@
  },
  {
   "rel": "blog/usdt-mica-eu-2026/index.html",
-  "cover": 0.9795918367346939,
-  "hit": 48,
-  "missing": 1
+  "cover": 1,
+  "hit": 49,
+  "missing": 0
  },
  {
   "rel": "blog/what-is-a-margin-call/index.html",
@@ -973,9 +967,9 @@
  },
  {
   "rel": "blog/what-is-liquidation-in-crypto/index.html",
-  "cover": 0.9841269841269841,
-  "hit": 62,
-  "missing": 1
+  "cover": 1,
+  "hit": 63,
+  "missing": 0
  },
  {
   "rel": "blog/what-is-open-interest/index.html",
@@ -1934,7 +1928,7 @@
  {
   "rel": "premium/index.html",
   "cover": 1,
-  "hit": 86,
+  "hit": 87,
   "missing": 0
  },
  {
@@ -2114,7 +2108,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 359,
+  "hit": 408,
   "missing": 0
  },
  {

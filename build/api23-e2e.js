@@ -110,7 +110,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
 
   // ── free plan: webhooks 402, report totals only, usage ───────────────────────────────────────────────────
   r = await bot('/webhooks');
-  chk('webhooks are 402 premium_required on the free plan', r.status === 402 && r.body.error && r.body.error.code === 'premium_required', r.body.error);
+  chk('webhooks are 402 plan_required on the free plan', r.status === 402 && r.body.error && r.body.error.code === 'plan_required', r.body.error);
   r = await bot('/report?days=30');
   chk('report on free: totals + skill, breakdowns locked', r.status === 200 && r.body.ok && r.body.data.premium === false && r.body.data.total && Array.isArray(r.body.data.locked) && r.body.data.locked.indexOf('findings') >= 0 && !r.body.data.byCoin, r.body.data && { locked: r.body.data.locked, closes: r.body.data.total && r.body.data.total.n });
   r = await bot('/usage');
@@ -125,11 +125,11 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   chk('bad key on the data API is 401 invalid_api_key', dr.status === 401, { status: dr.status });
 
   // ── Premium grant: webhooks end to end, report findings, AI ─────────────────────────────────────────────
-  let g = await admin('/api/admin/premium?add=' + encodeURIComponent(USERNAME));
-  chk('premium granted to the e2e member', g.status === 200, { ok: g.body.ok });
+  let g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 1, src: 'e2e' }); // 2026-09-15: the API has its own plans; a Premium grant buys nothing here
+  chk('API Pro granted to the e2e member', g.status === 200 && g.body.ok && g.body.plan === 'pro', g.body);
   await fetch(ORIGIN + '/api/bot/key', { method: 'GET', headers: { cookie } }); // re-resolves the tier onto the account's keys
   r = await bot('/usage');
-  chk('key now on the premium tier (600/min, webhooks 3, breakdowns)', r.status === 200 && r.body.data.plan === 'premium' && r.body.data.features.webhooks === 3 && r.body.data.features.report_breakdowns === true, r.body.data && { plan: r.body.data.plan, rpm: r.body.data.limits.requests_per_minute });
+  chk('key now on the pro plan (600/min, webhooks 3, breakdowns)', r.status === 200 && r.body.data.plan === 'pro' && r.body.data.features.webhooks === 3 && r.body.data.features.report_breakdowns === true, r.body.data && { plan: r.body.data.plan, rpm: r.body.data.limits.requests_per_minute });
   const TOKEN = 'e2e' + UID + Date.now().toString(36);
   const SINK = ORIGIN + '/api/whsink/' + TOKEN;
   r = await bot('/webhooks', { act: 'add', url: 'http://example.com/hook' });
@@ -209,7 +209,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
 
   // ── cleanup ──────────────────────────────────────────────────────────────────────────────────────────────
   await bot('/close_all', {});
-  await admin('/api/admin/premium?remove=' + encodeURIComponent(USERNAME));
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });
   const rm = await admin('/api/admin/e2euser', { uid: UID, op: 'rm' });
   chk('cleanup: premium removed, e2e member scrubbed', rm.status === 200, rm.body);
 

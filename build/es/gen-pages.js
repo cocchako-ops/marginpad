@@ -70,8 +70,14 @@ function main() {
     if (cover < MIN_COVER) { skipped++; report.push({ rel, cover, hit: r.hit, missing: r.missing, skipped: true }); continue; }
     let html = r.html;
     html = html.replace(/<html([^>]*)\blang="en"/, '<html$1lang="es"');
-    html = html.split('<link rel="canonical" href="' + enUrl + '"').join('<link rel="canonical" href="' + esUrl + '"');
-    html = html.split('<meta property="og:url" content="' + enUrl + '"').join('<meta property="og:url" content="' + esUrl + '"');
+    // Match the English URL with AND without its trailing slash. /premium/ declares `canonical href=".../premium"`,
+    // so the exact-string swap missed it and the twin canonicalised AWAY to the English page - which deindexes it.
+    // (Found by seo-surface-e2e on 2026-09-15; fix-seo-loose-ends.js had patched the file, and a rebuild undid it.)
+    const enAlts = enUrl.length > 1 && enUrl.slice(-1) === '/' ? [enUrl, enUrl.slice(0, -1)] : [enUrl];
+    for (const a of enAlts) {
+      html = html.split('<link rel="canonical" href="' + a + '"').join('<link rel="canonical" href="' + esUrl + '"');
+      html = html.split('<meta property="og:url" content="' + a + '"').join('<meta property="og:url" content="' + esUrl + '"');
+    }
     html = html.replace(/<meta property="og:locale" content="en[_A-Z]*"/, '<meta property="og:locale" content="es_ES"');
     html = hreflangBlock(html, enUrl, esUrl);
     // JSON-LD: the page's own url + inLanguage

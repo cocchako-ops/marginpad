@@ -10,7 +10,6 @@ const EXTRAS = [
   ['https://marginpad.io/status/', '0.6'],
   ['https://marginpad.io/api-docs/', '0.8'],
   ['https://marginpad.io/arena/', '0.8'],
-  ['https://marginpad.io/api-builder/', '0.6'],
   ['https://marginpad.io/season/', '0.9'],
   ['https://marginpad.io/trading-competition/', '1.0'],   // the entry point for competition intent - highest priority we set
   ['https://marginpad.io/vault/', '0.8'],

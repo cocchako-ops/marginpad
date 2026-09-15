@@ -47,13 +47,14 @@
  {"@type":"HowToStep","position":4,"name":"Track performance and iterate","text":"GET /api/bot/v1/positions returns live unrealized P&L and GET /api/bot/v1/account returns win rate and realized P&L - measure, fix, repeat until the strategy is proven."}
 ]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
- {"@type":"Question","name":"Is the trading bot API really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key."}},
+ {"@type":"Question","name":"Is the trading bot API really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key, 3 keys and 50 open positions, with the whole trading engine, the WebSocket stream and all keyless market data included. Paid plans only raise the ceilings - they add no endpoint the free plan cannot reach except webhooks and AI reads."}},
  {"@type":"Question","name":"How realistic is the simulation?","acceptedAnswer":{"@type":"Answer","text":"Orders fill at the real live price, positions use isolated margin with leverage up to 1000x, losses are capped at your margin, and positions are liquidated when the live price crosses the liquidation level. Stop-loss and take-profit execute automatically. Partial closes are supported."}},
  {"@type":"Question","name":"Which coins can my bot trade?","acceptedAnswer":{"@type":"Answer","text":"Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins. Check any symbol with GET /api/bot/v1/price?symbol=SOL."}},
  {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
  {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
  {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time - it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
- {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"On the free tier: 120 requests per minute per key, 3 keys per account and 50 open positions. A Premium account raises the same key to 600 requests per minute, 10 keys and 200 open positions automatically. Both tiers allow $1 to $100,000 margin per trade and leverage from 1x to 1000x, and market data, WebSocket and MCP are included in both."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($19 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($49 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all three."}},
+ {"@type":"Question","name":"Does MarginPad Premium include the API?","acceptedAnswer":{"@type":"Answer","text":"No. Since 15 September 2026 the Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts. The API plans unlock API limits. They are bought separately."}},
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
 <style>
@@ -127,6 +128,32 @@
   .gl-cta:hover{filter:brightness(1.08);}
   .gl-note{display:block;margin-top:12px;font-size:11.5px;line-height:1.5;color:var(--faint);}
   @media(max-width:640px){.golive{padding:16px}.gl-cta{width:100%;justify-content:center}}
+  /* API plans (2026-09-15) */
+  /* the page wrap is 760px: 240px minimums forced two columns and left Max alone on a second row */
+  .apgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px;margin:20px 0 8px;align-items:stretch;}
+  .apcard{display:flex;flex-direction:column;gap:14px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:20px 20px 18px;position:relative;min-width:0;}
+  .apcard.feat{border-color:rgba(194,246,74,.42);background:linear-gradient(180deg,rgba(194,246,74,.05),var(--panel));}
+  .appill{position:absolute;top:-9px;left:20px;font:800 8.5px 'Space Mono',monospace;letter-spacing:.1em;color:#0a0b0d;background:var(--lime);border-radius:5px;padding:3px 7px;}
+  .apcard h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;margin:0 0 4px;color:var(--ink);letter-spacing:-.01em;}
+  .appx{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1;}
+  .appx small{font-size:13px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:3px;}
+  .apsub{margin:9px 0 0;font-size:12.5px;line-height:1.55;color:var(--dim);}
+  .apfeat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .apfeat li{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;}
+  .apfeat li:before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--line2);}
+  .apcard.feat .apfeat li:before{background:var(--lime);}
+  .apfeat li b{color:var(--ink);font-weight:700;}
+  .apx{font:700 10px 'Space Mono',monospace;color:var(--lime);letter-spacing:.04em;margin-left:4px;}
+  .apbtn{width:100%;border:0;border-radius:10px;padding:11px 14px;font:700 13px 'Space Mono',monospace;letter-spacing:.03em;color:#0a0b0d;background:var(--lime);cursor:pointer;}
+  .apbtn:hover:not(:disabled){filter:brightness(1.08);}
+  .apbtn.ghost{background:transparent;border:1px solid var(--line2);color:var(--faint);cursor:default;}
+  .apbtn:disabled{opacity:.6;cursor:default;}
+  .apbtn.busy{opacity:.7;cursor:progress;}
+  #apPlanState{margin:18px 0 4px;border:1px solid var(--line2);border-left:3px solid var(--lime);border-radius:12px;padding:14px 16px;background:var(--panel);font-size:13.5px;line-height:1.6;color:var(--dim);}
+  #apPlanState b{color:var(--ink);}
+  #apPlanState .apdays{font-family:'Space Mono',monospace;color:var(--lime);font-weight:700;}
+  .apbuy2{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;}
+  .apbuy2 button{flex:1;min-width:150px;}
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -151,7 +178,8 @@
   <span class="free">● 100% free · no deposit · real live prices</span>
   <h1>Test your trading bot - for free.</h1>
   <p class="lead">Point your bot at our paper-trading REST API. Real live crypto prices, leveraged positions up to 1000×, stop-loss/take-profit, partial closes and liquidation simulation - without risking a cent. Your bot's whole strategy, proven before it ever touches real money.</p>
-  <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span><span>market, limit &amp; stop orders</span><span>trailing stops</span><span>WebSocket + webhooks</span></div>
+  <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span><span>market, limit &amp; stop orders</span><span>trailing stops</span><span>WebSocket stream</span><span>replay</span></div>
+  <p class="lead" style="margin-top:10px;font-size:14px">Those are the <b>free</b> limits, and free is the whole engine. <a href="#plans" style="color:var(--lime);font-weight:700">Pro ($19) and Max ($49)</a> raise the ceilings and add webhooks and AI reads. API plans are separate from site Premium.</p>
   <p class="lead" style="margin-top:10px;font-size:14px">Just want market data? See the <a href="/free-crypto-api/" style="color:var(--lime);font-weight:700">free crypto data API</a> - keyless live prices, OHLC, a scored screener, funding, open interest, liquidations, an economic calendar and calculators, all CORS-enabled with an <a href="/api/openapi.json" style="color:var(--lime)">OpenAPI spec</a>.</p>
 </div>
 
@@ -212,9 +240,9 @@ while len(all_bars) &lt; wanted:
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/markets</code><p>Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/sltp</code><p>Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000,"trail_pct":1.5}</code> - send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/fees</code><p>Whose fee schedule your fills are charged at: the venues we model with taker, maker, our referral discount and the effective rate, plus your current default. <code>POST {"venue":"bybit"}</code> sets the account default; <code>fee_venue</code> on <code>/open</code> overrides it for one position. See <a href="#fees">Fees as on the exchange you will actually use</a>.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/report?days=30</code><p>The <a href="/trading-report/">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on Premium (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/ai</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span><p>The chart panel's AI read, from the API: <code>{"symbol":"BTC","interval":"60","question":"Is this leaning long or short?"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/webhooks</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span><p>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href="#webhooks">Webhooks</a> below. <code>POST {"act":"add","url":"https://…"}</code> registers one (max 3), <code>{"act":"test","id":…}</code> sends a ping and returns the status your server answered, <code>{"act":"delete","id":…}</code> removes it.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/report?days=30</code><p>The <a href="/trading-report/">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/ai</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">API PRO</span><p>The chart panel's AI read, from the API: <code>{"symbol":"BTC","interval":"60","question":"Is this leaning long or short?"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/webhooks</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">API PRO</span><p>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href="#webhooks">Webhooks</a> below. <code>POST {"act":"add","url":"https://…"}</code> registers one (max 3), <code>{"act":"test","id":…}</code> sends a ping and returns the status your server answered, <code>{"act":"delete","id":…}</code> removes it.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/trades?limit=100&amp;before=…</code><p>The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window - follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/time</code><p>Server clock. <b>No key needed.</b> Pass <code>?client_ts=&lt;your unix ms&gt;</code> and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</p></div>
 <p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code>, <code class="k">/klines</code> and <code class="k">/time</code>. <b>Official clients</b> (one file each, zero dependencies): <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
@@ -239,7 +267,7 @@ POST /api/bot/v2/open  {..., "dry_run":true}      // -> fee_venue, taker_fee_pct
 </table></div>
 <p class="note">Rates are the venues' published base tier and the discounts we state on <a href="/exchanges/">/exchanges/</a>; the API returns them with <code>source</code> so you know they are advertised numbers, not measurements. Both legs pay the taker rate (the paper engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only - stocks, forex, metals and indices keep the MarginPad class rates whatever the venue. Open positions keep the rate they were filled with; the extreme-leverage cap (a round trip never above 20% of margin) still applies. The same choice is the <b>"Fees as on"</b> selector in the <a href="/paper-trade">Paper Trade</a> form, so a bot and its owner's manual trades pay identical fees.</p>
 
-<h2 id="webhooks">Webhooks - events pushed to your server <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">PREMIUM</span></h2>
+<h2 id="webhooks">Webhooks - events pushed to your server <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">API PRO</span></h2>
 <p>Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.</p>
 <pre><code>POST /api/bot/v2/webhooks
 {"act":"add","url":"https://bot.example.com/marginpad","events":["position.closed","position.liquidated","order.filled"]}
@@ -262,12 +290,66 @@ X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
 { "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
 <p>Same paths, same parameters, same key - swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.</p>
 
-<h2 id="tiers">Free and Premium limits</h2>
-<p>Every account starts on the free tier, which is enough to build and run a real bot. A <a href="/premium/">Premium</a> account lifts the ceilings on every key it owns automatically - there is nothing to configure, and they drop back when Premium ends.</p>
+<h2 id="plans"><span id="tiers"></span>Plans</h2>
+<p>Every account starts on Free, which is the whole product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.</p>
+<div id="apPlanState" hidden></div>
+<div class="apgrid">
+  <div class="apcard" data-plan="free">
+    <div class="aptop"><h3><span class="apn">Free</span></h3><div class="appx">$0</div><p class="apsub">Build and run a real bot without paying anything.</p></div>
+    <ul class="apfeat">
+      <li><b>120</b> requests / minute per key</li>
+      <li><b>3</b> keys &middot; <b>50</b> open positions</li>
+      <li>Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay</li>
+      <li>Fee schedule of <a href="#fees">9 real venues</a></li>
+      <li>WebSocket stream &middot; MCP &middot; keyless market data</li>
+      <li>Trading report: totals + skill score</li>
+    </ul>
+    <button class="apbtn ghost" type="button" disabled>Your starting plan</button>
+  </div>
+  <div class="apcard feat" data-plan="pro">
+    <span class="appill">MOST BOTS</span>
+    <div class="aptop"><h3>Pro</h3><div class="appx">$19<small>/month</small></div><p class="apsub">For a bot that runs unattended and needs to be pushed to, not polled.</p></div>
+    <ul class="apfeat">
+      <li><b>600</b> requests / minute per key <span class="apx">5&times; Free</span></li>
+      <li><b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books</li>
+      <li><b>Webhooks</b> - 3 signed, retried endpoints</li>
+      <li><b>AI market reads</b> - 50 a day through <code>/v1/ai</code></li>
+      <li>Trading report with breakdowns and written findings</li>
+      <li>Commercial use</li>
+    </ul>
+    <button class="apbtn" type="button" data-buy="pro">Get Pro</button>
+  </div>
+  <div class="apcard" data-plan="max">
+    <div class="aptop"><h3><span class="apn">Max</span></h3><div class="appx">$49<small>/month</small></div><p class="apsub">For several strategies, or one that trades far more often than it thinks.</p></div>
+    <ul class="apfeat">
+      <li><b>2000</b> requests / minute per key</li>
+      <li><b>30</b> keys &middot; <b>500</b> open positions &middot; <b>20</b> books</li>
+      <li><b>15</b> webhooks</li>
+      <li><b>200</b> AI market reads a day</li>
+      <li>Everything in Pro</li>
+      <li>Commercial use</li>
+    </ul>
+    <button class="apbtn" type="button" data-buy="max">Get Max</button>
+  </div>
+</div>
+<p id="apMsg" class="note" hidden></p>
+<p class="note"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
 <div class="vswrap"><table class="vs">
-  <tr><th>Limit</th><th>Free</th><th class="hl">Premium</th></tr><tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td></tr><tr><td>Market-data API (<code>/api/v1/*</code>) with your key</td><td>120 / min per key<br><span style="color:var(--faint)">(60 / min per IP without a key)</span></td><td class="hl"><b>600 / min per key</b></td></tr><tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td></tr><tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td></tr><tr><td>Fee schedule of a real venue (<a href="#fees">9 venues</a>, with our referral discounts)</td><td>included</td><td class="hl">included</td></tr><tr><td><b>Webhooks</b> (signed, retried)</td><td class="n">-</td><td class="hl"><b>3 per account</b></td></tr><tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="n">-</td><td class="hl"><b>50 a day</b></td></tr><tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td class="hl"><b>+ breakdowns &amp; findings</b></td></tr><tr><td>Market, limit &amp; stop orders, trailing stops, modify, dry run, WebSocket, MCP</td><td>included</td><td class="hl">included</td></tr><tr><td>Margin per trade / leverage</td><td colspan="2">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (same on both)</td></tr></table></div>
-<p class="note">Your current ceilings and entitlements are always in <code>GET /api/bot/v1/usage</code> (<code>limits</code> and <code>features</code>), so a bot can read them instead of guessing. Premium is <a href="/premium/">$3.99 a month</a>, or earned with rewards balance on the site.</p>
-<p><b>The market-data tier in one sentence:</b> every <code>/api/v1/*</code> endpoint stays keyless at 60 requests a minute per IP; send your <code>X-API-Key</code> on those same calls and they are metered against <b>your key</b> instead - 120 a minute free, 600 on Premium - so a bot behind a shared address stops sharing its budget with strangers. <code>X-RateLimit-Scope</code> on the response says which limit applied.</p>
+  <tr><th>Limit</th><th><span class="apn">Free</span></th><th class="hl">Pro &middot; $19</th><th>Max &middot; $49</th></tr>
+  <tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td><td><b>2000</b></td></tr>
+  <tr><td>Market-data API (<code>/api/v1/*</code>) with your key</td><td>120 / min<br><span style="color:var(--faint)">(60 / min per IP without a key)</span></td><td class="hl"><b>600 / min</b></td><td><b>2000 / min</b></td></tr>
+  <tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td><td><b>30</b></td></tr>
+  <tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td><td><b>500</b></td></tr>
+  <tr><td><a href="#books">Books</a> (separate journals)</td><td>1</td><td class="hl"><b>5</b></td><td><b>20</b></td></tr>
+  <tr><td><b>Webhooks</b> (signed, retried)</td><td class="n">-</td><td class="hl"><b>3</b></td><td><b>15</b></td></tr>
+  <tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="n">-</td><td class="hl"><b>50 a day</b></td><td><b>200 a day</b></td></tr>
+  <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td class="hl"><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
+  <tr><td>Fee schedule of a real venue (<a href="#fees">9 venues</a>)</td><td>included</td><td class="hl">included</td><td>included</td></tr>
+  <tr><td>Market, limit &amp; stop orders, trailing stops, modify, dry run, replay, WebSocket, MCP</td><td>included</td><td class="hl">included</td><td>included</td></tr>
+  <tr><td>Margin per trade / leverage</td><td colspan="3">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (the same on all three)</td></tr>
+</table></div>
+<p class="note">Your current ceilings and entitlements are always in <code>GET /api/bot/v1/usage</code> (<code>limits</code>, <code>features</code>, <code>plan_until</code>), so a bot can read them instead of guessing. Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it.</p>
+<p><b>The market-data tier in one sentence:</b> every <code>/api/v1/*</code> endpoint stays keyless at 60 requests a minute per IP; send your <code>X-API-Key</code> on those same calls and they are metered against <b>your key</b> instead - 120 a minute on Free, 600 on Pro, 2000 on Max - so a bot behind a shared address stops sharing its budget with strangers. <code>X-RateLimit-Scope</code> on the response says which limit applied. <b>Keyless market data stays free and is not for sale.</b></p>
 <h2 id="keys">Managing your keys</h2>
 <p>You can hold several keys on one account - keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:</p>
 <pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
@@ -277,7 +359,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 <p>A revoked key returns <code>401 revoked_key</code>. Keys are secrets - anyone holding one can trade your paper account.</p>
 
 <h2 id="books">Books - one strategy, one clean result <span style="background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a">2.5</span></h2>
-<p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, Premium five.</p>
+<p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.</p>
 <pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
 GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
 GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
@@ -359,7 +441,8 @@ curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
   <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>A stop entry waits on the breakout side (long above, short below). Use <code>type:"limit"</code> for a pullback entry.</td></tr>
   <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> is a percent between 0.05 and 50; it is refused, never silently clamped.</td></tr>
   <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> needs at least one field.</td></tr>
-  <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> are Premium. Everything else on this page is free.</td></tr>
+  <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> need API Pro or Max. Everything else on this page is on Free. The body carries <code>plan_needed</code>.</td></tr>
+  <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Legacy code for <code>plan_required</code>, still sent so a 2.3 bot recognises it.</td></tr>
   <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Three hooks per account. Delete one first.</td></tr>
   <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
   <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The 50-a-day AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
@@ -525,16 +608,16 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
 <div class="faq"><b>Margin, liquidation, SL/TP, trailing</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> - when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.</p></div>
 <div class="faq"><b>Limits &amp; rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>GET /v1/usage</code> tells you your plan and what is left in the current window.</p>
 <div class="vswrap"><table class="vs">
-  <tr><th></th><th class="hl">Free</th><th>Premium</th></tr>
-  <tr><td>Market data, candles, calculators, liquidation feed</td><td class="y hl">Unlimited, no key</td><td class="y">Same</td></tr>
-  <tr><td>Paper trading</td><td class="y hl">Full</td><td class="y">Full</td></tr>
-  <tr><td><b>WebSocket stream</b></td><td class="y hl">Yes</td><td class="y">Yes</td></tr>
-  <tr><td>Requests per minute, per key</td><td class="hl">120</td><td>600</td></tr>
-  <tr><td>Market-data calls with your key</td><td class="hl">120 / min</td><td>600 / min</td></tr>
-  <tr><td>API keys</td><td class="hl">3</td><td>10</td></tr>
-  <tr><td>Open positions</td><td class="hl">50</td><td>200</td></tr>
-  <tr><td>Webhooks · AI market read · report breakdowns</td><td class="n hl">-</td><td class="y">3 hooks · 50 reads/day · full report</td></tr>
-  <tr><td>Margin per trade / leverage</td><td class="hl">$1–$100,000 · per-symbol caps</td><td>Same</td></tr>
+  <tr><th></th><th class="hl"><span class="apn">Free</span></th><th>Pro &middot; $19</th><th>Max &middot; $49</th></tr>
+  <tr><td>Market data, candles, calculators, liquidation feed</td><td class="y hl">Unlimited, no key</td><td class="y">Same</td><td class="y">Same</td></tr>
+  <tr><td>Paper trading</td><td class="y hl">Full</td><td class="y">Full</td><td class="y">Full</td></tr>
+  <tr><td><b>WebSocket stream</b></td><td class="y hl">Yes</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+  <tr><td>Requests per minute, per key</td><td class="hl">120</td><td>600</td><td>2000</td></tr>
+  <tr><td>Market-data calls with your key</td><td class="hl">120 / min</td><td>600 / min</td><td>2000 / min</td></tr>
+  <tr><td>API keys</td><td class="hl">3</td><td>10</td><td>30</td></tr>
+  <tr><td>Open positions</td><td class="hl">50</td><td>200</td><td>500</td></tr>
+  <tr><td>Webhooks &middot; AI market read &middot; report breakdowns</td><td class="n hl">-</td><td class="y">3 hooks &middot; 50 reads/day &middot; full report</td><td class="y">15 hooks &middot; 200 reads/day &middot; full report</td></tr>
+  <tr><td>Margin per trade / leverage</td><td class="hl">$1&ndash;$100,000 &middot; per-symbol caps</td><td>Same</td><td>Same</td></tr>
 </table></div>
 <p><b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.</p></div>
 <div class="faq"><b>Balance &amp; equity</b><p>Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.</p></div>
@@ -580,12 +663,17 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
   function render(d){
     var keys=(d&&d.keys)||[],p=(d&&d.plan)||{};var live=keys.filter(function(k){return !k.revoked;}),dead=keys.filter(function(k){return k.revoked;});
     mgr.hidden=false;btn.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
-    var prem=p.tier==='premium';
-    plan.innerHTML='<b class="'+(prem?'prem':'')+'">'+esc(p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+(prem?'':' · <a href="/premium/">Premium: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>')+'</span>';
+    var paid=p.tier==='pro'||p.tier==='max';
+    var tail='';
+    if(p.free_month&&p.days_left!=null)tail=' · <b style="color:#c2f64a">free month: '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' left</b> <a href="#plans">keep Pro &rarr;</a>';
+    else if(paid&&p.days_left!=null)tail=' · renews in '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' · <a href="#plans">plans &rarr;</a>';
+    else if(!paid)tail=' · <a href="#plans">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>';
+    plan.innerHTML='<b class="'+(paid?'prem':'')+'">'+esc(p.label||p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+tail+'</span>';
+    try{if(window.__apPlanPaint)window.__apPlanPaint();}catch(e){}
     tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td>'+(k.book?'<b style="color:#c2f64a">'+esc(k.book)+'</b>':'<span style="color:var(--faint)">main</span>')+'</td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="6" style="color:var(--faint)">No keys yet - create one below.</td></tr>';
     usage(live); /* 2.5: calls per key for the last 7 days, refused (429) in red */
     rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+' (usage history kept, they no longer authenticate)':'';
-    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(prem?'.':' - revoke one, or Premium raises it to 10.');}else{frm.hidden=false;}
+    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(prem?'.':' - revoke one, or API Pro raises it to 10.');}else{frm.hidden=false;}
   }
   var useEl=document.getElementById('akbUse');
   function usage(live){ if(!useEl||!live.length){if(useEl)useEl.hidden=true;return;}
@@ -615,6 +703,74 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
   btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first - the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';});
   window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';FULL={};}});
   var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
+})();
+</script>
+<script>
+/* API plans (2026-09-15). Reads /api/apiplan, prints where the reader stands and buys a month with either
+   the rewards balance or crypto. The free-month countdown is the whole point of the banner: an account that
+   was building on the API before plans existed must never discover the change from a 429. */
+(function(){
+  var box=document.getElementById('apPlanState'),msg=document.getElementById('apMsg');
+  if(!box)return;
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  /* This block is rendered by JS, so the /es/ catalog never sees it - the banner is the first line of the section
+     and must not greet a Spanish reader in English. Same inline-dictionary pattern as AUTH_T in mp-auth.js. */
+  var ES=(document.documentElement.lang||'').slice(0,2)==='es';
+  var T=function(en,es){return ES?es:en;};
+  var state=null;
+  function say(t,bad){ if(!msg)return; msg.hidden=!t; msg.innerHTML=t||''; msg.style.color=bad?'#ff8a80':''; }
+  function paint(){
+    if(!state){box.hidden=true;return;}
+    var c=state.current;
+    if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#key">Sign in</a> to see your plan, generate a key, or buy Pro or Max.','<b>No has iniciado sesión.</b> <a href="#key">Inicia sesión</a> para ver tu plan, generar una clave o comprar Pro o Max.'); return; }
+    box.hidden=false;
+    if(!c||c.plan==='free'){ box.innerHTML=T('You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.','Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
+    else if(c.free_month){ box.innerHTML=ES?('Estás en <b>Pro</b> gratis porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class="apdays">Te '+(c.days_left===1?'queda 1 día':'quedan '+esc(c.days_left)+' días')+'</span>: termina el '+esc(new Date(c.until).toISOString().slice(0,10))+' y la clave baja a Free (120 peticiones por minuto) salvo que elijas un plan.'):('You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class="apdays">'+esc(c.days_left)+' day'+(c.days_left===1?'':'s')+' left</span> - it ends on '+esc(new Date(c.until).toISOString().slice(0,10))+', and the key drops to Free (120 requests a minute) unless you pick a plan.'); }
+    else { var nm=esc(c.plan==='max'?'Max':'Pro'), dd=esc(c.days_left), dt9=esc(new Date(c.until).toISOString().slice(0,10));
+      box.innerHTML=ES?('Estás en <b>'+nm+'</b> hasta el '+dt9+' (<span class="apdays">'+(c.days_left===1?'1 día':dd+' días')+'</span>)'+(c.source==='owner'||c.source==='founder'?', concedido por MarginPad.':'. Comprar otro mes se suma a este, no lo reemplaza.')):('You are on <b>'+nm+'</b> until '+dt9+' (<span class="apdays">'+dd+' day'+(c.days_left===1?'':'s')+'</span>)'+(c.source==='owner'||c.source==='founder'?' - granted by MarginPad.':'. Buying another month adds to this one, it does not replace it.')); }
+    /* Only REWRITE the label when the reader is already on that plan. Leaving the resting label alone is what
+       keeps the Spanish twin readable: its button text comes from the markup, which the catalog translates. */
+    Array.prototype.forEach.call(document.querySelectorAll('.apcard'),function(card){
+      var want=card.getAttribute('data-plan'),btn=card.querySelector('.apbtn[data-buy]');
+      if(!btn)return;
+      var on=c&&c.plan===want&&!c.free_month;
+      if(!on){ if(btn.dataset.rest)btn.textContent=btn.dataset.rest; return; }
+      if(!btn.dataset.rest)btn.dataset.rest=btn.textContent;
+      btn.textContent=T('Extend ','Renovar ')+(want==='max'?'Max':'Pro');
+    });
+  }
+  window.__apPlanPaint=paint;
+  function load(){ fetch('/api/apiplan',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){state=d;paint();}).catch(function(){}); }
+  function buy(plan,btn){
+    btn.classList.add('busy');btn.disabled=true;say('');
+    fetch('/api/apiplan/buy',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({plan:plan})})
+      .then(function(r){return r.json().then(function(j){return{s:r.status,j:j};});})
+      .then(function(x){
+        btn.classList.remove('busy');btn.disabled=false;
+        if(x.j&&x.j.ok){ var nm2=(plan==='max'?'Max':'Pro'), d2=new Date(x.j.until).toISOString().slice(0,10);
+          say(ES?('Listo: API '+nm2+' está activo hasta el '+d2+'. Tus claves subieron de inmediato.'):('Done - API '+nm2+' is active until '+d2+'. Your keys were raised immediately.'));
+          load(); if(window.mpToast)window.mpToast({msg:'API '+nm2+(ES?' activo':' active'),kind:'good'}); return; }
+        if(x.j&&x.j.error==='login_required'){ say(T('Sign in first, then pick a plan.','Inicia sesión primero y luego elige un plan.'),1); return; }
+        if(x.j&&x.j.error==='insufficient'){ var b2=(x.j.balance!=null?(+x.j.balance).toFixed(2):'0.00'), p2=(+x.j.price_usd).toFixed(2);
+          crypto_(plan, ES?('Tu saldo de recompensas es $'+b2+' y el plan cuesta $'+p2+'. Abrimos una factura en cripto en su lugar…'):('Your rewards balance is $'+b2+' and the plan is $'+p2+'. Opening a crypto invoice instead…')); return; }
+        if(x.j&&x.j.error==='downgrade_blocked'){ say(ES?'Ya estás en un plan mayor. Déjalo terminar y luego elige el más pequeño.':esc(x.j.hint||'You are already on a bigger plan.'),1); return; }
+        if(x.j&&x.j.error==='in_progress'){ say(T('That is already going through - give it a few seconds.','Eso ya se está procesando; dale unos segundos.'),1); return; }
+        crypto_(plan,T('Opening a crypto invoice…','Abriendo una factura en cripto…'));
+      }).catch(function(){ btn.classList.remove('busy');btn.disabled=false; crypto_(plan,T('Opening a crypto invoice…','Abriendo una factura en cripto…')); });
+  }
+  function crypto_(plan,note){
+    say(note||T('Opening a crypto invoice…','Abriendo una factura en cripto…'));
+    fetch('/api/apiplan/checkout',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({plan:plan})})
+      .then(function(r){return r.json();})
+      .then(function(j){ if(j&&j.invoice_url){ say(T('Invoice open in a new tab. Your plan starts the moment the payment confirms.','Factura abierta en otra pestaña. Tu plan empieza en cuanto se confirme el pago.')); window.open(j.invoice_url,'_blank','noopener'); } else if(j&&j.error==='login_required'){ say(T('Sign in first, then pick a plan.','Inicia sesión primero y luego elige un plan.'),1); } else { say(T('Could not open an invoice. Try again in a minute, or write to support@marginpad.io.','No se pudo abrir la factura. Inténtalo de nuevo en un minuto o escribe a support@marginpad.io.'),1); } })
+      .catch(function(){ say(T('Could not open an invoice. Try again in a minute.','No se pudo abrir la factura. Inténtalo de nuevo en un minuto.'),1); });
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.apbtn[data-buy]'); if(!b)return;
+    e.preventDefault(); buy(b.getAttribute('data-buy'),b);
+  });
+  load();
+  if(/[?&]plan=ok/.test(location.search))say(T('Payment received - if the plan is not showing yet, give the confirmation a minute and reload.','Pago recibido. Si el plan aún no aparece, dale un minuto a la confirmación y recarga.'));
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=35f0932a"></script>

@@ -96,15 +96,21 @@
   /* ================= live background (desktop only) ================= */
   .bgfx{display:none;}
   @media(min-width:941px){
+    /* body carries an opaque --bg, and a z-index:-1 layer paints BELOW block backgrounds - so the
+       aurora was being painted over by the page itself. The ground colour moves up to html, which
+       paints first, and body gets out of the way. Same tone, nothing else moves. (2026-09-14) */
+    html{background:var(--bg);}
+    body{background:transparent;}
     .bgfx{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
     .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
-    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);animation:au1 46s ease-in-out infinite alternate;}
-    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);animation:au2 58s ease-in-out infinite alternate;}
-    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);animation:au1 70s ease-in-out infinite alternate-reverse;}
+    /* the drift is driven by the rAF loop at the foot of this page, not by @keyframes: the owner's
+       Windows has animation effects off, which silences every @keyframes on his machine. */
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);}
     #bgline{position:absolute;inset:0;width:100%;height:100%;}
   }
-  @keyframes au1{from{transform:translate(0,0);}to{transform:translate(9vw,7vh);}}
-  @keyframes au2{from{transform:translate(0,0);}to{transform:translate(-8vw,-6vh);}}
+  /* au1 / au2 keyframes retired 2026-09-14 - the drift is on the rAF loop now, see the bgfx script. */
 
   /* ================= header - same as the live homepage ================= */
   header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:var(--bg);contain:paint;border-bottom:1px solid var(--line);} /* opaque, no blur (2026-09-12): mp-nav.js already forces body>header to a solid #0a0b0d, so the translucent + backdrop-filter pair here was dead code that only cost GPU; the member card must never show through the stuck block */
@@ -930,10 +936,10 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 </head>
 <body>
 
@@ -1275,14 +1281,25 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 
   // ---- live prices: tape (>=15 pairs: live majors + screener top-volume) + hero terminal ----
   var scrX=null; // extra pairs from the screener to widen the tape
+  var tapeNext=null;
+  (function(){ var el=document.getElementById('tape'); if(!el)return;
+    el.addEventListener('animationiteration',function(){ if(tapeNext){ el.innerHTML=tapeNext; tapeNext=null; } });
+  })();
   function buildTape(ps){
     var seen={},rows=[];
     ps.forEach(function(p){var sm=p.symbol.replace('USDT','');if(seen[sm])return;seen[sm]=1;rows.push({s:sm,p:+p.price,c:+p.changePct});});
     (scrX||[]).forEach(function(r){if(seen[r.s]||rows.length>=18)return;seen[r.s]=1;rows.push({s:r.s,p:+r.p,c:+r.chg});});
     if(rows.length<3)return;
     var html=rows.map(function(r){return '<span><b>'+r.s+'</b> $'+fmt(r.p)+' <span class="'+(r.c>=0?'up':'dn')+'">'+(r.c>=0?'+':'')+r.c.toFixed(2)+'%</span></span>';}).join('');
-    var el=document.getElementById('tape');el.innerHTML=html+html;
-    el.style.animationDuration=Math.max(28,rows.length*2.4)+'s'; // speed scales with content so it always visibly rolls
+    var el=document.getElementById('tape');
+    /* Same rule as the liquidation strip at the foot of the page: the scroll is a percentage of the
+       element's own width, so new text moves the loop point. The content waits for the wrap. This tape
+       measured clean before the change only because its symbols and digit counts happen to be stable -
+       one longer pair would have started it jumping too. */
+    tapeNext = html + html;
+    var dur=Math.max(28,rows.length*2.4)+'s';   // reassigning this restarts the animation, so only when it changes
+    if(el.style.animationDuration!==dur)el.style.animationDuration=dur;
+    if(!el.children.length){ el.innerHTML=tapeNext; tapeNext=null; }
   }
   fetch('/api/screener').then(function(r){return r.json();}).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
@@ -2080,6 +2097,21 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   (function(){
     if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
     var cv=document.getElementById('bgline');if(!cv)return;
+    /* The drift runs through the Web Animations API, not a timer and not @keyframes. WAAPI still plays
+       when the OS has animation effects off - that is why the breathing marks and the Supernova frame
+       use it - and Chrome hands a pure transform animation to the COMPOSITOR, so three 46vw blobs
+       under filter:blur(100px) cost the main thread nothing. The 120 ms interval this replaced was
+       writing style 25 times a second and was measured as the biggest source of churn on the page. */
+    (function(){
+      var blobs=[['.au1',9,7,46000,0],['.au2',-8,-6,58000,-9000],['.au3',-7,6,70000,-21000]];
+      blobs.forEach(function(b){
+        var el=document.querySelector('.bgfx '+b[0]); if(!el||!el.animate)return;
+        try{
+          el.animate([{transform:'translate(0,0)'},{transform:'translate('+b[1]+'vw,'+b[2]+'vh)'}],
+            {duration:b[3],iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:b[4]});
+        }catch(e){}
+      });
+    })();
     var g=cv.getContext('2d'),W=0,H=0;
     function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
     size();var rs;addEventListener('resize',function(){clearTimeout(rs);rs=setTimeout(size,200);});
@@ -2170,14 +2202,24 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     q.innerHTML='<span class="mpq-cap"><i></i>LIVE LIQUIDATIONS</span><span class="mpq-win"><span class="mpq-trk" id="mpqT"></span></span>';
     document.body.appendChild(q);
     q.addEventListener('click',function(){location.href='/rekt/';});
-    var lastTs=0;
+    var lastTs=0, mpqNext=null;
+    (function(){ var t=document.getElementById('mpqT'); if(!t)return;
+      // the wrap is the one moment the reader cannot tell old content from new
+      t.addEventListener('animationiteration',function(){ if(mpqNext){ t.innerHTML=mpqNext; mpqNext=null; } });
+    })();
     function pull(){ if(document.hidden)return;
       fetch('/api/v1/feed').then(function(r){return r.json();}).then(function(d){
         var ev=(d&&d.events||[]).slice(0,16); if(!ev.length)return;
         if(ev[0].ts===lastTs)return; lastTs=ev[0].ts;
         var h=ev.map(function(e){var lg=e.side==='long_liquidated';
           return '<span class="mpq-it"><span class="ex">'+e.exchange+'</span> <b>'+e.symbol+'</b> <b class="'+(lg?'lg':'sh')+'">'+(lg?'LONG':'SHORT')+' REKT '+money(e.notional)+'</b> @'+fpx(e.price)+'</span>';}).join('');
-        var t=document.getElementById('mpqT'); if(t)t.innerHTML=h+h; /* duplicated for the seamless -50% loop */
+        var t=document.getElementById('mpqT'); if(!t)return;
+        /* The strip scrolls to -50% of its OWN width, with the content duplicated so the wrap is
+           invisible. Any text change moves that width, and the loop point moves with it: measured jumps
+           of 64px, 149px and 281px as items came and went. So the new content WAITS and is swapped in at
+           the seam, where position 0 and -50% look identical by construction. */
+        mpqNext = h + h;
+        if (!t.children.length) { t.innerHTML = mpqNext; mpqNext = null; }
       }).catch(function(){});
     }
     pull(); setInterval(pull,9000);
