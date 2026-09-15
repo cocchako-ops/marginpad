@@ -10375,18 +10375,19 @@ const FEE_VENUES = {
   kraken:      { name: 'Kraken',      taker: 0.050, maker: 0.020, disc: 0,  code: null,        url: 'https://invite.kraken.com/JDNW/guj2tf28' },
   hyperliquid: { name: 'Hyperliquid', taker: 0.045, maker: 0.015, disc: 4,  code: 'MARGINPAD', url: 'https://app.hyperliquid.xyz/join/MARGINPAD' },
 };
-// The fill path may not pay a DO round trip for a setting that changes once a month, so the account's
-// realism is memoised per isolate for 60 s and dropped the moment it is written (realismBust).
-const _rzMemo = new Map();
-async function realismOf(env, uid) {
-  const k = String(uid || '').split(':')[0]; if (!k) return { ...REALISM_DEF };
-  const hit = _rzMemo.get(k); if (hit && Date.now() - hit.t < 60000) return hit.v;
-  let v = { ...REALISM_DEF };
-  try { const pg = await usersDO(env, '/prefsget', { uid: k, keys: ['realism'] }); v = realismNorm(pg && pg.prefs && pg.prefs.realism && pg.prefs.realism.v); } catch (e) {}
-  _rzMemo.set(k, { t: Date.now(), v }); if (_rzMemo.size > 500) { for (const kk of _rzMemo.keys()) { _rzMemo.delete(kk); if (_rzMemo.size <= 400) break; } }
-  return v;
+// Read fresh on every fill, never cached. The first cut memoised it per isolate for 60 s and busted the memo on
+// write - which is wrong in a way that only a test could catch, because the isolate that handles the POST is not
+// the isolate that handles the next open: realism-e2e switched slippage off and the very next fill still came back
+// at Binance's 0.4%. A setting the trader just changed must bite on the NEXT fill, not within the minute.
+// It costs nothing because it is never awaited on its own - every caller starts it BESIDE the price fetch the open
+// already waits on (Promise.all), so the DO round trip hides inside the network call that was happening anyway.
+function realismOf(env, uid) {
+  const k = String(uid || '').split(':')[0];
+  if (!k) return Promise.resolve({ ...REALISM_DEF });
+  return usersDO(env, '/prefsget', { uid: k, keys: ['realism'] })
+    .then(pg => realismNorm(pg && pg.prefs && pg.prefs.realism && pg.prefs.realism.v))
+    .catch(() => ({ ...REALISM_DEF })); // a store that cannot answer must not block a fill - the defaults are the safe answer
 }
-function realismBust(uid) { try { _rzMemo.delete(String(uid || '').split(':')[0]); } catch (e) {} }
 function feeVenueNorm(v) { const k = String(v == null ? '' : v).toLowerCase().replace(/[^a-z]/g, ''); if (!k || k === 'default' || k === 'marginpad' || k === 'none') return ''; return FEE_VENUES[k] ? k : null; } // '' = MarginPad default, null = unknown
 function feeVenueRate(key) { const v = FEE_VENUES[key]; return v ? v.taker * (1 - v.disc / 100) / 100 : null; } // effective per-side rate as a fraction
 function feeVenueList() { return Object.keys(FEE_VENUES).map(k => { const v = FEE_VENUES[k]; return { venue: k, name: v.name, taker_pct: v.taker, maker_pct: v.maker, referral_discount_pct: v.disc, effective_taker_pct: +(v.taker * (1 - v.disc / 100)).toFixed(4), code: v.code, signup_url: v.url, trading_api: true, applies_to: 'crypto', source: 'the venue’s published base tier and referral discount, as on marginpad.io/exchanges/' }; }); }
@@ -12287,7 +12288,8 @@ async function handleTrade(url, request, env, ctx) {
     if (!(margin >= 1)) return jt({ error: 'margin_min_1' }, 400);
     if (margin > 100000) return jt({ error: 'margin_max_100000' }, 400);
     const tP = Date.now();
-    const pd = await fetchPriceCached(sym);
+    // the realism read rides ALONGSIDE the price fetch, so it adds no wall-clock to the money path
+    const [pd, _rz] = await Promise.all([fetchPriceCached(sym), realismOf(env, uid)]);
     mk('price', tP);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jt({ error: 'market_closed', sym, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); } // opening was never gated at all (only closing was) - a weekend forex/metal fill landed on a frozen price
@@ -12295,7 +12297,6 @@ async function handleTrade(url, request, env, ctx) {
     // turned realism on: the entry line then sits where a real book would have filled it and the liquidation price
     // where a real risk-limit table would put it. Off by default, so this reads exactly as it always did.
     const long = side === 'long';
-    const _rz = await realismOf(env, uid);
     const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin });
     const entry = _rr.entry, mmr = _rr.mmr;
     const liq = mpcLiq(entry, lev, mmr, long);
@@ -12375,7 +12376,6 @@ async function handleTrade(url, request, env, ctx) {
       if (mvN === null) return jt({ error: 'unknown_margin_venue', venues: marginVenueList().map(v => v.venue).filter(Boolean) }, 400);
       const nv = { slippage: b.slippage === undefined ? cur.slippage : !!b.slippage, margin_tiers: b.margin_tiers === undefined ? cur.margin_tiers : !!b.margin_tiers, margin_venue: mvN };
       const r = await usersDO(env, '/prefsput', { uid, k: 'realism', v: JSON.stringify(nv) });
-      realismBust(uid); // the fill path memoises this for 60 s - a setting the trader just changed must bite on the next open
       return jt(r && r.ok ? { ok: true, realism: nv } : { error: 'unavailable' }, r && r.ok ? 200 : 503);
     }
     const cur = await realismOf(env, uid);
@@ -13203,7 +13203,8 @@ async function handleBot(url, request, env, ctx) {
     if (margin > 100000) return jb({ error: 'margin_usd_max_100000', max: 100000 }, 400);
     if (rp && sym !== rp.symbol) return jb({ error: 'replay_symbol_only', symbol: rp.symbol, hint: 'A replay runs on one market. Stop it (POST /v1/replay {act:"stop"}) to trade others.' }, 409);
     if (rp && rpCur >= rp.endMs) return jb({ error: 'replay_finished', hint: 'The day is over. POST /v1/replay {act:"stop"} for the summary.' }, 409);
-    const pd = rp ? { price: rpPx, sym } : await fetchPrice(sym);
+    // the realism read rides ALONGSIDE the price fetch so the fill path pays no extra wall-clock for it
+    const [pd, _rz] = await Promise.all([rp ? Promise.resolve({ price: rpPx, sym }) : fetchPrice(sym), realismOf(env, auth.owner || uid)]);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     if (!rp) { const ms9 = marketSession(sym, pd); if (!ms9.open) return jb({ error: 'market_closed', symbol: sym, message: ms9.msg || 'Market closed' }, 409); } // stocks REGULAR only; forex/metals/indices 24/5 with the NY maintenance break
     // Bot API 2.3: trail_pct = trailing stop distance (%), ratcheted server-side from the high-water mark; dry_run = validate
@@ -13243,7 +13244,6 @@ async function handleBot(url, request, env, ctx) {
     const long = side === 'long';
     // Realism: the account setting, with a per-call override so one strategy can be tested both ways without
     // touching the account. `slippage:true` / `margin_tiers:true` / `mmr_pct:0.4` on the open body.
-    const _rz = await realismOf(env, uid);
     const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin, over: { slippage: b.slippage, margin_tiers: b.margin_tiers, mmr_pct: b.mmr_pct } });
     const entry = _rr.entry, mmr = _rr.mmr;
     const liq = mpcLiq(entry, lev, mmr, long);
@@ -13497,7 +13497,6 @@ async function handleBot(url, request, env, ctx) {
       if (mvN === null) return jb({ error: 'unknown_margin_venue', venues: marginVenueList().map(v => v.venue).filter(Boolean) }, 400);
       const nv = { slippage: b.slippage === undefined ? cur.slippage : !!b.slippage, margin_tiers: b.margin_tiers === undefined ? cur.margin_tiers : !!b.margin_tiers, margin_venue: mvN };
       const r = await doCall('/prefsput', { uid: auth.owner || uid, k: 'realism', v: JSON.stringify(nv) });
-      realismBust(auth.owner || uid);
       return jb(r && r.ok ? { ok: true, realism: nv } : { error: 'unavailable' }, r && r.ok ? 200 : 503);
     }
     return jb(realismInfo(await realismOf(env, auth.owner || uid)));
@@ -21885,8 +21884,12 @@ export class UserStore {
       const byEp = this.rows('SELECT ep, COALESCE(SUM(n),0) n FROM botuse2 WHERE day>=? GROUP BY ep ORDER BY n DESC', cutoff);
       const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse2 WHERE day=?', today)[0] || {}).t || 0;
       const activeToday = (this.rows('SELECT COUNT(DISTINCT k) c FROM botuse2 WHERE day=?', today)[0] || {}).c || 0;
+      // who holds hooks, against the plan they are on NOW - a hook registered while a plan was live keeps
+      // delivering after it lapses (the gate is on registration, the drain only checks ok=1), so the owner
+      // needs to be able to see that rather than discover it from a support ticket (2026-09-16).
+      let whOwners = []; try { whOwners = this.rows('SELECT w.uid, COUNT(*) n, SUM(w.ok) ok, SUM(w.sent) sent, MAX(u.username) un, MAX(COALESCE(b.tier,0)) tier FROM botwh w LEFT JOIN users u ON u.id=w.uid LEFT JOIN botkeys2 b ON b.uid=w.uid AND b.revoked=0 GROUP BY w.uid ORDER BY n DESC LIMIT 50'); } catch (e) {}
       let webhooks = null; try { const w = this.rows('SELECT COUNT(*) n, SUM(ok) active, SUM(sent) sent, COUNT(DISTINCT uid) accounts FROM botwh')[0] || {}; const qn = (this.rows('SELECT COUNT(*) n FROM botwhq')[0] || {}).n || 0; webhooks = { hooks: +w.n || 0, active: +w.active || 0, paused: (+w.n || 0) - (+w.active || 0), accounts: +w.accounts || 0, delivered: +w.sent || 0, pending: qn }; } catch (e) {} // Bot API 2.3
-      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key', webhooks });
+      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key', webhooks, whOwners });
     }
     // ── PENDING LIMIT ORDERS ──────────────────────────────────────────────────────────────────────────────────
     // The DO owns the order's STATE (single-threaded => a fill can never happen twice); the worker owns the price
@@ -23374,7 +23377,8 @@ export class UserStore {
       // The hyphen belongs in the allowed set: the older harness (/mktestuser) mints ids like `e2e-vault1`, and
       // stripping it turned the id into one that matches no row - so `rm` answered ok and deleted nothing, and three
       // of those accounts sat in Users for weeks (2026-09-14). The `e2e` prefix is still what gates this.
-      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24); if (b.op !== 'sweep' && (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid))) return this.j({ error: 'bad_uid' }, 400);
+      const dry = !!b.dry;
+      const uid = String(b.uid || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24); if (b.op !== 'sweep' && b.op !== 'orphans' && (!uid || uid.indexOf('e2e') !== 0 && !/^(pr|pb|rep|lim)/.test(uid))) return this.j({ error: 'bad_uid' }, 400);
       const sql = this.state.storage.sql;
       if (b.op === 'sweep') { // remove every e2e_* member older than an hour: an E2E that crashed mid-run leaves its throwaway behind (goals-e2e 2026-09-06)
         const olds = this.rows("SELECT id FROM users WHERE username LIKE 'e2e\\_%' ESCAPE '\\' AND created < ?", Date.now() - 3600000).map(r => String(r.id));
@@ -23391,7 +23395,34 @@ export class UserStore {
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
         try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {}
+        try { this._whUids = null; } catch (e) {} // the hook-owner Set is memoised in the isolate - a removal must drop it
         return this.j({ ok: true, removed: uid });
+      }
+      // ORPHANS (2026-09-16). Deleting an account has cleared every table keyed to it since 2026-09-14 - but rows
+      // written by test runs BEFORE that list was complete outlived their own users row, and nothing ever looks for a
+      // row whose owner is gone. Measured the day this was added: 22 webhook registrations across 11 dead e2e
+      // accounts, which is why the owner's own API desk reported "11 accounts using webhooks" when the real number
+      // was ZERO. A wrong number on the desk you read to make pricing decisions is worse than no number. An orphan is
+      // removed ONLY when the account is genuinely absent AND the id carries a test prefix: a real account that is
+      // merely inactive is never touched.
+      if (b.op === 'orphans') {
+        const out = { checked: 0, removed: 0, tables: {}, uids: [] }, seen = new Set();
+        for (const t of ['botwh', 'botwhq', 'botkeys2', 'botkeys', 'botpos', 'botuse', 'botidem', 'porders']) {
+          let rowsO = [];
+          try { rowsO = this.rows('SELECT DISTINCT uid FROM ' + t + ' WHERE uid IS NOT NULL'); } catch (e) { continue; }
+          for (const r of rowsO) {
+            const u = String(r.uid || ''), own = u.split(':')[0];
+            if (!own || !/^(e2e|spotctr|spotdbg|spoterr|mktest|test-)/i.test(own)) continue;
+            out.checked++;
+            if (this.rows('SELECT 1 FROM users WHERE id=?', own)[0]) continue; // the account still exists - not an orphan
+            let n = 0; try { n = (this.rows('SELECT COUNT(*) n FROM ' + t + ' WHERE uid=?', u)[0] || {}).n || 0; } catch (e) {}
+            if (!dry) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=?', u); } catch (e) {} }
+            out.tables[t] = (out.tables[t] || 0) + n; out.removed += n;
+            if (!seen.has(own) && seen.size < 40) { seen.add(own); out.uids.push(own); }
+          }
+        }
+        if (!dry) { try { this._whUids = null; } catch (e) {} }
+        return this.j({ ok: true, dry: !!dry, ...out });
       } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
       if (b.op === 'sess') { // a real 2-hour member session for browser E2E (the site walked as a signed-in member, 2026-09-07) - e2e uids only, admin-gated upstream

@@ -59,6 +59,15 @@ const PROBE = /\bprobe\b/i;
     await sleep(120);
   }
 
+  // ── ORPHANS (2026-09-16) ─────────────────────────────────────────────────────────────────────────────────────
+  // Removing the ACCOUNT is not the same as removing everything it wrote. Rows written before the cleanup list was
+  // completed (2026-09-14) outlived their own users row, and nothing looks for a row whose owner is gone - so this
+  // sweep kept answering "0 from test runs" while 22 webhook registrations across 11 dead accounts sat in the store
+  // and told the owner's API desk that 11 accounts were using webhooks. The real number was zero.
+  const orph = await (await fetch(O + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ op: 'orphans', dry: DRY }) })).json().catch(() => ({}));
+  const oT = orph && orph.tables ? Object.keys(orph.tables).map(k => k + ' ' + orph.tables[k]).join(', ') : '';
+  console.log('\norphaned rows (owner account already gone): ' + ((orph && orph.removed) || 0) + (oT ? '  [' + oT + ']' : '') + (orph && orph.uids && orph.uids.length ? '  across ' + orph.uids.length + ' dead id(s)' : ''));
+
   if (DRY) { console.log('\n--dry: nothing was removed'); return; }
 
   // ── prove it ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -69,10 +78,12 @@ const PROBE = /\bprobe\b/i;
   const lb = await (await fetch(O + '/api/reward/lb')).json();
   const onBoard = [];
   for (const k of ['topGreen', 'topRoe', 'topWr', 'topXp', 'topGold', 'topBybit']) (lb[k] || []).forEach(x => { if (ACCT.test(String(x.who || ''))) onBoard.push(k + ':' + x.who); });
+  const orph2 = await (await fetch(O + '/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ op: 'orphans', dry: true }) })).json().catch(() => ({}));
   const au = await (await fetch(O + '/api/admin/lbaudit', { headers: H })).json();
   const inLb = (au.flagged || []).filter(f => ACCT.test(String(f.uid || '')));
 
-  console.log('\nremoved ' + removedAccts + ' account(s) and ' + removedMsgs + ' message(s)');
+  console.log('\nremoved ' + removedAccts + ' account(s), ' + removedMsgs + ' message(s) and ' + ((orph && orph.removed) || 0) + ' orphaned row(s)');
+  console.log('orphaned rows still present: ' + ((orph2 && orph2.removed) || 0) + (((orph2 && orph2.removed) || 0) ? '  <-- NOT CLEAN' : '  (clean)'));
   console.log('  accounts left from tests : ' + leftA.length + (leftA.length ? '  ' + leftA.map(u => u.id).join(', ') : ''));
   console.log('  chat messages left       : ' + leftM.length);
   console.log('  on a public board        : ' + (onBoard.length ? onBoard.join(', ') : 'none'));
