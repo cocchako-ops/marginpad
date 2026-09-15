@@ -153,14 +153,14 @@ async function handleV1(url, request, env, ctx) {
     if (!a || a.error === 'bad_key') return v1err('invalid_api_key', 'This key does not exist. Drop the X-API-Key header to use the keyless limit, or mint one at https://marginpad.io/trading-api/', 401);
     if (a.error === 'revoked_key') return v1err('revoked_key', 'This key was revoked.', 401);
     rlh = { 'x-ratelimit-limit': String(a.limit || 0), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || ''), 'x-ratelimit-scope': 'key' };
-    if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 2000 ? ' API Pro raises every key to 600/minute and Max to 2000: ' + API_UPGRADE : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 5000 ? ' API Pro raises every key to 600/minute, Max to 2000 and Business to 5000: ' + API_UPGRADE : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
     rl = { limited: false };
   } else {
     rl = v1Rate(ip);
     rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
     if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
   }
-  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.7', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
+  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.8', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, 5000 on Business, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.7.0',
+      version: '2.8.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }, except the four liquidation-collector passthroughs (feed, liquidations/live, liquidations/recent, clusters), which return the raw collector object and are marked as such.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -245,7 +245,7 @@ function handleOpenApi() {
       '/api/v1/calc/take-profit': { get: { tags: ['Calculators'], summary: 'Take-profit price', description: 'The price at which a position reaches a target return on equity.', parameters: [q('entry', 'Entry price, above zero.', true, '60000'), q('roe', 'Target return on equity, in percent.', true, '50'), q('leverage', 'Leverage multiple.', false, '10'), q('side', 'long or short.', false, 'long')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/price': { get: { tags: ['Paper trading'], summary: 'Paper price (keyless)', description: 'Fill price used by the paper-trading engine.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/time': { get: { tags: ['Paper trading'], summary: 'Server time (keyless)', description: 'Server clock. Pass client_ts to get drift_ms back - a bot bucketing candles against a drifting local clock builds bars nobody else sees.', parameters: [q('client_ts', 'Your unix ms, to measure drift.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/ServerTime' } } } } } } },
- '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (Free 50 / API Pro 200 / Max 500)' }, '429': { description: 'rate limited - see X-RateLimit-Reset and Retry-After' } } } },
+ '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (Free 50 / API Pro 200 / Max 500 / Business 1000)' }, '429': { description: 'rate limited - see X-RateLimit-Reset and Retry-After' } } } },
       '/api/bot/v1/close': { post: { tags: ['Paper trading'], summary: 'Close a paper position', description: 'Close a simulated position fully or partially. P&L settles net of the round-trip taker fee and accrued funding.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CloseRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { $ref: '#/components/schemas/Position' }, remaining: { $ref: '#/components/schemas/Position' }, position: { $ref: '#/components/schemas/Position' } } } } } }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
       '/api/bot/v1/sltp': { post: { tags: ['Paper trading'], summary: 'Move stop-loss / take-profit', description: 'Change the stop or target on an OPEN position without closing it. Both are side-checked against the entry price. Pass null to clear one.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SltpRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
       '/api/bot/v1/orders': { get: { tags: ['Paper trading'], summary: 'List limit orders', description: 'Resting limit orders plus the last 20 that filled, expired or were cancelled (a filled one carries the position_id it created).', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
@@ -282,7 +282,7 @@ function handleOpenApi() {
       '/api/bot/v2/{endpoint}': { get: { tags: ['Paper trading'], summary: 'Same API, standard envelope', description: 'Every /api/bot/v1/* path has a /v2 twin: identical parameters and identical data, wrapped as {ok:true,data,ts} or {ok:false,error:{code,message},ts}. v1 response bodies are frozen and will not change; new work happens on v2. Swap v1 for v2 in the URL. There is also a WebSocket that OpenAPI cannot describe: wss://marginpad.io/api/bot/v2/stream?api_key=... pushes position opened/updated/closed events and mark prices, which replaces polling /positions entirely.', security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'endpoint', in: 'path', required: true, description: 'account | balance | positions | trades | markets | open | close | close_all | sltp | price | klines | time', schema: { type: 'string' }, example: 'account' }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Envelope' } } } } } } },
     },
     components: {
-      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Required for paper-trading endpoints; OPTIONAL on /api/v1/* data endpoints, where sending it moves the call from the 60/minute per-IP limit to the key’s own budget (120/minute on Free, 600 on API Pro, 2000 on Max). Mint a key at POST /api/bot/key while signed in, or on https://marginpad.io/trading-api/.' } },
+      securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Required for paper-trading endpoints; OPTIONAL on /api/v1/* data endpoints, where sending it moves the call from the 60/minute per-IP limit to the key’s own budget (120/minute on Free, 600 on API Pro, 2000 on Max, 5000 on Business). Mint a key at POST /api/bot/key while signed in, or on https://marginpad.io/trading-api/.' } },
       schemas: {
         Envelope: { type: 'object', properties: { ok: { type: 'boolean' }, data: {}, error: { $ref: '#/components/schemas/ApiError' }, ts: { type: 'integer', description: 'Server unix ms' } }, required: ['ok', 'ts'] },
         ApiError: { type: 'object', description: 'code is a stable identifier you can branch on; message is prose and may be reworded.', properties: { code: { type: 'string', example: 'unknown_symbol' }, message: { type: 'string' }, symbol: { type: 'string' }, live: { type: 'number', description: 'On sl_wrong_side / tp_wrong_side: the live price, so a caller can correct and retry.' }, limit: {}, max: { type: 'integer' } }, required: ['code', 'message'] },
@@ -12332,6 +12332,14 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-15', version: '2.8.0', title: 'A fourth plan, and the prices the plans actually ship at',
+    changes: [
+      { type: 'changed', breaking: false, text: 'Prices, superseding the ones announced in 2.7.0 earlier the same day: API Pro is $29/month (600 requests/minute, 10 keys, 200 open positions, 5 books, 3 webhooks, 50 AI reads a day) and API Max is $79/month (2000/minute, 30 keys, 500 open positions, 20 books, 15 webhooks, 200 AI reads). Nobody had bought at the earlier numbers.' },
+      { type: 'added', breaking: false, text: 'API Business, $199/month: 5000 requests/minute per key, 100 keys, 1000 open positions, 50 books, 50 webhooks, 500 AI market reads a day. Same engine and same endpoints as every other plan - it is headroom for a desk running many strategies at once, not a different product.' },
+      { type: 'unchanged', breaking: false, text: 'Free is untouched: 120 requests/minute, 3 keys, 50 open positions, the whole trading engine, replay, books, the WebSocket stream and all keyless market data. Market data stays keyless and free on every plan.' },
+    ],
+  },
+  {
     date: '2026-09-15', version: '2.7.0', title: 'The API has its own plans. Premium no longer changes a single API limit.',
     changes: [
       { type: 'changed', breaking: true, text: 'API limits are no longer derived from a MarginPad Premium subscription. There are now three API plans: Free ($0 - 120 requests/minute per key, 3 keys, 50 open positions), Pro ($19/month - 600/minute, 10 keys, 200 open positions, 3 webhooks, 50 AI reads a day, full trading report) and Max ($49/month - 2000/minute, 30 keys, 500 open positions, 15 webhooks, 200 AI reads a day). GET /v1/usage reports your plan, when it ends and what every plan costs; GET /api/apiplan is the catalogue.' },
@@ -12645,7 +12653,7 @@ async function syncBotTiers(env) {
   }
   let applied = null;
   try { const r2 = await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: out }) })); applied = await r2.json(); } catch (e) { applied = { error: String(e && e.message || e) }; }
-  return { holders: holders.length, paid: out.filter(x => x.tier > 0).length, pro: out.filter(x => x.tier === 1).length, max: out.filter(x => x.tier === 2).length, applied };
+  return { holders: holders.length, paid: out.filter(x => x.tier > 0).length, byPlan: API_PLANS.map((p) => ({ plan: p.id, n: out.filter(x => x.tier === p.tier).length })), applied };
 }
 // FREE vs PREMIUM (owner 2026-08-19). The rule behind these numbers: charge for what COSTS us, never for what
 // SAVES us. Rate limit, key count and open positions all consume the shared single-threaded trading store, so they
@@ -12660,9 +12668,11 @@ async function syncBotTiers(env) {
 // The tier NUMBER is what every hot path reads (botkeys2.tier, denormalised) - 0 free, 1 pro, 2 max. Keep them ordered.
 const API_PLANS = [
   { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0 },
-  { id: 'pro', tier: 1, cents: 1900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 50 },
-  { id: 'max', tier: 2, cents: 4900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 200 },
+  { id: 'pro', tier: 1, cents: 2900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 50 },
+  { id: 'max', tier: 2, cents: 7900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 200 },
+  { id: 'business', tier: 3, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 500 },
 ];
+const API_TIER_MAX = API_PLANS.length - 1;
 const API_PLAN_BY_ID = (id) => API_PLANS.filter((p) => p.id === String(id || '').toLowerCase())[0] || null;
 function BOT_TIER_LIMITS(tier) {
   const t = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+tier || 0)));
@@ -12671,7 +12681,7 @@ function BOT_TIER_LIMITS(tier) {
 }
 // The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
-const API_UPGRADE_HINT = 'API Pro is $19 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads); Max is $49. Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
+const API_UPGRADE_HINT = 'API Pro is $29 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads), Max is $79 (2000/min) and Business is $199 (5000/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
 async function apiPlanOf(env, uid) {
@@ -12721,7 +12731,7 @@ const BOT_ERR = {
   stop_wrong_side: 'A stop entry waits on the breakout side of the market (a long above it, a short below it).',
   trail_pct_invalid: 'trail_pct is a percent distance between 0.05 and 50.',
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
-  plan_required: 'This is on API Pro ($19/month) and Max ($49/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
+  plan_required: 'This is on API Pro ($29/month), Max ($79/month) and Business ($199/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -13210,7 +13220,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($19/month, 3 hooks) and Max ($49/month, 15). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($29/month, 3 hooks), Max ($79/month, 15) and Business ($199/month, 50). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -13255,7 +13265,7 @@ async function handleBot(url, request, env, ctx) {
     return jb(Object.assign({ plan: BOT_TIER_LIMITS(+auth.tier || 0).name, breakdowns: true, premium: true, findings: reportFindings(rep) }, rest), 200);
   }
   if (path === '/v1/ai' && request.method === 'POST') { // API Pro and above: the chart panel's AI read, from the API. Same model, same prompt, one shared daily quota with the site.
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'AI market reads are on API Pro (50 a day) and Max (200 a day). ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'AI market reads are on API Pro (50 a day), Max (200 a day) and Business (500 a day). ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     if (!sym) return jb({ error: 'symbol_required' }, 400);
@@ -16112,7 +16122,7 @@ export default {
         for (const k of l.keys || []) {
           const uid = k.name.slice(8); let v = null; try { v = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
           if (!v) continue;
-          const tier = Math.max(0, Math.min(2, Math.round(+v.p || 0)));
+          const tier = Math.max(0, Math.min(API_TIER_MAX, Math.round(+v.p || 0)));
           rows.push({ uid, plan: API_PLANS[tier].id, tier, until: +v.until || 0, days_left: apiPlanDays(+v.until || 0), src: String(v.src || ''), live: (+v.until || 0) > Date.now(), ts: +v.ts || 0 });
         }
       } catch (e) {}
@@ -21162,12 +21172,12 @@ export class UserStore {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       // the worker resolves the account's API PLAN (KV api:sub - never Premium, split 2026-09-15) and passes the tier
       // down; we write it onto every key the account owns so the hot auth path can read it for free.
-      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', Math.max(0, Math.min(2, Math.round(+b.tier || 0))), uid); } catch (e) {} }
+      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', Math.max(0, Math.min(API_TIER_MAX, Math.round(+b.tier || 0))), uid); } catch (e) {} }
       // The worker's value WINS when it sent one: it just read api:sub, while the SELECT below reads rows that may
       // not exist yet. Measured 2026-09-15: an account on a paid plan minting its FIRST key got a tier-0 key and a
       // "Free plan" panel, because the UPDATE touched nothing and the SELECT found nothing.
       const tier = (b.tier != null)
-        ? Math.max(0, Math.min(2, Math.round(+b.tier || 0)))
+        ? Math.max(0, Math.min(API_TIER_MAX, Math.round(+b.tier || 0)))
         : (+(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0);
       const LIM = BOT_TIER_LIMITS(tier);
       const MAX_KEYS = LIM.maxKeys;
@@ -21175,14 +21185,14 @@ export class UserStore {
       const nameOf = (v, fb) => { const s2 = String(v == null ? '' : v).replace(/[^\w .-]/g, '').trim().slice(0, 40); return s2 || fb; };
       const bookOf = (v) => String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
       const books = () => Array.from(new Set(list().filter(r => !r.revoked && r.book).map(r => r.book)));
-      const MAX_BOOKS = LIM.maxBooks; // separate books besides the main account: Free 1, Pro 5, Max 20
+      const MAX_BOOKS = LIM.maxBooks; // separate books besides the main account: Free 1, Pro 5, Max 20, Business 50
       const mint = (nm, bk) => { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys2(k,uid,name,created,calls,mint,rpm,revoked,tier,book) VALUES(?,?,?,?,0,0,0,0,?,?)', k, uid, nm, now, tier, bk || ''); return k; };
       const plan = { tier: LIM.name, label: LIM.label, price_usd: LIM.price_usd, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, max_books: MAX_BOOKS, webhooks: LIM.hooks, ai_per_day: LIM.ai, websocket: true };
       const act = String(b.act || '');
       if (act === 'create') {
         if (list().filter(r => !r.revoked).length >= MAX_KEYS) return this.j({ error: 'max_keys', max: MAX_KEYS });
         const bk = bookOf(b.book); if (bk === 'main') return this.j({ error: 'bad_book', hint: 'main is the account itself; leave book empty for it.' });
-        if (bk && books().indexOf(bk) < 0 && books().length >= MAX_BOOKS) return this.j({ error: 'max_books', max: MAX_BOOKS, books: books(), hint: MAX_BOOKS === 1 ? 'Free accounts get one separate book besides the main account; API Pro gets five and Max twenty.' : 'Revoke the keys of a book you no longer use to free its slot.' });
+        if (bk && books().indexOf(bk) < 0 && books().length >= MAX_BOOKS) return this.j({ error: 'max_books', max: MAX_BOOKS, books: books(), hint: MAX_BOOKS === 1 ? 'Free accounts get one separate book besides the main account; API Pro gets five, Max twenty and Business fifty.' : 'Revoke the keys of a book you no longer use to free its slot.' });
         const k = mint(nameOf(b.name, (bk || 'key') + ' ' + (list().length + 1)), bk);
         return this.j({ key: k, created: now, book: bk, keys: list(), plan });
       }
@@ -21474,7 +21484,7 @@ export class UserStore {
     if (path === '/bottierset') {
       const set = Array.isArray(b.set) ? b.set.slice(0, 500) : [];
       let n = 0;
-      for (const x of set) { if (!x || !x.uid) continue; const t = Math.max(0, Math.min(2, Math.round(+x.tier || 0))); try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', t, String(x.uid), t); n++; } catch (e) {} }
+      for (const x of set) { if (!x || !x.uid) continue; const t = Math.max(0, Math.min(API_TIER_MAX, Math.round(+x.tier || 0))); try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', t, String(x.uid), t); n++; } catch (e) {} }
       return this.j({ ok: true, checked: n });
     }
     // ── Bot API 2.5 (2026-09-12): books, reset, equity, arena ────────────────────────────────────────────────────────

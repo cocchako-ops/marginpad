@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/api/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/api/" />
 <meta property="og:title" content="MarginPad API - datos cripto gratis, Bot API de paper trading, MCP" />
-<meta property="og:description" content="Datos de mercado sin clave a 60 req/min (120 con una clave gratuita, 600 en API Pro), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 27 herramientas, OpenAPI 3.1 y clientes en Python y JS." />
+<meta property="og:description" content="Datos de mercado sin clave a 60 req/min (120 con una clave gratuita, 600 en API Pro, 5000 en Business), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 27 herramientas, OpenAPI 3.1 y clientes en Python y JS." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/api/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/api.jpg" />
@@ -100,14 +100,14 @@
   <article>
     <h1>API de MarginPad</h1>
     <p class="lead">Todo lo que el sitio sabe, en JSON: precios y velas en vivo, un screener con puntuación, funding, interés abierto, long/short, liquidaciones medidas en nueve exchanges, un calendario económico - sin clave. Además, una <b>Bot API</b> de paper trading completa para probar un bot de trading con precios reales y dinero simulado, un <b>servidor MCP</b> remoto para que un asistente de IA use todo esto de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo para Python y JavaScript.</p>
-    <div class="chips"><span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>API Pro · 600 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 27 herramientas</span><span>Bot API 2.4.0</span></div>
+    <div class="chips"><span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 27 herramientas</span><span>Bot API 2.8.0</span></div>
 
     <div class="ways">
       <a class="way" href="/es/free-crypto-api/"><b>Datos de mercado</b><strong>API gratuita de datos cripto</strong><span>Precios, velas, screener, funding, OI, long/short, liquidaciones, calendario, Fear &amp; Greed y TVL de DeFi. Sin clave y sin registro.</span><em>Documentación &rarr;</em></a> <a class="way" href="/es/trading-api/"><b>Paper trading</b><strong>Bot API</strong><span>Abrir, cerrar, órdenes limit y stop, trailing stops, webhooks, WebSocket y un trading report. Precios reales, dinero simulado.</span><em>Documentación + clave gratuita &rarr;</em></a> <a class="way" href="/mcp"><b>Asistentes de IA</b><strong>Servidor MCP remoto</strong><span>27 herramientas para Claude, ChatGPT y Cursor: datos de mercado, calculadoras y tu cuenta de paper trading.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class="way" href="/api/openapi.json"><b>Legible por máquinas</b><strong>OpenAPI 3.1 + clientes</strong><span>La especificación completa con los esquemas de petición y respuesta, y los clientes sin dependencias <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Especificación &rarr;</em></a>
     </div>
 
     <h2 id="data">Datos de mercado - <code>/api/v1/*</code>, sin clave</h2>
-    <p>Cada respuesta llega en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, así que una página del navegador puede llamarla directamente. <b>60 peticiones por minuto y por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (desde <a href="/es/trading-api/">/trading-api/</a>) en esas mismas llamadas y se contarán contra tu clave: 120 por minuto en Free, 600 en <a href="/es/trading-api/#plans">API Pro</a> y 2000 en Max. Manual completo con ejemplos: <a href="/es/free-crypto-api/">/free-crypto-api/</a>.</p>
+    <p>Cada respuesta llega en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, así que una página del navegador puede llamarla directamente. <b>60 peticiones por minuto y por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (desde <a href="/es/trading-api/">/trading-api/</a>) en esas mismas llamadas y se contarán contra tu clave: 120 por minuto en Free, 600 en <a href="/es/trading-api/#plans">API Pro</a>, 2000 en Max y 5000 en Business. Manual completo con ejemplos: <a href="/es/free-crypto-api/">/free-crypto-api/</a>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>Qué obtienes</th></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/price?symbol=BTC</code></td><td>Precio en vivo de una moneda, agregado entre Binance / Bybit / OKX / Gate.</td></tr>
@@ -158,14 +158,14 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
       <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/ai <span class="tag p">API Pro</span></code></td><td>La lectura de la IA del panel de gráficos a partir de la API: una respuesta, un plan ya interpretado y el resumen sobre el que razonó, 50 al día <span class="tag n">2.3</span>.</td></tr>
     </table></div>
     <div class="tw"><table class="plans">
-      <tr><th>Plan</th><th>Free ($0)</th><th class="hl">Pro ($19/mes)</th><th>Max ($49/mes)</th></tr>
-      <tr><td>Solicitudes por minuto por clave (trading y datos de mercado)</td><td>120</td><td class="hl">600</td><td>2000</td></tr>
-      <tr><td>Claves API · posiciones abiertas · órdenes pendientes</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td><td>30 · 500 · 20</td></tr>
-      <tr><td>Datos de mercado, WebSocket, MCP, órdenes limit y stop, trailing stops, modificación, dry run, replay y tarifas por exchange</td><td>incluido</td><td class="hl">incluido</td><td>incluido</td></tr>
-      <tr><td>Webhooks · lectura de mercado por IA · desgloses de informes</td><td>-</td><td class="hl">3 webhooks · 50/día · informe completo</td><td>15 hooks · 200/día · report completo</td></tr>
-      <tr><td colspan="4" style="color:var(--ink-dim)">Los planes de API están separados de <a href="/es/premium/">Premium</a> del sitio: Premium no sube ningún límite de la API, y un plan de API no desbloquea las funciones del sitio.</td></tr>
+      <tr><th>Plan</th><th>Free ($0)</th><th class="hl">Pro ($29/mes)</th><th>Max ($79/mes)</th><th>Business ($199/mes)</th></tr>
+      <tr><td>Solicitudes por minuto por clave (trading y datos de mercado)</td><td>120</td><td class="hl">600</td><td>2000</td><td>5000</td></tr>
+      <tr><td>Claves API · posiciones abiertas · órdenes pendientes</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td><td>30 · 500 · 20</td><td>100 · 1000 · 20</td></tr>
+      <tr><td>Datos de mercado, WebSocket, MCP, órdenes limit y stop, trailing stops, modificación, dry run, replay y tarifas por exchange</td><td>incluido</td><td class="hl">incluido</td><td>incluido</td><td>incluido</td></tr>
+      <tr><td>Webhooks · lectura de mercado por IA · desgloses de informes</td><td>-</td><td class="hl">3 webhooks · 50/día · informe completo</td><td>15 hooks · 200/día · report completo</td><td>50 hooks · 500/día · report completo</td></tr>
+      <tr><td colspan="5" style="color:var(--ink-dim)">Los planes de API están separados de <a href="/es/premium/">Premium</a> del sitio: Premium no sube ningún límite de la API, y un plan de API no desbloquea las funciones del sitio.</td></tr>
     </table></div>
-    <p>La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href="/es/trading-api/">/trading-api/</a>. Cada cambio queda registrado en <a href="/api/changelog">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es la 2.7.0.</p>
+    <p>La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href="/es/trading-api/">/trading-api/</a>. Cada cambio queda registrado en <a href="/api/changelog">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es la 2.8.0.</p>
 
     <div class="golive" id="golive">
       <div class="gl-h">Cuando el bot ya está probado, necesita una clave real de un exchange</div>

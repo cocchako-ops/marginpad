@@ -26,7 +26,7 @@
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/api/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/api/" />
 <meta property="og:title" content="MarginPad API - free crypto data, paper-trading Bot API, MCP" />
-<meta property="og:description" content="Keyless market data at 60 req/min (120 with a free key, 600 on API Pro), a full paper-trading Bot API with webhooks and trailing stops, MCP with 27 tools, OpenAPI 3.1, Python and JS clients." />
+<meta property="og:description" content="Keyless market data at 60 req/min (120 with a free key, 600 on API Pro, 5000 on Business), a full paper-trading Bot API with webhooks and trailing stops, MCP with 27 tools, OpenAPI 3.1, Python and JS clients." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/api/" />
 <meta property="og:image" content="https://marginpad.io/assets/og/api.jpg" />
@@ -102,7 +102,7 @@
   <article>
     <h1>MarginPad API</h1>
     <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar - keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
-    <div class="chips"><span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>API Pro · 600 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 27 tools</span><span>Bot API 2.4.0</span></div>
+    <div class="chips"><span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 27 tools</span><span>Bot API 2.8.0</span></div>
 
     <div class="ways">
       <a class="way" href="/free-crypto-api/"><b>Market data</b><strong>Free crypto data API</strong><span>Prices, candles, screener, funding, OI, long/short, liquidations, calendar, Fear &amp; Greed, DeFi TVL. No key, no sign-up.</span><em>Docs &rarr;</em></a>
@@ -112,7 +112,7 @@
     </div>
 
     <h2 id="data">Market data - <code>/api/v1/*</code>, keyless</h2>
-    <p>Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href="/trading-api/">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute on Free, 600 on <a href="/trading-api/#plans">API Pro</a>, 2000 on Max. Full manual with examples: <a href="/free-crypto-api/">/free-crypto-api/</a>.</p>
+    <p>Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href="/trading-api/">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute on Free, 600 on <a href="/trading-api/#plans">API Pro</a>, 2000 on Max and 5000 on Business. Full manual with examples: <a href="/free-crypto-api/">/free-crypto-api/</a>.</p>
     <div class="tw"><table class="eps">
       <tr><th></th><th>Endpoint</th><th>What you get</th></tr>
       <tr><td><span class="m get">GET</span></td><td><code>/api/v1/price?symbol=BTC</code></td><td>Live price for one coin, aggregated across Binance / Bybit / OKX / Gate.</td></tr>
@@ -163,14 +163,14 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
       <tr><td><span class="m post">POST</span></td><td><code>/api/bot/v1/ai <span class="tag p">API Pro</span></code></td><td>The chart panel&rsquo;s AI read from the API: an answer, a parsed plan and the brief it reasoned over, 50 a day <span class="tag n">2.3</span>.</td></tr>
     </table></div>
     <div class="tw"><table class="plans">
-      <tr><th>Plan</th><th>Free ($0)</th><th class="hl">Pro ($19/mo)</th><th>Max ($49/mo)</th></tr>
-      <tr><td>Requests / minute per key (trading and market data)</td><td>120</td><td class="hl">600</td><td>2000</td></tr>
-      <tr><td>API keys · open positions · resting orders</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td><td>30 · 500 · 20</td></tr>
-      <tr><td>Market data, WebSocket, MCP, limit &amp; stop orders, trailing stops, modify, dry run, replay, venue fee schedules</td><td>included</td><td class="hl">included</td><td>included</td></tr>
-      <tr><td>Webhooks · AI market read · report breakdowns</td><td>-</td><td class="hl">3 hooks · 50/day · full report</td><td>15 hooks · 200/day · full report</td></tr>
-      <tr><td colspan="4" style="color:var(--ink-dim)">API plans are separate from site <a href="/premium/">Premium</a>: Premium does not raise any API limit, and an API plan does not unlock the site features.</td></tr>
+      <tr><th>Plan</th><th>Free ($0)</th><th class="hl">Pro ($29/mo)</th><th>Max ($79/mo)</th><th>Business ($199/mo)</th></tr>
+      <tr><td>Requests / minute per key (trading and market data)</td><td>120</td><td class="hl">600</td><td>2000</td><td>5000</td></tr>
+      <tr><td>API keys · open positions · resting orders</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td><td>30 · 500 · 20</td><td>100 · 1000 · 20</td></tr>
+      <tr><td>Market data, WebSocket, MCP, limit &amp; stop orders, trailing stops, modify, dry run, replay, venue fee schedules</td><td>included</td><td class="hl">included</td><td>included</td><td>included</td></tr>
+      <tr><td>Webhooks · AI market read · report breakdowns</td><td>-</td><td class="hl">3 hooks · 50/day · full report</td><td>15 hooks · 200/day · full report</td><td>50 hooks · 500/day · full report</td></tr>
+      <tr><td colspan="5" style="color:var(--ink-dim)">API plans are separate from site <a href="/premium/">Premium</a>: Premium does not raise any API limit, and an API plan does not unlock the site features.</td></tr>
     </table></div>
-    <p>Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href="/trading-api/">/trading-api/</a>. Every change is logged at <a href="/api/changelog">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.7.0.</p>
+    <p>Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href="/trading-api/">/trading-api/</a>. Every change is logged at <a href="/api/changelog">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.8.0.</p>
 
     <div class="golive" id="golive">
       <div class="gl-h">When the bot is proven, it needs a real exchange key</div>

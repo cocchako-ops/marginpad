@@ -53,7 +53,7 @@
  {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
  {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
  {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time - it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
- {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($19 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($49 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all three."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four."}},
  {"@type":"Question","name":"Does MarginPad Premium include the API?","acceptedAnswer":{"@type":"Answer","text":"No. Since 15 September 2026 the Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts. The API plans unlock API limits. They are bought separately."}},
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
@@ -178,8 +178,9 @@
   .diff + .diff + .diff + .diff{border-top:1px solid var(--line);margin-top:26px;padding-top:26px;}
 
   /* ── plans ────────────────────────────────────────────────────────────────────────────────────────────── */
-  .apgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:38px 0 0;border-top:1px solid var(--line2);}
-  .apcard{display:flex;flex-direction:column;position:relative;padding:28px 30px 30px;border-left:1px solid var(--line);min-width:0;}
+  .apgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:38px 0 0;border-top:1px solid var(--line2);}
+  .apcard[data-plan="business"] .thr-t i{background:linear-gradient(90deg,var(--lime),var(--cyan));}
+  .apcard{display:flex;flex-direction:column;position:relative;padding:28px 24px 30px;border-left:1px solid var(--line);min-width:0;}
   .apcard:first-child{border-left:0;}
   .apcard.feat{background:linear-gradient(180deg,rgba(194,246,74,.055),rgba(194,246,74,0) 70%);box-shadow:inset 0 2px 0 0 var(--lime);}
   .aphead{display:flex;align-items:center;gap:10px;}
@@ -194,14 +195,14 @@
   .thr-t{height:6px;border-radius:3px;background:#161b22;overflow:hidden;}
   .thr-t i{display:block;height:100%;width:0;border-radius:3px;background:var(--dim);}  /* the free sliver is only 6% wide - --line2 made it read as an empty track */
   .apcard.feat .thr-t i{background:var(--lime);}
-  .apcard[data-plan="max"] .thr-t i{background:linear-gradient(90deg,var(--lime),var(--cyan));}
+  .apcard[data-plan="max"] .thr-t i{background:var(--lime);}
   .thr-l{display:flex;align-items:baseline;gap:7px;margin-top:10px;font-family:var(--mono);}
   .thr-l b{font-size:17px;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
   .thr-l span{font-size:11px;color:var(--faint);letter-spacing:.06em;}
   .apfeat{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;flex:1;}
   .apfeat li{font-size:14px;line-height:1.5;color:var(--dim);padding-left:17px;position:relative;}
   .apfeat li:before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;background:var(--line2);}
-  .apcard.feat .apfeat li:before,.apcard[data-plan="max"] .apfeat li:before{background:var(--lime);}
+  .apcard.feat .apfeat li:before,.apcard[data-plan="max"] .apfeat li:before,.apcard[data-plan="business"] .apfeat li:before{background:var(--lime);}
   .apfeat li b{color:var(--ink);font-weight:600;}
   .apx{font:700 10px var(--mono);color:var(--lime);letter-spacing:.04em;margin-left:5px;}
   .apbtn{width:100%;margin-top:26px;border:0;border-radius:10px;padding:13px 16px;font:700 13.5px/1 var(--disp);color:#0a0b0d;background:var(--lime);cursor:pointer;}
@@ -213,6 +214,9 @@
   #apPlanState b{color:var(--ink);}
   #apPlanState .apdays{font-family:var(--mono);color:var(--lime);font-weight:700;}
   #apMsg{margin-top:14px;}
+  .plantw{margin-top:34px;}
+  .plantw table.vs{min-width:720px;}
+  .plantw table.vs th:first-child,.plantw table.vs td:first-child{width:34%;}
   .apfoot{margin-top:26px;font-size:14px;line-height:1.7;color:var(--dim);max-width:78ch;}
   .apfoot b{color:var(--ink);}
 
@@ -340,6 +344,11 @@
   footer a{color:var(--dim);}
 
   /* ── responsive ───────────────────────────────────────────────────────────────────────────────────────── */
+  @media(max-width:1150px){
+    .apgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .apcard:nth-child(odd){border-left:0;}
+    .apcard:nth-child(n+3){border-top:1px solid var(--line);}
+  }
   @media(max-width:1100px){
     .docs{grid-template-columns:minmax(0,1fr);gap:0;}
     .rail{position:static;max-height:none;margin-bottom:34px;overflow:visible;}
@@ -354,6 +363,7 @@
     .proof div:nth-child(3),.proof div:nth-child(4){padding-top:20px;}
     .qs,.diffs,.apgrid{grid-template-columns:minmax(0,1fr);}
     .qstep,.diff,.apcard{border-left:0;padding-left:0;padding-right:0;border-top:1px solid var(--line);}
+    .apcard:nth-child(odd){border-left:0;}
     .qs,.diffs{border-top:0;}
     .apgrid{border-top:0;}
     .apcard.feat{padding-left:20px;padding-right:20px;background:linear-gradient(180deg,rgba(194,246,74,.06),transparent 60%);box-shadow:inset 2px 0 0 0 var(--lime);}
@@ -403,7 +413,7 @@
       <a class="btn" href="#akb">Get a free API key</a>
       <a class="btn sec" href="#quickstart">Read the quickstart</a>
     </div>
-    <p class="hnote">No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href="#plans">Pro is $19</a> when one bot becomes four. Market data stays keyless on every plan.</p>
+    <p class="hnote">No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href="#plans">Pro is $29</a> when one bot becomes four. Market data stays keyless on every plan.</p>
   </div>
 
   <div class="term" id="heroTerm">
@@ -569,7 +579,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
         <div class="appx">$0</div>
         <p class="apsub">Build and run a real bot without paying anything.</p>
         <div class="thr">
-          <div class="thr-t"><i data-w="6" style="width:6%"></i></div>
+          <div class="thr-t"><i data-w="2.4" style="width:2.4%"></i></div>
           <div class="thr-l"><b>120</b><span>REQ / MIN PER KEY</span></div>
         </div>
         <ul class="apfeat">
@@ -583,10 +593,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       </div>
       <div class="apcard feat" data-plan="pro">
         <div class="aphead"><h3>Pro</h3><span class="appill">MOST BOTS</span></div>
-        <div class="appx">$19<small>/month</small></div>
+        <div class="appx">$29<small>/month</small></div>
         <p class="apsub">For a bot that runs unattended and needs to be pushed to, not polled.</p>
         <div class="thr">
-          <div class="thr-t"><i data-w="30" style="width:30%"></i></div>
+          <div class="thr-t"><i data-w="12" style="width:12%"></i></div>
           <div class="thr-l"><b>600</b><span>REQ / MIN <span class="apx">5&times; FREE</span></span></div>
         </div>
         <ul class="apfeat">
@@ -600,10 +610,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       </div>
       <div class="apcard" data-plan="max">
         <div class="aphead"><h3><span class="apn">Max</span></h3></div>
-        <div class="appx">$49<small>/month</small></div>
+        <div class="appx">$79<small>/month</small></div>
         <p class="apsub">For several strategies, or one that trades far more often than it thinks.</p>
         <div class="thr">
-          <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
+          <div class="thr-t"><i data-w="40" style="width:40%"></i></div>
           <div class="thr-l"><b>2000</b><span>REQ / MIN <span class="apx">17&times; FREE</span></span></div>
         </div>
         <ul class="apfeat">
@@ -615,8 +625,42 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
         </ul>
         <button class="apbtn" type="button" data-buy="max">Get Max</button>
       </div>
+      <div class="apcard" data-plan="business">
+        <div class="aphead"><h3><span class="apn">Business</span></h3></div>
+        <div class="appx">$199<small>/month</small></div>
+        <p class="apsub">For a desk running many strategies at once, or an app trading on behalf of its own users.</p>
+        <div class="thr">
+          <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
+          <div class="thr-l"><b>5000</b><span>REQ / MIN <span class="apx">42&times; FREE</span></span></div>
+        </div>
+        <ul class="apfeat">
+          <li><b>100</b> keys &middot; <b>1000</b> open positions &middot; <b>50</b> books</li>
+          <li><b>50</b> webhooks</li>
+          <li><b>500</b> AI market reads a day</li>
+          <li>Everything in Max</li>
+          <li>Commercial use</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="business">Get Business</button>
+      </div>
     </div>
     <p id="apMsg" class="note" hidden></p>
+    <div class="tw plantw"><table class="vs">
+      <tr><th>Limit</th><th><span class="apn">Free</span></th><th class="hl">Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $199</th></tr>
+      <tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
+      <tr><td>Market-data API (<code>/api/v1/*</code>) with your key</td><td>120 / min<br><span style="color:var(--faint)">(60 / min per IP without a key)</span></td><td class="hl"><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
+      <tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
+      <tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
+      <tr><td><a href="#books">Books</a> (separate journals)</td><td>1</td><td class="hl"><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
+      <tr><td><b>Webhooks</b> (signed, retried)</td><td class="n">-</td><td class="hl"><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
+      <tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="n">-</td><td class="hl"><b>50 a day</b></td><td><b>200 a day</b></td><td><b>500 a day</b></td></tr>
+      <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td class="hl"><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
+      <tr><td>Market data, candles, calculators, liquidation feed</td><td class="y">unlimited, no key</td><td class="y hl">same</td><td class="y">same</td><td class="y">same</td></tr>
+      <tr><td><b>WebSocket stream</b> &middot; MCP &middot; replay</td><td class="y">included</td><td class="y hl">included</td><td class="y">included</td><td class="y">included</td></tr>
+      <tr><td>Market, limit &amp; stop orders, trailing stops, modify, dry run</td><td class="y">included</td><td class="y hl">included</td><td class="y">included</td><td class="y">included</td></tr>
+      <tr><td>Fee schedule of a real venue (<a href="#fees">9 venues</a>)</td><td class="y">included</td><td class="y hl">included</td><td class="y">included</td><td class="y">included</td></tr>
+      <tr><td>Commercial use</td><td class="n">-</td><td class="y hl">yes</td><td class="y">yes</td><td class="y">yes</td></tr>
+      <tr><td>Margin per trade / leverage</td><td colspan="4">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; the same on all four</td></tr>
+    </table></div>
     <p class="apfoot"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
     <p class="apfoot">Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it. Your live ceilings are always in <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - so a bot can read them instead of guessing.</p>
   </div>
@@ -806,13 +850,13 @@ X-MP-Event: position.closed        X-MP-Delivery: 1841
 X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
 {"event":"position.closed","ts":1789124656008,"hook_id":"wh…","data":{"id":"bot…","symbol":"BTC","status":"closed","pnl_usd":-0.08,"close_reason":"SL hit",…}}</code></pre>
   <p><b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.</p>
-  <p><b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.</p>
+  <p><b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max, fifty on Business; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.</p>
   <p><b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.</p>
 </section>
 
 <section id="books">
   <h2>Books - one strategy, one clean result <span class="tag ver">2.5</span></h2>
-  <p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.</p>
+  <p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five, Max twenty and Business fifty.</p>
 <pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
 GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
 GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
@@ -876,9 +920,9 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>A stop entry waits on the breakout side (long above, short below). Use <code>type:"limit"</code> for a pullback entry.</td></tr>
     <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> is a percent between 0.05 and 50; it is refused, never silently clamped.</td></tr>
     <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> needs at least one field.</td></tr>
-    <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> need API Pro or Max. Everything else on this page is on Free. The body carries <code>plan_needed</code>.</td></tr>
+    <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> need a paid plan. Everything else on this page is on Free. The body carries <code>plan_needed</code>.</td></tr>
     <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Legacy code for <code>plan_required</code>, still sent so a 2.3 bot recognises it.</td></tr>
-    <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Delete one first - three hooks on Pro, fifteen on Max.</td></tr>
+    <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Delete one first - three hooks on Pro, fifteen on Max, fifty on Business.</td></tr>
     <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
     <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The daily AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
     <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You are at your plan's open-position ceiling. Close something.</td></tr>
@@ -1061,7 +1105,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
   function paint(){
     if(!state){box.hidden=true;return;}
     var c=state.current;
-    if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#akb">Sign in</a> to see your plan, generate a key, or buy Pro or Max.','<b>No has iniciado sesión.</b> <a href="#akb">Inicia sesión</a> para ver tu plan, generar una clave o comprar Pro o Max.'); return; }
+    if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#akb">Sign in</a> to see your plan, generate a key, or pick a plan.','<b>No has iniciado sesión.</b> <a href="#akb">Inicia sesión</a> para ver tu plan, generar una clave o elegir un plan.'); return; }
     box.hidden=false;
     if(!c||c.plan==='free'){ box.innerHTML=T('You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.','Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
     else if(c.free_month){ box.innerHTML=ES?('Estás en <b>Pro</b> gratis porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class="apdays">Te '+(c.days_left===1?'queda 1 día':'quedan '+esc(c.days_left)+' días')+'</span>: termina el '+esc(new Date(c.until).toISOString().slice(0,10))+' y la clave baja a Free (120 peticiones por minuto) salvo que elijas un plan.'):('You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class="apdays">'+esc(c.days_left)+' day'+(c.days_left===1?'':'s')+' left</span> - it ends on '+esc(new Date(c.until).toISOString().slice(0,10))+', and the key drops to Free (120 requests a minute) unless you pick a plan.'); }

@@ -254,7 +254,7 @@ print(r.json()[<span class="tok-s">'data'</span>][<span class="tok-s">'price'</s
 <div class="kpi"><b>600</b><span>req / min on API Pro</span></div>
 <div class="kpi"><b>*</b><span>CORS origin</span></div>
 </div>
-<p style="margin-top:16px"><b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href="/trading-api/">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href="/trading-api/#plans">API Pro</a> and 2000 on Max. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.</p>
+<p style="margin-top:16px"><b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href="/trading-api/">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href="/trading-api/#plans">API Pro</a>, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.</p>
 <p style="margin-top:16px">Every data response includes rate-limit headers so your client can pace itself:</p>
 <pre><code>X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59

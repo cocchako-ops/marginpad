@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T01:30:14.027Z",
+  "generated": "2026-09-15T01:57:34.861Z",
   "pages": 373,
-  "occurrences": 25127,
-  "unique": 13293,
-  "words": 247786,
+  "occurrences": 25190,
+  "unique": 13332,
+  "words": 247983,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T01:43:06.037Z"
+  "merged": "2026-09-15T01:58:37.144Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -8265,9 +8265,9 @@
    "n": 1,
    "w": 64
   },
-  "8wFwlMnf9z": {
-   "en": "<span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>API Pro · 600 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 27 tools</span><span>Bot API 2.4.0</span>",
-   "es": "<span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>API Pro · 600 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 27 herramientas</span><span>Bot API 2.4.0</span>",
+  "wG0P5U3AIJ": {
+   "en": "<span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 27 tools</span><span>Bot API 2.8.0</span>",
+   "es": "<span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 27 herramientas</span><span>Bot API 2.8.0</span>",
    "kind": [
     "html"
    ],
@@ -8275,7 +8275,7 @@
     "/api/"
    ],
    "n": 1,
-   "w": 24
+   "w": 27
   },
   "8x9tNGKWbj": {
    "en": "<a class=\"way\" href=\"/free-crypto-api/\"><b>Market data</b><strong>Free crypto data API</strong><span>Prices, candles, screener, funding, OI, long/short, liquidations, calendar, Fear &amp; Greed, DeFi TVL. No key, no sign-up.</span><em>Docs &rarr;</em></a> <a class=\"way\" href=\"/trading-api/\"><b>Paper trading</b><strong>Bot API</strong><span>Open, close, limit &amp; stop orders, trailing stops, webhooks, WebSocket, a trading report. Real prices, simulated money.</span><em>Docs + free key &rarr;</em></a> <a class=\"way\" href=\"/mcp\"><b>AI assistants</b><strong>Remote MCP server</strong><span>27 tools for Claude, ChatGPT and Cursor: market data, calculators and your paper account.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class=\"way\" href=\"/api/openapi.json\"><b>Machine-readable</b><strong>OpenAPI 3.1 + clients</strong><span>The full spec with request and response schemas, and zero-dependency <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Spec &rarr;</em></a>",
@@ -8301,9 +8301,9 @@
    "n": 1,
    "w": 4
   },
-  "BoU_CgJALu": {
-   "en": "Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href=\"/trading-api/\">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute on Free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max. Full manual with examples: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
-   "es": "Cada respuesta llega en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, así que una página del navegador puede llamarla directamente. <b>60 peticiones por minuto y por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (desde <a href=\"/trading-api/\">/trading-api/</a>) en esas mismas llamadas y se contarán contra tu clave: 120 por minuto en Free, 600 en <a href=\"/trading-api/#plans\">API Pro</a> y 2000 en Max. Manual completo con ejemplos: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
+  "nKqNGXCHXw": {
+   "en": "Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href=\"/trading-api/\">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute on Free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max and 5000 on Business. Full manual with examples: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
+   "es": "Cada respuesta llega en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, así que una página del navegador puede llamarla directamente. <b>60 peticiones por minuto y por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (desde <a href=\"/trading-api/\">/trading-api/</a>) en esas mismas llamadas y se contarán contra tu clave: 120 por minuto en Free, 600 en <a href=\"/trading-api/#plans\">API Pro</a>, 2000 en Max y 5000 en Business. Manual completo con ejemplos: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
    "kind": [
     "html"
    ],
@@ -8311,7 +8311,7 @@
     "/api/"
    ],
    "n": 1,
-   "w": 64
+   "w": 68
   },
   "kuxjUIiP_o": {
    "en": "Endpoint",
@@ -8961,9 +8961,9 @@
    "n": 1,
    "w": 2
   },
-  "fKF4hWZuE8": {
-   "en": "Pro ($19/mo)",
-   "es": "Pro ($19/mes)",
+  "H225DJ_D7_": {
+   "en": "Pro ($29/mo)",
+   "es": "Pro ($29/mes)",
    "kind": [
     "html"
    ],
@@ -8973,9 +8973,21 @@
    "n": 1,
    "w": 2
   },
-  "FiCcjE39lp": {
-   "en": "Max ($49/mo)",
-   "es": "Max ($49/mes)",
+  "AAB9cz9Dy7": {
+   "en": "Max ($79/mo)",
+   "es": "Max ($79/mes)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "woLC_G0eFk": {
+   "en": "Business ($199/mo)",
+   "es": "Business ($199/mes)",
    "kind": [
     "html"
    ],
@@ -9028,9 +9040,10 @@
     "html"
    ],
    "ctx": [
-    "/api/"
+    "/api/",
+    "/trading-api/"
    ],
-   "n": 3,
+   "n": 16,
    "w": 1
   },
   "dj25905nTH": {
@@ -9069,6 +9082,18 @@
    "n": 1,
    "w": 5
   },
+  "oQK3NmKfFw": {
+   "en": "50 hooks · 500/day · full report",
+   "es": "50 hooks · 500/día · report completo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
   "O5HxYx21Yk": {
    "en": "API plans are separate from site <a href=\"/premium/\">Premium</a>: Premium does not raise any API limit, and an API plan does not unlock the site features.",
    "es": "Los planes de API están separados de <a href=\"/premium/\">Premium</a> del sitio: Premium no sube ningún límite de la API, y un plan de API no desbloquea las funciones del sitio.",
@@ -9081,9 +9106,9 @@
    "n": 1,
    "w": 24
   },
-  "_n09y59l76": {
-   "en": "Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href=\"/trading-api/\">/trading-api/</a>. Every change is logged at <a href=\"/api/changelog\">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.7.0.",
-   "es": "La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href=\"/trading-api/\">/trading-api/</a>. Cada cambio queda registrado en <a href=\"/api/changelog\">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es la 2.7.0.",
+  "DoqQsaj1pu": {
+   "en": "Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href=\"/trading-api/\">/trading-api/</a>. Every change is logged at <a href=\"/api/changelog\">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.8.0.",
+   "es": "La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href=\"/trading-api/\">/trading-api/</a>. Cada cambio queda registrado en <a href=\"/api/changelog\">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es la 2.8.0.",
    "kind": [
     "html"
    ],
@@ -9688,9 +9713,9 @@
    "n": 1,
    "w": 9
   },
-  "gfdeNesnoX": {
-   "en": "Keyless market data at 60 req/min (120 with a free key, 600 on API Pro), a full paper-trading Bot API with webhooks and trailing stops, MCP with 27 tools, OpenAPI 3.1, Python and JS clients.",
-   "es": "Datos de mercado sin clave a 60 req/min (120 con una clave gratuita, 600 en API Pro), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 27 herramientas, OpenAPI 3.1 y clientes en Python y JS.",
+  "ZwCENZmUld": {
+   "en": "Keyless market data at 60 req/min (120 with a free key, 600 on API Pro, 5000 on Business), a full paper-trading Bot API with webhooks and trailing stops, MCP with 27 tools, OpenAPI 3.1, Python and JS clients.",
+   "es": "Datos de mercado sin clave a 60 req/min (120 con una clave gratuita, 600 en API Pro, 5000 en Business), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 27 herramientas, OpenAPI 3.1 y clientes en Python y JS.",
    "kind": [
     "attr:content"
    ],
@@ -9698,7 +9723,7 @@
     "/api/"
    ],
    "n": 1,
-   "w": 33
+   "w": 36
   },
   "I33l_E09sn": {
    "en": "Free keyless crypto market-data API (prices, OHLC, screener, funding, open interest, liquidations, calendar, calculators), a paper-trading Bot API (REST, WebSocket, webhooks, limit/stop orders, trailing stops) and a remote MCP server with 27 tools. OpenAPI 3.1.",
@@ -10776,9 +10801,10 @@
    ],
    "ctx": [
     "/app.html",
-    "/spot/"
+    "/spot/",
+    "/trading-api/"
    ],
-   "n": 2,
+   "n": 3,
    "w": 1
   },
   "BJLQQ88bfb": {
@@ -97610,9 +97636,10 @@
     "html"
    ],
    "ctx": [
-    "/free-crypto-api/"
+    "/free-crypto-api/",
+    "/trading-api/"
    ],
-   "n": 8,
+   "n": 11,
    "w": 1
   },
   "cVrwtNlSSP": {
@@ -98503,9 +98530,9 @@
    "n": 1,
    "w": 2
   },
-  "5e4kuMgjkB": {
-   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href=\"/trading-api/#plans\">API Pro</a> and 2000 on Max. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
-   "es": "<b>¿Necesitas más de 60 por minuto?</b> Envía una clave de API gratuita (se crea en segundos en <a href=\"/trading-api/\">/trading-api/</a>) como <code>X-API-Key</code> en esas mismas llamadas y se contarán contra <b>tu clave</b> en vez de contra tu IP: 120 por minuto gratis, 600 en <a href=\"/trading-api/#plans\">API Pro</a> y 2000 en Max. No cambia nada más: los mismos endpoints, el mismo sobre, y lo que va sin clave se queda exactamente igual. <code>X-RateLimit-Scope</code> te dice qué límite se aplicó.",
+  "_ssDKLNxLp": {
+   "en": "<b>Need more than 60 a minute?</b> Send a free API key (mint one in seconds at <a href=\"/trading-api/\">/trading-api/</a>) as <code>X-API-Key</code> on the same calls and they are metered against <b>your key</b> instead of your IP - 120 a minute free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max and 5000 on Business. Nothing else changes: same endpoints, same envelope, and keyless stays exactly as it is. <code>X-RateLimit-Scope</code> tells you which limit applied.",
+   "es": "<b>¿Necesitas más de 60 por minuto?</b> Envía una clave de API gratuita (se crea en segundos en <a href=\"/trading-api/\">/trading-api/</a>) como <code>X-API-Key</code> en esas mismas llamadas y se contarán contra <b>tu clave</b> en vez de contra tu IP: 120 por minuto gratis, 600 en <a href=\"/trading-api/#plans\">API Pro</a>, 2000 en Max y 5000 en Business. No cambia nada más: los mismos endpoints, el mismo sobre, y lo que va sin clave se queda exactamente igual. <code>X-RateLimit-Scope</code> te dice qué límite se aplicó.",
    "kind": [
     "html"
    ],
@@ -98513,7 +98540,7 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 63
+   "w": 66
   },
   "0Cayu7E32B": {
    "en": "Every data response includes rate-limit headers so your client can pace itself:",
@@ -132971,9 +132998,9 @@
    "n": 1,
    "w": 48
   },
-  "DQ73R3WjYX": {
-   "en": "Building a bot? <b style=\"color:#fff\">The Bot API is its own product</b> with its own Free, Pro and Max plans since 15 September 2026 - Premium does not change any API limit, and an API plan does not unlock the features above. <a href=\"/trading-api/#plans\" style=\"color:var(--lime)\">See the API plans &rarr;</a>",
-   "es": "¿Estás construyendo un bot? <b style=\"color:#fff\">La Bot API es un producto aparte</b>, con sus propios planes Free, Pro y Max desde el 15 de septiembre de 2026: Premium no cambia ningún límite de la API, y un plan de API no desbloquea las funciones de arriba. <a href=\"/trading-api/#plans\" style=\"color:var(--lime)\">Ver los planes de API &rarr;</a>",
+  "k_IBY1pA08": {
+   "en": "Building a bot? <b style=\"color:#fff\">The Bot API is its own product</b> with its own Free, Pro, Max and Business plans since 15 September 2026 - Premium does not change any API limit, and an API plan does not unlock the features above. <a href=\"/trading-api/#plans\" style=\"color:var(--lime)\">See the API plans &rarr;</a>",
+   "es": "¿Estás construyendo un bot? <b style=\"color:#fff\">La Bot API es un producto aparte</b>, con sus propios planes Free, Pro, Max y Business desde el 15 de septiembre de 2026: Premium no cambia ningún límite de la API, y un plan de API no desbloquea las funciones de arriba. <a href=\"/trading-api/#plans\" style=\"color:var(--lime)\">Ver los planes de API &rarr;</a>",
    "kind": [
     "html"
    ],
@@ -132981,7 +133008,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 42
+   "w": 43
   },
   "l9Ae4cfVFI": {
    "en": "Pick your plan",
@@ -133187,9 +133214,9 @@
    "n": 1,
    "w": 6
   },
-  "SevvK1-ztm": {
-   "en": "No. Since 15 September 2026 the Bot API is a separate product with its own plans - Free, Pro ($19/month) and Max ($49/month) - and a Premium subscription does not change any API limit. It works the other way too: an API plan does not unlock the Premium features on this page. <a href=\"/trading-api/#plans\">See the API plans &rarr;</a>",
-   "es": "No. Desde el 15 de septiembre de 2026 la Bot API es un producto aparte con sus propios planes - Free, Pro ($19/mes) y Max ($49/mes) - y una suscripción Premium no cambia ningún límite de la API. También funciona al revés: un plan de API no desbloquea las funciones Premium de esta página. <a href=\"/trading-api/#plans\">Ver los planes de API &rarr;</a>",
+  "APNVDSR2Br": {
+   "en": "No. Since 15 September 2026 the Bot API is a separate product with its own plans - Free, Pro ($29/month), Max ($79/month) and Business ($199/month) - and a Premium subscription does not change any API limit. It works the other way too: an API plan does not unlock the Premium features on this page. <a href=\"/trading-api/#plans\">See the API plans &rarr;</a>",
+   "es": "No. Desde el 15 de septiembre de 2026 la Bot API es un producto aparte con sus propios planes - Free, Pro ($29/mes), Max ($79/mes) y Business ($199/mes) - y una suscripción Premium no cambia ningún límite de la API. También funciona al revés: un plan de API no desbloquea las funciones Premium de esta página. <a href=\"/trading-api/#plans\">Ver los planes de API &rarr;</a>",
    "kind": [
     "html"
    ],
@@ -133197,7 +133224,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 52
+   "w": 54
   },
   "t8cowi2eIK": {
    "en": "How do I pay?",
@@ -147417,9 +147444,9 @@
    "n": 1,
    "w": 7
   },
-  "ZiN8ucGRs0": {
-   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $19</a> when one bot becomes four. Market data stays keyless on every plan.",
-   "es": "Sin tarjeta, sin KYC, sin depósito. Gratis para siempre con 120 peticiones por minuto - <a href=\"#plans\">Pro cuesta $19</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
+  "nBI6QUxxU_": {
+   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $29</a> when one bot becomes four. Market data stays keyless on every plan.",
+   "es": "Sin tarjeta, sin KYC y sin depósito. Gratis para siempre a 120 peticiones por minuto: <a href=\"#plans\">Pro cuesta $29</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
    "kind": [
     "html"
    ],
@@ -148110,7 +148137,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1
   },
   "hwuDpCjXHC": {
@@ -148233,9 +148260,9 @@
    "n": 1,
    "w": 2
   },
-  "olw_Dvmidn": {
-   "en": "$19<small>/month</small>",
-   "es": "$19<small>/mes</small>",
+  "vd7KRPL7E_": {
+   "en": "$29<small>/month</small>",
+   "es": "$29<small>/mes</small>",
    "kind": [
     "html"
    ],
@@ -148326,7 +148353,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 2,
+   "n": 4,
    "w": 2
   },
   "w6lvuBgh0G": {
@@ -148353,9 +148380,9 @@
    "n": 1,
    "w": 1
   },
-  "4EgKxUHiSB": {
-   "en": "$49<small>/month</small>",
-   "es": "$49<small>/mes</small>",
+  "DdUAkUe2xh": {
+   "en": "$79<small>/month</small>",
+   "es": "$79<small>/mes</small>",
    "kind": [
     "html"
    ],
@@ -148448,6 +148475,450 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "dm6RXkOm8p": {
+   "en": "<span class=\"apn\">Business</span>",
+   "es": "<span class=\"apn\">Business</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "lf7wjlw18p": {
+   "en": "$199<small>/month</small>",
+   "es": "$199<small>/mes</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "q7VmdSKs4W": {
+   "en": "For a desk running many strategies at once, or an app trading on behalf of its own users.",
+   "es": "Para una mesa que corre muchas estrategias a la vez, o para una app que opera por cuenta de sus propios usuarios.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "-sZH3dkVii": {
+   "en": "<b>5000</b><span>REQ / MIN <span class=\"apx\">42&times; FREE</span></span>",
+   "es": "<b>5000</b><span>PETICIONES / MIN <span class=\"apx\">42&times; FREE</span></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "EguiR7_ar7": {
+   "en": "<b>100</b> keys &middot; <b>1000</b> open positions &middot; <b>50</b> books",
+   "es": "<b>100</b> claves &middot; <b>1000</b> posiciones abiertas &middot; <b>50</b> books",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "13QeOsd7ID": {
+   "en": "<b>50</b> webhooks",
+   "es": "<b>50</b> webhooks",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "abEuOzH0Qx": {
+   "en": "<b>500</b> AI market reads a day",
+   "es": "<b>500</b> lecturas de mercado con IA al día",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "25He9UlTXp": {
+   "en": "Everything in Max",
+   "es": "Todo lo de Max",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "MbhcJ0gKZ0": {
+   "en": "Get Business",
+   "es": "Elegir Business",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "8WuG6ZSvAS": {
+   "en": "Pro &middot; $29",
+   "es": "Pro &middot; $29",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "UIv_XykVhR": {
+   "en": "Max &middot; $79",
+   "es": "Max &middot; $79",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "T0i6v5Fv9y": {
+   "en": "<span class=\"apn\">Business</span> &middot; $199",
+   "es": "<span class=\"apn\">Business</span> &middot; $199",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "QCPBgLn4gm": {
+   "en": "Requests per minute, per key",
+   "es": "Peticiones por minuto, por clave",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "Zfkl2wWyyh": {
+   "en": "Market-data API (<code>/api/v1/*</code>) with your key",
+   "es": "API de datos de mercado (<code>/api/v1/*</code>) con tu clave",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "hq7Z2S5OMQ": {
+   "en": "120 / min<br><span style=\"color:var(--faint)\">(60 / min per IP without a key)</span>",
+   "es": "120 / min<br><span style=\"color:var(--faint)\">(60 / min por IP sin clave)</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "JInU8bezlq": {
+   "en": "<b>600 / min</b>",
+   "es": "<b>600 / min</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "auvvOMuzpG": {
+   "en": "<b>2000 / min</b>",
+   "es": "<b>2000 / min</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "qtTqNFWAgm": {
+   "en": "<b>5000 / min</b>",
+   "es": "<b>5000 / min</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "yIaIzJz7f0": {
+   "en": "API keys per account",
+   "es": "Claves de API por cuenta",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "vtpmZXEb28": {
+   "en": "Open positions at once",
+   "es": "Posiciones abiertas a la vez",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "sC03RumwIi": {
+   "en": "<a href=\"#books\">Books</a> (separate journals)",
+   "es": "<a href=\"#books\">Books</a> (diarios separados)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "egSfxSmbBw": {
+   "en": "<b>Webhooks</b> (signed, retried)",
+   "es": "<b>Webhooks</b> (firmados, con reintentos)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "Y8vm_1TiGo": {
+   "en": "<b>AI market read</b> <code>/v1/ai</code>",
+   "es": "<b>Lectura de mercado con IA</b> <code>/v1/ai</code>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "lkbz7-6gky": {
+   "en": "<b>50 a day</b>",
+   "es": "<b>50 al día</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Rr595J11pR": {
+   "en": "<b>200 a day</b>",
+   "es": "<b>200 al día</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "-BrcMlfG2h": {
+   "en": "<b>500 a day</b>",
+   "es": "<b>500 al día</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "jwtET1XVkD": {
+   "en": "Trading report <code>/v1/report</code>",
+   "es": "Trading report <code>/v1/report</code>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "H-YuVE5ZPy": {
+   "en": "totals + skill score",
+   "es": "totales + skill score",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "MpboSteX5t": {
+   "en": "<b>+ breakdowns &amp; findings</b>",
+   "es": "<b>+ desgloses y hallazgos</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 3,
+   "w": 2
+  },
+  "8i_hHyVSB3": {
+   "en": "Market data, candles, calculators, liquidation feed",
+   "es": "Datos de mercado, velas, calculadoras y feed de liquidaciones",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "jMwQgjYULw": {
+   "en": "unlimited, no key",
+   "es": "ilimitado, sin clave",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "_zOQVXM1uo": {
+   "en": "same",
+   "es": "igual",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 3,
+   "w": 1
+  },
+  "JDhMto9re_": {
+   "en": "<b>WebSocket stream</b> &middot; MCP &middot; replay",
+   "es": "<b>Stream por WebSocket</b> &middot; MCP &middot; replay",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "RMuazHtLj1": {
+   "en": "Market, limit &amp; stop orders, trailing stops, modify, dry run",
+   "es": "Órdenes market, limit y stop, trailing stops, modificación y dry run",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "78T3Mjw3Ko": {
+   "en": "Fee schedule of a real venue (<a href=\"#fees\">9 venues</a>)",
+   "es": "Tarifas de un exchange real (<a href=\"#fees\">9 exchanges</a>)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "3gEwNPG7LU": {
+   "en": "Margin per trade / leverage",
+   "es": "Margen por operación / apalancamiento",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "mILdjaV_l8": {
+   "en": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; the same on all four",
+   "es": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; igual en los cuatro",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
   },
   "wEVfZ5fc_Y": {
    "en": "<b>Premium is a different product.</b> A <a href=\"/premium/\">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.",
@@ -148689,9 +149160,9 @@
    "n": 1,
    "w": 1
   },
-  "zEarCTssOA": {
-   "en": "Twenty-seven of them. Everything is JSON over HTTPS, CORS on, one header. Swap <code>v1</code> for <code>v2</code> in any path for the <code>{ok,data,ts}</code> envelope.",
-   "es": "Veintisiete en total. Todo es JSON sobre HTTPS, con CORS activado, un solo header. Cambia <code>v1</code> por <code>v2</code> en cualquier ruta para obtener el envoltorio <code>{ok,data,ts}</code>.",
+  "2XthJoRbfJ": {
+   "en": "Twenty-four of them. Everything is JSON over HTTPS, CORS on, one header. Swap <code>v1</code> for <code>v2</code> in any path for the <code>{ok,data,ts}</code> envelope.",
+   "es": "Veinticuatro en total. Todo es JSON sobre HTTPS, con CORS activado y una sola cabecera. Cambia <code>v1</code> por <code>v2</code> en cualquier ruta para obtener el sobre <code>{ok,data,ts}</code>.",
    "kind": [
     "html"
    ],
@@ -149661,9 +150132,9 @@
    "n": 1,
    "w": 34
   },
-  "GthPqRi3aP": {
-   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
-   "es": "<b>Verifica cada entrega.</b> <code>X-MP-Signature</code> es <code>sha256=HMAC_SHA256(secret, raw body)</code> con el secreto devuelto cuando añadiste el hook. Compáralo antes de parsear el body; ambos SDKs incluyen <code>verify_webhook</code> / <code>verifyWebhook</code>. Responde <code>2xx</code> en menos de 6 segundos - cualquier otra cosa se reintenta 5 veces con backoff (30 s, 1, 2, 4 min), y un hook se <b>pausa después de 25 fallos consecutivos</b>; <code>GET /webhooks</code> muestra <code>active</code>, <code>consecutive_failures</code> y <code>last_error</code> para que veas por qué. Tres hooks por cuenta en Pro, quince en Max; las entregas son best-effort, el <code>snapshot</code> del WebSocket y <code>/positions</code> siguen siendo la fuente de verdad.",
+  "CrF0rM3wpO": {
+   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max, fifty on Business; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
+   "es": "<b>Verifica cada entrega.</b> <code>X-MP-Signature</code> es <code>sha256=HMAC_SHA256(secret, raw body)</code> con el secreto que se devuelve al añadir el hook. Compáralo antes de parsear el cuerpo; ambos SDK traen <code>verify_webhook</code> / <code>verifyWebhook</code>. Responde <code>2xx</code> en menos de 6 segundos: cualquier otra cosa se reintenta 5 veces con espera creciente (30 s, 1, 2, 4 min), y un hook se <b>pausa tras 25 fallos seguidos</b>; <code>GET /webhooks</code> muestra <code>active</code>, <code>consecutive_failures</code> y <code>last_error</code> para que veas por qué. Tres hooks por cuenta en Pro, quince en Max y cincuenta en Business; las entregas son de mejor esfuerzo, y el <code>snapshot</code> del WebSocket y <code>/positions</code> siguen siendo la fuente de verdad.",
    "kind": [
     "html"
    ],
@@ -149671,7 +150142,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 87
+   "w": 90
   },
   "jwafciE7gN": {
    "en": "<b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.",
@@ -149697,9 +150168,9 @@
    "n": 1,
    "w": 7
   },
-  "C5oT2ai6O7": {
-   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.",
-   "es": "Un <b>book</b> es un diario, un balance, un report y una curva de equity separados dentro de tu cuenta. Crea una clave con el nombre de un book y cada llamada hecha con esa clave opera ese book; tu cuenta principal y tus otros books nunca lo ven. Las cuentas Free tienen un book además del principal, API Pro cinco y Max veinte.",
+  "AEfUFyGy39": {
+   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five, Max twenty and Business fifty.",
+   "es": "Un <b>book</b> es un diario, un balance, un report y una curva de equity separados dentro de tu cuenta. Crea una clave con el nombre de un book y cada llamada hecha con esa clave opera ese book; tu cuenta principal y tus otros books nunca lo ven. Las cuentas Free tienen un book además del principal, API Pro cinco, Max veinte y Business cincuenta.",
    "kind": [
     "html"
    ],
@@ -149707,7 +150178,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 52
+   "w": 54
   },
   "8tgu7hreP1": {
    "en": "<b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account's hooks with <code>\"account\":\"rsi\"</code> in the payload, so one receiver serves every book.",
@@ -150177,9 +150648,9 @@
    "n": 1,
    "w": 1
   },
-  "qOPZ3cNks2": {
-   "en": "Webhooks and <code>/v1/ai</code> need API Pro or Max. Everything else on this page is on Free. The body carries <code>plan_needed</code>.",
-   "es": "Los webhooks y <code>/v1/ai</code> necesitan API Pro o Max. Todo lo demás de esta página está en Free. El cuerpo lleva <code>plan_needed</code>.",
+  "ykv9AxmfyD": {
+   "en": "Webhooks and <code>/v1/ai</code> need a paid plan. Everything else on this page is on Free. The body carries <code>plan_needed</code>.",
+   "es": "Los webhooks y <code>/v1/ai</code> necesitan un plan de pago. Todo lo demás de esta página está en Free. El cuerpo lleva <code>plan_needed</code>.",
    "kind": [
     "html"
    ],
@@ -150187,7 +150658,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 20
+   "w": 18
   },
   "aiUv4Vfy3I": {
    "en": "<code>premium_required</code>",
@@ -150225,9 +150696,9 @@
    "n": 1,
    "w": 1
   },
-  "HArS9eQv3S": {
-   "en": "Delete one first - three hooks on Pro, fifteen on Max.",
-   "es": "Elimina uno primero - tres hooks en Pro, quince en Max.",
+  "ywtDS2jolw": {
+   "en": "Delete one first - three hooks on Pro, fifteen on Max, fifty on Business.",
+   "es": "Borra uno primero: tres hooks en Pro, quince en Max y cincuenta en Business.",
    "kind": [
     "html"
    ],
@@ -150235,7 +150706,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 10
+   "w": 13
   },
   "7MeBbY6JF6": {
    "en": "<code>bad_url</code> / <code>bad_event</code>",
@@ -151546,9 +152017,9 @@
    "n": 1,
    "w": 4
   },
-  "QPVSkv2L0O": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($19 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($49 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all three.",
-   "es": "Free: 120 peticiones por minuto y por clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($19 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks y 50 lecturas de mercado con IA al día. API Max ($49 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks y 200 lecturas con IA al día. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream por WebSocket y MCP están incluidos en los tres.",
+  "OzGunMTmJb": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
+   "es": "Free: 120 peticiones por minuto y por clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($29 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks y 50 lecturas de mercado con IA al día. API Max ($79 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks y 200 lecturas con IA al día. API Business ($199 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks y 500 lecturas con IA al día. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream por WebSocket y MCP están incluidos en los cuatro.",
    "kind": [
     "ld"
    ],
@@ -151556,7 +152027,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 82
+   "w": 102
   },
   "40rLeTkS3b": {
    "en": "Does MarginPad Premium include the API?",

@@ -254,7 +254,7 @@ print(r.json()[<span class="tok-s">'data'</span>][<span class="tok-s">'price'</s
 <div class="kpi"><b>600</b><span>req / min en API Pro</span></div>
 <div class="kpi"><b>*</b><span>origen CORS</span></div>
 </div>
-<p style="margin-top:16px"><b>¿Necesitas más de 60 por minuto?</b> Envía una clave de API gratuita (se crea en segundos en <a href="/es/trading-api/">/trading-api/</a>) como <code>X-API-Key</code> en esas mismas llamadas y se contarán contra <b>tu clave</b> en vez de contra tu IP: 120 por minuto gratis, 600 en <a href="/es/trading-api/#plans">API Pro</a> y 2000 en Max. No cambia nada más: los mismos endpoints, el mismo sobre, y lo que va sin clave se queda exactamente igual. <code>X-RateLimit-Scope</code> te dice qué límite se aplicó.</p>
+<p style="margin-top:16px"><b>¿Necesitas más de 60 por minuto?</b> Envía una clave de API gratuita (se crea en segundos en <a href="/es/trading-api/">/trading-api/</a>) como <code>X-API-Key</code> en esas mismas llamadas y se contarán contra <b>tu clave</b> en vez de contra tu IP: 120 por minuto gratis, 600 en <a href="/es/trading-api/#plans">API Pro</a>, 2000 en Max y 5000 en Business. No cambia nada más: los mismos endpoints, el mismo sobre, y lo que va sin clave se queda exactamente igual. <code>X-RateLimit-Scope</code> te dice qué límite se aplicó.</p>
 <p style="margin-top:16px">Cada respuesta de datos incluye encabezados de límite de peticiones para que tu cliente pueda regular su ritmo:</p>
 <pre><code>X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59

@@ -868,7 +868,7 @@
       + card('Waiting to fill', tbl(cols, os, 'nothing resting right now'), 'a fill lands at the order price, not at the price the engine noticed - the 1m high/low decides · click the owner for the card');
   } });
   // 2026-09-15: the API has its own plans, so this view reads the plan desk beside the usage stats.
-  var API_PLAN = function (t) { t = +t || 0; return t >= 2 ? 'max' : t === 1 ? 'pro' : 'free'; };
+  var API_PLAN = function (t) { t = +t || 0; return t >= 3 ? 'business' : t === 2 ? 'max' : t === 1 ? 'pro' : 'free'; };
   simple('trading/botapi', { urls: ['/api/admin/apistats', '/api/admin/apiplans'], every: 60000, html: function (d, pl) {
     var ks = (d.keys || []).slice().sort(function (a, b) { return (b.last || 0) - (a.last || 0); });
     var byKey = {}; (d.use || []).forEach(function (u) { byKey[u.k] = (byKey[u.k] || 0) + (+u.n || 0); }); var byDay = daysAgg(d.use || [], 'day', 'n', 14); var u7 = byDay.slice(7).reduce(function (s, x) { return s + x.v; }, 0), uP = byDay.slice(0, 7).reduce(function (s, x) { return s + x.v; }, 0);
@@ -887,7 +887,7 @@
             + tile(USD(pl.mrrUsd || 0), 'API MRR', pl.mrrUsd ? '' : 'dim', 'paid plans only, grants and the free month excluded')
             + tile(USD(pl.lifetimeUsd || 0), 'paid for API plans, all time', pl.lifetimeUsd ? '' : 'dim', N((pl.payments || []).length) + ' payment' + ((pl.payments || []).length === 1 ? '' : 's'))
             + tile(N(rows.filter(function (r) { return r.src === 'trial' && r.days_left <= 3; }).length), 'free months ending in 3 days', 'dim', 'they drop to Free unless they pick a plan') + '</div>'
-            + card('Who is on a plan', tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $19 · Max $49 · site Premium does not raise any API limit');
+            + card('Who is on a plan', tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $29 · Max $79 · Business $199 · site Premium does not raise any API limit');
         })()
       + card('Keys in use', tbl(keyCols, live, 'no key made a call in the last 14 days'), live.length + ' keys with calls in the last 14 days · click the owner for the card')
       + card('What the API is used for', bars((d.byEp || []).map(function (e) { return { l: e.ep, n: e.n }; }), 'l', 'n'), 'calls per endpoint, last 14 days · price/klines are keyless and not attributed · data = market-data calls sent with a key')
