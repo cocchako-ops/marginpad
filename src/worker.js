@@ -12681,6 +12681,64 @@ const BOT_START_BAL = 10000;
 // Nightly reconcile of every API key's tier against premium standing. The tier is denormalised onto the key row so
 // the auth hot path costs no KV read; the price of that is drift - a subscription that lapses at 3am would keep its
 // higher limit until the user next opened the keys page. This closes that. Checks BOTH premium sources, as required.
+// An API plan that lapses without warning is the worst thing an unattended bot can experience: it wakes up to
+// 429s and the owner finds out from a log. Every keyed response already carries X-MP-Plan-Expires inside the
+// last 14 days, which the BOT can act on - this is the message for the human. Once at 7 days, once at 1, and
+// once on the day it ends; each send is marked in KV so a retry or a second cron pass can never repeat it.
+async function checkApiPlanExpiry(env, dry) {
+  if (!env.STATS) return { skipped: 'no_kv' };
+  const now = Date.now(), out = { checked: 0, mailed: 0, rows: [] };
+  let keys = [];
+  try { const l = await env.STATS.list({ prefix: 'api:sub:', limit: 1000 }); keys = l.keys || []; } catch (e) { return { error: 'list_failed' }; }
+  for (const k of keys) {
+    const uid = k.name.slice(8);
+    if (/^e2e/.test(uid) && !dry) continue; // throwaway accounts must never be mailed; a dry run sends nothing, so it may see them
+    let v = null; try { v = JSON.parse((await env.STATS.get(k.name)) || 'null'); } catch (e) {}
+    if (!v || !(+v.until > now)) continue;
+    out.checked++;
+    const days = Math.ceil((+v.until - now) / 86400000);
+    const step = days <= 1 ? 1 : days <= 7 ? 7 : 0;      // one message a week out, one the day before
+    if (!step) continue;
+    const mark = 'api:exp:' + uid + ':' + step + ':' + new Date(+v.until).toISOString().slice(0, 10);
+    const already = !!(await env.STATS.get(mark));
+    if (already && !dry) continue;
+    const tier = Math.max(0, Math.min(API_TIER_MAX, Math.round(+v.p || 0)));
+    const plan = API_PLANS[tier];
+    let who = null; try { who = await usersDO(env, '/xpdiag', { uid }); } catch (e) {}
+    const u = (who && who.user) || {};
+    const trial = String(v.src || '') === 'trial';
+    const when = new Date(+v.until).toISOString().slice(0, 10);
+    const body = (trial
+        ? 'Your free month on API ' + plan.label + ' ends on ' + when + '.\n\n'
+          + 'You have had it because you were already building on the MarginPad API before the plans existed. '
+          + 'Nothing breaks when it ends: your key keeps working and your positions stay exactly where they are. '
+          + 'It drops to the Free plan - 120 requests a minute instead of ' + plan.rpm + ', ' + API_PLANS[0].maxKeys + ' keys, '
+          + API_PLANS[0].maxOpen + ' open positions, and no webhooks or AI reads.\n\n'
+        : 'Your API ' + plan.label + ' plan ends on ' + when + '.\n\n'
+          + 'Nothing breaks when it does: the key keeps working and your positions stay where they are. It drops to the '
+          + 'Free plan - 120 requests a minute instead of ' + plan.rpm + ', and no webhooks or AI reads.\n\n')
+      + 'Keep it, or move up or down a plan: https://marginpad.io/trading-api/#plans\n\n'
+      + 'Your bot can see this too - every keyed response carries X-MP-Plan, and inside the last fourteen days '
+      + 'X-MP-Plan-Expires and X-MP-Plan-Days-Left as well.\n\n'
+      + 'If you have stopped using the API, ignore this - there is nothing to cancel and nothing to pay.';
+    let sent = false;
+    if (dry) { out.rows.push({ uid, user: u.username || '', plan: plan.id, src: v.src || '', days, until: when, email: u.email ? 'on file' : 'NONE', alreadySent: already, preview: body.slice(0, 200) }); continue; }
+    if (u.email && env.RESEND_API_KEY) {
+      try { await sendSupportEmail(env, u.email, (trial ? 'Your free month on the MarginPad API ends ' : 'Your MarginPad API plan ends ') + when, body, 'alerts'); sent = true; } catch (e) {}
+    }
+    await env.STATS.put(mark, '1', { expirationTtl: 60 * 86400 });
+    out.mailed += sent ? 1 : 0;
+    out.rows.push({ uid, user: u.username || '', plan: plan.id, src: v.src || '', days, until: when, mailed: sent });
+  }
+  if (out.rows.length && !dry) {
+    try {
+      await tgAdmin(env, '<b>API plans ending soon</b>\n' + out.rows.map(r =>
+        (r.user ? '@' + r.user : r.uid.slice(0, 8)) + ' - ' + r.plan + (r.src === 'trial' ? ' (free month)' : '') + ' - ' + r.days + 'd left, ' + r.until + (r.mailed ? ' - emailed' : ' - NO EMAIL ON FILE')
+      ).join('\n'), { kind: 'api plan expiring', sev: 'info' });
+    } catch (e) {}
+  }
+  return out;
+}
 async function syncBotTiers(env) {
   if (!env.USERS) return;
   const users = env.USERS.get(env.USERS.idFromName('main'));
@@ -12690,7 +12748,7 @@ async function syncBotTiers(env) {
   const out = [];
   for (const h of holders) {
     const p = await apiPlanOf(env, h.uid);   // api:sub ONLY - Premium standing is not consulted here any more
-    out.push({ uid: h.uid, tier: p.tier });
+    out.push({ uid: h.uid, tier: p.tier, until: p.until || 0 });
   }
   let applied = null;
   try { const r2 = await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: out }) })); applied = await r2.json(); } catch (e) { applied = { error: String(e && e.message || e) }; }
@@ -12748,7 +12806,7 @@ async function apiPlanGrant(env, uid, tier, until, src) {
   } catch (e) { return { error: 'kv_failed', detail: String(e && e.message || e) }; }
   try {
     const users = env.USERS.get(env.USERS.idFromName('main'));
-    await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: [{ uid: u, tier: t }] }) }));
+    await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: [{ uid: u, tier: t, until: (+until > Date.now() ? +until : 0) }] }) }));
   } catch (e) {}
   return { ok: true, uid: u, tier: t, plan: API_PLANS[t].id, until: +until || 0, src: String(src || 'paid') };
 }
@@ -12793,8 +12851,12 @@ async function handleBot(url, request, env, ctx) {
   const isV2 = rawPath.indexOf('/v2/') === 0;
   const path = isV2 ? rawPath.replace('/v2/', '/v1/') : rawPath;
   let rl = null; // X-RateLimit-* headers, filled in as soon as the key resolves - emitted on EVERY later response incl. the 429
-  const RLX = 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After';
-  const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(extra || {}) });
+  const RLX = 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After, X-MP-Plan, X-MP-Plan-Expires, X-MP-Plan-Days-Left';
+  // A plan that lapses silently is the worst thing that can happen to an unattended bot: it wakes up to 429s
+  // and has no idea why. Every keyed response therefore carries its plan, and inside the last 14 days the
+  // exact date and the days remaining. Headers, not body fields - /api/bot/v1/* response shapes are frozen.
+  let planH = null;
+  const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(planH || {}), ...(extra || {}) });
   let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
     if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
@@ -12840,7 +12902,7 @@ async function handleBot(url, request, env, ctx) {
     // every time the user opens this endpoint, plus every 10 minutes by syncBotTiers.
     // 2026-09-15: this used to read Premium. It does not any more - Premium buys nothing on the API.
     const sub = await apiPlanOf(env, kuid);
-    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
+    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, until: sub.until || 0, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
     if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; } // the countdown the page prints
@@ -12913,6 +12975,11 @@ async function handleBot(url, request, env, ctx) {
   if (!auth || auth.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
   // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
   if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
+  if (auth.tier != null) { // the plan travels on every response; the expiry only once it is close enough to act on
+    planH = { 'x-mp-plan': BOT_TIER_LIMITS(+auth.tier || 0).name };
+    const dleft = auth.until ? Math.ceil((+auth.until - Date.now()) / 86400000) : 0;
+    if (dleft > 0 && dleft <= 14) { planH['x-mp-plan-expires'] = new Date(+auth.until).toISOString().slice(0, 10); planH['x-mp-plan-days-left'] = String(dleft); }
+  }
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   let uid = auth.uid; const uidLive = auth.uid;
@@ -13152,6 +13219,13 @@ async function handleBot(url, request, env, ctx) {
     const fp = (out.positions || []).map(p => [p.id, p.status, p.qty, p.sl, p.tp, p.exit_price].join('|')).join(';');
     const etag = 'W/"' + botFnv(fp) + '-' + (out.positions || []).length + '"';
     if ((request.headers.get('if-none-match') || '') === etag) return new Response(null, { status: 304, headers: hdrs({ etag }) });
+    // Measured 2026-09-15: 99.4% of every call ever made to this API was polling /positions and /account, and
+    // the WebSocket had been opened SIX times. The stream is free on every plan precisely so nobody has to poll,
+    // so a caller that is not even sending the ETag back gets told once per response what it is paying for.
+    // v2 only - /api/bot/v1/* response bodies are frozen.
+    if (isV2 && !request.headers.get('if-none-match')) {
+      out = { ...out, hint: 'You are re-downloading state you may already have. Send this response\u2019s ETag back as If-None-Match and an unchanged poll costs you a 304 with an empty body. Better still, stop polling: wss://marginpad.io/api/bot/v2/stream?api_key=… pushes position events within ~2s and is free on every plan.' };
+    }
     return jb(out, 200, { etag });
   }
   if (path === '/v1/close_all' && request.method === 'POST') {
@@ -13235,7 +13309,7 @@ async function handleBot(url, request, env, ctx) {
       // and every call tells them how long is left. A developer should never discover a downgrade from a 429.
       plan_until: sub.until || null, plan_days_left: sub.until ? sub.days_left : null, plan_source: sub.src || (paid ? 'paid' : 'free'),
       free_month: sub.trial ? { ends: new Date(sub.until).toISOString(), days_left: sub.days_left, note: 'You are on API Pro free until then because you were building on the API before plans existed. After that the key drops to Free (120 requests/minute) unless you pick a plan: ' + API_UPGRADE } : null,
-      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_books: L.maxBooks, max_resting_orders: PORDER_MAX, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
+      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_books: L.maxBooks, max_resting_orders: PORDER_MAX, trade_history_days: paid ? 90 : 30, report_max_days: paid ? 90 : 30, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
       features: { webhooks: L.hooks, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: paid, ai_market_read: L.ai ? L.ai + '/day' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
       plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, ai_per_day: p.ai })),
@@ -13295,8 +13369,10 @@ async function handleBot(url, request, env, ctx) {
     let mine = ''; try { const pg = await doCall('/prefsget', { uid, keys: ['feevenue'] }); mine = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) {}
     return jb({ fee_venue: mine || null, venues: feeVenueList(), marginpad_default: { crypto_pct: 0.055, forex_pct: 0.008, stock_pct: 0.02, metal_index_pct: 0.015, note: 'per side, charged as a round trip at close; above ~181x the rate is lowered so a round trip never exceeds 20% of margin' }, how: 'Both legs pay the venue TAKER rate less its referral discount (the paper engine fills at market). Crypto perps only - other asset classes keep the MarginPad rate. Set a default here or pass fee_venue on POST /v1/open; dry_run:true shows the difference in dollars.' }, 200);
   }
-  if (path === '/v1/report') { // the 30-day trading report the site shows at /trading-report/, for the account behind this key: totals + skill score free, breakdowns + findings on Premium (same rule as the site)
-    const days = Math.min(30, Math.max(1, +url.searchParams.get('days') || 30));
+  if (path === '/v1/report') { // the trading report the site shows at /trading-report/, for the account behind this key: totals + skill score free, breakdowns + findings on a paid plan
+    // the window follows the history the plan actually keeps - asking for 90 days on Free would silently return 30
+    const maxDays = (+auth.tier || 0) > 0 ? 90 : 30;
+    const days = Math.min(maxDays, Math.max(1, +url.searchParams.get('days') || 30));
     const rep = await doCall('/tradereport', { uid, days });
     if (!rep || rep.error) return jb(rep || { error: 'unavailable' }, 503);
     const paid = (+auth.tier || 0) > 0;
@@ -16162,6 +16238,10 @@ export default {
         try { await tgAdmin(env, '<b>API plan set</b>\n<code>' + uid + '</code> -> <b>' + pl.id + '</b>' + (until ? ' until ' + new Date(until).toISOString().slice(0, 10) : ' (revoked)') + ' · ' + String(b.src || 'owner'), { kind: 'api plan set', sev: 'info' }); } catch (e) {}
         return new Response(JSON.stringify(g), { headers: jh3 });
       }
+      if (url.searchParams.get('expiring') === '1') { // dry run: who WOULD be warned, and what the mail says. Sends nothing.
+        const ex = await checkApiPlanExpiry(env, true);
+        return new Response(JSON.stringify(ex), { headers: jh3 });
+      }
       const rows = [];
       try {
         const l = await env.STATS.list({ prefix: 'api:sub:', limit: 1000 });
@@ -18285,6 +18365,7 @@ export default {
     bg(payBybitPrizes, 'bybitprizes'); // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
+    bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
     bg(checkWhaleAlerts, 'whale');
@@ -20543,7 +20624,8 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS botkeys2(k TEXT PRIMARY KEY, uid TEXT, name TEXT, created INTEGER, last INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0, rpm INTEGER DEFAULT 0, revoked INTEGER DEFAULT 0)');
     try { s.exec('CREATE INDEX IF NOT EXISTS botkeys2_uid ON botkeys2(uid)'); } catch (e) {}
     try { s.exec('ALTER TABLE botkeys2 ADD COLUMN tier INTEGER DEFAULT 0'); } catch (e) {} // 0 = free, 1 = premium. Denormalised onto the key so the hot auth path never reads KV.
-    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN via TEXT'); } catch (e) {} // how the key last called: rest | mcp (2026-09-08, ops Here now)
+    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN via TEXT'); } catch (e) {}
+    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN tuntil INTEGER DEFAULT 0'); } catch (e) {} // when the account's API plan ends. Denormalised beside the tier so the hot auth path can warn a bot about its own expiry without a KV read (2026-09-15). // how the key last called: rest | mcp (2026-09-08, ops Here now)
     try { s.exec('ALTER TABLE botkeys2 ADD COLUMN book TEXT'); } catch (e) {} // Bot API 2.5 (2026-09-12): the BOOK a key trades - '' = the main account, 'strat-a' = the separate journal <uid>:strat-a. One strategy = one key = one clean result.
     s.exec('CREATE TABLE IF NOT EXISTS utrades_archive(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, json TEXT, n INTEGER, pnl REAL)'); // POST /v1/reset parks the closed journal here (never deleted): the owner can still read what a strategy did before the reset
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // 2.5: where the position was opened (bot | srv | client) - the Bot arena counts bot-opened closes whoever closed them (a stop the sweep fired is still the bot's trade)
@@ -20772,7 +20854,7 @@ export class UserStore {
     // Bot API 2.5: a key bound to a BOOK trades the journal <owner>:<book> - every caller that uses the returned uid lands in that book
     // without knowing books exist. `owner` is the real account (presence, webhooks, XP, boards all key on it).
     const book = String(row.book || '').replace(/[^a-z0-9_-]/g, '').slice(0, 24);
-    return { uid: book ? row.uid + ':' + book : row.uid, owner: row.uid, book, k, name: row.name || '', un, tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
+    return { uid: book ? row.uid + ':' + book : row.uid, owner: row.uid, book, k, name: row.name || '', un, tier: +row.tier || 0, until: +row.tuntil || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
   }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a.filter(x => !(x && x.status === 'planned')) : []; } } catch (e) {} return []; } // 'planned' rows (a June 2026 plan-form feature no bundle writes any more) are not positions: every reader treated "not win/loss" as open, so three XRP plans from 2026-06-11 surfaced as open positions on the owner's own account (2026-09-12). Filtered at the ONE read point; the next journal write drops them for good.
   // One shape for a pending order everywhere it is read (client, cron, Bot API, ops) - the SQL row is never leaked raw.
@@ -21110,7 +21192,12 @@ export class UserStore {
         sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0); // the client journal says `sl`, a server-filled position says `stop`
         nIns++;
       }
-      if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout - the WR board shifted in the season's last days
+      if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
+        // already denormalised onto botkeys2, so the prune can ask who is paying without leaving the DO. A book
+        // journal is <owner>:<book>, hence the LIKE - a paid account's books keep the long window too.
+        sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 90 * 86400000);
+        sql.exec('DELETE FROM tradeev WHERE ts < ? AND NOT EXISTS (SELECT 1 FROM botkeys2 b WHERE b.tier > 0 AND b.revoked = 0 AND (b.uid = tradeev.user_id OR tradeev.user_id LIKE b.uid || \':%\'))', now - 30 * 86400000);
+      } // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout - the WR board shifted in the season's last days
     } catch (e9) {}
     sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
     try { // lifetime stats: seed ONCE from the current blob (a floor - pre-cap history is unrecoverable), then event-increments only. The upsert above never touches life_* columns.
@@ -21218,7 +21305,7 @@ export class UserStore {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       // the worker resolves the account's API PLAN (KV api:sub - never Premium, split 2026-09-15) and passes the tier
       // down; we write it onto every key the account owns so the hot auth path can read it for free.
-      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', Math.max(0, Math.min(API_TIER_MAX, Math.round(+b.tier || 0))), uid); } catch (e) {} }
+      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=?, tuntil=? WHERE uid=?', Math.max(0, Math.min(API_TIER_MAX, Math.round(+b.tier || 0))), Math.max(0, Math.round(+b.until || 0)), uid); } catch (e) {} }
       // The worker's value WINS when it sent one: it just read api:sub, while the SELECT below reads rows that may
       // not exist yet. Measured 2026-09-15: an account on a paid plan minting its FIRST key got a tier-0 key and a
       // "Free plan" panel, because the UPDATE touched nothing and the SELECT found nothing.
@@ -21401,7 +21488,7 @@ export class UserStore {
     // number is built on, and anything thin stays thin rather than being dressed up.
     if (path === '/tradereport') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
-      const days = Math.min(30, Math.max(1, +b.days || 30));
+      const days = Math.min(90, Math.max(1, +b.days || 30)); // 90 since 2026-09-15: a paid API plan keeps 90 days of tradeev, and the caller that is allowed to ask for it is gated in the worker (free stays 30 there)
       // `days` is a ROLLING window, which is the wrong shape for a season: twelve hours into a new season, one day
       // back still reaches yesterday, and yesterday belongs to the season that was already paid out. A caller that
       // knows its own boundary passes `since` (2026-09-14).
@@ -21530,7 +21617,8 @@ export class UserStore {
     if (path === '/bottierset') {
       const set = Array.isArray(b.set) ? b.set.slice(0, 500) : [];
       let n = 0;
-      for (const x of set) { if (!x || !x.uid) continue; const t = Math.max(0, Math.min(API_TIER_MAX, Math.round(+x.tier || 0))); try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', t, String(x.uid), t); n++; } catch (e) {} }
+      for (const x of set) { if (!x || !x.uid) continue; const t = Math.max(0, Math.min(API_TIER_MAX, Math.round(+x.tier || 0))); const un9 = Math.max(0, Math.round(+x.until || 0));
+        try { sql.exec('UPDATE botkeys2 SET tier=?, tuntil=? WHERE uid=? AND (tier<>? OR COALESCE(tuntil,0)<>?)', t, un9, String(x.uid), t, un9); n++; } catch (e) {} }
       return this.j({ ok: true, checked: n });
     }
     // ── Bot API 2.5 (2026-09-12): books, reset, equity, arena ────────────────────────────────────────────────────────

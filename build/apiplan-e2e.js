@@ -6,6 +6,9 @@
 //   - API Pro granted -> 600/min, 3 webhooks, 50 AI reads, report breakdowns, keyed data limit 600
 //   - API Max granted -> 2000/min, 30 keys, 500 positions, 15 webhooks, 200 AI reads
 //   - API Business granted -> 5000/min, 100 keys, 1000 positions, 50 webhooks, 500 AI reads
+//   - the plan rides on every response as X-MP-Plan; inside 14 days the expiry and days left join it
+//   - a paid plan keeps 90 days of history and report; Free keeps 30 and says so rather than silently truncating
+//   - v2 /positions nudges a caller that ignores the ETag towards the stream; v1 stays byte-frozen
 //   - the free month (src:'trial') shows up as free_month.days_left on every /v1/usage
 //   - an expired plan falls back to Free on its own
 //   - GET /api/apiplan is a keyless catalogue and carries four plans with the published prices
@@ -109,6 +112,47 @@ const usage = async () => (await bot('/usage')).body.data || {};
   // the ladder must be ordered - a smaller plan cannot be bought over a bigger live one
   buy = await site('/api/apiplan/buy', { plan: 'pro' });
   chk('buying a smaller plan while Business runs is refused', buy.status === 409 && buy.body.error === 'downgrade_blocked', buy.body && buy.body.error);
+
+
+  // ── what a plan holder is TOLD (2026-09-15) ──────────────────────────────────────────────────────────────
+  // A plan that lapses in silence is the worst thing that can happen to an unattended bot, so three things
+  // have to hold: the plan rides on every response, the expiry appears once it is close enough to act on and
+  // NOT before, and the human gets a mail before the bot gets a 429.
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 5, src: 'e2e' });
+  await resync();
+  let hr = await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY, 'x-admin-key': K } });
+  chk('every keyed response names the plan', hr.headers.get('x-mp-plan') === 'pro', { plan: hr.headers.get('x-mp-plan') });
+  chk('inside 14 days it also carries the date and the days left', !!hr.headers.get('x-mp-plan-expires') && +hr.headers.get('x-mp-plan-days-left') === 5,
+    { expires: hr.headers.get('x-mp-plan-expires'), days: hr.headers.get('x-mp-plan-days-left') });
+  u = await usage();
+  chk('a paid plan keeps 90 days of history and report', u.limits.trade_history_days === 90 && u.limits.report_max_days === 90, { h: u.limits.trade_history_days });
+  let rp = await bot('/report?days=90');
+  chk('and the report really accepts the 90-day window', rp.status === 200 && rp.body.data.days === 90, { days: rp.body.data && rp.body.data.days });
+  const exp = await admin('/api/admin/apiplans?expiring=1');
+  chk('the expiry notice would catch this account', (exp.body.rows || []).some(r => r.uid === UID && r.days === 5), (exp.body.rows || []).filter(r => r.uid === UID)[0]);
+
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', days: 60, src: 'e2e' });
+  await resync();
+  hr = await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY, 'x-admin-key': K } });
+  chk('a plan that is far away raises no expiry noise', !hr.headers.get('x-mp-plan-expires'), { expires: hr.headers.get('x-mp-plan-expires') || 'none' });
+  const exp2 = await admin('/api/admin/apiplans?expiring=1');
+  chk('and nobody is warned about it', !(exp2.body.rows || []).some(r => r.uid === UID));
+
+  // ── the poller nudge, and v1 staying frozen ──────────────────────────────────────────────────────────────
+  r = await bot('/positions');
+  chk('v2 /positions tells a caller that ignores the ETag what it costs', typeof r.body.data.hint === 'string' && /stream/.test(r.body.data.hint), (r.body.data.hint || '').slice(0, 60));
+  const et = r.headers.get('etag');
+  const r304 = await fetch(ORIGIN + '/api/bot/v2/positions', { headers: { 'x-api-key': KEY, 'x-admin-key': K, 'if-none-match': et } });
+  chk('sending the ETag back is a 304 with an empty body', r304.status === 304, { status: r304.status });
+  const v1p = await (await fetch(ORIGIN + '/api/bot/v1/positions', { headers: { 'x-api-key': KEY, 'x-admin-key': K } })).json();
+  chk('v1 body is untouched - no hint field on a frozen shape', v1p.hint === undefined, { keys: Object.keys(v1p).join(',') });
+
+  await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });
+  await resync();
+  u = await usage();
+  chk('Free is back to a 30-day history', u.limits.trade_history_days === 30, { h: u.limits.trade_history_days });
+  rp = await bot('/report?days=90');
+  chk('and its report is capped at 30 rather than silently short', rp.status === 200 && rp.body.data.days === 30, { days: rp.body.data && rp.body.data.days });
 
   // ── the free month ────────────────────────────────────────────────────────────────────────────────────────
   const monthEnd = Date.UTC(2026, 8, 30, 23, 59, 59); // the grandfather window the owner set: to the end of September

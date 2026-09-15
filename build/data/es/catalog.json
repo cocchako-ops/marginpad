@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T02:57:54.225Z",
+  "generated": "2026-09-15T03:21:54.214Z",
   "pages": 373,
-  "occurrences": 25188,
-  "unique": 13237,
-  "words": 248165,
+  "occurrences": 25199,
+  "unique": 13246,
+  "words": 248382,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T03:04:06.838Z"
+  "merged": "2026-09-15T03:22:12.005Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -66825,9 +66825,10 @@
    ],
    "ctx": [
     "/blog/what-is-funding-rate/",
+    "/trading-api/",
     "/trading-report/"
    ],
-   "n": 2,
+   "n": 3,
    "w": 2
   },
   "qLxUR6BQAs": {
@@ -146033,6 +146034,18 @@
    "n": 1,
    "w": 9
   },
+  "rjPAJNBvFR": {
+   "en": "<a class=\"statusbar\" href=\"/status/\" id=\"statusBar\" aria-label=\"Live service status\"> <span class=\"sb-l\">STATUS</span> <span class=\"sb-i\" id=\"sbStore\"><i></i>trading store</span> <span class=\"sb-i\" id=\"sbColl\"><i></i>liquidation collector</span> <span class=\"sb-i\" id=\"sbCron\"><i></i>scheduled jobs</span> <span class=\"sb-n\" id=\"sbNote\">reading /api/status&hellip;</span> <span class=\"sb-go\">Full status and history &rarr;</span> </a>",
+   "es": "<a class=\"statusbar\" href=\"/status/\" id=\"statusBar\" aria-label=\"Estado del servicio en vivo\"> <span class=\"sb-l\">ESTADO</span> <span class=\"sb-i\" id=\"sbStore\"><i></i>motor de trading</span> <span class=\"sb-i\" id=\"sbColl\"><i></i>colector de liquidaciones</span> <span class=\"sb-i\" id=\"sbCron\"><i></i>tareas programadas</span> <span class=\"sb-n\" id=\"sbNote\">leyendo /api/status&hellip;</span> <span class=\"sb-go\">Estado completo e historial &rarr;</span> </a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 13
+  },
   "usAHs68QRe": {
    "en": "<span class=\"kick\">Quickstart</span>",
    "es": "<span class=\"kick\">Inicio rápido</span>",
@@ -146153,9 +146166,9 @@
    "n": 1,
    "w": 2
   },
-  "D8_DTB7aQI": {
-   "en": "Let the server work",
-   "es": "Deja que el servidor trabaje",
+  "7flq2Wy6gR": {
+   "en": "Let it push, do not poll",
+   "es": "Deja que te lo envíen, no preguntes",
    "kind": [
     "html"
    ],
@@ -146163,11 +146176,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 6
   },
-  "tkKLIRHySJ": {
-   "en": "Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. Read the outcome from <code>/positions</code>, the stream, or a webhook.",
-   "es": "Los stops, los objetivos, los trailing stops y las liquidaciones se resuelven de nuestro lado, sobre velas de 1 minuto, esté tu bot corriendo o no. Lee el resultado desde <code>/positions</code>, el stream o un webhook.",
+  "shgU5Dbh3J": {
+   "en": "Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. <b>Open the WebSocket and the outcome arrives in about two seconds</b> - it is free on every plan, and it is the difference between a bot that reacts and one that waits for its next loop.",
+   "es": "Los stops, los objetivos, los trailing stops y las liquidaciones se liquidan de nuestro lado, sobre velas de 1 minuto, esté tu bot corriendo o no. <b>Abre el WebSocket y el resultado te llega en unos dos segundos</b>: es gratis en todos los planes, y es la diferencia entre un bot que reacciona y uno que espera a su siguiente vuelta.",
    "kind": [
     "html"
    ],
@@ -146175,7 +146188,19 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 29
+   "w": 54
+  },
+  "Z8Nx_SBPvL": {
+   "en": "websocket",
+   "es": "websocket",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
   },
   "QjUie1FDat": {
    "en": "python",
@@ -146212,6 +146237,18 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "H0WsNLs0Va": {
+   "en": "<b style=\"color:var(--ink)\">Measured, and the reason this tab exists:</b> 99.4% of every call ever made to this API was a poll of <code>/positions</code> or <code>/account</code>, and the WebSocket had been opened six times. The stream is free on every plan on purpose - gating it would push everyone back onto polling, which costs us more than the stream does. If you must poll, send back the <code>ETag</code>: an unchanged poll then costs a 304 with an empty body.",
+   "es": "<b style=\"color:var(--ink)\">Medido, y por eso existe esta pestaña:</b> el 99.4% de todas las llamadas que ha recibido esta API han sido sondeos de <code>/positions</code> o <code>/account</code>, y el WebSocket se había abierto seis veces. El stream es gratis en todos los planes a propósito: ponerlo detrás de un muro empujaría a todo el mundo de vuelta al sondeo, que nos cuesta más que el stream. Si tienes que sondear, devuelve el <code>ETag</code>: un sondeo sin cambios te cuesta entonces un 304 con el cuerpo vacío.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 73
   },
   "MlrLeFulZc": {
    "en": "Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style=\"color:var(--ink)\">Official clients</b>, one file each and zero dependencies: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
@@ -146849,6 +146886,18 @@
    "n": 1,
    "w": 7
   },
+  "m13oTeC4NE": {
+   "en": "<b>90 days</b> of trade history, report and equity curve - Free keeps 30",
+   "es": "<b>90 días</b> de historial de operaciones, report y curva de equity - Free guarda 30",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12
+  },
   "w6lvuBgh0G": {
    "en": "Get Pro",
    "es": "Elegir Pro",
@@ -147305,6 +147354,30 @@
    "n": 1,
    "w": 2
   },
+  "XTken2WXN6": {
+   "en": "Trade history kept<br><span class=\"sub\">what <code>/v1/trades</code>, the report and the equity curve can still see</span>",
+   "es": "Historial de operaciones guardado<br><span class=\"sub\">lo que <code>/v1/trades</code>, el report y la curva de equity todavía pueden ver</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "4NLHUB6tzL": {
+   "en": "<b>90 days</b>",
+   "es": "<b>90 días</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 3,
+   "w": 2
+  },
   "jwtET1XVkD": {
    "en": "Trading report <code>/v1/report</code>",
    "es": "Trading report <code>/v1/report</code>",
@@ -147317,9 +147390,9 @@
    "n": 1,
    "w": 3
   },
-  "H-YuVE5ZPy": {
-   "en": "totals + skill score",
-   "es": "totales + skill score",
+  "waQN7DvjW4": {
+   "en": "totals + skill score<br><span class=\"sub\">up to 30 days back</span>",
+   "es": "totales + skill score<br><span class=\"sub\">hasta 30 días atrás</span>",
    "kind": [
     "html"
    ],
@@ -147327,7 +147400,19 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
+   "w": 8
+  },
+  "yCanGQrbxM": {
+   "en": "<b>+ breakdowns &amp; findings</b><br><span class=\"sub\">up to 90 days back</span>",
+   "es": "<b>+ desgloses y hallazgos</b><br><span class=\"sub\">hasta 90 días atrás</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
   },
   "MpboSteX5t": {
    "en": "<b>+ breakdowns &amp; findings</b>",
@@ -147338,7 +147423,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 2
   },
   "4WGp651-a5": {
@@ -147376,6 +147461,18 @@
    ],
    "n": 1,
    "w": 49
+  },
+  "KBFNPCaB0B": {
+   "en": "<b>Your bot is told before the plan lapses, not after.</b> Every keyed response carries <code>X-MP-Plan</code>, and inside the last fourteen days it also carries <code>X-MP-Plan-Expires</code> and <code>X-MP-Plan-Days-Left</code>. Log them and an unattended bot can warn you itself; the same countdown is on this page and in <code>/v1/usage</code>. A plan that runs out drops the key to Free - it never stops answering.",
+   "es": "<b>A tu bot se le avisa antes de que caduque el plan, no después.</b> Cada respuesta con clave lleva <code>X-MP-Plan</code>, y en los últimos catorce días lleva además <code>X-MP-Plan-Expires</code> y <code>X-MP-Plan-Days-Left</code>. Regístralos y un bot desatendido puede avisarte él mismo; la misma cuenta atrás está en esta página y en <code>/v1/usage</code>. Un plan que se agota baja la clave a Free: nunca deja de responder.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 60
   },
   "ImCMP8GD9V": {
    "en": "<span class=\"kick\">Reference</span>",
@@ -150076,6 +150173,18 @@
    ],
    "n": 1,
    "w": 17
+  },
+  "Uu91rU-tt5": {
+   "en": "Live service status",
+   "es": "Estado del servicio en vivo",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
   },
   "jwPjg9Oaye": {
    "en": "Quickstart language",

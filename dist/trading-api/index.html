@@ -85,6 +85,20 @@
   pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
   .shell{max-width:var(--shell);margin:0 auto;padding:0 28px;}
 
+  /* the status strip: uptime is the first thing a developer checks before building on you, and we had it
+     and hid it. Numbers come from the public /api/status, and the note states how MUCH history there is -
+     four days of sampling is not "99.9% uptime" and must not be dressed up as it. */
+  .statusbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0;padding:13px 0;border-bottom:1px solid var(--line);color:var(--dim);font-size:13px;}
+  .statusbar:hover{text-decoration:none;}
+  .statusbar .sb-l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--faint);}
+  .statusbar .sb-i{display:inline-flex;align-items:center;gap:7px;}
+  .statusbar .sb-i i{width:7px;height:7px;border-radius:50%;background:var(--line2);flex:0 0 auto;}
+  .statusbar .sb-i.ok i{background:var(--green);}
+  .statusbar .sb-i.bad i{background:var(--red);}
+  .statusbar .sb-n{color:var(--faint);font-size:12.5px;}
+  .statusbar .sb-go{margin-left:auto;color:var(--lime);font-weight:600;}
+  @media(max-width:760px){.statusbar .sb-go{margin-left:0;}}
+
   /* ── live background, ported from the bento homepage (desktop only) ──────────────────────────────────
      Two things that were learned there and must not be undone here:
      1. body carries an opaque --bg and a z-index:-1 layer paints BELOW block backgrounds, so the aurora
@@ -490,6 +504,17 @@
 </div>
 </div>
 
+<div class="shell">
+  <a class="statusbar" href="/status/" id="statusBar" aria-label="Live service status">
+    <span class="sb-l">STATUS</span>
+    <span class="sb-i" id="sbStore"><i></i>trading store</span>
+    <span class="sb-i" id="sbColl"><i></i>liquidation collector</span>
+    <span class="sb-i" id="sbCron"><i></i>scheduled jobs</span>
+    <span class="sb-n" id="sbNote">reading /api/status&hellip;</span>
+    <span class="sb-go">Full status and history &rarr;</span>
+  </a>
+</div>
+
 <!-- ── QUICKSTART ────────────────────────────────────────────────────────────────────────────────────── -->
 <section id="quickstart">
   <div class="shell">
@@ -501,11 +526,12 @@
     <div class="qs">
       <div class="qstep"><span class="qn">STEP 01</span><h3>Read the market</h3><p><code>GET /v1/price</code> and <code>/v1/klines</code> are keyless and CORS-enabled. Up to 1,000 candles a call, seven intervals, paged backwards with <code>&amp;end=</code> for as much history as a backtest needs.</p></div>
       <div class="qstep"><span class="qn">STEP 02</span><h3>Open a position</h3><p><code>POST /v1/open</code> fills at the live price with isolated margin and gives you back the liquidation level. Add <code>type:"limit"</code> or <code>"stop"</code> to rest an order server-side, or <code>dry_run</code> to price a trade without writing anything.</p></div>
-      <div class="qstep"><span class="qn">STEP 03</span><h3>Let the server work</h3><p>Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. Read the outcome from <code>/positions</code>, the stream, or a webhook.</p></div>
+      <div class="qstep"><span class="qn">STEP 03</span><h3>Let it push, do not poll</h3><p>Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. <b>Open the WebSocket and the outcome arrives in about two seconds</b> - it is free on every plan, and it is the difference between a bot that reacts and one that waits for its next loop.</p></div>
     </div>
 
     <div class="tabs" role="tablist" aria-label="Quickstart language">
       <button class="tab" role="tab" id="tb-curl" aria-controls="tp-curl" aria-selected="true" type="button">curl</button>
+      <button class="tab" role="tab" id="tb-ws" aria-controls="tp-ws" aria-selected="false" type="button">websocket</button>
       <button class="tab" role="tab" id="tb-py" aria-controls="tp-py" aria-selected="false" type="button">python</button>
       <button class="tab" role="tab" id="tb-js" aria-controls="tp-js" aria-selected="false" type="button">node.js</button>
       <button class="tab" role="tab" id="tb-http" aria-controls="tp-http" aria-selected="false" type="button">plain http</button>
@@ -526,6 +552,27 @@ curl "https://marginpad.io/api/bot/v1/positions" -H "X-API-Key: YOUR_KEY"
 curl -X POST "https://marginpad.io/api/bot/v1/close" \
   -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
   -d '{"id":"POSITION_ID","pct":50}'</pre>
+    </div>
+    <div class="tpane" id="tp-ws" role="tabpanel" aria-labelledby="tb-ws" hidden>
+<pre><b># the whole loop, without a single poll</b>
+const { MarginPad } = require("./marginpad.js");
+const mp = new MarginPad("YOUR_KEY");
+
+mp.stream(ev =&gt; {
+  if (ev.type === "snapshot") console.log("open now:", ev.data.positions.length);
+  if (ev.type === "position") {
+    const p = ev.data.position;                       // opened | updated | closed
+    console.log(ev.data.event, p.symbol, p.pnl_usd ?? p.unrealized_pnl_usd);
+    if (ev.data.event === "closed") decideWhatIsNext(p);
+  }
+});
+
+<b># or with nothing but a URL - any language with a WebSocket client</b>
+wscat -c "wss://marginpad.io/api/bot/v2/stream?api_key=mpb_..."
+&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000}}
+&lt;- {"type":"snapshot","data":{"positions":[...]}}
+&lt;- {"type":"position","data":{"event":"closed","position":{...,"pnl_usd":-1.24}}}</pre>
+      <p class="note" style="margin-top:10px"><b style="color:var(--ink)">Measured, and the reason this tab exists:</b> 99.4% of every call ever made to this API was a poll of <code>/positions</code> or <code>/account</code>, and the WebSocket had been opened six times. The stream is free on every plan on purpose - gating it would push everyone back onto polling, which costs us more than the stream does. If you must poll, send back the <code>ETag</code>: an unchanged poll then costs a 304 with an empty body.</p>
     </div>
     <div class="tpane" id="tp-py" role="tabpanel" aria-labelledby="tb-py" hidden>
 <pre><b># python - with the official one-file client (no dependencies)</b>
@@ -651,6 +698,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
           <li><b>Webhooks</b> - 3 signed, retried endpoints</li>
           <li><b>AI market reads</b> - 50 a day through <code>/v1/ai</code></li>
           <li>Trading report with breakdowns and written findings</li>
+          <li><b>90 days</b> of trade history, report and equity curve - Free keeps 30</li>
         </ul>
         <button class="apbtn" type="button" data-buy="pro">Get Pro</button>
       </div>
@@ -697,11 +745,13 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <tr><td><a href="#books">Books</a> - separate journals, one per strategy</td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
       <tr><td><b>Webhooks</b> - signed, retried, delivered while you are offline</td><td class="no">none</td><td><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
       <tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="no">none</td><td><b>50</b> a day</td><td><b>200</b> a day</td><td><b>500</b> a day</td></tr>
-      <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
+      <tr><td>Trade history kept<br><span class="sub">what <code>/v1/trades</code>, the report and the equity curve can still see</span></td><td>30 days</td><td><b>90 days</b></td><td><b>90 days</b></td><td><b>90 days</b></td></tr>
+      <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score<br><span class="sub">up to 30 days back</span></td><td><b>+ breakdowns &amp; findings</b><br><span class="sub">up to 90 days back</span></td><td><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
     </table></div>
     <p class="allplans"><b>On every plan, Free included:</b> the whole trading engine - market, limit and stop orders, trailing stops, partial closes, dry run and <a href="#replay">replay</a> - the <a href="#stream">WebSocket stream</a>, the <a href="#mcp">MCP server</a>, the <a href="#fees">fee schedule of 9 real venues</a>, $1 to $100,000 of margin per trade at up to 1000&times; leverage, and every keyless market-data endpoint at full speed. The paid plans move ceilings. They do not unlock the product.</p>
     <p class="apfoot"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
     <p class="apfoot">Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it. Your live ceilings are always in <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - so a bot can read them instead of guessing.</p>
+    <p class="apfoot"><b>Your bot is told before the plan lapses, not after.</b> Every keyed response carries <code>X-MP-Plan</code>, and inside the last fourteen days it also carries <code>X-MP-Plan-Expires</code> and <code>X-MP-Plan-Days-Left</code>. Log them and an unattended bot can warn you itself; the same countdown is on this page and in <code>/v1/usage</code>. A plan that runs out drops the key to Free - it never stops answering.</p>
   </div>
 </section>
 
@@ -1121,6 +1171,30 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
       });
     });
   });
+
+  /* 5. the status strip. Uptime is the first thing a developer checks before building on you. The numbers
+        are the public /api/status ones and the note says how much history exists - four days of sampling is
+        not "99.9% uptime" and dressing it up as one would be the exact opposite of a trust signal. */
+  (function(){
+    var bar=document.getElementById('statusBar'); if(!bar) return;
+    var set=function(id,ok){ var e=document.getElementById(id); if(e) e.className='sb-i '+(ok?'ok':'bad'); };
+    fetch('/api/status').then(function(r){return r.json();}).then(function(j){
+      var o=(j&&j.data)||j; if(!o||!o.now) throw 0;
+      set('sbStore', !!o.now.store&&o.now.store.ok!==false);
+      set('sbColl', !!o.now.collector&&o.now.collector.ok!==false);
+      set('sbCron', !!o.now.cron&&o.now.cron.ok!==false);
+      var days=(o.days||[]).filter(function(d){return d.n>0;});
+      var full=days.filter(function(d){return d.n>=(o.expectedPerDay||144);});
+      var ms=o.now.store&&o.now.store.ms;
+      var venues=o.now.collector?(o.now.collector.connected+'/'+o.now.collector.total+' venues'):'';
+      var note=[];
+      if(ms!=null) note.push('store answered in '+ms+' ms');
+      if(venues) note.push(venues);
+      /* n matters more than the percentage: say how many whole days have been sampled, never a bare 99.x% */
+      if(days.length) note.push(days.length+' day'+(days.length===1?'':'s')+' of checks so far, '+full.length+' complete');
+      var n=document.getElementById('sbNote'); if(n) n.textContent=note.join(' · ');
+    }).catch(function(){ var n=document.getElementById('sbNote'); if(n) n.textContent='status is measured every 10 minutes'; });
+  })();
 
   /* 5. live background: three drifting aurora blobs plus two faint price wireframes. Desktop only -
         it is decoration, and a phone should spend its frames on the page. Lifted from the homepage
