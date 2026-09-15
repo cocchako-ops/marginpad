@@ -444,6 +444,20 @@
     <div id="moonStatus" style="margin-top:8px"></div>
   </div>
 
+  <div class="card" id="fomoCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><span aria-hidden="true" style="width:22px;height:22px;border-radius:6px;background:#ff4d8d;color:#0a0b0d;font:800 12px/22px 'Space Mono',monospace;text-align:center;display:inline-block">f</span>Fomo sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="fomoAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Fomo</b> account through our link, then enter your Fomo username below. After a quick manual check we add <b style="color:#c2f64a">$<span id="fomoAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="fomoRefBtn" data-mpex="Fomo" href="https://fomo.family/r/Marginpad" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Fomo account</a>
+    <div id="fomoForm">
+      <div class="addr-row">
+        <input id="fomoUser" type="text" placeholder="2) Your Fomo username" autocomplete="off" spellcheck="false" />
+        <button class="btn btn-ghost" id="fomoSubmit" type="button">Submit</button>
+      </div>
+    </div>
+    <div class="msg" id="fomoMsg"></div>
+    <div id="fomoStatus" style="margin-top:8px"></div>
+  </div>
+
   <div class="card" id="promoCard" hidden>
     <div class="lbl" style="display:flex;align-items:center;gap:9px">Post &amp; earn <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">$<span id="prXAmt2">0.10</span> per post</span></div>
     <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Share one of your trade tickets on <b>X</b> - <b style="color:#c2f64a">$<span id="prXAmt">0.10</span></b> per post. One post per day; every post is reviewed manually and must stay live at least 24h.</p>
@@ -763,6 +777,10 @@
     var mc=document.getElementById('moonCard');
     if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
     if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}
+    window.__fomoOff=(j.fomoEnabled===false);
+    var fc=document.getElementById('fomoCard');
+    if(fc)fc.hidden=window.__fomoOff||!signedIn; // members-only, same gating as the Moon card
+    if(j.fomoUsd!=null){var f1=document.getElementById('fomoAmt'),f2=document.getElementById('fomoAmt2');var fv=fmtShort(j.fomoUsd);if(f1)f1.textContent=fv;if(f2)f2.textContent=fv;}
     window.__promoOff=(j.promoEnabled===false);
     var pc=document.getElementById('promoCard');
     if(pc)pc.hidden=window.__promoOff||!signedIn; // Post & earn card is members-only, mirrors the Moon card gating
@@ -800,6 +818,41 @@
         else if(j.error==='login_required')moonMsg('Sign in first (top of the page).','err');
         else moonMsg('Could not submit right now - try again in a minute.','err');
       }).catch(function(){sb.disabled=false;moonMsg('Network error - try again.','err');});
+    });
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
+  })();
+  /* Fomo $1 sign-up bonus (2026-09-15) - the same manual-review flow as Moon, over the same server table. */
+  function fomoMsg(t,kind){var el=document.getElementById('fomoMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
+  function loadFomo(){var st=document.getElementById('fomoStatus'),form=document.getElementById('fomoForm');if(!st)return;
+    if(!signedIn){st.innerHTML='';return;}
+    fetch('/api/reward/fomosign/mine').then(function(r){return r.json();}).then(function(d){
+      var rows=(d&&d.signups)||[];if(!rows.length){st.innerHTML='';if(form)form.style.display='';return;}
+      var x=rows[0];var chip;
+      if(x.status==='approved')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(194,246,74,.5);color:#c2f64a;font-size:12px;font-weight:700">+$'+(+x.amount||1).toFixed(2)+' PAID ✓</span>';
+      else if(x.status==='rejected')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:12px;font-weight:700">REJECTED</span>'+(x.note?' <span class="note" style="font-size:12px">'+String(x.note).replace(/</g,'&lt;')+'</span>':'');
+      else chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,215,90,.5);color:#ffd75a;font-size:12px;font-weight:700">IN REVIEW</span>';
+      st.innerHTML='<span class="note" style="font-size:12px">Fomo username <b>'+String(x.uid).replace(/</g,'&lt;')+'</b> &middot; </span>'+chip;
+      var again=(x.status==='rejected')&&rows.length<2; /* one retry per account, same rule as Moon */
+      if(form)form.style.display=again?'':'none';
+      if(x.status==='rejected'&&!again)st.innerHTML+=' <span class="note" style="font-size:12px">This account has used both submissions for this bonus. If you think that was a mistake, write to support.</span>';
+    }).catch(function(){});}
+  (function(){var sb=document.getElementById('fomoSubmit'),inp=document.getElementById('fomoUser');
+    if(!sb)return;
+    sb.addEventListener('click',function(){
+      if(!signedIn){fomoMsg('Sign in first (top of the page) - the bonus lands on your MarginPad balance.','err');return;}
+      var v=(inp.value||'').trim().replace(/^@/,'');
+      if(!/^[A-Za-z0-9_.-]{3,32}$/.test(v)){inp.classList.add('invalid');fomoMsg('Enter your Fomo username (3-32 letters/numbers).','err');return;}
+      inp.classList.remove('invalid');sb.disabled=true;fomoMsg('Submitting…','');
+      fetch('/api/reward/fomosign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(j){
+        sb.disabled=false;
+        if(j.ok){fomoMsg('Submitted ✓ - we check every sign-up manually; the bonus lands on your balance once approved.','ok');loadFomo();}
+        else if(j.error==='already_submitted')fomoMsg('You already submitted a Fomo sign-up on this account.','err');
+        else if(j.error==='limit_reached')fomoMsg('This account has used both of its submissions for this bonus. If you think a rejection was a mistake, write to support.','err');
+        else if(j.error==='uid_taken')fomoMsg('That Fomo username was already claimed by another account.','err');
+        else if(j.error==='bad_uid')fomoMsg('Invalid Fomo username.','err');
+        else if(j.error==='login_required')fomoMsg('Sign in first (top of the page).','err');
+        else fomoMsg('Could not submit right now - try again in a minute.','err');
+      }).catch(function(){sb.disabled=false;fomoMsg('Network error - try again.','err');});
     });
     inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
   })();
@@ -887,7 +940,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid',rej=x.status==='rejected';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'"'+(rej?' style="color:#ff6258;border-color:rgba(255,98,88,.4)"':'')+'>'+(paid?'Paid':rej?'Rejected - refunded':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+(rej&&x.note?' · '+String(x.note).replace(/</g,'&lt;'):'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); loadMoon(); loadPromo(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); loadMoon(); loadFomo(); loadPromo(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -1112,9 +1165,9 @@
 })();
 </script>
 <script src="/assets/mp-trade.js?v=8d881029" defer></script>
-<script defer src="/assets/mp-auth.js?v=35f0932a"></script>
+<script defer src="/assets/mp-auth.js?v=540db9a3"></script>
 <script defer src="/assets/mp-profile.js?v=2e6eb10f"></script>
-<script defer src="/assets/mp-nav.js?v=f6ade5dc"></script>
+<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;

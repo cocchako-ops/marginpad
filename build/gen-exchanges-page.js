@@ -50,6 +50,16 @@ const EX = [
     feel: 'Best-known for copy trading - you can mirror top futures traders automatically, which is handy while you learn. Liquidity on majors is solid (a notch below the top three) and the app is beginner-friendly. A large public insurance fund backs the derivatives engine.',
     pro: ['Deep copy-trading marketplace', 'Beginner-friendly app', 'Large published insurance fund'],
     con: ['Liquidity thinner than Bybit/Binance on altcoins', 'Some listed perps are illiquid - mind slippage'] },
+  // Fomo (2026-09-15). Every figure here comes from Fomo's OWN documents - the 0.05% is quoted from their Terms of
+  // Service ("Fomo charges a fee of 0.05% per transaction" for Perpetual Futures) and the asset list from their own
+  // perpetuals announcement. Max leverage and KYC are NOT published anywhere we could find, so they say so instead of
+  // carrying a number we made up: this table is the reason a reader trusts the rest of the page.
+  { key: 'fomo', name: 'Fomo', logo: null, mark: 'F', color: '#ff4d8d', href: 'https://fomo.family/r/Marginpad',
+    lev: '—', tk: '0.05%', mk: '0.05%', pairs: 'Crypto + stocks + indices', kyc: 'Not published', us: 'Spot only', bonus: 'Extra $1 from MarginPad after sign-up',
+    r: { fees: 92, liq: 80, mkts: 86, lev: 50, trust: 70, easy: 92 }, badge: 'One flat fee, social feed',
+    feel: 'A social-first trading app rather than an exchange terminal: a feed of what other traders are actually buying, profiles you can follow, and copy trading, with spot across six chains on a single USDC balance. Perpetuals arrived in June 2026 and are the interesting part here - not just BTC, ETH, SOL and HYPE, but equity perps (NVDA, GOOGL, AMD), indices (S&amp;P 500, Nasdaq 100, Nikkei 225), commodities (gold, silver, oil, copper, natural gas) and even pre-IPO exposure such as SpaceX, all from one account. Execution is not theirs: perps are powered by Hyperliquid and Trade[XYZ], so you are trading on books that already exist. The fee is the headline - one flat 0.05% per transaction, no maker/taker split and no VIP ladder to climb.',
+    pro: ['Flat 0.05% per transaction on perps - no maker/taker split, no VIP tiers to chase', 'Stocks, indices, commodities and pre-IPO perps beside crypto, on one balance', 'Perps execute on Hyperliquid and Trade[XYZ], not on a book they had to bootstrap', 'Social feed, follow and copy trading built in - useful while you are still learning'],
+    con: ['Perpetuals are not available to U.S. Persons under its own terms', 'Maximum leverage is not published - check it in the app before you size a position', 'Not a regulated broker or exchange: no FDIC or SIPC-style protection', 'Newer than the venues above, with a shorter track record to judge'] },
   { key: 'mexc', name: 'MEXC', logo: 544, color: '#1972ff', href: 'https://promote.mexc.com/r/GND4jI97o0',
     lev: '500×', tk: '0.02%', mk: '0.00%', pairs: '700+', kyc: 'Optional (light)', us: 'No', bonus: 'Up to 10,000 USDT + $20 gift',
     r: { fees: 94, liq: 62, mkts: 98, lev: 100, trust: 62, easy: 82 }, badge: 'Lowest fees + most pairs',

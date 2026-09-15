@@ -260,7 +260,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 52,
   "missing": 0
  },
  {
@@ -1351,9 +1351,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 1,
-  "hit": 336,
-  "missing": 0
+  "cover": 0.9329446064139941,
+  "hit": 320,
+  "missing": 23
  },
  {
   "rel": "fear-greed/index.html",
@@ -1562,7 +1562,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 52,
   "missing": 0
  },
  {
@@ -1615,9 +1615,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 218,
-  "missing": 0
+  "cover": 0.9954128440366973,
+  "hit": 217,
+  "missing": 1
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1634,7 +1634,7 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -1748,7 +1748,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 51,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -1939,9 +1939,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
-  "hit": 181,
-  "missing": 0
+  "cover": 0.978494623655914,
+  "hit": 182,
+  "missing": 4
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2162,13 +2162,13 @@
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "where-to-start/index.html",
-  "cover": 0.15254237288135594,
-  "hit": 9,
+  "cover": 0.18032786885245902,
+  "hit": 11,
   "missing": 50,
   "skipped": true
  },
@@ -2235,7 +2235,7 @@
  {
   "rel": "app.html → app-es.html",
   "cover": 1,
-  "hit": 459,
+  "hit": 461,
   "missing": 0
  }
 ]

@@ -2531,6 +2531,13 @@
     // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US - a US
     // click is a dead click, so it goes last there like Bybit does. Users get 4% off fees with code MARGINPAD.
     Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: '4% off fees with code MARGINPAD', code: 'MARGINPAD' },
+    // Fomo (2026-09-15): social-first trading app - spot across six chains plus perpetuals on crypto, equities,
+    // indices, commodities and pre-IPO, powered by Hyperliquid and Trade[XYZ]. Its own Terms state a flat
+    // "fee of 0.05% per transaction" on perps, with no maker/taker split - that is the reason to link it.
+    // NOT flagged `no:'US'`: Fomo's terms exclude U.S. Persons from PERPETUALS, not from the app, so the card
+    // is honest in the US and simply ranks low there - our reader arrives wanting futures. Accent is ours:
+    // Fomo's own theme-color is #060510, which is invisible on our dark cards.
+    Fomo: { c: '#ff4d8d', no: '', ref: 'https://fomo.family/r/Marginpad', deep: null, perk: 'social trading' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing - the join page attributes (2026-09-13) */, perk: 'pro tools' },
@@ -2545,10 +2552,12 @@
   // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) - not an opinion about quality.
   var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
   var ORD = {
-    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
-    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
-    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
-    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
+    // Fomo has NO measured click order here yet - it went live 2026-09-15. It is placed mid-list on reasoning
+    // (a mobile social app suits the NG/PK audience that carries `def`) and moves once there is data, like the rest.
+    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Fomo', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
+    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
+    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
+    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Fomo', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
   };
   function group(cc2) { cc2 = String(cc2 || '').toUpperCase(); if (cc2 === 'US') return 'us'; if (cc2 === 'CA') return 'ca'; return WEST.indexOf(cc2) >= 0 ? 'west' : 'def'; }
 

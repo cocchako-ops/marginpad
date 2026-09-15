@@ -34,7 +34,10 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
   await sleep(2500);
   const act = (await J('/api/admin/activity?h=1&n=600&e2e=1&_=' + Date.now())).body;
   const mine = (act.rows || []).filter(r => r.t === 'exchange' && r.di === DID.slice(0, 8));
-  chk('the injection label is stored as "other", never as a partner name', mine.some(r => r.e === 'other') && !mine.some(r => String(r.e || '').indexOf('UNION') >= 0), mine.map(r => r.e));
+  // Since 2026-09-14 a click-out naming no partner is not a ROW at all - it is counted as aff:junk and kept out of
+  // evlog, because 429 of 446 exchange rows in one day were a scanner. This check asked for the old 'other' row and
+  // had therefore been impossible to pass ever since: always red, hiding whatever else broke in this file.
+  chk('a click-out naming no partner is not a row at all, and the real one still is', mine.some(r => r.e === 'Bybit') && !mine.some(r => r.e === 'other') && !mine.some(r => String(r.e || '').indexOf('UNION') >= 0), mine.map(r => r.e));
   chk('a real partner label survives untouched', mine.some(r => r.e === 'Bybit'), mine.map(r => r.e));
   const rev = (await J('/api/admin/revenue?_=' + Date.now())).body;
   const KNOWN = ['Bybit', 'Binance', 'OKX', 'Bitget', 'Kraken', 'Coinbase', 'KuCoin', 'MEXC', 'Moon', 'Gate', 'Crypto.com', 'BingX', 'Phemex', 'Hyperliquid', 'TradingView', 'Koinly', '3Commas', 'Ledger', 'Trezor'];

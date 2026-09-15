@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..', 'dist');
 
-const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad|hyperliquid\.xyz\/join\/MARGINPAD/i;
+const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/join\/|kucoin\.com\/r\/rf\/|gate\.com\/VFIWB|invite\.kraken\.com\/|promote\.mexc\.com\/r\/|bitget\.com\/referral\/|base\.app\/invite\/chakko|moon\.com\/\?offer=marginpad|hyperliquid\.xyz\/join\/MARGINPAD|fomo\.family\/r\/Marginpad/i;
 
 // Partner links. `d` is a deliberately language-neutral descriptor (numbers + proper nouns) so the card
 // needs no translation; only Moon's needs words, and that one is in the string table below.
@@ -32,6 +32,10 @@ const EX = {
   coinbase: { name: 'Coinbase', href: 'https://base.app/invite/chakko/FHSFNY5H',             accent: '#3b7bff', d: 'US &middot; spot' },
   moon:     { name: 'Moon',     href: 'https://moon.com/?offer=marginpad',                   accent: '#8a5cff', d: '' },
   hyperliquid: { name: 'Hyperliquid', href: 'https://app.hyperliquid.xyz/join/MARGINPAD',   accent: '#5ee6c8', d: 'on-chain perps &middot; 4% off &middot; code MARGINPAD' },
+  // Fomo is in this table so the detector and any future context can reach it. The CTX pairs below are deliberately
+  // NOT changed: each page type gets two curated venues, and quietly displacing one to make room is the kind of
+  // "push it everywhere" the owner asked against (2026-09-15).
+  fomo:     { name: 'Fomo',     href: 'https://fomo.family/r/Marginpad',                    accent: '#ff4d8d', d: 'social perps &middot; flat 0.05%' },
 };
 
 // Contexts: eyebrow label, the reason line, and which two venues fit the page.

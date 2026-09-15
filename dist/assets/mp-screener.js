@@ -148,6 +148,7 @@
     {n:'Gate',c:'#3361ff',fg:'#ffffff',u:function(s){return 'https://www.gate.com/futures/USDT/'+s+'_USDT?ref=VFIWB10KUG';}},
     {n:'MEXC',c:'#0ac2d6',fg:'#06231d',u:function(s){return 'https://futures.mexc.com/exchange/'+s+'_USDT?inviteCode=GND4jI97o0';}},
     {n:'Hyperliquid',c:'#5ee6c8',fg:'#062a24',u:function(s){return 'https://app.hyperliquid.xyz/join/MARGINPAD';}},
+    {n:'Fomo',c:'#ff4d8d',fg:'#0a0b0d',u:function(s){return 'https://fomo.family/r/Marginpad';}}, /* no public pair link keeps the referral - the /r/ link is the referral */
     {n:'Kraken',c:'#7b5cff',fg:'#ffffff',u:function(s){return 'https://invite.kraken.com/JDNW/guj2tf28';}},
     {n:'Crypto.com',c:'#0b2e7a',fg:'#ffffff',u:function(s){return 'https://crypto.com/app/sdf5hb6rkv';}}
   ];
