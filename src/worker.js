@@ -1321,7 +1321,7 @@ async function handleSsrCalendar(request, url, env) {
 // So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
 // Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
 // cached, rather than printing a confident blank.
-const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding' };
+const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
@@ -1330,8 +1330,48 @@ function _askBox(big, prose, rows, cols, src) {
     + (rows && rows.length ? '<div class="ask-w"><table class="ask-t"><thead><tr>' + cols.map((c, i) => '<th' + (i ? ' class="r"' : '') + '>' + c + '</th>').join('') + '</tr></thead><tbody>'
       + rows.map(r => '<tr>' + r.map((c, i) => '<td' + (i ? ' class="n"' : '') + '>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '');
 }
-async function askRender(kind, env, ctx) {
+async function askRender(kind, env, ctx, es) {
   const stamp = t => 'Measured ' + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  if (kind === 'bot') {
+    // Every other question page answers with market data. This one answers a commercial question, so the
+    // honest number is OUR OWN usage: how many bots are really running on the paper API this season and how
+    // much they have closed through it. Small numbers stay small - a figure nobody can check is worth nothing.
+    let rows = [], se = null;
+    try { se = predSeason(Date.now()); const r = await usersDO(env, '/arena', { from: Date.parse(se.from + 'T00:00:00Z'), to: se.endMs }); rows = (r && r.rows) || []; } catch (e) {}
+    const bots = rows.length, closes = rows.reduce((a2, r) => a2 + (+r.closes || 0), 0);
+    const head = es
+      ? (bots ? 'Aqu\u00ed, gratis: ' + _aN(bots) + ' bot' + (bots === 1 ? '' : 's') + ' ' + (bots === 1 ? 'est\u00e1' : 'est\u00e1n') + ' corriendo sobre ella esta temporada'
+              : 'Aqu\u00ed, gratis: una API de futuros en paper trading sobre precios reales en vivo')
+      : (bots ? 'Here, free - ' + _aN(bots) + ' bot' + (bots === 1 ? '' : 's') + ' ' + (bots === 1 ? 'is' : 'are') + ' running on it this season'
+              : 'Here, free - a paper-trading futures API on real live prices');
+    const prose = es
+      ? ('MarginPad tiene una <strong>API de futuros en paper trading</strong>: tu bot abre posiciones apalancadas al precio real en vivo, deja \u00f3rdenes limit y stop en reposo, arrastra sus stops y es liquidado, y todo eso se liquida <strong>en nuestros servidores</strong> en d\u00f3lares simulados. '
+         + 'No hay dep\u00f3sito, ni tarjeta, ni KYC: con un correo obtienes una clave, y el plan gratuito es el motor entero a 120 peticiones por minuto. '
+         + (closes ? 'Los bots han cerrado ' + _aN(closes) + ' operaciones a trav\u00e9s de ella solo esta temporada, y la tabla es p\u00fablica en <a href="/arena/">/arena/</a>. ' : '')
+         + 'Por qu\u00e9 vale m\u00e1s probar aqu\u00ed que en la testnet de un exchange: los libros de \u00f3rdenes de las testnets son poco profundos y sus precios se alejan del mercado real, mientras que aqu\u00ed todo se valora con el mismo feed multi-exchange en vivo que usan nuestros gr\u00e1ficos. Solo el dinero est\u00e1 simulado.')
+      : ('MarginPad runs a <strong>paper-trading futures API</strong>: your bot opens leveraged positions at the real live price, rests limit and stop orders, trails its stops and gets liquidated, and every one of those settles <strong>on our servers</strong> in simulated dollars. '
+         + 'There is no deposit, no card and no KYC - an email gets you a key, and the free plan is the whole engine at 120 requests a minute. '
+         + (closes ? 'Bots have closed ' + _aN(closes) + ' trades through it this season alone, and the board is public at <a href="/arena/">/arena/</a>. ' : '')
+         + 'What makes it worth testing on rather than an exchange testnet: testnet books are thin and their prices drift from the real market, while everything here is priced from the same live multi-exchange feed our charts run on. Only the money is simulated.');
+    const tbl = es ? [
+      ['Coste de correr un bot en ella', '$0', 'sin dep\u00f3sito ni tarjeta; 120 peticiones por minuto, 3 claves, 50 posiciones abiertas'],
+      ['Bots en la tabla p\u00fablica esta temporada', _aN(bots), 'hacen falta al menos cinco cierres por la API - <a href="/arena/">/arena/</a>'],
+      ['Operaciones que cerraron esta temporada', _aN(closes), 'netas de comisiones y funding, liquidadas por nuestro propio motor'],
+      ['Endpoints', '24', 'm\u00e1s un stream por WebSocket, webhooks y un servidor MCP para clientes de IA'],
+      ['Tarifas reales de exchanges', '9', 'cobra a la cuenta de paper exactamente lo que cobrar\u00eda Bybit, Binance o Hyperliquid'],
+      ['Balance inicial por book', '$10,000', 'un marcador, no una restricci\u00f3n: se reinicia cuando quieras'],
+    ] : [
+      ['Cost to run a bot on it', '$0', 'no deposit, no card; 120 requests a minute, 3 keys, 50 open positions'],
+      ['Bots on the public board this season', _aN(bots), 'at least five closes through the API to qualify - <a href="/arena/">/arena/</a>'],
+      ['Trades they closed this season', _aN(closes), 'net of fees and funding, settled by our own engine'],
+      ['Endpoints', '24', 'plus a WebSocket stream, webhooks and an MCP server for AI clients'],
+      ['Real venue fee schedules', '9', 'charge the paper account exactly what Bybit, Binance or Hyperliquid would'],
+      ['Starting balance per book', '$10,000', 'a scorecard, not a constraint - reset it any time'],
+    ];
+    return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
+      (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; contado de operaciones que liquid\u00f3 nuestro propio motor &middot; JSON gratuito en /api/arena y /api/apiplan'
+          : stamp(Date.now()) + ' &middot; counted from trades our own engine settled &middot; free JSON at /api/arena and /api/apiplan')), ts: Date.now() };
+  }
   if (kind === 'funding') {
     let rows = [];
     try { const r = await handleV1(new URL('https://marginpad.io/api/v1/funding'), new Request('https://marginpad.io/api/v1/funding'), env, ctx); const j = await r.json(); rows = (j && j.data && (j.data.rows || j.data.coins)) || (j && Array.isArray(j.data) ? j.data : []); } catch (e) {}
@@ -1390,10 +1430,11 @@ async function handleSsrAsk(request, url, env, kind, ctx) {
   let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
   const open = html.indexOf('<div id="askdata">'); if (open < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
   const close = html.indexOf('</div>\n', open); if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
-  let res = null; try { res = await askRender(kind, env, ctx); } catch (e) {}
+  const _esAsk = /^\/es\//.test(new URL(request.url).pathname);
+  let res = null; try { res = await askRender(kind, env, ctx, _esAsk); } catch (e) {}
   if (!res) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   const out = ssrStampDate(html.slice(0, open) + '<div id="askdata" data-ssr="ask">' + res.html + html.slice(close), res.ts);
-  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind } });
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind + (_esAsk ? '-es' : '') } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }

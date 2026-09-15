@@ -30,7 +30,17 @@ function block(title, intro, links) {
 function inject(file, html, blocks) {
   if (!blocks.length) return false;
   let h = fs.readFileSync(file, 'utf8');
-  if (h.indexOf(MARK) >= 0) return false;
+  // The block used to be write-once, so a page that already had one never saw a new link added to it.
+  // With --refresh the existing block is cut out and rewritten, which is how a new destination reaches
+  // the 100+ pages a crawler already walks (2026-09-15: /trading-api/ had 0 crawls with 53 links, all of
+  // them on pages crawlers rarely reach).
+  const had = h.indexOf(MARK);
+  if (had >= 0) {
+    if (!process.argv.includes('--refresh')) return false;
+    let end = h.indexOf('<footer', had); if (end < 0) end = h.indexOf('</main>', had); if (end < 0) end = h.lastIndexOf('</body>');
+    if (end < 0 || end < had) return false;
+    h = h.slice(0, had) + h.slice(end);
+  }
   const body = CSS + blocks.join('');
   let at = h.indexOf('<footer'); if (at < 0) at = h.indexOf('</main>'); if (at < 0) at = h.lastIndexOf('</body>');
   if (at < 0) return false;
@@ -45,7 +55,7 @@ const rel = (d) => path.join(DIST, d, 'index.html');
 for (const d of MAPS) {
   const coin = coinOf(d, '-liquidation-map');
   const links = MAPS.filter(x => x !== d).map(x => ['/' + x + '/', coinOf(x, '-liquidation-map')]);
-  const extra = [['/liquidations/', 'All liquidations (24h totals)'], ['/rekt/', 'Live liquidation feed']];
+  const extra = [['/liquidations/', 'All liquidations (24h totals)'], ['/rekt/', 'Live liquidation feed'], ['/where-can-i-test-a-trading-bot/', 'Test a trading bot on live prices, free'], ['/trading-api/', 'Paper-trading Bot API']];
   const calc = coin.toLowerCase() + '-liquidation-calculator'; if (has(calc)) extra.unshift(['/' + calc + '/', coin + ' liquidation calculator']);
   if (inject(rel(d), null, [block('Liquidation maps for other coins', 'Same live heatmap and long/short clusters, per coin.', links), block('More on liquidations', '', extra)])) n++;
 }
@@ -53,7 +63,7 @@ for (const d of MAPS) {
 for (const d of CALCS) {
   const coin = coinOf(d, '-liquidation-calculator');
   const links = CALCS.filter(x => x !== d).map(x => ['/' + x + '/', coinOf(x, '-liquidation-calculator')]);
-  const extra = [['/calculators', 'All calculators'], ['/paper-trade', 'Practice with paper trading']];
+  const extra = [['/calculators', 'All calculators'], ['/paper-trade', 'Practice with paper trading'], ['/where-can-i-test-a-trading-bot/', 'Test a trading bot on live prices, free']];
   const map = coin.toLowerCase() + '-liquidation-map'; if (has(map)) extra.unshift(['/' + map + '/', coin + ' liquidation map']);
   if (inject(rel(d), null, [block('Liquidation calculators for other coins', '', links), block('Related', '', extra)])) n++;
 }
@@ -63,7 +73,7 @@ if (has('liquidations')) {
     block('Liquidation calculators by coin', '', CALCS.map(x => ['/' + x + '/', coinOf(x, '-liquidation-calculator')])),
     block('Read more', '', [['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/liquidation-statistics/', 'Liquidation statistics'], ['/liquidations/by-exchange/', 'Liquidations by exchange'], ['/hyperliquid-liquidations/', 'Hyperliquid liquidations']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')))),
     // the one-question pages (2026-09-14) - an orphan page is one an assistant never finds a route to
-    block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
+    block('One question, one answer', 'Each of these answers a single question with a live number and says who measured it.', [['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'], ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'], ['/biggest-liquidation-today/', 'What is the biggest liquidation today?'], ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?'], ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?']].filter(([h]) => has(h.replace(/^\/|\/$/g, ''))))];
   if (inject(rel('liquidations'), null, b)) n++;
 }
 // 4) the exchanges page lists every head-to-head and every "best for" page

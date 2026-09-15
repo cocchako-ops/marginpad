@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T02:24:47.524Z",
-  "pages": 372,
-  "occurrences": 25024,
-  "unique": 13204,
-  "words": 246476,
+  "generated": "2026-09-15T02:57:54.225Z",
+  "pages": 373,
+  "occurrences": 25188,
+  "unique": 13237,
+  "words": 248165,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T02:24:59.368Z"
+  "merged": "2026-09-15T03:04:06.838Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -34,7 +34,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 292,
+   "n": 293,
    "w": 2
   },
   "EEUXew76Qs": {
@@ -593,6 +593,21 @@
    "n": 186,
    "w": 15
   },
+  "0i_p_gzyQK": {
+   "en": ".hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>",
+   "es": ".hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/100x-liquidation-calculator/",
+    "/10x-liquidation-calculator/",
+    "/20x-liquidation-calculator/",
+    "/25x-liquidation-calculator/"
+   ],
+   "n": 121,
+   "w": 17
+  },
   "DXzxMSnuDb": {
    "en": "Liquidation calculators for other coins",
    "es": "Calculadoras de liquidación para otras monedas",
@@ -637,9 +652,9 @@
    "n": 153,
    "w": 1
   },
-  "QtCTfbUtka": {
-   "en": "<a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "MQUaX6NS4h": {
+   "en": "<a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -650,7 +665,7 @@
     "/25x-liquidation-calculator/"
    ],
    "n": 44,
-   "w": 6
+   "w": 13
   },
   "6htwLSvwWi": {
    "en": "<span>© 2026 MarginPad</span> <span><a href=\"/\">Calculators</a> · <a href=\"/blog/\">Blog</a> · <a href=\"/terms/\">Terms</a> · <a href=\"/privacy/\">Privacy</a> · <a href=\"/glossary/\">Glossary</a> · <a href=\"/about/\">About</a></span>",
@@ -683,7 +698,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1615,
+   "n": 1608,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -2665,9 +2680,9 @@
    "n": 1,
    "w": 75
   },
-  "0VM2qmJLf_": {
-   "en": "<a href=\"/aave-liquidation-map/\">AAVE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/aave-liquidation-map/\">Mapa de liquidación de AAVE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "i7gFLpE53V": {
+   "en": "<a href=\"/aave-liquidation-map/\">AAVE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/aave-liquidation-map/\">Mapa de liquidaciones de AAVE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -2675,7 +2690,7 @@
     "/aave-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "fJK-GGB2_a": {
    "en": "<span>© 2026 MarginPad</span> <span><a href=\"/\">Calculators</a> · <a href=\"/blog/\">Blog</a> · <a href=\"/terms/\">Terms</a> · <a href=\"/privacy/\">Privacy</a> · <a href=\"/glossary/\">Glossary</a></span>",
@@ -3140,9 +3155,9 @@
    "n": 64,
    "w": 3
   },
-  "lBHGAEi0iq": {
-   "en": "<a href=\"/aave-liquidation-calculator/\">AAVE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/aave-liquidation-calculator/\">Calculadora de liquidación de AAVE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "qghnV8gT8L": {
+   "en": "<a href=\"/aave-liquidation-calculator/\">AAVE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/aave-liquidation-calculator/\">Calculadora de liquidación de AAVE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -3150,7 +3165,7 @@
     "/aave-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "aLen71Kx9E": {
    "en": "<span>© 2026 MarginPad</span> <span><a href=\"/\">Calculators</a> · <a href=\"/heatmap\">Heatmap</a> · <a href=\"/blog/\">Blog</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a></span>",
@@ -6355,9 +6370,9 @@
    "n": 1,
    "w": 75
   },
-  "R3NtE7fC6i": {
-   "en": "<a href=\"/ada-liquidation-map/\">ADA liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/ada-liquidation-map/\">Mapa de liquidación de ADA</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "gTD__Z8GL7": {
+   "en": "<a href=\"/ada-liquidation-map/\">ADA liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/ada-liquidation-map/\">Mapa de liquidaciones de ADA</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -6365,7 +6380,7 @@
     "/ada-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "7COOPuJ3Yf": {
    "en": "Free ADA liquidation calculator. Find the exact Cardano liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -6633,9 +6648,9 @@
    "n": 1,
    "w": 31
   },
-  "f47Nz4j8gO": {
-   "en": "<a href=\"/ada-liquidation-calculator/\">ADA liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/ada-liquidation-calculator/\">Calculadora de liquidación de ADA</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "IBuVk-xOdo": {
+   "en": "<a href=\"/ada-liquidation-calculator/\">ADA liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/ada-liquidation-calculator/\">Calculadora de liquidación de ADA</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -6643,7 +6658,7 @@
     "/ada-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "CIrheCgalR": {
    "en": "Live Cardano (ADA) liquidation map: real ADA liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -13211,9 +13226,9 @@
    "n": 1,
    "w": 75
   },
-  "B3_r2qUKsh": {
-   "en": "<a href=\"/apt-liquidation-map/\">APT liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/apt-liquidation-map/\">Mapa de liquidación de APT</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "3FhJWxufeX": {
+   "en": "<a href=\"/apt-liquidation-map/\">APT liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/apt-liquidation-map/\">Mapa de liquidaciones de APT</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -13221,7 +13236,7 @@
     "/apt-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "Jw7GQIz-_p": {
    "en": "Free APT liquidation calculator. Find the exact Aptos liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -13489,9 +13504,9 @@
    "n": 1,
    "w": 31
   },
-  "eCFCkV7bNU": {
-   "en": "<a href=\"/apt-liquidation-calculator/\">APT liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/apt-liquidation-calculator/\">Calculadora de liquidación de APT</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "fnvVmUD-IP": {
+   "en": "<a href=\"/apt-liquidation-calculator/\">APT liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/apt-liquidation-calculator/\">Calculadora de liquidación de APT</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -13499,7 +13514,7 @@
     "/apt-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "BpTIHP6zqF": {
    "en": "Live Aptos (APT) liquidation map: real APT liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -13947,9 +13962,9 @@
    "n": 1,
    "w": 75
   },
-  "3cunXjCHI-": {
-   "en": "<a href=\"/arb-liquidation-map/\">ARB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/arb-liquidation-map/\">Mapa de liquidación de ARB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "9PW7TUxuVz": {
+   "en": "<a href=\"/arb-liquidation-map/\">ARB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/arb-liquidation-map/\">Mapa de liquidaciones de ARB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -13957,7 +13972,7 @@
     "/arb-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "C-wZe7s6wh": {
    "en": "Free ARB liquidation calculator. Find the exact Arbitrum liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -14225,9 +14240,9 @@
    "n": 1,
    "w": 31
   },
-  "1_PWiQiMcF": {
-   "en": "<a href=\"/arb-liquidation-calculator/\">ARB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/arb-liquidation-calculator/\">Calculadora de liquidación de ARB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "HE-BaHSui6": {
+   "en": "<a href=\"/arb-liquidation-calculator/\">ARB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/arb-liquidation-calculator/\">Calculadora de liquidación de ARB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -14235,7 +14250,7 @@
     "/arb-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "F5IW6TN4IT": {
    "en": "Live Arbitrum (ARB) liquidation map: real ARB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -14938,9 +14953,9 @@
    "n": 1,
    "w": 75
   },
-  "_0SB-hxqhR": {
-   "en": "<a href=\"/atom-liquidation-map/\">ATOM liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/atom-liquidation-map/\">Mapa de liquidaciones de ATOM</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "1G9GChr11G": {
+   "en": "<a href=\"/atom-liquidation-map/\">ATOM liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/atom-liquidation-map/\">Mapa de liquidaciones de ATOM</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -14948,7 +14963,7 @@
     "/atom-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "sit_nAICSa": {
    "en": "Free ATOM liquidation calculator. Find the exact Cosmos liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -15216,9 +15231,9 @@
    "n": 1,
    "w": 31
   },
-  "w-eE5bG7P0": {
-   "en": "<a href=\"/atom-liquidation-calculator/\">ATOM liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/atom-liquidation-calculator/\">Calculadora de liquidación de ATOM</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "Cc6qJoY5iV": {
+   "en": "<a href=\"/atom-liquidation-calculator/\">ATOM liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/atom-liquidation-calculator/\">Calculadora de liquidación de ATOM</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -15226,7 +15241,7 @@
     "/atom-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "jUlBE2p1vP": {
    "en": "Live Cosmos (ATOM) liquidation map: real ATOM liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -15662,9 +15677,9 @@
    "n": 1,
    "w": 75
   },
-  "5IgvEFRXlt": {
-   "en": "<a href=\"/avax-liquidation-map/\">AVAX liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/avax-liquidation-map/\">Mapa de liquidaciones de AVAX</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "EP3OQu63tn": {
+   "en": "<a href=\"/avax-liquidation-map/\">AVAX liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/avax-liquidation-map/\">Mapa de liquidaciones de AVAX</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -15672,7 +15687,7 @@
     "/avax-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "yDg-CC7XI_": {
    "en": "Free AVAX liquidation calculator. Find the exact Avalanche liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -15940,9 +15955,9 @@
    "n": 1,
    "w": 31
   },
-  "J60X759dSb": {
-   "en": "<a href=\"/avax-liquidation-calculator/\">AVAX liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/avax-liquidation-calculator/\">Calculadora de liquidación de AVAX</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "T7KxNmMX4k": {
+   "en": "<a href=\"/avax-liquidation-calculator/\">AVAX liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/avax-liquidation-calculator/\">Calculadora de liquidación de AVAX</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -15950,7 +15965,7 @@
     "/avax-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "1IkmPDU8vJ": {
    "en": "Live Avalanche (AVAX) liquidation map: real AVAX liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -22655,7 +22670,7 @@
     "/is-funding-positive-or-negative/",
     "/liquidations/by-exchange/"
    ],
-   "n": 5,
+   "n": 6,
    "w": 3
   },
   "0bZuTtPc1O": {
@@ -22694,7 +22709,7 @@
     "/is-funding-positive-or-negative/",
     "/longs-or-shorts-liquidated-more/"
    ],
-   "n": 4,
+   "n": 5,
    "w": 4
   },
   "34toQI5R31": {
@@ -22825,7 +22840,7 @@
     "/is-funding-positive-or-negative/",
     "/liquidations/by-exchange/"
    ],
-   "n": 6,
+   "n": 7,
    "w": 1
   },
   "UK3XvJ-lmU": {
@@ -22982,7 +22997,7 @@
     "/is-funding-positive-or-negative/",
     "/liquidations/by-exchange/"
    ],
-   "n": 5,
+   "n": 6,
    "w": 6
   },
   "yvPk6WiK2w": {
@@ -49624,9 +49639,9 @@
    "n": 2,
    "w": 29
   },
-  "HAlk5TAeRq": {
-   "en": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/es/blog/how-to-calculate-liquidation-price/\">Español</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
-   "es": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/es/blog/how-to-calculate-liquidation-price/\">Español</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
+  "cmltpoQyg0": {
+   "en": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
+   "es": "<a href=\"/blog/how-to-calculate-liquidation-price/ar/\">العربية</a><a href=\"/blog/how-to-calculate-liquidation-price/da/\">Dansk</a><a href=\"/blog/how-to-calculate-liquidation-price/de/\">Deutsch</a><a href=\"/blog/how-to-calculate-liquidation-price/fi/\">Suomi</a><a href=\"/blog/how-to-calculate-liquidation-price/fr/\">Français</a><a href=\"/blog/how-to-calculate-liquidation-price/id/\">Bahasa Indonesia</a><a href=\"/blog/how-to-calculate-liquidation-price/ja/\">日本語</a><a href=\"/blog/how-to-calculate-liquidation-price/ko/\">한국어</a><a href=\"/blog/how-to-calculate-liquidation-price/nl/\">Nederlands</a><a href=\"/blog/how-to-calculate-liquidation-price/no/\">Norsk</a><a href=\"/blog/how-to-calculate-liquidation-price/pt/\">Português</a><a href=\"/blog/how-to-calculate-liquidation-price/ru/\">Русский</a><a href=\"/blog/how-to-calculate-liquidation-price/sv/\">Svenska</a><a href=\"/blog/how-to-calculate-liquidation-price/tr/\">Türkçe</a><a href=\"/blog/how-to-calculate-liquidation-price/zh/\">中文</a>",
    "kind": [
     "html"
    ],
@@ -49634,7 +49649,7 @@
     "/blog/how-to-calculate-liquidation-price/"
    ],
    "n": 1,
-   "w": 17
+   "w": 16
   },
   "zfG7u1X4OC": {
    "en": "The exact formula exchanges use to set your liquidation price on isolated margin, why leverage moves it toward your entry, and worked examples for longs and shorts at 10x, 20x and 100x.",
@@ -60832,9 +60847,9 @@
    "n": 1,
    "w": 33
   },
-  "uTlZrudcb5": {
-   "en": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/es/blog/mica-stablecoins-vs-usdt/\">Español</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
-   "es": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/es/blog/mica-stablecoins-vs-usdt/\">Español</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
+  "QmxvSC1IlV": {
+   "en": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
+   "es": "<a href=\"/blog/mica-stablecoins-vs-usdt/da/\">Dansk</a><a href=\"/blog/mica-stablecoins-vs-usdt/de/\">Deutsch</a><a href=\"/blog/mica-stablecoins-vs-usdt/fi/\">Suomi</a><a href=\"/blog/mica-stablecoins-vs-usdt/fr/\">Français</a><a href=\"/blog/mica-stablecoins-vs-usdt/nl/\">Nederlands</a><a href=\"/blog/mica-stablecoins-vs-usdt/no/\">Norsk</a><a href=\"/blog/mica-stablecoins-vs-usdt/pt/\">Português</a><a href=\"/blog/mica-stablecoins-vs-usdt/ru/\">Русский</a><a href=\"/blog/mica-stablecoins-vs-usdt/sv/\">Svenska</a><a href=\"/blog/mica-stablecoins-vs-usdt/tr/\">Türkçe</a>",
    "kind": [
     "html"
    ],
@@ -60842,7 +60857,7 @@
     "/blog/mica-stablecoins-vs-usdt/"
    ],
    "n": 1,
-   "w": 11
+   "w": 10
   },
   "4KoSN7V2sm": {
    "en": "USDC, EURC and EUR pairs explained for EU traders. Which stablecoins are MiCA-authorised, how they differ from USDT, and how to switch without losing liquidity.",
@@ -65486,9 +65501,9 @@
    "n": 1,
    "w": 33
   },
-  "nsHszwdGlq": {
-   "en": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/es/blog/usdt-mica-eu-2026/\">Español</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
-   "es": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/es/blog/usdt-mica-eu-2026/\">Español</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
+  "biVElCbNBW": {
+   "en": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
+   "es": "<a href=\"/blog/usdt-mica-eu-2026/da/\">Dansk</a><a href=\"/blog/usdt-mica-eu-2026/de/\">Deutsch</a><a href=\"/blog/usdt-mica-eu-2026/fi/\">Suomi</a><a href=\"/blog/usdt-mica-eu-2026/fr/\">Français</a><a href=\"/blog/usdt-mica-eu-2026/nl/\">Nederlands</a><a href=\"/blog/usdt-mica-eu-2026/no/\">Norsk</a><a href=\"/blog/usdt-mica-eu-2026/pt/\">Português</a><a href=\"/blog/usdt-mica-eu-2026/ru/\">Русский</a><a href=\"/blog/usdt-mica-eu-2026/sv/\">Svenska</a><a href=\"/blog/usdt-mica-eu-2026/tr/\">Türkçe</a>",
    "kind": [
     "html"
    ],
@@ -65496,7 +65511,7 @@
     "/blog/usdt-mica-eu-2026/"
    ],
    "n": 1,
-   "w": 11
+   "w": 10
   },
   "YrrAV3oVoG": {
    "en": "The EU's MiCA rules are reshaping stablecoin access. Why exchanges are restricting USDT for EU users, the mid-2026 transitional deadline, and what it means for your trading.",
@@ -69995,9 +70010,9 @@
    "n": 1,
    "w": 75
   },
-  "RjDJtZ6GHO": {
-   "en": "<a href=\"/bnb-liquidation-map/\">BNB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/bnb-liquidation-map/\">Mapa de liquidaciones de BNB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "blMpQFlnQu": {
+   "en": "<a href=\"/bnb-liquidation-map/\">BNB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/bnb-liquidation-map/\">Mapa de liquidaciones de BNB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -70005,7 +70020,7 @@
     "/bnb-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "fUIcYKDAuW": {
    "en": "Free BNB liquidation calculator. Find the exact BNB liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -70273,9 +70288,9 @@
    "n": 1,
    "w": 31
   },
-  "BvY22gPta6": {
-   "en": "<a href=\"/bnb-liquidation-calculator/\">BNB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/bnb-liquidation-calculator/\">Calculadora de liquidación de BNB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "hgqTk0xYuW": {
+   "en": "<a href=\"/bnb-liquidation-calculator/\">BNB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/bnb-liquidation-calculator/\">Calculadora de liquidación de BNB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -70283,7 +70298,7 @@
     "/bnb-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "UCJVhAoKD8": {
    "en": "Live BNB (BNB) liquidation map: real BNB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -70732,9 +70747,9 @@
    "n": 1,
    "w": 75
   },
-  "BQVuVUtUZW": {
-   "en": "<a href=\"/bonk-liquidation-map/\">BONK liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/bonk-liquidation-map/\">Mapa de liquidaciones de BONK</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "x47Ec9O-GV": {
+   "en": "<a href=\"/bonk-liquidation-map/\">BONK liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/bonk-liquidation-map/\">Mapa de liquidaciones de BONK</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -70742,7 +70757,7 @@
     "/bonk-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "n4cb7-f-r6": {
    "en": "Free BONK liquidation calculator. Find the exact Bonk liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -71010,9 +71025,9 @@
    "n": 1,
    "w": 31
   },
-  "uUsoRf_ac1": {
-   "en": "<a href=\"/bonk-liquidation-calculator/\">BONK liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/bonk-liquidation-calculator/\">Calculadora de liquidación de BONK</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "mvmydMLvEp": {
+   "en": "<a href=\"/bonk-liquidation-calculator/\">BONK liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/bonk-liquidation-calculator/\">Calculadora de liquidación de BONK</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -71020,7 +71035,7 @@
     "/bonk-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "HlteS9b2ad": {
    "en": "Live Bonk (BONK) liquidation map: real BONK liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -71456,9 +71471,9 @@
    "n": 1,
    "w": 75
   },
-  "QR3nhsjaCC": {
-   "en": "<a href=\"/btc-liquidation-map/\">BTC liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/btc-liquidation-map/\">Mapa de liquidaciones de BTC</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "2Omi4nlP7s": {
+   "en": "<a href=\"/btc-liquidation-map/\">BTC liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/btc-liquidation-map/\">Mapa de liquidaciones de BTC</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -71466,7 +71481,7 @@
     "/btc-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "pTqkVmgKqz": {
    "en": "Free BTC liquidation calculator. Find the exact Bitcoin liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -71734,9 +71749,9 @@
    "n": 1,
    "w": 31
   },
-  "o2Y1d42KP9": {
-   "en": "<a href=\"/btc-liquidation-calculator/\">BTC liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/btc-liquidation-calculator/\">Calculadora de liquidación de BTC</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "mKsSk2xq6Y": {
+   "en": "<a href=\"/btc-liquidation-calculator/\">BTC liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/btc-liquidation-calculator/\">Calculadora de liquidación de BTC</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -71744,7 +71759,7 @@
     "/btc-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "MZTk11KeSe": {
    "en": "Live Bitcoin (BTC) liquidation map: real BTC liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -86140,9 +86155,9 @@
    "n": 1,
    "w": 75
   },
-  "j5prdyx_dg": {
-   "en": "<a href=\"/doge-liquidation-map/\">DOGE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/doge-liquidation-map/\">Mapa de liquidación de DOGE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "FO3j7F5qHz": {
+   "en": "<a href=\"/doge-liquidation-map/\">DOGE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/doge-liquidation-map/\">Mapa de liquidaciones de DOGE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -86150,7 +86165,7 @@
     "/doge-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "ItLlqFotWC": {
    "en": "Free DOGE liquidation calculator. Find the exact Dogecoin liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -86418,9 +86433,9 @@
    "n": 1,
    "w": 31
   },
-  "HndnhRG90J": {
-   "en": "<a href=\"/doge-liquidation-calculator/\">DOGE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/doge-liquidation-calculator/\">Calculadora de liquidación de DOGE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidación en vivo</a>",
+  "1MRY7uGKyP": {
+   "en": "<a href=\"/doge-liquidation-calculator/\">DOGE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/doge-liquidation-calculator/\">Calculadora de liquidación de DOGE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -86428,7 +86443,7 @@
     "/doge-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "KiItDTEgd_": {
    "en": "Live Dogecoin (DOGE) liquidation map: real DOGE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -86876,9 +86891,9 @@
    "n": 1,
    "w": 75
   },
-  "TvCaqVkFv2": {
-   "en": "<a href=\"/dot-liquidation-map/\">DOT liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/dot-liquidation-map/\">Mapa de liquidación de DOT</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "-dDo8_WKyd": {
+   "en": "<a href=\"/dot-liquidation-map/\">DOT liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/dot-liquidation-map/\">Mapa de liquidaciones de DOT</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -86886,7 +86901,7 @@
     "/dot-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "QAcyDlTyYI": {
    "en": "Free DOT liquidation calculator. Find the exact Polkadot liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -87154,9 +87169,9 @@
    "n": 1,
    "w": 31
   },
-  "uvhqn-L5e9": {
-   "en": "<a href=\"/dot-liquidation-calculator/\">DOT liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/dot-liquidation-calculator/\">Calculadora de liquidación de DOT</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidación en vivo</a>",
+  "rh0nDZwiGk": {
+   "en": "<a href=\"/dot-liquidation-calculator/\">DOT liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/dot-liquidation-calculator/\">Calculadora de liquidación de DOT</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -87164,7 +87179,7 @@
     "/dot-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "Nc60CJfZ3l": {
    "en": "Live Polkadot (DOT) liquidation map: real DOT liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -89234,9 +89249,9 @@
    "n": 1,
    "w": 75
   },
-  "dMsifSgfFT": {
-   "en": "<a href=\"/eth-liquidation-map/\">ETH liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/eth-liquidation-map/\">Mapa de liquidaciones de ETH</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "VR6s82Btpv": {
+   "en": "<a href=\"/eth-liquidation-map/\">ETH liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/eth-liquidation-map/\">Mapa de liquidaciones de ETH</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -89244,7 +89259,7 @@
     "/eth-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "hb0qfwh0DW": {
    "en": "Free ETH liquidation calculator. Find the exact Ethereum liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -89512,9 +89527,9 @@
    "n": 1,
    "w": 31
   },
-  "C1VQl4ymYT": {
-   "en": "<a href=\"/eth-liquidation-calculator/\">ETH liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/eth-liquidation-calculator/\">Calculadora de liquidación de ETH</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "hIN3sJcB_f": {
+   "en": "<a href=\"/eth-liquidation-calculator/\">ETH liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/eth-liquidation-calculator/\">Calculadora de liquidación de ETH</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -89522,7 +89537,7 @@
     "/eth-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "lbiaRZT_3A": {
    "en": "Live Ethereum (ETH) liquidation map: real ETH liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -93964,9 +93979,9 @@
    "n": 1,
    "w": 75
   },
-  "5aJuJ808m5": {
-   "en": "<a href=\"/fil-liquidation-map/\">FIL liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/fil-liquidation-map/\">Mapa de liquidación de FIL</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "7wLxyz2qIK": {
+   "en": "<a href=\"/fil-liquidation-map/\">FIL liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/fil-liquidation-map/\">Mapa de liquidaciones de FIL</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -93974,7 +93989,7 @@
     "/fil-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "M4Ka5jY2jr": {
    "en": "Free FIL liquidation calculator. Find the exact Filecoin liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -94242,9 +94257,9 @@
    "n": 1,
    "w": 31
   },
-  "PR07cG3C80": {
-   "en": "<a href=\"/fil-liquidation-calculator/\">FIL liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/fil-liquidation-calculator/\">Calculadora de liquidación de FIL</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "7Shdrm4eWJ": {
+   "en": "<a href=\"/fil-liquidation-calculator/\">FIL liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/fil-liquidation-calculator/\">Calculadora de liquidación de FIL</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -94252,7 +94267,7 @@
     "/fil-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "bU02fVBlOZ": {
    "en": "Live Filecoin (FIL) liquidation map: real FIL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -94700,9 +94715,9 @@
    "n": 1,
    "w": 75
   },
-  "HQwJNyZpSG": {
-   "en": "<a href=\"/floki-liquidation-map/\">FLOKI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/floki-liquidation-map/\">Mapa de liquidación de FLOKI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "XF7MhNbeq4": {
+   "en": "<a href=\"/floki-liquidation-map/\">FLOKI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/floki-liquidation-map/\">Mapa de liquidaciones de FLOKI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -94710,7 +94725,7 @@
     "/floki-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "cfZk9unuPX": {
    "en": "Free FLOKI liquidation calculator. Find the exact Floki liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -94942,9 +94957,9 @@
    "n": 1,
    "w": 31
   },
-  "Owuq8DC9k4": {
-   "en": "<a href=\"/floki-liquidation-calculator/\">FLOKI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/floki-liquidation-calculator/\">Calculadora de liquidación de FLOKI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "QqcGo0xyfT": {
+   "en": "<a href=\"/floki-liquidation-calculator/\">FLOKI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/floki-liquidation-calculator/\">Calculadora de liquidación de FLOKI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -94952,7 +94967,7 @@
     "/floki-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "0ZcDWEw3a6": {
    "en": "Live Floki (FLOKI) liquidation map: real FLOKI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -106139,9 +106154,9 @@
    "n": 1,
    "w": 75
   },
-  "m-0CCDEwOQ": {
-   "en": "<a href=\"/hype-liquidation-map/\">HYPE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/hype-liquidation-map/\">Mapa de liquidaciones de HYPE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "W0NBWOoAwp": {
+   "en": "<a href=\"/hype-liquidation-map/\">HYPE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/hype-liquidation-map/\">Mapa de liquidaciones de HYPE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -106149,7 +106164,7 @@
     "/hype-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "Bc14wJB9YE": {
    "en": "Free HYPE liquidation calculator. Find the exact Hyperliquid liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -106417,9 +106432,9 @@
    "n": 1,
    "w": 31
   },
-  "IGzwiqkLZx": {
-   "en": "<a href=\"/hype-liquidation-calculator/\">HYPE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/hype-liquidation-calculator/\">Calculadora de liquidación de HYPE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "XuWrWtYB2x": {
+   "en": "<a href=\"/hype-liquidation-calculator/\">HYPE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/hype-liquidation-calculator/\">Calculadora de liquidación de HYPE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -106427,7 +106442,7 @@
     "/hype-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "IdM6D-v2tv": {
    "en": "Live Hyperliquid (HYPE) liquidation map: real HYPE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -112151,9 +112166,9 @@
    "n": 1,
    "w": 75
   },
-  "VYFTh8kpPr": {
-   "en": "<a href=\"/inj-liquidation-map/\">INJ liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/inj-liquidation-map/\">Mapa de liquidaciones de INJ</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "-x6i3IYbtT": {
+   "en": "<a href=\"/inj-liquidation-map/\">INJ liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/inj-liquidation-map/\">Mapa de liquidaciones de INJ</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -112161,7 +112176,7 @@
     "/inj-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "_760_5Utj-": {
    "en": "Free INJ liquidation calculator. Find the exact Injective liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -112429,9 +112444,9 @@
    "n": 1,
    "w": 31
   },
-  "TyiY-nBr5A": {
-   "en": "<a href=\"/inj-liquidation-calculator/\">INJ liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/inj-liquidation-calculator/\">Calculadora de liquidación de INJ</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "iQnlsO3gBD": {
+   "en": "<a href=\"/inj-liquidation-calculator/\">INJ liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/inj-liquidation-calculator/\">Calculadora de liquidación de INJ</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -112439,7 +112454,7 @@
     "/inj-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "LKW-2mg93n": {
    "en": "Live Injective (INJ) liquidation map: real INJ liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -118327,9 +118342,9 @@
    "n": 1,
    "w": 75
   },
-  "QTRt9hTrv2": {
-   "en": "<a href=\"/link-liquidation-map/\">LINK liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/link-liquidation-map/\">Mapa de liquidaciones de LINK</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "WCiWaqkanP": {
+   "en": "<a href=\"/link-liquidation-map/\">LINK liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/link-liquidation-map/\">Mapa de liquidaciones de LINK</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -118337,7 +118352,7 @@
     "/link-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "BVJX9ga5KI": {
    "en": "Free LINK liquidation calculator. Find the exact Chainlink liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -118605,9 +118620,9 @@
    "n": 1,
    "w": 31
   },
-  "RJyAx9_9Oc": {
-   "en": "<a href=\"/link-liquidation-calculator/\">LINK liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/link-liquidation-calculator/\">Calculadora de liquidación de LINK</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "T7EvPFsn0G": {
+   "en": "<a href=\"/link-liquidation-calculator/\">LINK liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/link-liquidation-calculator/\">Calculadora de liquidación de LINK</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -118615,7 +118630,7 @@
     "/link-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "zYFOL6rIvl": {
    "en": "Live Chainlink (LINK) liquidation map: real LINK liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -119930,9 +119945,9 @@
    "n": 1,
    "w": 14
   },
-  "3nHh6GTAAQ": {
-   "en": "<a href=\"/how-many-traders-liquidated-today/\">How many traders got liquidated today?</a><a href=\"/longs-or-shorts-liquidated-more/\">Are longs or shorts getting liquidated more?</a><a href=\"/biggest-liquidation-today/\">What is the biggest liquidation today?</a><a href=\"/is-funding-positive-or-negative/\">Is funding positive or negative right now?</a>",
-   "es": "<a href=\"/how-many-traders-liquidated-today/\">¿Cuántos traders fueron liquidados hoy?</a><a href=\"/longs-or-shorts-liquidated-more/\">¿Se están liquidando más los longs o los shorts?</a><a href=\"/biggest-liquidation-today/\">¿Cuál es la mayor liquidación de hoy?</a><a href=\"/is-funding-positive-or-negative/\">¿El funding está positivo o negativo ahora mismo?</a>",
+  "bkuBQml1eP": {
+   "en": "<a href=\"/how-many-traders-liquidated-today/\">How many traders got liquidated today?</a><a href=\"/longs-or-shorts-liquidated-more/\">Are longs or shorts getting liquidated more?</a><a href=\"/biggest-liquidation-today/\">What is the biggest liquidation today?</a><a href=\"/is-funding-positive-or-negative/\">Is funding positive or negative right now?</a><a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a>",
+   "es": "<a href=\"/how-many-traders-liquidated-today/\">¿Cuántos traders fueron liquidados hoy?</a><a href=\"/longs-or-shorts-liquidated-more/\">¿Se liquidan más los longs o los shorts?</a><a href=\"/biggest-liquidation-today/\">¿Cuál es la mayor liquidación de hoy?</a><a href=\"/is-funding-positive-or-negative/\">¿El funding está en positivo o negativo ahora mismo?</a><a href=\"/where-can-i-test-a-trading-bot/\">¿Dónde puedo probar un bot de trading gratis?</a>",
    "kind": [
     "html"
    ],
@@ -119940,7 +119955,7 @@
     "/liquidations/"
    ],
    "n": 1,
-   "w": 26
+   "w": 33
   },
   "TPR9fPZVZ1": {
    "en": "<span>© 2026 MarginPad</span> <span><a href=\"/screener\">Screener</a> · <a href=\"/rekt/\">Rekt</a> · <a href=\"/\">Tools</a> · <a href=\"/blog/\">Blog</a> · <a href=\"/terms/\">Terms</a> · <a href=\"/privacy/\">Privacy</a></span>",
@@ -121210,9 +121225,9 @@
    "n": 1,
    "w": 75
   },
-  "lqid20vNQl": {
-   "en": "<a href=\"/ltc-liquidation-map/\">LTC liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/ltc-liquidation-map/\">Mapa de liquidaciones de LTC</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "pcFHV2IgXj": {
+   "en": "<a href=\"/ltc-liquidation-map/\">LTC liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/ltc-liquidation-map/\">Mapa de liquidaciones de LTC</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -121220,7 +121235,7 @@
     "/ltc-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "qc652iccGI": {
    "en": "Free LTC liquidation calculator. Find the exact Litecoin liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -121488,9 +121503,9 @@
    "n": 1,
    "w": 31
   },
-  "Xu7fOIOuN0": {
-   "en": "<a href=\"/ltc-liquidation-calculator/\">LTC liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/ltc-liquidation-calculator/\">Calculadora de liquidación de LTC</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "eoY-0jm_ly": {
+   "en": "<a href=\"/ltc-liquidation-calculator/\">LTC liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/ltc-liquidation-calculator/\">Calculadora de liquidación de LTC</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -121498,7 +121513,7 @@
     "/ltc-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "VA3XXHLANB": {
    "en": "Live Litecoin (LTC) liquidation map: real LTC liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -124169,9 +124184,9 @@
    "n": 1,
    "w": 75
   },
-  "yiAaUjDnOW": {
-   "en": "<a href=\"/near-liquidation-map/\">NEAR liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/near-liquidation-map/\">Mapa de liquidaciones de NEAR</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "WXZzf2kLzq": {
+   "en": "<a href=\"/near-liquidation-map/\">NEAR liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/near-liquidation-map/\">Mapa de liquidaciones de NEAR</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -124179,7 +124194,7 @@
     "/near-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "NWFA2Upr5p": {
    "en": "Free NEAR liquidation calculator. Find the exact NEAR Protocol liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -124447,9 +124462,9 @@
    "n": 1,
    "w": 31
   },
-  "tC87lwnYTy": {
-   "en": "<a href=\"/near-liquidation-calculator/\">NEAR liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/near-liquidation-calculator/\">Calculadora de liquidación de NEAR</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "ZrHK5-GaSR": {
+   "en": "<a href=\"/near-liquidation-calculator/\">NEAR liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/near-liquidation-calculator/\">Calculadora de liquidación de NEAR</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -124457,7 +124472,7 @@
     "/near-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "OrQ4oYUcPd": {
    "en": "Live NEAR Protocol (NEAR) liquidation map: real NEAR liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -126702,9 +126717,9 @@
    "n": 1,
    "w": 75
   },
-  "I9zkg3dYS2": {
-   "en": "<a href=\"/op-liquidation-map/\">OP liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/op-liquidation-map/\">Mapa de liquidaciones de OP</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "JJGesX-Z_e": {
+   "en": "<a href=\"/op-liquidation-map/\">OP liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/op-liquidation-map/\">Mapa de liquidaciones de OP</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -126712,7 +126727,7 @@
     "/op-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "FPQY2ogjmt": {
    "en": "Free OP liquidation calculator. Find the exact Optimism liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -126980,9 +126995,9 @@
    "n": 1,
    "w": 31
   },
-  "Fkqdx-4zmj": {
-   "en": "<a href=\"/op-liquidation-calculator/\">OP liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/op-liquidation-calculator/\">Calculadora de liquidación de OP</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "r0Ntk2tIUN": {
+   "en": "<a href=\"/op-liquidation-calculator/\">OP liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/op-liquidation-calculator/\">Calculadora de liquidación de OP</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -126990,7 +127005,7 @@
     "/op-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "OFddCvacsy": {
    "en": "Live Optimism (OP) liquidation map: real OP liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -127667,9 +127682,9 @@
    "n": 1,
    "w": 75
   },
-  "W9G7TL-nyi": {
-   "en": "<a href=\"/ordi-liquidation-map/\">ORDI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/ordi-liquidation-map/\">Mapa de liquidaciones de ORDI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "3Fq_qH71-B": {
+   "en": "<a href=\"/ordi-liquidation-map/\">ORDI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/ordi-liquidation-map/\">Mapa de liquidaciones de ORDI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -127677,7 +127692,7 @@
     "/ordi-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "vwu94pKbPm": {
    "en": "Free ORDI liquidation calculator. Find the exact ORDI liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -127909,9 +127924,9 @@
    "n": 1,
    "w": 31
   },
-  "3vzdu292kr": {
-   "en": "<a href=\"/ordi-liquidation-calculator/\">ORDI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/ordi-liquidation-calculator/\">Calculadora de liquidación de ORDI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "PQbZyPOFRU": {
+   "en": "<a href=\"/ordi-liquidation-calculator/\">ORDI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/ordi-liquidation-calculator/\">Calculadora de liquidación de ORDI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -127919,7 +127934,7 @@
     "/ordi-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "iVf9bqDncX": {
    "en": "Live ORDI (ORDI) liquidation map: real ORDI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -129438,9 +129453,9 @@
    "n": 1,
    "w": 75
   },
-  "uUnv5mDpIJ": {
-   "en": "<a href=\"/pepe-liquidation-map/\">PEPE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/pepe-liquidation-map/\">Mapa de liquidaciones de PEPE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "kcnHokOovp": {
+   "en": "<a href=\"/pepe-liquidation-map/\">PEPE liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/pepe-liquidation-map/\">Mapa de liquidaciones de PEPE</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -129448,7 +129463,7 @@
     "/pepe-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "hf3JzCZveQ": {
    "en": "Free PEPE liquidation calculator. Find the exact Pepe liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -129716,9 +129731,9 @@
    "n": 1,
    "w": 31
   },
-  "wnzfWo6eDs": {
-   "en": "<a href=\"/pepe-liquidation-calculator/\">PEPE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/pepe-liquidation-calculator/\">Calculadora de liquidación de PEPE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "L5MtCGPhI0": {
+   "en": "<a href=\"/pepe-liquidation-calculator/\">PEPE liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/pepe-liquidation-calculator/\">Calculadora de liquidación de PEPE</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -129726,7 +129741,7 @@
     "/pepe-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "HEBgIdBNaa": {
    "en": "Live Pepe (PEPE) liquidation map: real PEPE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -138085,9 +138100,9 @@
    "n": 1,
    "w": 75
   },
-  "3rcnVTzEij": {
-   "en": "<a href=\"/sei-liquidation-map/\">SEI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/sei-liquidation-map/\">Mapa de liquidaciones de SEI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "Pr6RHqFQWO": {
+   "en": "<a href=\"/sei-liquidation-map/\">SEI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/sei-liquidation-map/\">Mapa de liquidaciones de SEI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -138095,7 +138110,7 @@
     "/sei-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "qI9D2gVORM": {
    "en": "Free SEI liquidation calculator. Find the exact Sei liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -138363,9 +138378,9 @@
    "n": 1,
    "w": 31
   },
-  "DwXSALUoQH": {
-   "en": "<a href=\"/sei-liquidation-calculator/\">SEI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/sei-liquidation-calculator/\">Calculadora de liquidación de SEI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "2XZL_Tvwlm": {
+   "en": "<a href=\"/sei-liquidation-calculator/\">SEI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/sei-liquidation-calculator/\">Calculadora de liquidación de SEI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -138373,7 +138388,7 @@
     "/sei-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "N2QP5vsax-": {
    "en": "Live Sei (SEI) liquidation map: real SEI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -138809,9 +138824,9 @@
    "n": 1,
    "w": 75
   },
-  "-_a4zXXPMc": {
-   "en": "<a href=\"/shib-liquidation-map/\">SHIB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/shib-liquidation-map/\">Mapa de liquidaciones de SHIB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "KIUS80eorQ": {
+   "en": "<a href=\"/shib-liquidation-map/\">SHIB liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/shib-liquidation-map/\">Mapa de liquidaciones de SHIB</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -138819,7 +138834,7 @@
     "/shib-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "HvaUWmAhxo": {
    "en": "Free SHIB liquidation calculator. Find the exact Shiba Inu liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -139087,9 +139102,9 @@
    "n": 1,
    "w": 31
   },
-  "gC4rKS-8f8": {
-   "en": "<a href=\"/shib-liquidation-calculator/\">SHIB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/shib-liquidation-calculator/\">Calculadora de liquidación de SHIB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "QpFHLpgfhu": {
+   "en": "<a href=\"/shib-liquidation-calculator/\">SHIB liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/shib-liquidation-calculator/\">Calculadora de liquidación de SHIB</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -139097,7 +139112,7 @@
     "/shib-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "aMD8yupisq": {
    "en": "Live Shiba Inu (SHIB) liquidation map: real SHIB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -139545,9 +139560,9 @@
    "n": 1,
    "w": 75
   },
-  "f8V-MbuKTg": {
-   "en": "<a href=\"/sol-liquidation-map/\">SOL liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/sol-liquidation-map/\">Mapa de liquidaciones de SOL</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "t_aMmJF-27": {
+   "en": "<a href=\"/sol-liquidation-map/\">SOL liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/sol-liquidation-map/\">Mapa de liquidaciones de SOL</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -139555,7 +139570,7 @@
     "/sol-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "Ap0HSjkdO6": {
    "en": "Free SOL liquidation calculator. Find the exact Solana liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -139823,9 +139838,9 @@
    "n": 1,
    "w": 31
   },
-  "XNo1RRnmJ6": {
-   "en": "<a href=\"/sol-liquidation-calculator/\">SOL liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/sol-liquidation-calculator/\">Calculadora de liquidación de SOL</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "jXTxo-ygkQ": {
+   "en": "<a href=\"/sol-liquidation-calculator/\">SOL liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/sol-liquidation-calculator/\">Calculadora de liquidación de SOL</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -139833,7 +139848,7 @@
     "/sol-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "aJLq2BMLC1": {
    "en": "Live Solana (SOL) liquidation map: real SOL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -142412,9 +142427,9 @@
    "n": 1,
    "w": 75
   },
-  "d8xkn4dMGb": {
-   "en": "<a href=\"/sui-liquidation-map/\">SUI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/sui-liquidation-map/\">Mapa de liquidaciones de SUI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "RLr2HE2BBi": {
+   "en": "<a href=\"/sui-liquidation-map/\">SUI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/sui-liquidation-map/\">Mapa de liquidaciones de SUI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -142422,7 +142437,7 @@
     "/sui-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "12GNJyYPsP": {
    "en": "Free SUI liquidation calculator. Find the exact Sui liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -142690,9 +142705,9 @@
    "n": 1,
    "w": 31
   },
-  "WV551WzKS3": {
-   "en": "<a href=\"/sui-liquidation-calculator/\">SUI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/sui-liquidation-calculator/\">Calculadora de liquidación de SUI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "Pp4KZlxrzy": {
+   "en": "<a href=\"/sui-liquidation-calculator/\">SUI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/sui-liquidation-calculator/\">Calculadora de liquidación de SUI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -142700,7 +142715,7 @@
     "/sui-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "vDWy7K5xBx": {
    "en": "Live Sui (SUI) liquidation map: real SUI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -143148,9 +143163,9 @@
    "n": 1,
    "w": 75
   },
-  "rM9brB-HW8": {
-   "en": "<a href=\"/tao-liquidation-map/\">TAO liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/tao-liquidation-map/\">Mapa de liquidaciones de TAO</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "kh5lIxn2LD": {
+   "en": "<a href=\"/tao-liquidation-map/\">TAO liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/tao-liquidation-map/\">Mapa de liquidaciones de TAO</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -143158,7 +143173,7 @@
     "/tao-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "Xh0IsEjOQ3": {
    "en": "Free TAO liquidation calculator. Find the exact Bittensor liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -143426,9 +143441,9 @@
    "n": 1,
    "w": 31
   },
-  "I2gIo7GNgA": {
-   "en": "<a href=\"/tao-liquidation-calculator/\">TAO liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/tao-liquidation-calculator/\">Calculadora de liquidación de TAO</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "9D-EWtrnWX": {
+   "en": "<a href=\"/tao-liquidation-calculator/\">TAO liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/tao-liquidation-calculator/\">Calculadora de liquidación de TAO</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -143436,7 +143451,7 @@
     "/tao-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "dpdigw9M_n": {
    "en": "Live Bittensor (TAO) liquidation map: real TAO liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -145029,9 +145044,9 @@
    "n": 1,
    "w": 75
   },
-  "ygFrbnKMiQ": {
-   "en": "<a href=\"/ton-liquidation-map/\">TON liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/ton-liquidation-map/\">Mapa de liquidaciones de TON</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "XvhhOLiyTG": {
+   "en": "<a href=\"/ton-liquidation-map/\">TON liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/ton-liquidation-map/\">Mapa de liquidaciones de TON</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -145039,7 +145054,7 @@
     "/ton-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "4NwQHQGrL2": {
    "en": "Free TON liquidation calculator. Find the exact Toncoin liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -145271,9 +145286,9 @@
    "n": 1,
    "w": 31
   },
-  "BQPtEZMvDE": {
-   "en": "<a href=\"/ton-liquidation-calculator/\">TON liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/ton-liquidation-calculator/\">Calculadora de liquidación de TON</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "NyRxo-gUmF": {
+   "en": "<a href=\"/ton-liquidation-calculator/\">TON liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/ton-liquidation-calculator/\">Calculadora de liquidación de TON</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -145281,7 +145296,7 @@
     "/ton-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "I54_b6jHOG": {
    "en": "Live Toncoin (TON) liquidation map: real TON liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -153011,9 +153026,9 @@
    "n": 1,
    "w": 75
   },
-  "jzlwXbpZV7": {
-   "en": "<a href=\"/trx-liquidation-map/\">TRX liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/trx-liquidation-map/\">Mapa de liquidación de TRX</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "e04saYJX09": {
+   "en": "<a href=\"/trx-liquidation-map/\">TRX liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/trx-liquidation-map/\">Mapa de liquidaciones de TRX</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -153021,7 +153036,7 @@
     "/trx-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "0_7KJsgTyc": {
    "en": "Free TRX liquidation calculator. Find the exact TRON liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -153289,9 +153304,9 @@
    "n": 1,
    "w": 31
   },
-  "MBxLP2Qvpz": {
-   "en": "<a href=\"/trx-liquidation-calculator/\">TRX liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/trx-liquidation-calculator/\">Calculadora de liquidación de TRX</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "zK_MV5HwQl": {
+   "en": "<a href=\"/trx-liquidation-calculator/\">TRX liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/trx-liquidation-calculator/\">Calculadora de liquidación de TRX</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -153299,7 +153314,7 @@
     "/trx-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "Va6YB9gwcX": {
    "en": "Live TRON (TRX) liquidation map: real TRX liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -153735,9 +153750,9 @@
    "n": 1,
    "w": 75
   },
-  "00xuvxWYZw": {
-   "en": "<a href=\"/uni-liquidation-map/\">UNI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/uni-liquidation-map/\">Mapa de liquidación de UNI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "iri_HJNfb6": {
+   "en": "<a href=\"/uni-liquidation-map/\">UNI liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/uni-liquidation-map/\">Mapa de liquidaciones de UNI</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -153745,7 +153760,7 @@
     "/uni-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "0mVUwKx52h": {
    "en": "Free UNI liquidation calculator. Find the exact Uniswap liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -154013,9 +154028,9 @@
    "n": 1,
    "w": 31
   },
-  "uURRWwTTER": {
-   "en": "<a href=\"/uni-liquidation-calculator/\">UNI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/uni-liquidation-calculator/\">Calculadora de liquidación de UNI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "H8-C9MBXRF": {
+   "en": "<a href=\"/uni-liquidation-calculator/\">UNI liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/uni-liquidation-calculator/\">Calculadora de liquidación de UNI</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -154023,7 +154038,7 @@
     "/uni-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "4NLwOwWccf": {
    "en": "Live Uniswap (UNI) liquidation map: real UNI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -155057,6 +155072,401 @@
    ],
    "n": 1,
    "w": 5
+  },
+  "vvPbop0DBC": {
+   "en": "Where Can I Test a Trading Bot for Free? - Live Paper-Trading API | MarginPad",
+   "es": "¿Dónde Puedo Probar un Bot de Trading Gratis? - API de Paper Trading en Vivo | MarginPad",
+   "kind": [
+    "title",
+    "attr:content"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 11
+  },
+  "XM4FqjjsE5": {
+   "en": "Where can I test a trading bot for free?",
+   "es": "¿Dónde puedo probar un bot de trading gratis?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 3,
+   "w": 7
+  },
+  "RLyW00AWtn": {
+   "en": "Answered with our own numbers: what is running on MarginPad’s paper-trading API right now, and what it costs to put a bot on it.",
+   "es": "Respondido con nuestros propios números: qué está corriendo ahora mismo en la API de paper trading de MarginPad y cuánto cuesta poner un bot a operar en ella.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 23
+  },
+  "W3IqpW8G_0": {
+   "en": "<a class=\"ask-cta\" href=\"/trading-api/\">The full Bot API reference</a><a class=\"ask-cta alt\" href=\"/arena/\">The public bot arena</a><a class=\"ask-cta alt\" href=\"/paper-trade\">Paper trade by hand</a><a class=\"ask-cta alt\" href=\"/crypto-backtester/\">Backtest an idea first</a>",
+   "es": "<a class=\"ask-cta\" href=\"/trading-api/\">La referencia completa del Bot API</a><a class=\"ask-cta alt\" href=\"/arena/\">La arena pública de bots</a><a class=\"ask-cta alt\" href=\"/paper-trade\">Practica paper trading a mano</a><a class=\"ask-cta alt\" href=\"/crypto-backtester/\">Haz un backtest de la idea primero</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "A5Co5W6CGM": {
+   "en": "Why an exchange testnet is not the same test",
+   "es": "Por qué un testnet de un exchange no es la misma prueba",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "d0qjdqC9nA": {
+   "en": "The obvious answer to this question is \"the exchange testnet\", and it is the wrong one often enough to be worth saying plainly. Testnet order books are thin, so a fill you get there is a fill you would not get with real liquidity. Testnet prices drift from the real market, sometimes by percent, because nothing arbitrages them back. And testnets are reset on the operator’s schedule, which ends a forward test that was two weeks into proving something.",
+   "es": "La respuesta obvia a esta pregunta es “el testnet del exchange”, y se equivoca las veces suficientes como para merecer decirlo con claridad. Los libros de órdenes de un testnet son delgados, así que una ejecución que consigues ahí es una ejecución que no conseguirías con liquidez real. Los precios de un testnet se alejan del mercado real, a veces por varios puntos porcentuales, porque nada los arbitra de vuelta. Y los testnets se reinician según el calendario del operador, lo que corta en seco una prueba en vivo que llevaba dos semanas demostrando algo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 76
+  },
+  "sCoxY72q64": {
+   "en": "The alternative is to keep the prices real and simulate only the money. Everything on this page is priced from the same live multi-exchange feed our charts and our own paper terminal run on. Your bot places real orders against real prices; what is simulated is the dollar that settles.",
+   "es": "La alternativa es mantener los precios reales y simular solo el dinero. Todo en esta página se cotiza con el mismo feed multi-exchange en vivo que usan nuestros gráficos y nuestro propio terminal de paper trading. Tu bot coloca órdenes reales contra precios reales; lo que se simula es el dólar que se liquida.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 50
+  },
+  "uLXQQTHhml": {
+   "en": "What has to be simulated before a test means anything",
+   "es": "Qué se debe simular para que una prueba signifique algo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "VrH68RddNB": {
+   "en": "A simulator that fills every order at the mid price and charges nothing will tell you that almost any strategy works. Four things decide whether a paper result survives contact with an exchange:",
+   "es": "Un simulador que ejecuta cada orden al precio medio y no cobra nada te va a decir que casi cualquier estrategia funciona. Cuatro cosas deciden si un resultado en paper trading sobrevive al contacto con un exchange:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 31
+  },
+  "QYOAyvxdrV": {
+   "en": "<strong>Fees on both legs.</strong> A taker fee is charged when you open and again when you close. On a $10,000 crypto position that is about $11 a round trip. Any strategy whose average winner is smaller than its round trip is a losing strategy no matter how often it is right, and a simulator that hides the fee hides exactly that. You can also charge the paper account at a named venue’s published schedule, so the test settles the way the live account will.",
+   "es": "<strong>Comisiones en ambos lados.</strong> Se cobra una comisión taker al abrir y otra al cerrar. En una posición de $10,000 en cripto eso es cerca de $11 por ida y vuelta. Cualquier estrategia cuya ganancia promedio sea menor que ese ida y vuelta es una estrategia perdedora sin importar cuántas veces acierte, y un simulador que oculta la comisión oculta justo eso. También puedes cobrar la cuenta de paper trading con la tarifa publicada de un exchange en concreto, para que la prueba liquide igual que lo haría la cuenta real.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 78
+  },
+  "JHO1dC46OX": {
+   "en": "<strong>Funding.</strong> Perpetuals pay funding periodically. A position held across marks accrues it, and a carry strategy that ignores it is measuring the wrong thing.",
+   "es": "<strong>Funding.</strong> Los perpetuos pagan funding periódicamente. Una posición que se mantiene abierta a través de los marks lo va acumulando, y una estrategia de carry que lo ignora está midiendo la cosa equivocada.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 22
+  },
+  "l4L26s9-Bx": {
+   "en": "<strong>Liquidation, on the wick.</strong> Isolated margin with a maintenance rate, checked against one-minute candle extremes rather than closes, so a spike that retraced still takes the position. A simulator that only checks closes will under-report exactly the events that kill real accounts.",
+   "es": "<strong>Liquidación, sobre la mecha.</strong> Margen aislado con una tasa de mantenimiento, comprobada contra los extremos de la vela de un minuto y no contra los cierres, así que un pico que luego se retrace igual liquida la posición. Un simulador que solo revisa los cierres va a subestimar justo los eventos que acaban con cuentas reales.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 39
+  },
+  "EFn0W2pnWt": {
+   "en": "<strong>Orders that outlive your process.</strong> Limit entries, stop entries, stop-losses, targets and trailing stops have to be evaluated on the server. If they only exist while your script is running, you are testing your uptime, not your strategy.",
+   "es": "<strong>Órdenes que sobreviven a tu proceso.</strong> Las entradas límite, las entradas stop, los stop-loss, los objetivos y los trailing stops se tienen que evaluar en el servidor. Si solo existen mientras tu script está corriendo, estás probando tu uptime, no tu estrategia.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 38
+  },
+  "cw72gFSFHM": {
+   "en": "Backtest, paper, live - and why the middle one gets skipped",
+   "es": "Backtest, paper trading, en vivo - y por qué el del medio se salta",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "sf_ciEbfOf": {
+   "en": "A backtest replays historical candles. It is fast, it filters obvious losers, and it cannot catch a race condition in your order logic, a position-sizing bug that only appears after a losing streak, or leverage that quietly grows past what the margin survives. Those are the failures that empty accounts, and they only show up when the same code runs forward against prices nobody has seen yet.",
+   "es": "Un backtest reproduce velas históricas. Es rápido, filtra las pérdidas obvias, y no puede detectar una race condition en la lógica de tus órdenes, un bug de tamaño de posición que solo aparece después de una racha perdedora, o un apalancamiento que crece en silencio más allá de lo que el margen aguanta. Esas son las fallas que vacían cuentas, y solo aparecen cuando el mismo código corre hacia adelante contra precios que nadie ha visto todavía.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 63
+  },
+  "8H5xrduRnl": {
+   "en": "Forward testing is the step most people skip, because it costs time rather than money. It is also the only stage that runs the exact code path that will run live. Do all three in order: backtest the idea, forward-test the bot for days or weeks, and fund an exchange account only once the paper result holds.",
+   "es": "La prueba en vivo es el paso que casi todos se saltan, porque cuesta tiempo en vez de dinero. También es la única etapa que corre exactamente el mismo código que va a correr en real. Haz las tres en orden: haz el backtest de la idea, pon el bot a prueba en vivo durante días o semanas, y financia una cuenta de exchange solo una vez que el resultado en paper trading se sostenga.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 57
+  },
+  "Imbz1bHo0y": {
+   "en": "Start in three calls",
+   "es": "Empieza con tres llamadas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "ubwBTv6uAC": {
+   "en": "The first one needs no key at all. <code>GET /api/bot/v1/price?symbol=BTC</code> is keyless and CORS-enabled, so it works from a terminal or a browser tab right now. Sign in with an email to mint a key, then <code>POST /api/bot/v1/open</code> places a leveraged position at the live price and returns its liquidation level, and <code>GET /api/bot/v1/positions</code> reports what happened while you were away. Stops, targets and liquidations settle on our side whether or not your bot is connected.",
+   "es": "La primera no necesita ninguna clave. <code>GET /api/bot/v1/price?symbol=BTC</code> no requiere clave y tiene CORS habilitado, así que funciona desde una terminal o una pestaña del navegador ahora mismo. Inicia sesión con un correo para generar una clave, luego <code>POST /api/bot/v1/open</code> abre una posición apalancada al precio en vivo y devuelve su nivel de liquidación, y <code>GET /api/bot/v1/positions</code> reporta qué pasó mientras no estabas. Los stops, los objetivos y las liquidaciones se resuelven de nuestro lado, esté tu bot conectado o no.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 72
+  },
+  "Ru67GS4kE0": {
+   "en": "Official one-file clients with no dependencies ship for <a href=\"/assets/sdk/marginpad.py\">Python</a> and <a href=\"/assets/sdk/marginpad.js\">Node</a>, an MCP server at <code>https://marginpad.io/mcp</code> exposes the same account to Claude, ChatGPT or Cursor, and the full reference with a quickstart lives on <a href=\"/trading-api/\">the Bot API page</a>. The free plan is the whole engine: 120 requests a minute, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint.",
+   "es": "Hay clientes oficiales de un solo archivo y sin dependencias para <a href=\"/assets/sdk/marginpad.py\">Python</a> y <a href=\"/assets/sdk/marginpad.js\">Node</a>, un servidor MCP en <code>https://marginpad.io/mcp</code> expone la misma cuenta a Claude, ChatGPT o Cursor, y la referencia completa con una guía rápida vive en <a href=\"/trading-api/\">la página del Bot API</a>. El plan gratis trae el motor completo: 120 peticiones por minuto, tres claves, cincuenta posiciones abiertas, el stream por WebSocket, replay de un día pasado y todos los endpoints de datos de mercado sin clave.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 64
+  },
+  "thnm6SpOKK": {
+   "en": "On MarginPad’s paper-trading API. Your bot opens leveraged positions at real live crypto prices and they settle on our servers in simulated dollars, with fees on both legs, funding, and liquidation checked against one-minute candle extremes. There is no deposit, no card and no KYC - an email gets you an API key, and the free plan carries the whole engine at 120 requests a minute.",
+   "es": "En la API de paper trading de MarginPad. Tu bot abre posiciones apalancadas a precios reales en vivo de cripto y se liquidan en nuestros servidores en dólares simulados, con comisiones en ambos lados, funding, y liquidación comprobada contra los extremos de la vela de un minuto. No hay depósito, ni tarjeta ni KYC - con un correo obtienes una clave API, y el plan gratis trae el motor completo a 120 peticiones por minuto.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 64
+  },
+  "leK9xdNRqc": {
+   "en": "Is paper trading a bot actually useful, or should I just go live small?",
+   "es": "¿De verdad sirve hacer paper trading con un bot, o debería simplemente ir en vivo con poco dinero?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 12
+  },
+  "tv2lnwL7ZC": {
+   "en": "Going live small still exposes you to the failures that matter, and it does so at the worst possible time - when you have least information about why something broke. Forward testing runs the same code path against the same live prices with the consequences removed, so a race condition in your order logic or a sizing bug after a losing streak costs a log line instead of an account. Go live small after the paper result holds, not instead of it.",
+   "es": "Ir en vivo con poco dinero igual te expone a las fallas que importan, y lo hace en el peor momento posible - cuando menos información tienes sobre por qué algo se rompió. La prueba en vivo corre exactamente el mismo código contra los mismos precios en vivo pero sin las consecuencias, así que una race condition en la lógica de tus órdenes o un bug de tamaño después de una racha perdedora te cuesta una línea de log en vez de una cuenta. Ve en vivo con poco dinero después de que el resultado en paper trading se sostenga, no en lugar de eso.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 77
+  },
+  "U7wQqDTKaT": {
+   "en": "Can an AI agent trade on it?",
+   "es": "¿Puede un agente de IA operar en ella?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 7
+  },
+  "tbNFgxvEsV": {
+   "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 27 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.",
+   "es": "Sí. MarginPad tiene un servidor MCP remoto en https://marginpad.io/mcp con 27 herramientas, así que un asistente como Claude, ChatGPT o Cursor puede leer el mercado y operar una cuenta de paper trading directamente, sin código de por medio. Las herramientas de datos de mercado no necesitan ninguna clave; las de paper trading piden una clave API gratis en un header X-API-Key. Nada de eso puede tocar dinero real.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 55
+  },
+  "7ZC8ra2Zbo": {
+   "en": "What does it cost?",
+   "es": "¿Cuánto cuesta?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 4
+  },
+  "mMybwAGawS": {
+   "en": "Nothing to run a bot on it. The free plan is 120 requests a minute per key, three keys and fifty open positions, with the full trading engine, replay, the WebSocket stream, the MCP server and all keyless market data. Paid plans raise those ceilings and add webhooks and AI market reads; they do not unlock the product.",
+   "es": "Nada por correr un bot en ella. El plan gratis es de 120 peticiones por minuto por clave, tres claves y cincuenta posiciones abiertas, con el motor de trading completo, replay, el stream por WebSocket, el servidor MCP y todos los datos de mercado sin clave. Los planes pagos suben esos límites y agregan webhooks y lecturas de mercado con IA; no desbloquean el producto.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 56
+  },
+  "vLO9yoAVyz": {
+   "en": "Do the paper trades show up anywhere public?",
+   "es": "¿Las operaciones en paper trading aparecen en algún lugar público?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 8
+  },
+  "faxFCaHk0q": {
+   "en": "Only if you want them to. Any account or book that closes at least five bot-opened trades in the current 14-day season is ranked on the public bot arena at /arena/ by realized profit and loss net of fees and funding. There is nothing to sign up for and no prize - trade through the API and the board picks you up.",
+   "es": "Solo si quieres. Cualquier cuenta o book que cierre al menos cinco operaciones abiertas por un bot en la temporada actual de 14 días entra en la clasificación de la arena pública de bots en /arena/, por ganancia y pérdida realizada neta de comisiones y funding. No hay nada que registrar ni ningún premio - opera a través de la API y la tabla te suma sola.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 61
+  },
+  "VV9vzUDj1C": {
+   "en": "Related: <a href=\"/trading-api/\">the full Bot API reference</a> &middot; <a href=\"/arena/\">the public bot arena</a> &middot; <a href=\"/paper-trade\">paper trade by hand</a> &middot; <a href=\"/crypto-backtester/\">backtest an idea first</a>",
+   "es": "Relacionado: <a href=\"/trading-api/\">la referencia completa del Bot API</a> &middot; <a href=\"/arena/\">la arena pública de bots</a> &middot; <a href=\"/paper-trade\">practica paper trading a mano</a> &middot; <a href=\"/crypto-backtester/\">haz un backtest de la idea primero</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 18
+  },
+  "sptrPlu3EP": {
+   "en": "Point a crypto trading bot at a free paper-trading API on real live prices: leveraged positions, limit and stop orders, trailing stops and liquidation, all settled server-side. No deposit, no KYC, no card.",
+   "es": "Conecta un bot de trading de cripto a una API de paper trading gratis con precios reales en vivo: posiciones apalancadas, órdenes límite y stop, trailing stops y liquidación, todo resuelto en el servidor. Sin depósito, sin KYC, sin tarjeta.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 2,
+   "w": 31
+  },
+  "4iyukMYldb": {
+   "en": "MarginPad bot arena (paper-trading season board)",
+   "es": "Arena de bots de MarginPad (tabla de temporada de paper trading)",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "TRFqgPF8yN": {
+   "en": "Every account or book that closed at least five bot-opened paper trades in the current 14-day season, ranked by realized profit and loss net of fees and funding, with win rate, return on the $10,000 scorecard and liquidations.",
+   "es": "Cada cuenta o book que cerró al menos cinco operaciones de paper trading abiertas por un bot en la temporada actual de 14 días, clasificadas por ganancia y pérdida realizada neta de comisiones y funding, con tasa de acierto, rendimiento sobre el marcador de $10,000 y liquidaciones.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 1,
+   "w": 38
   },
   "TIZDeIVJ3N": {
    "en": "Where To Start - Crypto Trading for Complete Beginners | MarginPad",
@@ -157849,9 +158259,9 @@
    "n": 1,
    "w": 75
   },
-  "pElWyOZBU7": {
-   "en": "<a href=\"/wif-liquidation-map/\">WIF liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/wif-liquidation-map/\">Mapa de liquidación de WIF</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "WiNO_U8l_r": {
+   "en": "<a href=\"/wif-liquidation-map/\">WIF liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/wif-liquidation-map/\">Mapa de liquidaciones de WIF</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -157859,7 +158269,7 @@
     "/wif-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "CQTeD5Mo61": {
    "en": "Free WIF liquidation calculator. Find the exact dogwifhat liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -158127,9 +158537,9 @@
    "n": 1,
    "w": 31
   },
-  "i-M2CcRast": {
-   "en": "<a href=\"/wif-liquidation-calculator/\">WIF liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/wif-liquidation-calculator/\">Calculadora de liquidación de WIF</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "n6lcYI6cQU": {
+   "en": "<a href=\"/wif-liquidation-calculator/\">WIF liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/wif-liquidation-calculator/\">Calculadora de liquidación de WIF</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -158137,7 +158547,7 @@
     "/wif-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "wFj-4XYze-": {
    "en": "Live dogwifhat (WIF) liquidation map: real WIF liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
@@ -160531,9 +160941,9 @@
    "n": 1,
    "w": 75
   },
-  "rN-6TG9aAp": {
-   "en": "<a href=\"/xrp-liquidation-map/\">XRP liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a>",
-   "es": "<a href=\"/xrp-liquidation-map/\">Mapa de liquidación de XRP</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a>",
+  "Hci7UhE-eo": {
+   "en": "<a href=\"/xrp-liquidation-map/\">XRP liquidation map</a><a href=\"/calculators\">All calculators</a><a href=\"/paper-trade\">Practice with paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a>",
+   "es": "<a href=\"/xrp-liquidation-map/\">Mapa de liquidaciones de XRP</a><a href=\"/calculators\">Todas las calculadoras</a><a href=\"/paper-trade\">Practica con paper trading</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a>",
    "kind": [
     "html"
    ],
@@ -160541,7 +160951,7 @@
     "/xrp-liquidation-calculator/"
    ],
    "n": 1,
-   "w": 9
+   "w": 16
   },
   "WBiYEncQ7V": {
    "en": "Free XRP liquidation calculator. Find the exact XRP liquidation price for any leverage and position, long or short. Instant, private, no signup.",
@@ -160809,9 +161219,9 @@
    "n": 1,
    "w": 31
   },
-  "-122IYShOm": {
-   "en": "<a href=\"/xrp-liquidation-calculator/\">XRP liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a>",
-   "es": "<a href=\"/xrp-liquidation-calculator/\">Calculadora de liquidación de XRP</a><a href=\"/liquidations/\">Todas las liquidaciones (totales 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a>",
+  "vOV39kOnSn": {
+   "en": "<a href=\"/xrp-liquidation-calculator/\">XRP liquidation calculator</a><a href=\"/liquidations/\">All liquidations (24h totals)</a><a href=\"/rekt/\">Live liquidation feed</a><a href=\"/where-can-i-test-a-trading-bot/\">Test a trading bot on live prices, free</a><a href=\"/trading-api/\">Paper-trading Bot API</a>",
+   "es": "<a href=\"/xrp-liquidation-calculator/\">Calculadora de liquidación de XRP</a><a href=\"/liquidations/\">Todas las liquidaciones (totales de 24h)</a><a href=\"/rekt/\">Feed de liquidaciones en vivo</a><a href=\"/where-can-i-test-a-trading-bot/\">Prueba un bot de trading con precios en vivo, gratis</a><a href=\"/trading-api/\">Bot API de paper trading</a>",
    "kind": [
     "html"
    ],
@@ -160819,7 +161229,7 @@
     "/xrp-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 20
   },
   "FUiUn7ZdLF": {
    "en": "Live XRP (XRP) liquidation map: real XRP liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
