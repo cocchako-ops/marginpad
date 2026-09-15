@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T01:57:34.861Z",
+  "generated": "2026-09-15T02:12:49.223Z",
   "pages": 373,
-  "occurrences": 25190,
-  "unique": 13332,
-  "words": 247983,
+  "occurrences": 25164,
+  "unique": 13326,
+  "words": 248022,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T01:58:37.144Z"
+  "merged": "2026-09-15T02:13:22.986Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -9040,10 +9040,9 @@
     "html"
    ],
    "ctx": [
-    "/api/",
-    "/trading-api/"
+    "/api/"
    ],
-   "n": 16,
+   "n": 4,
    "w": 1
   },
   "dj25905nTH": {
@@ -10801,10 +10800,9 @@
    ],
    "ctx": [
     "/app.html",
-    "/spot/",
-    "/trading-api/"
+    "/spot/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 1
   },
   "BJLQQ88bfb": {
@@ -97636,10 +97634,9 @@
     "html"
    ],
    "ctx": [
-    "/free-crypto-api/",
-    "/trading-api/"
+    "/free-crypto-api/"
    ],
-   "n": 11,
+   "n": 8,
    "w": 1
   },
   "cVrwtNlSSP": {
@@ -148344,18 +148341,6 @@
    "n": 1,
    "w": 7
   },
-  "mlmjLj7KRY": {
-   "en": "Commercial use",
-   "es": "Uso comercial",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 4,
-   "w": 2
-  },
   "w6lvuBgh0G": {
    "en": "Get Pro",
    "es": "Elegir Pro",
@@ -148584,6 +148569,18 @@
    "n": 1,
    "w": 2
   },
+  "crELTr-Zz0": {
+   "en": "What changes with the plan",
+   "es": "Lo que cambia con el plan",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
   "8WuG6ZSvAS": {
    "en": "Pro &middot; $29",
    "es": "Pro &middot; $29",
@@ -148632,9 +148629,9 @@
    "n": 1,
    "w": 5
   },
-  "Zfkl2wWyyh": {
-   "en": "Market-data API (<code>/api/v1/*</code>) with your key",
-   "es": "API de datos de mercado (<code>/api/v1/*</code>) con tu clave",
+  "eYSUJ8gI0q": {
+   "en": "Market-data API (<code>/api/v1/*</code>) with your key<br><span class=\"sub\">60 / min per IP without a key, on every plan</span>",
+   "es": "API de datos de mercado (<code>/api/v1/*</code>) con tu clave<br><span class=\"sub\">60 / min por IP sin clave, en todos los planes</span>",
    "kind": [
     "html"
    ],
@@ -148642,11 +148639,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 15
   },
-  "hq7Z2S5OMQ": {
-   "en": "120 / min<br><span style=\"color:var(--faint)\">(60 / min per IP without a key)</span>",
-   "es": "120 / min<br><span style=\"color:var(--faint)\">(60 / min por IP sin clave)</span>",
+  "_RoKjIQua9": {
+   "en": "120 / min",
+   "es": "120 / min",
    "kind": [
     "html"
    ],
@@ -148654,7 +148651,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 2
   },
   "JInU8bezlq": {
    "en": "<b>600 / min</b>",
@@ -148716,9 +148713,9 @@
    "n": 1,
    "w": 4
   },
-  "sC03RumwIi": {
-   "en": "<a href=\"#books\">Books</a> (separate journals)",
-   "es": "<a href=\"#books\">Books</a> (diarios separados)",
+  "XsjnZ9qa5v": {
+   "en": "<a href=\"#books\">Books</a> - separate journals, one per strategy",
+   "es": "<a href=\"#books\">Books</a> - diarios separados, uno por estrategia",
    "kind": [
     "html"
    ],
@@ -148726,11 +148723,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
+   "w": 6
   },
-  "egSfxSmbBw": {
-   "en": "<b>Webhooks</b> (signed, retried)",
-   "es": "<b>Webhooks</b> (firmados, con reintentos)",
+  "2tsjf3jiyk": {
+   "en": "<b>Webhooks</b> - signed, retried, delivered while you are offline",
+   "es": "<b>Webhooks</b> - firmados, con reintentos, entregados aunque estés desconectado",
    "kind": [
     "html"
    ],
@@ -148738,7 +148735,19 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
+   "w": 8
+  },
+  "cfjnl25MvE": {
+   "en": "none",
+   "es": "ninguno",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 2,
+   "w": 1
   },
   "Y8vm_1TiGo": {
    "en": "<b>AI market read</b> <code>/v1/ai</code>",
@@ -148752,9 +148761,9 @@
    "n": 1,
    "w": 4
   },
-  "lkbz7-6gky": {
-   "en": "<b>50 a day</b>",
-   "es": "<b>50 al día</b>",
+  "Wp41eUKAir": {
+   "en": "<b>50</b> a day",
+   "es": "<b>50</b> al día",
    "kind": [
     "html"
    ],
@@ -148764,9 +148773,9 @@
    "n": 1,
    "w": 2
   },
-  "Rr595J11pR": {
-   "en": "<b>200 a day</b>",
-   "es": "<b>200 al día</b>",
+  "TzMeLXe9jG": {
+   "en": "<b>200</b> a day",
+   "es": "<b>200</b> al día",
    "kind": [
     "html"
    ],
@@ -148776,9 +148785,9 @@
    "n": 1,
    "w": 2
   },
-  "-BrcMlfG2h": {
-   "en": "<b>500 a day</b>",
-   "es": "<b>500 al día</b>",
+  "FaWwHgKSPp": {
+   "en": "<b>500</b> a day",
+   "es": "<b>500</b> al día",
    "kind": [
     "html"
    ],
@@ -148824,9 +148833,9 @@
    "n": 3,
    "w": 2
   },
-  "8i_hHyVSB3": {
-   "en": "Market data, candles, calculators, liquidation feed",
-   "es": "Datos de mercado, velas, calculadoras y feed de liquidaciones",
+  "4WGp651-a5": {
+   "en": "<b>On every plan, Free included:</b> the whole trading engine - market, limit and stop orders, trailing stops, partial closes, dry run and <a href=\"#replay\">replay</a> - the <a href=\"#stream\">WebSocket stream</a>, the <a href=\"#mcp\">MCP server</a>, the <a href=\"#fees\">fee schedule of 9 real venues</a>, $1 to $100,000 of margin per trade at up to 1000&times; leverage, and every keyless market-data endpoint at full speed. The paid plans move ceilings. They do not unlock the product.",
+   "es": "<b>En todos los planes, Free incluido:</b> el motor de trading completo - órdenes market, limit y stop, trailing stops, cierres parciales, dry run y <a href=\"#replay\">replay</a> -, el <a href=\"#stream\">stream por WebSocket</a>, el <a href=\"#mcp\">servidor MCP</a>, las <a href=\"#fees\">tarifas de 9 exchanges reales</a>, de $1 a $100,000 de margen por operación con hasta 1000&times; de apalancamiento, y todos los endpoints de datos de mercado sin clave a máxima velocidad. Los planes de pago mueven los topes. No desbloquean el producto.",
    "kind": [
     "html"
    ],
@@ -148834,91 +148843,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
-  },
-  "jMwQgjYULw": {
-   "en": "unlimited, no key",
-   "es": "ilimitado, sin clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "_zOQVXM1uo": {
-   "en": "same",
-   "es": "igual",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "JDhMto9re_": {
-   "en": "<b>WebSocket stream</b> &middot; MCP &middot; replay",
-   "es": "<b>Stream por WebSocket</b> &middot; MCP &middot; replay",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "RMuazHtLj1": {
-   "en": "Market, limit &amp; stop orders, trailing stops, modify, dry run",
-   "es": "Órdenes market, limit y stop, trailing stops, modificación y dry run",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "78T3Mjw3Ko": {
-   "en": "Fee schedule of a real venue (<a href=\"#fees\">9 venues</a>)",
-   "es": "Tarifas de un exchange real (<a href=\"#fees\">9 exchanges</a>)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "3gEwNPG7LU": {
-   "en": "Margin per trade / leverage",
-   "es": "Margen por operación / apalancamiento",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "mILdjaV_l8": {
-   "en": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; the same on all four",
-   "es": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; igual en los cuatro",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 8
+   "w": 65
   },
   "wEVfZ5fc_Y": {
    "en": "<b>Premium is a different product.</b> A <a href=\"/premium/\">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.",

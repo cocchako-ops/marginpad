@@ -69,6 +69,26 @@
   pre b{color:var(--lime);font-weight:400;}
   pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
   .shell{max-width:var(--shell);margin:0 auto;padding:0 28px;}
+
+  /* ── live background, ported from the bento homepage (desktop only) ──────────────────────────────────
+     Two things that were learned there and must not be undone here:
+     1. body carries an opaque --bg and a z-index:-1 layer paints BELOW block backgrounds, so the aurora
+        was being painted over by the page itself. The ground colour lives on html, which paints first.
+     2. The drift is driven by the Web Animations API, never @keyframes: the owner's Windows has
+        animation effects off, which silences every @keyframes on his machine. WAAPI still plays, and
+        Chrome hands a pure transform animation to the compositor, so three blurred blobs cost nothing. */
+  .bgfx{display:none;}
+  @media(min-width:941px){
+    html{background:var(--bg);}
+    body{background:transparent;}
+    .bgfx{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+    .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(92,214,230,.06),transparent 65%);}
+    .bgfx::before{content:'';position:absolute;inset:0;background:radial-gradient(62% 44% at 50% -8%,rgba(255,255,255,.055),transparent 70%);}
+    #bgline{position:absolute;inset:0;width:100%;height:100%;}
+  }
   .kick{font-family:var(--mono);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--faint);}
 
   /* ── header ───────────────────────────────────────────────────────────────────────────────────────────── */
@@ -84,7 +104,12 @@
   .hauth:hover{border-color:var(--lime);}
 
   /* ── hero ─────────────────────────────────────────────────────────────────────────────────────────────── */
-  .hero{padding:58px 0 40px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:52px;align-items:start;}
+  /* min-height is RESERVED SPACE, not styling. Measured on a cold font cache: the hero renders 540px tall
+     in the fallback face and collapses to 512 when Bricolage/Familjen swap in, which shoved every section
+     below it up by 28px - 0.176 of layout shift on a first visit, against 0.029 on /premium/. Reserving the
+     taller of the two heights means the swap moves nothing. (The zero-whitespace fix is a metric-adjusted
+     fallback @font-face in the shared fonts.css; that is a site-wide change, not this page's.) */
+  .hero{padding:58px 0 40px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:52px;align-items:start;min-height:540px;}
   .hero h1{font-size:clamp(34px,4.2vw,54px);font-weight:800;line-height:1.02;margin:18px 0 0;}
   .hero h1 em{font-style:normal;color:var(--lime);}
   .hlead{margin-top:20px;font-size:18px;line-height:1.6;color:var(--dim);max-width:52ch;}
@@ -200,8 +225,25 @@
   #apPlanState .apdays{font-family:var(--mono);color:var(--lime);font-weight:700;}
   #apMsg{margin-top:14px;}
   .plantw{margin-top:34px;}
-  .plantw table.vs{min-width:720px;}
-  .plantw table.vs th:first-child,.plantw table.vs td:first-child{width:34%;}
+  .plantw table.vs{min-width:760px;}
+  .plantw table.vs th:first-child,.plantw table.vs td:first-child{width:36%;}
+  /* One colour per COLUMN, so the eye climbs the ladder instead of reading the same green four times.
+     Free is the baseline in grey, Pro is the accent, Max is full ink, Business picks up the cyan its
+     throughput bar ends on. The number carries the meaning - there is no "yes" anywhere. */
+  .plantw td:nth-child(2),.plantw th:nth-child(2){color:var(--dim);}
+  .plantw td:nth-child(3),.plantw th:nth-child(3){color:var(--lime);}
+  .plantw td:nth-child(4),.plantw th:nth-child(4){color:var(--ink);}
+  .plantw td:nth-child(5),.plantw th:nth-child(5){color:var(--cyan);}
+  .plantw td:not(:first-child){font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .plantw td b{font-weight:700;}
+  .plantw td.no{color:var(--faint);font-style:normal;}
+  .plantw td:first-child{color:var(--ink);font-weight:500;white-space:normal;}
+  .plantw td:first-child .sub{display:block;margin-top:3px;font-size:12.5px;color:var(--faint);font-weight:400;}
+  .plantw th{color:var(--faint);}
+  .plantw th:nth-child(3){color:var(--lime);}
+  .plantw th:nth-child(5){color:var(--cyan);}
+  .allplans{margin-top:20px;padding:16px 18px;border-left:2px solid var(--line2);font-size:14.5px;line-height:1.7;color:var(--dim);max-width:88ch;}
+  .allplans b{color:var(--ink);}
   .apfoot{margin-top:26px;font-size:14px;line-height:1.7;color:var(--dim);max-width:78ch;}
   .apfoot b{color:var(--ink);}
 
@@ -329,6 +371,7 @@
   footer a{color:var(--dim);}
 
   /* ── responsive ───────────────────────────────────────────────────────────────────────────────────────── */
+  @media(min-width:901px) and (max-width:1099px){ .hero{min-height:578px;} }
   @media(max-width:1150px){
     .apgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
     .apcard:nth-child(odd){border-left:0;}
@@ -341,7 +384,7 @@
   }
   @media(max-width:760px){ .tnav a{display:none;} }
   @media(max-width:900px){
-    .hero{grid-template-columns:minmax(0,1fr);gap:34px;padding:34px 0 30px;}
+    .hero{grid-template-columns:minmax(0,1fr);gap:34px;padding:34px 0 30px;min-height:0;}
     .proof{grid-template-columns:1fr 1fr;}
     .proof div:nth-child(3){border-left:0;padding-left:0;}
     .proof div:nth-child(-n+2){border-bottom:1px solid var(--line);}
@@ -362,6 +405,9 @@
     .apsub{min-height:0;}
   }
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+  /* LAST in the sheet on purpose: the base .band rule is opaque and would hide the live background.
+     Same specificity, so only source order decides. */
+  @media(min-width:941px){ .band{background:rgba(12,14,18,.72);} }
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -372,6 +418,7 @@
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 </head>
 <body>
+<div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
 
 <div class="top">
   <div class="shell">
@@ -584,7 +631,6 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
           <li><b>Webhooks</b> - 3 endpoints firmados y con reintentos</li>
           <li><b>Lecturas de mercado con IA</b> - 50 al día a través de <code>/v1/ai</code></li>
           <li>Trading report con desgloses y hallazgos escritos</li>
-          <li>Uso comercial</li>
         </ul>
         <button class="apbtn" type="button" data-buy="pro">Elegir Pro</button>
       </div>
@@ -601,7 +647,6 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
           <li><b>15</b> webhooks</li>
           <li><b>200</b> lecturas de mercado con IA al día</li>
           <li>Todo lo de Pro</li>
-          <li>Uso comercial</li>
         </ul>
         <button class="apbtn" type="button" data-buy="max">Elegir Max</button>
       </div>
@@ -618,29 +663,23 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
           <li><b>50</b> webhooks</li>
           <li><b>500</b> lecturas de mercado con IA al día</li>
           <li>Todo lo de Max</li>
-          <li>Uso comercial</li>
         </ul>
         <button class="apbtn" type="button" data-buy="business">Elegir Business</button>
       </div>
     </div>
     <p id="apMsg" class="note" hidden></p>
     <div class="tw plantw"><table class="vs">
-      <tr><th>Límite</th><th><span class="apn">Free</span></th><th class="hl">Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $199</th></tr>
-      <tr><td>Peticiones por minuto, por clave</td><td>120</td><td class="hl"><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
-      <tr><td>API de datos de mercado (<code>/api/v1/*</code>) con tu clave</td><td>120 / min<br><span style="color:var(--faint)">(60 / min por IP sin clave)</span></td><td class="hl"><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
-      <tr><td>Claves de API por cuenta</td><td>3</td><td class="hl"><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
-      <tr><td>Posiciones abiertas a la vez</td><td>50</td><td class="hl"><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
-      <tr><td><a href="#books">Books</a> (diarios separados)</td><td>1</td><td class="hl"><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
-      <tr><td><b>Webhooks</b> (firmados, con reintentos)</td><td class="n">-</td><td class="hl"><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
-      <tr><td><b>Lectura de mercado con IA</b> <code>/v1/ai</code></td><td class="n">-</td><td class="hl"><b>50 al día</b></td><td><b>200 al día</b></td><td><b>500 al día</b></td></tr>
-      <tr><td>Trading report <code>/v1/report</code></td><td>totales + skill score</td><td class="hl"><b>+ desgloses y hallazgos</b></td><td><b>+ desgloses y hallazgos</b></td><td><b>+ desgloses y hallazgos</b></td></tr>
-      <tr><td>Datos de mercado, velas, calculadoras y feed de liquidaciones</td><td class="y">ilimitado, sin clave</td><td class="y hl">igual</td><td class="y">igual</td><td class="y">igual</td></tr>
-      <tr><td><b>Stream por WebSocket</b> &middot; MCP &middot; replay</td><td class="y">incluido</td><td class="y hl">incluido</td><td class="y">incluido</td><td class="y">incluido</td></tr>
-      <tr><td>Órdenes market, limit y stop, trailing stops, modificación y dry run</td><td class="y">incluido</td><td class="y hl">incluido</td><td class="y">incluido</td><td class="y">incluido</td></tr>
-      <tr><td>Tarifas de un exchange real (<a href="#fees">9 exchanges</a>)</td><td class="y">incluido</td><td class="y hl">incluido</td><td class="y">incluido</td><td class="y">incluido</td></tr>
-      <tr><td>Uso comercial</td><td class="n">-</td><td class="y hl">sí</td><td class="y">sí</td><td class="y">sí</td></tr>
-      <tr><td>Margen por operación / apalancamiento</td><td colspan="4">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; &mdash; igual en los cuatro</td></tr>
+      <tr><th>Lo que cambia con el plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $199</th></tr>
+      <tr><td>Peticiones por minuto, por clave</td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
+      <tr><td>API de datos de mercado (<code>/api/v1/*</code>) con tu clave<br><span class="sub">60 / min por IP sin clave, en todos los planes</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
+      <tr><td>Claves de API por cuenta</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
+      <tr><td>Posiciones abiertas a la vez</td><td>50</td><td><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
+      <tr><td><a href="#books">Books</a> - diarios separados, uno por estrategia</td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
+      <tr><td><b>Webhooks</b> - firmados, con reintentos, entregados aunque estés desconectado</td><td class="no">ninguno</td><td><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
+      <tr><td><b>Lectura de mercado con IA</b> <code>/v1/ai</code></td><td class="no">ninguno</td><td><b>50</b> al día</td><td><b>200</b> al día</td><td><b>500</b> al día</td></tr>
+      <tr><td>Trading report <code>/v1/report</code></td><td>totales + skill score</td><td><b>+ desgloses y hallazgos</b></td><td><b>+ desgloses y hallazgos</b></td><td><b>+ desgloses y hallazgos</b></td></tr>
     </table></div>
+    <p class="allplans"><b>En todos los planes, Free incluido:</b> el motor de trading completo - órdenes market, limit y stop, trailing stops, cierres parciales, dry run y <a href="#replay">replay</a> -, el <a href="#stream">stream por WebSocket</a>, el <a href="#mcp">servidor MCP</a>, las <a href="#fees">tarifas de 9 exchanges reales</a>, de $1 a $100,000 de margen por operación con hasta 1000&times; de apalancamiento, y todos los endpoints de datos de mercado sin clave a máxima velocidad. Los planes de pago mueven los topes. No desbloquean el producto.</p>
     <p class="apfoot"><b>Premium es otro producto.</b> Una suscripción a <a href="/es/premium/">MarginPad Premium</a> desbloquea funciones del sitio web - los indicadores de gráfico exclusivos, el mapa de calor de liquidaciones, Ask-AI en los gráficos - y desde el 15 de septiembre de 2026 no cambia ni un solo límite de la API. Estos planes tampoco desbloquean aquellas funciones del sitio. Compra el que de verdad vayas a usar.</p>
     <p class="apfoot">Los planes son mes a mes, pagados en cripto o directamente desde tu saldo de recompensas de MarginPad, y un mes comprado antes de tiempo se suma al que ya tienes en vez de reemplazarlo. Tus límites en vivo siempre están en <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - para que un bot los pueda leer en vez de adivinar.</p>
   </div>
@@ -1062,8 +1101,42 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     });
   });
 
-  /* 5. lifetime calls in the proof strip, from the public plan catalogue's sibling - kept static unless
-        the number is ever exposed; the figure printed in the markup is the measured one. */
+  /* 5. live background: three drifting aurora blobs plus two faint price wireframes. Desktop only -
+        it is decoration, and a phone should spend its frames on the page. Lifted from the homepage
+        so both surfaces drift identically; WAAPI for the blobs, one rAF for the canvas. */
+  (function(){
+    if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
+    [['.au1',9,7,46000,0],['.au2',-8,-6,58000,-9000],['.au3',-7,6,70000,-21000]].forEach(function(b){
+      var el=document.querySelector('.bgfx '+b[0]); if(!el||!el.animate)return;
+      try{ el.animate([{transform:'translate(0,0)'},{transform:'translate('+b[1]+'vw,'+b[2]+'vh)'}],
+        {duration:b[3],iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:b[4]}); }catch(e){}
+    });
+    var cv=document.getElementById('bgline'); if(!cv)return;
+    var g=cv.getContext('2d'),W=0,H=0;
+    function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+    size(); var rs; addEventListener('resize',function(){clearTimeout(rs);rs=setTimeout(size,200);});
+    function mkLine(seed,amp){var pts=[],y=0;for(var i=0;i<260;i++){y+=(Math.sin(i*seed)+Math.random()-.5)*amp;pts.push(y);}return pts;}
+    var L=[{p:mkLine(.13,7),c:'rgba(194,246,74,.085)',o:.32,sp:.32},
+           {p:mkLine(.21,9),c:'rgba(46,189,133,.07)',o:.6,sp:.2}];
+    var off=0,run=true;
+    // only restart on a real hidden -> visible transition: an unconditional restart spawns a second
+    // concurrent loop and the lines then move at double speed (the homepage learned this one).
+    document.addEventListener('visibilitychange',function(){var was=run;run=!document.hidden;if(run&&!was)requestAnimationFrame(fr);});
+    function fr(){ if(!run)return;
+      off+=1; g.clearRect(0,0,W,H);
+      L.forEach(function(l){
+        var n=l.p.length,step=W/(n-22),sh=(off*l.sp)%step,idx=Math.floor(off*l.sp/step);
+        g.beginPath();
+        for(var i=0;i<n-20;i++){
+          var v=l.p[(i+idx)%n], x=i*step-sh, y=H*l.o+v*(H*0.012);
+          i?g.lineTo(x,y):g.moveTo(x,y);
+        }
+        g.strokeStyle=l.c; g.lineWidth=1.4; g.stroke();
+      });
+      requestAnimationFrame(fr);
+    }
+    requestAnimationFrame(fr);
+  })();
 })();
 </script>
 
