@@ -1,3 +1,0 @@
-
-[stream]
-websockets>=11

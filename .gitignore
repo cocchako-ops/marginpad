@@ -84,3 +84,8 @@ build/data/es/leftover.json
 
 build/signal-gate/klines.json
 build/signal-gate/scan-trades.json
+
+# build artefacts from publish-sdk.js - never commit these
+sdk/python/dist/
+sdk/python/build/
+sdk/python/*.egg-info/
