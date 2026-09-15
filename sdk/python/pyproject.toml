@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "marginpad"
-version = "2.6.0"
+version = "2.8.0"
 description = "MarginPad Bot API client: free crypto-futures paper trading for bots (REST + WebSocket + webhooks) and free market data. No dependencies."
 readme = "README.md"
 license = { text = "MIT" }
