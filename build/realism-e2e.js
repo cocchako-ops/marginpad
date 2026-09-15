@@ -96,7 +96,11 @@ const live = async sym => +(await jf('/api/price?symbol=' + sym)).body.price;
     chk('it is in the OpenAPI spec', !!(spec.body.paths || {})['/api/bot/v1/realism']);
     const cl = await jf('/api/changelog');
     const ents = (cl.body.data || cl.body).entries || [];
-    chk('and in the changelog, newest first', ents[0] && ents[0].version === '2.9.0', ents[0] && ents[0].version);
+    // pin the ENTRY, never the newest version - the first cut asserted [0].version === '2.9.0' and went red the
+    // day 2.9.1 shipped, which is a test reporting its own staleness as a product failure
+    const rzEnt = ents.find(e => /realism/i.test(e.title || '') || (e.changes || []).some(c => /\/v1\/realism/.test(c.text || '')));
+    chk('the changelog carries the realism release', !!rzEnt, rzEnt && (rzEnt.version + ' ' + rzEnt.title));
+    chk('and it is ordered newest first', ents.length > 1 && ents[0].date >= ents[1].date, ents.slice(0, 2).map(e => e.version + '@' + e.date));
     const pg = await (await fetch(ORIGIN + '/trading-api/?cb=' + Date.now())).text();
     chk('the product page documents it under the anchor the arena links to', /id="realism"/.test(pg) && /Fill realism/.test(pg));
     const ap = await (await fetch(ORIGIN + '/arena/?cb=' + Date.now())).text();
