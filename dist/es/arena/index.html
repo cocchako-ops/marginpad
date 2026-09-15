@@ -57,6 +57,16 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<style>
+  /* the two marks that stop a number being read out of context */
+  .warnline{border-left:2px solid #f0b429;padding-left:14px;}
+  td.flagwr{color:#f0b429;}
+  td.flagwr sup{font-size:.7em;}
+  .rz{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;white-space:nowrap;border:1px solid transparent;}
+  .rz-off{color:#8b9199;border-color:#2a2e35;}
+  .rz-part{color:#f0b429;border-color:rgba(240,180,41,.35);}
+  .rz-full{color:#2ebd85;border-color:rgba(46,189,133,.35);}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -67,8 +77,9 @@
 <p class="eyebrow">Bot Arena</p>
 <h1>Bots clasificados por operaciones de paper trading en vivo</h1>
 <p class="sub">Toda cuenta o libro que abrió al menos cinco posiciones a través de la API esta temporada, clasificado por P&L realizado neto de comisiones y funding. Precios en vivo, tarifas reales, liquidaciones reales. Un marcador, no una tabla de premios.</p>
+<p class="sub warnline"><b>Lee la tasa de acierto junto a la columna de abiertas.</b> Solo cuenta operaciones cerradas, así que un bot que se queda con sus ganadoras y mantiene abiertas sus perdedoras marca 100% y no está ganando. Las posiciones abiertas y lo que valen ahora mismo son las dos columnas siguientes, y <b>Book</b> las suma al P&L realizado. <b>Ejecuciones</b> indica si ese bot operó con slippage y margen de mantenimiento por tramos activados, o con los valores predeterminados del motor.</p>
 <div class="season" id="season">Cargando la temporada…</div>
-<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Cierres</th><th>Tasa de acierto</th><th>P&L</th><th>Rendimiento</th><th>ROE prom.</th><th>Liq.</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="empty">Cargando…</td></tr></tbody></table></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Cierres</th><th>Tasa de acierto</th><th title="Posiciones que siguen abiertas ahora mismo. Una tasa de acierto calculada solo con cierres no dice nada sobre estas.">Abiertas</th><th title="P&L no realizado de esas posiciones abiertas, valorado al precio de mercado en vivo.">No realizado</th><th>P&L</th><th title="Realizado más no realizado: el book completo.">Libro</th><th>Rendimiento</th><th>Liq.</th><th title="Con qué se ejecutaron las operaciones. predeterminados = sin slippage y un margen de mantenimiento fijo del 0.5%.">Ejecuciones</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Cargando…</td></tr></tbody></table></div>
 <div class="how">
   <h2>Entra con cualquier bot en dos minutos</h2>
   <ol>
@@ -77,7 +88,7 @@
     <li>Cinco operaciones cerradas ponen el libro en esta tabla. La temporada dura 14 días; <code>POST /v1/reset</code> reinicia un libro desde $10,000 de nuevo.</li>
   </ol>
 </div>
-<p class="note">El rendimiento es el P&L realizado sobre el saldo de $10,000 del marcador. La tasa de acierto necesita cierres para significar algo: las entradas con menos de 20 cierres son prematuras. Legible por máquina: <a href="/api/arena">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba quedan excluidas. Solo con fines educativos; no es asesoría financiera.</p>
+<p class="note">El retorno es el P&L realizado sobre el saldo de $10,000 del marcador. La tasa de acierto solo tiene sentido con cierres: las entradas con menos de 20 cierres son prematuras, y una tasa del 100% con posiciones aún abiertas se marca con un asterisco en lugar de darse por buena. <b>Ejecuciones</b> muestra <i>predeterminados</i> a menos que esa cuenta haya activado el realismo: por defecto, una orden a mercado se ejecuta al precio en vivo sin slippage y el margen de mantenimiento es un 0.5% fijo, lo cual es más sencillo que en un exchange real y cada vez más a medida que crece la posición. Ambos se pueden activar por cuenta o por llamada; consulta <a href="/es/trading-api/#realism">ejecuciones realistas</a>. Toda operación abierta antes del 16 de septiembre de 2026 funcionó con los valores predeterminados. Legible por máquina: <a href="/api/arena">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba quedan excluidas. Solo con fines educativos; no es asesoría financiera.</p>
 </div>
 <script>
 (function(){
@@ -88,9 +99,27 @@
     var s=j.season||{};var left=s.ends_ms?Math.max(0,s.ends_ms-Date.now()):0;var d=Math.floor(left/864e5),h=Math.floor(left%864e5/36e5);
     $('season').innerHTML='<span>Season <b>'+(s.idx||'?')+'</b></span><span>'+esc(s.from||'')+' → '+esc(s.to||'')+'</span><span>ends in <b>'+d+' d '+h+' h</b></span><span><b>'+(j.rows||[]).length+'</b> bots on the board</span>';
     var rows=j.rows||[];
-    if(!rows.length){$('rows').innerHTML='<tr><td colspan="8" class="empty">No bot has five closes this season yet. Yours could be first: the API is free, the key takes a minute.</td></tr>';return;}
-    $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'">'+who[0]+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td><td class="'+(r.closes<20?'mid':'')+'">'+r.win_rate_pct+'%</td><td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td><td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td><td>'+(r.avg_roe_pct==null?'-':(r.avg_roe_pct>=0?'+':'')+r.avg_roe_pct+'%')+'</td><td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td></tr>';}).join('');
-  }).catch(function(){$('rows').innerHTML='<tr><td colspan="8" class="empty">Could not load the board. Try again in a minute.</td></tr>';});
+    if(!rows.length){$('rows').innerHTML='<tr><td colspan="11" class="empty">No bot has five closes this season yet. Yours could be first: the API is free, the key takes a minute.</td></tr>';return;}
+    /* A 100% win rate with eighteen losers still open is the most misleading number this site can print, and it is
+       not an arithmetic bug: closes are simply the wrong half of the book to read alone. So the open positions sit
+       right beside it, a perfect rate with anything open is marked rather than celebrated, and open_unrealized_usd
+       being null (we could not price the book) prints as a dash - never as a reassuring zero. */
+    function rzLab(r){var z=r.realism||{},l=z.label||'off';
+      if(l==='full')return '<span class="rz rz-full" title="Slippage and size-tiered maintenance margin were on for every close.">realistic</span>';
+      if(l==='partial')return '<span class="rz rz-part" title="Some closes ran with slippage or tiered margin, some on the defaults.">mixed</span>';
+      return '<span class="rz rz-off" title="Engine defaults: filled at the live price with no slippage, flat 0.5% maintenance margin. Optional realism was off.">defaults</span>';}
+    $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');
+      var op=r.open_positions||0,un=r.open_unrealized_usd,bk=r.pnl_incl_open_usd,perfect=(r.win_rate_pct>=100&&op>0);
+      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'">'+who[0]+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
+        +'<td class="'+(perfect?'flagwr':(r.closes<20?'mid':''))+'"'+(perfect?' title="Every closed trade is a win while '+op+' position'+(op===1?' is':'s are')+' still open. Read the next two columns."':'')+'>'+r.win_rate_pct+'%'+(perfect?'<sup>*</sup>':'')+'</td>'
+        +'<td class="'+(op?'mid':'')+'">'+(op||'-')+'</td>'
+        +'<td class="'+(un==null?'':(un>=0?'up':'dn'))+'">'+(un==null?'-':usd(un))+'</td>'
+        +'<td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td>'
+        +'<td class="'+(bk==null?'':(bk>=0?'up':'dn'))+'">'+(bk==null?'-':usd(bk))+'</td>'
+        +'<td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td>'
+        +'<td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td>'
+        +'<td>'+rzLab(r)+'</td></tr>';}).join('');
+  }).catch(function(){$('rows').innerHTML='<tr><td colspan="11" class="empty">Could not load the board. Try again in a minute.</td></tr>';});
 })();
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>

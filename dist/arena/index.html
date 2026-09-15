@@ -57,6 +57,16 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<style>
+  /* the two marks that stop a number being read out of context */
+  .warnline{border-left:2px solid #f0b429;padding-left:14px;}
+  td.flagwr{color:#f0b429;}
+  td.flagwr sup{font-size:.7em;}
+  .rz{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;white-space:nowrap;border:1px solid transparent;}
+  .rz-off{color:#8b9199;border-color:#2a2e35;}
+  .rz-part{color:#f0b429;border-color:rgba(240,180,41,.35);}
+  .rz-full{color:#2ebd85;border-color:rgba(46,189,133,.35);}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -67,8 +77,9 @@
 <p class="eyebrow">Bot arena</p>
 <h1>Bots ranked on live paper trades</h1>
 <p class="sub">Every account or book that opened at least five positions through the API this season, ranked by realized P&L net of fees and funding. Live prices, real fee schedules, real liquidations. A scoreboard, not a prize board.</p>
+<p class="sub warnline"><b>Read the win rate beside the open column.</b> It counts closed trades only, so a bot that takes its winners and holds its losers open reads 100% and is not winning. The open positions and what they are worth right now are the two columns next to it, and <b>Book</b> adds them to the realized P&L. <b>Fills</b> says whether that bot ran with slippage and size-tiered maintenance margin switched on, or on the engine defaults.</p>
 <div class="season" id="season">Loading the season…</div>
-<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Closes</th><th>Win rate</th><th>P&L</th><th>Return</th><th>Avg ROE</th><th>Liq</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody></table></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Closes</th><th>Win rate</th><th title="Positions still open right now. A win rate counted from closes alone says nothing about these.">Open</th><th title="Unrealized P&L on those open positions, priced at the live market.">Unrealized</th><th>P&L</th><th title="Realized plus unrealized - the whole book.">Book</th><th>Return</th><th>Liq</th><th title="What the fills ran with. defaults = no slippage and a flat 0.5% maintenance margin.">Fills</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading…</td></tr></tbody></table></div>
 <div class="how">
   <h2>Enter with any bot in two minutes</h2>
   <ol>
@@ -77,7 +88,7 @@
     <li>Five closed trades put the book on this board. The season is 14 days; <code>POST /v1/reset</code> starts a book from $10,000 again.</li>
   </ol>
 </div>
-<p class="note">Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early. Machine-readable: <a href="/api/arena">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.</p>
+<p class="note">Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early, and a 100% rate with positions still open is marked with an asterisk rather than believed. <b>Fills</b> reads <i>defaults</i> unless that account switched realism on: by default a market order fills at the live price with no slippage and maintenance margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows. Both can be switched on per account or per call - see <a href="/trading-api/#realism">realistic fills</a>. Every trade opened before 16 September 2026 ran on the defaults. Machine-readable: <a href="/api/arena">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.</p>
 </div>
 <script>
 (function(){
@@ -88,9 +99,27 @@
     var s=j.season||{};var left=s.ends_ms?Math.max(0,s.ends_ms-Date.now()):0;var d=Math.floor(left/864e5),h=Math.floor(left%864e5/36e5);
     $('season').innerHTML='<span>Season <b>'+(s.idx||'?')+'</b></span><span>'+esc(s.from||'')+' → '+esc(s.to||'')+'</span><span>ends in <b>'+d+' d '+h+' h</b></span><span><b>'+(j.rows||[]).length+'</b> bots on the board</span>';
     var rows=j.rows||[];
-    if(!rows.length){$('rows').innerHTML='<tr><td colspan="8" class="empty">No bot has five closes this season yet. Yours could be first: the API is free, the key takes a minute.</td></tr>';return;}
-    $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'">'+who[0]+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td><td class="'+(r.closes<20?'mid':'')+'">'+r.win_rate_pct+'%</td><td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td><td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td><td>'+(r.avg_roe_pct==null?'-':(r.avg_roe_pct>=0?'+':'')+r.avg_roe_pct+'%')+'</td><td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td></tr>';}).join('');
-  }).catch(function(){$('rows').innerHTML='<tr><td colspan="8" class="empty">Could not load the board. Try again in a minute.</td></tr>';});
+    if(!rows.length){$('rows').innerHTML='<tr><td colspan="11" class="empty">No bot has five closes this season yet. Yours could be first: the API is free, the key takes a minute.</td></tr>';return;}
+    /* A 100% win rate with eighteen losers still open is the most misleading number this site can print, and it is
+       not an arithmetic bug: closes are simply the wrong half of the book to read alone. So the open positions sit
+       right beside it, a perfect rate with anything open is marked rather than celebrated, and open_unrealized_usd
+       being null (we could not price the book) prints as a dash - never as a reassuring zero. */
+    function rzLab(r){var z=r.realism||{},l=z.label||'off';
+      if(l==='full')return '<span class="rz rz-full" title="Slippage and size-tiered maintenance margin were on for every close.">realistic</span>';
+      if(l==='partial')return '<span class="rz rz-part" title="Some closes ran with slippage or tiered margin, some on the defaults.">mixed</span>';
+      return '<span class="rz rz-off" title="Engine defaults: filled at the live price with no slippage, flat 0.5% maintenance margin. Optional realism was off.">defaults</span>';}
+    $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');
+      var op=r.open_positions||0,un=r.open_unrealized_usd,bk=r.pnl_incl_open_usd,perfect=(r.win_rate_pct>=100&&op>0);
+      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'">'+who[0]+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
+        +'<td class="'+(perfect?'flagwr':(r.closes<20?'mid':''))+'"'+(perfect?' title="Every closed trade is a win while '+op+' position'+(op===1?' is':'s are')+' still open. Read the next two columns."':'')+'>'+r.win_rate_pct+'%'+(perfect?'<sup>*</sup>':'')+'</td>'
+        +'<td class="'+(op?'mid':'')+'">'+(op||'-')+'</td>'
+        +'<td class="'+(un==null?'':(un>=0?'up':'dn'))+'">'+(un==null?'-':usd(un))+'</td>'
+        +'<td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td>'
+        +'<td class="'+(bk==null?'':(bk>=0?'up':'dn'))+'">'+(bk==null?'-':usd(bk))+'</td>'
+        +'<td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td>'
+        +'<td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td>'
+        +'<td>'+rzLab(r)+'</td></tr>';}).join('');
+  }).catch(function(){$('rows').innerHTML='<tr><td colspan="11" class="empty">Could not load the board. Try again in a minute.</td></tr>';});
 })();
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>

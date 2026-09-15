@@ -103,7 +103,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=570e64be">
+<link rel="stylesheet" href="/assets/home.css?v=30362dfa">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -383,6 +383,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
                 <option value="1.33">Coinbase - 1.33%</option>
               </select></div><p class="plan-hint" id="planExHint" hidden><b>Maintenance margin</b> is the slice of your position the exchange makes you keep on deposit; the moment your margin falls to it, you are liquidated. Binance asks 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% on its first tier, Hyperliquid 1.25% on BTC, Coinbase 1.33%; MarginPad default is 0.5%. It moves <b>only where your liquidation price sits</b>. Position size, fees and P&amp;L do not change.</p></div>
               <div class="field" id="planFeeField"><div class="fl-row"><label for="planFeeVenue">Fees as on (sets taker fee)</label><button type="button" class="ptt-q" data-hint="planFeeHint" aria-expanded="false" aria-label="What does the fee schedule do?">?</button></div><div class="input-line"><select id="planFeeVenue" aria-label="Fee schedule"><option value="">MarginPad - 0.055%</option></select></div><p class="plan-hint" id="planFeeHint" hidden><b>Taker fee</b> is what the venue charges per side on the full position size (not on your margin), once at open and once at close, less the discount a MarginPad sign-up gets there. It changes <b>only what the trade costs and your net P&amp;L</b>, never the liquidation price. <a href="/trading-api/#fees" target="_blank" rel="noopener">How the fee schedules work</a></p></div>
+              <div class="field" id="planRzField"><div class="fl-row"><label>Realistic fills</label><button type="button" class="ptt-q" data-hint="planRzHint" aria-expanded="false" aria-label="What do realistic fills change?">?</button></div><div class="rz-row"><label class="rz-sw"><input type="checkbox" id="planRzSlip"><span>Slippage</span></label><label class="rz-sw"><input type="checkbox" id="planRzTier"><span>Margin tiers</span></label><span class="rz-st" id="planRzSt"></span></div><p class="plan-hint" id="planRzHint" hidden>By default a market order fills at the <b>live price</b> and maintenance margin is a flat <b>0.5%</b> - the entry line sits exactly where you clicked and a new position reads 0.00. That is easier than a real venue. <b>Slippage</b> moves the fill against you the way walking a real order book does: 0.01% on the majors, 0.05% on thinner crypto, 0.005% on forex, 0.02% on stocks, metals and indices. <b>Margin tiers</b> raise the maintenance margin as the position grows, the way an exchange risk-limit table does, so a large position is liquidated sooner - a higher maintenance requirement leaves less room before it closes you. Both are off unless you switch them on, they apply to <b>positions opened from now on</b>, and a position always keeps the maintenance margin it was filled with. The same setting is what your bots use through the API.</p></div>
               <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
               <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
               <div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
@@ -839,7 +840,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=570e64be"></script>
+<script src="/assets/home.js?v=30362dfa"></script>
 <script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>
 </html>

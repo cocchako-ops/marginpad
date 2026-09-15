@@ -434,7 +434,40 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   window.mpPlanRisk=updatePlanRisk;
   // Exchange margin preset (paper trade) - sets the maintenance-margin rate used for the liq estimate + opened position
   window.mpPlanMmr=0.005;
-  (function(){var px=document.getElementById('planEx');if(!px)return;px.addEventListener('change',function(){var v=parseFloat(px.value);window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005;try{calc();}catch(_){}try{updatePlanRisk();}catch(_){}});})();
+  /* Realistic fills (2026-09-16). Two things happen here, and the first is a fix: the "Exchange (sets margin
+     rate)" picker used to move only the CALCULATOR - the server filled every position at a flat 0.5% whatever
+     was chosen, so the liquidation line on the chart and the price the engine would actually liquidate at
+     disagreed. It writes the account setting now, which is the same one the Bot API reads, so the picked
+     venue's published rate is what the fill really gets. Second, the two switches: slippage and size tiers,
+     off by default (the engine's long-standing behaviour) and never changed behind anyone's back.
+     The venue key is read off the option's own label - "Hyperliquid - 1.25%" -> "hyperliquid" - so the custom
+     select (csel) keeps working on plain <option value="rate"> markup with nothing extra attached to it. */
+  (function(){
+    var px=document.getElementById('planEx');
+    var cs=document.getElementById('planRzSlip'),ct=document.getElementById('planRzTier'),st=document.getElementById('planRzSt');
+    function vKey(){try{var o=px&&px.options[px.selectedIndex];if(!o)return '';var k=String(o.textContent||'').split('-')[0].trim().toLowerCase().replace(/[^a-z]/g,'');return (k==='marginpad')?'':k;}catch(e){return '';}}
+    function say(){if(!st)return;var on=(cs&&cs.checked)||(ct&&ct.checked);st.className='rz-st'+(on?' on':'');st.textContent=on?'on for new positions':'engine defaults';}
+    var _busy=0;
+    function push(){ /* fire-and-forget: a settings write must never block or fail a trade */
+      if(!window.fetch)return; var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}
+      if(!me){say();return;} if(_busy)return; _busy=1;
+      fetch('/api/trade/realism',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({slippage:!!(cs&&cs.checked),margin_tiers:!!(ct&&ct.checked),margin_venue:vKey()})})
+        .then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(){_busy=0;say();});
+    }
+    if(px)px.addEventListener('change',function(){var v=parseFloat(px.value);window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005;try{calc();}catch(_){}try{updatePlanRisk();}catch(_){}push();});
+    if(cs)cs.addEventListener('change',push); if(ct)ct.addEventListener('change',push);
+    /* restore what this account already has, so the form never lies about what the next fill will do */
+    function pull(){ if(!window.fetch||!(cs||ct))return;
+      fetch('/api/trade/realism',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+        var z=j&&j.realism;if(!z){say();return;}
+        if(cs)cs.checked=!!z.slippage; if(ct)ct.checked=!!z.margin_tiers;
+        if(z.margin_venue&&px){for(var i=0;i<px.options.length;i++){var k=String(px.options[i].textContent||'').split('-')[0].trim().toLowerCase().replace(/[^a-z]/g,'');if(k===z.margin_venue){px.selectedIndex=i;var v=parseFloat(px.value);window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005;try{px.dispatchEvent(new Event('mp-sync'));}catch(e){}try{calc();}catch(_){}break;}}}
+        say();
+      });
+    }
+    say(); setTimeout(pull,1200); /* mp-auth is deferred: give it a tick to restore the session before we ask */
+    try{window.addEventListener('mp-auth-change',function(){setTimeout(pull,200);});}catch(e){}
+  })();
   ['planSlOpt','planTpOpt','planLev','planAmt'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){window._mpSltpHidden=false;try{posDragLines();}catch(_){}try{updatePlanRisk();}catch(_){}});});
   var _prT=0;try{window.addEventListener('mp:price',function(){var n=Date.now();if(n-_prT<600)return;_prT=n;try{updatePlanRisk();}catch(_){}});}catch(_){}
   var pSym=document.getElementById('planSym');
@@ -691,7 +724,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(window.innerWidth<721){ /* mobile: prewarm only the two NEIGHBOURING timeframes (~50KB), not all six (~150KB) - measured 2026-09-05: TF switch p95 5.7s on phones because every switch fetched on demand */ var i=all.indexOf(curTf);list=[all[i-1],all[i+1]].filter(Boolean); }
     list.forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   var _kq=0; // klines request ticket (2026-09-02): loadKlines + refreshKlinesQuiet share it - only the newest full-window response may paint
-  function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;morePages=0;
+  function loadKlines(){var sym=formSym();chartSym=sym;try{window.__mpChartSym=sym;}catch(e){}/* the health probe needs to know WHICH symbol is on screen - see price-age below */var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;morePages=0;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
     if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache - no flash on a TF/symbol switch
     var _pk=null;try{if(window.__preK){var _hit=(window.__preK.key===ck);if(_hit)_pk=window.__preK.p;window.__preR=_hit?'hit':'miss';window.__preK=null;}}catch(e){}/* cold-load waterfall: an inline <head> preload may have fired this exact klines request in parallel with the bundle download - pick up its promise instead of a fresh serial fetch. no-store means the browser won't dedupe, so the handoff MUST be the promise not the cache. DRIFT DETECTOR: __preR = hit (key matched) or miss (inline drifted from what loadKlines asks → a wasted request on EVERY cold load, silently, forever - the exact thing this optimization is supposed to REDUCE). __preR rides the perf probe → AE 'preload' rows, so drift surfaces as a metric with a denominator instead of quietly burning infra. consume __preK once either way. */
@@ -3914,7 +3947,22 @@ window.mpSrvOpen=function(payload,ok,fail){
       var payload={};if(ws!=null)payload.ws=ws;payload.fps=f2;
       try{var u=window.__mpUx||{};for(var k in u){payload[k]=Math.round(u[k]);}window.__mpUx={};}catch(e){}
       try{if(window.__preR){payload.pr=window.__preR;window.__preR=null;}}catch(e){} // preload drift detector: hit|miss (miss = inline drifted → wasted request on every cold load)
-      try{var pr=window.mpLivePrices||{},best=1/0,n2=Date.now();for(var s in pr){if(pr[s]&&pr[s].t&&!pr[s].seed)best=Math.min(best,n2-pr[s].t);}if(isFinite(best))payload.pa=Math.max(0,Math.round(best));}catch(e){}
+        /* price-age, rewritten 2026-09-16. It used to be the MINIMUM age across every symbol in the feed, which
+         answers "is at least one symbol alive?" - a question that is yes even when every symbol the trader can
+         see is frozen. It read healthy while the screen was stale, so the budget on it was removed in August
+         and nobody trusted the metric after that. Two honest numbers instead:
+           pa = the age of the symbol ACTUALLY ON THE CHART. That is the price a person is looking at, and a
+                stale one there is a real defect no matter what the rest of the feed is doing.
+           pm = the age of BTC. Majors trade every second, so a high number here is the FEED being late and
+                never the market being quiet - which is the one thing a max-over-all-symbols metric could not
+                tell you, because a quiet alt looks identical to a broken subscription.
+         Neither is sent unless we have a real, non-seeded tick for it: a missing sample beats a made-up one. */
+      try{var pr=window.mpLivePrices||{},n2=Date.now();
+        function _age(sy){var e=sy&&pr[sy];return (e&&e.t&&!e.seed)?Math.max(0,Math.round(n2-e.t)):null;}
+        var _cs=null;try{_cs=window.__mpChartSym||null;}catch(e){}
+        var _a=_age(_cs);if(_a!=null)payload.pa=_a;
+        var _b=_age('BTC');if(_b!=null)payload.pm=_b;
+      }catch(e){}
       try{navigator.sendBeacon('/api/perf',new Blob([JSON.stringify(payload)],{type:'application/json'}));}catch(e){}
     });
   }

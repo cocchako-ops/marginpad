@@ -737,7 +737,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     <ol>
       <li><a href="#endpoints">Endpoints</a></li>
       <li><a href="#engine">Cómo funciona el motor</a></li>
-      <li><a href="#fees">Comisiones por exchange</a></li>
+      <li><a href="#fees">Comisiones del exchange</a> <a href="#realism">Realismo de ejecución</a></li>
       <li><a href="#reliable">Bots que no se rompen</a></li>
       <li><a href="#stream">WebSocket</a></li>
       <li><a href="#webhooks">Webhooks</a></li>
@@ -832,6 +832,24 @@ while len(all_bars) &lt; wanted:
   <div class="faq"><b>Headers de límite de peticiones</b><p>Cada respuesta lleva <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> y <code>X-RateLimit-Reset</code> (segundos epoch); un 429 añade <code>Retry-After</code>. Los límites se cuentan <b>por clave</b>, así que una segunda clave tiene su propio presupuesto. <code>X-RateLimit-Scope</code> indica si se aplicó el límite de la clave o el de la IP.</p></div>
   <div class="faq"><b>Las operaciones de tu bot en el sitio</b><p>Las posiciones abiertas vía la API viven en tu cuenta del lado del servidor, así que aparecen en <a href="/es/paper-trade">Mis Operaciones</a>, cuentan para las tablas de temporada y el XP, y alimentan tu <a href="/es/trading-report/">informe de trading</a> - el mismo informe que <code>GET /v1/report</code> devuelve al bot.</p></div>
   <div class="faq"><b>La API de streaming es gratis a propósito</b><p>Ponerla detrás de un muro de pago empujaría a todos los demás de vuelta al polling, que nos cuesta mucho más que el stream - así que los incentivos se alinean: usa el WebSocket, ganamos los dos. Los datos de mercado siguen sin clave y gratis para siempre; una clave solo sube su límite.</p></div>
+</section>
+
+<section id="realism">
+  <h2>Realismo de ejecución, porque un backtest que te favorece no vale nada</h2>
+  <p>Dos cosas en este motor son deliberadamente generosas, y es mejor nombrarlas que dejar que las descubras en una cuenta real. Una orden a mercado se ejecuta al <b>precio en vivo</b>, así que una posición nueva marca 0.00 de no realizado y la línea de entrada queda exactamente donde la pediste. Y el margen de mantenimiento es un <b>0.5%</b> fijo, sin importar cuánto valga la posición. Para aprender a operar, ambas son la decisión correcta. Para poner a prueba una estrategia son optimistas, y cuanto mayor es el tamaño, más optimistas se vuelven.</p>
+  <p>Así que son interruptores, no supuestos fijos. Desactivados por defecto (nada de lo que ya construiste cambia) y, al activarlos, el precio de ejecución y el precio de liquidación se comportan como los haría comportarse un libro de órdenes real y una tabla de límites de riesgo real.</p>
+<pre><code>GET  /api/bot/v2/realism                     // your setting, the venue table and the whole tier ladder
+POST /api/bot/v2/realism {"slippage": true, "margin_tiers": true, "margin_venue": "binance"}
+
+<b># or per call, so one strategy can be tested both ways without touching the account</b>
+POST /api/bot/v1/open {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,
+                       "slippage": true, "margin_tiers": true, "mmr_pct": 0.4}</code></pre>
+  <div class="dgrid">
+    <div class="dcard"><h3>Slippage</h3><p>La ejecución se mueve en tu contra lo que cuesta recorrer un libro de órdenes real: <b>0.01%</b> en las principales, <b>0.05%</b> en criptomonedas menos líquidas, <b>0.005%</b> en forex, <b>0.02%</b> en acciones, metales e índices. Una compra paga de más, una venta vende de menos; nunca al revés.</p></div>
+    <div class="dcard"><h3>Tramos de margen</h3><p>El margen de mantenimiento sube con el tamaño nocional, igual que la tabla de límites de riesgo de un exchange, así que una posición grande se liquida <b>antes</b>: un requisito de mantenimiento más alto tolera menos movimiento en contra antes de cerrarte, que es justo lo que un exchange quiere para el tamaño grande. Este es nuestro modelo publicado y no la tabla de ningún exchange en particular, y <code>GET /realism</code> devuelve toda la escala; nunca deberías tener que deducirla a partir de un precio de liquidación.</p></div>
+    <div class="dcard"><h3>Exchange de margen</h3><p>La tasa de margen de mantenimiento publicada de qué exchange usar como base: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. Esto mueve <b>solo</b> dónde se ubica el precio de liquidación, nunca el tamaño, las comisiones ni el P&amp;L.</p></div>
+  </div>
+  <p class="note">Una posición conserva el margen de mantenimiento con el que fue ejecutada, así que activar esto nunca reescribe una operación que ya tienes abierta, y cada cierre registra con qué se ejecutó. De ahí viene la columna <i>Ejecuciones</i> del <a href="#arena">arena</a>: una tabla que clasifica bots debería decir cuáles jugaron en modo fácil.</p>
 </section>
 
 <section id="fees">

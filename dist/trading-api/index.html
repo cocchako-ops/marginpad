@@ -764,7 +764,8 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     <ol>
       <li><a href="#endpoints">Endpoints</a></li>
       <li><a href="#engine">How the engine works</a></li>
-      <li><a href="#fees">Venue fees</a></li>
+      <li><a href="#fees">Venue fees</a>
+      <a href="#realism">Fill realism</a></li>
       <li><a href="#reliable">Bots that do not break</a></li>
       <li><a href="#stream">WebSocket</a></li>
       <li><a href="#webhooks">Webhooks</a></li>
@@ -859,6 +860,24 @@ while len(all_bars) &lt; wanted:
   <div class="faq"><b>Rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>X-RateLimit-Scope</code> says whether the key's limit or the per-IP one applied.</p></div>
   <div class="faq"><b>Your bot's trades on the site</b><p>Positions opened via the API live on your account server-side, so they show in <a href="/paper-trade">My Trades</a>, count for the season boards and XP, and feed your <a href="/trading-report/">trading report</a> - the same report <code>GET /v1/report</code> returns to the bot.</p></div>
   <div class="faq"><b>The streaming API is free on purpose</b><p>Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.</p></div>
+</section>
+
+<section id="realism">
+  <h2>Fill realism, because a backtest that flatters you is worth nothing</h2>
+  <p>Two things in this engine are deliberately generous, and it is better to name them than to let you find out on a live account. A market order fills at the <b>live price</b>, so a new position reads 0.00 unrealized and the entry line sits exactly where you asked for it. And maintenance margin is a flat <b>0.5%</b>, whatever the position is worth. For learning to trade, both are the right call. For proving out a strategy they are optimistic, and the bigger the size the more optimistic they get.</p>
+  <p>So they are switches, not assumptions. Off by default - nothing you have already built moves - and on, the fill price and the liquidation price behave the way a real book and a real risk-limit table make them behave.</p>
+<pre><code>GET  /api/bot/v2/realism                     // your setting, the venue table and the whole tier ladder
+POST /api/bot/v2/realism {"slippage": true, "margin_tiers": true, "margin_venue": "binance"}
+
+<b># or per call, so one strategy can be tested both ways without touching the account</b>
+POST /api/bot/v1/open {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,
+                       "slippage": true, "margin_tiers": true, "mmr_pct": 0.4}</code></pre>
+  <div class="dgrid">
+    <div class="dcard"><h3>Slippage</h3><p>The fill moves against you by what walking a real order book costs: <b>0.01%</b> on the majors, <b>0.05%</b> on thinner crypto, <b>0.005%</b> on forex, <b>0.02%</b> on stocks, metals and indices. A buy pays up, a sell sells down - never the other way.</p></div>
+    <div class="dcard"><h3>Margin tiers</h3><p>Maintenance margin rises with notional size, the way an exchange risk-limit table does, so a large position is liquidated <b>sooner</b> - a higher maintenance requirement tolerates less adverse move before it closes you, which is exactly what a venue wants on size. This is our published model rather than any one venue's table, and <code>GET /realism</code> returns the whole ladder - you should never have to reverse-engineer it from a liquidation price.</p></div>
+    <div class="dcard"><h3>Margin venue</h3><p>Which venue's published maintenance-margin rate to build on: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. It moves <b>only</b> where the liquidation price sits - never size, fees or P&amp;L.</p></div>
+  </div>
+  <p class="note">A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href="#arena">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.</p>
 </section>
 
 <section id="fees">

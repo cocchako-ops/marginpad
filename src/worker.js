@@ -160,7 +160,7 @@ async function handleV1(url, request, env, ctx) {
     rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
     if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
   }
-  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.8', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, 5000 on Business, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
+  if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.9', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, 5000 on Business, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
@@ -197,7 +197,7 @@ function handleOpenApi() {
     openapi: '3.1.0',
     info: {
       title: 'MarginPad Free Crypto API',
-      version: '2.8.0',
+      version: '2.9.0',
       description: 'Free, keyless, CORS-enabled crypto market-data API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, long/short ratios, liquidations, an economic calendar, the Fear & Greed index, top coins, global market stats, DeFi TVL, trading calculators, and a free paper-trading REST API for testing bots. No API key. No sign-up. about 60 requests/minute per client. Every response uses the envelope { ok, data, error, ts }, except the four liquidation-collector passthroughs (feed, liquidations/live, liquidations/recent, clusters), which return the raw collector object and are marked as such.',
       contact: { name: 'MarginPad', url: B + '/free-crypto-api/' },
       license: { name: 'Free for public use' },
@@ -261,6 +261,9 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'List webhooks (Premium)', description: 'Your registered webhooks with delivery counts, consecutive failures, the last error and whether each is active. Also lists the event names and the signature scheme.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Webhooks' } } } }, '402': { description: 'Premium required' } } },
         post: { tags: ['Paper trading'], summary: 'Add / delete / test a webhook (Premium)', description: 'act:"add" {url, events?} registers an https URL (max 3 per account) and returns its secret once. act:"delete" {id}. act:"test" {id} delivers a ping right now and returns the HTTP status your server answered. Deliveries: POST JSON {event, ts, hook_id, data} with headers X-MP-Event, X-MP-Delivery, X-MP-Timestamp and X-MP-Signature = sha256=HMAC_SHA256(secret, raw body). Retried 5 times with backoff; paused after 25 consecutive failures.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/WebhookRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'bad_url / bad_event' }, '402': { description: 'Premium required' }, '409': { description: 'too_many_webhooks' } } },
       },
+      '/api/bot/v1/realism': {
+        get: { tags: ['Paper trading'], summary: 'Fill realism (read)', description: 'Two deliberate simplifications in the engine, made optional: a market order fills at the live price with no slippage, and maintenance margin is a flat 0.5%. Both are off by default. Returns your setting, the published maintenance-margin rate of every venue, the whole size-tier ladder and what each switch does. Requires a key.', responses: { '200': { description: '{ realism:{slippage, margin_tiers, margin_venue}, defaults, effective, margin_venues, tiers, explain, applies_to }' } } },
+        post: { tags: ['Paper trading'], summary: 'Fill realism (set)', description: 'Set the account default. Any field you omit keeps its current value. Applies to positions opened from now on - a position always keeps the maintenance margin it was filled with. A per-call override (slippage, margin_tiers, mmr_pct) is accepted on /v1/open.', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { slippage: { type: 'boolean' }, margin_tiers: { type: 'boolean' }, margin_venue: { type: 'string', example: 'binance' } } } } } }, responses: { '200': { description: '{ ok, realism }' }, '400': { description: 'unknown_margin_venue' } } } },
       '/api/bot/v1/fees': {
         get: { tags: ['Paper trading'], summary: 'Fee schedules (venues) and your default', description: 'The exchanges whose taker schedule your paper fills can be charged at - Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid - each with taker_pct, maker_pct, the referral discount a MarginPad sign-up gets there, the effective rate, its code and link; plus the MarginPad default rates and your current fee_venue. Both legs pay the venue TAKER rate less the discount (the engine fills at market). Crypto perps only; other asset classes keep the MarginPad rate.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } },
         post: { tags: ['Paper trading'], summary: 'Set your default fee venue', description: 'Body {"venue":"hyperliquid"} makes every open from now on (site and API) pay that schedule unless a call names its own fee_venue; {"venue":null} or "marginpad" returns to the default rate. Open positions keep the rate they were filled with.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { venue: { type: ['string', 'null'], example: 'hyperliquid' } } } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'unknown_fee_venue' } } },
@@ -272,7 +275,7 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'Replay status, price and candles', description: 'While a replay runs on this key’s book: cursor (market time), the price under it, progress, finished, and the candles up to the cursor. ?interval=1|5|15|60|240 (minutes), ?bars=1-500.', security: [{ ApiKeyAuth: [] }], parameters: [q('interval', 'Candle size in minutes (aggregated from 1m).', false, '5'), q('bars', 'How many candles up to the cursor.', false, '120')], responses: { '200': { description: '{ running, symbol, day, speed, cursor_ts, cursor_iso, progress_pct, price, finished, bars:[{time,open,high,low,close}] }' } } },
         post: { tags: ['Paper trading'], summary: 'Start or stop a replay of a past day', description: 'Start: {symbol, day:"YYYY-MM-DD" (a complete past UTC day), speed (1-600 market seconds per real second, default 60)}. From then on the key’s trading calls act on a separate replay journal priced from MarginPad’s own 1-minute candles; stops, targets and liquidations are checked on every candle between two calls. Stop: {act:"stop"} closes everything at the cursor, returns the summary and empties the replay journal. One replay per key at a time; crypto only; limit and stop entries are not available in replay.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, day: { type: 'string', example: '2026-09-11' }, speed: { type: 'number', example: 60 }, act: { type: 'string', enum: ['start', 'stop'] } } } } } }, responses: { '200': { description: 'start: { ok, replay:{id, symbol, day, speed, start_ts, end_ts, candles, first_price} } · stop: { ok, replay:{closes, wins, losses, win_rate_pct, pnl_usd, return_pct, liquidations, trades} }' }, '400': { description: 'day_invalid / day_not_finished / speed_invalid / replay_crypto_only' }, '404': { description: 'no_data / no_replay' }, '409': { description: 'replay_running' } } },
       },
-      '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations}] }' } } } },
+      '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L. win_rate_pct counts CLOSED trades only - read it beside open_positions and open_unrealized_usd, because a bot that closes its winners and holds its losers reads 100% and is not winning; pnl_incl_open_usd is the whole book. realism.label says what the fills ran with (off = the engine defaults, no slippage and a flat 0.5% maintenance margin). No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, note, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations, open_positions, open_margin_usd, open_unrealized_usd, pnl_incl_open_usd, realism:{slippage_closes, tiered_closes, label}}] }' } } } },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/ai': { post: { tags: ['Paper trading'], summary: 'AI market read (Premium)', description: 'The chart panel’s AI read, from the API: {symbol, interval (minutes: 1,5,15,60,240,1440), question?, lang?}. Same model, prompt and 50-a-day quota as Ask-AI on the site. Returns the answer, a parsed plan when the model gives one, and the brief it reasoned over. Educational, not financial advice.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, interval: { type: 'string', example: '60' }, question: { type: 'string', maxLength: 280 }, lang: { type: 'string', example: 'en' } }, required: ['symbol'] } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/AiRead' } } } }, '402': { description: 'Premium required' }, '429': { description: 'daily AI quota used' } } } },
       '/api/whsink/{token}': {
@@ -6381,7 +6384,7 @@ async function checkOpsAlerts(env) {
       // from a single 8h afternoon and the note below said to re-run on 08-02). Same formula as before:
       // max(round(p95 x1.5), p95+150). Groups still short of n>=30 keep their interim ceiling.
       // fps is NOT here: it is frames-per-second, where HIGHER is better - it is checked as a floor below.
- const BUDGET = { 'prices': 155, 'klines': 1173, 'screener': 218, 'trade-other': 1292, 'trade-open': 1277, 'ws': 356, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 3149, 'ux-nav': 1000, 'ux-cold': 21213 }; // RECALIBRATED 2026-09-02 from budgetSuggest (8h ring, n>=30 groups, max(round(p95*1.5), p95+150)): trade-open 540 had been breached every day of the week (p95 665-1141) and screener/ws sat 100x above their p95 - a budget that fires daily or never is not a detector. // RECALIBRATED 2026-08-03 from budgetSuggest (all n>=30 groups at once, max(p95x1.5, p95+150)). price-age REMOVED on owner order - structurally blind metric (min-age of the freshest symbol, see CLAUDE.md 2026-07-30), a budget on it pages on noise. trade-open/ws/ws-recon/ux-modal/ux-nav keep interim ceilings (n<30 still).
+ const BUDGET = { 'prices': 155, 'klines': 1173, 'screener': 218, 'trade-other': 1292, 'trade-open': 1277, 'ws': 356, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 3149, 'ux-nav': 1000, 'ux-cold': 21213 }; // RECALIBRATED 2026-09-02 from budgetSuggest (8h ring, n>=30 groups, max(round(p95*1.5), p95+150)): trade-open 540 had been breached every day of the week (p95 665-1141) and screener/ws sat 100x above their p95 - a budget that fires daily or never is not a detector. // RECALIBRATED 2026-08-03 from budgetSuggest (all n>=30 groups at once, max(p95x1.5, p95+150)). price-age REMOVED on owner order - it WAS structurally blind (min-age of the freshest symbol, see CLAUDE.md 2026-07-30). Rewritten 2026-09-16 (pa = the charted symbol, pm = BTC), but it stays budget-free until n>=30 says where the p95 is. trade-open/ws/ws-recon/ux-modal/ux-nav keep interim ceilings (n<30 still).
       let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
       const cutP = Date.now() - 8 * 3600000, dayP = new Date().toISOString().slice(0, 10); // 8h = full ring retention → ~30+ samples even for the sparse UX beacons
       const byG = {}; for (const it of ring) { if (!it || (it.t || 0) < cutP) continue; (byG[it.g] = byG[it.g] || []).push(+it.ms || 0); }
@@ -10271,6 +10274,96 @@ function _feeOpen(margin, lev, rate) { return Math.round((+margin || 0) * (+lev 
 // like a market-order bot; a maker rebate on a resting entry is not modelled (documented). Crypto perps only:
 // stocks / forex / metals keep the MarginPad class rates whatever the venue. Applied through feeRateFor(); the
 // PnL formula is untouched - a venue only changes which per-side rate the position is stamped with at open.
+// ── REALISM: the two simplifications, made optional (2026-09-16) ────────────────────────────────────────────
+// The engine has carried two deliberate simplifications since it was built, both owner decisions and both
+// documented: a market order fills at the LIVE price with no slippage (2026-09-02 - so a fresh position reads
+// 0.00 unrealized and the entry line on the chart sits exactly where the trader clicked), and maintenance
+// margin is a flat 0.5% no matter what the position is worth. For learning to trade they are the right call.
+// For testing a bot they are optimistic against a real venue, and increasingly so as size grows. So they are
+// switches now instead of a silent assumption: OFF by default, so nothing anyone has already built moves, and
+// ON, the fill price and the liquidation price move the way a real book and a real risk-limit table move them.
+// Everything here is published through /api/trade/realism and /api/bot/v1/realism - a number a bot cannot read
+// back is a number it has to guess at.
+
+// Maintenance-margin rates as the venues publish them - the same table the terminal's "Exchange (sets margin
+// rate)" picker has always shown. It decides ONE thing: where the liquidation price sits. Not size, not fees.
+const MARGIN_VENUES = {
+  binance:     { name: 'Binance',     mmr: 0.40 },
+  bybit:       { name: 'Bybit',       mmr: 0.50 },
+  okx:         { name: 'OKX',         mmr: 0.50 },
+  bitget:      { name: 'Bitget',      mmr: 0.50 },
+  mexc:        { name: 'MEXC',        mmr: 0.10 },
+  kucoin:      { name: 'KuCoin',      mmr: 0.50 },
+  gate:        { name: 'Gate',        mmr: 0.50 },
+  kraken:      { name: 'Kraken',      mmr: 0.60 },
+  hyperliquid: { name: 'Hyperliquid', mmr: 1.25 },
+  coinbase:    { name: 'Coinbase',    mmr: 1.33 },
+};
+const MMR_DEFAULT = 0.005; // MarginPad's own 0.5%, unchanged - what every position has always been filled with
+function marginVenueNorm(v) { const k = String(v == null ? '' : v).toLowerCase().replace(/[^a-z]/g, ''); if (!k || k === 'default' || k === 'marginpad' || k === 'none') return ''; return MARGIN_VENUES[k] ? k : null; } // '' = MarginPad default, null = unknown
+function marginVenueMmr(key) { const v = MARGIN_VENUES[key]; return v ? v.mmr / 100 : null; }
+function marginVenueList() { return [{ venue: '', name: 'MarginPad', mmr_pct: MMR_DEFAULT * 100, is_default: true }].concat(Object.keys(MARGIN_VENUES).map(k => ({ venue: k, name: MARGIN_VENUES[k].name, mmr_pct: MARGIN_VENUES[k].mmr, is_default: false }))); }
+
+// Slippage against the trader, as a fraction of the price. A market order is filled by walking the book, so it
+// costs more the thinner the book is; majors are deep, a mid-cap perp is not. These are the numbers the engine
+// used before the 2026-09-02 decision to fill at the live price, and they are stated rather than modelled away.
+const SLIP_MAJORS = { BTC: 1, ETH: 1, SOL: 1, XRP: 1, BNB: 1, DOGE: 1 };
+function slipFor(sym) {
+  const c = assetClassOf(sym);
+  if (c === 'forex') return 0.00005;                                  // 0.005% - the deepest book there is
+  if (c === 'stock' || c === 'index' || c === 'metal') return 0.0002; // 0.02%
+  return SLIP_MAJORS[String(sym || '').toUpperCase()] ? 0.0001 : 0.0005; // crypto: 0.01% majors, 0.05% the rest
+}
+
+// Risk-limit tiers. Every real venue raises the maintenance margin as a position grows, because a large position
+// is harder to unwind - so a $5M position is liquidated SOONER than a $500 one at the same leverage: a higher
+// maintenance requirement tolerates less adverse move, which is exactly what the venue wants on size. Measured
+// on our own engine at 10x: 0.4% liquidates 9.960% from entry, 0.8% at 9.920%. This is a MODEL of that shape,
+// not any one venue's published table, and it is published whole (/realism returns `tiers`) rather than left to
+// be reverse-engineered from a fill.
+const MMR_TIERS = [[50000, 1], [250000, 1.5], [1000000, 2], [5000000, 3], [Infinity, 5]];
+function mmrTier(notional, base) { const n = Math.max(0, +notional || 0); for (const [cap, mult] of MMR_TIERS) if (n <= cap) return Math.min(0.1, base * mult); return Math.min(0.1, base * 5); }
+function mmrTierList(base) { let lo = 0; return MMR_TIERS.map(([cap, mult]) => { const row = { from_notional_usd: lo, to_notional_usd: cap === Infinity ? null : cap, mmr_pct: +(Math.min(0.1, base * mult) * 100).toFixed(4) }; lo = cap === Infinity ? lo : cap; return row; }); }
+
+const REALISM_DEF = { slippage: false, margin_tiers: false, margin_venue: '' };
+// Anything unreadable falls back to the default rather than throwing: this is read on the fill path.
+function realismNorm(v) {
+  let o = v; if (typeof o === 'string') { try { o = JSON.parse(o); } catch (e) { o = null; } }
+  if (!o || typeof o !== 'object') return { ...REALISM_DEF };
+  const mv = marginVenueNorm(o.margin_venue);
+  return { slippage: !!o.slippage, margin_tiers: !!o.margin_tiers, margin_venue: mv === null ? '' : mv };
+}
+// The one place a fill price and a maintenance margin are decided. Pure, so the E2E runs the real function.
+// `over` is a per-call override from the Bot API; the account setting is the default, never the other way round.
+// One or two letters, stored on the position and copied onto the close: S = filled with slippage, T = the
+// maintenance margin was raised by the size tier, M = a venue's margin rate rather than ours. Absent = the
+// defaults, which is what every trade before 2026-09-16 ran with.
+// What both surfaces answer with. The ladder and the rates are published in full: a bot that can read where its
+// liquidation price comes from does not have to reverse-engineer it from a fill.
+function realismInfo(cur) {
+  const base = cur.margin_venue ? (marginVenueMmr(cur.margin_venue) || MMR_DEFAULT) : MMR_DEFAULT;
+  return { realism: cur, defaults: REALISM_DEF,
+    effective: { maintenance_margin_pct: +(base * 100).toFixed(4), slippage_pct: { crypto_majors: 0.01, crypto_other: 0.05, forex: 0.005, stocks_metals_indices: 0.02 } },
+    margin_venues: marginVenueList(),
+    tiers: mmrTierList(base),
+    explain: { slippage: 'Off by default: a market order fills at the live price, so a fresh position reads 0.00 unrealized and the entry line sits where you clicked. On, the fill moves against you by the amount above - a buy pays up, a sell sells down - which is what walking a real order book costs.', margin_tiers: 'Off by default: maintenance margin is a flat ' + (MMR_DEFAULT * 100) + '% whatever the position is worth. On, it rises with notional size the way a venue risk-limit table does, so a large position is liquidated sooner - a higher maintenance requirement tolerates less adverse move before it closes you. This is our published model, not one venue\u2019s table - the whole ladder is in `tiers`.', margin_venue: 'Which venue\u2019s published maintenance-margin rate to use as the base. It moves ONLY where the liquidation price sits - never position size, fees or P&L.' },
+    applies_to: 'positions opened from now on. A position keeps the maintenance margin it was filled with - history is never rewritten.' };
+}
+function _rzTag(r) { return (r.slipPct ? 'S' : '') + (r.tiered ? 'T' : '') + (r.mmrSource !== 'default' ? 'M' : ''); }
+function applyRealism(rz, o) {
+  const r = realismNorm(rz), over = o.over || {};
+  const long = o.side !== 'short', live = +o.price, lev = Math.max(1, +o.lev || 1), notional = (+o.margin || 0) * lev;
+  const slipOn = over.slippage != null ? !!over.slippage : r.slippage;
+  const slip = slipOn ? slipFor(o.sym) : 0;
+  const entry = live * (1 + (long ? slip : -slip));  // always AGAINST the trader: a buy pays up, a sell sells down
+  let base = MMR_DEFAULT, src = 'default';
+  if (over.mmr_pct != null && isFinite(+over.mmr_pct) && +over.mmr_pct > 0) { base = Math.min(0.1, Math.max(0.0005, +over.mmr_pct / 100)); src = 'override'; }
+  else if (r.margin_venue) { const m = marginVenueMmr(r.margin_venue); if (m) { base = m; src = r.margin_venue; } }
+  const tiersOn = over.margin_tiers != null ? !!over.margin_tiers : r.margin_tiers;
+  const mmr = tiersOn ? mmrTier(notional, base) : base;
+  return { entry, mmr, slipPct: slip * 100, mmrPct: mmr * 100, mmrSource: src, tiered: tiersOn && mmr > base, applied: !!(slip || mmr !== MMR_DEFAULT) };
+}
+
 const FEE_VENUES = {
   bybit:       { name: 'Bybit',       taker: 0.055, maker: 0.020, disc: 20, code: null,        url: 'https://www.bybit.com/invite?ref=LZKBERJ' },
   binance:     { name: 'Binance',     taker: 0.050, maker: 0.020, disc: 20, code: 'MAOZM9DS',  url: 'https://www.binance.com/register?ref=MAOZM9DS' },
@@ -10282,6 +10375,18 @@ const FEE_VENUES = {
   kraken:      { name: 'Kraken',      taker: 0.050, maker: 0.020, disc: 0,  code: null,        url: 'https://invite.kraken.com/JDNW/guj2tf28' },
   hyperliquid: { name: 'Hyperliquid', taker: 0.045, maker: 0.015, disc: 4,  code: 'MARGINPAD', url: 'https://app.hyperliquid.xyz/join/MARGINPAD' },
 };
+// The fill path may not pay a DO round trip for a setting that changes once a month, so the account's
+// realism is memoised per isolate for 60 s and dropped the moment it is written (realismBust).
+const _rzMemo = new Map();
+async function realismOf(env, uid) {
+  const k = String(uid || '').split(':')[0]; if (!k) return { ...REALISM_DEF };
+  const hit = _rzMemo.get(k); if (hit && Date.now() - hit.t < 60000) return hit.v;
+  let v = { ...REALISM_DEF };
+  try { const pg = await usersDO(env, '/prefsget', { uid: k, keys: ['realism'] }); v = realismNorm(pg && pg.prefs && pg.prefs.realism && pg.prefs.realism.v); } catch (e) {}
+  _rzMemo.set(k, { t: Date.now(), v }); if (_rzMemo.size > 500) { for (const kk of _rzMemo.keys()) { _rzMemo.delete(kk); if (_rzMemo.size <= 400) break; } }
+  return v;
+}
+function realismBust(uid) { try { _rzMemo.delete(String(uid || '').split(':')[0]); } catch (e) {} }
 function feeVenueNorm(v) { const k = String(v == null ? '' : v).toLowerCase().replace(/[^a-z]/g, ''); if (!k || k === 'default' || k === 'marginpad' || k === 'none') return ''; return FEE_VENUES[k] ? k : null; } // '' = MarginPad default, null = unknown
 function feeVenueRate(key) { const v = FEE_VENUES[key]; return v ? v.taker * (1 - v.disc / 100) / 100 : null; } // effective per-side rate as a fraction
 function feeVenueList() { return Object.keys(FEE_VENUES).map(k => { const v = FEE_VENUES[k]; return { venue: k, name: v.name, taker_pct: v.taker, maker_pct: v.maker, referral_discount_pct: v.disc, effective_taker_pct: +(v.taker * (1 - v.disc / 100)).toFixed(4), code: v.code, signup_url: v.url, trading_api: true, applies_to: 'crypto', source: 'the venue’s published base tier and referral discount, as on marginpad.io/exchanges/' }; }); }
@@ -12186,12 +12291,13 @@ async function handleTrade(url, request, env, ctx) {
     mk('price', tP);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
     { const ms9 = marketSession(sym, pd); if (!ms9.open) return jt({ error: 'market_closed', sym, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); } // opening was never gated at all (only closing was) - a weekend forex/metal fill landed on a frozen price
-    // P1 realism: slippage against the trader - perfect last-price fills teach bad habits. Majors 0.01%, thinner books 0.05%.
-    // The fill is the live price itself (owner 2026-09-02): the entry line on the chart sits exactly where the trader
-    // clicked, and a freshly opened position reads 0.00 - the old 0.01-0.05% slippage against the trader made every
-    // new position open in the red and drew the line off the market. The taker fee is real and is charged below.
+    // The fill is the live price and maintenance margin is a flat 0.5% (owner 2026-09-02) UNLESS this account has
+    // turned realism on: the entry line then sits where a real book would have filled it and the liquidation price
+    // where a real risk-limit table would put it. Off by default, so this reads exactly as it always did.
     const long = side === 'long';
-    const entry = +pd.price, mmr = 0.005;
+    const _rz = await realismOf(env, uid);
+    const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin });
+    const entry = _rr.entry, mmr = _rr.mmr;
     const liq = mpcLiq(entry, lev, mmr, long);
     const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
@@ -12202,7 +12308,7 @@ async function handleTrade(url, request, env, ctx) {
     // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
     const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
     const _fvS = (b.feeVenue !== undefined) ? (feeVenueNorm(b.feeVenue) || '') : undefined;
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, _fvS || '')), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding - sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym, _fvS || ''), ...(_fvS !== undefined ? { feeVenue: _fvS } : {}) /* Bot API 2.4: the terminal's fee venue; undefined = the store applies the account default */, status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side - settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, _fvS || '')), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding - sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, ...(_rr.applied ? { rz: _rzTag(_rr) } : {}) /* what this fill really ran with - recorded on the close so the Bot arena can say so (2026-09-16) */, feeRate: feeRateFor(lev, sym, _fvS || ''), ...(_fvS !== undefined ? { feeVenue: _fvS } : {}) /* Bot API 2.4: the terminal's fee venue; undefined = the store applies the account default */, status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side - settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
     mk('do_fill', tD);
@@ -12262,6 +12368,19 @@ async function handleTrade(url, request, env, ctx) {
   // ── TRADING REPORT ──────────────────────────────────────────────────────────────────────────────────────────
   // The headline totals are free - everyone should be able to see how they did. The BREAKDOWNS (which coin, which
   // leverage, which hour) and the findings are Premium, because that is the part that changes how someone trades.
+  if (path === '/realism') { // the two simplifications, made optional (2026-09-16). Same account setting the Bot API reads.
+    if (request.method === 'POST') {
+      const cur = await realismOf(env, uid);
+      const mvN = b.margin_venue === undefined ? cur.margin_venue : marginVenueNorm(b.margin_venue);
+      if (mvN === null) return jt({ error: 'unknown_margin_venue', venues: marginVenueList().map(v => v.venue).filter(Boolean) }, 400);
+      const nv = { slippage: b.slippage === undefined ? cur.slippage : !!b.slippage, margin_tiers: b.margin_tiers === undefined ? cur.margin_tiers : !!b.margin_tiers, margin_venue: mvN };
+      const r = await usersDO(env, '/prefsput', { uid, k: 'realism', v: JSON.stringify(nv) });
+      realismBust(uid); // the fill path memoises this for 60 s - a setting the trader just changed must bite on the next open
+      return jt(r && r.ok ? { ok: true, realism: nv } : { error: 'unavailable' }, r && r.ok ? 200 : 503);
+    }
+    const cur = await realismOf(env, uid);
+    return jt(realismInfo(cur));
+  }
   if (path === '/fees') { // Bot API 2.4 from the site: the terminal's "fees as on" selector reads and writes the same account default the Bot API uses
     if (request.method === 'POST') { const fvN = feeVenueNorm(b.venue); if (fvN === null) return jt({ error: 'unknown_fee_venue' }, 400); const r = await usersDO(env, '/prefsput', { uid, k: 'feevenue', v: fvN }); return jt(r && r.ok ? { ok: true, venue: fvN || null } : { error: 'unavailable' }, r && r.ok ? 200 : 503); }
     let mine = ''; try { const pg = await usersDO(env, '/prefsget', { uid, keys: ['feevenue'] }); mine = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) {}
@@ -12373,6 +12492,14 @@ async function handleTrade(url, request, env, ctx) {
 // changelog is a copy that goes stale. Newest first. Append, never rewrite history.
 const API_CHANGELOG = [
   {
+    date: '2026-09-16', version: '2.9.0', title: 'Fill realism: slippage and risk-limit tiers, off by default and yours to switch on',
+    changes: [
+      { type: 'added', breaking: false, text: 'GET|POST /v1/realism - two deliberate simplifications in the engine, made optional. `slippage` fills a market order against you the way walking a real book does (0.01% crypto majors, 0.05% thinner crypto, 0.005% forex, 0.02% stocks/metals/indices) instead of at the live price. `margin_tiers` raises maintenance margin with notional size the way an exchange risk-limit table does, instead of a flat 0.5%. `margin_venue` picks whose published maintenance-margin rate to build on. All three OFF by default: nothing you have already built changes.' },
+      { type: 'added', breaking: false, text: 'Per-call overrides on /v1/open: slippage, margin_tiers, mmr_pct. One strategy can be tested both ways without touching the account setting.' },
+      { type: 'added', breaking: false, text: 'GET /api/arena now carries open_positions, open_margin_usd, open_unrealized_usd, pnl_incl_open_usd and realism.label per row. win_rate_pct only ever counted CLOSED trades, so a bot that takes its winners and holds its losers reads 100%: the open book now sits beside it on the board and in the JSON.' },
+      { type: 'changed', breaking: false, text: 'A position records the realism it was filled with and keeps its own maintenance margin for life - switching either setting never rewrites a trade you already hold.' },
+    ],
+  }, {
     date: '2026-09-15', version: '2.8.0', title: 'A fourth plan, and the prices the plans actually ship at',
     changes: [
       { type: 'changed', breaking: false, text: 'Prices, superseding the ones announced in 2.7.0 earlier the same day: API Pro is $29/month (600 requests/minute, 10 keys, 200 open positions, 5 books, 3 webhooks, 50 AI reads a day) and API Max is $79/month (2000/minute, 30 keys, 500 open positions, 20 books, 15 webhooks, 200 AI reads). Nobody had bought at the earlier numbers.' },
@@ -13113,13 +13240,18 @@ async function handleBot(url, request, env, ctx) {
       const _o = ro.order || {};
       return jb({ ok: true, order: Object.assign({}, _o, { type: typeQ, order_id: _o.id, symbol: _o.sym, limit_price: _o.px, leverage: _o.lev, margin_usd: _o.margin, trail_pct: _o.trail || null, placed_ts: _o.ts, expires_ts: _o.expTs }), ...(ro.idempotent ? { idempotent: true } : {}) }, 200);
     }
-    const entry = +pd.price, mmr = 0.005, long = side === 'long';
+    const long = side === 'long';
+    // Realism: the account setting, with a per-call override so one strategy can be tested both ways without
+    // touching the account. `slippage:true` / `margin_tiers:true` / `mmr_pct:0.4` on the open body.
+    const _rz = await realismOf(env, uid);
+    const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin, over: { slippage: b.slippage, margin_tiers: b.margin_tiers, mmr_pct: b.mmr_pct } });
+    const entry = _rr.entry, mmr = _rr.mmr;
     const liq = mpcLiq(entry, lev, mmr, long);
     const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: (rp ? 'rp' : 'bot') + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: rp ? rpCur : Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, feeVenue || '')), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym, feeVenue || ''), status: 'open', pnl: null, src: rp ? 'replay' : 'bot' };
+    const t = { id: (rp ? 'rp' : 'bot') + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: rp ? rpCur : Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, feeVenue || '')), liq: Math.round(liq * 1e6) / 1e6, mmr, ...(_rr.applied ? { rz: _rzTag(_rr) } : {}), feeRate: feeRateFor(lev, sym, feeVenue || ''), status: 'open', pnl: null, src: rp ? 'replay' : 'bot' };
     if (rp) t.swT = rpCur; // replay clock: the position's time and candle watermark are the cursor, so the replay sweep starts from the next candle
     if (feeVenue !== undefined) t.feeVenue = feeVenue; // explicit (incl. '' = MarginPad default); undefined lets the store apply the account default
     if (trailQ) { t.trail = trailQ; t.hwm = entry; if (t.stop == null) t.stop = Number((long ? entry * (1 - trailQ / 100) : entry * (1 + trailQ / 100)).toPrecision(10)); } // an initial stop at trail distance, so the position is protected from the first tick
@@ -13357,6 +13489,18 @@ async function handleBot(url, request, env, ctx) {
     const r = await doCall('/webhook', { uid, act: 'list' });
     if (!r) return jb({ error: 'unavailable' }, 503);
     return jb({ webhooks: r.webhooks || [], pending_deliveries: r.pending || 0, max: r.max || WH_MAX, events: WH_EVENTS, signature: 'X-MP-Signature: sha256=HMAC_SHA256(secret, raw body); X-MP-Event, X-MP-Delivery, X-MP-Timestamp headers on every delivery' }, 200);
+  }
+  if (path === '/v1/realism') { // 2.5: read or set the account's fill realism. Per-call override lives on /v1/open.
+    if (request.method === 'POST') {
+      const cur = await realismOf(env, auth.owner || uid);
+      const mvN = b.margin_venue === undefined ? cur.margin_venue : marginVenueNorm(b.margin_venue);
+      if (mvN === null) return jb({ error: 'unknown_margin_venue', venues: marginVenueList().map(v => v.venue).filter(Boolean) }, 400);
+      const nv = { slippage: b.slippage === undefined ? cur.slippage : !!b.slippage, margin_tiers: b.margin_tiers === undefined ? cur.margin_tiers : !!b.margin_tiers, margin_venue: mvN };
+      const r = await doCall('/prefsput', { uid: auth.owner || uid, k: 'realism', v: JSON.stringify(nv) });
+      realismBust(auth.owner || uid);
+      return jb(r && r.ok ? { ok: true, realism: nv } : { error: 'unavailable' }, r && r.ok ? 200 : 503);
+    }
+    return jb(realismInfo(await realismOf(env, auth.owner || uid)));
   }
   if (path === '/v1/fees') { // Bot API 2.4: which exchange's fee schedule your paper fills are charged at. GET = the table + your default; POST {venue} sets the account default (null / "marginpad" = back to the class rate)
     if (request.method === 'POST') {
@@ -15882,11 +16026,29 @@ export default {
     }
     if (url.pathname === '/api/status') return handleStatusApi(env); // public status: live checks + 90 days of sampled uptime (Phase 0)
     if (url.pathname === '/api/arena') { // Bot arena (2.5): public season board of bot-opened closes, per account or book, 5 closes to enter; no prizes, a scoreboard
-      const ck = new Request('https://marginpad.io/__arena_v1');
+      const ck = new Request('https://marginpad.io/__arena_v2');
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       const s = predSeason(Date.now()); const from = Date.parse(s.from + 'T00:00:00Z'), to = s.endMs;
       let r = null; try { r = await usersDO(env, '/arena', { from, to }); } catch (e) {}
-      const body = JSON.stringify({ ok: !!r, ts: Date.now(), season: { idx: s.idx + 1, from: s.from, to: s.to, ends_ms: s.endMs }, min_closes: 5, starting_balance_usd: BOT_START_BAL, rows: (r && r.rows) || [] });
+      // A win rate built from closes alone says nothing about what is still being held, and holding losers open is
+      // exactly how a bot reaches 100%. The DO hands back each account's open book; we price it here (the DO cannot
+      // fetch) so the board can print the unrealized P&L beside the realized one. One price lookup per symbol.
+      const rowsQ = (r && r.rows) || [];
+      const symsQ = Array.from(new Set(rowsQ.flatMap(x => (x._open || []).map(o => o.sym)))).slice(0, 60);
+      const pxQ = {}; await Promise.all(symsQ.map(async sy => { try { const d = await fetchPriceCached(sy); if (d && +d.price > 0) pxQ[sy] = +d.price; } catch (e) {} }));
+      for (const x of rowsQ) {
+        const op = x._open || []; delete x._open;
+        let un = 0, priced = 0, mg = 0;
+        for (const o of op) { mg += +o.margin || 0; const lp = pxQ[o.sym]; if (!(lp > 0) || !(o.qty > 0)) continue; priced++; let pv = o.qty * (lp - o.entry) * (o.side === 'short' ? -1 : 1); if (o.margin > 0 && pv < -o.margin) pv = -o.margin; un += pv; }
+        x.open_positions = op.length;
+        x.open_margin_usd = Math.round(mg * 100) / 100;
+        x.open_unrealized_usd = priced ? Math.round(un * 100) / 100 : null; // null = we could not price them, never a silent 0
+        x.open_priced = priced;
+        x.pnl_incl_open_usd = priced === op.length ? Math.round((x.pnl_usd + un) * 100) / 100 : null;
+      }
+      const body = JSON.stringify({ ok: !!r, ts: Date.now(), season: { idx: s.idx + 1, from: s.from, to: s.to, ends_ms: s.endMs }, min_closes: 5, starting_balance_usd: BOT_START_BAL,
+        note: 'win_rate_pct counts CLOSED trades only. Read it beside open_positions and open_unrealized_usd: a bot that closes its winners and holds its losers reads 100% and is not winning. realism.label says what its fills ran with - off = no slippage and a flat 0.5% maintenance margin (the engine default), full = slippage and size-tiered margin on every close.',
+        rows: rowsQ });
       const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
       if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return resp;
@@ -16806,7 +16968,14 @@ export default {
           if (isFinite(wsv) && wsv >= 0 && wsv < 5000) perfPush(env, ctx, 'ws', wsv, true); // >5s = client clock skew / stale-tab tick, not real WS latency (a 21.6s "sample" polluted the ring 2026-07-24)
           if (isFinite(fpv) && fpv >= 1 && fpv <= 120) perfPush(env, ctx, 'fps', fpv, true);
           // UX budget metrics (worst observed per 5-min client window): mo=modal open, cs=chart TF switch, nav=SPA transition, pa=live price age, rc=WS reconnect
-          const UXC = { mo: ['ux-modal', 10000], cs: ['ux-chart', 30000], cc: ['ux-cold', 30000], nav: ['ux-nav', 30000], pa: ['price-age', 120000], rc: ['ws-recon', 60000] }; // cc = cold-load first-chart (nav->render); ux-chart (cs) deliberately skips the first load, so this is the ONLY production telemetry for a new visitor's first-impression chart time
+          // pa was the MINIMUM live-price age across every symbol in the feed - it answered "is anything alive?",
+          // which is yes even when every symbol on screen is frozen, so it read healthy while the screen was stale
+          // and its budget was pulled in August as a metric nobody could act on. Since 2026-09-16 the client sends
+          // two real numbers instead: pa = the age of the symbol ON THE CHART (the price a person is looking at),
+          // pm = the age of BTC, which trades every second, so a high number there is the FEED being late and never
+          // the market being quiet. Neither has a BUDGET yet, deliberately: a budget comes from n>=30 measured
+          // samples (see budgetSuggest), and these two have none. They accumulate in AE until they do.
+          const UXC = { mo: ['ux-modal', 10000], cs: ['ux-chart', 30000], cc: ['ux-cold', 30000], nav: ['ux-nav', 30000], pa: ['price-age', 120000], pm: ['price-age-major', 120000], rc: ['ws-recon', 60000] }; // cc = cold-load first-chart (nav->render); ux-chart (cs) deliberately skips the first load, so this is the ONLY production telemetry for a new visitor's first-impression chart time
  for (const uk in UXC) { const uv = +pb[uk]; if (isFinite(uv) && uv >= 0 && uv < UXC[uk][1]) { perfPush(env, ctx, UXC[uk][0], uv, true); try { if (env.AE) env.AE.writeDataPoint({ indexes: ['uxperf'], blobs: ['uxperf', UXC[uk][0]], doubles: [1, uv] }); } catch (e) {} } } // AE dual-write (all UX metrics, same line): unbounded history so a p50/p95 baseline can accumulate past the 8h ring - the waterfall deploy waits for 15+ ux-cold samples HERE, not in the ring
           if (pb.pr === 'hit' || pb.pr === 'miss' || pb.pr === 'fired') { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['preload'], blobs: ['preload', pb.pr], doubles: [1] }); } catch (e) {} } // inline-preload accounting: hit = picked up (useful), miss = inline drifted from loadKlines (wasted, drift), fired = loadKlines never ran so the preload was spent for nothing (bounce-before-boot). Query: SELECT blob2, SUM(_sample_interval) WHERE blob1='preload'.
           ctx.waitUntil(perfFlush(env));
@@ -20704,6 +20873,7 @@ export class UserStore {
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution - client / site / bot / sweep / cron / sltp
     try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {}
     try { s.exec('ALTER TABLE tradeev ADD COLUMN sl INTEGER'); } catch (e) {} // skill score (2026-09-06): had a stop set at close (0/1); NULL = before the column existed
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN rz TEXT'); } catch (e) {} // realism the trade was FILLED with (2026-09-16): S=slippage, T=size tier, M=venue margin rate. NULL/'' = the defaults, which is every trade before that date - so the Bot arena can say on the board which bots ran on easy mode.
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
@@ -21189,7 +21359,7 @@ export class UserStore {
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once - a DO-reset re-sync must not double-grant */
             if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
         if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0); // the client journal says `sl`, a server-filled position says `stop`
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4)); // the client journal says `sl`, a server-filled position says `stop`
         nIns++;
       }
       if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
@@ -21678,10 +21848,19 @@ export class UserStore {
     }
     if (path === '/arena') { // public Bot arena: bot-opened closes in a window, per account (main or book), at least 5 closes
       const from = +b.from || 0, to = +b.to || now;
-      let rowsA = []; try { rowsA = this.rows("SELECT user_id, COUNT(*) n, SUM(pnl) pnl, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) wins, SUM(liq) liq, AVG(roe) roe, SUM(margin) margin, MAX(ts) last FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND (src='bot' OR via='bot') GROUP BY user_id HAVING COUNT(*)>=5 ORDER BY pnl DESC LIMIT 200", from, to); } catch (e) { return this.j({ rows: [] }); }
+      // A win rate counted from CLOSES alone is the easiest number on this site to game, and not on purpose: a bot
+      // that takes every winner and leaves every loser open reads 100%. So the board carries what is still OPEN
+      // beside what was closed, and the realism each close was actually FILLED with (2026-09-16) - a bot trading
+      // without slippage and on a flat maintenance margin is on easy mode, and the reader is entitled to know.
+      let rowsA = []; try { rowsA = this.rows("SELECT user_id, COUNT(*) n, SUM(pnl) pnl, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) wins, SUM(liq) liq, AVG(roe) roe, SUM(margin) margin, MAX(ts) last, SUM(CASE WHEN rz LIKE '%S%' THEN 1 ELSE 0 END) slipN, SUM(CASE WHEN rz LIKE '%T%' THEN 1 ELSE 0 END) tierN FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND (src='bot' OR via='bot') GROUP BY user_id HAVING COUNT(*)>=5 ORDER BY pnl DESC LIMIT 200", from, to); } catch (e) { return this.j({ rows: [] }); }
       const owners = Array.from(new Set(rowsA.map(r => String(r.user_id).split(':')[0]))); const nameOf = {};
       for (let i = 0; i < owners.length; i += 60) { const part = owners.slice(i, i + 60); try { this.rows('SELECT id, username FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { nameOf[u.id] = u.username || ''; }); } catch (e) {} }
-      const out = rowsA.map(r => { const [own, bk] = String(r.user_id).split(':'); const un = nameOf[own] || ''; if (!un || /^e2e_/i.test(un)) return null; return { who: un + (bk ? '/' + bk : ''), account: bk || 'main', closes: +r.n, wins: +r.wins, win_rate_pct: Math.round(+r.wins / +r.n * 1000) / 10, pnl_usd: Math.round(+r.pnl * 100) / 100, return_pct: Math.round(+r.pnl / BOT_START_BAL * 10000) / 100, avg_roe_pct: r.roe == null ? null : Math.round(+r.roe * 10) / 10, liquidations: +r.liq || 0, last_close_ts: +r.last || 0 }; }).filter(Boolean);
+      const out = rowsA.map(r => { const [own, bk] = String(r.user_id).split(':'); const un = nameOf[own] || ''; if (!un || /^e2e_/i.test(un)) return null;
+        // the open book of the SAME account/book, so the reader can weigh the win rate against what is being held
+        let open = []; try { open = this._loadJournal(String(r.user_id)).filter(t => t && t.status !== 'win' && t.status !== 'loss' && (t.src === 'bot' || t.src === 'srv') && +t.entry > 0).slice(0, 60).map(t => ({ sym: String(t.sym || '').toUpperCase().slice(0, 12), side: t.side === 'short' ? 'short' : 'long', entry: +t.entry, qty: +t.qty || 0, margin: +t.margin || 0, lev: +t.lev || 1, ts: +t.ts || 0 })); } catch (e) {}
+        const slipN = +r.slipN || 0, tierN = +r.tierN || 0;
+        return { who: un + (bk ? '/' + bk : ''), account: bk || 'main', closes: +r.n, wins: +r.wins, win_rate_pct: Math.round(+r.wins / +r.n * 1000) / 10, pnl_usd: Math.round(+r.pnl * 100) / 100, return_pct: Math.round(+r.pnl / BOT_START_BAL * 10000) / 100, avg_roe_pct: r.roe == null ? null : Math.round(+r.roe * 10) / 10, liquidations: +r.liq || 0, last_close_ts: +r.last || 0,
+          open_positions: open.length, realism: { slippage_closes: slipN, tiered_closes: tierN, label: (slipN >= +r.n && tierN >= +r.n) ? 'full' : (!slipN && !tierN) ? 'off' : 'partial' }, _open: open }; }).filter(Boolean);
       out.forEach((r, i) => { r.rank = i + 1; });
       return this.j({ rows: out, from, to });
     }

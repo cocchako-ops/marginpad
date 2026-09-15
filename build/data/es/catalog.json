@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T03:21:54.214Z",
+  "generated": "2026-09-15T03:53:24.156Z",
   "pages": 373,
-  "occurrences": 25199,
-  "unique": 13246,
-  "words": 248382,
+  "occurrences": 25221,
+  "unique": 13268,
+  "words": 249051,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T03:22:12.005Z"
+  "merged": "2026-09-15T03:56:08.129Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -698,7 +698,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1608,
+   "n": 1606,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -9600,6 +9600,54 @@
    "n": 1,
    "w": 51
   },
+  "LW2w1XqNrj": {
+   "en": "Realistic fills",
+   "es": "Ejecuciones realistas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "vg3iRRuLJD": {
+   "en": "<input type=\"checkbox\" id=\"planRzSlip\"><span>Slippage</span>",
+   "es": "<input type=\"checkbox\" id=\"planRzSlip\"><span>Slippage</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "M7mzWhbChu": {
+   "en": "<input type=\"checkbox\" id=\"planRzTier\"><span>Margin tiers</span>",
+   "es": "<input type=\"checkbox\" id=\"planRzTier\"><span>Tramos de margen</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "wKAi8D21WN": {
+   "en": "By default a market order fills at the <b>live price</b> and maintenance margin is a flat <b>0.5%</b> - the entry line sits exactly where you clicked and a new position reads 0.00. That is easier than a real venue. <b>Slippage</b> moves the fill against you the way walking a real order book does: 0.01% on the majors, 0.05% on thinner crypto, 0.005% on forex, 0.02% on stocks, metals and indices. <b>Margin tiers</b> raise the maintenance margin as the position grows, the way an exchange risk-limit table does, so a large position is liquidated sooner - a higher maintenance requirement leaves less room before it closes you. Both are off unless you switch them on, they apply to <b>positions opened from now on</b>, and a position always keeps the maintenance margin it was filled with. The same setting is what your bots use through the API.",
+   "es": "Por defecto, una orden a mercado se ejecuta al <b>precio en vivo</b> y el margen de mantenimiento es un <b>0.5%</b> fijo: la línea de entrada queda exactamente donde hiciste clic y una posición nueva marca 0.00. Eso es más sencillo que en un exchange real. El <b>slippage</b> mueve la ejecución en tu contra tal como ocurre al recorrer un libro de órdenes real: 0.01% en las principales, 0.05% en criptomonedas menos líquidas, 0.005% en forex, 0.02% en acciones, metales e índices. Los <b>tramos de margen</b> aumentan el margen de mantenimiento a medida que crece la posición, igual que la tabla de límites de riesgo de un exchange, así que una posición grande se liquida antes: un requisito de mantenimiento más alto deja menos margen antes de cerrarte. Ambos están desactivados salvo que los actives, se aplican a las <b>posiciones abiertas a partir de ahora</b>, y una posición siempre conserva el margen de mantenimiento con el que fue ejecutada. Es el mismo ajuste que usan tus bots a través de la API.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 135
+  },
   "UJqEQ7FbsK": {
    "en": "Stop-loss (optional)",
    "es": "Stop-loss (opcional)",
@@ -11306,9 +11354,9 @@
    "n": 1,
    "w": 19
   },
-  "6iu0AX3Eud": {
-   "en": "<span class=\"ml-h\" data-i18n=\"mlTools\">Tools</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glossary</a><span class=\"ml-sep\">·</span><a href=\"/trading-api/\">Free API</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">US futures guide</a>",
-   "es": "<span class=\"ml-h\" data-i18n=\"mlTools\">Herramientas</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glosario</a><span class=\"ml-sep\">·</span><a href=\"/trading-api/\">API gratuita</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">Guía de futuros en EE. UU.</a>",
+  "4ijbDRzKZn": {
+   "en": "<span class=\"ml-h\" data-i18n=\"mlTools\">Tools</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glossary</a><span class=\"ml-sep\">·</span><a href=\"/api/\">Free API</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">US futures guide</a>",
+   "es": "<span class=\"ml-h\" data-i18n=\"mlTools\">Herramientas</span><a href=\"/funding-fee-calculator/\">Comisión de funding</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glosario</a><span class=\"ml-sep\">·</span><a href=\"/api/\">API gratuita</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">Guía de futuros en EE. UU.</a>",
    "kind": [
     "html"
    ],
@@ -12109,6 +12157,30 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "a3_8lyG-KA": {
+   "en": "planRzHint",
+   "es": "planRzHint",
+   "kind": [
+    "attr:data-hint"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "di0iGuc9Zf": {
+   "en": "What do realistic fills change?",
+   "es": "¿Qué cambian las ejecuciones realistas?",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5
   },
   "2npoc0Nngo": {
    "en": "off",
@@ -14420,6 +14492,18 @@
    "n": 1,
    "w": 35
   },
+  "vaHHg6FmIq": {
+   "en": "<b>Read the win rate beside the open column.</b> It counts closed trades only, so a bot that takes its winners and holds its losers open reads 100% and is not winning. The open positions and what they are worth right now are the two columns next to it, and <b>Book</b> adds them to the realized P&L. <b>Fills</b> says whether that bot ran with slippage and size-tiered maintenance margin switched on, or on the engine defaults.",
+   "es": "<b>Lee la tasa de acierto junto a la columna de abiertas.</b> Solo cuenta operaciones cerradas, así que un bot que se queda con sus ganadoras y mantiene abiertas sus perdedoras marca 100% y no está ganando. Las posiciones abiertas y lo que valen ahora mismo son las dos columnas siguientes, y <b>Book</b> las suma al P&L realizado. <b>Ejecuciones</b> indica si ese bot operó con slippage y margen de mantenimiento por tramos activados, o con los valores predeterminados del motor.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 74
+  },
   "DiHTDMTV7I": {
    "en": "Loading the season…",
    "es": "Cargando la temporada…",
@@ -14469,6 +14553,43 @@
    "n": 4,
    "w": 2
   },
+  "z5t3Bh97MS": {
+   "en": "Open",
+   "es": "Abiertas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "WCGEIZns6A": {
+   "en": "Unrealized",
+   "es": "No realizado",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "9p8jMAXxWA": {
+   "en": "Book",
+   "es": "Libro",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/arena/",
+    "/trading-api/"
+   ],
+   "n": 2,
+   "w": 1
+  },
   "JPCWsiH5U0": {
    "en": "Return",
    "es": "Rendimiento",
@@ -14481,9 +14602,9 @@
    "n": 1,
    "w": 1
   },
-  "3oEAwKHJQv": {
-   "en": "Avg ROE",
-   "es": "ROE prom.",
+  "BppximYSQo": {
+   "en": "Liq",
+   "es": "Liq.",
    "kind": [
     "html"
    ],
@@ -14491,11 +14612,11 @@
     "/arena/"
    ],
    "n": 1,
-   "w": 2
+   "w": 1
   },
-  "BppximYSQo": {
-   "en": "Liq",
-   "es": "Liq.",
+  "Jl8MViR9pp": {
+   "en": "Fills",
+   "es": "Ejecuciones",
    "kind": [
     "html"
    ],
@@ -14553,9 +14674,9 @@
    "n": 1,
    "w": 21
   },
-  "JCsxnaZ74R": {
-   "en": "Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early. Machine-readable: <a href=\"/api/arena\">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.",
-   "es": "El rendimiento es el P&L realizado sobre el saldo de $10,000 del marcador. La tasa de acierto necesita cierres para significar algo: las entradas con menos de 20 cierres son prematuras. Legible por máquina: <a href=\"/api/arena\">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba quedan excluidas. Solo con fines educativos; no es asesoría financiera.",
+  "tbOqsuHLbh": {
+   "en": "Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early, and a 100% rate with positions still open is marked with an asterisk rather than believed. <b>Fills</b> reads <i>defaults</i> unless that account switched realism on: by default a market order fills at the live price with no slippage and maintenance margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows. Both can be switched on per account or per call - see <a href=\"/trading-api/#realism\">realistic fills</a>. Every trade opened before 16 September 2026 ran on the defaults. Machine-readable: <a href=\"/api/arena\">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.",
+   "es": "El retorno es el P&L realizado sobre el saldo de $10,000 del marcador. La tasa de acierto solo tiene sentido con cierres: las entradas con menos de 20 cierres son prematuras, y una tasa del 100% con posiciones aún abiertas se marca con un asterisco en lugar de darse por buena. <b>Ejecuciones</b> muestra <i>predeterminados</i> a menos que esa cuenta haya activado el realismo: por defecto, una orden a mercado se ejecuta al precio en vivo sin slippage y el margen de mantenimiento es un 0.5% fijo, lo cual es más sencillo que en un exchange real y cada vez más a medida que crece la posición. Ambos se pueden activar por cuenta o por llamada; consulta <a href=\"/trading-api/#realism\">ejecuciones realistas</a>. Toda operación abierta antes del 16 de septiembre de 2026 funcionó con los valores predeterminados. Legible por máquina: <a href=\"/api/arena\">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba quedan excluidas. Solo con fines educativos; no es asesoría financiera.",
    "kind": [
     "html"
    ],
@@ -14563,7 +14684,55 @@
     "/arena/"
    ],
    "n": 1,
-   "w": 37
+   "w": 115
+  },
+  "mSiNc0ZOJw": {
+   "en": "Positions still open right now. A win rate counted from closes alone says nothing about these.",
+   "es": "Posiciones que siguen abiertas ahora mismo. Una tasa de acierto calculada solo con cierres no dice nada sobre estas.",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 15
+  },
+  "jQouQhx-g8": {
+   "en": "Unrealized P&L on those open positions, priced at the live market.",
+   "es": "P&L no realizado de esas posiciones abiertas, valorado al precio de mercado en vivo.",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "KmoZ8_Nqpp": {
+   "en": "Realized plus unrealized - the whole book.",
+   "es": "Realizado más no realizado: el book completo.",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "76QQl5fgJu": {
+   "en": "What the fills ran with. defaults = no slippage and a flat 0.5% maintenance margin.",
+   "es": "Con qué se ejecutaron las operaciones. predeterminados = sin slippage y un margen de mantenimiento fijo del 0.5%.",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/arena/"
+   ],
+   "n": 1,
+   "w": 13
   },
   "-2L2As1vGi": {
    "en": "A public 14-day scoreboard of trading bots and AI agents that trade through the MarginPad paper-trading API on live crypto-futures prices: realized P&L, win rate, return, liquidations. No prizes, no login to read.",
@@ -68789,9 +68958,10 @@
    ],
    "ctx": [
     "/blog/what-is-slippage/",
-    "/glossary/"
+    "/glossary/",
+    "/trading-api/"
    ],
-   "n": 3,
+   "n": 4,
    "w": 1
   },
   "yb85FjSGFM": {
@@ -146310,18 +146480,6 @@
    "n": 1,
    "w": 1
   },
-  "9p8jMAXxWA": {
-   "en": "Book",
-   "es": "Libro",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
   "xn3SDuhCmG": {
    "en": "Key",
    "es": "Clave",
@@ -147510,9 +147668,9 @@
    "n": 1,
    "w": 4
   },
-  "rBSB3sNX1u": {
-   "en": "<a href=\"#fees\">Venue fees</a>",
-   "es": "<a href=\"#fees\">Comisiones por exchange</a>",
+  "WsbiEE-Ofn": {
+   "en": "<a href=\"#fees\">Venue fees</a> <a href=\"#realism\">Fill realism</a>",
+   "es": "<a href=\"#fees\">Comisiones del exchange</a> <a href=\"#realism\">Realismo de ejecución</a>",
    "kind": [
     "html"
    ],
@@ -147520,7 +147678,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2
+   "w": 4
   },
   "uyfnDZjZ5Y": {
    "en": "<a href=\"#reliable\">Bots that do not break</a>",
@@ -148361,6 +148519,114 @@
    ],
    "n": 1,
    "w": 43
+  },
+  "cC_kJOVnVm": {
+   "en": "Fill realism, because a backtest that flatters you is worth nothing",
+   "es": "Realismo de ejecución, porque un backtest que te favorece no vale nada",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "LtQAQYmubV": {
+   "en": "Two things in this engine are deliberately generous, and it is better to name them than to let you find out on a live account. A market order fills at the <b>live price</b>, so a new position reads 0.00 unrealized and the entry line sits exactly where you asked for it. And maintenance margin is a flat <b>0.5%</b>, whatever the position is worth. For learning to trade, both are the right call. For proving out a strategy they are optimistic, and the bigger the size the more optimistic they get.",
+   "es": "Dos cosas en este motor son deliberadamente generosas, y es mejor nombrarlas que dejar que las descubras en una cuenta real. Una orden a mercado se ejecuta al <b>precio en vivo</b>, así que una posición nueva marca 0.00 de no realizado y la línea de entrada queda exactamente donde la pediste. Y el margen de mantenimiento es un <b>0.5%</b> fijo, sin importar cuánto valga la posición. Para aprender a operar, ambas son la decisión correcta. Para poner a prueba una estrategia son optimistas, y cuanto mayor es el tamaño, más optimistas se vuelven.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 85
+  },
+  "XHxL8DIfsI": {
+   "en": "So they are switches, not assumptions. Off by default - nothing you have already built moves - and on, the fill price and the liquidation price behave the way a real book and a real risk-limit table make them behave.",
+   "es": "Así que son interruptores, no supuestos fijos. Desactivados por defecto (nada de lo que ya construiste cambia) y, al activarlos, el precio de ejecución y el precio de liquidación se comportan como los haría comportarse un libro de órdenes real y una tabla de límites de riesgo real.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 36
+  },
+  "BbJVI4xNwE": {
+   "en": "The fill moves against you by what walking a real order book costs: <b>0.01%</b> on the majors, <b>0.05%</b> on thinner crypto, <b>0.005%</b> on forex, <b>0.02%</b> on stocks, metals and indices. A buy pays up, a sell sells down - never the other way.",
+   "es": "La ejecución se mueve en tu contra lo que cuesta recorrer un libro de órdenes real: <b>0.01%</b> en las principales, <b>0.05%</b> en criptomonedas menos líquidas, <b>0.005%</b> en forex, <b>0.02%</b> en acciones, metales e índices. Una compra paga de más, una venta vende de menos; nunca al revés.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 39
+  },
+  "59iXxLN5fC": {
+   "en": "Margin tiers",
+   "es": "Tramos de margen",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "AZEGf2wi7H": {
+   "en": "Maintenance margin rises with notional size, the way an exchange risk-limit table does, so a large position is liquidated <b>sooner</b> - a higher maintenance requirement tolerates less adverse move before it closes you, which is exactly what a venue wants on size. This is our published model rather than any one venue's table, and <code>GET /realism</code> returns the whole ladder - you should never have to reverse-engineer it from a liquidation price.",
+   "es": "El margen de mantenimiento sube con el tamaño nocional, igual que la tabla de límites de riesgo de un exchange, así que una posición grande se liquida <b>antes</b>: un requisito de mantenimiento más alto tolera menos movimiento en contra antes de cerrarte, que es justo lo que un exchange quiere para el tamaño grande. Este es nuestro modelo publicado y no la tabla de ningún exchange en particular, y <code>GET /realism</code> devuelve toda la escala; nunca deberías tener que deducirla a partir de un precio de liquidación.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 66
+  },
+  "tAoABiRGLT": {
+   "en": "Margin venue",
+   "es": "Exchange de margen",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "5eQ6c97FpR": {
+   "en": "Which venue's published maintenance-margin rate to build on: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. It moves <b>only</b> where the liquidation price sits - never size, fees or P&amp;L.",
+   "es": "La tasa de margen de mantenimiento publicada de qué exchange usar como base: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. Esto mueve <b>solo</b> dónde se ubica el precio de liquidación, nunca el tamaño, las comisiones ni el P&amp;L.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 33
+  },
+  "79ZZqwudev": {
+   "en": "A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href=\"#arena\">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.",
+   "es": "Una posición conserva el margen de mantenimiento con el que fue ejecutada, así que activar esto nunca reescribe una operación que ya tienes abierta, y cada cierre registra con qué se ejecutó. De ahí viene la columna <i>Ejecuciones</i> del <a href=\"#arena\">arena</a>: una tabla que clasifica bots debería decir cuáles jugaron en modo fácil.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 50
   },
   "-IDZNYIdT3": {
    "en": "Fees as on the exchange you will actually use",

@@ -128,7 +128,7 @@
  {
   "rel": "arena/index.html",
   "cover": 1,
-  "hit": 27,
+  "hit": 35,
   "missing": 0
  },
  {
@@ -2102,7 +2102,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 432,
+  "hit": 442,
   "missing": 0
  },
  {
@@ -2234,7 +2234,7 @@
  {
   "rel": "app.html → app-es.html",
   "cover": 1,
-  "hit": 455,
+  "hit": 459,
   "missing": 0
  }
 ]
