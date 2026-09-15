@@ -539,7 +539,7 @@ curl -X POST "https://marginpad.io/api/bot/v1/close" \
     </div>
     <div class="tpane" id="tp-ws" role="tabpanel" aria-labelledby="tb-ws" hidden>
 <pre><b># the whole loop, without a single poll</b>
-const { MarginPad } = require("./marginpad.js");
+const { MarginPad } = require("marginpad");
 const mp = new MarginPad("YOUR_KEY");
 
 mp.stream(ev =&gt; {
@@ -559,8 +559,9 @@ wscat -c "wss://marginpad.io/api/bot/v2/stream?api_key=mpb_..."
       <p class="note" style="margin-top:10px"><b style="color:var(--ink)">Medido, y por eso existe esta pestaña:</b> el 99.4% de todas las llamadas que ha recibido esta API han sido sondeos de <code>/positions</code> o <code>/account</code>, y el WebSocket se había abierto seis veces. El stream es gratis en todos los planes a propósito: ponerlo detrás de un muro empujaría a todo el mundo de vuelta al sondeo, que nos cuesta más que el stream. Si tienes que sondear, devuelve el <code>ETag</code>: un sondeo sin cambios te cuesta entonces un 304 con el cuerpo vacío.</p>
     </div>
     <div class="tpane" id="tp-py" role="tabpanel" aria-labelledby="tb-py" hidden>
-<pre><b># python - with the official one-file client (no dependencies)</b>
-# curl -O https://marginpad.io/assets/sdk/marginpad.py
+<pre><b># python - the official client, zero dependencies</b>
+pip install marginpad
+
 from marginpad import MarginPad
 mp = MarginPad("YOUR_KEY")
 
@@ -575,9 +576,10 @@ changed = mp.positions(status="open")   # None when nothing changed (ETag / 304)
 print(mp.report()["skill"])</pre>
     </div>
     <div class="tpane" id="tp-js" role="tabpanel" aria-labelledby="tb-js" hidden>
-<pre><b># node.js - with the official one-file client</b>
-// curl -O https://marginpad.io/assets/sdk/marginpad.js
-const { MarginPad } = require("./marginpad.js");
+<pre><b># node.js - the official client, zero dependencies</b>
+npm install marginpad
+
+const { MarginPad } = require("marginpad");
 const mp = new MarginPad("YOUR_KEY");
 
 const { price } = await mp.price("ETH");
@@ -596,7 +598,7 @@ r = requests.post(f"{API}/v2/open", headers=H, json={"symbol": "BTC", "side": "l
       "margin_usd": 50, "leverage": 10, "dry_run": True}).json()   # priced, nothing written
 print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_price"])</pre>
     </div>
-    <p class="note" style="margin-top:8px">Autentica con <code>X-API-Key</code> en cada llamada excepto <code>/price</code>, <code>/klines</code> y <code>/time</code>. <b style="color:var(--ink)">Clientes oficiales</b>, un archivo cada uno y cero dependencias: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, polling con ETag, back-off de 429 y verificación de firma de webhooks incluidos.</p>
+    <p class="note" style="margin-top:8px">Autentícate con <code>X-API-Key</code> en cada llamada excepto <code>/price</code>, <code>/klines</code> y <code>/time</code>. <b style="color:var(--ink)">Clientes oficiales</b>, cero dependencias - <code>npm install marginpad</code> o <code>pip install marginpad</code>, o un solo archivo cada uno: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, sondeo con ETag, reintento tras 429 y verificación de firma de webhook ya incluidos.</p>
 
     <div class="keybox" id="akb">
       <div>

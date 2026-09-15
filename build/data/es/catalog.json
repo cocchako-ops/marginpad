@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T12:01:26.417Z",
+  "generated": "2026-09-15T13:23:53.477Z",
   "pages": 373,
   "occurrences": 25257,
   "unique": 13305,
-  "words": 250420,
+  "words": 250427,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T12:04:34.283Z"
+  "merged": "2026-09-15T13:24:07.884Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -146827,9 +146827,9 @@
    "n": 1,
    "w": 73
   },
-  "MlrLeFulZc": {
-   "en": "Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style=\"color:var(--ink)\">Official clients</b>, one file each and zero dependencies: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
-   "es": "Autentica con <code>X-API-Key</code> en cada llamada excepto <code>/price</code>, <code>/klines</code> y <code>/time</code>. <b style=\"color:var(--ink)\">Clientes oficiales</b>, un archivo cada uno y cero dependencias: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, polling con ETag, back-off de 429 y verificación de firma de webhooks incluidos.",
+  "5XLjk0-rFl": {
+   "en": "Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style=\"color:var(--ink)\">Official clients</b>, zero dependencies - <code>npm install marginpad</code> or <code>pip install marginpad</code>, or one file each: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
+   "es": "Autentícate con <code>X-API-Key</code> en cada llamada excepto <code>/price</code>, <code>/klines</code> y <code>/time</code>. <b style=\"color:var(--ink)\">Clientes oficiales</b>, cero dependencias - <code>npm install marginpad</code> o <code>pip install marginpad</code>, o un solo archivo cada uno: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, sondeo con ETag, reintento tras 429 y verificación de firma de webhook ya incluidos.",
    "kind": [
     "html"
    ],
@@ -146837,7 +146837,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 33
+   "w": 40
   },
   "YQvKK4Sh9O": {
    "en": "Get your key",
