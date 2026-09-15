@@ -135,6 +135,32 @@ function robots(txt) {
     ok(bad.length === 0, 'all ' + urls.length + ' URLs named in the AI layer answer 200', bad.slice(0, 6));
   }
 
+  // ---- no page may PRINT its own stylesheet ----
+  // 2026-09-15: add-hub-links --refresh cut from the position of its marker ATTRIBUTE instead of the start of
+  // the tag holding it, leaving `<nav class="hublinks" ` dangling; the stylesheet inserted next landed inside
+  // that unclosed tag and 338 pages rendered 495 characters of CSS as body text. Nothing noticed until the
+  // owner read a liquidation map. The injector refuses to write that shape now - this is the second net.
+  {
+    const walk = (dir, out) => {
+      let e; try { e = fs.readdirSync(dir, { withFileTypes: true }); } catch (x) { return out; }
+      for (const f of e) {
+        if (f.isDirectory()) { if (f.name !== 'assets') walk(path.join(dir, f.name), out); }
+        else if (f.name === 'index.html') out.push(path.join(dir, f.name));
+      }
+      return out;
+    };
+    const files = walk(DIST, []);
+    const broken = [], twice = [];
+    for (const f of files) {
+      let h; try { h = fs.readFileSync(f, 'utf8'); } catch (x) { continue; }
+      // a '<' where an attribute name belongs = an unclosed tag swallowing whatever follows
+      if (/<(?:nav|div|section|article|p)\s[^>]*\s</.test(h)) broken.push(path.relative(DIST, f));
+      if ((h.split('<style>.hublinks{').length - 1) > 1) twice.push(path.relative(DIST, f));
+    }
+    ok(broken.length === 0, files.length + ' pages: none leaves a tag unclosed around injected markup', broken.slice(0, 6));
+    ok(twice.length === 0, 'and none carries the hub-link stylesheet twice', twice.slice(0, 6));
+  }
+
   console.log('\nseo-surface-e2e: pass ' + pass + '  fail ' + fail);
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

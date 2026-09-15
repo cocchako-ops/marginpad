@@ -37,14 +37,29 @@ function inject(file, html, blocks) {
   const had = h.indexOf(MARK);
   if (had >= 0) {
     if (!process.argv.includes('--refresh')) return false;
-    let end = h.indexOf('<footer', had); if (end < 0) end = h.indexOf('</main>', had); if (end < 0) end = h.lastIndexOf('</body>');
-    if (end < 0 || end < had) return false;
-    h = h.slice(0, had) + h.slice(end);
+    // CUT FROM THE START OF THE BLOCK, NOT FROM THE MARKER. MARK is an ATTRIBUTE inside the opening tag
+    // (<nav class="hublinks" data-hublinks ...>), so slicing at its index left the dangling fragment
+    // `<nav class="hublinks" ` in the page; the CSS inserted next then landed INSIDE that unclosed tag and the
+    // browser rendered 495 characters of stylesheet as body text. 338 pages shipped like that after the
+    // 2026-09-15 refresh run - owner reported it on the BTC and ETH liquidation maps.
+    // Starting at whichever comes first - the <style> or the first <nav class="hublinks" - also repairs a page
+    // that is already broken, because the dangling fragment is inside the cut.
+    const navAt = h.indexOf('<nav class="hublinks"');
+    const cssAt = h.indexOf('<style>.hublinks{');
+    let start = Math.min(navAt < 0 ? Infinity : navAt, cssAt < 0 ? Infinity : cssAt);
+    if (!isFinite(start)) start = had;
+    let end = h.indexOf('<footer', start); if (end < 0) end = h.indexOf('</main>', start); if (end < 0) end = h.lastIndexOf('</body>');
+    if (end < 0 || end < start) return false;
+    h = h.slice(0, start) + h.slice(end);
   }
   const body = CSS + blocks.join('');
   let at = h.indexOf('<footer'); if (at < 0) at = h.indexOf('</main>'); if (at < 0) at = h.lastIndexOf('</body>');
   if (at < 0) return false;
   h = h.slice(0, at) + body + h.slice(at);
+  // never ship the shape that caused this: a stylesheet living inside an unclosed tag, or two copies of it
+  if (h.indexOf('<nav class="hublinks" <') >= 0 || (h.split('<style>.hublinks{').length - 1) !== 1) {
+    console.error('REFUSED ' + file + ' - hub-link block would be malformed'); return false;
+  }
   fs.writeFileSync(file, h);
   return true;
 }

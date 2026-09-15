@@ -96,6 +96,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var p=+document.getElementById('pos').value,fr=+document.getElementById('frate').value/100,d=+document.getElementById('days').value,dir=+document.getElementById('dir').value;var r=document.getElementById('res');if(!(p>0&&d>0)){r.innerHTML='';return;}var per=p*fr,day=per*3,tot=day*d,sgn=dir>0?-1:1;var fx=function(v){return (v>=0?'+':'')+v.toFixed(2);};
 r.innerHTML='<div class="rrow"><span class="k">Per 8h interval</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*per)+' USD</span></div><div class="rrow"><span class="k">Per day (3 intervals)</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*day)+' USD</span></div><div class="rrow big"><span class="k">Over '+d+' day'+(d===1?'':'s')+'</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*tot)+' USD</span></div><div class="rrow"><span class="k">Annualized rate</span><span class="v">'+(fr*3*365*100).toFixed(1)+'% APR</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=2633bca4"></script>
+<script defer src="/assets/mp-nav.js?v=f6ade5dc"></script>
 </body>
 </html>

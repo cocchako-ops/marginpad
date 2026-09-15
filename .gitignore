@@ -95,3 +95,6 @@ build/browse-shots/
 
 # where-to-start E2E screenshots
 build/wts-shots/
+
+# liquidation-map render checks
+build/liqmap-shots/
