@@ -81,6 +81,26 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await page.evaluate(() => { location.hash = 'settings/rewards'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => !!document.getElementById('sSave'))) break; }
       const sr = await page.evaluate(() => ({ amount: +(document.getElementById('sAmount') || {}).value, cap: +(document.getElementById('sCap') || {}).value, togs: document.querySelectorAll('.tog').length, hints: (document.getElementById('sHints') || {}).innerText, prem: document.querySelectorAll('#premList .badge').length, xp: !!document.getElementById('xpList'), cal: (document.getElementById('calEv') || {}).value }));
       chk('reward config: every store loaded into the form (claim amount, budget, toggles, premium grants, calendar, promos)', sr.amount > 0 && sr.cap > 0 && sr.togs >= 6 && /day/.test(sr.hints || '') && sr.xp, sr);
+      // BYBIT: "Apply to the board" is the owner's several-times-a-day path (patch one UID, leave the rest alone).
+      // Nothing here writes: both refusals are asserted, and the chip proves the exact-decimal formatter is live.
+      const bv = await page.evaluate(async () => {
+        const el = id => document.getElementById(id);
+        const b = el('bvApply'); if (!b) return { none: 1 };
+        b.scrollIntoView({ block: 'center' }); await new Promise(r => setTimeout(r, 350));
+        const q = b.getBoundingClientRect(), hit = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
+        const reachable = !!hit && (hit === b || b.contains(hit));
+        b.click(); await new Promise(r => setTimeout(r, 300));
+        const empty = (el('bvAddSt') || {}).textContent || '';
+        el('bvText').value = '123456789,50'; el('bvUid').value = '987654321'; el('bvVol').value = '12.34';
+        el('bvAdd').click(); await new Promise(r => setTimeout(r, 200));
+        const chip = (document.querySelector('#bvManual .chip') || {}).textContent || '';
+        b.click(); await new Promise(r => setTimeout(r, 300));
+        const guarded = (el('bvAddSt') || {}).textContent || '';
+        el('bvText').value = ''; const c = el('bvManClr'); if (c) c.click();   // leave the desk as we found it
+        return { reachable, empty, guarded, chip };
+      });
+      chk('Bybit: Apply is reachable, refuses an empty list and refuses to patch while a file is pasted, and volumes print in full',
+        !bv.none && bv.reachable && /nothing typed/i.test(bv.empty) && /paste box/i.test(bv.guarded) && /\$12\.34/.test(bv.chip), bv);
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-settings-rewards.png') }); } catch (e) {}
     }
     if (!only.length || only.includes('inbox/chat')) {

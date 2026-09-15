@@ -17118,18 +17118,37 @@ export default {
         const parsed = hasText ? bybitParseReport(bb.text, bb.col) : { rows: [], diag: { lines: 0, rows: 0, skipped: [], skippedN: 0, sep: null, header: null, uidCol: null, volCol: null } };
         const man = String(bb.manual || '').trim() ? bybitParseReport(String(bb.manual)) : { rows: [], diag: null };
         if (hasText && parsed.diag.error === 'no_volume_column') return J({ error: 'no_volume_column', hint: 'The file has a header but no column that reads as trading volume. Pick one by name and send it as "col".', diag: parsed.diag }, 400);
-        let rows = parsed.rows;
-        if (man.rows.length) { const mm = new Map(rows.map(r => [r.uid, r])); for (const r of man.rows) mm.set(r.uid, r); rows = [...mm.values()]; }
+        // TYPING ONE PAIR IS A PATCH, NOT AN UPLOAD (owner 2026-09-15: "ako taj uid ima vec na leaderboard on treba
+        // samo da ga update, ako nema da ga ubaci kao novog clana ... ovaj deo posla odradjujem vise puta dnevno").
+        // The stored report was REPLACED by whatever this call parsed, so a hand-typed pair with an empty textarea
+        // wiped every other trader off the board - which is exactly what "ne radi" meant. A pasted export still
+        // replaces (the portal file is cumulative); manual pairs with NO file now merge into what is already stored.
+        const patch = !hasText && man.rows.length > 0;
+        const prevUp = patch ? await bybitUpload(env, ws) : null;
+        let rows = patch ? ((prevUp && Array.isArray(prevUp.rows)) ? prevUp.rows.slice() : []) : parsed.rows;
+        let added = 0, updated = 0;
+        if (man.rows.length) {
+          const mm = new Map(rows.map(r => [r.uid, r]));
+          for (const r of man.rows) { if (mm.has(r.uid)) updated++; else added++; mm.set(r.uid, r); }
+          rows = [...mm.values()];
+        }
         parsed.diag.manual = man.rows.length;
         parsed.diag.manualSkipped = man.diag ? man.diag.skippedN : 0;
+        if (patch) { parsed.diag.patch = true; parsed.diag.added = added; parsed.diag.updated = updated; parsed.diag.base = rows.length - added; }
         if (man.rows.length) { parsed.diag.rows = rows.length; parsed.diag.total = Math.round(rows.reduce((s, r) => s + r.vol, 0) * 100) / 100; parsed.diag.zeroN = rows.filter(r => !(r.vol > 0)).length; }
         if (!rows.length) return J({ error: 'no_rows', hint: 'No "UID, volume" lines found - neither in the pasted text nor in the manual entries', diag: parsed.diag }, 400);
-        if (bb.preview) return J({ ok: true, preview: true, rows: rows.slice(0, 500), n: rows.length, diag: parsed.diag });
-        const up = { ts: Date.now(), rows, final: !!bb.final, by: 'ops' };
+        if (bb.preview) return J({ ok: true, preview: true, patch, added, updated, rows: rows.slice(0, 500), n: rows.length, diag: parsed.diag });
+        // a patch must not silently un-mark a FINAL report: the payout reads that flag
+        const finalFlag = patch ? (bb.final != null ? !!bb.final : !!(prevUp && prevUp.final)) : !!bb.final;
+        const up = { ts: Date.now(), rows, final: finalFlag, by: 'ops' };
         try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
         const snap = await bybitSnapshotRebuild(env, ws);
-        try { await evPush(env, request, 'admin', 'Bybit volume report uploaded: ' + rows.length + ' UIDs, ' + snap.n + ' on the board' + (up.final ? ' (FINAL)' : ''), '/season/'); } catch (e) {}
-        return J({ ok: true, n: rows.length, snapshot: snap });
+        try {
+          await evPush(env, request, 'admin', patch
+            ? ('Bybit volume edited by hand: ' + updated + ' updated, ' + added + ' added, ' + rows.length + ' UIDs in the report, ' + snap.n + ' on the board')
+            : ('Bybit volume report uploaded: ' + rows.length + ' UIDs, ' + snap.n + ' on the board' + (up.final ? ' (FINAL)' : '')), '/season/');
+        } catch (e) {}
+        return J({ ok: true, n: rows.length, patch, added, updated, snapshot: snap });
       }
       const b = await bybitVolBoard(env, ws); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:bybit:' + ws)); } catch (e) {}
       return J({ ws, we: ws + LB_PERIOD, upload: b.upload, registered: b.registered, matched: b.matched, unmatched: b.unmatched, board: b.rows.map(r => ({ rank: r.rank, who: r.name, uid: r.uid, buid: r.buid, vol: r.vol })), paid: paidFlag });

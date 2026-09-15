@@ -1745,8 +1745,8 @@
           + '<div class="line" style="margin:8px 0 4px"><b>Two ways in.</b> Pick the file Bybit gave you, or type the lines yourself below - one <span class="mono">UID volume</span> per line. Either way, press <b>Preview</b> first: it shows exactly which columns were read and which lines were dropped, and changes nothing.</div>'
           + '<textarea class="in" id="bvText" rows="6" placeholder="580090490,1234567.89&#10;579447222,98765.40&#10;&#10;(a header row is understood, and so are tabs or semicolons)"></textarea>'
           + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><span class="meta" style="font-size:12px">or type the pairs one at a time below</span></div>'
-          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add. Each pair joins the list below; a UID you add twice keeps the newer number, and a hand-typed pair always beats the same UID in the file.</div>'
-          + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="bvUid" placeholder="Bybit UID" inputmode="numeric" autocomplete="off" style="flex:0 1 170px"><input class="in" id="bvVol" placeholder="Volume in USD" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="bvAdd">Add</button><span class="stat" id="bvAddSt"></span></div>'
+          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add, then <b>Apply</b>. This does NOT replace the report: a UID already on the board is updated, a new one is added, and everybody else is left exactly as they are. Leave the box above empty when you do this.</div>'
+          + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="bvUid" placeholder="Bybit UID" inputmode="numeric" autocomplete="off" style="flex:0 1 170px"><input class="in" id="bvVol" placeholder="Volume in USD" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="bvAdd">Add</button><button class="btn lime" id="bvApply">Apply to the board</button><span class="stat" id="bvAddSt"></span></div>'
           + '<div id="bvManual" style="margin-top:8px"></div>'
           + '<div class="bar" style="margin-top:12px;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'
           + '<div id="bvTable" style="margin-top:8px"></div>')
@@ -1762,7 +1762,10 @@
         var st = $('bvStatus'); if (!st) return; var bvCol = '', bvMan = [];   // bvMan = the hand-typed pairs, kept apart from the pasted export
         // volumes in a real export are small decimals ($9.23), not round millions - rounding them to whole dollars
         // printed the season's only trader as "$9" and everyone else as "$0". Show cents below $1,000.
-        var fmt = function (v) { v = +v || 0; return '$' + (v > 0 && v < 1000 ? v.toFixed(2) : Math.round(v).toLocaleString('en-US')); };
+        // EXACT, NOT COMPACT (owner 2026-09-15: "mozemo da prestavimo vrednosti cak i u decimale jer ih tako unosim
+        // na mp-ops, ne mora da pise 1k"). Rounding hid the cents he types, and the whole season's volume was $9.23 -
+        // printed as "$9" that reads as a rounding artefact rather than the real, measured number.
+        var fmt = function (v) { return '$' + (+v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); };
         function load() { J('/api/admin/bybitvol').then(function (d) { if (!d || d.error) { st.textContent = 'could not load'; return; } var up = d.upload;
           st.innerHTML = (up ? ('report: <b>' + up.n + '</b> UIDs, uploaded ' + new Date(up.ts).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' + (up.final ? ' · <b>FINAL</b>' : ' · not final')) : 'no report for this season yet') + ' · registered UIDs: <b>' + (d.registered || 0) + '</b> · on the board: <b>' + (d.board || []).length + '</b> · in the report but registered by nobody: <b>' + (d.unmatched || []).length + '</b>' + (d.paid ? ' · <b>paid</b>' : '');
           var hidden = (d.matched || []).filter(function (m) { return m.e2e || !m.listed; });
@@ -1790,17 +1793,34 @@
           var uEl = $('bvUid'), vEl = $('bvVol');
           var uid = String(uEl.value || '').replace(/[^0-9]/g, '');
           var raw = String(vEl.value || '').replace(/[$\s,]/g, '');
-          if (!/^[0-9]{5,15}$/.test(uid)) { setStat('bvAddSt', 'a Bybit UID is 5 to 15 digits', false); uEl.focus(); return; }
+          if (!/^[0-9]{5,15}$/.test(uid)) { setStat('bvAddSt', 'a Bybit UID is 5 to 15 digits', false); uEl.focus(); return false; }
           var m = /^([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/.exec(raw);
-          if (!m) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return; }
+          if (!m) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return false; }
           var vol = +m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1);
           var at = -1; bvMan.forEach(function (r, i) { if (r.uid === uid) at = i; });
           if (at >= 0) { bvMan[at].vol = vol; setStat('bvAddSt', uid + ' updated to ' + fmt(vol)); }
           else { bvMan.push({ uid: uid, vol: vol }); setStat('bvAddSt', 'added ' + uid + ' · ' + fmt(vol)); }
-          uEl.value = ''; vEl.value = ''; uEl.focus(); manPaint();
+          uEl.value = ''; vEl.value = ''; uEl.focus(); manPaint(); return true;
         }
         $('bvAdd').onclick = bvAdd;
-        ['bvUid', 'bvVol'].forEach(function (id) { $(id).onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); bvAdd(); } }; });
+        // APPLY = patch the stored report, never replace it. The worker treats "manual pairs, no pasted text" as an
+        // upsert; this button is the one-click path for it, because the owner does this several times a day and the
+        // old route (Preview, then Upload, then a confirm that says "replace") both read wrong and WAS wrong.
+        // Enter in the volume box adds AND applies, so a correction is: type, Enter.
+        function bvApply() {
+          if (!bvMan.length) { setStat('bvAddSt', 'nothing typed yet - add a UID and a volume first', false); return; }
+          if (String($('bvText').value || '').trim()) { setStat('bvAddSt', 'the paste box has a file in it - clear it, or press Upload report to replace the whole season', false); return; }
+          var n = bvMan.length;
+          setStat('bvAddSt', 'applying ' + n + ' change' + (n > 1 ? 's' : '') + '…');
+          post('/api/admin/bybitvol', { manual: manText() }).then(function (j) {
+            if (!j || !j.ok) { setStat('bvAddSt', (j && (j.hint || j.error)) || 'error', false); return; }
+            setStat('bvAddSt', (j.updated ? j.updated + ' updated' : '') + (j.updated && j.added ? ', ' : '') + (j.added ? j.added + ' added' : '')
+              + ' · ' + j.n + ' UIDs in the report · ' + ((j.snapshot && j.snapshot.n) || 0) + ' on the board', true);
+            bvMan = []; manPaint(); load();
+          });
+        }
+        $('bvApply').onclick = function () { bvApply(); };
+        ['bvUid', 'bvVol'].forEach(function (id) { $(id).onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); var okAdd = bvAdd(); if (okAdd && id === 'bvVol') bvApply(); } }; });
         $('bvFile').onchange = function () { var f = this.files && this.files[0]; if (!f) return; var rd = new FileReader(); rd.onload = function () { $('bvText').value = String(rd.result || ''); setStat('bvSt', f.name + ' loaded - press Preview'); }; rd.readAsText(f); };
         // Preview is the safety gate: it prints what the parser UNDERSTOOD, not just what it accepted.
         // Every column the file has, as chips, so the owner can name the volume column himself when the export changes

@@ -46,7 +46,35 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, n
   ok((adm.b.board || []).length === 0, 'public board for that season is empty (test account hidden)');
   const after = await j('/api/reward/lb?cb=' + Date.now());
   ok(JSON.stringify(after.b.topBybit) === JSON.stringify(before.b.topBybit), 'the live season board is untouched by the past-season upload');
+  // 3b. TYPING ONE PAIR IS A PATCH, NOT AN UPLOAD (owner 2026-09-15, "probao sam da koristim ona dva manualna
+  // textbox-a i to ne radi"). It went down the upload path, and the upload REPLACES the stored report - so a
+  // hand-typed correction with an empty paste box wiped every other trader off the board. These four checks are
+  // the load-bearing ones: everybody else must survive, an existing UID must be updated in place, an unknown UID
+  // must join, and the FINAL flag must not be cleared by a correction (payBybitPrizes reads it).
+  const fin = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ text: REPORT, final: true }) });
+  ok(fin.b.ok && fin.b.n === 2, 'a report of 2 UIDs is stored, marked final');
+  const patch1 = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ manual: TU + ',4321.55' }) });
+  ok(patch1.s === 200 && patch1.b.ok && patch1.b.patch === true, 'a manual pair with no pasted file is a PATCH');
+  ok(patch1.b.updated === 1 && patch1.b.added === 0, 'it reports 1 updated, 0 added');
+  ok(patch1.b.n === 2, 'and the OTHER trader is still in the report (2 UIDs, not 1)');
+  const a1 = await j('/api/admin/bybitvol?ws=' + WS + '&cb=' + Date.now(), { headers: AH });
+  ok((a1.b.matched || []).find(m => m.buid === TU).vol === 4321.55, 'the typed volume replaced the old one, decimals intact');
+  ok(a1.b.upload && a1.b.upload.final === true, 'and the FINAL flag survived the correction');
+  const patch2 = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ manual: '888888777,9.23' }) });
+  ok(patch2.b.ok && patch2.b.added === 1 && patch2.b.updated === 0 && patch2.b.n === 3, 'an unknown UID joins as a new row (3 UIDs now)');
+  const a2 = await j('/api/admin/bybitvol?ws=' + WS + '&cb=' + Date.now(), { headers: AH });
+  ok((a2.b.unmatched || []).some(u => u.uid === '888888777'), 'the new UID is in the report, waiting for someone to register it');
+  ok((a2.b.matched || []).find(m => m.buid === TU).vol === 4321.55, 'and the earlier hand correction is still there');
+  const patchPv = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ manual: TU + ',7.5', preview: true }) });
+  ok(patchPv.b.ok && patchPv.b.preview && patchPv.b.n === 3 && patchPv.b.patch === true, 'preview of a patch shows the WHOLE resulting report, not just the typed line');
+  const a3 = await j('/api/admin/bybitvol?ws=' + WS + '&cb=' + Date.now(), { headers: AH });
+  ok((a3.b.matched || []).find(m => m.buid === TU).vol === 4321.55, 'and a preview changes nothing');
+  const reup = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ text: REPORT, final: false }) });
+  ok(reup.b.ok && reup.b.n === 2 && !reup.b.patch, 'pasting a file still REPLACES the report (the export is cumulative)');
   const cl = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ clear: true }) }); ok(cl.b.ok && cl.b.cleared, 'past-season report cleared');
+  const emptyPatch = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ manual: '888888002,500' }) });
+  ok(emptyPatch.b.ok && emptyPatch.b.added === 1 && emptyPatch.b.n === 1, 'patching an empty season simply starts the report');
+  await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ clear: true }) });
   const bad = await j('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: AH, body: JSON.stringify({ text: 'hello\nworld' }) }); ok(bad.s === 400 && bad.b.error === 'no_rows', 'a file without UID/volume lines is refused');
   // 4. browser: cards, logo, switching, registration box, phone
   await withBrowser(async (browser) => {
