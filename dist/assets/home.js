@@ -490,6 +490,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
   var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={},_linesSig=null;
   var _lgp=0,_rej=0; // spike filter: last accepted price + consecutive-reject count, so one bad print can't ratchet a fake high/low wick
+  var _srvLiqAt={}; // last time we asked the server to sweep a server-owned position sitting past its liq (throttle)
   var _clArm={}; // per-trade LIQUIDATION arming: liq needs 2 consecutive ticks (a sub-2.5% phantom can still cross the ~0.1% liq at 1000×). TP/SL fire on first touch of the spike-validated price below.
   var _vpx={}; // spike-validated close-check price per symbol: a lone >2.5% jump is held for one tick, so a bad print can't trigger a TP/SL/liq. Idempotent per underlying tick (keyed by prices[sym].t) so N positions on one symbol don't double-count.
   function ccPx(sym, raw){ if(!(raw>0))return raw; var v=_vpx[sym], t=(prices[sym]&&prices[sym].t)||0;
@@ -556,7 +557,19 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
          The heal existed and worked; it was curing a symptom. For srv/bot rows we now show the position as it is
          (deep red, at the level) and let the sweep settle it - which the very next /positions poll triggers, so
          this costs seconds, not the 10-minute cron. A client sync could never close these rows anyway. */
-      if(e.src==='srv'||e.src==='bot'){try{if(window.__mpTrack)window.__mpTrack('cliqhold',e.sym+' at liq, awaiting server');}catch(_){}window.__mpSrvLiq=1;return false;}
+      if(e.src==='srv'||e.src==='bot'){try{if(window.__mpTrack)window.__mpTrack('cliqhold',e.sym+' at liq, awaiting server');}catch(_){}window.__mpSrvLiq=1;
+        /* ASK THE SERVER TO LOOK, NOW (2026-09-16). This branch is right to refuse to close a server-owned position -
+           the client cannot confirm a liquidation - but until today it only set window.__mpSrvLiq, and NOTHING IN THE
+           CODEBASE EVER READ THAT FLAG. The comment above promises "the very next /positions poll triggers" the sweep;
+           that is true for a Bot API caller hitting /botpositions, and the site terminal never calls it. So a signed-in
+           trader whose position crossed its liquidation price watched a -99% ticket sit open until the ten-minute
+           cron came round - and if the price came back before then, the cron's floor path no longer saw a breach at
+           all. Reported with a screenshot: four XRP shorts at 500-800x, all past liq, all still open.
+           The nudge is the mechanism that already exists for exactly this: the server re-sweeps THIS account from its
+           own prices and its own 1m candles, and refutes a cross it cannot find. The client still decides nothing.
+           Throttled per position so a ticket parked past its liq does not nudge on every tick. */
+        var _nw=Date.now();if(!_srvLiqAt[e.id]||_nw-_srvLiqAt[e.id]>15000){_srvLiqAt[e.id]=_nw;queueNudge(e.id);}
+        return false;}
       try{if(window.__mpTrack)window.__mpTrack('cliq',e.sym+' liq'+(+m.liq).toPrecision(6)+' px'+(+px).toPrecision(6)+' age'+((prices[e.sym]&&prices[e.sym].t)?Math.round((Date.now()-prices[e.sym].t)/1000):-1)+'s');}catch(_){} // server-side trail: every client liquidation logs symbol + level + the price that fired it
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}

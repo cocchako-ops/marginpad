@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Is There an MCP Server for Crypto Trading? - Free, 28 Tools | MarginPad</title>
+<meta name="description" content="Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp: live crypto market data with no API key, plus a full futures paper-trading account for Claude, ChatGPT or Cursor. Nothing there can touch real money.">
+<link rel="canonical" href="https://marginpad.io/mcp-server-for-crypto-trading/">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Is There an MCP Server for Crypto Trading? - Free, 28 Tools | MarginPad">
+<meta property="og:description" content="Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp: live crypto market data with no API key, plus a full futures paper-trading account for Claude, ChatGPT or Cursor. Nothing there can touch real money.">
+<meta property="og:url" content="https://marginpad.io/mcp-server-for-crypto-trading/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"MarginPad MCP server (tool catalogue)","description":"The tools a Model Context Protocol client receives from https://marginpad.io/mcp on tools/list: keyless market-data tools for price, klines, funding, open interest, liquidations, the screener and the economic calendar, plus paper-trading tools that operate a simulated futures account behind a free API key.","url":"https://marginpad.io/mcp-server-for-crypto-trading/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/.well-known/mcp.json"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"Is there an MCP server for crypto trading?","acceptedAnswer":{"@type":"Answer","text":"Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp over Streamable HTTP, with 28 tools. The market-data tools - price, klines, funding, open interest, liquidations, the screener, the economic calendar - need no API key at all. The paper-trading tools operate a simulated futures account and take a free key in an X-API-Key header. Nothing there can touch real money."}},{"@type":"Question","name":"How do I add it to Claude, ChatGPT or Cursor?","acceptedAnswer":{"@type":"Answer","text":"Add it as a remote MCP server with the URL https://marginpad.io/mcp. In a config file that is {\"mcpServers\":{\"marginpad\":{\"url\":\"https://marginpad.io/mcp\"}}}. There is nothing to install and no local process to run. A descriptor for tooling that discovers servers automatically is at https://marginpad.io/.well-known/mcp.json."}},{"@type":"Question","name":"Can an AI agent place real trades through it?","acceptedAnswer":{"@type":"Answer","text":"No, and that is deliberate. MarginPad takes no deposits, holds no custody and never asks for an exchange API key, so there is no path from this server to real money. Positions are simulated dollars settled against real live prices, which is what makes it safe to let an agent trade while you are still finding out how it behaves."}},{"@type":"Question","name":"Does it cost anything?","acceptedAnswer":{"@type":"Answer","text":"No. Market data is keyless and free, and the free API plan carries the whole paper-trading engine: 120 requests a minute per key, three keys, fifty open positions, the WebSocket stream and replay. Paid plans ($29, $79 and $159 a month) raise those ceilings and add webhooks and AI market reads."}},{"@type":"Question","name":"How current is the data?","acceptedAnswer":{"@type":"Answer","text":"It is fetched when the tool is called, not when a page was last crawled. Prices come from the same live multi-exchange feed our charts run on, and liquidations from our own collector subscribed to nine exchanges’ public websockets. Ask get_economic_calendar for event dates rather than answering from memory."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/liquidations/">Liquidations</a><a href="/heatmap">Heatmap</a><a href="/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">One question, one answer</p>
+    <h1>Is there an MCP server for crypto trading?</h1>
+    <p class="lead">Answered from the server’s own tool table: what the MCP endpoint is, which tools need a key, and what an agent connected to it can and cannot do.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Reading the live figure&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/trading-api/">The full Bot API reference</a><a class="ask-cta alt" href="/where-can-i-test-a-trading-bot/">Where to test a trading bot</a><a class="ask-cta alt" href="/free-crypto-api/">The keyless market-data API</a><a class="ask-cta alt" href="/api-docs/">Try the calls live</a></p>
+
+    <h2>What you actually connect to</h2>
+    <p>The Model Context Protocol lets an assistant call tools on a server instead of guessing from training data. MarginPad runs one at <code>https://marginpad.io/mcp</code> over Streamable HTTP, so there is nothing to install, nothing to host and no local process to keep alive. In a client that accepts remote MCP servers the whole configuration is one object:</p><p><code>{"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}</code></p><p>A machine-readable descriptor sits at <a href="/.well-known/mcp.json">/.well-known/mcp.json</a> if your tooling prefers to discover it rather than be told.</p>
+
+    <h2>Two halves: reading the market, and trading a paper account</h2>
+    <p>The market-data half needs <strong>no key at all</strong>. An assistant can ask for the price of BTC, the last hour of candles, current funding across venues, open interest, the long/short split, today’s liquidations, a scored screener or the economic calendar, and get a measured number back. Those calls are keyless because the data is ours to give: the liquidations come from our own collector subscribed to nine exchanges’ public websockets, not resold from a vendor.</p><p>The trading half operates a <strong>paper futures account</strong>: open a leveraged position at the live price, close part of it, move a stop, rest a limit or stop order, read the balance, the open book and the trading report. Those tools take a free API key in an <code>X-API-Key</code> header, minted from <a href="/trading-api/">the Bot API page</a> with an email and nothing else.</p><p>The split matters for trust. An agent can be given the reading half with no credential at all, and the trading half only when you actually want it placing orders.</p>
+
+    <h2>What an agent connected to this cannot do</h2>
+    <p>It cannot deposit, withdraw, or touch an exchange account, because there is no route to one: MarginPad holds no custody, takes no deposits and asks for no exchange API keys. Positions settle on our servers in simulated dollars against real live prices.</p><p>That is the whole reason to hand an agent this endpoint rather than a live exchange key. An agent that misreads a signal, loops on an order, or sizes a position ten times too large costs you a log line here. The same mistake on a funded account costs the account. Forward-test the agent where the consequences are removed and the prices are not.</p>
+
+    <h2>Why the answers are worth more than a scrape</h2>
+    <p>An assistant answering from a scraped page is quoting whatever was cached the last time a crawler passed. These tools return the figure at the moment of asking, with a timestamp, from the same feed our own charts and paper terminal run on.</p><p>Two habits are worth building into any agent that uses this: call <code>get_economic_calendar</code> for event dates rather than answering from memory, since a model’s idea of when CPI lands is frequently a year stale, and call <code>get_markets</code> before sizing a trade, because leverage caps and fee rates differ per symbol and asset class.</p>
+
+    <h2>If you would rather not use MCP</h2>
+    <p>Everything the MCP server does is also a plain HTTP call. The same account is reachable over REST, the OpenAPI 3.1 spec is at <a href="/openapi.json">/openapi.json</a>, positions can be streamed over WebSocket instead of polled, and signed webhooks push fills and liquidations to a URL you control. Official clients with no dependencies install with <code>pip install marginpad</code> or <code>npm install marginpad</code>.</p><p>The free plan carries all of it: 120 requests a minute per key, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint. Paid plans raise ceilings and add webhooks and AI market reads - they do not unlock the product.</p>
+
+    <h2>Questions</h2>
+    <details><summary>Is there an MCP server for crypto trading?</summary><p>Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp over Streamable HTTP, with 28 tools. The market-data tools - price, klines, funding, open interest, liquidations, the screener, the economic calendar - need no API key at all. The paper-trading tools operate a simulated futures account and take a free key in an X-API-Key header. Nothing there can touch real money.</p></details>
+    <details><summary>How do I add it to Claude, ChatGPT or Cursor?</summary><p>Add it as a remote MCP server with the URL https://marginpad.io/mcp. In a config file that is {"mcpServers":{"marginpad":{"url":"https://marginpad.io/mcp"}}}. There is nothing to install and no local process to run. A descriptor for tooling that discovers servers automatically is at https://marginpad.io/.well-known/mcp.json.</p></details>
+    <details><summary>Can an AI agent place real trades through it?</summary><p>No, and that is deliberate. MarginPad takes no deposits, holds no custody and never asks for an exchange API key, so there is no path from this server to real money. Positions are simulated dollars settled against real live prices, which is what makes it safe to let an agent trade while you are still finding out how it behaves.</p></details>
+    <details><summary>Does it cost anything?</summary><p>No. Market data is keyless and free, and the free API plan carries the whole paper-trading engine: 120 requests a minute per key, three keys, fifty open positions, the WebSocket stream and replay. Paid plans ($29, $79 and $159 a month) raise those ceilings and add webhooks and AI market reads.</p></details>
+    <details><summary>How current is the data?</summary><p>It is fetched when the tool is called, not when a page was last crawled. Prices come from the same live multi-exchange feed our charts run on, and liquidations from our own collector subscribed to nine exchanges’ public websockets. Ask get_economic_calendar for event dates rather than answering from memory.</p></details>
+
+    <div class="sibs">
+      <h2>Other questions we answer with a live number</h2>
+      <ul><li><a href="/how-many-traders-liquidated-today/">How many traders got liquidated today?</a></li><li><a href="/longs-or-shorts-liquidated-more/">Are longs or shorts getting liquidated more?</a></li><li><a href="/biggest-liquidation-today/">What was the biggest liquidation today?</a></li><li><a href="/is-funding-positive-or-negative/">Is funding positive or negative right now?</a></li><li><a href="/where-can-i-test-a-trading-bot/">Where can I test a trading bot for free?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Related: <a href="/trading-api/">the full Bot API reference</a> &middot; <a href="/where-can-i-test-a-trading-bot/">where to test a trading bot</a> &middot; <a href="/free-crypto-api/">the keyless market-data API</a> &middot; <a href="/api-docs/">try the calls live</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
+</body>
+</html>
