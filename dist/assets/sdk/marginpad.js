@@ -17,7 +17,7 @@
   else root.MarginPadSDK = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  var VERSION = '2.6.0';
+  var VERSION = '2.9.1';
 
   function MarginPadError(code, message, status, extra) {
     var e = new Error(code + ': ' + (message || code));

@@ -16,6 +16,10 @@
 //   node build/publish-sdk.js            # dry run: checks everything, publishes nothing
 //   node build/publish-sdk.js --go       # actually publishes
 //
+// If npm answers EOTP ("This operation requires a one-time password"), the account requires 2FA for WRITES,
+// not only for sign-in. Fix it permanently at npmjs.com > Account > Two-Factor Authentication > Modify >
+// "Authorization only", or pass the code for one run:  set NPM_OTP=123456  (valid ~30 seconds).
+//
 // Any token may be omitted; that target is skipped and reported.
 'use strict';
 const { execSync, spawnSync } = require('child_process');
@@ -37,6 +41,14 @@ const vPy = version('python/pyproject.toml', /version\s*=\s*"([^"]+)"/);
   say(null, (GO ? 'PUBLISHING' : 'DRY RUN - nothing will be published; add --go when the tokens are in place'));
   say(null, 'sdk/js ' + vJs + '  ·  sdk/python ' + vPy);
   if (vJs !== vPy) say(false, 'the two packages disagree on the version - fix that before publishing');
+  // The version the CODE reports is a THIRD place it can be written, and it had never been bumped: both SDKs
+  // announced 2.6.0 while their packages said 2.8.0, so `marginpad.__version__` was wrong and every request the
+  // SDK ever made carried a User-Agent naming a version that was two releases old - the one field that tells
+  // SDK traffic apart from hand-rolled calls. Publishing now refuses to proceed while they disagree.
+  const vCodeJs = version('js/index.js', /VERSION\s*=\s*'([^']+)'/);
+  const vCodePy = version('python/marginpad/__init__.py', /__version__\s*=\s*"([^"]+)"/);
+  say(vCodeJs === vJs, 'sdk/js reports its own version correctly', vCodeJs + ' in code vs ' + vJs + ' in package.json');
+  say(vCodePy === vPy, 'sdk/python reports its own version correctly', vCodePy + ' in code vs ' + vPy + ' in pyproject.toml');
 
   // the SDK is a copy of dist/assets/sdk/*; a stale copy would ship an SDK older than the site's own
   for (const [a, b] of [['js/index.js', 'dist/assets/sdk/marginpad.js'], ['python/marginpad/__init__.py', 'dist/assets/sdk/marginpad.py']]) {
@@ -55,7 +67,12 @@ const vPy = version('python/pyproject.toml', /version\s*=\s*"([^"]+)"/);
       const who = run('npm whoami', path.join(SDK, 'js'), { npm_config_userconfig: rc });
       say(who.status === 0, 'npm authenticated', (who.stdout || who.stderr || '').trim().slice(0, 60));
       if (who.status === 0) {
-        const cmd = 'npm publish --access public' + (GO ? '' : ' --dry-run');
+        // EOTP (2026-09-15): an npm account set to "two-factor authentication for authorization AND writes"
+        // demands a one-time code on every publish, whatever kind of token you hold. Either switch the account
+        // to "Authorization only" - the right answer for anything automated - or hand the code over for this
+        // one run via NPM_OTP. The code is valid for about 30 seconds, so this has to be the last thing you do.
+        const otp = (process.env.NPM_OTP || '').replace(/[^0-9]/g, '');
+        const cmd = 'npm publish --access public' + (otp ? ' --otp=' + otp : '') + (GO ? '' : ' --dry-run');
         const r = run(cmd, path.join(SDK, 'js'), { npm_config_userconfig: rc });
         say(r.status === 0, 'npm ' + (GO ? 'publish' : 'publish --dry-run'), (r.stderr || r.stdout || '').trim().split('\n').slice(-2).join(' | ').slice(0, 160));
       }

@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+marginpad/__init__.py
+marginpad.egg-info/PKG-INFO
+marginpad.egg-info/SOURCES.txt
+marginpad.egg-info/dependency_links.txt
+marginpad.egg-info/requires.txt
+marginpad.egg-info/top_level.txt

@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "2.6.0"
+__version__ = "2.9.1"
 __all__ = ["MarginPad", "MarginPadError", "verify_webhook"]
 
 

@@ -586,8 +586,9 @@ wscat -c "wss://marginpad.io/api/bot/v2/stream?api_key=mpb_..."
       <p class="note" style="margin-top:10px"><b style="color:var(--ink)">Measured, and the reason this tab exists:</b> 99.4% of every call ever made to this API was a poll of <code>/positions</code> or <code>/account</code>, and the WebSocket had been opened six times. The stream is free on every plan on purpose - gating it would push everyone back onto polling, which costs us more than the stream does. If you must poll, send back the <code>ETag</code>: an unchanged poll then costs a 304 with an empty body.</p>
     </div>
     <div class="tpane" id="tp-py" role="tabpanel" aria-labelledby="tb-py" hidden>
-<pre><b># python - with the official one-file client (no dependencies)</b>
-# curl -O https://marginpad.io/assets/sdk/marginpad.py
+<pre><b># python - the official client, zero dependencies</b>
+pip install marginpad
+
 from marginpad import MarginPad
 mp = MarginPad("YOUR_KEY")
 
@@ -623,7 +624,7 @@ r = requests.post(f"{API}/v2/open", headers=H, json={"symbol": "BTC", "side": "l
       "margin_usd": 50, "leverage": 10, "dry_run": True}).json()   # priced, nothing written
 print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_price"])</pre>
     </div>
-    <p class="note" style="margin-top:8px">Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style="color:var(--ink)">Official clients</b>, one file each and zero dependencies: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
+    <p class="note" style="margin-top:8px">Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style="color:var(--ink)">Official clients</b>, zero dependencies - <code>pip install marginpad</code>, or one file each: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
 
     <div class="keybox" id="akb">
       <div>
