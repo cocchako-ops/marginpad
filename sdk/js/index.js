@@ -1,4 +1,4 @@
-/* MarginPad Bot API client — one file, zero dependencies. Node 18+ (global fetch) or any browser.
+/* MarginPad Bot API client - one file, zero dependencies. Node 18+ (global fetch) or any browser.
  *
  *   const { MarginPad } = require('./marginpad.js');          // or: import { MarginPad } from './marginpad.js'
  *   const mp = new MarginPad('mpb_...');                       // key from https://marginpad.io/trading-api/
@@ -80,12 +80,12 @@
   MarginPad.prototype.orders = function () { return this._get('/api/bot/v2/orders'); };
   MarginPad.prototype.modifyOrder = function (orderId, changes) { return this._post('/api/bot/v2/modify_order', Object.assign({ order_id: orderId }, changes || {})); };
   MarginPad.prototype.cancelOrder = function (orderId) { return this._post('/api/bot/v2/cancel_order', { order_id: orderId }); };
-  // close(id, {symbol, pct, client_order_id}) — pass symbol: one price fetch, one round trip
+  // close(id, {symbol, pct, client_order_id}) - pass symbol: one price fetch, one round trip
   MarginPad.prototype.close = function (id, o) { return this._post('/api/bot/v2/close', Object.assign({ id: id }, o || {})); };
   MarginPad.prototype.closeAll = function () { return this._post('/api/bot/v2/close_all', {}); };
-  // sltp(id, {sl, tp, trail_pct}) — null clears a level, an omitted key keeps it
+  // sltp(id, {sl, tp, trail_pct}) - null clears a level, an omitted key keeps it
   MarginPad.prototype.sltp = function (id, o) { return this._post('/api/bot/v2/sltp', Object.assign({ id: id }, o || {})); };
-  // positions({status:'open'|'closed', since}) — resolves null when nothing changed (ETag / 304)
+  // positions({status:'open'|'closed', since}) - resolves null when nothing changed (ETag / 304)
   MarginPad.prototype.positions = async function (o) { o = o || {}; var d = await this._call('GET', '/api/bot/v2/positions', { status: o.status, since: o.since }, null, true, this._etag && o.useEtag !== false ? { 'if-none-match': this._etag } : null); var et = this.lastHeaders.etag; if (et) this._etag = et; return d; };
   MarginPad.prototype.trades = function (limit, beforeMs) { return this._get('/api/bot/v2/trades', { limit: limit || 100, before: beforeMs }); };
   MarginPad.prototype.account = function () { return this._get('/api/bot/v2/account'); };
@@ -99,10 +99,22 @@
   MarginPad.prototype.replayStart = function (o) { return this._post('/api/bot/v2/replay', { symbol: o.symbol, day: o.day, speed: o.speed }); };
   MarginPad.prototype.replay = function (o) { o = o || {}; return this._get('/api/bot/v2/replay', { interval: o.interval, bars: o.bars }); };
   MarginPad.prototype.replayStop = function () { return this._post('/api/bot/v2/replay', { act: 'stop' }); };
-  // ai({symbol, interval, question, lang}) — Premium; educational, not advice
+  // ai({symbol, interval, question, lang}) - Premium; educational, not advice
   MarginPad.prototype.ai = function (o) { return this._post('/api/bot/v2/ai', Object.assign({}, o, { interval: String((o && o.interval) || 60) })); };
 
-  // ── webhooks (Premium) ───────────────────────────────────────────────────────────────────────────────
+  // ── fee schedule and fill realism (2.9) ──────────────────────────────────
+  // fees() reads the table and your default; fees('binance') sets it; fees('') goes back to ours.
+  MarginPad.prototype.fees = function (venue) { return venue === undefined ? this._get('/api/bot/v2/fees') : this._post('/api/bot/v2/fees', { venue: venue }); };
+
+  // Fill realism. Both switches are OFF by default: a market order fills at the live price and maintenance
+  // margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows.
+  //   await c.realism()                                       -> your setting, every venue rate, the tier ladder
+  //   await c.realism({ slippage: true, margin_tiers: true })   -> test against something closer to a real book
+  //   await c.realism({ margin_venue: 'binance' })             -> liquidate where Binance would
+  // Pass the same fields to open() to override the account for one fill only.
+  MarginPad.prototype.realism = function (o) { return o === undefined ? this._get('/api/bot/v2/realism') : this._post('/api/bot/v2/realism', o); };
+
+  // ── webhooks (API Pro and up) ───────────────────────────────────────────────────────────────────────────────
   MarginPad.prototype.webhooks = function () { return this._get('/api/bot/v2/webhooks'); };
   MarginPad.prototype.addWebhook = function (url, events) { return this._post('/api/bot/v2/webhooks', { act: 'add', url: url, events: events }); };
   MarginPad.prototype.deleteWebhook = function (id) { return this._post('/api/bot/v2/webhooks', { act: 'delete', id: id }); };

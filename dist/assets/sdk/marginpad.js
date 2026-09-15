@@ -102,7 +102,19 @@
   // ai({symbol, interval, question, lang}) - Premium; educational, not advice
   MarginPad.prototype.ai = function (o) { return this._post('/api/bot/v2/ai', Object.assign({}, o, { interval: String((o && o.interval) || 60) })); };
 
-  // ── webhooks (Premium) ───────────────────────────────────────────────────────────────────────────────
+  // ── fee schedule and fill realism (2.9) ──────────────────────────────────
+  // fees() reads the table and your default; fees('binance') sets it; fees('') goes back to ours.
+  MarginPad.prototype.fees = function (venue) { return venue === undefined ? this._get('/api/bot/v2/fees') : this._post('/api/bot/v2/fees', { venue: venue }); };
+
+  // Fill realism. Both switches are OFF by default: a market order fills at the live price and maintenance
+  // margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows.
+  //   await c.realism()                                       -> your setting, every venue rate, the tier ladder
+  //   await c.realism({ slippage: true, margin_tiers: true })   -> test against something closer to a real book
+  //   await c.realism({ margin_venue: 'binance' })             -> liquidate where Binance would
+  // Pass the same fields to open() to override the account for one fill only.
+  MarginPad.prototype.realism = function (o) { return o === undefined ? this._get('/api/bot/v2/realism') : this._post('/api/bot/v2/realism', o); };
+
+  // ── webhooks (API Pro and up) ───────────────────────────────────────────────────────────────────────────────
   MarginPad.prototype.webhooks = function () { return this._get('/api/bot/v2/webhooks'); };
   MarginPad.prototype.addWebhook = function (url, events) { return this._post('/api/bot/v2/webhooks', { act: 'add', url: url, events: events }); };
   MarginPad.prototype.deleteWebhook = function (id) { return this._post('/api/bot/v2/webhooks', { act: 'delete', id: id }); };

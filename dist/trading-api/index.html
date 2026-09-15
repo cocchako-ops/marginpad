@@ -230,6 +230,17 @@
   .appx small{font-size:14px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:4px;}
   .apsub{margin-top:12px;font-size:14px;line-height:1.55;color:var(--dim);min-height:44px;}
   /* throughput at TRUE scale: 120 / 600 / 2000 req per minute. The free sliver is the honest picture. */
+  /* What a plan UNLOCKS, where the throughput bar used to be. The bar was honest and it drew the wrong thing:
+     measured over a fortnight, no key on this API has ever been rate-limited and the busiest sits at 38% of the
+     FREE ceiling, so a pricing page led by requests-per-minute was selling the one axis nobody is short of. */
+  .apkey{margin:20px 0 6px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#0e1116;}
+  .apkey b{display:block;font-size:15px;color:var(--ink);line-height:1.3;}
+  .apkey span{display:block;margin-top:5px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--faint);}
+  .apkey.feat{border-color:rgba(194,246,74,.28);background:rgba(194,246,74,.045);}
+  .apkey.feat b{color:var(--lime);}
+  .apmeas{margin:26px 0 8px;padding:16px 18px;border-left:2px solid var(--line2);background:#0d1014;border-radius:0 10px 10px 0;}
+  .apmeas b{color:var(--ink);font-size:14.5px;}
+  .apmeas p{margin:8px 0 0;font-size:13.5px;line-height:1.65;color:var(--dim);}
   .thr{margin:22px 0 4px;}
   .thr-t{height:6px;border-radius:3px;background:#161b22;overflow:hidden;}
   .thr-t i{display:block;height:100%;width:0;border-radius:3px;background:var(--dim);}  /* the free sliver is only 6% wide - --line2 made it read as an empty track */
@@ -663,7 +674,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     <span id="tiers"></span>
     <div class="shead">
       <span class="kick">Plans</span>
-      <h2>Free is the whole engine. You pay for headroom.</h2>
+      <h2>Free is the whole engine. You pay to run more than one thing at once.</h2>
       <p>Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.</p>
     </div>
     <div id="apPlanState" hidden></div>
@@ -672,12 +683,9 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
         <div class="aphead"><h3><span class="apn">Free</span></h3></div>
         <div class="appx">$0</div>
         <p class="apsub">Build and run a real bot without paying anything.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="2.4" style="width:2.4%"></i></div>
-          <div class="thr-l"><b>120</b><span>REQ / MIN PER KEY</span></div>
-        </div>
+        <div class="apkey"><b>One strategy</b><span>one book, one journal, one balance</span></div>
         <ul class="apfeat">
-          <li><b>3</b> keys &middot; <b>50</b> open positions &middot; <b>1</b> book</li>
+          <li><b>3</b> keys &middot; <b>50</b> open positions &middot; <b>120</b> req/min</li>
           <li>Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay</li>
           <li>Fee schedule of <a href="#fees">9 real venues</a></li>
           <li>WebSocket stream &middot; MCP &middot; keyless market data</li>
@@ -688,14 +696,11 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard feat" data-plan="pro">
         <div class="aphead"><h3>Pro</h3><span class="appill">MOST BOTS</span></div>
         <div class="appx">$29<small>/month</small></div>
-        <p class="apsub">For a bot that runs unattended and needs to be pushed to, not polled.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="12" style="width:12%"></i></div>
-          <div class="thr-l"><b>600</b><span>REQ / MIN <span class="apx">5&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">For a bot that runs unattended, and for comparing strategies instead of guessing between them.</p>
+        <div class="apkey feat"><b>5 strategies, and the server calls you</b><span>five separate books &middot; webhooks &middot; 90-day history</span></div>
         <ul class="apfeat">
-          <li><b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books</li>
-          <li><b>Webhooks</b> - 3 signed, retried endpoints</li>
+          <li><b>10</b> keys &middot; <b>200</b> open positions &middot; <b>600</b> req/min</li>
+          <li><b>Webhooks</b> - 3 signed, retried endpoints, delivered while you are offline</li>
           <li><b>AI market reads</b> - 50 a day through <code>/v1/ai</code></li>
           <li>Trading report with breakdowns and written findings</li>
           <li><b>90 days</b> of trade history, report and equity curve - Free keeps 30</li>
@@ -705,13 +710,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard" data-plan="max">
         <div class="aphead"><h3><span class="apn">Max</span></h3></div>
         <div class="appx">$79<small>/month</small></div>
-        <p class="apsub">For several strategies, or one that trades far more often than it thinks.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="40" style="width:40%"></i></div>
-          <div class="thr-l"><b>2000</b><span>REQ / MIN <span class="apx">17&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">For a fleet - a family of strategies, each with its own book, running at the same time.</p>
+        <div class="apkey"><b>20 strategies</b><span>twenty books &middot; 15 webhooks</span></div>
         <ul class="apfeat">
-          <li><b>30</b> keys &middot; <b>500</b> open positions &middot; <b>20</b> books</li>
+          <li><b>30</b> keys &middot; <b>500</b> open positions &middot; <b>2000</b> req/min</li>
           <li><b>15</b> webhooks</li>
           <li><b>200</b> AI market reads a day</li>
           <li>Everything in Pro</li>
@@ -721,13 +723,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard" data-plan="business">
         <div class="aphead"><h3><span class="apn">Business</span></h3></div>
         <div class="appx">$159<small>/month</small></div>
-        <p class="apsub">For a desk running many strategies at once, or an app trading on behalf of its own users.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
-          <div class="thr-l"><b>5000</b><span>REQ / MIN <span class="apx">42&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">For an app or a desk trading on behalf of its own users - a key each, a book each.</p>
+        <div class="apkey"><b>100 keys, 50 books</b><span>one key per end user, kept apart</span></div>
         <ul class="apfeat">
-          <li><b>100</b> keys &middot; <b>1000</b> open positions &middot; <b>50</b> books</li>
+          <li><b>1000</b> open positions &middot; <b>5000</b> req/min</li>
           <li><b>50</b> webhooks</li>
           <li><b>500</b> AI market reads a day</li>
           <li>Everything in Max</li>
@@ -736,21 +735,26 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       </div>
     </div>
     <p id="apMsg" class="note" hidden></p>
+    <div class="apmeas">
+      <b>Rate limits are rarely the reason to upgrade, and we would rather tell you than sell you.</b>
+      <p>Measured across every key on this API over the last fortnight: the busiest bot in production sits at <b>46 requests a minute</b> - 38% of what the Free plan already allows - and <b>no key has ever been rate-limited</b>, on any plan. If you are choosing between these, choose on the <a href="#books">books</a>, the <a href="#webhooks">webhooks</a> and the history, which is what actually runs out. The throughput is there when you need it. Most bots never touch it.</p>
+    </div>
     <div class="tw plantw"><table class="vs">
       <tr><th>What changes with the plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $159</th></tr>
-      <tr><td>Requests per minute, per key</td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
       <tr><td>Market-data API (<code>/api/v1/*</code>) with your key<br><span class="sub">60 / min per IP without a key, on every plan</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
       <tr><td>API keys per account</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
       <tr><td>Open positions at once</td><td>50</td><td><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
-      <tr><td><a href="#books">Books</a> - separate journals, one per strategy</td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
+      <tr><td><a href="#books">Books</a> - a separate journal, balance and report per strategy<br><span class="sub">the limit most people actually reach</span></td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
       <tr><td><b>Webhooks</b> - signed, retried, delivered while you are offline</td><td class="no">none</td><td><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
       <tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="no">none</td><td><b>50</b> a day</td><td><b>200</b> a day</td><td><b>500</b> a day</td></tr>
       <tr><td>Trade history kept<br><span class="sub">what <code>/v1/trades</code>, the report and the equity curve can still see</span></td><td>30 days</td><td><b>90 days</b></td><td><b>90 days</b></td><td><b>90 days</b></td></tr>
+      <tr><td>Requests per minute, per key<br><span class="sub">measured: the busiest production bot uses 46, and nothing has ever been limited</span></td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
       <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score<br><span class="sub">up to 30 days back</span></td><td><b>+ breakdowns &amp; findings</b><br><span class="sub">up to 90 days back</span></td><td><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
     </table></div>
     <p class="allplans"><b>On every plan, Free included:</b> the whole trading engine - market, limit and stop orders, trailing stops, partial closes, dry run and <a href="#replay">replay</a> - the <a href="#stream">WebSocket stream</a>, the <a href="#mcp">MCP server</a>, the <a href="#fees">fee schedule of 9 real venues</a>, $1 to $100,000 of margin per trade at up to 1000&times; leverage, and every keyless market-data endpoint at full speed. The paid plans move ceilings. They do not unlock the product.</p>
     <p class="apfoot"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
     <p class="apfoot">Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it. Your live ceilings are always in <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - so a bot can read them instead of guessing.</p>
+    <p class="apfoot"><b>What you are buying, in writing.</b> <a href="/terms/#api">Section 9 of the terms</a> covers the API on its own: what a plan includes and what happens the day it ends, that nothing renews automatically and there is nothing to cancel, what we do and do not commit to on availability (there is no SLA - we say so, and we say what we do commit to instead), thirty days’ notice before any breaking change, and that you may build and sell commercial products on this API without asking us.</p>
     <p class="apfoot"><b>Your bot is told before the plan lapses, not after.</b> Every keyed response carries <code>X-MP-Plan</code>, and inside the last fourteen days it also carries <code>X-MP-Plan-Expires</code> and <code>X-MP-Plan-Days-Left</code>. Log them and an unattended bot can warn you itself; the same countdown is on this page and in <code>/v1/usage</code>. A plan that runs out drops the key to Free - it never stops answering.</p>
   </div>
 </section>
@@ -1145,7 +1149,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
   }).catch(function(){ if(px) px.textContent = '64770.1'; if(ts) ts.textContent = Date.now(); if(en) en.textContent = '64770.1'; if(lq) lq.textContent = '58293.1'; });
 
   /* 2. throughput bars at TRUE relative scale, drawn once when the plans come into view. */
-  var bars = [].slice.call(document.querySelectorAll('.thr-t i'));
+  var bars = [].slice.call(document.querySelectorAll('.thr-t i')); // the throughput bars were retired 2026-09-16; this stays harmless and empty
   var drawBars = function(){
     bars.forEach(function(b, i){
       var w = (+b.getAttribute('data-w') || 0) + '%';

@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T03:53:24.156Z",
+  "generated": "2026-09-15T12:01:26.417Z",
   "pages": 373,
-  "occurrences": 25221,
-  "unique": 13268,
-  "words": 249051,
+  "occurrences": 25257,
+  "unique": 13305,
+  "words": 250420,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T03:56:08.129Z"
+  "merged": "2026-09-15T12:04:34.283Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -132175,10 +132175,9 @@
     "html"
    ],
    "ctx": [
-    "/privacy/",
-    "/terms/"
+    "/privacy/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 4
   },
   "FZ2H-oIhNy": {
@@ -143769,6 +143768,18 @@
    "n": 2,
    "w": 3
   },
+  "gmncLbM5j7": {
+   "en": "Last updated: 16 September 2026",
+   "es": "Última actualización: 16 de septiembre de 2026",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 5
+  },
   "UZBaxMIg6d": {
    "en": "These terms govern your use of <strong>marginpad.io</strong>, its subdomains, the MarginPad browser extensions, the Telegram bots and the public API (together, <strong>the Service</strong>). By using the Service you accept them. If you do not accept them, do not use the Service.",
    "es": "Estos términos rigen tu uso de <strong>marginpad.io</strong>, sus subdominios, las extensiones de navegador de MarginPad, los bots de Telegram y la API pública (en conjunto, <strong>el Servicio</strong>). Al usar el Servicio, los aceptas. Si no los aceptas, no uses el Servicio.",
@@ -144201,9 +144212,9 @@
    "n": 1,
    "w": 62
   },
-  "Z3CMJvWmrj": {
-   "en": "9. The public API",
-   "es": "9. La API pública",
+  "-rhl51xmFI": {
+   "en": "9. The API",
+   "es": "9. La API",
    "kind": [
     "html"
    ],
@@ -144211,11 +144222,95 @@
     "/terms/"
    ],
    "n": 1,
-   "w": 4
+   "w": 3
   },
-  "hjqgHlEKEU": {
-   "en": "The API is provided free, as-is, with <strong>no service level and no guarantee of continuity</strong>. We may change endpoints, add authentication, impose or lower limits, or withdraw it entirely.",
-   "es": "La API se ofrece de forma gratuita, tal cual, <strong>sin nivel de servicio ni garantía de continuidad</strong>. Podemos cambiar los endpoints, agregar autenticación, imponer o reducir límites, o retirarla por completo.",
+  "sY9Jtpf5ku": {
+   "en": "Section 9 covers the MarginPad API in all its forms: the keyless market-data endpoints, the Bot API, the WebSocket stream, webhooks, the MCP server and the published SDKs. Where it conflicts with the rest of these terms for API use, section 9 wins; everything else here still applies.",
+   "es": "La sección 9 cubre la API de MarginPad en todas sus formas: los endpoints de datos de mercado sin clave, el Bot API, el stream de WebSocket, los webhooks, el servidor MCP y los SDK publicados. Donde entre en conflicto con el resto de estos términos para el uso de la API, prevalece la sección 9; todo lo demás aquí sigue aplicando.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 46
+  },
+  "AVtNo4t8cF": {
+   "en": "<a href=\"#api-what\">9.1 What it is</a><a href=\"#api-plans\">9.2 Plans and payment</a><a href=\"#api-sla\">9.3 Availability</a><a href=\"#api-use\">9.4 Permitted use</a><a href=\"#api-fair\">9.5 Suspension</a><a href=\"#api-lia\">9.6 Liability</a><a href=\"#api-sdk\">9.7 SDKs</a>",
+   "es": "<a href=\"#api-what\">9.1 Qué es</a><a href=\"#api-plans\">9.2 Planes y pago</a><a href=\"#api-sla\">9.3 Disponibilidad</a><a href=\"#api-use\">9.4 Uso permitido</a><a href=\"#api-fair\">9.5 Suspensión</a><a href=\"#api-lia\">9.6 Responsabilidad</a><a href=\"#api-sdk\">9.7 SDK</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 19
+  },
+  "lq4ALAX1wk": {
+   "en": "9.1 What the API is, and what it is not",
+   "es": "9.1 Qué es la API, y qué no es",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "n-wmDVuxEW": {
+   "en": "The API gives you <strong>market data</strong> and a <strong>paper-trading engine</strong>. The trading is simulated, exactly as described in section 2. No order you place through the API reaches an exchange, no position you hold is a real position, and the balances it reports are not money. <strong>We never take custody of funds, never hold an exchange key of yours, and never place a real order on your behalf.</strong> If you connect our output to a system that trades real money, that system and its consequences are entirely yours.",
+   "es": "La API te da <strong>datos de mercado</strong> y un <strong>motor de trading simulado</strong>. El trading es simulado, exactamente como se describe en la sección 2. Ninguna orden que envíes a través de la API llega a un exchange, ninguna posición que mantengas es una posición real, y los saldos que reporta no son dinero. <strong>Nunca tomamos custodia de fondos, nunca guardamos una clave de exchange tuya, y nunca colocamos una orden real en tu nombre.</strong> Si conectas nuestra salida de datos a un sistema que opera con dinero real, ese sistema y sus consecuencias son enteramente tuyos.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 84
+  },
+  "2glVweCGCx": {
+   "en": "Market data is provided as-is under section 3 and reaches us from exchanges and data providers whose own terms continue to apply to your use of it. Figures we compute ourselves - liquidation aggregates, positioning, scores - are measurements of our own data and may be wrong.",
+   "es": "Los datos de mercado se proporcionan tal cual bajo la sección 3 y nos llegan desde exchanges y proveedores de datos cuyos propios términos siguen aplicando a tu uso de ellos. Las cifras que calculamos nosotros mismos - agregados de liquidaciones, posicionamiento, puntuaciones - son mediciones de nuestros propios datos y pueden estar equivocadas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 44
+  },
+  "t0lWbFaC4r": {
+   "en": "9.2 Plans, payment and what happens when one ends",
+   "es": "9.2 Planes, pago y qué pasa cuando uno termina",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "oRgC6saP5B": {
+   "en": "A paid API plan buys the limits and features published at <a href=\"/trading-api/#plans\">marginpad.io/trading-api/#plans</a> for a period of one month from the moment it is granted. Plans are paid in cryptocurrency or from a MarginPad rewards balance.",
+   "es": "Un plan de API pagado compra los límites y funciones publicados en <a href=\"/trading-api/#plans\">marginpad.io/trading-api/#plans</a> por un período de un mes desde el momento en que se otorga. Los planes se pagan en criptomoneda o desde un saldo de recompensas de MarginPad.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 32
+  },
+  "oPhtgDnTFJ": {
+   "en": "<strong>Nothing renews automatically.</strong> There is no stored card, no standing authority and no recurring charge. When a plan reaches its end date it simply ends. There is nothing to cancel.",
+   "es": "<strong>Nada se renueva automáticamente.</strong> No hay tarjeta guardada, ni autorización permanente, ni cargo recurrente. Cuando un plan llega a su fecha de fin, simplemente termina. No hay nada que cancelar.",
    "kind": [
     "html"
    ],
@@ -144225,9 +144320,9 @@
    "n": 1,
    "w": 29
   },
-  "tluQNoha5l": {
-   "en": "You must not exceed published rate limits, circumvent them by rotating addresses, or resell the data as a substitute for the Service. Attribution is appreciated. Data reaching us from exchanges remains subject to those exchanges' own terms, and it is your responsibility to comply with them for your use.",
-   "es": "No debes superar los límites de peticiones publicados, evadirlos rotando direcciones, ni revender los datos como sustituto del Servicio. Se agradece la atribución. Los datos que nos llegan de los exchanges siguen sujetos a los propios términos de esos exchanges, y es tu responsabilidad cumplirlos en tu uso.",
+  "FrKzNAYP28": {
+   "en": "<strong>A plan that ends drops your keys to the Free plan.</strong> Your keys keep working, your books and open positions stay exactly where they are, and your history is retained for the Free period. Features above the Free plan stop until you buy again.",
+   "es": "<strong>Un plan que termina baja tus claves al plan Free.</strong> Tus claves siguen funcionando, tus libros y posiciones abiertas se quedan exactamente donde están, y tu historial se conserva durante el período que corresponde al plan Free. Las funciones por encima del plan Free se detienen hasta que vuelvas a comprar.",
    "kind": [
     "html"
    ],
@@ -144235,7 +144330,319 @@
     "/terms/"
    ],
    "n": 1,
-   "w": 48
+   "w": 43
+  },
+  "ITIjGJ_bGX": {
+   "en": "<strong>We warn you before it ends, twice.</strong> Every keyed response carries your plan, and within the last fourteen days the exact end date and the days remaining, as response headers. We also email the address on the account about seven days out and again the day before. Delivery of an email is not a condition of the plan ending - the headers and <code>GET /v1/usage</code> are the authoritative record and are always available to you.",
+   "es": "<strong>Te avisamos antes de que termine, dos veces.</strong> Toda respuesta autenticada con clave lleva tu plan, y dentro de los últimos catorce días, la fecha de fin exacta y los días restantes, como cabeceras de respuesta. También enviamos un correo a la dirección de la cuenta unos siete días antes, y otra vez el día anterior. La entrega de un correo no es una condición para que el plan termine - las cabeceras y <code>GET /v1/usage</code> son el registro autorizado y siempre están disponibles para ti.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 73
+  },
+  "jBQHcpv7FM": {
+   "en": "<strong>Buying early extends, it does not replace.</strong> A month bought while a plan is running is added to the time you have.",
+   "es": "<strong>Comprar antes de tiempo extiende, no reemplaza.</strong> Un mes comprado mientras un plan está en curso se suma al tiempo que ya tienes.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "VL190h2wmK": {
+   "en": "<strong>Cryptocurrency payments are final.</strong> We do not refund a completed period, because we cannot reverse a chain payment. If you were charged twice for the same period, or a payment was taken and no plan was granted, write to <a href=\"mailto:support@marginpad.io\">support@marginpad.io</a> and we will put it right - that is a correction, not a refund policy.",
+   "es": "<strong>Los pagos en criptomoneda son definitivos.</strong> No reembolsamos un período ya completado, porque no podemos revertir un pago en cadena. Si se te cobró dos veces por el mismo período, o se realizó un pago y no se otorgó ningún plan, escribe a <a href=\"mailto:support@marginpad.io\">support@marginpad.io</a> y lo corregiremos - eso es una corrección, no una política de reembolso.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 49
+  },
+  "iqTrj9sLA5": {
+   "en": "<strong>Prices can change; your paid period cannot.</strong> A price change never affects a period you have already paid for. Plan limits may be raised at any time. If we reduce what a plan includes, the plan you are inside keeps what it had when you bought it.",
+   "es": "<strong>Los precios pueden cambiar; tu período pagado no.</strong> Un cambio de precio nunca afecta a un período que ya has pagado. Los límites de un plan pueden aumentarse en cualquier momento. Si reducimos lo que incluye un plan, el plan en el que estás conserva lo que tenía cuando lo compraste.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 44
+  },
+  "8EZTdOxsqI": {
+   "en": "9.3 Availability - what we actually commit to",
+   "es": "9.3 Disponibilidad - a qué nos comprometemos realmente",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "mqUM18GwTi": {
+   "en": "We will not pretend to an uptime figure we cannot evidence. Continuous measurement of this service began on 12 September 2026 and the record, including its length, is public at <a href=\"/status/\">marginpad.io/status/</a>. Read it before you decide what to build on this.",
+   "es": "No vamos a fingir una cifra de tiempo activo que no podemos demostrar. La medición continua de este servicio comenzó el 12 de septiembre de 2026 y el registro, incluida su duración, es público en <a href=\"/status/\">marginpad.io/status/</a>. Léelo antes de decidir qué vas a construir sobre esto.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 41
+  },
+  "xY7Rdtafh1": {
+   "en": "<strong>There is no SLA and there are no service credits.</strong> The API is provided as-available. We target continuous availability and we publish what we measure, but we do not contract to a percentage.",
+   "es": "<strong>No hay SLA ni créditos de servicio.</strong> La API se ofrece según disponibilidad. Nuestro objetivo es la disponibilidad continua y publicamos lo que medimos, pero no nos comprometemos contractualmente a un porcentaje.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 32
+  },
+  "wIS_fPNiEw": {
+   "en": "<strong>What we do commit to</strong> is this: a public status endpoint that is not gated behind a key; a plan extended by at least the length of any single unplanned outage longer than <strong>24 consecutive hours</strong> that we can confirm from our own monitoring, applied on request to any plan live at the time; and notice of a planned interruption where one is planned.",
+   "es": "<strong>A lo que sí nos comprometemos</strong> es a esto: un endpoint de estado público que no está bloqueado detrás de una clave; un plan extendido al menos por la duración de cualquier interrupción no planificada de más de <strong>24 horas consecutivas</strong> que podamos confirmar con nuestro propio monitoreo, aplicado a petición a cualquier plan vigente en ese momento; y aviso previo de una interrupción planificada cuando la haya.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 60
+  },
+  "Qvlcs_K15P": {
+   "en": "<strong>Breaking changes.</strong> <code>/api/bot/v1/*</code> response bodies are frozen: we add endpoints and headers, we do not remove or repurpose a field. Where we must break something, we will publish it in the changelog at <a href=\"/api/changelog\">/api/changelog</a> and give <strong>at least 30 days' notice</strong> to the email on every account with a live paid plan. Additions, new optional fields and new endpoints are not breaking changes and ship without notice.",
+   "es": "<strong>Cambios incompatibles.</strong> Los cuerpos de respuesta de <code>/api/bot/v1/*</code> están congelados: añadimos endpoints y cabeceras, no eliminamos ni reutilizamos un campo. Cuando tengamos que romper algo, lo publicaremos en el registro de cambios en <a href=\"/api/changelog\">/api/changelog</a> y daremos <strong>al menos 30 días de aviso</strong> al correo de toda cuenta con un plan pagado vigente. Las adiciones, los nuevos campos opcionales y los nuevos endpoints no son cambios incompatibles y se publican sin aviso previo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 65
+  },
+  "EnVEgnYbHe": {
+   "en": "<strong>Withdrawal.</strong> If we discontinue a paid API plan entirely, we will refund the unused part of any period you have paid for, pro rata.",
+   "es": "<strong>Retirada del servicio.</strong> Si discontinuamos por completo un plan de API pagado, reembolsaremos la parte no utilizada de cualquier período que hayas pagado, de forma prorrateada.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 23
+  },
+  "-dIVw-kvmK": {
+   "en": "Keyless endpoints, the Free plan, and everything documented as free carry no commitment at all beyond as-available.",
+   "es": "Los endpoints sin clave, el plan Free y todo lo documentado como gratis no llevan ningún compromiso más allá de según disponibilidad.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "lvITq46_uJ": {
+   "en": "9.4 How you may use it",
+   "es": "9.4 Cómo puedes usarla",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "8LmPdhgwuW": {
+   "en": "You may build commercial products on this API, including products you charge for, and you may store and display data you retrieve. You do not need our permission and we ask no revenue share. Attribution is appreciated, not required.",
+   "es": "Puedes construir productos comerciales sobre esta API, incluidos productos por los que cobres, y puedes almacenar y mostrar los datos que obtengas. No necesitas nuestro permiso y no pedimos ningún porcentaje de los ingresos. La atribución se agradece, pero no es obligatoria.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 39
+  },
+  "k03Itkz9-w": {
+   "en": "You must not:",
+   "es": "No debes:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "uOibg6wM22": {
+   "en": "Exceed your published rate limit deliberately, or evade any limit by rotating keys, accounts or addresses. A limit is a limit whether or not we enforce it perfectly.",
+   "es": "Superar deliberadamente tu límite de peticiones publicado, o evadir cualquier límite rotando claves, cuentas o direcciones. Un límite es un límite, lo apliquemos o no a la perfección.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "TF3Yab8-Hf": {
+   "en": "Share, sell or publish a key. A key identifies your account; everything done with it is attributed to you, and you are responsible for it. If you believe a key is exposed, rotate it - the tooling is in your account and it is instant.",
+   "es": "Compartir, vender o publicar una clave. Una clave identifica tu cuenta; todo lo que se haga con ella se te atribuye a ti, y eres responsable de ello. Si crees que una clave está expuesta, rótala - la herramienta está en tu cuenta y es instantánea.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 41
+  },
+  "M5LmQEpmpn": {
+   "en": "Resell or redistribute our market data as a bulk feed, or operate a service whose substance is a mirror of this API.",
+   "es": "Revender o redistribuir nuestros datos de mercado como un feed masivo, u operar un servicio cuya sustancia sea un espejo de esta API.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 19
+  },
+  "W6rqMAHBy5": {
+   "en": "Use the paper-trading engine, the arena or any board to fabricate a trading record you present to anyone as real. Simulated results are simulated. Presenting them as live performance to investors, customers or a prop firm is a misuse of this service and we will terminate the account.",
+   "es": "Usar el motor de trading simulado, el Arena o cualquier tabla para fabricar un historial de operaciones que presentes a alguien como real. Los resultados simulados son simulados. Presentarlos como rendimiento en vivo a inversores, clientes o una prop firm es un mal uso de este servicio y cancelaremos la cuenta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 45
+  },
+  "vuNvHVMaK5": {
+   "en": "Use the API to build or train a service that materially competes with MarginPad using our own computed data as its substance. Building a trading bot, a dashboard, a research tool or an AI agent is not that, and is explicitly welcome.",
+   "es": "Usar la API para construir o entrenar un servicio que compita de forma sustancial con MarginPad usando nuestros propios datos calculados como sustancia. Construir un bot de trading, un dashboard, una herramienta de investigación o un agente de IA no es eso, y es explícitamente bienvenido.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 38
+  },
+  "ZCCjrruC0X": {
+   "en": "Probe, scan or stress the Service beyond your own account, or attempt to reach another account's data.",
+   "es": "Sondear, escanear o sobrecargar el Servicio más allá de tu propia cuenta, o intentar acceder a los datos de otra cuenta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "A20I0_ZSy3": {
+   "en": "9.5 Suspension",
+   "es": "9.5 Suspensión",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Um2CjkoxH8": {
+   "en": "We may rate-limit, suspend or revoke a key that is damaging the Service for other users, that is being used in breach of 9.4, or that is implicated in fraud or chargeback. Where the cause is technical and not deliberate we will try to reach you first. If we suspend a <strong>paid</strong> key for a reason that turns out not to be your doing, we extend the plan by the time it was suspended. A key revoked for the conduct in 9.4(4) or 9.4(6) is not refunded.",
+   "es": "Podemos limitar, suspender o revocar una clave que esté dañando el Servicio para otros usuarios, que se esté usando incumpliendo la sección 9.4, o que esté implicada en fraude o contracargo. Cuando la causa sea técnica y no deliberada, intentaremos contactarte primero. Si suspendemos una clave <strong>pagada</strong> por un motivo que resulte no ser responsabilidad tuya, extendemos el plan por el tiempo que estuvo suspendida. Una clave revocada por la conducta descrita en 9.4(4) o 9.4(6) no se reembolsa.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 83
+  },
+  "n4VrC3eNd8": {
+   "en": "9.6 Liability for paid plans",
+   "es": "9.6 Responsabilidad para planes pagados",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "0SvkV1A2dc": {
+   "en": "Section 13 applies in full. For the avoidance of doubt, where you have paid us for an API plan, our total aggregate liability to you for any claim arising from the API is limited to <strong>the amount you paid us for that API plan in the twelve months before the claim</strong>. We are not liable for trading losses, for decisions a system of yours made on our output, for data that was wrong, late or missing, or for anything you built being unavailable because we were.",
+   "es": "La sección 13 aplica en su totalidad. Para evitar dudas, cuando nos hayas pagado por un plan de API, nuestra responsabilidad total agregada hacia ti por cualquier reclamación derivada de la API se limita a <strong>el monto que nos pagaste por ese plan de API en los doce meses anteriores a la reclamación</strong>. No somos responsables de pérdidas de trading, de decisiones que un sistema tuyo haya tomado a partir de nuestra salida de datos, de datos que estuvieran equivocados, retrasados o faltantes, ni de que algo que hayas construido quede no disponible porque nosotros lo estuviéramos.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 85
+  },
+  "YZsB0kVgLZ": {
+   "en": "9.7 SDKs and sample code",
+   "es": "9.7 SDK y código de ejemplo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "lwsY8AWRzP": {
+   "en": "The published SDKs and example code are licensed under the MIT licence stated in their repository. They are convenience wrappers: the terms above govern the service they call, not the wrapper. We do not warrant that any SDK is current with the API, and the API reference at <a href=\"/trading-api/\">marginpad.io/trading-api/</a> is authoritative where the two disagree.",
+   "es": "Los SDK publicados y el código de ejemplo están licenciados bajo la licencia MIT indicada en su repositorio. Son envoltorios de conveniencia: los términos anteriores rigen el servicio al que llaman, no el envoltorio. No garantizamos que un SDK esté actualizado respecto a la API, y la referencia de la API en <a href=\"/trading-api/\">marginpad.io/trading-api/</a> es la autoridad cuando ambos difieren.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/terms/"
+   ],
+   "n": 1,
+   "w": 55
   },
   "9OxkGezsiL": {
    "en": "10. Chat, community and anything you post",
@@ -146804,9 +147211,9 @@
    "n": 1,
    "w": 1
   },
-  "dvwK41uqFU": {
-   "en": "Free is the whole engine. You pay for headroom.",
-   "es": "Free es el motor completo. Pagas por margen de maniobra.",
+  "zqUzejeA1C": {
+   "en": "Free is the whole engine. You pay to run more than one thing at once.",
+   "es": "Free es el motor completo. Pagas para ejecutar más de una cosa a la vez.",
    "kind": [
     "html"
    ],
@@ -146814,7 +147221,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 9
+   "w": 15
   },
   "q7_zqCFYX3": {
    "en": "Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.",
@@ -146852,9 +147259,9 @@
    "n": 1,
    "w": 8
   },
-  "4lfU4Cn3-W": {
-   "en": "<b>120</b><span>REQ / MIN PER KEY</span>",
-   "es": "<b>120</b><span>PETICIONES / MIN POR CLAVE</span>",
+  "Mq24PqejcQ": {
+   "en": "<b>One strategy</b><span>one book, one journal, one balance</span>",
+   "es": "<b>Una estrategia</b><span>un libro, un diario, un saldo</span>",
    "kind": [
     "html"
    ],
@@ -146862,11 +147269,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 5
+   "w": 8
   },
-  "WywbdmTWJo": {
-   "en": "<b>3</b> keys &middot; <b>50</b> open positions &middot; <b>1</b> book",
-   "es": "<b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>1</b> book",
+  "ua9eLfw-HU": {
+   "en": "<b>3</b> keys &middot; <b>50</b> open positions &middot; <b>120</b> req/min",
+   "es": "<b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>120</b> peticiones/min",
    "kind": [
     "html"
    ],
@@ -146874,7 +147281,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 5
+   "w": 6
   },
   "ZkMr3pxNHV": {
    "en": "Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay",
@@ -146972,9 +147379,9 @@
    "n": 1,
    "w": 2
   },
-  "xAAK8eii7v": {
-   "en": "For a bot that runs unattended and needs to be pushed to, not polled.",
-   "es": "Para un bot que corre solo y necesita que le envíen los eventos, no tener que pedirlos.",
+  "wjEuk4f9V_": {
+   "en": "For a bot that runs unattended, and for comparing strategies instead of guessing between them.",
+   "es": "Para un bot que corre sin supervisión, y para comparar estrategias en vez de adivinar entre ellas.",
    "kind": [
     "html"
    ],
@@ -146982,11 +147389,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 13
+   "w": 14
   },
-  "ooCB2v3kHE": {
-   "en": "<b>600</b><span>REQ / MIN <span class=\"apx\">5&times; FREE</span></span>",
-   "es": "<b>600</b><span>PETICIONES / MIN <span class=\"apx\">5&times; FREE</span></span>",
+  "YecjtaeRNM": {
+   "en": "<b>5 strategies, and the server calls you</b><span>five separate books &middot; webhooks &middot; 90-day history</span>",
+   "es": "<b>5 estrategias, y el servidor te llama</b><span>cinco libros separados &middot; webhooks &middot; 90 días de historial</span>",
    "kind": [
     "html"
    ],
@@ -146994,11 +147401,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 12
   },
-  "LSVpmwcz0K": {
-   "en": "<b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books",
-   "es": "<b>10</b> claves &middot; <b>200</b> posiciones abiertas &middot; <b>5</b> books",
+  "q3wLzPykgm": {
+   "en": "<b>10</b> keys &middot; <b>200</b> open positions &middot; <b>600</b> req/min",
+   "es": "<b>10</b> claves &middot; <b>200</b> posiciones abiertas &middot; <b>600</b> peticiones/min",
    "kind": [
     "html"
    ],
@@ -147006,11 +147413,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 7
   },
-  "UBPf2GcyoK": {
-   "en": "<b>Webhooks</b> - 3 signed, retried endpoints",
-   "es": "<b>Webhooks</b> - 3 endpoints firmados y con reintentos",
+  "_9aQeYS7LY": {
+   "en": "<b>Webhooks</b> - 3 signed, retried endpoints, delivered while you are offline",
+   "es": "<b>Webhooks</b> - 3 endpoints firmados, con reintentos, entregados aunque estés desconectado",
    "kind": [
     "html"
    ],
@@ -147018,7 +147425,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 9
   },
   "WLVv-zMyJL": {
    "en": "<b>AI market reads</b> - 50 a day through <code>/v1/ai</code>",
@@ -147092,9 +147499,9 @@
    "n": 1,
    "w": 2
   },
-  "euFnd8Jlk0": {
-   "en": "For several strategies, or one that trades far more often than it thinks.",
-   "es": "Para varias estrategias, o para una que opera mucho más de lo que piensa.",
+  "aIMZYyS_4M": {
+   "en": "For a fleet - a family of strategies, each with its own book, running at the same time.",
+   "es": "Para una flota - una familia de estrategias, cada una con su propio libro, ejecutándose al mismo tiempo.",
    "kind": [
     "html"
    ],
@@ -147102,11 +147509,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 13
+   "w": 15
   },
-  "Y8v-nc02-k": {
-   "en": "<b>2000</b><span>REQ / MIN <span class=\"apx\">17&times; FREE</span></span>",
-   "es": "<b>2000</b><span>PETICIONES / MIN <span class=\"apx\">17&times; FREE</span></span>",
+  "kIl7tFw9eY": {
+   "en": "<b>20 strategies</b><span>twenty books &middot; 15 webhooks</span>",
+   "es": "<b>20 estrategias</b><span>veinte libros &middot; 15 webhooks</span>",
    "kind": [
     "html"
    ],
@@ -147114,11 +147521,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 5
+   "w": 6
   },
-  "1wEJsROa5V": {
-   "en": "<b>30</b> keys &middot; <b>500</b> open positions &middot; <b>20</b> books",
-   "es": "<b>30</b> claves &middot; <b>500</b> posiciones abiertas &middot; <b>20</b> books",
+  "rkYhr_sm6t": {
+   "en": "<b>30</b> keys &middot; <b>500</b> open positions &middot; <b>2000</b> req/min",
+   "es": "<b>30</b> claves &middot; <b>500</b> posiciones abiertas &middot; <b>2000</b> peticiones/min",
    "kind": [
     "html"
    ],
@@ -147200,9 +147607,9 @@
    "n": 1,
    "w": 2
   },
-  "q7VmdSKs4W": {
-   "en": "For a desk running many strategies at once, or an app trading on behalf of its own users.",
-   "es": "Para una mesa que corre muchas estrategias a la vez, o para una app que opera por cuenta de sus propios usuarios.",
+  "OHtsRrs_mh": {
+   "en": "For an app or a desk trading on behalf of its own users - a key each, a book each.",
+   "es": "Para una app o una mesa que opera en nombre de sus propios usuarios - una clave cada uno, un libro cada uno.",
    "kind": [
     "html"
    ],
@@ -147210,11 +147617,23 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 17
+   "w": 16
   },
-  "-sZH3dkVii": {
-   "en": "<b>5000</b><span>REQ / MIN <span class=\"apx\">42&times; FREE</span></span>",
-   "es": "<b>5000</b><span>PETICIONES / MIN <span class=\"apx\">42&times; FREE</span></span>",
+  "-rGYRDzXyH": {
+   "en": "<b>100 keys, 50 books</b><span>one key per end user, kept apart</span>",
+   "es": "<b>100 claves, 50 libros</b><span>una clave por usuario final, cada una separada</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "0PLKOSajAx": {
+   "en": "<b>1000</b> open positions &middot; <b>5000</b> req/min",
+   "es": "<b>1000</b> posiciones abiertas &middot; <b>5000</b> peticiones/min",
    "kind": [
     "html"
    ],
@@ -147223,18 +147642,6 @@
    ],
    "n": 1,
    "w": 5
-  },
-  "EguiR7_ar7": {
-   "en": "<b>100</b> keys &middot; <b>1000</b> open positions &middot; <b>50</b> books",
-   "es": "<b>100</b> claves &middot; <b>1000</b> posiciones abiertas &middot; <b>50</b> books",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
   },
   "13QeOsd7ID": {
    "en": "<b>50</b> webhooks",
@@ -147284,6 +147691,30 @@
    "n": 1,
    "w": 2
   },
+  "Q9V3HkZPYU": {
+   "en": "<b>Rate limits are rarely the reason to upgrade, and we would rather tell you than sell you.</b>",
+   "es": "<b>Los límites de peticiones raramente son el motivo para mejorar de plan, y preferimos decírtelo a venderte.</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "nnBFSlaItT": {
+   "en": "Measured across every key on this API over the last fortnight: the busiest bot in production sits at <b>46 requests a minute</b> - 38% of what the Free plan already allows - and <b>no key has ever been rate-limited</b>, on any plan. If you are choosing between these, choose on the <a href=\"#books\">books</a>, the <a href=\"#webhooks\">webhooks</a> and the history, which is what actually runs out. The throughput is there when you need it. Most bots never touch it.",
+   "es": "Medido en todas las claves de esta API durante las últimas dos semanas: el bot más activo en producción está en <b>46 peticiones por minuto</b> - el 38% de lo que ya permite el plan Free - y <b>ninguna clave ha sido limitada jamás</b>, en ningún plan. Si estás elegiendo entre estos, elige según los <a href=\"#books\">libros</a>, los <a href=\"#webhooks\">webhooks</a> y el historial, que es lo que realmente se agota. La capacidad está ahí cuando la necesitas. La mayoría de los bots nunca la tocan.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 73
+  },
   "crELTr-Zz0": {
    "en": "What changes with the plan",
    "es": "Lo que cambia con el plan",
@@ -147331,18 +147762,6 @@
    ],
    "n": 1,
    "w": 2
-  },
-  "QCPBgLn4gm": {
-   "en": "Requests per minute, per key",
-   "es": "Peticiones por minuto, por clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5
   },
   "eYSUJ8gI0q": {
    "en": "Market-data API (<code>/api/v1/*</code>) with your key<br><span class=\"sub\">60 / min per IP without a key, on every plan</span>",
@@ -147428,9 +147847,9 @@
    "n": 1,
    "w": 4
   },
-  "XsjnZ9qa5v": {
-   "en": "<a href=\"#books\">Books</a> - separate journals, one per strategy",
-   "es": "<a href=\"#books\">Books</a> - diarios separados, uno por estrategia",
+  "yz2-JQN8iJ": {
+   "en": "<a href=\"#books\">Books</a> - a separate journal, balance and report per strategy<br><span class=\"sub\">the limit most people actually reach</span>",
+   "es": "<a href=\"#books\">Libros</a> - un diario, saldo e informe separados por estrategia<br><span class=\"sub\">el límite que la mayoría realmente alcanza</span>",
    "kind": [
     "html"
    ],
@@ -147438,7 +147857,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 14
   },
   "2tsjf3jiyk": {
    "en": "<b>Webhooks</b> - signed, retried, delivered while you are offline",
@@ -147536,6 +147955,18 @@
    "n": 3,
    "w": 2
   },
+  "KBlyoq1S35": {
+   "en": "Requests per minute, per key<br><span class=\"sub\">measured: the busiest production bot uses 46, and nothing has ever been limited</span>",
+   "es": "Peticiones por minuto, por clave<br><span class=\"sub\">medido: el bot en producción más activo usa 46, y nunca se ha limitado nada</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 18
+  },
   "jwtET1XVkD": {
    "en": "Trading report <code>/v1/report</code>",
    "es": "Trading report <code>/v1/report</code>",
@@ -147619,6 +148050,18 @@
    ],
    "n": 1,
    "w": 49
+  },
+  "K32VZ-_73c": {
+   "en": "<b>What you are buying, in writing.</b> <a href=\"/terms/#api\">Section 9 of the terms</a> covers the API on its own: what a plan includes and what happens the day it ends, that nothing renews automatically and there is nothing to cancel, what we do and do not commit to on availability (there is no SLA - we say so, and we say what we do commit to instead), thirty days’ notice before any breaking change, and that you may build and sell commercial products on this API without asking us.",
+   "es": "<b>Lo que estás comprando, por escrito.</b> La <a href=\"/terms/#api\">sección 9 de los términos</a> cubre la API por su cuenta: qué incluye un plan y qué pasa el día en que termina, que nada se renueva automáticamente y que no hay nada que cancelar, a qué nos comprometemos y a qué no en materia de disponibilidad (no hay SLA - lo decimos así, y decimos a qué nos comprometemos en su lugar), treinta días de aviso antes de cualquier cambio incompatible, y que puedes construir y vender productos comerciales sobre esta API sin pedirnos permiso.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 84
   },
   "KBFNPCaB0B": {
    "en": "<b>Your bot is told before the plan lapses, not after.</b> Every keyed response carries <code>X-MP-Plan</code>, and inside the last fourteen days it also carries <code>X-MP-Plan-Expires</code> and <code>X-MP-Plan-Days-Left</code>. Log them and an unattended bot can warn you itself; the same countdown is on this page and in <code>/v1/usage</code>. A plan that runs out drops the key to Free - it never stops answering.",

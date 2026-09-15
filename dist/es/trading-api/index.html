@@ -215,6 +215,17 @@
   .appx small{font-size:14px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:4px;}
   .apsub{margin-top:12px;font-size:14px;line-height:1.55;color:var(--dim);min-height:44px;}
   /* throughput at TRUE scale: 120 / 600 / 2000 req per minute. The free sliver is the honest picture. */
+  /* What a plan UNLOCKS, where the throughput bar used to be. The bar was honest and it drew the wrong thing:
+     measured over a fortnight, no key on this API has ever been rate-limited and the busiest sits at 38% of the
+     FREE ceiling, so a pricing page led by requests-per-minute was selling the one axis nobody is short of. */
+  .apkey{margin:20px 0 6px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#0e1116;}
+  .apkey b{display:block;font-size:15px;color:var(--ink);line-height:1.3;}
+  .apkey span{display:block;margin-top:5px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--faint);}
+  .apkey.feat{border-color:rgba(194,246,74,.28);background:rgba(194,246,74,.045);}
+  .apkey.feat b{color:var(--lime);}
+  .apmeas{margin:26px 0 8px;padding:16px 18px;border-left:2px solid var(--line2);background:#0d1014;border-radius:0 10px 10px 0;}
+  .apmeas b{color:var(--ink);font-size:14.5px;}
+  .apmeas p{margin:8px 0 0;font-size:13.5px;line-height:1.65;color:var(--dim);}
   .thr{margin:22px 0 4px;}
   .thr-t{height:6px;border-radius:3px;background:#161b22;overflow:hidden;}
   .thr-t i{display:block;height:100%;width:0;border-radius:3px;background:var(--dim);}  /* the free sliver is only 6% wide - --line2 made it read as an empty track */
@@ -636,7 +647,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     <span id="tiers"></span>
     <div class="shead">
       <span class="kick">Planes</span>
-      <h2>Free es el motor completo. Pagas por margen de maniobra.</h2>
+      <h2>Free es el motor completo. Pagas para ejecutar más de una cosa a la vez.</h2>
       <p>Toda cuenta empieza en Free y tiene el producto completo: el motor de trading, comisiones reales de exchanges, entradas límite y stop, trailing stops, replay, books, el stream de WebSocket y todos los datos de mercado sin clave. Los planes de pago suben los límites y añaden dos cosas - <b>webhooks</b> y <b>lecturas de mercado con IA</b>. No se retiene nada más.</p>
     </div>
     <div id="apPlanState" hidden></div>
@@ -645,12 +656,9 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
         <div class="aphead"><h3><span class="apn">Free</span></h3></div>
         <div class="appx">$0</div>
         <p class="apsub">Construye y haz correr un bot de verdad sin pagar nada.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="2.4" style="width:2.4%"></i></div>
-          <div class="thr-l"><b>120</b><span>PETICIONES / MIN POR CLAVE</span></div>
-        </div>
+        <div class="apkey"><b>Una estrategia</b><span>un libro, un diario, un saldo</span></div>
         <ul class="apfeat">
-          <li><b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>1</b> book</li>
+          <li><b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>120</b> peticiones/min</li>
           <li>Motor completo: órdenes market, limit y stop, trailing stops, dry run y replay</li>
           <li>Tarifas de <a href="#fees">9 exchanges reales</a></li>
           <li>Stream por WebSocket &middot; MCP &middot; datos de mercado sin clave</li>
@@ -661,14 +669,11 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard feat" data-plan="pro">
         <div class="aphead"><h3>Pro</h3><span class="appill">MÁS ELEGIDO</span></div>
         <div class="appx">$29<small>/mes</small></div>
-        <p class="apsub">Para un bot que corre solo y necesita que le envíen los eventos, no tener que pedirlos.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="12" style="width:12%"></i></div>
-          <div class="thr-l"><b>600</b><span>PETICIONES / MIN <span class="apx">5&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">Para un bot que corre sin supervisión, y para comparar estrategias en vez de adivinar entre ellas.</p>
+        <div class="apkey feat"><b>5 estrategias, y el servidor te llama</b><span>cinco libros separados &middot; webhooks &middot; 90 días de historial</span></div>
         <ul class="apfeat">
-          <li><b>10</b> claves &middot; <b>200</b> posiciones abiertas &middot; <b>5</b> books</li>
-          <li><b>Webhooks</b> - 3 endpoints firmados y con reintentos</li>
+          <li><b>10</b> claves &middot; <b>200</b> posiciones abiertas &middot; <b>600</b> peticiones/min</li>
+          <li><b>Webhooks</b> - 3 endpoints firmados, con reintentos, entregados aunque estés desconectado</li>
           <li><b>Lecturas de mercado con IA</b> - 50 al día a través de <code>/v1/ai</code></li>
           <li>Trading report con desgloses y hallazgos escritos</li>
           <li><b>90 días</b> de historial de operaciones, report y curva de equity - Free guarda 30</li>
@@ -678,13 +683,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard" data-plan="max">
         <div class="aphead"><h3><span class="apn">Max</span></h3></div>
         <div class="appx">$79<small>/mes</small></div>
-        <p class="apsub">Para varias estrategias, o para una que opera mucho más de lo que piensa.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="40" style="width:40%"></i></div>
-          <div class="thr-l"><b>2000</b><span>PETICIONES / MIN <span class="apx">17&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">Para una flota - una familia de estrategias, cada una con su propio libro, ejecutándose al mismo tiempo.</p>
+        <div class="apkey"><b>20 estrategias</b><span>veinte libros &middot; 15 webhooks</span></div>
         <ul class="apfeat">
-          <li><b>30</b> claves &middot; <b>500</b> posiciones abiertas &middot; <b>20</b> books</li>
+          <li><b>30</b> claves &middot; <b>500</b> posiciones abiertas &middot; <b>2000</b> peticiones/min</li>
           <li><b>15</b> webhooks</li>
           <li><b>200</b> lecturas de mercado con IA al día</li>
           <li>Todo lo de Pro</li>
@@ -694,13 +696,10 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <div class="apcard" data-plan="business">
         <div class="aphead"><h3><span class="apn">Business</span></h3></div>
         <div class="appx">$159<small>/mes</small></div>
-        <p class="apsub">Para una mesa que corre muchas estrategias a la vez, o para una app que opera por cuenta de sus propios usuarios.</p>
-        <div class="thr">
-          <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
-          <div class="thr-l"><b>5000</b><span>PETICIONES / MIN <span class="apx">42&times; FREE</span></span></div>
-        </div>
+        <p class="apsub">Para una app o una mesa que opera en nombre de sus propios usuarios - una clave cada uno, un libro cada uno.</p>
+        <div class="apkey"><b>100 claves, 50 libros</b><span>una clave por usuario final, cada una separada</span></div>
         <ul class="apfeat">
-          <li><b>100</b> claves &middot; <b>1000</b> posiciones abiertas &middot; <b>50</b> books</li>
+          <li><b>1000</b> posiciones abiertas &middot; <b>5000</b> peticiones/min</li>
           <li><b>50</b> webhooks</li>
           <li><b>500</b> lecturas de mercado con IA al día</li>
           <li>Todo lo de Max</li>
@@ -709,21 +708,26 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       </div>
     </div>
     <p id="apMsg" class="note" hidden></p>
+    <div class="apmeas">
+      <b>Los límites de peticiones raramente son el motivo para mejorar de plan, y preferimos decírtelo a venderte.</b>
+      <p>Medido en todas las claves de esta API durante las últimas dos semanas: el bot más activo en producción está en <b>46 peticiones por minuto</b> - el 38% de lo que ya permite el plan Free - y <b>ninguna clave ha sido limitada jamás</b>, en ningún plan. Si estás elegiendo entre estos, elige según los <a href="#books">libros</a>, los <a href="#webhooks">webhooks</a> y el historial, que es lo que realmente se agota. La capacidad está ahí cuando la necesitas. La mayoría de los bots nunca la tocan.</p>
+    </div>
     <div class="tw plantw"><table class="vs">
       <tr><th>Lo que cambia con el plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $159</th></tr>
-      <tr><td>Peticiones por minuto, por clave</td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
       <tr><td>API de datos de mercado (<code>/api/v1/*</code>) con tu clave<br><span class="sub">60 / min por IP sin clave, en todos los planes</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
       <tr><td>Claves de API por cuenta</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
       <tr><td>Posiciones abiertas a la vez</td><td>50</td><td><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
-      <tr><td><a href="#books">Books</a> - diarios separados, uno por estrategia</td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
+      <tr><td><a href="#books">Libros</a> - un diario, saldo e informe separados por estrategia<br><span class="sub">el límite que la mayoría realmente alcanza</span></td><td>1</td><td><b>5</b></td><td><b>20</b></td><td><b>50</b></td></tr>
       <tr><td><b>Webhooks</b> - firmados, con reintentos, entregados aunque estés desconectado</td><td class="no">ninguno</td><td><b>3</b></td><td><b>15</b></td><td><b>50</b></td></tr>
       <tr><td><b>Lectura de mercado con IA</b> <code>/v1/ai</code></td><td class="no">ninguno</td><td><b>50</b> al día</td><td><b>200</b> al día</td><td><b>500</b> al día</td></tr>
       <tr><td>Historial de operaciones guardado<br><span class="sub">lo que <code>/v1/trades</code>, el report y la curva de equity todavía pueden ver</span></td><td>30 días</td><td><b>90 días</b></td><td><b>90 días</b></td><td><b>90 días</b></td></tr>
+      <tr><td>Peticiones por minuto, por clave<br><span class="sub">medido: el bot en producción más activo usa 46, y nunca se ha limitado nada</span></td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
       <tr><td>Trading report <code>/v1/report</code></td><td>totales + skill score<br><span class="sub">hasta 30 días atrás</span></td><td><b>+ desgloses y hallazgos</b><br><span class="sub">hasta 90 días atrás</span></td><td><b>+ desgloses y hallazgos</b></td><td><b>+ desgloses y hallazgos</b></td></tr>
     </table></div>
     <p class="allplans"><b>En todos los planes, Free incluido:</b> el motor de trading completo - órdenes market, limit y stop, trailing stops, cierres parciales, dry run y <a href="#replay">replay</a> -, el <a href="#stream">stream por WebSocket</a>, el <a href="#mcp">servidor MCP</a>, las <a href="#fees">tarifas de 9 exchanges reales</a>, de $1 a $100,000 de margen por operación con hasta 1000&times; de apalancamiento, y todos los endpoints de datos de mercado sin clave a máxima velocidad. Los planes de pago mueven los topes. No desbloquean el producto.</p>
     <p class="apfoot"><b>Premium es otro producto.</b> Una suscripción a <a href="/es/premium/">MarginPad Premium</a> desbloquea funciones del sitio web - los indicadores de gráfico exclusivos, el mapa de calor de liquidaciones, Ask-AI en los gráficos - y desde el 15 de septiembre de 2026 no cambia ni un solo límite de la API. Estos planes tampoco desbloquean aquellas funciones del sitio. Compra el que de verdad vayas a usar.</p>
     <p class="apfoot">Los planes son mes a mes, pagados en cripto o directamente desde tu saldo de recompensas de MarginPad, y un mes comprado antes de tiempo se suma al que ya tienes en vez de reemplazarlo. Tus límites en vivo siempre están en <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - para que un bot los pueda leer en vez de adivinar.</p>
+    <p class="apfoot"><b>Lo que estás comprando, por escrito.</b> La <a href="/es/terms/#api">sección 9 de los términos</a> cubre la API por su cuenta: qué incluye un plan y qué pasa el día en que termina, que nada se renueva automáticamente y que no hay nada que cancelar, a qué nos comprometemos y a qué no en materia de disponibilidad (no hay SLA - lo decimos así, y decimos a qué nos comprometemos en su lugar), treinta días de aviso antes de cualquier cambio incompatible, y que puedes construir y vender productos comerciales sobre esta API sin pedirnos permiso.</p>
     <p class="apfoot"><b>A tu bot se le avisa antes de que caduque el plan, no después.</b> Cada respuesta con clave lleva <code>X-MP-Plan</code>, y en los últimos catorce días lleva además <code>X-MP-Plan-Expires</code> y <code>X-MP-Plan-Days-Left</code>. Regístralos y un bot desatendido puede avisarte él mismo; la misma cuenta atrás está en esta página y en <code>/v1/usage</code>. Un plan que se agota baja la clave a Free: nunca deja de responder.</p>
   </div>
 </section>
@@ -1116,7 +1120,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
   }).catch(function(){ if(px) px.textContent = '64770.1'; if(ts) ts.textContent = Date.now(); if(en) en.textContent = '64770.1'; if(lq) lq.textContent = '58293.1'; });
 
   /* 2. throughput bars at TRUE relative scale, drawn once when the plans come into view. */
-  var bars = [].slice.call(document.querySelectorAll('.thr-t i'));
+  var bars = [].slice.call(document.querySelectorAll('.thr-t i')); // the throughput bars were retired 2026-09-16; this stays harmless and empty
   var drawBars = function(){
     bars.forEach(function(b, i){
       var w = (+b.getAttribute('data-w') || 0) + '%';

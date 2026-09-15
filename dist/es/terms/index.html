@@ -31,6 +31,12 @@
   article ol{padding-left:22px}
   article ol > li{margin:10px 0}
   article h2{margin-top:34px}
+  /* section 9 is the only one with subsections - it is the only part of this document that describes something
+     people pay for, and a paying reader needs to find one clause, not read a wall (2026-09-16) */
+  article h3{margin:26px 0 8px;font-size:16px;color:#e8eaed;scroll-margin-top:18px}
+  .lgl-sub{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+  .lgl-sub a{font:600 11px 'Space Mono',ui-monospace,monospace;color:#8b95a1;border:1px solid #232932;border-radius:7px;padding:5px 9px;text-decoration:none}
+  .lgl-sub a:hover{color:#c2f64a;border-color:#3a434f}
   .lgl-note{border-left:2px solid #ffb347;background:rgba(255,179,71,.06);padding:13px 16px;border-radius:0 10px 10px 0;margin:22px 0;font-size:14.5px;color:#c8d0d9}
   .lgl-note b{color:#ffb347}
   .lgl-toc{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 26px}
@@ -60,7 +66,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / Términos de Servicio</div>
   <article>
     <h1>Términos de Servicio</h1>
-    <div class="meta">Última actualización: agosto de 2026</div>
+    <div class="meta">Última actualización: 16 de septiembre de 2026</div>
 
     <p>Estos términos rigen tu uso de <strong>marginpad.io</strong>, sus subdominios, las extensiones de navegador de MarginPad, los bots de Telegram y la API pública (en conjunto, <strong>el Servicio</strong>). Al usar el Servicio, los aceptas. Si no los aceptas, no uses el Servicio.</p>
 
@@ -115,9 +121,56 @@
     <h2 id="vault">8. Objetos digitales</h2>
     <p>Los marcos, skins de ticket, fondos y consumibles son <strong>objetos digitales cosméticos licenciados a tu cuenta</strong>, no propiedad, y no tienen valor monetario fuera del Servicio. No se pueden vender, transferir por valor ni canjear por dinero. Podemos modificar o retirar un objeto, y podemos cambiar su precio o la forma de obtenerlo. Los objetos obtenidos mediante abuso pueden ser eliminados.</p>
 
-    <h2 id="api">9. La API pública</h2>
-    <p>La API se ofrece de forma gratuita, tal cual, <strong>sin nivel de servicio ni garantía de continuidad</strong>. Podemos cambiar los endpoints, agregar autenticación, imponer o reducir límites, o retirarla por completo.</p>
-    <p>No debes superar los límites de peticiones publicados, evadirlos rotando direcciones, ni revender los datos como sustituto del Servicio. Se agradece la atribución. Los datos que nos llegan de los exchanges siguen sujetos a los propios términos de esos exchanges, y es tu responsabilidad cumplirlos en tu uso.</p>
+    <h2 id="api">9. La API</h2>
+    <p>La sección 9 cubre la API de MarginPad en todas sus formas: los endpoints de datos de mercado sin clave, el Bot API, el stream de WebSocket, los webhooks, el servidor MCP y los SDK publicados. Donde entre en conflicto con el resto de estos términos para el uso de la API, prevalece la sección 9; todo lo demás aquí sigue aplicando.</p>
+
+    <div class="lgl-sub"><a href="#api-what">9.1 Qué es</a><a href="#api-plans">9.2 Planes y pago</a><a href="#api-sla">9.3 Disponibilidad</a><a href="#api-use">9.4 Uso permitido</a><a href="#api-fair">9.5 Suspensión</a><a href="#api-lia">9.6 Responsabilidad</a><a href="#api-sdk">9.7 SDK</a></div>
+
+    <h3 id="api-what">9.1 Qué es la API, y qué no es</h3>
+    <p>La API te da <strong>datos de mercado</strong> y un <strong>motor de trading simulado</strong>. El trading es simulado, exactamente como se describe en la sección 2. Ninguna orden que envíes a través de la API llega a un exchange, ninguna posición que mantengas es una posición real, y los saldos que reporta no son dinero. <strong>Nunca tomamos custodia de fondos, nunca guardamos una clave de exchange tuya, y nunca colocamos una orden real en tu nombre.</strong> Si conectas nuestra salida de datos a un sistema que opera con dinero real, ese sistema y sus consecuencias son enteramente tuyos.</p>
+    <p>Los datos de mercado se proporcionan tal cual bajo la sección 3 y nos llegan desde exchanges y proveedores de datos cuyos propios términos siguen aplicando a tu uso de ellos. Las cifras que calculamos nosotros mismos - agregados de liquidaciones, posicionamiento, puntuaciones - son mediciones de nuestros propios datos y pueden estar equivocadas.</p>
+
+    <h3 id="api-plans">9.2 Planes, pago y qué pasa cuando uno termina</h3>
+    <p>Un plan de API pagado compra los límites y funciones publicados en <a href="/es/trading-api/#plans">marginpad.io/trading-api/#plans</a> por un período de un mes desde el momento en que se otorga. Los planes se pagan en criptomoneda o desde un saldo de recompensas de MarginPad.</p>
+    <ol>
+      <li><strong>Nada se renueva automáticamente.</strong> No hay tarjeta guardada, ni autorización permanente, ni cargo recurrente. Cuando un plan llega a su fecha de fin, simplemente termina. No hay nada que cancelar.</li>
+      <li><strong>Un plan que termina baja tus claves al plan Free.</strong> Tus claves siguen funcionando, tus libros y posiciones abiertas se quedan exactamente donde están, y tu historial se conserva durante el período que corresponde al plan Free. Las funciones por encima del plan Free se detienen hasta que vuelvas a comprar.</li>
+      <li><strong>Te avisamos antes de que termine, dos veces.</strong> Toda respuesta autenticada con clave lleva tu plan, y dentro de los últimos catorce días, la fecha de fin exacta y los días restantes, como cabeceras de respuesta. También enviamos un correo a la dirección de la cuenta unos siete días antes, y otra vez el día anterior. La entrega de un correo no es una condición para que el plan termine - las cabeceras y <code>GET /v1/usage</code> son el registro autorizado y siempre están disponibles para ti.</li>
+      <li><strong>Comprar antes de tiempo extiende, no reemplaza.</strong> Un mes comprado mientras un plan está en curso se suma al tiempo que ya tienes.</li>
+      <li><strong>Los pagos en criptomoneda son definitivos.</strong> No reembolsamos un período ya completado, porque no podemos revertir un pago en cadena. Si se te cobró dos veces por el mismo período, o se realizó un pago y no se otorgó ningún plan, escribe a <a href="mailto:support@marginpad.io">support@marginpad.io</a> y lo corregiremos - eso es una corrección, no una política de reembolso.</li>
+      <li><strong>Los precios pueden cambiar; tu período pagado no.</strong> Un cambio de precio nunca afecta a un período que ya has pagado. Los límites de un plan pueden aumentarse en cualquier momento. Si reducimos lo que incluye un plan, el plan en el que estás conserva lo que tenía cuando lo compraste.</li>
+    </ol>
+
+    <h3 id="api-sla">9.3 Disponibilidad - a qué nos comprometemos realmente</h3>
+    <p>No vamos a fingir una cifra de tiempo activo que no podemos demostrar. La medición continua de este servicio comenzó el 12 de septiembre de 2026 y el registro, incluida su duración, es público en <a href="/es/status/">marginpad.io/status/</a>. Léelo antes de decidir qué vas a construir sobre esto.</p>
+    <ol>
+      <li><strong>No hay SLA ni créditos de servicio.</strong> La API se ofrece según disponibilidad. Nuestro objetivo es la disponibilidad continua y publicamos lo que medimos, pero no nos comprometemos contractualmente a un porcentaje.</li>
+      <li><strong>A lo que sí nos comprometemos</strong> es a esto: un endpoint de estado público que no está bloqueado detrás de una clave; un plan extendido al menos por la duración de cualquier interrupción no planificada de más de <strong>24 horas consecutivas</strong> que podamos confirmar con nuestro propio monitoreo, aplicado a petición a cualquier plan vigente en ese momento; y aviso previo de una interrupción planificada cuando la haya.</li>
+      <li><strong>Cambios incompatibles.</strong> Los cuerpos de respuesta de <code>/api/bot/v1/*</code> están congelados: añadimos endpoints y cabeceras, no eliminamos ni reutilizamos un campo. Cuando tengamos que romper algo, lo publicaremos en el registro de cambios en <a href="/api/changelog">/api/changelog</a> y daremos <strong>al menos 30 días de aviso</strong> al correo de toda cuenta con un plan pagado vigente. Las adiciones, los nuevos campos opcionales y los nuevos endpoints no son cambios incompatibles y se publican sin aviso previo.</li>
+      <li><strong>Retirada del servicio.</strong> Si discontinuamos por completo un plan de API pagado, reembolsaremos la parte no utilizada de cualquier período que hayas pagado, de forma prorrateada.</li>
+      <li>Los endpoints sin clave, el plan Free y todo lo documentado como gratis no llevan ningún compromiso más allá de según disponibilidad.</li>
+    </ol>
+
+    <h3 id="api-use">9.4 Cómo puedes usarla</h3>
+    <p>Puedes construir productos comerciales sobre esta API, incluidos productos por los que cobres, y puedes almacenar y mostrar los datos que obtengas. No necesitas nuestro permiso y no pedimos ningún porcentaje de los ingresos. La atribución se agradece, pero no es obligatoria.</p>
+    <p>No debes:</p>
+    <ol>
+      <li>Superar deliberadamente tu límite de peticiones publicado, o evadir cualquier límite rotando claves, cuentas o direcciones. Un límite es un límite, lo apliquemos o no a la perfección.</li>
+      <li>Compartir, vender o publicar una clave. Una clave identifica tu cuenta; todo lo que se haga con ella se te atribuye a ti, y eres responsable de ello. Si crees que una clave está expuesta, rótala - la herramienta está en tu cuenta y es instantánea.</li>
+      <li>Revender o redistribuir nuestros datos de mercado como un feed masivo, u operar un servicio cuya sustancia sea un espejo de esta API.</li>
+      <li>Usar el motor de trading simulado, el Arena o cualquier tabla para fabricar un historial de operaciones que presentes a alguien como real. Los resultados simulados son simulados. Presentarlos como rendimiento en vivo a inversores, clientes o una prop firm es un mal uso de este servicio y cancelaremos la cuenta.</li>
+      <li>Usar la API para construir o entrenar un servicio que compita de forma sustancial con MarginPad usando nuestros propios datos calculados como sustancia. Construir un bot de trading, un dashboard, una herramienta de investigación o un agente de IA no es eso, y es explícitamente bienvenido.</li>
+      <li>Sondear, escanear o sobrecargar el Servicio más allá de tu propia cuenta, o intentar acceder a los datos de otra cuenta.</li>
+    </ol>
+
+    <h3 id="api-fair">9.5 Suspensión</h3>
+    <p>Podemos limitar, suspender o revocar una clave que esté dañando el Servicio para otros usuarios, que se esté usando incumpliendo la sección 9.4, o que esté implicada en fraude o contracargo. Cuando la causa sea técnica y no deliberada, intentaremos contactarte primero. Si suspendemos una clave <strong>pagada</strong> por un motivo que resulte no ser responsabilidad tuya, extendemos el plan por el tiempo que estuvo suspendida. Una clave revocada por la conducta descrita en 9.4(4) o 9.4(6) no se reembolsa.</p>
+
+    <h3 id="api-lia">9.6 Responsabilidad para planes pagados</h3>
+    <p>La sección 13 aplica en su totalidad. Para evitar dudas, cuando nos hayas pagado por un plan de API, nuestra responsabilidad total agregada hacia ti por cualquier reclamación derivada de la API se limita a <strong>el monto que nos pagaste por ese plan de API en los doce meses anteriores a la reclamación</strong>. No somos responsables de pérdidas de trading, de decisiones que un sistema tuyo haya tomado a partir de nuestra salida de datos, de datos que estuvieran equivocados, retrasados o faltantes, ni de que algo que hayas construido quede no disponible porque nosotros lo estuviéramos.</p>
+
+    <h3 id="api-sdk">9.7 SDK y código de ejemplo</h3>
+    <p>Los SDK publicados y el código de ejemplo están licenciados bajo la licencia MIT indicada en su repositorio. Son envoltorios de conveniencia: los términos anteriores rigen el servicio al que llaman, no el envoltorio. No garantizamos que un SDK esté actualizado respecto a la API, y la referencia de la API en <a href="/es/trading-api/">marginpad.io/trading-api/</a> es la autoridad cuando ambos difieren.</p>
 
     <h2 id="content">10. Chat, comunidad y cualquier cosa que publiques</h2>
     <p>Eres responsable de lo que publiques. No publiques nada ilegal, abusivo, de odio, engañoso o que infrinja derechos; no suplantes a nadie; no publiques información personal de otras personas; no uses el Servicio para promover un esquema, solicitar inversión, o dar asesoría financiera personalizada a otros usuarios.</p>

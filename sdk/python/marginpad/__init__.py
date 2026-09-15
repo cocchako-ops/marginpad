@@ -1,4 +1,4 @@
-"""MarginPad Bot API client — one file, no dependencies (Python 3.8+).
+"""MarginPad Bot API client - one file, no dependencies (Python 3.8+).
 
     from marginpad import MarginPad
     mp = MarginPad("mpb_...")                      # key from https://marginpad.io/trading-api/
@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "2.8.0"
+__version__ = "2.6.0"
 __all__ = ["MarginPad", "MarginPadError", "verify_webhook"]
 
 
@@ -141,9 +141,14 @@ class MarginPad(object):
         return self._get("/api/bot/v2/time", keyed=False, client_ts=int(time.time() * 1000))
 
     # ── paper trading ───────────────────────────────────────────────────────────────────────────────────
-    def open(self, symbol, side, margin_usd, leverage, sl=None, tp=None, trail_pct=None, client_order_id=None, dry_run=False):
-        """Market open at the live price. dry_run=True prices the trade and writes nothing."""
-        return self._post("/api/bot/v2/open", symbol=symbol, side=side, margin_usd=margin_usd, leverage=leverage, sl=sl, tp=tp, trail_pct=trail_pct, client_order_id=client_order_id, dry_run=True if dry_run else None)
+    def open(self, symbol, side, margin_usd, leverage, sl=None, tp=None, trail_pct=None, client_order_id=None, dry_run=False,
+             slippage=None, margin_tiers=None, mmr_pct=None, fee_venue=None):
+        """Market open at the live price. dry_run=True prices the trade and writes nothing.
+
+        slippage / margin_tiers / mmr_pct override this account's realism setting for THIS fill only (see realism()).
+        fee_venue charges this one position at a named venue's taker schedule (see fees())."""
+        return self._post("/api/bot/v2/open", symbol=symbol, side=side, margin_usd=margin_usd, leverage=leverage, sl=sl, tp=tp, trail_pct=trail_pct, client_order_id=client_order_id, dry_run=True if dry_run else None,
+                          slippage=slippage, margin_tiers=margin_tiers, mmr_pct=mmr_pct, fee_venue=fee_venue)
 
     def limit_order(self, symbol, side, limit_price, margin_usd, leverage, sl=None, tp=None, trail_pct=None, client_order_id=None, dry_run=False):
         """Pullback entry: a long below the market, a short above it. Fills AT the level from 1m candles."""
@@ -231,6 +236,35 @@ class MarginPad(object):
         return self._post("/api/bot/v2/ai", symbol=symbol, interval=str(interval), question=question, lang=lang)
 
     # ── webhooks (Premium) ──────────────────────────────────────────────────────────────────────────────
+    # -- fee schedule and fill realism (2.9) ------------------------------------------------------------
+    def fees(self, venue=None):
+        """Read the fee schedules, or set which venue's taker fee your fills are charged at.
+        fees() -> the table plus your default.  fees("binance") -> sets it.  fees("") -> back to our rate."""
+        if venue is None:
+            return self._get("/api/bot/v2/fees")
+        return self._post("/api/bot/v2/fees", venue=venue)
+
+    def realism(self, slippage=None, margin_tiers=None, margin_venue=None):
+        """Read or set fill realism. Both switches are OFF by default: a market order fills at the live
+        price and maintenance margin is a flat 0.5%, which is easier than a real venue and increasingly so as
+        a position grows. Reading also returns the whole size-tier ladder and every venue's margin rate, so
+        you never have to work out where a liquidation price came from.
+
+            c.realism()                                   # what am I on, and what are the tiers
+            c.realism(slippage=True, margin_tiers=True)    # test against something closer to a real book
+            c.realism(margin_venue="binance")              # liquidate where Binance would
+        """
+        if slippage is None and margin_tiers is None and margin_venue is None:
+            return self._get("/api/bot/v2/realism")
+        body = {}
+        if slippage is not None:
+            body["slippage"] = bool(slippage)
+        if margin_tiers is not None:
+            body["margin_tiers"] = bool(margin_tiers)
+        if margin_venue is not None:
+            body["margin_venue"] = margin_venue
+        return self._post("/api/bot/v2/realism", **body)
+
     def webhooks(self):
         return self._get("/api/bot/v2/webhooks")
 
