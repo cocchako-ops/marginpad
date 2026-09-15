@@ -1745,7 +1745,7 @@
           + '<div class="line" style="margin:8px 0 4px"><b>Two ways in.</b> Pick the file Bybit gave you, or type the lines yourself below - one <span class="mono">UID volume</span> per line. Either way, press <b>Preview</b> first: it shows exactly which columns were read and which lines were dropped, and changes nothing.</div>'
           + '<textarea class="in" id="bvText" rows="6" placeholder="580090490,1234567.89&#10;579447222,98765.40&#10;&#10;(a header row is understood, and so are tabs or semicolons)"></textarea>'
           + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><span class="meta" style="font-size:12px">or type the pairs one at a time below</span></div>'
-          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add, then <b>Apply</b>. This does NOT replace the report: a UID already on the board is updated, a new one is added, and everybody else is left exactly as they are. Leave the box above empty when you do this.</div>'
+          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add, then <b>Apply</b>. This does NOT replace the report: a UID already on the board is updated, a new one is added, and everybody else is left exactly as they are. Leave the box above empty when you do this. A UID that is already in the table below is quicker to fix <b>in the table itself</b> - type over its volume and press Enter.</div>'
           + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="bvUid" placeholder="Bybit UID" inputmode="numeric" autocomplete="off" style="flex:0 1 170px"><input class="in" id="bvVol" placeholder="Volume in USD" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="bvAdd">Add</button><button class="btn lime" id="bvApply">Apply to the board</button><span class="stat" id="bvAddSt"></span></div>'
           + '<div id="bvManual" style="margin-top:8px"></div>'
           + '<div class="bar" style="margin-top:12px;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'
@@ -1766,12 +1766,46 @@
         // na mp-ops, ne mora da pise 1k"). Rounding hid the cents he types, and the whole season's volume was $9.23 -
         // printed as "$9" that reads as a rounding artefact rather than the real, measured number.
         var fmt = function (v) { return '$' + (+v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); };
+        // ONE parser for a typed volume, used by the Add box AND by the in-table editor. Two copies would drift, and
+        // the whole point of the table editor is that it behaves exactly like the box the owner already trusts.
+        function parseVol(raw) {
+          var s = String(raw == null ? '' : raw).replace(/[$\s,]/g, '');
+          var m = /^([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/.exec(s);
+          if (!m) return null;
+          return +m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1);
+        }
+        // The confirmation has to SURVIVE the reload it triggers. A successful commit calls load(), which replaces the
+        // whole table - and #bvRowSt with it - so the first cut wiped its own "saved" line a moment after writing it,
+        // leaving the owner to type, press Enter and see nothing at all. The message is kept here and re-rendered.
+        var bvMsg = null, bvMsgT = null;
+        function rowSt(txt, ok) {
+          bvMsg = txt ? { txt: txt, ok: ok } : null;
+          var e = $('bvRowSt'); if (e) { e.textContent = txt || ''; e.className = 'stat ' + (ok === true ? 'ok' : ok === false ? 'bad' : ''); }
+          clearTimeout(bvMsgT);
+          if (txt) bvMsgT = setTimeout(function () { bvMsg = null; var x = $('bvRowSt'); if (x) x.textContent = ''; }, 6000);
+        }
+        // THE TABLE IS THE EDITOR (owner 2026-09-15: "da mogu direktno u leaderboard-u da kucam izmene"). It is built
+        // from `matched` - everything in the report that a member registered - and NOT from `board`, which is only the
+        // rows the public sees. The correction the owner makes most often is a trader sitting at $0, and a $0 row is
+        // deliberately off the public board, so a board-only table could never edit the one row that needs it.
+        function boardHtml(d) {
+          var rank = {}; (d.board || []).forEach(function (r) { rank[r.buid] = r.rank; });
+          var rows = (d.matched || []).slice().sort(function (a, b) { return (+b.vol || 0) - (+a.vol || 0); });
+          var tail = (d.unmatched || []).length ? '<div class="line" style="margin-top:6px">in the report, registered by nobody (they cannot reach the board until that member registers the UID on /season/): <span class="mono">' + d.unmatched.slice(0, 60).map(function (u) { return esc(u.uid); }).join(' ') + (d.unmatched.length > 60 ? ' …' : '') + '</span></div>' : '';
+          if (!rows.length) return '<div class="line">nothing to edit yet' + (d.upload ? ' - no UID in the report has been registered by a member' : ' - no report for this season') + '</div>' + tail;
+          return '<div class="line" style="margin-bottom:6px"><b>Type straight into the Volume column</b> and press Enter - it patches this season\'s report, everybody else is left alone, and the public board is rebuilt at once. Esc undoes. <span class="stat' + (bvMsg ? (bvMsg.ok === true ? ' ok' : bvMsg.ok === false ? ' bad' : '') : '') + '" id="bvRowSt">' + (bvMsg ? esc(bvMsg.txt) : '') + '</span></div>'
+            + '<div class="tblwrap"><table class="tbl"><thead><tr><th>#</th><th>Trader</th><th>Bybit UID</th><th>Volume</th><th>on the public board</th></tr></thead><tbody>'
+            + rows.map(function (r) {
+              var why = r.e2e ? 'test account' : !r.listed ? 'UID not on the withdrawal list' : !(+r.vol > 0) ? 'no volume yet' : '';
+              return '<tr' + (why ? ' class="off"' : '') + '><td>' + (rank[r.buid] ? rank[r.buid] : '<span class="meta">-</span>') + '</td>'
+                + '<td>' + esc(r.name || r.uid) + '</td><td class="mono">' + esc(r.buid) + '</td>'
+                + '<td class="mono bvv" contenteditable="true" spellcheck="false" data-uid="' + esc(r.buid) + '" data-v0="' + (+r.vol || 0) + '" title="type a new volume and press Enter">' + fmt(r.vol) + '</td>'
+                + '<td>' + (why ? '<span class="badge amber">' + why + '</span>' : '<span class="badge ok">yes</span>') + '</td></tr>';
+            }).join('') + '</tbody></table></div>' + tail;
+        }
         function load() { J('/api/admin/bybitvol').then(function (d) { if (!d || d.error) { st.textContent = 'could not load'; return; } var up = d.upload;
           st.innerHTML = (up ? ('report: <b>' + up.n + '</b> UIDs, uploaded ' + new Date(up.ts).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' + (up.final ? ' · <b>FINAL</b>' : ' · not final')) : 'no report for this season yet') + ' · registered UIDs: <b>' + (d.registered || 0) + '</b> · on the board: <b>' + (d.board || []).length + '</b> · in the report but registered by nobody: <b>' + (d.unmatched || []).length + '</b>' + (d.paid ? ' · <b>paid</b>' : '');
-          var hidden = (d.matched || []).filter(function (m) { return m.e2e || !m.listed; });
-          $('bvTable').innerHTML = ((d.board || []).length ? '<table class="tbl"><thead><tr><th>#</th><th>Trader</th><th>Bybit UID</th><th>Volume</th></tr></thead><tbody>' + d.board.map(function (r) { return '<tr><td>' + r.rank + '</td><td>' + esc(r.who || r.uid) + '</td><td class="mono">' + esc(r.buid) + '</td><td class="mono">' + fmt(r.vol) + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="line">the board is empty' + (up ? ' - no report UID matches a registered member' : '') + '</div>')
-            + (hidden.length ? '<div class="line" style="margin-top:6px">hidden from the public board: ' + hidden.map(function (m) { return esc(m.name || m.uid) + ' (' + (m.e2e ? 'test account' : 'UID not on the withdrawal list') + ')'; }).join(', ') + '</div>' : '')
-            + ((d.unmatched || []).length ? '<div class="line" style="margin-top:6px">in the report, registered by nobody: <span class="mono">' + d.unmatched.slice(0, 60).map(function (u) { return esc(u.uid); }).join(' ') + (d.unmatched.length > 60 ? ' …' : '') + '</span></div>' : ''); }); }
+          $('bvTable').innerHTML = boardHtml(d); }); }
         load();
         // The hand-typed pairs. They are sent as `manual` and merged on top of the file by the worker - never pasted
         // into the textarea, because a two-cell line under an 18-column header has fewer cells than the header and
@@ -1792,11 +1826,9 @@
         function bvAdd() {
           var uEl = $('bvUid'), vEl = $('bvVol');
           var uid = String(uEl.value || '').replace(/[^0-9]/g, '');
-          var raw = String(vEl.value || '').replace(/[$\s,]/g, '');
           if (!/^[0-9]{5,15}$/.test(uid)) { setStat('bvAddSt', 'a Bybit UID is 5 to 15 digits', false); uEl.focus(); return false; }
-          var m = /^([0-9]+(?:\.[0-9]+)?)([kKmMbB])?$/.exec(raw);
-          if (!m) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return false; }
-          var vol = +m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1);
+          var vol = parseVol(vEl.value);
+          if (vol == null) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return false; }
           var at = -1; bvMan.forEach(function (r, i) { if (r.uid === uid) at = i; });
           if (at >= 0) { bvMan[at].vol = vol; setStat('bvAddSt', uid + ' updated to ' + fmt(vol)); }
           else { bvMan.push({ uid: uid, vol: vol }); setStat('bvAddSt', 'added ' + uid + ' · ' + fmt(vol)); }
@@ -1847,6 +1879,48 @@
           var sample = '<div class="line" style="margin-top:4px">' + (rows || []).slice(0, 12).map(function (r) { return '<span class="mono">' + esc(r.uid) + '</span> → ' + fmt(r.vol); }).join(' · ') + (n > 12 ? ' …' : '') + '</div>';
           return head + zero + skipped + sample + colChips(d);
         }
+        // The cell editor. Delegated on #bvTable, so it survives every re-render of the table inside it.
+        // A commit is the SAME upsert the Apply button sends ({manual} with no text): the stored report is patched,
+        // the FINAL flag is preserved by the worker, and bybitSnapshotRebuild republishes the public board.
+        function commitCell(c) {
+          if (c.getAttribute('data-busy')) return;
+          var uid = c.getAttribute('data-uid'), v0 = +c.getAttribute('data-v0') || 0;
+          var vol = parseVol(c.textContent);
+          if (vol == null) { rowSt('volume must be a number (1234.56, or 1.2M) - left at ' + fmt(v0), false); c.textContent = fmt(v0); return; }
+          if (Math.round(vol * 100) === Math.round(v0 * 100)) { c.textContent = fmt(v0); return; }   // typed the same number back
+          c.setAttribute('data-busy', '1'); c.className = 'mono bvv busy'; c.setAttribute('contenteditable', 'false');
+          rowSt('saving ' + uid + ' → ' + fmt(vol) + '…');
+          post('/api/admin/bybitvol', { manual: uid + ',' + vol }).then(function (j) {
+            c.removeAttribute('data-busy'); c.className = 'mono bvv'; c.setAttribute('contenteditable', 'true');
+            if (!j || !j.ok) { rowSt((j && (j.hint || j.error)) || 'error - nothing was changed', false); c.textContent = fmt(v0); return; }
+            rowSt(uid + ' → ' + fmt(vol) + ' · ' + ((j.snapshot && j.snapshot.n) || 0) + ' on the board, live on /season/', true);
+            toast(uid + ' set to ' + fmt(vol) + ' - the board on /season/ is updated');
+            load();   // re-rank: the row that just changed may have moved
+          }).catch(function () {
+            c.removeAttribute('data-busy'); c.className = 'mono bvv'; c.setAttribute('contenteditable', 'true');
+            rowSt('network error - nothing was changed', false); c.textContent = fmt(v0);
+          });
+        }
+        $('bvTable').addEventListener('focusin', function (ev) {   // select the whole number, so typing replaces it
+          var c = ev.target.closest && ev.target.closest('.bvv'); if (!c) return;
+          try { var r = document.createRange(); r.selectNodeContents(c); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+        });
+        $('bvTable').addEventListener('keydown', function (ev) {
+          var c = ev.target.closest && ev.target.closest('.bvv'); if (!c) return;
+          if (ev.key === 'Enter') { ev.preventDefault(); c.blur(); }                      // focusout does the commit
+          else if (ev.key === 'Escape') { ev.preventDefault(); c.setAttribute('data-esc', '1'); c.textContent = fmt(+c.getAttribute('data-v0') || 0); c.blur(); }
+        });
+        $('bvTable').addEventListener('focusout', function (ev) {
+          var c = ev.target.closest && ev.target.closest('.bvv'); if (!c) return;
+          if (c.getAttribute('data-esc')) { c.removeAttribute('data-esc'); rowSt(''); return; }
+          commitCell(c);
+        });
+        $('bvTable').addEventListener('paste', function (ev) {     // a cell pasted from a spreadsheet must stay plain text
+          var c = ev.target.closest && ev.target.closest('.bvv'); if (!c) return;
+          ev.preventDefault();
+          var t = ((ev.clipboardData || window.clipboardData) || { getData: function () { return ''; } }).getData('text') || '';
+          try { document.execCommand('insertText', false, t.replace(/[\r\n\t]+/g, ' ').trim()); } catch (e) { c.textContent = t.replace(/[\r\n\t]+/g, ' ').trim(); }
+        });
         $('bvTable').addEventListener('click', function (ev) {
           var b = ev.target.closest && ev.target.closest('[data-bvcol]'); if (!b) return;
           bvCol = b.getAttribute('data-bvcol'); setStat('bvSt', 'reading volume from "' + bvCol + '" - press Preview');

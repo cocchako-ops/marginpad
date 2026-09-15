@@ -174,6 +174,14 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
 .tbl td.wrap{white-space:normal;min-width:180px;max-width:360px;overflow-wrap:anywhere}.on-la b{font-weight:600;color:var(--ink)}
 .tbl tr.fresh td:first-child{box-shadow:inset 3px 0 0 var(--blue)}.gst{color:#9fd8f2}
 @media(max-width:760px){.tbl td.wrap{min-width:140px}}
+/* Bybit volume board: the volume is typed straight into the table (owner 2026-09-15). The cell has to LOOK like a
+   field or nobody discovers it, and it must stay readable on a row that is held back from the public board. */
+.tbl td.bvv{cursor:text;border-radius:7px;box-shadow:inset 0 0 0 1px var(--line2);min-width:120px;text-align:right}
+.tbl td.bvv:hover{box-shadow:inset 0 0 0 1px var(--dim)}
+.tbl td.bvv:focus{outline:none;box-shadow:inset 0 0 0 1px var(--lime);background:#0a0d12}
+.tbl td.bvv.busy{opacity:.55;cursor:progress}
+.tbl tr.off td{color:var(--dim)}.tbl tr.off td.bvv{color:var(--ink)}
+@media(max-width:760px){.tbl td.bvv{min-width:104px}}
 /* Inbox > milan@ (2026-09-08): two panes on the support grid, the body as readable text */
 .sup.pm{grid-template-columns:320px minmax(0,1fr)}.pm-body{white-space:pre-wrap;word-break:break-word;font:13.5px/1.65 -apple-system,system-ui,'Segoe UI',sans-serif;color:var(--dim);margin:0}
 @media(max-width:1180px){.sup.pm{grid-template-columns:280px minmax(0,1fr)}}

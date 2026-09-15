@@ -101,6 +101,53 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       });
       chk('Bybit: Apply is reachable, refuses an empty list and refuses to patch while a file is pasted, and volumes print in full',
         !bv.none && bv.reachable && /nothing typed/i.test(bv.empty) && /paste box/i.test(bv.guarded) && /\$12\.34/.test(bv.chip), bv);
+      // THE TABLE IS THE EDITOR (owner 2026-09-15): type over a volume, press Enter, the public board follows.
+      // Nothing here WRITES - a commit would patch the live season. Both no-write paths are asserted instead:
+      // a value that is not a number is refused and the cell snaps back, and Esc abandons an edit. If the season
+      // has no editable row yet, the explicit empty state must be there - never a blank that quietly passes.
+      const be = await page.evaluate(async () => {
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+        const cells = [...document.querySelectorAll('#bvTable td.bvv')];
+        if (!cells.length) return { rows: 0, empty: (document.getElementById('bvTable') || {}).innerText || '' };
+        const c = cells[0], was = c.textContent, uid = c.getAttribute('data-uid');
+        c.scrollIntoView({ block: 'center' }); await wait(350);
+        const q = c.getBoundingClientRect(), hit = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
+        const reachable = !!hit && (hit === c || c.contains(hit));
+        const editable = c.isContentEditable;
+        c.focus(); c.textContent = 'not a number'; c.blur(); await wait(400);          // refused, no request
+        const refused = (document.getElementById('bvRowSt') || {}).textContent || '', afterBad = c.textContent;
+        c.focus(); c.textContent = '424242.42';
+        c.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await wait(300);   // abandoned
+        const afterEsc = c.textContent;
+        return { rows: cells.length, uid, was, reachable, editable, refused, afterBad, afterEsc };
+      });
+      chk('Bybit: the volume cell is an editable field - reachable, refuses a non-number without writing, and Esc abandons the edit',
+        be.rows === 0
+          ? /nothing to edit yet/i.test(be.empty)
+          : (be.reachable && be.editable && /must be a number/i.test(be.refused) && be.afterBad === be.was && be.afterEsc === be.was), be);
+      // What Enter actually SENDS. The live season must not be patched by a test, so fetch is stubbed for this one
+      // route and the request is read instead of being made: it has to be the same {manual:"uid,vol"} upsert the
+      // Apply button sends (proven server-side against a past season by bybit-lb-e2e), with no `text` - a body
+      // carrying text would REPLACE the season's report and wipe every other trader off the board.
+      const bs = be.rows === 0 ? { skip: 1 } : await page.evaluate(async () => {
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+        const c = document.querySelector('#bvTable td.bvv'), was = c.textContent;
+        const real = window.fetch; let sent = null;
+        window.fetch = function (u, o) {
+          if (String(u).indexOf('/api/admin/bybitvol') >= 0 && o && o.method === 'POST') {
+            sent = { url: String(u), body: String(o.body || '') };
+            return Promise.resolve(new Response(JSON.stringify({ ok: true, n: 3, patch: true, updated: 1, added: 0, snapshot: { n: 2 } }), { status: 200, headers: { 'content-type': 'application/json' } }));
+          }
+          return real.apply(this, arguments);
+        };
+        c.focus(); c.textContent = '424242.42'; c.blur(); await wait(600);
+        const st = (document.getElementById('bvRowSt') || {}).textContent || '';
+        window.fetch = real; await wait(900);   // the stubbed ok triggers load(), which re-reads the REAL board
+        return { was, sent, st, back: (document.querySelector('#bvTable td.bvv') || {}).textContent || '' };
+      });
+      let body = {}; try { body = JSON.parse((bs.sent || {}).body || '{}'); } catch (e) {}
+      chk('Bybit: Enter sends the one-UID PATCH (no `text`, so nobody else is touched) and says it is live on the site',
+        bs.skip ? true : (!!bs.sent && body.manual === be.uid + ',424242.42' && body.text == null && /live on \/season\//i.test(bs.st) && bs.back === be.was), { sent: bs.sent, st: bs.st, back: bs.back, was: bs.was });
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-settings-rewards.png') }); } catch (e) {}
     }
     if (!only.length || only.includes('inbox/chat')) {
