@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T13:44:04.403Z",
+  "generated": "2026-09-15T14:05:28.041Z",
   "pages": 373,
-  "occurrences": 25258,
-  "unique": 13306,
-  "words": 250565,
+  "occurrences": 25288,
+  "unique": 13312,
+  "words": 250608,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T13:45:39.437Z"
+  "merged": "2026-09-15T14:07:05.303Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -22842,6 +22842,22 @@
    "n": 6,
    "w": 3
   },
+  "ADpi7uK7k7": {
+   "en": "One question, one answer",
+   "es": "Una pregunta, una respuesta",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/how-many-traders-liquidated-today/",
+    "/is-funding-positive-or-negative/",
+    "/liquidations/"
+   ],
+   "n": 7,
+   "w": 4
+  },
   "0bZuTtPc1O": {
    "en": "What is the biggest crypto liquidation today?",
    "es": "¿Cuál es la mayor liquidación cripto de hoy?",
@@ -23141,6 +23157,81 @@
    ],
    "n": 2,
    "w": 22
+  },
+  "YIGZsFaXX_": {
+   "en": "Other questions we answer with a live number",
+   "es": "Otras preguntas que respondemos con un número en vivo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/how-many-traders-liquidated-today/",
+    "/is-funding-positive-or-negative/",
+    "/longs-or-shorts-liquidated-more/"
+   ],
+   "n": 5,
+   "w": 7
+  },
+  "3BG9T5UKib": {
+   "en": "<a href=\"/how-many-traders-liquidated-today/\">How many traders got liquidated today?</a>",
+   "es": "<a href=\"/how-many-traders-liquidated-today/\">¿Cuántos traders fueron liquidados hoy?</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/is-funding-positive-or-negative/",
+    "/longs-or-shorts-liquidated-more/",
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 4,
+   "w": 6
+  },
+  "nPa2iH43Cm": {
+   "en": "<a href=\"/longs-or-shorts-liquidated-more/\">Are longs or shorts getting liquidated more?</a>",
+   "es": "<a href=\"/longs-or-shorts-liquidated-more/\">¿Se liquidan más los longs o los shorts?</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/how-many-traders-liquidated-today/",
+    "/is-funding-positive-or-negative/",
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 4,
+   "w": 7
+  },
+  "_Z4bVQIdZN": {
+   "en": "<a href=\"/is-funding-positive-or-negative/\">Is funding positive or negative right now?</a>",
+   "es": "<a href=\"/is-funding-positive-or-negative/\">¿El funding es positivo o negativo ahora mismo?</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/how-many-traders-liquidated-today/",
+    "/longs-or-shorts-liquidated-more/",
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 4,
+   "w": 7
+  },
+  "PTtNBvepXq": {
+   "en": "<a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a>",
+   "es": "<a href=\"/where-can-i-test-a-trading-bot/\">¿Dónde puedo probar un bot de trading gratis?</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/biggest-liquidation-today/",
+    "/how-many-traders-liquidated-today/",
+    "/is-funding-positive-or-negative/",
+    "/longs-or-shorts-liquidated-more/"
+   ],
+   "n": 4,
+   "w": 7
   },
   "3rA-KsHa9u": {
    "en": "Related: <a href=\"/rekt/\">the live liquidation feed</a> &middot; <a href=\"/liquidations/\">market totals</a> &middot; <a href=\"/heatmap\">liquidation heatmap</a> &middot; <a href=\"/hyperliquid-whales/\">live whale positions</a>",
@@ -105939,6 +106030,21 @@
    "n": 2,
    "w": 36
   },
+  "ikOH-BxXdl": {
+   "en": "<a href=\"/biggest-liquidation-today/\">What was the biggest liquidation today?</a>",
+   "es": "<a href=\"/biggest-liquidation-today/\">¿Cuál fue la mayor liquidación de hoy?</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/how-many-traders-liquidated-today/",
+    "/is-funding-positive-or-negative/",
+    "/longs-or-shorts-liquidated-more/",
+    "/where-can-i-test-a-trading-bot/"
+   ],
+   "n": 4,
+   "w": 6
+  },
   "i_Dfd6eAzC": {
    "en": "Related: <a href=\"/rekt/\">the live liquidation feed</a> &middot; <a href=\"/liquidations/\">market totals</a> &middot; <a href=\"/liquidations/by-exchange/\">by exchange</a> &middot; <a href=\"/heatmap\">liquidation heatmap</a>",
    "es": "Relacionado: <a href=\"/rekt/\">el feed de liquidaciones en vivo</a> &middot; <a href=\"/liquidations/\">totales del mercado</a> &middot; <a href=\"/liquidations/by-exchange/\">por exchange</a> &middot; <a href=\"/heatmap\">mapa de calor de liquidaciones</a>",
@@ -120090,19 +120196,6 @@
    ],
    "n": 1,
    "w": 11
-  },
-  "ADpi7uK7k7": {
-   "en": "One question, one answer",
-   "es": "Una pregunta, una respuesta",
-   "kind": [
-    "html",
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/liquidations/"
-   ],
-   "n": 2,
-   "w": 4
   },
   "tlSKjOIzIz": {
    "en": "Each of these answers a single question with a live number and says who measured it.",
@@ -155991,7 +156084,7 @@
   },
   "atJhLh5Drw": {
    "en": "A simulator that fills every order at the mid price and charges nothing will tell you that almost any strategy works. Five things decide whether a paper result survives contact with an exchange:",
-   "es": "Un simulador que ejecuta cada orden al precio medio y no cobra nada te dirá que casi cualquier estrategia funciona. Cinco cosas deciden si un resultado simulado sobrevive al contacto con un exchange:",
+   "es": "Un simulador que ejecuta cada orden al precio medio y no cobra nada te va a decir que casi cualquier estrategia funciona. Cinco cosas determinan si un resultado simulado sobrevive al contacto con un exchange:",
    "kind": [
     "html"
    ],
@@ -156039,7 +156132,7 @@
   },
   "PddoxftUWp": {
    "en": "<strong>The fill price, and where the liquidation sits.</strong> A market order does not land on the screen price - it walks the book, and it costs more the thinner that book is. Maintenance margin is not one number either: an exchange raises it with position size, so a large position is closed sooner than its leverage alone suggests. Both are switches here rather than assumptions. Off by default a fill lands on the live price at a flat 0.5%, which is right for learning and optimistic for proving out a strategy; turn them on and the fill moves against you the way a real book does while the liquidation moves with size, <a href=\"/trading-api/#realism\">per account or per call</a>. Every trade records which way it ran and the public bot board prints it, so no result here can be quoted without saying what it was measured under.",
-   "es": "<strong>El precio de ejecución, y dónde queda la liquidación.</strong> Una orden a mercado no cae sobre el precio que ves en pantalla: recorre el libro, y cuesta más cuanto más delgado es ese libro. El margen de mantenimiento tampoco es un número fijo: un exchange lo sube con el tamaño de la posición, así que una posición grande se liquida antes de lo que sugiere solo su apalancamiento. Aquí ambos son interruptores, no supuestos. Por defecto, desactivados, una ejecución cae sobre el precio en vivo con un 0.5% fijo, lo cual es correcto para aprender pero optimista para poner a prueba una estrategia; actívalos y la ejecución se mueve en tu contra como lo hace un libro real, mientras que la liquidación se mueve con el tamaño, <a href=\"/trading-api/#realism\">por cuenta o por llamada</a>. Cada operación registra bajo qué modo corrió y la tabla pública de bots lo muestra, así que ningún resultado aquí puede citarse sin decir bajo qué condiciones se midió.",
+   "es": "<strong>El precio de ejecución, y dónde se ubica la liquidación.</strong> Una orden a mercado no cae justo en el precio que ves en pantalla - recorre el libro, y cuesta más cuanto más delgado sea ese libro. El margen de mantenimiento tampoco es un número fijo: un exchange lo sube con el tamaño de la posición, así que una posición grande se cierra antes de lo que sugiere solo su apalancamiento. Aquí ambas cosas son interruptores, no suposiciones. Desactivados por defecto, la ejecución cae sobre el precio en vivo con un 0.5% fijo, lo cual está bien para aprender pero es optimista para poner a prueba una estrategia real; actívalos y la ejecución se mueve en tu contra como lo haría un libro real, mientras la liquidación se mueve según el tamaño, <a href=\"/trading-api/#realism\">por cuenta o por llamada</a>. Cada operación registra bajo qué modo corrió y la tabla pública de bots lo muestra, así que ningún resultado aquí se puede citar sin decir bajo qué condiciones se midió.",
    "kind": [
     "html"
    ],
@@ -156121,9 +156214,9 @@
    "n": 1,
    "w": 72
   },
-  "Ru67GS4kE0": {
-   "en": "Official one-file clients with no dependencies ship for <a href=\"/assets/sdk/marginpad.py\">Python</a> and <a href=\"/assets/sdk/marginpad.js\">Node</a>, an MCP server at <code>https://marginpad.io/mcp</code> exposes the same account to Claude, ChatGPT or Cursor, and the full reference with a quickstart lives on <a href=\"/trading-api/\">the Bot API page</a>. The free plan is the whole engine: 120 requests a minute, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint.",
-   "es": "Hay clientes oficiales de un solo archivo y sin dependencias para <a href=\"/assets/sdk/marginpad.py\">Python</a> y <a href=\"/assets/sdk/marginpad.js\">Node</a>, un servidor MCP en <code>https://marginpad.io/mcp</code> expone la misma cuenta a Claude, ChatGPT o Cursor, y la referencia completa con una guía rápida vive en <a href=\"/trading-api/\">la página del Bot API</a>. El plan gratis trae el motor completo: 120 peticiones por minuto, tres claves, cincuenta posiciones abiertas, el stream por WebSocket, replay de un día pasado y todos los endpoints de datos de mercado sin clave.",
+  "-UL-3spWbx": {
+   "en": "Official clients with no dependencies install with <code>pip install marginpad</code> and <code>npm install marginpad</code>, an MCP server at <code>https://marginpad.io/mcp</code> exposes the same account to Claude, ChatGPT or Cursor, and the full reference with a quickstart lives on <a href=\"/trading-api/\">the Bot API page</a>. The free plan is the whole engine: 120 requests a minute, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint.",
+   "es": "Los clientes oficiales, sin dependencias, se instalan con <code>pip install marginpad</code> y <code>npm install marginpad</code>; un servidor MCP en <code>https://marginpad.io/mcp</code> expone la misma cuenta a Claude, ChatGPT o Cursor, y la referencia completa con una guía rápida está en <a href=\"/trading-api/\">la página del Bot API</a>. El plan gratuito es el motor completo: 120 peticiones por minuto, tres claves, cincuenta posiciones abiertas, el stream de WebSocket, repetición de un día pasado y todos los endpoints de datos de mercado sin clave.",
    "kind": [
     "html"
    ],
@@ -156131,7 +156224,7 @@
     "/where-can-i-test-a-trading-bot/"
    ],
    "n": 1,
-   "w": 64
+   "w": 67
   },
   "thnm6SpOKK": {
    "en": "On MarginPad’s paper-trading API. Your bot opens leveraged positions at real live crypto prices and they settle on our servers in simulated dollars, with fees on both legs, funding, and liquidation checked against one-minute candle extremes. There is no deposit, no card and no KYC - an email gets you an API key, and the free plan carries the whole engine at 120 requests a minute.",
@@ -156187,7 +156280,7 @@
   },
   "tws0laRA_p": {
    "en": "Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 28 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.",
-   "es": "Sí. MarginPad ejecuta un servidor MCP remoto en https://marginpad.io/mcp con 28 herramientas, de modo que un asistente como Claude, ChatGPT o Cursor puede leer los mercados y operar una cuenta simulada directamente, sin código de conexión. Las herramientas de datos de mercado no necesitan ninguna clave; las herramientas de paper trading requieren una clave API gratuita en un header X-API-Key. Nada de esto puede tocar dinero real.",
+   "es": "Sí. MarginPad ejecuta un servidor MCP remoto en https://marginpad.io/mcp con 28 herramientas, así que un asistente como Claude, ChatGPT o Cursor puede leer los mercados y operar una cuenta simulada directamente, sin código de conexión. Las herramientas de datos de mercado no necesitan ninguna clave; las herramientas de paper trading usan una clave API gratuita en un header X-API-Key. Nada de esto puede tocar dinero real.",
    "kind": [
     "html",
     "ld"

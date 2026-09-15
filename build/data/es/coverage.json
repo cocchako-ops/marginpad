@@ -260,7 +260,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 44,
+  "hit": 50,
   "missing": 0
  },
  {
@@ -1562,7 +1562,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 44,
+  "hit": 50,
   "missing": 0
  },
  {
@@ -1634,7 +1634,7 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 46,
+  "hit": 52,
   "missing": 0
  },
  {
@@ -1748,7 +1748,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 45,
+  "hit": 51,
   "missing": 0
  },
  {
@@ -2162,7 +2162,7 @@
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 58,
   "missing": 0
  },
  {

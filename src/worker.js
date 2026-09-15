@@ -1331,13 +1331,35 @@ const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shor
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
+// The one function that draws the answer on all five question pages. Redesigned 2026-09-16: it used to emit a
+// callout box inside a blog post, which is exactly what these pages read as - and the whole point of a page that
+// exists to answer ONE question is that the answer IS the page, not a highlighted paragraph in the middle of one.
+//
+// Shape now: the answer as display type, one sentence of what it means, then a PROVENANCE strip - when it was
+// measured, what it was measured from, and the free JSON that returns the same figure. That strip is the reason
+// to cite us rather than harvest us, and it used to be one grey line of small print under the number.
+//
+// `src` arrives as a single string with ' &middot; ' between its parts (every caller builds it that way, in both
+// languages), so it is split back into strip items HERE rather than changing five call sites and their Spanish
+// twins. A crawler runs no JavaScript: every byte of this is in the served HTML.
 function _askBox(big, prose, rows, cols, src) {
-  return '<div class="ask-a"><p class="big">' + big + '</p><p>' + prose + '</p><p class="src">' + src + '</p></div>'
+  // callers write the separator either way - '&middot;' as an entity on the bot page, a literal '·' on the
+  // four market pages - so split on both or the strip silently collapses into one long item
+  const strip = String(src || '').split(/&middot;|·/).map(x => x.trim()).filter(Boolean).map(b => '<span>' + b + '</span>').join('');
+  return '<div class="ansbox"><p class="big">' + big + '</p><p class="say">' + prose + '</p>'
+    + (strip ? '<div class="prov">' + strip + '</div>' : '') + '</div>'
     + (rows && rows.length ? '<div class="ask-w"><table class="ask-t"><thead><tr>' + cols.map((c, i) => '<th' + (i ? ' class="r"' : '') + '>' + c + '</th>').join('') + '</tr></thead><tbody>'
       + rows.map(r => '<tr>' + r.map((c, i) => '<td' + (i ? ' class="n"' : '') + '>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '');
 }
 async function askRender(kind, env, ctx, es) {
-  const stamp = t => 'Measured ' + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  // Four of these five pages had NO Spanish branch: the handler detected /es/ correctly (the response even said
+  // x-mp-ssr: ask-count-es) and then rendered the English answer under the Spanish headline. Same class of bug as
+  // the coin pages on 2026-09-14. T() picks the string; money() picks the FORMATTER, because the magnitude words
+  // are false friends - Spanish billon is 10^12, so _aUsd's ' billion' would tell a Spanish reader a thousand
+  // times the truth. _susd(x,'es') says 'mil millones'.
+  const T = (en, sp) => (es ? sp : en);
+  const money = v => (es ? _susd(v, 'es') : _aUsd(v));
+  const stamp = t => (es ? 'Medido ' : 'Measured ') + new Date(t || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   if (kind === 'bot') {
     // Every other question page answers with market data. This one answers a commercial question, so the
     // honest number is OUR OWN usage: how many bots are really running on the paper API this season and how
@@ -1363,14 +1385,14 @@ async function askRender(kind, env, ctx, es) {
       ['Coste de correr un bot en ella', '$0', 'sin dep\u00f3sito ni tarjeta; 120 peticiones por minuto, 3 claves, 50 posiciones abiertas'],
       ['Bots en la tabla p\u00fablica esta temporada', _aN(bots), 'hacen falta al menos cinco cierres por la API - <a href="/arena/">/arena/</a>'],
       ['Operaciones que cerraron esta temporada', _aN(closes), 'netas de comisiones y funding, liquidadas por nuestro propio motor'],
-      ['Endpoints', '24', 'm\u00e1s un stream por WebSocket, webhooks y un servidor MCP para clientes de IA'],
+      ['Endpoints', '25', 'm\u00e1s un stream por WebSocket, webhooks y un servidor MCP para clientes de IA'],
       ['Tarifas reales de exchanges', '9', 'cobra a la cuenta de paper exactamente lo que cobrar\u00eda Bybit, Binance o Hyperliquid'],
       ['Balance inicial por book', '$10,000', 'un marcador, no una restricci\u00f3n: se reinicia cuando quieras'],
     ] : [
       ['Cost to run a bot on it', '$0', 'no deposit, no card; 120 requests a minute, 3 keys, 50 open positions'],
       ['Bots on the public board this season', _aN(bots), 'at least five closes through the API to qualify - <a href="/arena/">/arena/</a>'],
       ['Trades they closed this season', _aN(closes), 'net of fees and funding, settled by our own engine'],
-      ['Endpoints', '24', 'plus a WebSocket stream, webhooks and an MCP server for AI clients'],
+      ['Endpoints', '25', 'plus a WebSocket stream, webhooks and an MCP server for AI clients'],
       ['Real venue fee schedules', '9', 'charge the paper account exactly what Bybit, Binance or Hyperliquid would'],
       ['Starting balance per book', '$10,000', 'a scorecard, not a constraint - reset it any time'],
     ];
@@ -1389,12 +1411,22 @@ async function askRender(kind, env, ctx, es) {
     const sorted = rows.slice().sort((a, b) => (+b.funding || 0) - (+a.funding || 0));
     const hi = sorted[0], lo = sorted[sorted.length - 1];
     const sign = f => (+f >= 0 ? '+' : '') + (+f).toFixed(4) + '%';
-    const head = btc ? (+btc.funding > 0 ? 'Positive on Bitcoin: ' + sign(btc.funding) : +btc.funding < 0 ? 'Negative on Bitcoin: ' + sign(btc.funding) : 'Flat on Bitcoin') : (pos > neg ? 'Positive across most of the market' : 'Negative across most of the market');
-    const prose = (btc ? 'Bitcoin funding is ' + sign(btc.funding) + ', so ' + (+btc.funding > 0 ? '<strong>longs are paying shorts</strong>' : +btc.funding < 0 ? '<strong>shorts are paying longs</strong>' : 'neither side is paying a meaningful premium') + '. ' : '')
-      + 'Across the ' + _aN(rows.length) + ' perpetual contracts we track, ' + _aN(pos) + ' are positive and ' + _aN(neg) + ' are negative'
-      + (hi && lo ? ', with the widest spread running from ' + sign(hi.funding) + ' on ' + hi.s + ' down to ' + sign(lo.funding) + ' on ' + lo.s : '') + '.';
-    const tbl = maj.map(m => [m.s, sign(m.funding), (+m.funding > 0 ? 'longs pay' : +m.funding < 0 ? 'shorts pay' : 'flat'), m.oiUsd ? _aUsd(m.oiUsd) : '-']);
-    return { html: _askBox(head, prose, tbl, ['Coin', 'Funding', 'Who pays', 'Open interest'], stamp(Date.now()) + ' · read from each exchange&#39;s own public funding endpoint · free JSON at /api/v1/funding'), ts: Date.now() };
+    const head = btc
+      ? (+btc.funding > 0 ? T('Positive on Bitcoin: ', 'Positivo en Bitcoin: ') + sign(btc.funding)
+        : +btc.funding < 0 ? T('Negative on Bitcoin: ', 'Negativo en Bitcoin: ') + sign(btc.funding)
+        : T('Flat on Bitcoin', 'Plano en Bitcoin'))
+      : (pos > neg ? T('Positive across most of the market', 'Positivo en la mayor parte del mercado') : T('Negative across most of the market', 'Negativo en la mayor parte del mercado'));
+    const who = btc ? (+btc.funding > 0 ? T('<strong>longs are paying shorts</strong>', '<strong>los largos pagan a los cortos</strong>')
+      : +btc.funding < 0 ? T('<strong>shorts are paying longs</strong>', '<strong>los cortos pagan a los largos</strong>')
+      : T('neither side is paying a meaningful premium', 'ning\u00fan lado paga una prima significativa')) : '';
+    const prose = (btc ? T('Bitcoin funding is ' + sign(btc.funding) + ', so ' + who + '. ', 'El funding de Bitcoin es ' + sign(btc.funding) + ', as\u00ed que ' + who + '. ') : '')
+      + T('Across the ' + _aN(rows.length) + ' perpetual contracts we track, ' + _aN(pos) + ' are positive and ' + _aN(neg) + ' are negative',
+          'De los ' + _aN(rows.length) + ' contratos perpetuos que seguimos, ' + _aN(pos) + ' est\u00e1n en positivo y ' + _aN(neg) + ' en negativo')
+      + (hi && lo ? T(', with the widest spread running from ' + sign(hi.funding) + ' on ' + hi.s + ' down to ' + sign(lo.funding) + ' on ' + lo.s,
+                      ', con el rango m\u00e1s amplio desde ' + sign(hi.funding) + ' en ' + hi.s + ' hasta ' + sign(lo.funding) + ' en ' + lo.s) : '') + '.';
+    const tbl = maj.map(m => [m.s, sign(m.funding), (+m.funding > 0 ? T('longs pay', 'pagan los largos') : +m.funding < 0 ? T('shorts pay', 'pagan los cortos') : T('flat', 'plano')), m.oiUsd ? money(m.oiUsd) : '-']);
+    return { html: _askBox(head, prose, tbl, T(['Coin', 'Funding', 'Who pays', 'Open interest'], ['Moneda', 'Funding', 'Qui\u00e9n paga', 'Inter\u00e9s abierto']),
+      stamp(Date.now()) + ' \u00b7 ' + T('read from each exchange&#39;s own public funding endpoint', 'le\u00eddo del endpoint p\u00fablico de funding de cada exchange') + ' \u00b7 ' + T('free JSON at', 'JSON gratuito en') + ' /api/v1/funding'), ts: Date.now() };
   }
   let d = null; try { d = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); } catch (e) {}
   if (!d || d.error || !d.market) return null;
@@ -1402,28 +1434,50 @@ async function askRender(kind, env, ctx, es) {
   if (kind === 'count') {
     if (!(+m.count > 0)) return null;
     const avg = m.count ? m.total / m.count : 0;
-    const prose = _aN(m.count) + ' leveraged positions were force-closed across ' + ex + ' exchanges in the last 24 hours, worth ' + _aUsd(m.total) + ' in total and spread over ' + _aN(m.coinsN) + ' coins. That averages ' + _aUsd(avg) + ' per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.';
-    const tbl = [['Positions force-closed', _aN(m.count), '24h'], ['Total value', _aUsd(m.total), '24h'], ['Average per liquidation', _aUsd(avg), ''], ['Longs liquidated', _aUsd(m.long), (m.total ? Math.round(m.long / m.total * 100) : 0) + '% of the total'], ['Shorts liquidated', _aUsd(m.short), (m.total ? Math.round(m.short / m.total * 100) : 0) + '% of the total'], ['Coins involved', _aN(m.coinsN), '']];
-    return { html: _askBox(_aN(m.count) + ' in the last 24 hours', prose, tbl, ['', 'Figure', 'Note'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations'), ts: d.ts };
+    const lPct = m.total ? Math.round(m.long / m.total * 100) : 0, sPct = m.total ? Math.round(m.short / m.total * 100) : 0;
+    const prose = T(
+      _aN(m.count) + ' leveraged positions were force-closed across ' + ex + ' exchanges in the last 24 hours, worth ' + money(m.total) + ' in total and spread over ' + _aN(m.coinsN) + ' coins. That averages ' + money(avg) + ' per liquidation - the size of the typical position that died, which describes who is trading leverage better than the headline dollar figure does.',
+      _aN(m.count) + ' posiciones apalancadas fueron cerradas a la fuerza en ' + ex + ' exchanges en las \u00faltimas 24 horas, por un valor de ' + money(m.total) + ' repartido entre ' + _aN(m.coinsN) + ' monedas. Eso da una media de ' + money(avg) + ' por liquidaci\u00f3n: el tama\u00f1o de la posici\u00f3n t\u00edpica que muri\u00f3, que describe qui\u00e9n opera con apalancamiento mucho mejor que la cifra total en d\u00f3lares.');
+    const tbl = es
+      ? [['Posiciones cerradas a la fuerza', _aN(m.count), '24h'], ['Valor total', money(m.total), '24h'], ['Media por liquidaci\u00f3n', money(avg), ''], ['Largos liquidados', money(m.long), lPct + '% del total'], ['Cortos liquidados', money(m.short), sPct + '% del total'], ['Monedas afectadas', _aN(m.coinsN), '']]
+      : [['Positions force-closed', _aN(m.count), '24h'], ['Total value', money(m.total), '24h'], ['Average per liquidation', money(avg), ''], ['Longs liquidated', money(m.long), lPct + '% of the total'], ['Shorts liquidated', money(m.short), sPct + '% of the total'], ['Coins involved', _aN(m.coinsN), '']];
+    return { html: _askBox(T(_aN(m.count) + ' in the last 24 hours', _aN(m.count) + ' en las \u00faltimas 24 horas'), prose, tbl,
+      T(['', 'Figure', 'Note'], ['', 'Cifra', 'Nota']),
+      stamp(d.ts) + ' \u00b7 ' + T('MarginPad&#39;s own collector, ' + ex + ' exchange websockets', 'colector propio de MarginPad, ' + ex + ' websockets de exchanges') + ' \u00b7 ' + T('free JSON at', 'JSON gratuito en') + ' /api/v1/liquidations'), ts: d.ts };
   }
   if (kind === 'side') {
     if (!(m.total > 0)) return null;
     const lp = Math.round(m.long / m.total * 100), sp = 100 - lp;
-    const head = lp >= 60 ? 'Longs, ' + lp + '% of the damage' : sp >= 60 ? 'Shorts, ' + sp + '% of the damage' : 'Close to even, ' + lp + '% long';
+    const head = lp >= 60 ? T('Longs, ' + lp + '% of the damage', 'Largos, el ' + lp + '% del da\u00f1o')
+      : sp >= 60 ? T('Shorts, ' + sp + '% of the damage', 'Cortos, el ' + sp + '% del da\u00f1o')
+      : T('Close to even, ' + lp + '% long', 'Casi parejo, ' + lp + '% largos');
     let vs = []; try { const v = await handleVenueStats(env, false, ctx); const vj = await v.json(); vs = (vj && vj.venues) || []; } catch (e) {}
-    const prose = 'Of the ' + _aUsd(m.total) + ' liquidated across ' + ex + ' exchanges in the last 24 hours, ' + _aUsd(m.long) + ' (' + lp + '%) was long positions and ' + _aUsd(m.short) + ' (' + sp + '%) was shorts. '
-      + (lp >= 60 ? 'Leveraged buyers were the crowded side and price came down into them.' : sp >= 60 ? 'Leveraged sellers were the crowded side and the squeeze ran upward.' : 'Neither side was clearly crowded - the market chopped and both paid for it.');
-    const tbl = vs.slice(0, 8).map(v => [_aVen[v.venue] || v.venue, _aUsd(v.total), v.longPct + '% long', (100 - v.longPct) + '% short']);
-    return { html: _askBox(head, prose, tbl, ['Exchange', '24h liquidated', 'Longs', 'Shorts'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations and /api/v1/venues'), ts: d.ts };
+    const prose = T(
+      'Of the ' + money(m.total) + ' liquidated across ' + ex + ' exchanges in the last 24 hours, ' + money(m.long) + ' (' + lp + '%) was long positions and ' + money(m.short) + ' (' + sp + '%) was shorts. '
+        + (lp >= 60 ? 'Leveraged buyers were the crowded side and price came down into them.' : sp >= 60 ? 'Leveraged sellers were the crowded side and the squeeze ran upward.' : 'Neither side was clearly crowded - the market chopped and both paid for it.'),
+      'De los ' + money(m.total) + ' liquidados en ' + ex + ' exchanges en las \u00faltimas 24 horas, ' + money(m.long) + ' (' + lp + '%) fueron posiciones largas y ' + money(m.short) + ' (' + sp + '%) cortas. '
+        + (lp >= 60 ? 'Los compradores apalancados eran el lado saturado y el precio baj\u00f3 hacia ellos.' : sp >= 60 ? 'Los vendedores apalancados eran el lado saturado y el squeeze fue hacia arriba.' : 'Ning\u00fan lado estaba claramente saturado: el mercado se movi\u00f3 en rango y ambos pagaron por ello.'));
+    const tbl = vs.slice(0, 8).map(v => [_aVen[v.venue] || v.venue, money(v.total), v.longPct + T('% long', '% largos'), (100 - v.longPct) + T('% short', '% cortos')]);
+    return { html: _askBox(head, prose, tbl, T(['Exchange', '24h liquidated', 'Longs', 'Shorts'], ['Exchange', 'Liquidado 24h', 'Largos', 'Cortos']),
+      stamp(d.ts) + ' \u00b7 ' + T('MarginPad&#39;s own collector, ' + ex + ' exchange websockets', 'colector propio de MarginPad, ' + ex + ' websockets de exchanges') + ' \u00b7 ' + T('free JSON at', 'JSON gratuito en') + ' /api/v1/liquidations ' + T('and', 'y') + ' /api/v1/venues'), ts: d.ts };
   }
   if (kind === 'big') {
     const b = d.big;
     if (!b || !(+b.usd > 0)) return null;
-    const side = /long/i.test(b.side || '') ? 'long' : 'short';
+    const isLong = /long/i.test(b.side || '');
+    const side = isLong ? T('long', 'larga') : T('short', 'corta');
     const ven = _aVen[b.ex] || b.ex;
-    const prose = 'The largest single forced close our collector has seen in the last 24 hours was a <strong>' + side + '</strong> position in ' + b.s + ' on ' + ven + ', worth ' + _aUsd(b.usd) + ' at the price it was closed at. It is ' + (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '% of everything liquidated market-wide in the same window (' + _aUsd(m.total) + ' across ' + _aN(m.count) + ' positions).';
-    const tbl = [['Size', _aUsd(b.usd), 'notional, not the trader&#39;s loss'], ['Coin', b.s, ''], ['Exchange', ven, ''], ['Side', side + ' liquidated', side === 'long' ? 'a leveraged buyer' : 'a leveraged seller'], ['Share of the 24h total', (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '%', 'of ' + _aUsd(m.total)]];
-    return { html: _askBox(_aUsd(b.usd) + ' - ' + b.s + ' ' + side + ' on ' + ven, prose, tbl, ['', 'Figure', 'Note'], stamp(d.ts) + ' · MarginPad&#39;s own collector, ' + ex + ' exchange websockets · free JSON at /api/v1/liquidations (data.big)'), ts: d.ts };
+    const pc = (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '%';
+    const prose = T(
+      'The largest single forced close our collector has seen in the last 24 hours was a <strong>' + side + '</strong> position in ' + b.s + ' on ' + ven + ', worth ' + money(b.usd) + ' at the price it was closed at. It is ' + pc + ' of everything liquidated market-wide in the same window (' + money(m.total) + ' across ' + _aN(m.count) + ' positions).',
+      'El mayor cierre forzoso que ha visto nuestro colector en las \u00faltimas 24 horas fue una posici\u00f3n <strong>' + side + '</strong> en ' + b.s + ' en ' + ven + ', por ' + money(b.usd) + ' al precio al que se cerr\u00f3. Es el ' + pc + ' de todo lo liquidado en el mercado en la misma ventana (' + money(m.total) + ' repartidos en ' + _aN(m.count) + ' posiciones).');
+    const shr = (m.total ? (b.usd / m.total * 100).toFixed(1) : '0') + '%';
+    const tbl = es
+      ? [['Tama\u00f1o', money(b.usd), 'nocional, no la p\u00e9rdida del trader'], ['Moneda', b.s, ''], ['Exchange', ven, ''], ['Lado', 'posici\u00f3n ' + side + ' liquidada', isLong ? 'un comprador apalancado' : 'un vendedor apalancado'], ['Parte del total de 24h', shr, 'de ' + money(m.total)]]
+      : [['Size', money(b.usd), 'notional, not the trader&#39;s loss'], ['Coin', b.s, ''], ['Exchange', ven, ''], ['Side', side + ' liquidated', isLong ? 'a leveraged buyer' : 'a leveraged seller'], ['Share of the 24h total', shr, 'of ' + money(m.total)]];
+    return { html: _askBox(money(b.usd) + T(' - ' + b.s + ' ' + side + ' on ' + ven, ' - ' + b.s + ', posici\u00f3n ' + side + ' en ' + ven), prose, tbl,
+      T(['', 'Figure', 'Note'], ['', 'Cifra', 'Nota']),
+      stamp(d.ts) + ' \u00b7 ' + T('MarginPad&#39;s own collector, ' + ex + ' exchange websockets', 'colector propio de MarginPad, ' + ex + ' websockets de exchanges') + ' \u00b7 ' + T('free JSON at', 'JSON gratuito en') + ' /api/v1/liquidations (data.big)'), ts: d.ts };
   }
   return null;
 }
@@ -1435,7 +1489,21 @@ async function handleSsrAsk(request, url, env, kind, ctx) {
   if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
   let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
   const open = html.indexOf('<div id="askdata">'); if (open < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
-  const close = html.indexOf('</div>\n', open); if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  // Find the div that CLOSES #askdata by walking the nesting, not by taking the first '</div>\n' after it.
+  // Taking the first one has been wrong since these pages launched: the placeholder holds a nested div, so the
+  // match landed on the INNER close and the outer one was left behind - one surplus </div> in every served page,
+  // which closed <article> early and left the whole FAQ parented to <body>. Invisible until CSS was scoped to
+  // `article details` (2026-09-16) and matched nothing. Structured data was never affected; the document was.
+  let close = -1;
+  { let i = open, depth = 0;
+    while (i < html.length) {
+      const nx = html.indexOf('<div', i), cl = html.indexOf('</div>', i);
+      if (cl < 0) break;
+      if (nx >= 0 && nx < cl) { depth++; i = nx + 4; continue; }
+      depth--; if (depth === 0) { close = cl; break; }
+      i = cl + 6;
+    } }
+  if (close < 0) return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
   const _esAsk = /^\/es\//.test(new URL(request.url).pathname);
   let res = null; try { res = await askRender(kind, env, ctx, _esAsk); } catch (e) {}
   if (!res) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });

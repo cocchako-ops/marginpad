@@ -27,6 +27,16 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 
 const COLLECTOR = 'MarginPad runs its own collector subscribed to the public liquidation websocket of nine exchanges: Binance (USD- and coin-margined), Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex. Every forced close is normalised to symbol, side, fill price and dollar notional, then aggregated over a rolling 24-hour window. These are observed events, not a model and not a vendor feed. Nothing is filled in when a venue goes quiet, and if the collector itself is down the page says so rather than showing yesterday&#39;s figures as if they were current.';
 
+// Each page links the other four. A narrow page gets LINKED by an assistant rather than harvested, so the
+// family should feed itself - and a crawler that reaches one of these should reach all five.
+const SIBS = [
+  ['/how-many-traders-liquidated-today/', 'How many traders got liquidated today?'],
+  ['/longs-or-shorts-liquidated-more/', 'Are longs or shorts getting liquidated more?'],
+  ['/biggest-liquidation-today/', 'What was the biggest liquidation today?'],
+  ['/is-funding-positive-or-negative/', 'Is funding positive or negative right now?'],
+  ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?'],
+];
+
 const PAGES = [
   {
     slug: 'where-can-i-test-a-trading-bot',
@@ -38,15 +48,15 @@ const PAGES = [
     dataset: ['MarginPad bot arena (paper-trading season board)', 'Every account or book that closed at least five bot-opened paper trades in the current 14-day season, ranked by realized profit and loss net of fees and funding, with win rate, return on the $10,000 scorecard and liquidations.', 'https://marginpad.io/api/arena'],
     body: [
       ['Why an exchange testnet is not the same test', '<p>The obvious answer to this question is "the exchange testnet", and it is the wrong one often enough to be worth saying plainly. Testnet order books are thin, so a fill you get there is a fill you would not get with real liquidity. Testnet prices drift from the real market, sometimes by percent, because nothing arbitrages them back. And testnets are reset on the operator\u2019s schedule, which ends a forward test that was two weeks into proving something.</p><p>The alternative is to keep the prices real and simulate only the money. Everything on this page is priced from the same live multi-exchange feed our charts and our own paper terminal run on. Your bot places real orders against real prices; what is simulated is the dollar that settles.</p>'],
-      ['What has to be simulated before a test means anything', '<p>A simulator that fills every order at the mid price and charges nothing will tell you that almost any strategy works. Four things decide whether a paper result survives contact with an exchange:</p><p><strong>Fees on both legs.</strong> A taker fee is charged when you open and again when you close. On a $10,000 crypto position that is about $11 a round trip. Any strategy whose average winner is smaller than its round trip is a losing strategy no matter how often it is right, and a simulator that hides the fee hides exactly that. You can also charge the paper account at a named venue\u2019s published schedule, so the test settles the way the live account will.</p><p><strong>Funding.</strong> Perpetuals pay funding periodically. A position held across marks accrues it, and a carry strategy that ignores it is measuring the wrong thing.</p><p><strong>Liquidation, on the wick.</strong> Isolated margin with a maintenance rate, checked against one-minute candle extremes rather than closes, so a spike that retraced still takes the position. A simulator that only checks closes will under-report exactly the events that kill real accounts.</p><p><strong>Orders that outlive your process.</strong> Limit entries, stop entries, stop-losses, targets and trailing stops have to be evaluated on the server. If they only exist while your script is running, you are testing your uptime, not your strategy.</p>'],
+      ['What has to be simulated before a test means anything', '<p>A simulator that fills every order at the mid price and charges nothing will tell you that almost any strategy works. Five things decide whether a paper result survives contact with an exchange:</p><p><strong>Fees on both legs.</strong> A taker fee is charged when you open and again when you close. On a $10,000 crypto position that is about $11 a round trip. Any strategy whose average winner is smaller than its round trip is a losing strategy no matter how often it is right, and a simulator that hides the fee hides exactly that. You can also charge the paper account at a named venue\u2019s published schedule, so the test settles the way the live account will.</p><p><strong>Funding.</strong> Perpetuals pay funding periodically. A position held across marks accrues it, and a carry strategy that ignores it is measuring the wrong thing.</p><p><strong>Liquidation, on the wick.</strong> Isolated margin with a maintenance rate, checked against one-minute candle extremes rather than closes, so a spike that retraced still takes the position. A simulator that only checks closes will under-report exactly the events that kill real accounts.</p><p><strong>The fill price, and where the liquidation sits.</strong> A market order does not land on the screen price - it walks the book, and it costs more the thinner that book is. Maintenance margin is not one number either: an exchange raises it with position size, so a large position is closed sooner than its leverage alone suggests. Both are switches here rather than assumptions. Off by default a fill lands on the live price at a flat 0.5%, which is right for learning and optimistic for proving out a strategy; turn them on and the fill moves against you the way a real book does while the liquidation moves with size, <a href="/trading-api/#realism">per account or per call</a>. Every trade records which way it ran and the public bot board prints it, so no result here can be quoted without saying what it was measured under.</p><p><strong>Orders that outlive your process.</strong> Limit entries, stop entries, stop-losses, targets and trailing stops have to be evaluated on the server. If they only exist while your script is running, you are testing your uptime, not your strategy.</p>'],
       ['Backtest, paper, live - and why the middle one gets skipped', '<p>A backtest replays historical candles. It is fast, it filters obvious losers, and it cannot catch a race condition in your order logic, a position-sizing bug that only appears after a losing streak, or leverage that quietly grows past what the margin survives. Those are the failures that empty accounts, and they only show up when the same code runs forward against prices nobody has seen yet.</p><p>Forward testing is the step most people skip, because it costs time rather than money. It is also the only stage that runs the exact code path that will run live. Do all three in order: backtest the idea, forward-test the bot for days or weeks, and fund an exchange account only once the paper result holds.</p>'],
-      ['Start in three calls', '<p>The first one needs no key at all. <code>GET /api/bot/v1/price?symbol=BTC</code> is keyless and CORS-enabled, so it works from a terminal or a browser tab right now. Sign in with an email to mint a key, then <code>POST /api/bot/v1/open</code> places a leveraged position at the live price and returns its liquidation level, and <code>GET /api/bot/v1/positions</code> reports what happened while you were away. Stops, targets and liquidations settle on our side whether or not your bot is connected.</p><p>Official one-file clients with no dependencies ship for <a href="/assets/sdk/marginpad.py">Python</a> and <a href="/assets/sdk/marginpad.js">Node</a>, an MCP server at <code>https://marginpad.io/mcp</code> exposes the same account to Claude, ChatGPT or Cursor, and the full reference with a quickstart lives on <a href="/trading-api/">the Bot API page</a>. The free plan is the whole engine: 120 requests a minute, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint.</p>'],
+      ['Start in three calls', '<p>The first one needs no key at all. <code>GET /api/bot/v1/price?symbol=BTC</code> is keyless and CORS-enabled, so it works from a terminal or a browser tab right now. Sign in with an email to mint a key, then <code>POST /api/bot/v1/open</code> places a leveraged position at the live price and returns its liquidation level, and <code>GET /api/bot/v1/positions</code> reports what happened while you were away. Stops, targets and liquidations settle on our side whether or not your bot is connected.</p><p>Official clients with no dependencies install with <code>pip install marginpad</code> and <code>npm install marginpad</code>, an MCP server at <code>https://marginpad.io/mcp</code> exposes the same account to Claude, ChatGPT or Cursor, and the full reference with a quickstart lives on <a href="/trading-api/">the Bot API page</a>. The free plan is the whole engine: 120 requests a minute, three keys, fifty open positions, the WebSocket stream, replay of a past day and every keyless market-data endpoint.</p>'],
     ],
     related: [['/trading-api/', 'the full Bot API reference'], ['/arena/', 'the public bot arena'], ['/paper-trade', 'paper trade by hand'], ['/crypto-backtester/', 'backtest an idea first']],
     faq: [
       ['Where can I test a trading bot for free?', 'On MarginPad\u2019s paper-trading API. Your bot opens leveraged positions at real live crypto prices and they settle on our servers in simulated dollars, with fees on both legs, funding, and liquidation checked against one-minute candle extremes. There is no deposit, no card and no KYC - an email gets you an API key, and the free plan carries the whole engine at 120 requests a minute.'],
       ['Is paper trading a bot actually useful, or should I just go live small?', 'Going live small still exposes you to the failures that matter, and it does so at the worst possible time - when you have least information about why something broke. Forward testing runs the same code path against the same live prices with the consequences removed, so a race condition in your order logic or a sizing bug after a losing streak costs a log line instead of an account. Go live small after the paper result holds, not instead of it.'],
-      ['Can an AI agent trade on it?', 'Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 27 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.'],
+      ['Can an AI agent trade on it?', 'Yes. MarginPad runs a remote MCP server at https://marginpad.io/mcp with 28 tools, so an assistant such as Claude, ChatGPT or Cursor can read markets and trade a paper account directly, without glue code. Market-data tools need no key at all; the paper-trading tools take a free API key in an X-API-Key header. Nothing there can touch real money.'],
       ['What does it cost?', 'Nothing to run a bot on it. The free plan is 120 requests a minute per key, three keys and fifty open positions, with the full trading engine, replay, the WebSocket stream, the MCP server and all keyless market data. Paid plans raise those ceilings and add webhooks and AI market reads; they do not unlock the product.'],
       ['Do the paper trades show up anywhere public?', 'Only if you want them to. Any account or book that closes at least five bot-opened trades in the current 14-day season is ranked on the public bot arena at /arena/ by realized profit and loss net of fees and funding. There is nothing to sign up for and no prize - trade through the API and the board picks you up.'],
     ],
@@ -163,20 +173,82 @@ function page(p) {
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
-.ask-a{border:1px solid rgba(194,246,74,.3);border-left:3px solid #c2f64a;border-radius:13px;padding:17px 19px;background:rgba(194,246,74,.04);margin:20px 0 8px}
-.ask-a .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(26px,5.4vw,40px);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
-.ask-a p{margin:0;font-size:15px;line-height:1.7}
-.ask-a .src{font-family:'Space Mono',monospace;font-size:11.5px;color:#6f7885;margin:11px 0 0}
-.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0 0}
-.ask-t th,.ask-t td{padding:8px 11px 8px 0;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-.ask-t th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim);font-weight:400}
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
 .ask-t th.r{text-align:right}
-.ask-t td.n{font-family:'Space Mono',monospace;text-align:right}
-.ask-t td:last-child,.ask-t th:last-child{color:#8b95a1;font-size:12.5px;white-space:normal}
-.ask-t td:first-child{font-weight:600}
-.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.ask-cta{display:inline-block;margin:4px 8px 0 0;padding:9px 15px;border-radius:10px;background:#c2f64a;color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none}
-.ask-cta.alt{background:none;border:1px solid #2a323d;color:var(--ink)}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":${JSON.stringify(p.dataset[0])},"description":${JSON.stringify(p.dataset[1])},"url":"${url}","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"${p.dataset[2]}"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[${faqLd}]}</script>
@@ -189,21 +261,26 @@ ${GTAG}
     <nav class="nav"><a href="/liquidations/">Liquidations</a><a href="/heatmap">Heatmap</a><a href="/trading-api/">API</a></nav>
   </header>
   <article>
+    <p class="qeye">One question, one answer</p>
     <h1>${p.h1}</h1>
     <p class="lead">${p.lead}</p>
 
     <div id="askdata">
-      <div class="ask-a"><p>Reading the live figure&hellip;</p></div>
+      <div class="ansbox"><p class="say">Reading the live figure&hellip;</p></div>
     </div>
 
-    <p style="margin:18px 0 26px">${p.related.map(r => '<a class="ask-cta' + (r === p.related[0] ? '' : ' alt') + '" href="' + r[0] + '">' + r[1][0].toUpperCase() + r[1].slice(1) + '</a>').join('')}</p>
+    <p class="ctarow">${p.related.map(r => '<a class="ask-cta' + (r === p.related[0] ? '' : ' alt') + '" href="' + r[0] + '">' + r[1][0].toUpperCase() + r[1].slice(1) + '</a>').join('')}</p>
 
 ${p.body.map(([h, b]) => '    <h2>' + h + '</h2>\n    ' + b).join('\n\n')}
 
     <h2>Questions</h2>
     ${p.faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n    ')}
 
-    <p style="margin-top:26px">Related: ${p.related.map(r => '<a href="' + r[0] + '">' + r[1] + '</a>').join(' &middot; ')}</p>
+    <div class="sibs">
+      <h2>Other questions we answer with a live number</h2>
+      <ul>${SIBS.filter(x => x[0] !== '/' + p.slug + '/').map(x => '<li><a href="' + x[0] + '">' + x[1] + '</a></li>').join('')}</ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Related: ${p.related.map(r => '<a href="' + r[0] + '">' + r[1] + '</a>').join(' &middot; ')}</p>
   </article>
   <footer>
     <span>&copy; 2026 MarginPad</span>
