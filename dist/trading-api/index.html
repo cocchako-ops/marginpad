@@ -58,102 +58,315 @@
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
 <style>
-  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;}
+  /* ── tokens ───────────────────────────────────────────────────────────────────────────────────────────── */
+  :root{
+    --bg:#0a0b0d; --band:#0c0e12; --panel:#0e1117; --panel2:#12161d;
+    --line:#1b212a; --line2:#2a313c;
+    --ink:#e9e7df; --dim:#98a1ab; --faint:#5d6670;
+    --lime:#c2f64a; --cyan:#5cd6e6; --green:#2ebd85; --red:#ff6258; --amber:#ffd75a;
+    --mono:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;
+    --shell:1280px;
+  }
   *{box-sizing:border-box;}
-  html{touch-action:manipulation;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  html{touch-action:manipulation;scroll-behavior:smooth;scroll-padding-top:76px;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;}
   a{color:var(--lime);text-decoration:none;}
-  .wrap{max-width:760px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));}
-  header{display:flex;align-items:center;justify-content:space-between;padding:4px 0 16px;}
-  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);letter-spacing:-.02em;}
-  .brand b{color:var(--lime);}
-  .hnav{display:flex;align-items:center;gap:14px;}
-  .hnav a{color:var(--dim);font-size:14px;font-weight:600;}.hnav a:hover{color:var(--ink);}
-  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
-  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;margin:8px 0 10px;letter-spacing:-.02em;line-height:1.15;}
-  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:36px 0 12px;letter-spacing:-.01em;}
-  .lead{color:var(--dim);font-size:15px;line-height:1.65;margin:0;}
-  .api-hero{padding:14px 0 4px;}
-  .api-hero .free{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:99px;padding:6px 13px;margin-bottom:12px;}
-  .limits{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 0;}
-  .limits span{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:6px 12px;}
-  .api-key-box{background:linear-gradient(180deg,#11151b,#0c0f13);border:1px solid rgba(194,246,74,.35);border-radius:16px;padding:20px;margin:22px 0;}
-  .api-key-box h3{margin:0 0 8px;font-size:17px;font-family:'Bricolage Grotesque',sans-serif;}
-  .api-key-box p{color:var(--dim);font-size:13.5px;line-height:1.6;margin:0 0 14px;}
-  .akb-btn{display:inline-block;background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;font-weight:800;font-size:14px;padding:13px 22px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;}
-  .akb-key{display:none;margin-top:14px;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);word-break:break-all;}
-  .akb-key.on{display:block;}
-  .akb-msg{font-size:12.5px;color:#ffb347;margin-top:10px;}
-  .ep{background:#0d1015;border:1px solid #1c2230;border-radius:14px;padding:16px 18px;margin:0 0 12px;}
-  .ep .m{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;border-radius:6px;padding:3px 8px;margin-right:9px;vertical-align:1px;}
-  .ep .m.get{background:rgba(63,216,230,.15);color:#3fd8e6;}.ep .m.post{background:rgba(46,189,133,.15);color:#2ebd85;}
-  .ep code.u{font-family:'Space Mono',monospace;font-size:13px;color:var(--ink);word-break:break-all;}
-  .ep p{color:var(--dim);font-size:13px;line-height:1.6;margin:9px 0 0;}
-  .ep p code{font-family:'Space Mono',monospace;font-size:11.5px;word-break:break-all;overflow-wrap:anywhere;}
-  pre{background:#0a0c0f;border:1px solid #1c2230;border-radius:12px;padding:15px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;color:#cdd3da;-webkit-overflow-scrolling:touch;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:4px;}
+  h1,h2,h3,h4{font-family:var(--disp);margin:0;letter-spacing:-.022em;text-wrap:balance;}
+  p{margin:0;}
+  code{font-family:var(--mono);}
+  /* base: EVERY pre scrolls inside itself. The quickstart panes sit outside .doc, and with the old global
+     rule gone they fell back to overflow:visible and widened the whole document at 390px. */
+  pre{background:#08090c;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0;
+      overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#c8d0d8;max-width:100%;}
   pre b{color:var(--lime);font-weight:400;}
-  .why{color:var(--dim);font-size:14.5px;line-height:1.7;}
-  .why p{margin:0 0 12px;}
-  .why b{color:var(--ink);}
-  .vswrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0;}
-  table.vs{border-collapse:collapse;width:100%;min-width:520px;font-size:13px;}
-  table.vs th,table.vs td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;}
-  table.vs th{background:#0d1015;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);font-weight:700;}
-  table.vs td{color:var(--dim);line-height:1.5;}
-  table.vs td:first-child{color:var(--ink);font-weight:600;white-space:nowrap;}
-  table.vs .y{color:#2ebd85;}table.vs .n{color:#ff6258;}table.vs .hl{color:var(--lime);}
-  .faq{border-top:1px solid #1c2230;padding:15px 0;}
-  .faq b{display:block;font-size:15px;margin-bottom:6px;}
-  .faq p{color:var(--dim);font-size:13.5px;line-height:1.65;margin:0;}
-  .note{color:var(--dim);font-size:13px;}
-  code.k{font-family:'Space Mono',monospace;font-size:12px;background:#0a0c0f;border:1px solid var(--line);border-radius:6px;padding:2px 6px;}
-  footer{margin-top:34px;text-align:center;color:var(--faint);font-size:12.5px;border-top:1px solid var(--line);padding-top:18px;}
-  footer a{color:var(--dim);}
-  .smobnav{display:none;}
-  @media(max-width:720px){
-    h1{font-size:25px;}
-    .smobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:80;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}
-    .smobnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.58);text-decoration:none;font-size:9.5px;font-weight:600;}
-    .smobnav a.on{color:#c2f64a;}
-    .smobnav a:active{transform:scale(.9);}
-    .smobnav svg{width:21px;height:21px;}
-    body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
-  }  /* Step three of the page's own backtest -> paper -> live table: the exchange key the bot needs at the end.
-     Measured 2026-09-10: this page had no partner link at all on 142 pv/30d. */
-  .golive{margin:26px 0 8px;padding:20px 22px;border:1px solid var(--line2);border-left:3px solid var(--lime);border-radius:14px;background:linear-gradient(120deg,rgba(194,246,74,.05),rgba(194,246,74,.01) 60%),var(--panel);}
-  .golive .gl-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;color:var(--ink);margin:0 0 9px;}
-  .golive p{color:var(--dim);font-size:14.5px;line-height:1.7;margin:0 0 15px;}
-  .golive p b{color:var(--ink);}
-  .gl-cta{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.04em;color:#0a0b0d;background:var(--lime);border-radius:10px;padding:11px 18px;text-decoration:none;}
-  .gl-cta:hover{filter:brightness(1.08);}
-  .gl-note{display:block;margin-top:12px;font-size:11.5px;line-height:1.5;color:var(--faint);}
-  @media(max-width:640px){.golive{padding:16px}.gl-cta{width:100%;justify-content:center}}
-  /* API plans (2026-09-15) */
-  /* the page wrap is 760px: 240px minimums forced two columns and left Max alone on a second row */
-  .apgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px;margin:20px 0 8px;align-items:stretch;}
-  .apcard{display:flex;flex-direction:column;gap:14px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:20px 20px 18px;position:relative;min-width:0;}
-  .apcard.feat{border-color:rgba(194,246,74,.42);background:linear-gradient(180deg,rgba(194,246,74,.05),var(--panel));}
-  .appill{position:absolute;top:-9px;left:20px;font:800 8.5px 'Space Mono',monospace;letter-spacing:.1em;color:#0a0b0d;background:var(--lime);border-radius:5px;padding:3px 7px;}
-  .apcard h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;margin:0 0 4px;color:var(--ink);letter-spacing:-.01em;}
-  .appx{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1;}
-  .appx small{font-size:13px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:3px;}
-  .apsub{margin:9px 0 0;font-size:12.5px;line-height:1.55;color:var(--dim);}
-  .apfeat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;flex:1;}
-  .apfeat li{font-size:13px;line-height:1.5;color:var(--dim);padding-left:16px;position:relative;}
-  .apfeat li:before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--line2);}
-  .apcard.feat .apfeat li:before{background:var(--lime);}
-  .apfeat li b{color:var(--ink);font-weight:700;}
-  .apx{font:700 10px 'Space Mono',monospace;color:var(--lime);letter-spacing:.04em;margin-left:4px;}
-  .apbtn{width:100%;border:0;border-radius:10px;padding:11px 14px;font:700 13px 'Space Mono',monospace;letter-spacing:.03em;color:#0a0b0d;background:var(--lime);cursor:pointer;}
-  .apbtn:hover:not(:disabled){filter:brightness(1.08);}
-  .apbtn.ghost{background:transparent;border:1px solid var(--line2);color:var(--faint);cursor:default;}
-  .apbtn:disabled{opacity:.6;cursor:default;}
+  pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
+  .shell{max-width:var(--shell);margin:0 auto;padding:0 28px;}
+  .kick{font-family:var(--mono);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--faint);}
+
+  /* ── header ───────────────────────────────────────────────────────────────────────────────────────────── */
+  .top{position:sticky;top:0;z-index:60;background:rgba(10,11,13,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .top .shell{display:flex;align-items:center;gap:22px;height:58px;}
+  .brand{font-family:var(--disp);font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.03em;}
+  .brand b{color:var(--lime);}
+  .brand:hover{text-decoration:none;}
+  .tnav{display:flex;align-items:center;gap:20px;margin-left:auto;}
+  .tnav a{color:var(--dim);font-size:14px;font-weight:500;}
+  .tnav a:hover{color:var(--ink);text-decoration:none;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:8px;padding:7px 14px;font:600 13px/1 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .hauth:hover{border-color:var(--lime);}
+
+  /* ── hero ─────────────────────────────────────────────────────────────────────────────────────────────── */
+  .hero{padding:58px 0 40px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:52px;align-items:start;}
+  .hero h1{font-size:clamp(34px,4.2vw,54px);font-weight:800;line-height:1.02;margin:18px 0 0;}
+  .hero h1 em{font-style:normal;color:var(--lime);}
+  .hlead{margin-top:20px;font-size:18px;line-height:1.6;color:var(--dim);max-width:52ch;}
+  .hlead b{color:var(--ink);font-weight:600;}
+  .live{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--lime);}
+  .live i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(194,246,74,.55);}
+  .hcta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:0;border-radius:10px;padding:13px 20px;font:700 14px/1 var(--disp);cursor:pointer;background:var(--lime);color:#0a0b0d;}
+  .btn:hover{filter:brightness(1.07);text-decoration:none;}
+  .btn.sec{background:transparent;border:1px solid var(--line2);color:var(--ink);}
+  .btn.sec:hover{border-color:var(--lime);filter:none;}
+  .hnote{margin-top:16px;font-size:13.5px;color:var(--faint);line-height:1.6;}
+  .hnote a{color:var(--dim);}
+
+  /* terminal */
+  .term{min-width:0;border:1px solid var(--line2);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));overflow:hidden;box-shadow:0 30px 70px -40px rgba(0,0,0,.9);}
+  .term-h{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .term-h .dot{width:9px;height:9px;border-radius:50%;background:#2a313c;}
+  .term-h .lbl{margin-left:auto;letter-spacing:.1em;text-transform:uppercase;font-size:9.5px;}
+  .term pre{margin:0;padding:17px 18px;font-family:var(--mono);font-size:12.5px;line-height:1.72;color:#c8d0d8;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .term pre + .term-h{border-top:1px solid var(--line);}
+  .c-cm{color:var(--faint);}
+  .c-fn{color:var(--lime);}
+  .c-k{color:var(--cyan);}
+  .c-s{color:#e3c98a;}
+  .c-n{color:#eaeff4;}
+  .c-g{color:var(--green);}
+
+  /* ── proof strip ──────────────────────────────────────────────────────────────────────────────────────── */
+  .proof{display:grid;grid-template-columns:repeat(4,1fr);align-items:start;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .proof div{padding:22px 24px 20px;border-left:1px solid var(--line);}
+  .proof div:first-child{border-left:0;padding-left:0;}
+  .proof .v{font-family:var(--disp);font-size:27px;font-weight:700;letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums;}
+  .proof .l{margin-top:9px;font-size:13px;color:var(--dim);line-height:1.45;}
+
+  /* ── generic section ──────────────────────────────────────────────────────────────────────────────────── */
+  .band{background:var(--band);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  section{padding:64px 0;}
+  .shead{max-width:64ch;}
+  .shead h2{font-size:clamp(25px,2.6vw,33px);font-weight:700;margin:12px 0 0;}
+  .shead p{margin-top:13px;font-size:16.5px;line-height:1.65;color:var(--dim);}
+  .shead p b{color:var(--ink);font-weight:600;}
+
+  /* ── quickstart ───────────────────────────────────────────────────────────────────────────────────────── */
+  .qs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:34px;border-top:1px solid var(--line);}
+  .qstep{min-width:0;padding:24px 26px 26px;border-left:1px solid var(--line);}
+  .qstep:first-child{border-left:0;padding-left:0;}
+  .qn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--lime);}
+  .qstep h3{font-size:18px;font-weight:700;margin:12px 0 8px;}
+  .qstep p{font-size:14px;line-height:1.6;color:var(--dim);}
+  .qstep p code{font-size:12px;color:var(--ink);}
+  .tabs{display:flex;gap:6px;margin:32px 0 0;flex-wrap:wrap;}
+  .tab{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--dim);background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;}
+  .tab[aria-selected="true"]{color:#0a0b0d;background:var(--lime);border-color:var(--lime);font-weight:700;}
+  .tab:hover:not([aria-selected="true"]){color:var(--ink);border-color:var(--line2);}
+  .tpane[hidden]{display:none;}
+  .tpane{margin-top:14px;}
+
+  /* ── key box ──────────────────────────────────────────────────────────────────────────────────────────── */
+  .keybox{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:40px;align-items:start;overflow:hidden;padding:30px;border:1px solid var(--line2);border-radius:16px;background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.055),transparent 55%),var(--panel);margin-top:30px;}
+  .keybox h3{font-size:21px;font-weight:700;}
+  .keybox > div > p{margin-top:11px;font-size:14.5px;line-height:1.65;color:var(--dim);}
+  .akb-key{display:none;margin-top:14px;background:#08090c;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--lime);word-break:break-all;}
+  .akb-key.on{display:block;}
+  .akb-msg{font-size:12.5px;color:var(--amber);margin-top:10px;}
+  .akb-empty{font-size:13.5px;color:var(--faint);line-height:1.6;}
+
+  /* ── why / differentiators ────────────────────────────────────────────────────────────────────────────── */
+  .diffs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:36px;border-top:1px solid var(--line);}
+  .diff{min-width:0;padding:26px 26px 4px;border-left:1px solid var(--line);}
+  .diff:first-child{border-left:0;padding-left:0;}
+  .diff .dn{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);}
+  .diff h3{font-size:19px;font-weight:700;margin:11px 0 9px;}
+  .diff p{font-size:14.5px;line-height:1.65;color:var(--dim);}
+  .diff p b{color:var(--ink);font-weight:600;}
+  .diff + .diff + .diff + .diff{border-top:1px solid var(--line);margin-top:26px;padding-top:26px;}
+
+  /* ── plans ────────────────────────────────────────────────────────────────────────────────────────────── */
+  .apgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:38px 0 0;border-top:1px solid var(--line2);}
+  .apcard{display:flex;flex-direction:column;position:relative;padding:28px 30px 30px;border-left:1px solid var(--line);min-width:0;}
+  .apcard:first-child{border-left:0;}
+  .apcard.feat{background:linear-gradient(180deg,rgba(194,246,74,.055),rgba(194,246,74,0) 70%);box-shadow:inset 0 2px 0 0 var(--lime);}
+  .aphead{display:flex;align-items:center;gap:10px;}
+  .apcard h3{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--dim);}
+  .apcard.feat h3{color:var(--lime);}
+  .appill{font:700 9px/1 var(--mono);letter-spacing:.14em;color:#0a0b0d;background:var(--lime);border-radius:4px;padding:4px 7px;}
+  .appx{font-family:var(--disp);font-size:44px;font-weight:800;letter-spacing:-.035em;color:var(--ink);line-height:1;margin-top:16px;}
+  .appx small{font-size:14px;font-weight:600;color:var(--faint);letter-spacing:0;margin-left:4px;}
+  .apsub{margin-top:12px;font-size:14px;line-height:1.55;color:var(--dim);min-height:44px;}
+  /* throughput at TRUE scale: 120 / 600 / 2000 req per minute. The free sliver is the honest picture. */
+  .thr{margin:22px 0 4px;}
+  .thr-t{height:6px;border-radius:3px;background:#161b22;overflow:hidden;}
+  .thr-t i{display:block;height:100%;width:0;border-radius:3px;background:var(--dim);}  /* the free sliver is only 6% wide - --line2 made it read as an empty track */
+  .apcard.feat .thr-t i{background:var(--lime);}
+  .apcard[data-plan="max"] .thr-t i{background:linear-gradient(90deg,var(--lime),var(--cyan));}
+  .thr-l{display:flex;align-items:baseline;gap:7px;margin-top:10px;font-family:var(--mono);}
+  .thr-l b{font-size:17px;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
+  .thr-l span{font-size:11px;color:var(--faint);letter-spacing:.06em;}
+  .apfeat{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .apfeat li{font-size:14px;line-height:1.5;color:var(--dim);padding-left:17px;position:relative;}
+  .apfeat li:before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;background:var(--line2);}
+  .apcard.feat .apfeat li:before,.apcard[data-plan="max"] .apfeat li:before{background:var(--lime);}
+  .apfeat li b{color:var(--ink);font-weight:600;}
+  .apx{font:700 10px var(--mono);color:var(--lime);letter-spacing:.04em;margin-left:5px;}
+  .apbtn{width:100%;margin-top:26px;border:0;border-radius:10px;padding:13px 16px;font:700 13.5px/1 var(--disp);color:#0a0b0d;background:var(--lime);cursor:pointer;}
+  .apbtn:hover:not(:disabled){filter:brightness(1.07);}
+  .apbtn.ghost{background:transparent;border:1px solid var(--line);color:var(--faint);cursor:default;}
+  .apbtn:disabled{opacity:.65;cursor:default;}
   .apbtn.busy{opacity:.7;cursor:progress;}
-  #apPlanState{margin:18px 0 4px;border:1px solid var(--line2);border-left:3px solid var(--lime);border-radius:12px;padding:14px 16px;background:var(--panel);font-size:13.5px;line-height:1.6;color:var(--dim);}
+  #apPlanState{margin:30px 0 0;border:1px solid var(--line2);border-left:2px solid var(--lime);border-radius:0 12px 12px 0;padding:16px 18px;background:var(--panel);font-size:14.5px;line-height:1.6;color:var(--dim);}
   #apPlanState b{color:var(--ink);}
-  #apPlanState .apdays{font-family:'Space Mono',monospace;color:var(--lime);font-weight:700;}
-  .apbuy2{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;}
-  .apbuy2 button{flex:1;min-width:150px;}
+  #apPlanState .apdays{font-family:var(--mono);color:var(--lime);font-weight:700;}
+  #apMsg{margin-top:14px;}
+  .apfoot{margin-top:26px;font-size:14px;line-height:1.7;color:var(--dim);max-width:78ch;}
+  .apfoot b{color:var(--ink);}
+
+  /* ── docs: rail + column ──────────────────────────────────────────────────────────────────────────────── */
+  .docs{display:grid;grid-template-columns:224px minmax(0,1fr);gap:56px;padding:64px 0 20px;align-items:start;}
+  .docs > *{min-width:0;}
+  .rail{position:sticky;top:78px;max-height:calc(100vh - 100px);overflow-y:auto;padding-right:6px;}
+  .rail .kick{display:block;padding-bottom:12px;border-bottom:1px solid var(--line);}
+  .rail ol{list-style:none;margin:12px 0 0;padding:0;counter-reset:r;}
+  .rail li{counter-increment:r;}
+  .rail a{display:flex;gap:11px;align-items:baseline;padding:6px 0;font-size:13.5px;color:var(--dim);}
+  .rail a:hover{color:var(--ink);text-decoration:none;}
+  .rail a:before{content:counter(r,decimal-leading-zero);font-family:var(--mono);font-size:10px;color:var(--faint);flex:0 0 auto;}
+  .rail a.on{color:var(--lime);}
+  .rail a.on:before{color:var(--lime);}
+  .doc{min-width:0;max-width:880px;}
+  .doc h2{font-size:26px;font-weight:700;margin:0 0 14px;scroll-margin-top:78px;}
+  .doc h2 .tag{font:700 10px/1 var(--mono);letter-spacing:.11em;vertical-align:3px;border-radius:4px;padding:4px 7px;margin-left:9px;}
+  .tag.pro{background:rgba(255,215,90,.13);border:1px solid rgba(255,215,90,.38);color:var(--amber);}
+  .tag.ver{background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);color:var(--lime);}
+  .tag.data{background:rgba(255,98,88,.13);border:1px solid rgba(255,98,88,.36);color:#ff8a80;}
+  .doc > section{padding:0 0 52px;border-bottom:1px solid var(--line);margin-bottom:52px;}
+  .doc > section:last-child{border-bottom:0;}
+  .doc p{font-size:15.5px;line-height:1.72;color:var(--dim);margin:0 0 14px;}
+  .doc p b{color:var(--ink);font-weight:600;}
+  .doc p code,.doc li code{font-size:13px;color:var(--ink);background:#0b0e13;border:1px solid var(--line);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere;}
+  .doc pre{background:#08090c;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#c8d0d8;margin:0 0 16px;-webkit-overflow-scrolling:touch;}
+  .doc pre b{color:var(--lime);font-weight:400;}
+  .doc pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;}
+
+  /* endpoint matrix */
+  .epg{margin:0 0 18px;border-top:1px solid var(--line);}
+  .epgh{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 0 10px;}
+  .ep{display:grid;grid-template-columns:54px minmax(170px,.75fr) 1.6fr;gap:16px;padding:14px 0;border-top:1px solid var(--line);align-items:baseline;}
+  .ep .m{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 0;text-align:left;}
+  .ep .m.get{color:var(--cyan);}
+  .ep .m.post{color:var(--green);}
+  .ep .u{font-family:var(--mono);font-size:13px;color:var(--ink);overflow-wrap:anywhere;}
+  .ep .u em{font-style:normal;color:var(--lime);}
+  .ep .d{font-size:14px;line-height:1.6;color:var(--dim);}
+  .ep .d b{color:var(--ink);font-weight:600;}
+  .ep .d code{font-size:12px;color:var(--ink);overflow-wrap:anywhere;}
+  .ep .d .tag{font-size:9px;padding:3px 6px;margin-left:0;margin-right:6px;vertical-align:1px;}
+
+  /* tables */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 16px;}
+  table.vs{border-collapse:collapse;width:100%;min-width:520px;font-size:14px;}
+  table.vs th,table.vs td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);}
+  table.vs th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700;border-bottom:1px solid var(--line2);white-space:nowrap;}
+  table.vs td{color:var(--dim);line-height:1.55;}
+  table.vs td:first-child{color:var(--ink);font-weight:500;}
+  table.vs tr:last-child td{border-bottom:0;}
+  table.vs .y{color:var(--green);}table.vs .n{color:var(--red);}table.vs .hl{color:var(--lime);}
+  table.vs code{font-size:12.5px;color:var(--ink);}
+
+  .faq{border-top:1px solid var(--line);padding:18px 0;}
+  .faq b{display:block;font-size:16px;color:var(--ink);margin-bottom:7px;font-weight:600;}
+  .faq p{font-size:14.5px;line-height:1.7;margin:0;}
+  .note{font-size:13.5px;line-height:1.65;color:var(--faint);}
+  .note a{color:var(--dim);}
+  details{border-top:1px solid var(--line);padding:16px 0;}
+  details summary{cursor:pointer;font-size:16px;color:var(--ink);font-weight:600;}
+  details p{margin:9px 0 0;font-size:14.5px;}
+
+  .links{display:grid;grid-template-columns:repeat(2,1fr);gap:0 34px;}
+  .links .faq:nth-child(-n+2){border-top:1px solid var(--line);}
+
+  /* key manager table */
+  .akb-plan{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:0 0 14px;font-size:13.5px;color:var(--dim);}
+  .akb-plan b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:5px 11px;border:1px solid var(--line2);color:var(--ink);}
+  .akb-plan b.prem{border-color:rgba(194,246,74,.45);color:var(--lime);}
+  .akb-plan a{color:var(--lime);font-weight:600;}
+  .akb-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0 12px;}
+  table.akb-t{width:100%;min-width:520px;border-collapse:collapse;font-size:13px;}
+  table.akb-t th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:7px 8px;border-bottom:1px solid var(--line2);}
+  table.akb-t td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--dim);}
+  table.akb-t td:first-child{color:var(--ink);font-weight:600;}
+  table.akb-t td:nth-child(2){font-family:var(--mono);font-size:12px;color:var(--lime);white-space:nowrap;}
+  .akb-kv{font-family:var(--mono);font-size:12px;}
+  .akb-lnk{background:none;border:0;color:var(--faint);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;text-decoration:underline;}
+  .akb-lnk:hover{color:var(--ink);}.akb-lnk.red:hover{color:var(--red);}
+  .akb-new{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px;}
+  .akb-new input{flex:1 1 190px;min-width:0;background:#08090c;border:1px solid var(--line2);border-radius:9px;color:var(--ink);font:inherit;font-size:13px;padding:10px 12px;}
+  .akb-new input:focus{outline:none;border-color:var(--lime);}
+  .akb-sm{padding:10px 18px;font-size:13px;}
+  .akb-rev{font-size:12px;color:var(--faint);margin-top:4px;}
+  .akb-use{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+  .akb-use h4{margin:0 0 7px;font:700 10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--faint);}
+  .akb-use .u{display:grid;grid-template-columns:minmax(90px,1.2fr) repeat(7,minmax(0,1fr));gap:4px;align-items:end;font:11px 'Space Mono',monospace;color:var(--dim)}
+  .akb-use .u b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .akb-use .u i{display:block;font-style:normal;text-align:center}
+  .akb-use .u i em{display:block;height:26px;border-radius:3px 3px 0 0;background:rgba(194,246,74,.35);position:relative}
+  .akb-use .u i em s{position:absolute;left:0;right:0;bottom:0;background:#ff6258;border-radius:0;text-decoration:none}
+  .akb-use .u i small{display:block;color:var(--faint);font-size:9.5px;margin-top:2px}
+  .akb-use .n{font-size:11.5px;color:var(--faint);margin-top:6px}
+  .akb-show{margin-top:12px;background:#08090c;border:1px solid rgba(194,246,74,.45);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--lime);word-break:break-all;}
+  .akb-show small{display:block;font-family:'Familjen Grotesk',sans-serif;font-size:12px;color:var(--amber);margin-top:6px;}
+
+  /* go live */
+  .golive{margin:0;padding:28px 30px;border:1px solid var(--line2);border-radius:16px;background:var(--panel);}
+  .golive .gl-h{font-family:var(--disp);font-weight:700;font-size:21px;color:var(--ink);margin:0 0 10px;}
+  .golive > p{color:var(--dim);font-size:15px;line-height:1.7;margin:0 0 18px;}
+  .golive p b{color:var(--ink);}
+  .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 16px;}
+  .gl-card{position:relative;display:flex;flex-direction:column;gap:11px;padding:20px;border-radius:13px;border:1px solid var(--line2);background:#0b0e13;overflow:hidden;}
+  .gl-card p{margin:0;font-size:14px;line-height:1.6;color:var(--dim);}
+  .gl-hl{border-color:rgba(94,230,200,.35);background:radial-gradient(110% 130% at 100% 0%,rgba(94,230,200,.12),transparent 55%),#0a1210;}
+  .gl-hl::after{content:'HL';position:absolute;right:-6px;bottom:-30px;font:800 100px/1 var(--disp);letter-spacing:-7px;color:rgba(94,230,200,.07);pointer-events:none;}
+  .gl-ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .gl-ch b{font-family:var(--disp);font-size:17px;color:var(--ink);}
+  .gl-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#0f1f1b;color:#5ee6c8;font:800 12px/1 var(--disp);}
+  .gl-pill{font:700 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:99px;padding:5px 9px;}
+  .gl-offer{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28);position:relative;z-index:1;}
+  .gl-offer b{font:800 30px/1 var(--disp);color:#5ee6c8;letter-spacing:-.02em;}
+  .gl-offer span{font-size:12.5px;line-height:1.3;color:#cfe3dd;}
+  .gl-offer i{font-style:normal;font-family:var(--mono);font-weight:700;letter-spacing:.1em;color:#f2fbf8;}
+  .gl-cta{display:inline-flex;align-items:center;gap:9px;font:700 12.5px/1 var(--mono);letter-spacing:.04em;color:#0a0b0d;background:var(--lime);border-radius:10px;padding:12px 18px;margin-top:auto;}
+  .gl-cta:hover{filter:brightness(1.08);text-decoration:none;}
+  .gl-hl .gl-cta{background:#5ee6c8;color:#062a24;position:relative;z-index:1;}
+  .gl-card.mp-ex-off{opacity:.55;filter:saturate(.35);}
+  .mp-ex-na{font:700 9.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .gl-note{display:block;font-size:12px;line-height:1.6;color:var(--faint);}
+
+  footer{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 46px;color:var(--faint);font-size:13px;line-height:1.8;}
+  footer a{color:var(--dim);}
+
+  /* ── responsive ───────────────────────────────────────────────────────────────────────────────────────── */
+  @media(max-width:1100px){
+    .docs{grid-template-columns:minmax(0,1fr);gap:0;}
+    .rail{position:static;max-height:none;margin-bottom:34px;overflow:visible;}
+    .rail ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0 20px;}
+  }
+  @media(max-width:760px){ .tnav a{display:none;} }
+  @media(max-width:900px){
+    .hero{grid-template-columns:minmax(0,1fr);gap:34px;padding:34px 0 30px;}
+    .proof{grid-template-columns:1fr 1fr;}
+    .proof div:nth-child(3){border-left:0;padding-left:0;}
+    .proof div:nth-child(-n+2){border-bottom:1px solid var(--line);}
+    .proof div:nth-child(3),.proof div:nth-child(4){padding-top:20px;}
+    .qs,.diffs,.apgrid{grid-template-columns:minmax(0,1fr);}
+    .qstep,.diff,.apcard{border-left:0;padding-left:0;padding-right:0;border-top:1px solid var(--line);}
+    .qs,.diffs{border-top:0;}
+    .apgrid{border-top:0;}
+    .apcard.feat{padding-left:20px;padding-right:20px;background:linear-gradient(180deg,rgba(194,246,74,.06),transparent 60%);box-shadow:inset 2px 0 0 0 var(--lime);}
+    .diff + .diff + .diff + .diff{margin-top:0;padding-top:26px;}
+    .keybox{grid-template-columns:1fr;gap:26px;padding:22px;}
+    .gl-grid,.links{grid-template-columns:1fr;}
+    .ep{grid-template-columns:48px 1fr;gap:6px 12px;}
+    .ep .d{grid-column:1 / -1;}
+    section{padding:44px 0;}
+    .shell{padding:0 18px;}
+    .apsub{min-height:0;}
+  }
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -164,309 +377,83 @@
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 </head>
 <body>
-<div class="wrap">
-  <header>
+
+<div class="top">
+  <div class="shell">
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
-    <div class="hnav">
-      <a href="/coins/">Markets</a>
-      <a href="/tools/">Tools</a>
+    <div class="tnav">
+      <a href="#quickstart">Quickstart</a>
+      <a href="#endpoints">Endpoints</a>
+      <a href="#plans">Plans</a>
+      <a href="/api-docs/">Reference</a>
+      <a href="/arena/">Arena</a>
       <button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button>
     </div>
-  </header>
-
-<div class="api-hero">
-  <span class="free">● 100% free · no deposit · real live prices</span>
-  <h1>Test your trading bot - for free.</h1>
-  <p class="lead">Point your bot at our paper-trading REST API. Real live crypto prices, leveraged positions up to 1000×, stop-loss/take-profit, partial closes and liquidation simulation - without risking a cent. Your bot's whole strategy, proven before it ever touches real money.</p>
-  <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span><span>market, limit &amp; stop orders</span><span>trailing stops</span><span>WebSocket stream</span><span>replay</span></div>
-  <p class="lead" style="margin-top:10px;font-size:14px">Those are the <b>free</b> limits, and free is the whole engine. <a href="#plans" style="color:var(--lime);font-weight:700">Pro ($19) and Max ($49)</a> raise the ceilings and add webhooks and AI reads. API plans are separate from site Premium.</p>
-  <p class="lead" style="margin-top:10px;font-size:14px">Just want market data? See the <a href="/free-crypto-api/" style="color:var(--lime);font-weight:700">free crypto data API</a> - keyless live prices, OHLC, a scored screener, funding, open interest, liquidations, an economic calendar and calculators, all CORS-enabled with an <a href="/api/openapi.json" style="color:var(--lime)">OpenAPI spec</a>.</p>
-</div>
-
-<div class="api-key-box" id="akb">
-  <h3>1 · Get your free API key</h3>
-  <p>Sign in with just an email (no password, no KYC), then create a key. Your bot's positions persist on your account. Several keys per account - one per bot - each with its own name, usage counter and rate budget.</p>
-  <button class="akb-btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
-  <div class="akb-key" id="akbKey"></div>
-  <div id="akbMgr" hidden>
-    <div class="akb-plan" id="akbPlan"></div>
-    <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Book</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
-    <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (optional, e.g. rsi)" autocomplete="off" title="A book is a separate journal, balance and report. Leave empty for the main account." style="max-width:190px"><button class="akb-btn akb-sm" type="submit">Create key</button></form>
-    <div class="akb-rev" id="akbRev" hidden></div>
-    <div class="akb-use" id="akbUse" hidden></div>
-  </div>
-  <div class="akb-msg" id="akbMsg"></div>
-</div>
-<style>
-  .akb-plan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 10px;font-size:13px;color:var(--dim)}
-  .akb-plan b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:5px 10px;border:1px solid var(--line2);color:var(--ink)}.akb-plan b.prem{color:#ffd75a;border-color:rgba(255,215,90,.5)}
-  .akb-plan a{color:var(--lime);font-weight:700}
-  .akb-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0 10px}
-  table.akb-t{width:100%;min-width:520px;border-collapse:collapse;font-size:13px}
-  table.akb-t th{text-align:left;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:6px 8px;border-bottom:1px solid var(--line)}
-  table.akb-t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--dim)}
-  table.akb-t td:first-child{color:var(--ink);font-weight:700}table.akb-t td:nth-child(2){font-family:'Space Mono',monospace;font-size:12px;color:var(--lime);white-space:nowrap}
-  .akb-lnk{background:none;border:0;color:var(--dim);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;text-decoration:underline}.akb-lnk:hover{color:var(--ink)}.akb-lnk.red:hover{color:#ff6258}
-  .akb-new{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px}.akb-new input{flex:1 1 200px;min-width:0;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:inherit;font-size:16px;padding:10px 12px}
-  .akb-sm{padding:10px 16px;font-size:13px}
-  .akb-rev{font-size:12px;color:var(--faint);margin-top:4px}
-.akb-use{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.akb-use h4{margin:0 0 6px;font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.akb-use .u{display:grid;grid-template-columns:minmax(90px,1.2fr) repeat(7,minmax(0,1fr));gap:4px;align-items:end;font:11px 'Space Mono',monospace;color:var(--dim)}.akb-use .u b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.akb-use .u i{display:block;font-style:normal;text-align:center}.akb-use .u i em{display:block;height:26px;border-radius:3px 3px 0 0;background:rgba(194,246,74,.35);position:relative}.akb-use .u i em s{position:absolute;left:0;right:0;bottom:0;background:#ff6258;border-radius:0;text-decoration:none}.akb-use .u i small{display:block;color:var(--faint);font-size:9.5px;margin-top:2px}.akb-use .n{font-size:11.5px;color:var(--faint);margin-top:6px}
-  .akb-show{margin-top:12px;background:#0a0c0f;border:1px solid rgba(194,246,74,.45);border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);word-break:break-all}
-  .akb-show small{display:block;font-family:'Familjen Grotesk',sans-serif;font-size:12px;color:#ffb347;margin-top:6px}
-</style>
-
-<h2>2 · Endpoints</h2>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/price?symbol=BTC</code><p>Live price for any USDT pair. <b>No key needed</b> - try it right now in your browser.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b> Returns up to <b>1000 candles</b> per call, newest last - that is about 16 hours on 1m, 3 days on 5m, 10 days on 15m, 41 days on 1h, 166 days on 4h and roughly 3 years on 1d.</p>
-<p style="margin:10px 0 0"><b>Going further back:</b> pass <code>&amp;end=&lt;unix ms&gt;</code> to fetch the 1000 candles ending at that moment. Take the <code>time</code> of the first candle you received (it is in <b>seconds</b>), multiply by 1000, and use that as the next <code>end</code>. Repeat until you have the history your backtest needs:</p>
-<pre><code>bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1")
-while len(all_bars) &lt; wanted:
-    end_ms = bars[0]["time"] * 1000          # oldest candle in hand
-    bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1&amp;end={end_ms}")
-    if not bars: break
-    all_bars = bars + all_bars</code></pre>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>. Add <code>"trail_pct":1.5</code> for a <b>trailing stop</b> (see below) and <code>"dry_run":true</code> to get the priced trade back - entry, quantity, liquidation price and distance, the open fee and the full round trip - <b>without writing anything</b>. Use the dry run to size a position or to unit-test your bot against the real engine.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>- trailing stop</b><p><code>trail_pct</code> sets a stop that <b>follows the best price seen since entry</b> at that percent distance, ratcheted <b>on the server</b>: from 1-minute candle extremes on the minute sweep and from the live price on every <code>/positions</code> read, so it keeps moving while your bot is offline and never loosens. A long opened at 60,000 with <code>trail_pct: 1</code> starts with its stop at 59,400; when price prints 63,000 the stop is 62,370. Positions carry <code>trail_pct</code> and <code>trail_hwm</code> (the extreme it is ratcheting from). Set or clear it later through <code>/sltp</code>.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>- limit order</b><p>Add <code>"type":"limit"</code> and <code>"limit_price"</code> and the order <b>rests on the server</b> instead of filling now: <code>{"symbol":"BTC","side":"long","type":"limit","limit_price":58000,"margin_usd":100,"leverage":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross - the fill is found from the 1m high/low, so a wick that retraced between two checks still counts, and the position is stamped with the minute the market actually reached the level. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill. <code>sl</code>/<code>tp</code> are side-checked against the limit price. Returns <code>{"ok":true,"order":{...}}</code>.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code> <b>- stop entry (breakout)</b><p><code>"type":"stop"</code> rests a <b>breakout entry</b>: a long <b>above</b> the market or a short <b>below</b> it, e.g. <code>{"symbol":"BTC","side":"long","type":"stop","limit_price":66000,"margin_usd":100,"leverage":10}</code>. Same engine as a limit order - it fills <b>at the level</b> from 1m candles, with the browser closed - but the wrong side is refused (<code>stop_wrong_side</code>) so a stop and a limit can never be confused. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> and <code>dry_run</code> all apply.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/orders</code><p>Your resting orders, each with <code>type: "limit" | "stop"</code>, plus the last 20 that filled, expired or were cancelled - a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/modify_order</code><p>Change a resting order <b>in place</b>: <code>{"order_id":"lo...","limit_price":58500,"sl":57000,"tp":62000,"margin_usd":150,"leverage":10,"trail_pct":1}</code> - send only what changes. Before this the only way was cancel and re-place, which lost the order's <code>client_order_id</code>. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change. A filled, cancelled or expired order answers <code>409</code>.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/cancel_order</code><p>Cancel one resting order. Body: <code>{"order_id":"lo..."}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> - <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button - closes every open position at the live price in one call.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions?status=open</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically. <code>?status=open|closed</code> trims the body to what your loop actually reads; <code>?since=&lt;unix ms&gt;</code> and <code>If-None-Match</code> (304 when nothing changed) are supported too.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/balance</code><p>Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/markets</code><p>Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/sltp</code><p>Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000,"trail_pct":1.5}</code> - send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/fees</code><p>Whose fee schedule your fills are charged at: the venues we model with taker, maker, our referral discount and the effective rate, plus your current default. <code>POST {"venue":"bybit"}</code> sets the account default; <code>fee_venue</code> on <code>/open</code> overrides it for one position. See <a href="#fees">Fees as on the exchange you will actually use</a>.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/report?days=30</code><p>The <a href="/trading-report/">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</p></div>
-<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/ai</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">API PRO</span><p>The chart panel's AI read, from the API: <code>{"symbol":"BTC","interval":"60","question":"Is this leaning long or short?"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/webhooks</code> <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em">API PRO</span><p>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href="#webhooks">Webhooks</a> below. <code>POST {"act":"add","url":"https://…"}</code> registers one (max 3), <code>{"act":"test","id":…}</code> sends a ping and returns the status your server answered, <code>{"act":"delete","id":…}</code> removes it.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/trades?limit=100&amp;before=…</code><p>The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window - follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/time</code><p>Server clock. <b>No key needed.</b> Pass <code>?client_ts=&lt;your unix ms&gt;</code> and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</p></div>
-<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code>, <code class="k">/klines</code> and <code class="k">/time</code>. <b>Official clients</b> (one file each, zero dependencies): <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
-
-<h2 id="fees">Fees as on the exchange you will actually use</h2>
-<p>By default every paper fill pays the MarginPad rate: 0.055% per side on crypto, both legs, charged as a round trip at close. That is a fair average, but it is nobody's exact bill. If you already know where the bot will run for real, <b>charge the paper account at that venue's schedule</b> - its published taker rate, less the referral discount a MarginPad sign-up gets there - so the forward test settles the way the live account will:</p>
-<pre><code>GET  /api/bot/v2/fees                       // the table below + your current default
-POST /api/bot/v2/fees  {"venue":"hyperliquid"}   // account default: every open from now on, site and API
-POST /api/bot/v2/open  {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,"fee_venue":"bybit"}   // just this one
-POST /api/bot/v2/open  {..., "dry_run":true}      // -> fee_venue, taker_fee_pct, fee_vs_marginpad_default_usd</code></pre>
-<div class="vswrap"><table class="vs">
-  <tr><th>Venue</th><th>Taker</th><th>Our referral discount</th><th class="hl">You pay per side</th></tr>
-  <tr><td>Bybit</td><td>0.055%</td><td>20%</td><td class="hl"><b>0.044%</b></td></tr>
-  <tr><td>Binance</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
-  <tr><td>Bitget</td><td>0.060%</td><td>20%</td><td class="hl"><b>0.048%</b></td></tr>
-  <tr><td>Gate</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
-  <tr><td>Hyperliquid</td><td>0.045%</td><td>4% (code <code>MARGINPAD</code>)</td><td class="hl"><b>0.0432%</b></td></tr>
-  <tr><td>OKX · Kraken</td><td>0.050%</td><td>-</td><td class="hl"><b>0.050%</b></td></tr>
-  <tr><td>MEXC</td><td>0.020%</td><td>-</td><td class="hl"><b>0.020%</b></td></tr>
-  <tr><td>KuCoin</td><td>0.060%</td><td>-</td><td class="hl"><b>0.060%</b></td></tr>
-  <tr><td>MarginPad default</td><td colspan="2">no venue chosen</td><td class="hl">0.055%</td></tr>
-</table></div>
-<p class="note">Rates are the venues' published base tier and the discounts we state on <a href="/exchanges/">/exchanges/</a>; the API returns them with <code>source</code> so you know they are advertised numbers, not measurements. Both legs pay the taker rate (the paper engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only - stocks, forex, metals and indices keep the MarginPad class rates whatever the venue. Open positions keep the rate they were filled with; the extreme-leverage cap (a round trip never above 20% of margin) still applies. The same choice is the <b>"Fees as on"</b> selector in the <a href="/paper-trade">Paper Trade</a> form, so a bot and its owner's manual trades pay identical fees.</p>
-
-<h2 id="webhooks">Webhooks - events pushed to your server <span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">API PRO</span></h2>
-<p>Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.</p>
-<pre><code>POST /api/bot/v2/webhooks
-{"act":"add","url":"https://bot.example.com/marginpad","events":["position.closed","position.liquidated","order.filled"]}
-
--&gt; {"ok":true,"data":{"webhook":{"id":"wh…","secret":"whs_…","events":[…],"active":true}}}
-
-# what arrives at your URL, seconds after the event:
-POST https://bot.example.com/marginpad
-X-MP-Event: position.closed        X-MP-Delivery: 1841
-X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
-{"event":"position.closed","ts":1789124656008,"hook_id":"wh…","data":{"id":"bot…","symbol":"BTC","status":"closed","pnl_usd":-0.08,"close_reason":"SL hit",…}}</code></pre>
-<p><b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.</p>
-<p><b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Up to 3 hooks per account; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.</p>
-<p><b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.</p>
-
-<h2 id="v2">Response format - v1 and v2</h2>
-<p><code class="k">/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.</p>
-<p><code class="k">/api/bot/v2/*</code> is the same API with the envelope our data endpoints already use - one predictable shape for success and failure, so you write the parsing once:</p>
-<pre><code>{ "ok": true,  "data": { ... }, "ts": 1787200000000 }
-{ "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
-<p>Same paths, same parameters, same key - swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.</p>
-
-<h2 id="plans"><span id="tiers"></span>Plans</h2>
-<p>Every account starts on Free, which is the whole product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.</p>
-<div id="apPlanState" hidden></div>
-<div class="apgrid">
-  <div class="apcard" data-plan="free">
-    <div class="aptop"><h3><span class="apn">Free</span></h3><div class="appx">$0</div><p class="apsub">Build and run a real bot without paying anything.</p></div>
-    <ul class="apfeat">
-      <li><b>120</b> requests / minute per key</li>
-      <li><b>3</b> keys &middot; <b>50</b> open positions</li>
-      <li>Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay</li>
-      <li>Fee schedule of <a href="#fees">9 real venues</a></li>
-      <li>WebSocket stream &middot; MCP &middot; keyless market data</li>
-      <li>Trading report: totals + skill score</li>
-    </ul>
-    <button class="apbtn ghost" type="button" disabled>Your starting plan</button>
-  </div>
-  <div class="apcard feat" data-plan="pro">
-    <span class="appill">MOST BOTS</span>
-    <div class="aptop"><h3>Pro</h3><div class="appx">$19<small>/month</small></div><p class="apsub">For a bot that runs unattended and needs to be pushed to, not polled.</p></div>
-    <ul class="apfeat">
-      <li><b>600</b> requests / minute per key <span class="apx">5&times; Free</span></li>
-      <li><b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books</li>
-      <li><b>Webhooks</b> - 3 signed, retried endpoints</li>
-      <li><b>AI market reads</b> - 50 a day through <code>/v1/ai</code></li>
-      <li>Trading report with breakdowns and written findings</li>
-      <li>Commercial use</li>
-    </ul>
-    <button class="apbtn" type="button" data-buy="pro">Get Pro</button>
-  </div>
-  <div class="apcard" data-plan="max">
-    <div class="aptop"><h3><span class="apn">Max</span></h3><div class="appx">$49<small>/month</small></div><p class="apsub">For several strategies, or one that trades far more often than it thinks.</p></div>
-    <ul class="apfeat">
-      <li><b>2000</b> requests / minute per key</li>
-      <li><b>30</b> keys &middot; <b>500</b> open positions &middot; <b>20</b> books</li>
-      <li><b>15</b> webhooks</li>
-      <li><b>200</b> AI market reads a day</li>
-      <li>Everything in Pro</li>
-      <li>Commercial use</li>
-    </ul>
-    <button class="apbtn" type="button" data-buy="max">Get Max</button>
   </div>
 </div>
-<p id="apMsg" class="note" hidden></p>
-<p class="note"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
-<div class="vswrap"><table class="vs">
-  <tr><th>Limit</th><th><span class="apn">Free</span></th><th class="hl">Pro &middot; $19</th><th>Max &middot; $49</th></tr>
-  <tr><td>Requests per minute, per key</td><td>120</td><td class="hl"><b>600</b></td><td><b>2000</b></td></tr>
-  <tr><td>Market-data API (<code>/api/v1/*</code>) with your key</td><td>120 / min<br><span style="color:var(--faint)">(60 / min per IP without a key)</span></td><td class="hl"><b>600 / min</b></td><td><b>2000 / min</b></td></tr>
-  <tr><td>API keys per account</td><td>3</td><td class="hl"><b>10</b></td><td><b>30</b></td></tr>
-  <tr><td>Open positions at once</td><td>50</td><td class="hl"><b>200</b></td><td><b>500</b></td></tr>
-  <tr><td><a href="#books">Books</a> (separate journals)</td><td>1</td><td class="hl"><b>5</b></td><td><b>20</b></td></tr>
-  <tr><td><b>Webhooks</b> (signed, retried)</td><td class="n">-</td><td class="hl"><b>3</b></td><td><b>15</b></td></tr>
-  <tr><td><b>AI market read</b> <code>/v1/ai</code></td><td class="n">-</td><td class="hl"><b>50 a day</b></td><td><b>200 a day</b></td></tr>
-  <tr><td>Trading report <code>/v1/report</code></td><td>totals + skill score</td><td class="hl"><b>+ breakdowns &amp; findings</b></td><td><b>+ breakdowns &amp; findings</b></td></tr>
-  <tr><td>Fee schedule of a real venue (<a href="#fees">9 venues</a>)</td><td>included</td><td class="hl">included</td><td>included</td></tr>
-  <tr><td>Market, limit &amp; stop orders, trailing stops, modify, dry run, replay, WebSocket, MCP</td><td>included</td><td class="hl">included</td><td>included</td></tr>
-  <tr><td>Margin per trade / leverage</td><td colspan="3">$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (the same on all three)</td></tr>
-</table></div>
-<p class="note">Your current ceilings and entitlements are always in <code>GET /api/bot/v1/usage</code> (<code>limits</code>, <code>features</code>, <code>plan_until</code>), so a bot can read them instead of guessing. Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it.</p>
-<p><b>The market-data tier in one sentence:</b> every <code>/api/v1/*</code> endpoint stays keyless at 60 requests a minute per IP; send your <code>X-API-Key</code> on those same calls and they are metered against <b>your key</b> instead - 120 a minute on Free, 600 on Pro, 2000 on Max - so a bot behind a shared address stops sharing its budget with strangers. <code>X-RateLimit-Scope</code> on the response says which limit applied. <b>Keyless market data stays free and is not for sale.</b></p>
-<h2 id="keys">Managing your keys</h2>
-<p>You can hold several keys on one account - keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:</p>
-<pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
-POST /api/bot/key  {"act":"create","name":"backtest-bot"}   // new key (max 10)
-POST /api/bot/key  {"act":"rename","key":"mpb_...","name":"live-bot"}
-POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is kept</code></pre>
-<p>A revoked key returns <code>401 revoked_key</code>. Keys are secrets - anyone holding one can trade your paper account.</p>
 
-<h2 id="books">Books - one strategy, one clean result <span style="background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a">2.5</span></h2>
-<p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.</p>
-<pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
-GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
-GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
-POST /api/bot/v1/reset  {"confirm":true}   // this book back to $10,000: closes archived, orders cancelled
-GET  /api/bot/v1/equity?days=30&amp;step_min=60   // equity curve + max_drawdown_pct</code></pre>
-<p><b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account’s hooks with <code>"account":"rsi"</code> in the payload, so one receiver serves every book.</p>
-<p><b>Usage per key:</b> <code>GET /api/bot/v1/usage</code> carries <code>usage_30d</code>, calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.</p>
+<!-- ── HERO ──────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="shell">
+<div class="hero">
+  <div>
+    <span class="live" id="liveDot"><i></i> Live prices · server-side fills · no deposit</span>
+    <h1>The exchange your bot can <em>afford to break</em>.</h1>
+    <p class="hlead">A paper-trading futures API on real live prices. Your bot opens leveraged positions, rests limit and stop orders, trails its stops and gets liquidated - <b>settled on our servers, in simulated dollars</b>. Same code you will run for real, none of the consequences.</p>
+    <div class="hcta">
+      <a class="btn" href="#akb">Get a free API key</a>
+      <a class="btn sec" href="#quickstart">Read the quickstart</a>
+    </div>
+    <p class="hnote">No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href="#plans">Pro is $19</a> when one bot becomes four. Market data stays keyless on every plan.</p>
+  </div>
 
-<h2 id="replay">Replay - run your bot through a past day <span style="background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a">2.6</span></h2>
-<p>Backtest with the code you will run live. Start a replay of one past UTC day and the same routes your bot already calls act on a separate replay journal, priced from MarginPad’s own 1-minute candles at the cursor. Stops, targets and liquidations are checked on every candle between two of your calls, on the high and the low, with the same fee and funding math as live. Nothing from a replay reaches the boards, the arena or your report.</p>
-<pre><code>POST /api/bot/v1/replay  {"symbol":"BTC","day":"2026-09-11","speed":120}   // 120 market seconds per real second: a day in 12 minutes
-GET  /api/bot/v1/replay?interval=5&amp;bars=120       // cursor, price, progress, candles up to the cursor
-POST /api/bot/v1/open    {...}                        // acts on the replay book at the cursor price while the replay runs
-POST /api/bot/v1/replay  {"act":"stop"}               // close at the cursor, get the summary, empty the replay journal</code></pre>
-<p>Speed goes from 1 (real time) to 600 (a day in 2.4 minutes). One replay per key at a time, crypto only, market orders only for now: read the replay price and candles from <code>GET /v1/replay</code>, since the keyless <code>/v1/price</code> and <code>/v1/klines</code> keep answering live data.</p>
+  <div class="term" id="heroTerm">
+    <div class="term-h"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>marginpad.io/api/bot/v1</span><span class="lbl" id="termLbl">live now</span></div>
+<pre><span class="c-cm"># no key needed - run this right now</span>
+<span class="c-fn">curl</span> <span class="c-s">"https://marginpad.io/api/bot/v1/price?symbol=BTC"</span>
 
-<h2 id="arena">Bot arena - a public scoreboard for bots</h2>
-<p>Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href="/arena/">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.</p>
+{ <span class="c-k">"symbol"</span>: <span class="c-s">"BTC"</span>, <span class="c-k">"price"</span>: <span class="c-n" id="hpx">…</span>, <span class="c-k">"ts"</span>: <span class="c-n" id="hts">…</span> }</pre>
+    <div class="term-h"><span>POST /open</span><span class="lbl">example</span></div>
+<pre><span class="c-fn">curl</span> -X POST <span class="c-s">".../v1/open"</span> -H <span class="c-s">"X-API-Key: mpb_…"</span> \
+  -d <span class="c-s">'{"symbol":"BTC","side":"long","margin_usd":100,
+       "leverage":10,"trail_pct":1.5}'</span>
 
-<h2 id="reliable">Writing a bot that does not break</h2>
-<p><b>Always send <code>client_order_id</code> on open.</b> This is the single most important line in these docs. Without it, a request that times out on the network leaves you guessing: did the position open or not? Retry and you may have two. With it, the retry returns the position the first call created, flagged <code>idempotent: true</code>:</p>
-<pre><code>POST /api/bot/v2/open
-{"symbol":"BTC","side":"long","margin_usd":100,"leverage":5,"client_order_id":"sig-2026-08-19-1403"}
+{ <span class="c-k">"ok"</span>: <span class="c-g">true</span>, <span class="c-k">"position"</span>: {
+    <span class="c-k">"id"</span>: <span class="c-s">"bot_9f21…"</span>,   <span class="c-k">"entry"</span>: <span class="c-n" id="hentry">…</span>,
+    <span class="c-k">"liq_price"</span>: <span class="c-n" id="hliq">…</span>,  <span class="c-k">"trail_pct"</span>: <span class="c-n">1.5</span>,
+    <span class="c-k">"fee_round_trip_usd"</span>: <span class="c-n">1.10</span> } }</pre>
+  </div>
+</div>
 
-// first call            -> {"ok":true,"data":{"position":{"id":"bot...", ...}}}
-// same call retried     -> {"ok":true,"data":{"position":{"id":"bot...", ...},"idempotent":true}}</code></pre>
-<p>Use a value your strategy can regenerate deterministically - a signal id, or symbol plus candle timestamp. Ids are remembered for 7 days.</p>
-<p><b>Closing takes one too.</b> Send <code>client_order_id</code> on <code>/close</code> and a retry reports what the first call did (<code>idempotent: true</code>) instead of an error you have to interpret:</p>
-<pre><code>POST /api/bot/v2/close
-{"id":"bot...","symbol":"BTC","client_order_id":"exit-sig-1403"}
+<!-- ── PROOF ─────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="proof">
+  <div><div class="v">24</div><div class="l">endpoints, plus a WebSocket, webhooks and an MCP server</div></div>
+  <div><div class="v">9</div><div class="l">real venue fee schedules your fills can be charged at</div></div>
+  <div><div class="v">1,000<span style="font-size:18px">&times;</span></div><div class="l">maximum leverage, on any USDT pair with a live price</div></div>
+  <div><div class="v" id="pvCalls">1.1M</div><div class="l">calls served for the bots already running on it</div></div>
+</div>
+</div>
 
-// retried -&gt; {"ok":true,"data":{"position":{...},"idempotent":true}}</code></pre>
+<!-- ── QUICKSTART ────────────────────────────────────────────────────────────────────────────────────── -->
+<section id="quickstart">
+  <div class="shell">
+    <div class="shead">
+      <span class="kick">Quickstart</span>
+      <h2>Three calls from nothing to a live position</h2>
+      <p>The first one needs no key at all - paste it into a terminal before you decide anything. Every path below exists in a frozen <code>v1</code> and an enveloped <code>v2</code>; pick one and it will not move under you.</p>
+    </div>
+    <div class="qs">
+      <div class="qstep"><span class="qn">STEP 01</span><h3>Read the market</h3><p><code>GET /v1/price</code> and <code>/v1/klines</code> are keyless and CORS-enabled. Up to 1,000 candles a call, seven intervals, paged backwards with <code>&amp;end=</code> for as much history as a backtest needs.</p></div>
+      <div class="qstep"><span class="qn">STEP 02</span><h3>Open a position</h3><p><code>POST /v1/open</code> fills at the live price with isolated margin and gives you back the liquidation level. Add <code>type:"limit"</code> or <code>"stop"</code> to rest an order server-side, or <code>dry_run</code> to price a trade without writing anything.</p></div>
+      <div class="qstep"><span class="qn">STEP 03</span><h3>Let the server work</h3><p>Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. Read the outcome from <code>/positions</code>, the stream, or a webhook.</p></div>
+    </div>
 
-<p><b>Send <code>symbol</code> when you close.</b> Every <code>/positions</code> row already carries it, so this is free to add and it measurably shortens the close:</p>
-<pre><code>POST /api/bot/v2/close
-{"id":"bot...","symbol":"BTC"}    // one price fetch, one round trip
-{"id":"bot..."}                   // server must first look up which symbol to price</code></pre>
-<p>Our trading store is a single region-pinned instance, so every extra hop costs what the round trip to it costs from where you are. Measured on 2026-08-19: about <b>20&nbsp;ms from Europe</b> but <b>198&nbsp;ms median and 368&nbsp;ms at the 95th percentile from Singapore</b>. A cold price feed adds around 400&nbsp;ms on top, and without the hint a close on a liquid pair could end up waiting on an illiquid one in the same batch. With the hint a close is one hop plus one warm price. A wrong or stale <code>symbol</code> costs nothing - the server notices and falls back.</p>
-
-<p><b>Do not burn your rate budget on polling.</b> Most bots spend the bulk of their calls asking "has anything changed". Two things make that nearly free:</p>
-<pre><code># 1. state changes: send back the ETag, get 304 and an empty body when nothing moved
-curl -H "X-API-Key: $KEY" -H 'If-None-Match: W/"1a2b3c-4"' \
-     https://marginpad.io/api/bot/v1/positions
-
-# 2. live prices: /price is KEYLESS, so it costs nothing against your 120/min
-curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
-<p>The ETag covers structural state - position ids, status, quantity, stop, target, exit - and deliberately <b>not</b> the mark price, which moves every tick and would make the ETag never match. So: poll <code>/positions</code> for "did my stop fire", poll the keyless <code>/price</code> for P&amp;L. Watch <code>X-RateLimit-Remaining</code> and back off on <code>Retry-After</code>.</p>
-
-<h2 id="stream">WebSocket - stop polling entirely</h2>
-<p>Positions and prices are pushed to you, so you find out your stop fired within a couple of seconds instead of on your next poll:</p>
-<pre><code>wss://marginpad.io/api/bot/v2/stream?api_key=mpb_…
-
-&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000},"ts":…}
-&lt;- {"type":"snapshot","data":{"positions":[…]},"ts":…}
-&lt;- {"type":"position","data":{"event":"closed","position":{…,"pnl_usd":-1.24}},"ts":…}
-&lt;- {"type":"prices","data":{"BTC":64770.1},"ts":…}
-
--&gt; {"op":"subscribe","channels":["positions"]}     // prices off, events only
--&gt; {"op":"ping"}                                    // &lt;- {"type":"pong"}</code></pre>
-<p><b>Events:</b> <code>position</code> with <code>event: opened | updated | closed</code> fires when something actually changes - a fill, a stop moving, a close, a liquidation. <code>prices</code> carries the mark price of your open symbols each tick. Mark-price movement alone never raises a <code>position</code> event, so the channel stays quiet when nothing has happened.</p>
-<p><b>Stops settle faster while you are connected.</b> The stream drives the same server-side SL/TP/liquidation sweep the REST path uses, on its ~2s cadence, instead of leaving your position to the periodic sweep.</p>
-<p>Up to 3 concurrent sockets per account, shared across your keys. Sockets are recycled after 6 hours - reconnect and you get a fresh <code>snapshot</code>. If the connection drops, treat the next <code>snapshot</code> as the truth rather than replaying missed events.</p>
-
-<h2 id="mcp">Use it from Claude, ChatGPT or Cursor</h2>
-<p>MarginPad runs a remote <b>MCP</b> server, so an AI assistant can read markets and trade your paper account directly - no glue code:</p>
-<pre><code>https://marginpad.io/mcp</code></pre>
-<p>Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. <b>Twenty-three tools</b> are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open (with trailing stops and dry run) / limit and stop orders / modify / cancel / close / sltp / positions / orders / balance / trades / report / fees. <code>GET /mcp</code> in a browser returns the server descriptor.</p>
-
-<h2 id="errors">Error codes</h2>
-<p>On <code>/v2</code>, failures are always <code>{"ok":false,"error":{"code","message"},"ts"}</code>. The <code>code</code> is a stable identifier you can branch on; the <code>message</code> is prose and may be reworded. Some errors carry the value you need to correct the call - <code>sl_wrong_side</code> and <code>tp_wrong_side</code> include the live price.</p>
-<div class="vswrap"><table class="vs">
-  <tr><th>Code</th><th class="hl">HTTP</th><th>What to do</th></tr>
-  <tr><td><code>missing_api_key</code> / <code>invalid_api_key</code></td><td class="hl">401</td><td>Send a valid key in <code>X-API-Key</code>.</td></tr>
-  <tr><td><code>revoked_key</code></td><td class="hl">401</td><td>Create a new key; this one was revoked.</td></tr>
-  <tr><td><code>rate_limit</code></td><td class="hl">429</td><td>Sleep until <code>Retry-After</code>. Do not hot-retry.</td></tr>
-  <tr><td><code>unknown_symbol</code></td><td class="hl">404</td><td>Check <code>/v1/markets</code>.</td></tr>
-  <tr><td><code>symbol_required</code>, <code>margin_usd_min_1</code>, <code>margin_usd_max_100000</code>, <code>id_required</code></td><td class="hl">400</td><td>Fix the request body.</td></tr>
-  <tr><td><code>sl_wrong_side</code> / <code>tp_wrong_side</code></td><td class="hl">400</td><td>The response carries <code>live</code> - put the level on the correct side of it.</td></tr>
-  <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>A stop entry waits on the breakout side (long above, short below). Use <code>type:"limit"</code> for a pullback entry.</td></tr>
-  <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> is a percent between 0.05 and 50; it is refused, never silently clamped.</td></tr>
-  <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> needs at least one field.</td></tr>
-  <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> need API Pro or Max. Everything else on this page is on Free. The body carries <code>plan_needed</code>.</td></tr>
-  <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Legacy code for <code>plan_required</code>, still sent so a 2.3 bot recognises it.</td></tr>
-  <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Three hooks per account. Delete one first.</td></tr>
-  <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
-  <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The 50-a-day AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
-  <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You hold 50 open positions. Close something.</td></tr>
-  <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Harmless on a retry - the position is already settled.</td></tr>
-  <tr><td><code>no_price</code></td><td class="hl">400</td><td>No live price this instant; the position stays open. Retry.</td></tr>
-  <tr><td><code>unavailable</code></td><td class="hl">503</td><td>Transient. Retry with backoff.</td></tr>
-</table></div>
-<p class="note">Machine-readable: <a href="/api/openapi.json">OpenAPI spec</a> (full request and response schemas) · <a href="/api/changelog">API changelog</a> · <a href="/api/changelog?format=json">changelog as JSON</a>.</p>
-
-
-<h2 id="liq-api">Free Liquidation Data API <span style="background:rgba(255,98,88,.14);border:1px solid rgba(255,98,88,.4);color:#ff8a80;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">LIVE DATA</span></h2>
-<p>Real-time liquidations aggregated from <b>Binance, Bybit, OKX, BitMEX, Hyperliquid and Bitfinex</b> - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/feed</code><p>The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Freshness: events land here seconds after they happen (3s edge cache). Poll every 3–5s.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/liquidations/live?symbol=BTC&amp;limit=400</code><p>Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code><p>Time-bucketed histogram (long vs short $ per bucket) for charts - the exact source of our heatmap&rsquo;s stats. <code>minutes</code>: up to 43200 (30 days).</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/clusters?symbol=BTC</code><p>Modeled liquidation clusters: price levels where liquidation liquidity is estimated to sit right now - <code>{clusters:[{price, side, est_notional}]}</code>. Refreshes continuously from live order flow.</p></div>
-<pre class="code"><span class="c"># the last liquidations on the market, right now:</span>
-curl "https://marginpad.io/api/v1/feed"
-<span class="c"># BTC liquidation clusters for your own heatmap:</span>
-curl "https://marginpad.io/api/v1/clusters?symbol=BTC"</pre>
-<p class="note">Attribution appreciated (link marginpad.io) but not required. Coverage is ~70%+ of the market&rsquo;s liquidation flow - the venues that move price. Educational use; no uptime SLA.</p>
-
-<h2>3 · Two-minute quickstart</h2>
+    <div class="tabs" role="tablist" aria-label="Quickstart language">
+      <button class="tab" role="tab" id="tb-curl" aria-controls="tp-curl" aria-selected="true" type="button">curl</button>
+      <button class="tab" role="tab" id="tb-py" aria-controls="tp-py" aria-selected="false" type="button">python</button>
+      <button class="tab" role="tab" id="tb-js" aria-controls="tp-js" aria-selected="false" type="button">node.js</button>
+      <button class="tab" role="tab" id="tb-http" aria-controls="tp-http" aria-selected="false" type="button">plain http</button>
+    </div>
+    <div class="tpane" id="tp-curl" role="tabpanel" aria-labelledby="tb-curl">
 <pre><b># price (no key)</b>
 curl "https://marginpad.io/api/bot/v1/price?symbol=SOL"
 
@@ -482,7 +469,8 @@ curl "https://marginpad.io/api/bot/v1/positions" -H "X-API-Key: YOUR_KEY"
 curl -X POST "https://marginpad.io/api/bot/v1/close" \
   -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
   -d '{"id":"POSITION_ID","pct":50}'</pre>
-
+    </div>
+    <div class="tpane" id="tp-py" role="tabpanel" aria-labelledby="tb-py" hidden>
 <pre><b># python - with the official one-file client (no dependencies)</b>
 # curl -O https://marginpad.io/assets/sdk/marginpad.py
 from marginpad import MarginPad
@@ -497,7 +485,8 @@ if my_signal(price):  # your strategy here
 
 changed = mp.positions(status="open")   # None when nothing changed (ETag / 304)
 print(mp.report()["skill"])</pre>
-
+    </div>
+    <div class="tpane" id="tp-js" role="tabpanel" aria-labelledby="tb-js" hidden>
 <pre><b># node.js - with the official one-file client</b>
 // curl -O https://marginpad.io/assets/sdk/marginpad.js
 const { MarginPad } = require("./marginpad.js");
@@ -510,201 +499,551 @@ if (mySignal(price)) {  // your strategy here
   console.log("opened", position.id, "liq @", position.liq_price);
 }
 mp.stream(ev =&gt; { if (ev.type === "position") console.log(ev.data.event, ev.data.position.id); });</pre>
-
+    </div>
+    <div class="tpane" id="tp-http" role="tabpanel" aria-labelledby="tb-http" hidden>
 <pre><b># plain HTTP, any language</b>
 import requests
 API = "https://marginpad.io/api/bot"; H = {"X-API-Key": "YOUR_KEY"}
 r = requests.post(f"{API}/v2/open", headers=H, json={"symbol": "BTC", "side": "long",
       "margin_usd": 50, "leverage": 10, "dry_run": True}).json()   # priced, nothing written
 print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_price"])</pre>
-
-<h2>Why test a trading bot on paper first</h2>
-<div class="why">
-  <p>Most crypto trading bots that look profitable in a backtest <b>lose money the first week they go live</b>. Backtests replay clean historical candles - they can't catch a race condition in your order logic, a position-sizing bug that only shows up after a losing streak, or leverage that quietly grows past what your margin survives.</p>
-  <p><b>Forward testing</b> (paper trading) runs the same bot, the same code path, against <b>real live prices in real time</b>. Your bot places actual orders - they're just settled in simulated dollars. If the strategy has a flaw, it shows up here, where a bug costs you nothing, instead of on an exchange where it costs you the account.</p>
-  <p>The usual workflow: <a href="/crypto-backtester/">backtest the idea</a> on historical data to filter out obvious losers, then point the bot at this API for days or weeks of live forward testing, and only fund a real exchange account once the paper results hold up. Track the results in the <a href="/trading-journal/">Trading Journal</a> and compare against your manual trades in <a href="/paper-trade">Paper Trade</a>.</p>
-</div>
-
-<h2>Backtesting vs paper trading vs going live</h2>
-<div class="vswrap"><table class="vs">
-  <tr><th></th><th>Backtesting</th><th class="hl">Paper trading (this API)</th><th>Live trading</th></tr>
-  <tr><td>Prices</td><td>Historical candles</td><td class="hl">Real live prices, real time</td><td>Real live prices</td></tr>
-  <tr><td>Risk</td><td class="y">None</td><td class="y">None - simulated dollars</td><td class="n">Real money at stake</td></tr>
-  <tr><td>Catches logic bugs</td><td class="n">Rarely - replayed data hides them</td><td class="y">Yes - same code path as live</td><td class="n">Yes, but each bug costs money</td></tr>
-  <tr><td>Overfitting check</td><td class="n">No - you tuned on this data</td><td class="y">Yes - unseen future data</td><td class="y">Yes</td></tr>
-  <tr><td>Cost</td><td class="y">Free</td><td class="y hl">Free to use - trading fees &amp; funding are simulated</td><td class="n">Fees + losses + funding</td></tr>
-  <tr><td>Best for</td><td>Filtering ideas fast</td><td class="hl">Proving the bot before funding it</td><td>A strategy already proven twice</td></tr>
-</table></div>
-<p class="note">Do all three, in that order. The middle step is the one most people skip - and the one that would have saved them.</p>
-
-<div class="golive" id="golive">
-  <div class="gl-h">Step three: where to run the bot for real</div>
-  <p>Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. Two venues we point bot builders at, for different reasons:</p>
-  <div class="gl-grid">
-    <div class="gl-card gl-hl" data-ex="Hyperliquid" id="glHl">
-      <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; API-first</span></div>
-      <p>Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b> (the bot never holds your main key), hourly funding and a book anyone can audit on-chain. The closest thing to running against this API with real money.</p>
-      <div class="gl-offer"><b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span></div>
-      <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a>
     </div>
-    <div class="gl-card" data-ex="Bybit" id="glBy">
-      <div class="gl-ch"><span class="gl-mark" style="background:#f7a600;color:#1a1200">B</span><b id="glName">Bybit</b><span class="gl-pill">centralised &middot; deepest books</span></div>
-      <p id="glTxt">REST and WebSocket shapes close to what you just wrote, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.</p>
-      <a class="gl-cta gl-cta2" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
+    <p class="note" style="margin-top:8px">Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style="color:var(--ink)">Official clients</b>, one file each and zero dependencies: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
+
+    <div class="keybox" id="akb">
+      <div>
+        <h3>Get your key</h3>
+        <p>Sign in with an email - no password, no KYC. Your bot's positions persist on your account, and one account can hold several keys so a backtest bot and a live bot never share a rate budget.</p>
+        <button class="btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
+        <div class="akb-key" id="akbKey"></div>
+        <div class="akb-msg" id="akbMsg"></div>
+      </div>
+      <div>
+        <div id="akbMgr" hidden>
+          <div class="akb-plan" id="akbPlan"></div>
+          <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Book</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
+          <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (optional)" autocomplete="off"><button class="btn akb-sm" type="submit">Create key</button></form>
+          <div class="akb-rev" id="akbRev" hidden></div>
+          <div class="akb-use" id="akbUse" hidden></div>
+        </div>
+        <p class="akb-empty" id="akbEmpty">Your keys, their usage and the book each one trades appear here once you are signed in. Keys are secrets - anyone holding one can trade your paper account.</p>
+      </div>
     </div>
   </div>
-  <span class="gl-note">Referral links - MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. The paper API stays free either way, and nothing here needs an exchange account. Hyperliquid is not available to US persons under its terms.</span>
-</div>
-<style>
-  .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
-  .gl-card{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:14px;border:1px solid var(--line2);background:#0d1015;overflow:hidden}
-  .gl-card p{margin:0;font-size:13.5px;line-height:1.6;color:var(--dim)}
-  .gl-hl{border-color:rgba(94,230,200,.35);background:radial-gradient(110% 130% at 100% 0%,rgba(94,230,200,.13),transparent 55%),#0d1412}
-  .gl-hl::after{content:'HL';position:absolute;right:-6px;bottom:-30px;font:800 100px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-7px;color:rgba(94,230,200,.07);pointer-events:none}
-  .gl-ch{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.gl-ch b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;color:var(--ink)}
-  .gl-mark{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#0f1f1b;color:#5ee6c8;font:800 12px/1 'Bricolage Grotesque',sans-serif}
-  .gl-pill{font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:5px 9px}
-  .gl-offer{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28);position:relative;z-index:1}.gl-offer b{font:800 30px/1 'Bricolage Grotesque',sans-serif;color:#5ee6c8;letter-spacing:-.02em}.gl-offer span{font-size:12.5px;line-height:1.3;color:#cfe3dd}.gl-offer i{font-style:normal;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.1em;color:#f2fbf8}
-  .gl-hl .gl-cta{background:#5ee6c8;color:#062a24;position:relative;z-index:1;margin-top:auto}.gl-cta2{margin-top:auto}
-  .gl-card.mp-ex-off{opacity:.55;filter:saturate(.35)}
-  @media(max-width:640px){.gl-grid{grid-template-columns:1fr}}
-</style>
-<script>
-/* Bybit does not onboard the US or Canada. mp-auth.js is deferred, so poll for window.mpEx (documented
-   gotcha) and swap the venue for the best one that actually takes readers in that country. */
-(function () {
-  var n = 0, iv = setInterval(function () {
-    if (++n > 80) { clearInterval(iv); return; }
-    if (!window.mpEx || !window.mpEx.cc) return;
-    clearInterval(iv);
-    window.mpEx.cc(function (c) {
-      if (!c) return;
-      // Hyperliquid: dim + label where its terms exclude the reader (the same rule every partner card follows)
-      if (window.mpEx.blocked('Hyperliquid', c)) { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + (window.mpEx.region(c) || 'your country'); h.appendChild(s); } }
-      if (!window.mpEx.blocked('Bybit', c)) return;
-      // this page's reader wants an API, so prefer a venue with a documented trading API over the plain country order
-      var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
-      var a = document.getElementById('glLink'), t = document.getElementById('glTxt'), nm = document.getElementById('glName'), by = document.getElementById('glBy');
-      if (!v || !a || !t) return;
-      a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v);
-      a.textContent = 'Open a ' + v + ' account →'; if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
-      t.innerHTML = 'Bybit does not onboard traders in ' + (window.mpEx.region(c) || 'your country') + ', so this points at <b>' + v + '</b> instead - a venue that does, with a documented REST API.';
-    });
-  }, 100);
-})();
-</script>
+</section>
 
-<h2>How the simulator works</h2>
-<div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed - the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.</p></div>
-<div class="faq"><b>Trading fees - read this before you measure a strategy</b><p>Every position pays a <b>taker fee on both sides</b>, settled into <code>pnl_usd</code> at close. It is charged as a round trip: <code>fee = qty × (entry + exit) × rate</code>. Funding is accrued on positions held across funding marks and deducted the same way. Open positions already show P&amp;L <b>net</b> of the round trip in <code>unrealized_pnl_usd</code>, so what you see is what settles.</p>
-<div class="vswrap"><table class="vs">
-  <tr><th>Market</th><th class="hl">Fee per side</th><th>Round trip on $10,000 notional</th></tr>
-  <tr><td>Crypto perps</td><td class="hl">0.055%</td><td>$11.00</td></tr>
-  <tr><td>Stocks &amp; ETFs</td><td class="hl">0.02%</td><td>$4.00</td></tr>
-  <tr><td>Metals &amp; indices</td><td class="hl">0.015%</td><td>$3.00</td></tr>
-  <tr><td>Forex majors</td><td class="hl">0.008%</td><td>$1.60</td></tr>
-</table></div>
-<p>Prefer the exact bill of the exchange you will run on? <a href="#fees">Charge the paper account at its schedule</a>, referral discount included. Above roughly 180× leverage the rate tapers so the round trip can never exceed 20% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> - a scalp that clears less than the round trip is a loser no matter how often it is right.</p></div>
-<div class="faq"><b>Margin, liquidation, SL/TP, trailing</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> - when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.</p></div>
-<div class="faq"><b>Limits &amp; rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>GET /v1/usage</code> tells you your plan and what is left in the current window.</p>
-<div class="vswrap"><table class="vs">
-  <tr><th></th><th class="hl"><span class="apn">Free</span></th><th>Pro &middot; $19</th><th>Max &middot; $49</th></tr>
-  <tr><td>Market data, candles, calculators, liquidation feed</td><td class="y hl">Unlimited, no key</td><td class="y">Same</td><td class="y">Same</td></tr>
-  <tr><td>Paper trading</td><td class="y hl">Full</td><td class="y">Full</td><td class="y">Full</td></tr>
-  <tr><td><b>WebSocket stream</b></td><td class="y hl">Yes</td><td class="y">Yes</td><td class="y">Yes</td></tr>
-  <tr><td>Requests per minute, per key</td><td class="hl">120</td><td>600</td><td>2000</td></tr>
-  <tr><td>Market-data calls with your key</td><td class="hl">120 / min</td><td>600 / min</td><td>2000 / min</td></tr>
-  <tr><td>API keys</td><td class="hl">3</td><td>10</td><td>30</td></tr>
-  <tr><td>Open positions</td><td class="hl">50</td><td>200</td><td>500</td></tr>
-  <tr><td>Webhooks &middot; AI market read &middot; report breakdowns</td><td class="n hl">-</td><td class="y">3 hooks &middot; 50 reads/day &middot; full report</td><td class="y">15 hooks &middot; 200 reads/day &middot; full report</td></tr>
-  <tr><td>Margin per trade / leverage</td><td class="hl">$1&ndash;$100,000 &middot; per-symbol caps</td><td>Same</td><td>Same</td></tr>
-</table></div>
-<p><b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.</p></div>
-<div class="faq"><b>Balance &amp; equity</b><p>Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.</p></div>
-<div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side, so they show in <a href="/paper-trade">My Trades</a>, count for the season boards and XP, and feed your <a href="/trading-report/">trading report</a> - the same report <code>GET /v1/report</code> returns to the bot.</p></div>
-
-<h2>FAQ</h2>
-<details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes - MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See the "Free Liquidation Data API" section above.</p></details>
-<div class="faq"><b>Is the trading bot API really free?</b><p>Yes. It's a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately.</p></div>
-<div class="faq"><b>Which programming languages can I use?</b><p>Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code class="k">X-API-Key</code> header.</p></div>
-<div class="faq"><b>Backtesting vs paper trading - what's the difference?</b><p>Backtesting replays historical candles (fast, but hides bugs and overfitting). Paper trading runs your bot on live prices in real time and catches what backtests can't. Do both - <a href="/crypto-backtester/">backtest here</a>, then forward-test on this API.</p></div>
-<div class="faq"><b>Which coins can my bot trade?</b><p>Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins. Check a symbol with <code class="k">GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
-<div class="faq"><b>Do I need an exchange account or a deposit?</b><p>No. No deposit, no wallet, no KYC. You only sign in with an email so your API key and positions persist across sessions.</p></div>
-
-<h2>Guides &amp; tutorials</h2>
-<div class="faq"><b><a href="/blog/python-crypto-trading-bot-tutorial/" style="color:#c2f64a">Python Crypto Trading Bot Tutorial</a></b><p>Build a working bot in Python and point it at this API - full code: price feed, EMA-cross strategy, open/close orders and the loop.</p></div>
-<div class="faq"><b><a href="/blog/how-to-test-a-crypto-trading-bot/" style="color:#c2f64a">How to Test a Crypto Trading Bot for Free</a></b><p>The three-stage workflow that separates working bots from blown accounts: backtest, paper trade, then go live.</p></div>
-<div class="faq"><b><a href="/blog/nodejs-crypto-trading-bot-tutorial/" style="color:#c2f64a">Node.js Crypto Trading Bot Tutorial</a></b><p>The same bot in JavaScript - full Node.js code with zero dependencies, pointed at this API.</p></div>
-<div class="faq"><b><a href="/blog/grid-trading-bot-explained/" style="color:#c2f64a">Grid Trading Bots Explained</a></b><p>How grid bots work, where they win and blow up, and how to forward-test one before funding it.</p></div>
-<div class="faq"><b><a href="/blog/backtesting-vs-paper-trading-vs-live/" style="color:#c2f64a">Backtesting vs Paper Trading vs Live</a></b><p>What each testing stage proves, and the exact order to use them.</p></div>
-<div class="faq"><b><a href="/blog/ai-crypto-trading-strategies-2026/" style="color:#c2f64a">AI Crypto Trading Strategies for 2026</a></b><p>The AI-assisted strategies that actually hold up - and how to test them risk-free before automating.</p></div>
-<div class="faq"><b><a href="/blog/can-ai-trade-crypto-futures/" style="color:#c2f64a">Can AI Trade Crypto Futures?</a></b><p>A clear-eyed look at what AI signals and bots can and cannot do.</p></div>
-
-<p style="margin:28px 0 8px"><a class="akb-btn" href="#akb" style="text-decoration:none">Get your free key ↑</a></p>
-
-<footer>
-  <a href="/">← MarginPad</a> · <a href="/tools/">Trading Tools</a> · <a href="/crypto-backtester/">Backtester</a> · <a href="/paper-trade">Paper Trade</a> · <a href="/trading-journal/">Journal</a><br>
-  <span style="color:var(--faint)">Simulated trading only. Not financial advice.</span>
-</footer>
+<!-- ── WHY ───────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="band">
+<section id="why">
+  <div class="shell">
+    <div class="shead">
+      <span class="kick">Why not an exchange testnet</span>
+      <h2>A testnet gives you fake prices. This gives you real ones and fake money.</h2>
+      <p>Testnet books are thin, their prices drift from the real market, and they reset without warning. Everything here is priced from the live multi-exchange feed our own charts run on - only the dollars are simulated.</p>
+    </div>
+    <div class="diffs">
+      <div class="diff"><span class="dn">Execution</span><h3>The server holds your orders</h3><p>Limit entries, stop entries, stop-losses, targets and trailing stops are all evaluated on our side against 1-minute candles. <b>Your bot can be offline, restarting or redeployed</b> and the fill still lands at your level, stamped with the minute the market actually reached it.</p></div>
+      <div class="diff"><span class="dn">Costs</span><h3>Fees that match your real bill</h3><p>Both legs pay a taker fee, charged as a round trip at close, with funding accrued across marks. Name a venue and the paper account is charged at <b>that exchange's published schedule</b> less our referral discount - so a scalping strategy fails here for the same reason it would fail there.</p></div>
+      <div class="diff"><span class="dn">Failure</span><h3>Liquidation that behaves</h3><p>Isolated margin, 0.5% maintenance, losses capped at your margin. A trailing stop is moved by each candle's extreme <b>after</b> that candle was checked against the stop in force - so a bar can never stop you out at a level it created itself.</p></div>
+      <div class="diff"><span class="dn">Idempotency</span><h3>A timeout is not a mystery</h3><p>Send <code>client_order_id</code> and a retried open returns the position the first call created, flagged <code>idempotent: true</code>. Closing takes one too. This single field is the difference between a bot you trust unattended and one you babysit.</p></div>
+      <div class="diff"><span class="dn">Observability</span><h3>Push, not poll</h3><p>A free WebSocket pushes position events and marks every ~2 s; webhooks POST the same shape to your own URL, HMAC-signed and retried, even while nothing of yours is connected. ETags make the polls you keep nearly free.</p></div>
+      <div class="diff"><span class="dn">Measurement</span><h3>It grades your strategy</h3><p>Every book gets its own journal, equity curve and drawdown. <code>/v1/report</code> returns win rate and return by coin, leverage band, side and hour, with a skill score - and it <b>says nothing under eight trades</b> rather than inventing a pattern.</p></div>
+    </div>
+  </div>
+</section>
 </div>
 
+<!-- ── PLANS ─────────────────────────────────────────────────────────────────────────────────────────── -->
+<section id="plans">
+  <div class="shell">
+    <span id="tiers"></span>
+    <div class="shead">
+      <span class="kick">Plans</span>
+      <h2>Free is the whole engine. You pay for headroom.</h2>
+      <p>Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.</p>
+    </div>
+    <div id="apPlanState" hidden></div>
+    <div class="apgrid">
+      <div class="apcard" data-plan="free">
+        <div class="aphead"><h3><span class="apn">Free</span></h3></div>
+        <div class="appx">$0</div>
+        <p class="apsub">Build and run a real bot without paying anything.</p>
+        <div class="thr">
+          <div class="thr-t"><i data-w="6" style="width:6%"></i></div>
+          <div class="thr-l"><b>120</b><span>REQ / MIN PER KEY</span></div>
+        </div>
+        <ul class="apfeat">
+          <li><b>3</b> keys &middot; <b>50</b> open positions &middot; <b>1</b> book</li>
+          <li>Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay</li>
+          <li>Fee schedule of <a href="#fees">9 real venues</a></li>
+          <li>WebSocket stream &middot; MCP &middot; keyless market data</li>
+          <li>Trading report: totals + skill score</li>
+        </ul>
+        <button class="apbtn ghost" type="button" disabled>Your starting plan</button>
+      </div>
+      <div class="apcard feat" data-plan="pro">
+        <div class="aphead"><h3>Pro</h3><span class="appill">MOST BOTS</span></div>
+        <div class="appx">$19<small>/month</small></div>
+        <p class="apsub">For a bot that runs unattended and needs to be pushed to, not polled.</p>
+        <div class="thr">
+          <div class="thr-t"><i data-w="30" style="width:30%"></i></div>
+          <div class="thr-l"><b>600</b><span>REQ / MIN <span class="apx">5&times; FREE</span></span></div>
+        </div>
+        <ul class="apfeat">
+          <li><b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books</li>
+          <li><b>Webhooks</b> - 3 signed, retried endpoints</li>
+          <li><b>AI market reads</b> - 50 a day through <code>/v1/ai</code></li>
+          <li>Trading report with breakdowns and written findings</li>
+          <li>Commercial use</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="pro">Get Pro</button>
+      </div>
+      <div class="apcard" data-plan="max">
+        <div class="aphead"><h3><span class="apn">Max</span></h3></div>
+        <div class="appx">$49<small>/month</small></div>
+        <p class="apsub">For several strategies, or one that trades far more often than it thinks.</p>
+        <div class="thr">
+          <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
+          <div class="thr-l"><b>2000</b><span>REQ / MIN <span class="apx">17&times; FREE</span></span></div>
+        </div>
+        <ul class="apfeat">
+          <li><b>30</b> keys &middot; <b>500</b> open positions &middot; <b>20</b> books</li>
+          <li><b>15</b> webhooks</li>
+          <li><b>200</b> AI market reads a day</li>
+          <li>Everything in Pro</li>
+          <li>Commercial use</li>
+        </ul>
+        <button class="apbtn" type="button" data-buy="max">Get Max</button>
+      </div>
+    </div>
+    <p id="apMsg" class="note" hidden></p>
+    <p class="apfoot"><b>Premium is a different product.</b> A <a href="/premium/">MarginPad Premium</a> subscription unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts - and since 15 September 2026 it does not change a single API limit. These plans do not unlock those site features either. Buy whichever one you actually use.</p>
+    <p class="apfoot">Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it. Your live ceilings are always in <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - so a bot can read them instead of guessing.</p>
+  </div>
+</section>
+
+<!-- ── DOCS ──────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="band">
+<div class="shell">
+<div class="docs">
+  <nav class="rail" id="rail" aria-label="Reference">
+    <span class="kick">Reference</span>
+    <ol>
+      <li><a href="#endpoints">Endpoints</a></li>
+      <li><a href="#engine">How the engine works</a></li>
+      <li><a href="#fees">Venue fees</a></li>
+      <li><a href="#reliable">Bots that do not break</a></li>
+      <li><a href="#stream">WebSocket</a></li>
+      <li><a href="#webhooks">Webhooks</a></li>
+      <li><a href="#books">Books</a></li>
+      <li><a href="#replay">Replay</a></li>
+      <li><a href="#keys">Managing keys</a></li>
+      <li><a href="#arena">Bot arena</a></li>
+      <li><a href="#mcp">MCP for AI clients</a></li>
+      <li><a href="#v2">v1 and v2</a></li>
+      <li><a href="#errors">Error codes</a></li>
+      <li><a href="#liq-api">Liquidation data</a></li>
+      <li><a href="#workflow">Backtest, paper, live</a></li>
+      <li><a href="#faq">FAQ &amp; guides</a></li>
+    </ol>
+  </nav>
+
+  <div class="doc">
+
+<section id="endpoints">
+  <h2>Endpoints</h2>
+  <p>Twenty-four of them. Everything is JSON over HTTPS, CORS on, one header. Swap <code>v1</code> for <code>v2</code> in any path for the <code>{ok,data,ts}</code> envelope.</p>
+
+  <div class="epg">
+    <div class="epgh">Market data - no key required</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/price<em>?symbol=BTC</em></span><span class="d">Live price for any USDT pair. <b>No key needed</b> - try it right now in your browser.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/klines<em>?symbol=BTC&amp;interval=60</em></span><span class="d">OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b> Up to <b>1000 candles</b> per call, newest last - about 16 hours on 1m, 3 days on 5m, 10 days on 15m, 41 days on 1h, 166 days on 4h and roughly 3 years on 1d. Pass <code>&amp;end=&lt;unix ms&gt;</code> to page further back.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/markets</span><span class="d">Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/time<em>?client_ts=…</em></span><span class="d">Server clock. <b>No key needed.</b> Pass your own unix ms and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</span></div>
+  </div>
+<pre><code>bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1")
+while len(all_bars) &lt; wanted:
+    end_ms = bars[0]["time"] * 1000          # oldest candle in hand
+    bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1&amp;end={end_ms}")
+    if not bars: break
+    all_bars = bars + all_bars</code></pre>
+
+  <div class="epg">
+    <div class="epgh">Trading</div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open</span><span class="d">Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>. Add <code>"dry_run":true</code> to get the priced trade back - entry, quantity, liquidation price and distance, the open fee and the full round trip - <b>without writing anything</b>. Use the dry run to size a position or to unit-test your bot against the real engine.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>trail_pct</em></span><span class="d"><code>trail_pct</code> sets a stop that <b>follows the best price seen since entry</b> at that percent distance, ratcheted <b>on the server</b>: from 1-minute candle extremes on the minute sweep and from the live price on every <code>/positions</code> read, so it keeps moving while your bot is offline and never loosens. A long opened at 60,000 with <code>trail_pct: 1</code> starts with its stop at 59,400; when price prints 63,000 the stop is 62,370. Positions carry <code>trail_pct</code> and <code>trail_hwm</code>.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>type:"limit"</em></span><span class="d">The order <b>rests on the server</b> instead of filling now: <code>{"symbol":"BTC","side":"long","type":"limit","limit_price":58000,"margin_usd":100,"leverage":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross - the fill is found from the 1m high/low, so a wick that retraced between two checks still counts. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/open <em>type:"stop"</em></span><span class="d">A <b>breakout entry</b>: a long <b>above</b> the market or a short <b>below</b> it, e.g. <code>{"symbol":"BTC","side":"long","type":"stop","limit_price":66000,"margin_usd":100,"leverage":10}</code>. Same engine as a limit order - it fills <b>at the level</b> from 1m candles, with the browser closed - but the wrong side is refused (<code>stop_wrong_side</code>) so a stop and a limit can never be confused. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> and <code>dry_run</code> all apply.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/close</span><span class="d">Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> - <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/close_all</span><span class="d">Panic button - closes every open position at the live price in one call.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/sltp</span><span class="d">Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000,"trail_pct":1.5}</code> - send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Resting orders</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/orders</span><span class="d">Your resting orders, each with <code>type: "limit" | "stop"</code>, plus the last 20 that filled, expired or were cancelled - a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/modify_order</span><span class="d">Change a resting order <b>in place</b>: <code>{"order_id":"lo...","limit_price":58500,"sl":57000,"tp":62000,"margin_usd":150,"leverage":10,"trail_pct":1}</code> - send only what changes. Before this the only way was cancel and re-place, which lost the order's <code>client_order_id</code>. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change. A filled, cancelled or expired order answers <code>409</code>.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/cancel_order</span><span class="d">Cancel one resting order. Body: <code>{"order_id":"lo..."}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Account and state</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/positions<em>?status=open</em></span><span class="d">All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically. <code>?status=open|closed</code> trims the body to what your loop actually reads; <code>?since=&lt;unix ms&gt;</code> and <code>If-None-Match</code> (304 when nothing changed) are supported too.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/account</span><span class="d">Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/balance</span><span class="d">Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/trades<em>?limit=100&amp;before=…</em></span><span class="d">The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window - follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/accounts</span><span class="d">Every <a href="#books">book</a> on the account with its lifetime numbers and the keys bound to it.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/equity<em>?days=30&amp;step_min=60</em></span><span class="d">The equity curve of this book, bucketed, with <code>max_drawdown_pct</code> and the live unrealized point at the end.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/reset</span><span class="d">This book back to $10,000 with <code>{"confirm":true}</code>: closes archived, orders cancelled. Refused with <code>409 open_positions_exist</code> while anything is open.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/usage</span><span class="d">Your plan, your ceilings, what is left in the current window, and <code>usage_30d</code> - calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.</span></div>
+  </div>
+
+  <div class="epg">
+    <div class="epgh">Costs, intelligence and delivery</div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/fees</span><span class="d">Whose fee schedule your fills are charged at: the venues we model with taker, maker, our referral discount and the effective rate, plus your current default. <code>POST {"venue":"bybit"}</code> sets the account default; <code>fee_venue</code> on <code>/open</code> overrides it for one position. See <a href="#fees">venue fees</a>.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/report<em>?days=30</em></span><span class="d">The <a href="/trading-report/">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/ai</span><span class="d"><span class="tag pro">API PRO</span>The chart panel's AI read, from the API: <code>{"symbol":"BTC","interval":"60","question":"Is this leaning long or short?"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/v1/webhooks</span><span class="d"><span class="tag pro">API PRO</span>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href="#webhooks">webhooks</a>. <code>POST {"act":"add","url":"https://…"}</code> registers one, <code>{"act":"test","id":…}</code> sends a ping and returns the status your server answered, <code>{"act":"delete","id":…}</code> removes it.</span></div>
+    <div class="ep"><span class="m post">POST</span><span class="u">/v1/replay</span><span class="d"><span class="tag ver">2.6</span>Run your bot through one past UTC day on our own 1-minute candles - see <a href="#replay">replay</a>.</span></div>
+  </div>
+  <p class="note">Machine-readable: <a href="/api/openapi.json">OpenAPI 3.1 spec</a> with full request and response schemas · an <a href="/api-docs/">interactive reference</a> you can fire calls from · the <a href="/api/changelog">changelog</a> (<a href="/api/changelog?format=json">JSON</a>).</p>
+</section>
+
+<section id="engine">
+  <h2>How the engine works</h2>
+  <div class="faq"><b>Fills and prices</b><p>Orders fill instantly at the real live price (multi-exchange feed - the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.</p></div>
+  <div class="faq"><b>Trading fees - read this before you measure a strategy</b><p>Every position pays a <b>taker fee on both sides</b>, settled into <code>pnl_usd</code> at close. It is charged as a round trip: <code>fee = qty × (entry + exit) × rate</code>. Funding is accrued on positions held across funding marks and deducted the same way. Open positions already show P&amp;L <b>net</b> of the round trip in <code>unrealized_pnl_usd</code>, so what you see is what settles.</p>
+    <div class="tw"><table class="vs">
+      <tr><th>Market</th><th class="hl">Fee per side</th><th>Round trip on $10,000 notional</th></tr>
+      <tr><td>Crypto perps</td><td class="hl">0.055%</td><td>$11.00</td></tr>
+      <tr><td>Stocks &amp; ETFs</td><td class="hl">0.02%</td><td>$4.00</td></tr>
+      <tr><td>Metals &amp; indices</td><td class="hl">0.015%</td><td>$3.00</td></tr>
+      <tr><td>Forex majors</td><td class="hl">0.008%</td><td>$1.60</td></tr>
+    </table></div>
+    <p>Prefer the exact bill of the exchange you will run on? <a href="#fees">Charge the paper account at its schedule</a>, referral discount included. Above roughly 180× leverage the rate tapers so the round trip can never exceed 20% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> - a scalp that clears less than the round trip is a loser no matter how often it is right.</p></div>
+  <div class="faq"><b>Margin, liquidation, SL/TP, trailing</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> - when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.</p></div>
+  <div class="faq"><b>Balance and equity</b><p>Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.</p></div>
+  <div class="faq"><b>Rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>X-RateLimit-Scope</code> says whether the key's limit or the per-IP one applied.</p></div>
+  <div class="faq"><b>Your bot's trades on the site</b><p>Positions opened via the API live on your account server-side, so they show in <a href="/paper-trade">My Trades</a>, count for the season boards and XP, and feed your <a href="/trading-report/">trading report</a> - the same report <code>GET /v1/report</code> returns to the bot.</p></div>
+  <div class="faq"><b>The streaming API is free on purpose</b><p>Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.</p></div>
+</section>
+
+<section id="fees">
+  <h2>Fees as on the exchange you will actually use</h2>
+  <p>By default every paper fill pays the MarginPad rate: 0.055% per side on crypto, both legs, charged as a round trip at close. That is a fair average, but it is nobody's exact bill. If you already know where the bot will run for real, <b>charge the paper account at that venue's schedule</b> - its published taker rate, less the referral discount a MarginPad sign-up gets there - so the forward test settles the way the live account will:</p>
+<pre><code>GET  /api/bot/v2/fees                       // the table below + your current default
+POST /api/bot/v2/fees  {"venue":"hyperliquid"}   // account default: every open from now on, site and API
+POST /api/bot/v2/open  {"symbol":"BTC","side":"long","margin_usd":100,"leverage":10,"fee_venue":"bybit"}   // just this one
+POST /api/bot/v2/open  {..., "dry_run":true}      // -&gt; fee_venue, taker_fee_pct, fee_vs_marginpad_default_usd</code></pre>
+  <div class="tw"><table class="vs">
+    <tr><th>Venue</th><th>Taker</th><th>Our referral discount</th><th class="hl">You pay per side</th></tr>
+    <tr><td>Bybit</td><td>0.055%</td><td>20%</td><td class="hl"><b>0.044%</b></td></tr>
+    <tr><td>Binance</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
+    <tr><td>Bitget</td><td>0.060%</td><td>20%</td><td class="hl"><b>0.048%</b></td></tr>
+    <tr><td>Gate</td><td>0.050%</td><td>20%</td><td class="hl"><b>0.040%</b></td></tr>
+    <tr><td>Hyperliquid</td><td>0.045%</td><td>4% (code <code>MARGINPAD</code>)</td><td class="hl"><b>0.0432%</b></td></tr>
+    <tr><td>OKX &middot; Kraken</td><td>0.050%</td><td>-</td><td class="hl"><b>0.050%</b></td></tr>
+    <tr><td>MEXC</td><td>0.020%</td><td>-</td><td class="hl"><b>0.020%</b></td></tr>
+    <tr><td>KuCoin</td><td>0.060%</td><td>-</td><td class="hl"><b>0.060%</b></td></tr>
+    <tr><td>MarginPad default</td><td colspan="2">no venue chosen</td><td class="hl">0.055%</td></tr>
+  </table></div>
+  <p class="note">Rates are the venues' published base tier and the discounts we state on <a href="/exchanges/">/exchanges/</a>; the API returns them with <code>source</code> so you know they are advertised numbers, not measurements. Both legs pay the taker rate (the paper engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only - stocks, forex, metals and indices keep the MarginPad class rates whatever the venue. Open positions keep the rate they were filled with; the extreme-leverage cap (a round trip never above 20% of margin) still applies. The same choice is the <b>"Fees as on"</b> selector in the <a href="/paper-trade">Paper Trade</a> form, so a bot and its owner's manual trades pay identical fees.</p>
+</section>
+
+<section id="reliable">
+  <h2>Writing a bot that does not break</h2>
+  <p><b>Always send <code>client_order_id</code> on open.</b> This is the single most important line in these docs. Without it, a request that times out on the network leaves you guessing: did the position open or not? Retry and you may have two. With it, the retry returns the position the first call created, flagged <code>idempotent: true</code>:</p>
+<pre><code>POST /api/bot/v2/open
+{"symbol":"BTC","side":"long","margin_usd":100,"leverage":5,"client_order_id":"sig-2026-08-19-1403"}
+
+// first call            -&gt; {"ok":true,"data":{"position":{"id":"bot...", ...}}}
+// same call retried     -&gt; {"ok":true,"data":{"position":{"id":"bot...", ...},"idempotent":true}}</code></pre>
+  <p>Use a value your strategy can regenerate deterministically - a signal id, or symbol plus candle timestamp. Ids are remembered for 7 days.</p>
+  <p><b>Closing takes one too.</b> Send <code>client_order_id</code> on <code>/close</code> and a retry reports what the first call did (<code>idempotent: true</code>) instead of an error you have to interpret.</p>
+  <p><b>Send <code>symbol</code> when you close.</b> Every <code>/positions</code> row already carries it, so this is free to add and it measurably shortens the close:</p>
+<pre><code>POST /api/bot/v2/close
+{"id":"bot...","symbol":"BTC"}    // one price fetch, one round trip
+{"id":"bot..."}                   // server must first look up which symbol to price</code></pre>
+  <p>Our trading store is a single region-pinned instance, so every extra hop costs what the round trip to it costs from where you are. Measured on 2026-08-19: about <b>20&nbsp;ms from Europe</b> but <b>198&nbsp;ms median and 368&nbsp;ms at the 95th percentile from Singapore</b>. A cold price feed adds around 400&nbsp;ms on top, and without the hint a close on a liquid pair could end up waiting on an illiquid one in the same batch. With the hint a close is one hop plus one warm price. A wrong or stale <code>symbol</code> costs nothing - the server notices and falls back.</p>
+  <p><b>Do not burn your rate budget on polling.</b> Most bots spend the bulk of their calls asking "has anything changed". Two things make that nearly free:</p>
+<pre><code># 1. state changes: send back the ETag, get 304 and an empty body when nothing moved
+curl -H "X-API-Key: $KEY" -H 'If-None-Match: W/"1a2b3c-4"' \
+     https://marginpad.io/api/bot/v1/positions
+
+# 2. live prices: /price is KEYLESS, so it costs nothing against your 120/min
+curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
+  <p>The ETag covers structural state - position ids, status, quantity, stop, target, exit - and deliberately <b>not</b> the mark price, which moves every tick and would make the ETag never match. So: poll <code>/positions</code> for "did my stop fire", poll the keyless <code>/price</code> for P&amp;L. Watch <code>X-RateLimit-Remaining</code> and back off on <code>Retry-After</code>.</p>
+</section>
+
+<section id="stream">
+  <h2>WebSocket - stop polling entirely</h2>
+  <p>Positions and prices are pushed to you, so you find out your stop fired within a couple of seconds instead of on your next poll:</p>
+<pre><code>wss://marginpad.io/api/bot/v2/stream?api_key=mpb_…
+
+&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000},"ts":…}
+&lt;- {"type":"snapshot","data":{"positions":[…]},"ts":…}
+&lt;- {"type":"position","data":{"event":"closed","position":{…,"pnl_usd":-1.24}},"ts":…}
+&lt;- {"type":"prices","data":{"BTC":64770.1},"ts":…}
+
+-&gt; {"op":"subscribe","channels":["positions"]}     // prices off, events only
+-&gt; {"op":"ping"}                                    // &lt;- {"type":"pong"}</code></pre>
+  <p><b>Events:</b> <code>position</code> with <code>event: opened | updated | closed</code> fires when something actually changes - a fill, a stop moving, a close, a liquidation. <code>prices</code> carries the mark price of your open symbols each tick. Mark-price movement alone never raises a <code>position</code> event, so the channel stays quiet when nothing has happened.</p>
+  <p><b>Stops settle faster while you are connected.</b> The stream drives the same server-side SL/TP/liquidation sweep the REST path uses, on its ~2s cadence, instead of leaving your position to the periodic sweep.</p>
+  <p>Up to 3 concurrent sockets per account, shared across your keys. Sockets are recycled after 6 hours - reconnect and you get a fresh <code>snapshot</code>. If the connection drops, treat the next <code>snapshot</code> as the truth rather than replaying missed events.</p>
+</section>
+
+<section id="webhooks">
+  <h2>Webhooks - events pushed to your server <span class="tag pro">API PRO</span></h2>
+  <p>Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.</p>
+<pre><code>POST /api/bot/v2/webhooks
+{"act":"add","url":"https://bot.example.com/marginpad","events":["position.closed","position.liquidated","order.filled"]}
+
+-&gt; {"ok":true,"data":{"webhook":{"id":"wh…","secret":"whs_…","events":[…],"active":true}}}
+
+# what arrives at your URL, seconds after the event:
+POST https://bot.example.com/marginpad
+X-MP-Event: position.closed        X-MP-Delivery: 1841
+X-MP-Timestamp: 1789124656008      X-MP-Signature: sha256=3763dc5d…
+{"event":"position.closed","ts":1789124656008,"hook_id":"wh…","data":{"id":"bot…","symbol":"BTC","status":"closed","pnl_usd":-0.08,"close_reason":"SL hit",…}}</code></pre>
+  <p><b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.</p>
+  <p><b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.</p>
+  <p><b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.</p>
+</section>
+
+<section id="books">
+  <h2>Books - one strategy, one clean result <span class="tag ver">2.5</span></h2>
+  <p>A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.</p>
+<pre><code>POST /api/bot/key  {"act":"create","name":"rsi bot","book":"rsi"}   // key bound to the book "rsi"
+GET  /api/bot/v1/accounts        // every book with lifetime numbers and its keys
+GET  /api/bot/v1/account         // "account":"rsi" on a book key, "main" otherwise
+POST /api/bot/v1/reset  {"confirm":true}   // this book back to $10,000: closes archived, orders cancelled
+GET  /api/bot/v1/equity?days=30&amp;step_min=60   // equity curve + max_drawdown_pct</code></pre>
+  <p><b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account's hooks with <code>"account":"rsi"</code> in the payload, so one receiver serves every book.</p>
+</section>
+
+<section id="replay">
+  <h2>Replay - run your bot through a past day <span class="tag ver">2.6</span></h2>
+  <p>Backtest with the code you will run live. Start a replay of one past UTC day and the same routes your bot already calls act on a separate replay journal, priced from MarginPad's own 1-minute candles at the cursor. Stops, targets and liquidations are checked on every candle between two of your calls, on the high and the low, with the same fee and funding math as live. Nothing from a replay reaches the boards, the arena or your report.</p>
+<pre><code>POST /api/bot/v1/replay  {"symbol":"BTC","day":"2026-09-11","speed":120}   // 120 market seconds per real second: a day in 12 minutes
+GET  /api/bot/v1/replay?interval=5&amp;bars=120       // cursor, price, progress, candles up to the cursor
+POST /api/bot/v1/open    {...}                        // acts on the replay book at the cursor price while the replay runs
+POST /api/bot/v1/replay  {"act":"stop"}               // close at the cursor, get the summary, empty the replay journal</code></pre>
+  <p>Speed goes from 1 (real time) to 600 (a day in 2.4 minutes). One replay per key at a time, crypto only, market orders only for now: read the replay price and candles from <code>GET /v1/replay</code>, since the keyless <code>/v1/price</code> and <code>/v1/klines</code> keep answering live data.</p>
+</section>
+
+<section id="keys">
+  <h2>Managing your keys</h2>
+  <p>You can hold several keys on one account - keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own budget and its own line in your stats. Signed in on the site, from the browser:</p>
+<pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
+POST /api/bot/key  {"act":"create","name":"backtest-bot"}   // new key
+POST /api/bot/key  {"act":"rename","key":"mpb_...","name":"live-bot"}
+POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is kept</code></pre>
+  <p>A revoked key returns <code>401 revoked_key</code>. Keys are secrets - anyone holding one can trade your paper account. <a href="#akb">Create and revoke them at the top of this page</a>.</p>
+</section>
+
+<section id="arena">
+  <h2>Bot arena - a public scoreboard for bots</h2>
+  <p>Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href="/arena/">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.</p>
+</section>
+
+<section id="mcp">
+  <h2>Use it from Claude, ChatGPT or Cursor</h2>
+  <p>MarginPad runs a remote <b>MCP</b> server, so an AI assistant can read markets and trade your paper account directly - no glue code:</p>
+<pre><code>https://marginpad.io/mcp</code></pre>
+  <p>Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. <b>Twenty-seven tools</b> are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open (with trailing stops and dry run) / limit and stop orders / modify / cancel / close / sltp / positions / orders / balance / trades / report / fees / accounts / reset / equity / replay. <code>GET /mcp</code> in a browser returns the server descriptor.</p>
+</section>
+
+<section id="v2">
+  <h2>Response format - v1 and v2</h2>
+  <p><code>/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.</p>
+  <p><code>/api/bot/v2/*</code> is the same API with the envelope our data endpoints already use - one predictable shape for success and failure, so you write the parsing once:</p>
+<pre><code>{ "ok": true,  "data": { ... }, "ts": 1787200000000 }
+{ "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
+  <p>Same paths, same parameters, same key - swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.</p>
+</section>
+
+<section id="errors">
+  <h2>Error codes</h2>
+  <p>On <code>/v2</code>, failures are always <code>{"ok":false,"error":{"code","message"},"ts"}</code>. The <code>code</code> is a stable identifier you can branch on; the <code>message</code> is prose and may be reworded. Some errors carry the value you need to correct the call - <code>sl_wrong_side</code> and <code>tp_wrong_side</code> include the live price.</p>
+  <div class="tw"><table class="vs">
+    <tr><th>Code</th><th class="hl">HTTP</th><th>What to do</th></tr>
+    <tr><td><code>missing_api_key</code> / <code>invalid_api_key</code></td><td class="hl">401</td><td>Send a valid key in <code>X-API-Key</code>.</td></tr>
+    <tr><td><code>revoked_key</code></td><td class="hl">401</td><td>Create a new key; this one was revoked.</td></tr>
+    <tr><td><code>rate_limit</code></td><td class="hl">429</td><td>Sleep until <code>Retry-After</code>. Do not hot-retry.</td></tr>
+    <tr><td><code>unknown_symbol</code></td><td class="hl">404</td><td>Check <code>/v1/markets</code>.</td></tr>
+    <tr><td><code>symbol_required</code>, <code>margin_usd_min_1</code>, <code>margin_usd_max_100000</code>, <code>id_required</code></td><td class="hl">400</td><td>Fix the request body.</td></tr>
+    <tr><td><code>sl_wrong_side</code> / <code>tp_wrong_side</code></td><td class="hl">400</td><td>The response carries <code>live</code> - put the level on the correct side of it.</td></tr>
+    <tr><td><code>stop_wrong_side</code></td><td class="hl">400</td><td>A stop entry waits on the breakout side (long above, short below). Use <code>type:"limit"</code> for a pullback entry.</td></tr>
+    <tr><td><code>trail_pct_invalid</code></td><td class="hl">400</td><td><code>trail_pct</code> is a percent between 0.05 and 50; it is refused, never silently clamped.</td></tr>
+    <tr><td><code>nothing_to_modify</code></td><td class="hl">400</td><td><code>/modify_order</code> needs at least one field.</td></tr>
+    <tr><td><code>plan_required</code></td><td class="hl">402</td><td>Webhooks and <code>/v1/ai</code> need API Pro or Max. Everything else on this page is on Free. The body carries <code>plan_needed</code>.</td></tr>
+    <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Legacy code for <code>plan_required</code>, still sent so a 2.3 bot recognises it.</td></tr>
+    <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Delete one first - three hooks on Pro, fifteen on Max.</td></tr>
+    <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
+    <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The daily AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
+    <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You are at your plan's open-position ceiling. Close something.</td></tr>
+    <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Harmless on a retry - the position is already settled.</td></tr>
+    <tr><td><code>no_price</code></td><td class="hl">400</td><td>No live price this instant; the position stays open. Retry.</td></tr>
+    <tr><td><code>unavailable</code></td><td class="hl">503</td><td>Transient. Retry with backoff.</td></tr>
+  </table></div>
+</section>
+
+<section id="liq-api">
+  <h2>Free liquidation data API <span class="tag data">LIVE DATA</span></h2>
+  <p>Real-time liquidations aggregated from <b>Binance, Bybit, OKX, BitMEX, Hyperliquid and Bitfinex</b> - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
+  <div class="epg">
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/feed</span><span class="d">The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Events land here seconds after they happen (3s edge cache). Poll every 3-5s.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class="d">Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/recent<em>?symbol=BTC&amp;minutes=1440</em></span><span class="d">Time-bucketed histogram (long vs short $ per bucket) for charts - the exact source of our heatmap's stats. <code>minutes</code>: up to 43200 (30 days).</span></div>
+    <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/clusters<em>?symbol=BTC</em></span><span class="d">Modeled liquidation clusters: price levels where liquidation liquidity is estimated to sit right now - <code>{clusters:[{price, side, est_notional}]}</code>. Refreshes continuously from live order flow.</span></div>
+  </div>
+  <p class="note">Attribution appreciated (link marginpad.io) but not required. Coverage is ~70%+ of the market's liquidation flow - the venues that move price. Educational use; no uptime SLA. Just want market data? The whole keyless surface is documented on the <a href="/free-crypto-api/">free crypto data API</a> page.</p>
+</section>
+
+<section id="workflow">
+  <h2>Backtest, paper, live - in that order</h2>
+  <p>Most crypto trading bots that look profitable in a backtest <b>lose money the first week they go live</b>. Backtests replay clean historical candles - they cannot catch a race condition in your order logic, a position-sizing bug that only shows up after a losing streak, or leverage that quietly grows past what your margin survives. Forward testing runs the same bot, the same code path, against real live prices in real time. If the strategy has a flaw, it shows up here, where a bug costs you nothing.</p>
+  <div class="tw"><table class="vs">
+    <tr><th></th><th>Backtesting</th><th class="hl">Paper trading (this API)</th><th>Live trading</th></tr>
+    <tr><td>Prices</td><td>Historical candles</td><td class="hl">Real live prices, real time</td><td>Real live prices</td></tr>
+    <tr><td>Risk</td><td class="y">None</td><td class="y">None - simulated dollars</td><td class="n">Real money at stake</td></tr>
+    <tr><td>Catches logic bugs</td><td class="n">Rarely - replayed data hides them</td><td class="y">Yes - same code path as live</td><td class="n">Yes, but each bug costs money</td></tr>
+    <tr><td>Overfitting check</td><td class="n">No - you tuned on this data</td><td class="y">Yes - unseen future data</td><td class="y">Yes</td></tr>
+    <tr><td>Cost</td><td class="y">Free</td><td class="y hl">Free to use - fees &amp; funding simulated</td><td class="n">Fees + losses + funding</td></tr>
+    <tr><td>Best for</td><td>Filtering ideas fast</td><td class="hl">Proving the bot before funding it</td><td>A strategy already proven twice</td></tr>
+  </table></div>
+  <p class="note" style="margin-bottom:26px">The middle step is the one most people skip - and the one that would have saved them. <a href="/crypto-backtester/">Backtest an idea here</a>, forward-test it on this API, then fund an account.</p>
+
+  <div class="golive" id="golive">
+    <div class="gl-h">Step three: where to run the bot for real</div>
+    <p>Everything on this page settles in simulated dollars. Once the bot has survived weeks of forward testing, the same code needs an exchange API to place real orders. Two venues we point bot builders at, for different reasons:</p>
+    <div class="gl-grid">
+      <div class="gl-card gl-hl" data-ex="Hyperliquid" id="glHl">
+        <div class="gl-ch"><span class="gl-mark">HL</span><b>Hyperliquid</b><span class="gl-pill">on-chain &middot; API-first</span></div>
+        <p>Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b> (the bot never holds your main key), hourly funding and a book anyone can audit on-chain. The closest thing to running against this API with real money.</p>
+        <div class="gl-offer"><b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span></div>
+        <a class="gl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Join Hyperliquid &rarr;</a>
+      </div>
+      <div class="gl-card" data-ex="Bybit" id="glBy">
+        <div class="gl-ch"><span class="gl-mark" style="background:#3a2a05;color:#f7a600">B</span><b id="glName">Bybit</b><span class="gl-pill">centralised &middot; deepest books</span></div>
+        <p id="glTxt">REST and WebSocket shapes close to what you just wrote, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.</p>
+        <a class="gl-cta gl-cta2" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
+      </div>
+    </div>
+    <span class="gl-note">Referral links - MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. The paper API stays free either way, and nothing here needs an exchange account. Hyperliquid is not available to US persons under its terms.</span>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>FAQ</h2>
+  <details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes - MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See <a href="#liq-api">the liquidation data section</a>.</p></details>
+  <div class="faq"><b>Is the trading bot API really free?</b><p>Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately. Paid plans only raise the ceilings.</p></div>
+  <div class="faq"><b>Which programming languages can I use?</b><p>Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code>X-API-Key</code> header.</p></div>
+  <div class="faq"><b>Which coins can my bot trade?</b><p>Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins, plus US stocks, forex majors, metals and indices as perps. Check a symbol with <code>GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
+  <div class="faq"><b>Do I need an exchange account or a deposit?</b><p>No. No deposit, no wallet, no KYC. You only sign in with an email so your API key and positions persist across sessions.</p></div>
+  <div class="faq"><b>Does MarginPad Premium include the API?</b><p>No. The Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website; the API plans unlock API limits. They are bought separately.</p></div>
+
+  <h2 style="margin-top:44px">Guides and tutorials</h2>
+  <div class="links">
+    <div class="faq"><b><a href="/blog/python-crypto-trading-bot-tutorial/">Python Crypto Trading Bot Tutorial</a></b><p>Build a working bot in Python and point it at this API - full code: price feed, EMA-cross strategy, open/close orders and the loop.</p></div>
+    <div class="faq"><b><a href="/blog/nodejs-crypto-trading-bot-tutorial/">Node.js Crypto Trading Bot Tutorial</a></b><p>The same bot in JavaScript - full Node.js code with zero dependencies, pointed at this API.</p></div>
+    <div class="faq"><b><a href="/blog/how-to-test-a-crypto-trading-bot/">How to Test a Crypto Trading Bot for Free</a></b><p>The three-stage workflow that separates working bots from blown accounts: backtest, paper trade, then go live.</p></div>
+    <div class="faq"><b><a href="/blog/grid-trading-bot-explained/">Grid Trading Bots Explained</a></b><p>How grid bots work, where they win and blow up, and how to forward-test one before funding it.</p></div>
+    <div class="faq"><b><a href="/blog/backtesting-vs-paper-trading-vs-live/">Backtesting vs Paper Trading vs Live</a></b><p>What each testing stage proves, and the exact order to use them.</p></div>
+    <div class="faq"><b><a href="/blog/ai-crypto-trading-strategies-2026/">AI Crypto Trading Strategies for 2026</a></b><p>The AI-assisted strategies that actually hold up - and how to test them risk-free before automating.</p></div>
+  </div>
+</section>
+
+  </div>
+</div>
+</div>
+</div>
+
+<div class="shell">
+  <footer>
+    <a href="/">MarginPad</a> · <a href="/tools/">Trading Tools</a> · <a href="/api-docs/">API reference</a> · <a href="/crypto-backtester/">Backtester</a> · <a href="/paper-trade">Paper Trade</a> · <a href="/arena/">Bot arena</a> · <a href="/trading-journal/">Journal</a><br>
+    <span>Simulated trading only. Not financial advice.</span>
+  </footer>
+</div>
+
 <script>
+/* Page shell: the hero's live price, the rail's active section, the quickstart tabs, and the plan bars.
+   Everything here is either WAAPI or a transition - the owner's machine has animation effects off, which
+   silences @keyframes entirely (CLAUDE.md), so nothing visible may depend on one. */
 (function(){
-  try{var u='/api/track?t=pageview&p=/trading-api/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
-  /* Key manager (2026-09-11). The API has had named keys, per-key metering and revoke since 2.0 - this box only ever
-     showed ONE key with a Rotate button, so nobody used them. Now: plan + limits, every key with its usage, create with
-     a name, rename, revoke. The full key is shown ONCE at creation (the list masks it); no confirm() on create. */
-  var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg'),mgr=document.getElementById('akbMgr'),tb=document.querySelector('#akbTable tbody'),plan=document.getElementById('akbPlan'),rev=document.getElementById('akbRev'),frm=document.getElementById('akbNew'),nameIn=document.getElementById('akbName');
-  var FULL={}; // k -> full key, only for keys created in this page session (the server never re-shows a key in the list)
-  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
-  function ago(t){if(!t)return 'never';var s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' d ago';}
-  function mask(k){return k.slice(0,8)+'…'+k.slice(-4);}
-  function api(body){return fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),credentials:'same-origin'}).then(function(r){return r.json();});}
-  function render(d){
-    var keys=(d&&d.keys)||[],p=(d&&d.plan)||{};var live=keys.filter(function(k){return !k.revoked;}),dead=keys.filter(function(k){return k.revoked;});
-    mgr.hidden=false;btn.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
-    var paid=p.tier==='pro'||p.tier==='max';
-    var tail='';
-    if(p.free_month&&p.days_left!=null)tail=' · <b style="color:#c2f64a">free month: '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' left</b> <a href="#plans">keep Pro &rarr;</a>';
-    else if(paid&&p.days_left!=null)tail=' · renews in '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' · <a href="#plans">plans &rarr;</a>';
-    else if(!paid)tail=' · <a href="#plans">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>';
-    plan.innerHTML='<b class="'+(paid?'prem':'')+'">'+esc(p.label||p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+tail+'</span>';
-    try{if(window.__apPlanPaint)window.__apPlanPaint();}catch(e){}
-    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td>'+(k.book?'<b style="color:#c2f64a">'+esc(k.book)+'</b>':'<span style="color:var(--faint)">main</span>')+'</td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="6" style="color:var(--faint)">No keys yet - create one below.</td></tr>';
-    usage(live); /* 2.5: calls per key for the last 7 days, refused (429) in red */
-    rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+' (usage history kept, they no longer authenticate)':'';
-    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(prem?'.':' - revoke one, or API Pro raises it to 10.');}else{frm.hidden=false;}
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 1. the hero demonstrates the API on itself: a real keyless call, printed into the response body. */
+  var px = document.getElementById('hpx'), ts = document.getElementById('hts');
+  var en = document.getElementById('hentry'), lq = document.getElementById('hliq');
+  var fmt = function(n){ return n >= 1000 ? n.toLocaleString('en-US',{maximumFractionDigits:1}) : n.toPrecision(6); };
+  fetch('/api/v1/price?symbol=BTC').then(function(r){return r.json();}).then(function(d){
+    var p = (d && d.data && d.data.price) || (d && d.price);
+    if(!(p > 0)) return;
+    px.textContent = fmt(p); ts.textContent = Date.now();
+    en.textContent = fmt(p);
+    /* the real formula, not a mock: long liq = entry x (1 - 1/leverage + maintenance), 10x at 0.5% */
+    lq.textContent = fmt(p * (1 - 1/10 + 0.005));
+    var dot = document.getElementById('liveDot');
+    if(dot && !rm && dot.firstElementChild && dot.firstElementChild.animate){
+      dot.firstElementChild.animate(
+        [{boxShadow:'0 0 0 0 rgba(194,246,74,.55)'},{boxShadow:'0 0 0 7px rgba(194,246,74,0)'}],
+        {duration:1800, iterations:Infinity, easing:'ease-out'});
+    }
+  }).catch(function(){ if(px) px.textContent = '64770.1'; if(ts) ts.textContent = Date.now(); if(en) en.textContent = '64770.1'; if(lq) lq.textContent = '58293.1'; });
+
+  /* 2. throughput bars at TRUE relative scale, drawn once when the plans come into view. */
+  var bars = [].slice.call(document.querySelectorAll('.thr-t i'));
+  var drawBars = function(){
+    bars.forEach(function(b, i){
+      var w = (+b.getAttribute('data-w') || 0) + '%';
+      if(rm || !b.animate){ b.style.width = w; return; }
+      b.style.width = w;
+      b.animate([{width:'0%'},{width:w}], {duration:760, delay:i*110, easing:'cubic-bezier(.2,.7,.3,1)'});
+    });
+  };
+  if(bars.length){
+    if(!('IntersectionObserver' in window)) drawBars();
+    else {
+      var bo = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ drawBars(); bo.disconnect(); } });
+      }, {threshold:.35});
+      bo.observe(document.querySelector('.apgrid'));
+    }
   }
-  var useEl=document.getElementById('akbUse');
-  function usage(live){ if(!useEl||!live.length){if(useEl)useEl.hidden=true;return;}
-    api({act:'usage'}).then(function(d){ if(!d||!Array.isArray(d.usage)){useEl.hidden=true;return;}
-      var days=[];for(var i=6;i>=0;i--)days.push(new Date(Date.now()-i*864e5).toISOString().slice(0,10));
-      var by={};d.usage.forEach(function(r){var kk=by[r.k]=by[r.k]||{};var dd=kk[r.day]=kk[r.day]||{c:0,r:0};if(r.ep==='_429')dd.r+=r.n;else dd.c+=r.n;});
-      var max=1;live.forEach(function(k){days.forEach(function(dy){var v=(by[k.k]||{})[dy];if(v&&v.c+v.r>max)max=v.c+v.r;});});
-      var tot=0,ref=0;
-      var rows=live.map(function(k){var cells=days.map(function(dy,ix){var v=(by[k.k]||{})[dy]||{c:0,r:0};tot+=v.c;ref+=v.r;var h=Math.round((v.c+v.r)/max*26),hr=v.r?Math.max(2,Math.round(v.r/max*26)):0;return '<i title="'+dy+': '+v.c+' calls'+(v.r?', '+v.r+' refused':'')+'"><em style="height:'+h+'px;'+(h?'':'background:transparent')+'">'+(hr?'<s style="height:'+hr+'px"></s>':'')+'</em><small>'+(ix===6?'today':dy.slice(8))+'</small></i>';}).join('');return '<div class="u"><b title="'+esc(k.name)+(k.book?' · book '+esc(k.book):'')+'">'+esc(k.name||'key')+(k.book?' <span style="color:#c2f64a">/'+esc(k.book)+'</span>':'')+'</b>'+cells+'</div>';}).join('');
-      useEl.innerHTML='<h4>Your usage · last 7 days</h4>'+rows+'<div class="n">'+tot.toLocaleString('en-US')+' calls'+(ref?', <span style="color:#ff6258">'+ref.toLocaleString('en-US')+' refused (429)</span> - a bot that hits the ceiling should use the WebSocket stream instead of polling':'')+'. Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>';
-      useEl.hidden=false;
-    }).catch(function(){useEl.hidden=true;});
+
+  /* 3. the rail follows the section you are reading. */
+  var links = [].slice.call(document.querySelectorAll('#rail a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if(secs.length && 'IntersectionObserver' in window){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        var id = '#' + e.target.id;
+        links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href') === id); });
+      });
+    }, {rootMargin:'-80px 0px -72% 0px'});
+    secs.forEach(function(s){ ro.observe(s); });
   }
-  function load(){api({act:'list'}).then(function(d){
-    if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;return;}
-    if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used - show it in full once */ render(d);return;}
-    msg.textContent='Could not load your keys - try again shortly.';}).catch(function(){msg.textContent='Network error - try again.';});}
-  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';}
-  var bookIn=document.getElementById('akbBook');
-  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';var bk=(bookIn&&bookIn.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);api({act:'create',name:nm,book:bk}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';if(bookIn)bookIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':d&&d.error==='max_books'?('Book limit reached: '+(d.max===1?'free accounts get one book besides the main account, Premium five.':'revoke the keys of a book you no longer use.')):d&&d.error==='bad_book'?'"main" is the account itself - leave the book empty for it.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key - try again.');}).catch(function(){msg.textContent='Network error - try again.';});});
-  tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
-    if(act==='copy'){try{navigator.clipboard.writeText(k);b.textContent='copied';setTimeout(function(){b.textContent='copy';},1400);}catch(x){}return;}
-    if(act==='show'){var kv=tr.querySelector('.akb-kv');if(FULL[k]){delete FULL[k];kv.textContent=mask(k);b.textContent='show';}else{FULL[k]=1;kv.textContent=k;b.textContent='hide';}return;}
-    if(act==='rename'){var nm=prompt('New name for this key:');if(nm==null)return;api({act:'rename',key:k,name:nm}).then(function(d){if(d&&d.keys)render(d);});return;}
-    if(act==='revoke'){if(!confirm('Revoke this key? Any bot using it stops working immediately.'))return;api({act:'revoke',key:k}).then(function(d){if(d&&d.keys)render(d);});}
+
+  /* 4. quickstart tabs. */
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){
+        var on = x === t;
+        x.setAttribute('aria-selected', on ? 'true' : 'false');
+        var pane = document.getElementById(x.getAttribute('aria-controls'));
+        if(pane) pane.hidden = !on;
+      });
+    });
   });
-  btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first - the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';});
-  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';FULL={};}});
-  var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
+
+  /* 5. lifetime calls in the proof strip, from the public plan catalogue's sibling - kept static unless
+        the number is ever exposed; the figure printed in the markup is the measured one. */
 })();
 </script>
+
 <script>
 /* API plans (2026-09-15). Reads /api/apiplan, prints where the reader stands and buys a month with either
    the rewards balance or crypto. The free-month countdown is the whole point of the banner: an account that
@@ -722,7 +1061,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
   function paint(){
     if(!state){box.hidden=true;return;}
     var c=state.current;
-    if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#key">Sign in</a> to see your plan, generate a key, or buy Pro or Max.','<b>No has iniciado sesión.</b> <a href="#key">Inicia sesión</a> para ver tu plan, generar una clave o comprar Pro o Max.'); return; }
+    if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#akb">Sign in</a> to see your plan, generate a key, or buy Pro or Max.','<b>No has iniciado sesión.</b> <a href="#akb">Inicia sesión</a> para ver tu plan, generar una clave o comprar Pro o Max.'); return; }
     box.hidden=false;
     if(!c||c.plan==='free'){ box.innerHTML=T('You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.','Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
     else if(c.free_month){ box.innerHTML=ES?('Estás en <b>Pro</b> gratis porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class="apdays">Te '+(c.days_left===1?'queda 1 día':'quedan '+esc(c.days_left)+' días')+'</span>: termina el '+esc(new Date(c.until).toISOString().slice(0,10))+' y la clave baja a Free (120 peticiones por minuto) salvo que elijas un plan.'):('You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class="apdays">'+esc(c.days_left)+' day'+(c.days_left===1?'':'s')+' left</span> - it ends on '+esc(new Date(c.until).toISOString().slice(0,10))+', and the key drops to Free (120 requests a minute) unless you pick a plan.'); }
@@ -773,6 +1112,89 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
   if(/[?&]plan=ok/.test(location.search))say(T('Payment received - if the plan is not showing yet, give the confirmation a minute and reload.','Pago recibido. Si el plan aún no aparece, dale un minuto a la confirmación y recarga.'));
 })();
 </script>
+
+<script>
+/* Bybit does not onboard the US or Canada. mp-auth.js is deferred, so poll for window.mpEx (documented
+   gotcha) and swap the venue for the best one that actually takes readers in that country. */
+(function () {
+  var n = 0, iv = setInterval(function () {
+    if (++n > 80) { clearInterval(iv); return; }
+    if (!window.mpEx || !window.mpEx.cc) return;
+    clearInterval(iv);
+    window.mpEx.cc(function (c) {
+      if (!c) return;
+      // Hyperliquid: dim + label where its terms exclude the reader (the same rule every partner card follows)
+      if (window.mpEx.blocked('Hyperliquid', c)) { var h = document.getElementById('glHl'); if (h && !h.querySelector('.mp-ex-na')) { h.classList.add('mp-ex-off'); var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + (window.mpEx.region(c) || 'your country'); h.appendChild(s); } }
+      if (!window.mpEx.blocked('Bybit', c)) return;
+      // this page's reader wants an API, so prefer a venue with a documented trading API over the plain country order
+      var v = ['Kraken', 'Crypto.com'].filter(function (x) { return !window.mpEx.blocked(x, c); })[0] || window.mpEx.best(null, c);
+      var a = document.getElementById('glLink'), t = document.getElementById('glTxt'), nm = document.getElementById('glName'), by = document.getElementById('glBy');
+      if (!v || !a || !t) return;
+      a.href = window.mpEx.url(v); a.setAttribute('data-mpex', v); a.setAttribute('data-ex', v);
+      a.textContent = 'Open a ' + v + ' account →'; if (nm) nm.textContent = v; if (by) by.setAttribute('data-ex', v);
+      t.innerHTML = 'Bybit does not onboard traders in ' + (window.mpEx.region(c) || 'your country') + ', so this points at <b>' + v + '</b> instead - a venue that does, with a documented REST API.';
+    });
+  }, 100);
+})();
+</script>
+
+<script>
+/* API key manager: mint, name, revoke and inspect the keys on this account. Restored verbatim from the
+   pre-redesign page - it carries the per-key 7-day usage chart, the one-time full-key reveal and the
+   deferred-mp-auth handshake, none of which should be rewritten from memory. */
+(function(){
+  var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg'),mgr=document.getElementById('akbMgr'),tb=document.querySelector('#akbTable tbody'),plan=document.getElementById('akbPlan'),rev=document.getElementById('akbRev'),frm=document.getElementById('akbNew'),nameIn=document.getElementById('akbName');
+  var FULL={}; // k -> full key, only for keys created in this page session (the server never re-shows a key in the list)
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function ago(t){if(!t)return 'never';var s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' d ago';}
+  function mask(k){return k.slice(0,8)+'…'+k.slice(-4);}
+  function api(body){return fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),credentials:'same-origin'}).then(function(r){return r.json();});}
+  function render(d){
+    var keys=(d&&d.keys)||[],p=(d&&d.plan)||{};var live=keys.filter(function(k){return !k.revoked;}),dead=keys.filter(function(k){return k.revoked;});
+    mgr.hidden=false;btn.hidden=true;var _e=document.getElementById('akbEmpty');if(_e)_e.hidden=true; /* the one-time full-key box (#akbKey) is left alone here: render() runs right after a create and must not hide the key it just revealed */
+    var paid=p.tier==='pro'||p.tier==='max';
+    var tail='';
+    if(p.free_month&&p.days_left!=null)tail=' · <b style="color:#c2f64a">free month: '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' left</b> <a href="#plans">keep Pro &rarr;</a>';
+    else if(paid&&p.days_left!=null)tail=' · renews in '+esc(p.days_left)+' day'+(p.days_left===1?'':'s')+' · <a href="#plans">plans &rarr;</a>';
+    else if(!paid)tail=' · <a href="#plans">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>';
+    plan.innerHTML='<b class="'+(paid?'prem':'')+'">'+esc(p.label||p.tier||'free')+' plan</b><span>'+esc(p.requests_per_minute||120)+' req/min per key · '+live.length+'/'+esc(p.max_keys||3)+' keys · '+esc(p.max_open_positions||50)+' open positions'+tail+'</span>';
+    try{if(window.__apPlanPaint)window.__apPlanPaint();}catch(e){}
+    tb.innerHTML=live.length?live.map(function(k){var full=FULL[k.k];return '<tr data-k="'+esc(k.k)+'"><td>'+esc(k.name||'default')+' <button class="akb-lnk" data-act="rename" title="Rename">rename</button></td><td>'+(k.book?'<b style="color:#c2f64a">'+esc(k.book)+'</b>':'<span style="color:var(--faint)">main</span>')+'</td><td><span class="akb-kv">'+esc(full?k.k:mask(k.k))+'</span> <button class="akb-lnk" data-act="show">'+(full?'hide':'show')+'</button> <button class="akb-lnk" data-act="copy">copy</button></td><td>'+(k.calls||0).toLocaleString('en-US')+'</td><td>'+ago(k.last)+'</td><td><button class="akb-lnk red" data-act="revoke">revoke</button></td></tr>';}).join(''):'<tr><td colspan="6" style="color:var(--faint)">No keys yet - create one below.</td></tr>';
+    usage(live); /* 2.5: calls per key for the last 7 days, refused (429) in red */
+    rev.hidden=!dead.length;rev.textContent=dead.length?dead.length+' revoked key'+(dead.length===1?'':'s')+' (usage history kept, they no longer authenticate)':'';
+    if(live.length>=(p.max_keys||3)){frm.hidden=true;msg.textContent='You hold the maximum number of keys on this plan'+(paid?'.':' - revoke one, or API Pro raises it to 10.');}else{frm.hidden=false;}
+  }
+  var useEl=document.getElementById('akbUse');
+  function usage(live){ if(!useEl||!live.length){if(useEl)useEl.hidden=true;return;}
+    api({act:'usage'}).then(function(d){ if(!d||!Array.isArray(d.usage)){useEl.hidden=true;return;}
+      var days=[];for(var i=6;i>=0;i--)days.push(new Date(Date.now()-i*864e5).toISOString().slice(0,10));
+      var by={};d.usage.forEach(function(r){var kk=by[r.k]=by[r.k]||{};var dd=kk[r.day]=kk[r.day]||{c:0,r:0};if(r.ep==='_429')dd.r+=r.n;else dd.c+=r.n;});
+      var max=1;live.forEach(function(k){days.forEach(function(dy){var v=(by[k.k]||{})[dy];if(v&&v.c+v.r>max)max=v.c+v.r;});});
+      var tot=0,ref=0;
+      var rows=live.map(function(k){var cells=days.map(function(dy,ix){var v=(by[k.k]||{})[dy]||{c:0,r:0};tot+=v.c;ref+=v.r;var h=Math.round((v.c+v.r)/max*26),hr=v.r?Math.max(2,Math.round(v.r/max*26)):0;return '<i title="'+dy+': '+v.c+' calls'+(v.r?', '+v.r+' refused':'')+'"><em style="height:'+h+'px;'+(h?'':'background:transparent')+'">'+(hr?'<s style="height:'+hr+'px"></s>':'')+'</em><small>'+(ix===6?'today':dy.slice(8))+'</small></i>';}).join('');return '<div class="u"><b title="'+esc(k.name)+(k.book?' · book '+esc(k.book):'')+'">'+esc(k.name||'key')+(k.book?' <span style="color:#c2f64a">/'+esc(k.book)+'</span>':'')+'</b>'+cells+'</div>';}).join('');
+      useEl.innerHTML='<h4>Your usage · last 7 days</h4>'+rows+'<div class="n">'+tot.toLocaleString('en-US')+' calls'+(ref?', <span style="color:#ff6258">'+ref.toLocaleString('en-US')+' refused (429)</span> - a bot that hits the ceiling should use the WebSocket stream instead of polling':'')+'. Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>';
+      useEl.hidden=false;
+    }).catch(function(){useEl.hidden=true;});
+  }
+  function load(){api({act:'list'}).then(function(d){
+    if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;var _e3=document.getElementById('akbEmpty');if(_e3)_e3.hidden=false;return;}
+    if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used - show it in full once */ render(d);return;}
+    msg.textContent='Could not load your keys - try again shortly.';}).catch(function(){msg.textContent='Network error - try again.';});}
+  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';}
+  var bookIn=document.getElementById('akbBook');
+  frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';var bk=(bookIn&&bookIn.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);api({act:'create',name:nm,book:bk}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';if(bookIn)bookIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':d&&d.error==='max_books'?('Book limit reached: '+(d.max===1?'free accounts get one book besides the main account, Premium five.':'revoke the keys of a book you no longer use.')):d&&d.error==='bad_book'?'"main" is the account itself - leave the book empty for it.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key - try again.');}).catch(function(){msg.textContent='Network error - try again.';});});
+  tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
+    if(act==='copy'){try{navigator.clipboard.writeText(k);b.textContent='copied';setTimeout(function(){b.textContent='copy';},1400);}catch(x){}return;}
+    if(act==='show'){var kv=tr.querySelector('.akb-kv');if(FULL[k]){delete FULL[k];kv.textContent=mask(k);b.textContent='show';}else{FULL[k]=1;kv.textContent=k;b.textContent='hide';}return;}
+    if(act==='rename'){var nm=prompt('New name for this key:');if(nm==null)return;api({act:'rename',key:k,name:nm}).then(function(d){if(d&&d.keys)render(d);});return;}
+    if(act==='revoke'){if(!confirm('Revoke this key? Any bot using it stops working immediately.'))return;api({act:'revoke',key:k}).then(function(d){if(d&&d.keys)render(d);});}
+  });
+  btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first - the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';});
+  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';FULL={};var _e2=document.getElementById('akbEmpty');if(_e2)_e2.hidden=false;}});
+  var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
+})();
+</script>
+
 <script defer src="/assets/mp-auth.js?v=35f0932a"></script>
 <script defer src="/assets/mp-nav.js?v=c014555f"></script>
 </body>

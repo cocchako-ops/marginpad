@@ -21163,7 +21163,12 @@ export class UserStore {
       // the worker resolves the account's API PLAN (KV api:sub - never Premium, split 2026-09-15) and passes the tier
       // down; we write it onto every key the account owns so the hot auth path can read it for free.
       if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', Math.max(0, Math.min(2, Math.round(+b.tier || 0))), uid); } catch (e) {} }
-      const tier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
+      // The worker's value WINS when it sent one: it just read api:sub, while the SELECT below reads rows that may
+      // not exist yet. Measured 2026-09-15: an account on a paid plan minting its FIRST key got a tier-0 key and a
+      // "Free plan" panel, because the UPDATE touched nothing and the SELECT found nothing.
+      const tier = (b.tier != null)
+        ? Math.max(0, Math.min(2, Math.round(+b.tier || 0)))
+        : (+(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0);
       const LIM = BOT_TIER_LIMITS(tier);
       const MAX_KEYS = LIM.maxKeys;
       const list = () => this.rows('SELECT k, name, created, last, calls, rpm, revoked, tier, book FROM botkeys2 WHERE uid=? ORDER BY created', uid).map(r => Object.assign(r, { book: r.book || '' }));

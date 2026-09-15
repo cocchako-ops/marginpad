@@ -133,6 +133,24 @@ const usage = async () => (await bot('/usage')).body.data || {};
     chk('SKIPPED: could not fund the e2e balance, purchase path not exercised', false, gift.body);
   }
 
+  // ── the FIRST key an account mints must already carry its plan ───────────────────────────────────────────
+  // Measured 2026-09-15: it did not. The DO updated botkeys2 rows that did not exist yet and then read the tier
+  // back from the same empty table, so an account that had already paid got a tier-0 first key and a panel that
+  // said "Free plan". The worker's tier now wins whenever it sends one.
+  const UID2 = UID + 'b';
+  const mk2 = await admin('/api/admin/e2euser', { uid: UID2, op: 'mk' });
+  const se2 = await admin('/api/admin/e2euser', { uid: UID2, op: 'sess' });
+  chk('second e2e member minted', mk2.status === 200 && !!se2.body.token);
+  await admin('/api/admin/apiplans', { uid: UID2, plan: 'pro', days: 7, src: 'e2e' }); // plan FIRST, key after
+  const kr2 = await fetch(ORIGIN + '/api/bot/key', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + se2.body.token }, body: JSON.stringify({ act: 'create', name: 'first' }) });
+  const kj2 = await kr2.json().catch(() => ({}));
+  chk('the first key of an account already on Pro is minted ON Pro', kj2.plan && kj2.plan.tier === 'pro' && kj2.plan.requests_per_minute === 600 && kj2.plan.max_keys === 10, kj2.plan && { tier: kj2.plan.tier, rpm: kj2.plan.requests_per_minute });
+  const KEY2 = kj2.key || (kj2.keys && kj2.keys[0] && kj2.keys[0].k) || '';
+  const u2 = await (await fetch(ORIGIN + '/api/bot/v2/usage', { headers: { 'x-api-key': KEY2, 'x-admin-key': K } })).json().catch(() => ({}));
+  chk('and that key really authenticates at 600/min', u2.ok && u2.data && u2.data.plan === 'pro' && u2.data.limits.requests_per_minute === 600, u2.data && { plan: u2.data.plan, rpm: u2.data.limits.requests_per_minute });
+  await admin('/api/admin/apiplans', { uid: UID2, plan: 'free' });
+  await admin('/api/admin/e2euser', { uid: UID2, op: 'rm' });
+
   // ── cleanup ──────────────────────────────────────────────────────────────────────────────────────────────
   await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });
   const after = await site('/api/apiplan');

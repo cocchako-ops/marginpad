@@ -2107,9 +2107,9 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 1,
-  "hit": 408,
-  "missing": 0
+  "cover": 0.9974160206718347,
+  "hit": 386,
+  "missing": 1
  },
  {
   "rel": "trading-competition/index.html",

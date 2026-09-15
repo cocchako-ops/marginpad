@@ -1,12 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T01:01:11.127Z",
+  "generated": "2026-09-15T01:30:14.027Z",
   "pages": 373,
-  "occurrences": 25148,
-  "unique": 13292,
-  "words": 247497,
+  "occurrences": 25127,
+  "unique": 13293,
+  "words": 247786,
   "untranslated": 0,
-  "untranslatedWords": 0
+  "untranslatedWords": 0,
+  "merged": "2026-09-15T01:43:06.037Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -9027,10 +9028,9 @@
     "html"
    ],
    "ctx": [
-    "/api/",
-    "/trading-api/"
+    "/api/"
    ],
-   "n": 9,
+   "n": 3,
    "w": 1
   },
   "dj25905nTH": {
@@ -9175,10 +9175,9 @@
     "html"
    ],
    "ctx": [
-    "/api/",
-    "/trading-api/"
+    "/api/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 4
   },
   "sHcNZqCUwy": {
@@ -10777,10 +10776,9 @@
    ],
    "ctx": [
     "/app.html",
-    "/spot/",
-    "/trading-api/"
+    "/spot/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 1
   },
   "BJLQQ88bfb": {
@@ -22064,7 +22062,7 @@
     "/crypto-trading-simulator-no-sign-up/",
     "/exchanges/"
    ],
-   "n": 38,
+   "n": 35,
    "w": 1
   },
   "usXudyxx8E": {
@@ -97431,9 +97429,10 @@
     "html"
    ],
    "ctx": [
-    "/free-crypto-api/"
+    "/free-crypto-api/",
+    "/trading-api/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1
   },
   "7mIJI_9fxR": {
@@ -147358,93 +147357,9 @@
    "n": 2,
    "w": 10
   },
-  "xHAk_GTMpH": {
-   "en": "<a href=\"/coins/\">Markets</a> <a href=\"/tools/\">Tools</a>",
-   "es": "<a href=\"/coins/\">Mercados</a> <a href=\"/tools/\">Herramientas</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "7tbaoWBFkQ": {
-   "en": "<span class=\"free\">● 100% free · no deposit · real live prices</span>",
-   "es": "<span class=\"free\">● 100% gratis · sin depósito · precios reales en vivo</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "x0kMKlCNxF": {
-   "en": "Test your trading bot - for free.",
-   "es": "Prueba tu bot de trading - gratis.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "eaOsVcPexD": {
-   "en": "Point your bot at our paper-trading REST API. Real live crypto prices, leveraged positions up to 1000×, stop-loss/take-profit, partial closes and liquidation simulation - without risking a cent. Your bot's whole strategy, proven before it ever touches real money.",
-   "es": "Apunta tu bot a nuestra API REST de paper trading. Precios cripto reales en vivo, posiciones apalancadas de hasta 1000×, stop-loss/take-profit, cierres parciales y simulación de liquidación - sin arriesgar un centavo. Toda la estrategia de tu bot, comprobada antes de que toque dinero real.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 37
-  },
-  "suwGuq3taH": {
-   "en": "<span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span><span>market, limit &amp; stop orders</span><span>trailing stops</span><span>WebSocket stream</span><span>replay</span>",
-   "es": "<span>120 req/min</span><span>50 posiciones abiertas</span><span>hasta 1000× de apalancamiento</span><span>cualquier par USDT</span><span>máx. $100k de margen por operación</span><span>órdenes market, limit y stop</span><span>trailing stops</span><span>stream por WebSocket</span><span>replay</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 26
-  },
-  "adn4hXFXA6": {
-   "en": "Those are the <b>free</b> limits, and free is the whole engine. <a href=\"#plans\" style=\"color:var(--lime);font-weight:700\">Pro ($19) and Max ($49)</a> raise the ceilings and add webhooks and AI reads. API plans are separate from site Premium.",
-   "es": "Esos son los límites del plan <b>gratuito</b>, y el gratuito trae el motor entero. <a href=\"#plans\" style=\"color:var(--lime);font-weight:700\">Pro ($19) y Max ($49)</a> suben los topes y añaden webhooks y lecturas de mercado con IA. Los planes de API están separados de Premium del sitio.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 32
-  },
-  "VA78p0QsOT": {
-   "en": "Just want market data? See the <a href=\"/free-crypto-api/\" style=\"color:var(--lime);font-weight:700\">free crypto data API</a> - keyless live prices, OHLC, a scored screener, funding, open interest, liquidations, an economic calendar and calculators, all CORS-enabled with an <a href=\"/api/openapi.json\" style=\"color:var(--lime)\">OpenAPI spec</a>.",
-   "es": "¿Solo quieres datos de mercado? Mira la <a href=\"/free-crypto-api/\" style=\"color:var(--lime);font-weight:700\">API de datos cripto gratis</a> - precios en vivo sin clave, OHLC, un screener con puntuación, funding, interés abierto, liquidaciones, un calendario económico y calculadoras, todo habilitado con CORS y con una <a href=\"/api/openapi.json\" style=\"color:var(--lime)\">especificación OpenAPI</a>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 31
-  },
-  "btbGgvggh5": {
-   "en": "1 · Get your free API key",
-   "es": "1 · Obtén tu clave API gratis",
+  "N2f_KyKaY_": {
+   "en": "<a href=\"#quickstart\">Quickstart</a> <a href=\"#endpoints\">Endpoints</a> <a href=\"#plans\">Plans</a> <a href=\"/api-docs/\">Reference</a> <a href=\"/arena/\">Arena</a>",
+   "es": "<a href=\"#quickstart\">Inicio rápido</a> <a href=\"#endpoints\">Endpoints</a> <a href=\"#plans\">Planes</a> <a href=\"/api-docs/\">Referencia</a> <a href=\"/arena/\">Arena</a>",
    "kind": [
     "html"
    ],
@@ -147454,9 +147369,9 @@
    "n": 1,
    "w": 5
   },
-  "yFnbKeciZ_": {
-   "en": "Sign in with just an email (no password, no KYC), then create a key. Your bot's positions persist on your account. Several keys per account - one per bot - each with its own name, usage counter and rate budget.",
-   "es": "Inicia sesión con solo un correo (sin contraseña, sin KYC), y luego crea una clave. Las posiciones de tu bot se guardan en tu cuenta. Puedes tener varias claves por cuenta - una por bot - cada una con su propio nombre, contador de uso y presupuesto de peticiones.",
+  "FGUGDvMtx2": {
+   "en": "<span class=\"live\" id=\"liveDot\"><i></i> Live prices · server-side fills · no deposit</span>",
+   "es": "<span class=\"live\" id=\"liveDot\"><i></i> Precios en vivo · ejecuciones en el servidor · sin depósito</span>",
    "kind": [
     "html"
    ],
@@ -147464,7 +147379,343 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 37
+   "w": 6
+  },
+  "VPyRi09ovt": {
+   "en": "The exchange your bot can <em>afford to break</em>.",
+   "es": "El exchange que tu bot <em>se puede permitir romper</em>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "FkNsB4j80n": {
+   "en": "A paper-trading futures API on real live prices. Your bot opens leveraged positions, rests limit and stop orders, trails its stops and gets liquidated - <b>settled on our servers, in simulated dollars</b>. Same code you will run for real, none of the consequences.",
+   "es": "Una API de futuros en paper trading con precios reales en vivo. Tu bot abre posiciones apalancadas, deja órdenes límite y stop pendientes, mueve sus trailing stops y se liquida - <b>todo se resuelve en nuestros servidores, en dólares simulados</b>. El mismo código que vas a usar en real, sin ninguna de las consecuencias.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 41
+  },
+  "g0GiTjnyNc": {
+   "en": "<a class=\"btn\" href=\"#akb\">Get a free API key</a> <a class=\"btn sec\" href=\"#quickstart\">Read the quickstart</a>",
+   "es": "<a class=\"btn\" href=\"#akb\">Obtén una clave API gratis</a> <a class=\"btn sec\" href=\"#quickstart\">Lee la guía rápida</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "ZiN8ucGRs0": {
+   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $19</a> when one bot becomes four. Market data stays keyless on every plan.",
+   "es": "Sin tarjeta, sin KYC, sin depósito. Gratis para siempre con 120 peticiones por minuto - <a href=\"#plans\">Pro cuesta $19</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 27
+  },
+  "B48mKJEUe6": {
+   "en": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">live now</span>",
+   "es": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">en vivo ahora</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "vX7wsoPgD7": {
+   "en": "<span>POST /open</span><span class=\"lbl\">example</span>",
+   "es": "<span>POST /open</span><span class=\"lbl\">ejemplo</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "tv9T-zKkRt": {
+   "en": "endpoints, plus a WebSocket, webhooks and an MCP server",
+   "es": "endpoints, además de un WebSocket, webhooks y un servidor MCP",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "hpfIB7abdD": {
+   "en": "real venue fee schedules your fills can be charged at",
+   "es": "tablas reales de comisiones de exchanges con las que se pueden cobrar tus ejecuciones",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "qiM8uRY0Pa": {
+   "en": "maximum leverage, on any USDT pair with a live price",
+   "es": "de apalancamiento máximo, en cualquier par USDT con precio en vivo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "lWwnd5xDGe": {
+   "en": "calls served for the bots already running on it",
+   "es": "peticiones atendidas para los bots que ya se ejecutan en ella",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "usAHs68QRe": {
+   "en": "<span class=\"kick\">Quickstart</span>",
+   "es": "<span class=\"kick\">Inicio rápido</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "aocT-Pd_US": {
+   "en": "Three calls from nothing to a live position",
+   "es": "Tres llamadas para pasar de nada a una posición en vivo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "YdESWW3TFw": {
+   "en": "The first one needs no key at all - paste it into a terminal before you decide anything. Every path below exists in a frozen <code>v1</code> and an enveloped <code>v2</code>; pick one and it will not move under you.",
+   "es": "La primera no necesita ninguna clave - pégala en una terminal antes de decidir nada. Cada ruta de abajo existe en una <code>v1</code> congelada y una <code>v2</code> con envoltorio; elige una y no se va a mover bajo tus pies.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 36
+  },
+  "0F29deGmPq": {
+   "en": "<span class=\"qn\">STEP 01</span>",
+   "es": "<span class=\"qn\">PASO 01</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "FOQXWZsQz_": {
+   "en": "Read the market",
+   "es": "Lee el mercado",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "VIf3qWtMLs": {
+   "en": "<code>GET /v1/price</code> and <code>/v1/klines</code> are keyless and CORS-enabled. Up to 1,000 candles a call, seven intervals, paged backwards with <code>&amp;end=</code> for as much history as a backtest needs.",
+   "es": "<code>GET /v1/price</code> y <code>/v1/klines</code> no requieren clave y tienen CORS habilitado. Hasta 1,000 velas por llamada, siete temporalidades, paginadas hacia atrás con <code>&amp;end=</code> para tanto historial como necesite un backtest.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "UJgk54aRnU": {
+   "en": "<span class=\"qn\">STEP 02</span>",
+   "es": "<span class=\"qn\">PASO 02</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "gUg9ARqYCc": {
+   "en": "Open a position",
+   "es": "Abre una posición",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "TXQUyg_QHz": {
+   "en": "<code>POST /v1/open</code> fills at the live price with isolated margin and gives you back the liquidation level. Add <code>type:\"limit\"</code> or <code>\"stop\"</code> to rest an order server-side, or <code>dry_run</code> to price a trade without writing anything.",
+   "es": "<code>POST /v1/open</code> ejecuta al precio en vivo con margen aislado y te devuelve el nivel de liquidación. Añade <code>type:\"limit\"</code> o <code>\"stop\"</code> para dejar una orden pendiente en el servidor, o <code>dry_run</code> para cotizar una operación sin escribir nada.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 34
+  },
+  "BVlM9dds07": {
+   "en": "<span class=\"qn\">STEP 03</span>",
+   "es": "<span class=\"qn\">PASO 03</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "D8_DTB7aQI": {
+   "en": "Let the server work",
+   "es": "Deja que el servidor trabaje",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "tkKLIRHySJ": {
+   "en": "Stops, targets, trailing stops and liquidations settle on our side, on 1-minute candles, whether or not your bot is running. Read the outcome from <code>/positions</code>, the stream, or a webhook.",
+   "es": "Los stops, los objetivos, los trailing stops y las liquidaciones se resuelven de nuestro lado, sobre velas de 1 minuto, esté tu bot corriendo o no. Lee el resultado desde <code>/positions</code>, el stream o un webhook.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "QjUie1FDat": {
+   "en": "python",
+   "es": "python",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "kN41pYAO7c": {
+   "en": "node.js",
+   "es": "node.js",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "ZGv0-eWXRd": {
+   "en": "plain http",
+   "es": "http simple",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "MlrLeFulZc": {
+   "en": "Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style=\"color:var(--ink)\">Official clients</b>, one file each and zero dependencies: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
+   "es": "Autentica con <code>X-API-Key</code> en cada llamada excepto <code>/price</code>, <code>/klines</code> y <code>/time</code>. <b style=\"color:var(--ink)\">Clientes oficiales</b>, un archivo cada uno y cero dependencias: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, polling con ETag, back-off de 429 y verificación de firma de webhooks incluidos.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 33
+  },
+  "YQvKK4Sh9O": {
+   "en": "Get your key",
+   "es": "Obtén tu clave",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "PwVN322tmb": {
+   "en": "Sign in with an email - no password, no KYC. Your bot's positions persist on your account, and one account can hold several keys so a backtest bot and a live bot never share a rate budget.",
+   "es": "Inicia sesión con un correo - sin contraseña, sin KYC. Las posiciones de tu bot persisten en tu cuenta, y una cuenta puede tener varias claves para que un bot de backtest y un bot en vivo nunca compartan el mismo límite de peticiones.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 33
   },
   "iWhe7fyQuO": {
    "en": "Sign in &amp; get my API key",
@@ -147550,9 +147801,9 @@
    "n": 1,
    "w": 2
   },
-  "ZNLnQ7lhkL": {
-   "en": "2 · Endpoints",
-   "es": "2 · Endpoints",
+  "CkgE9A1XV8": {
+   "en": "Your keys, their usage and the book each one trades appear here once you are signed in. Keys are secrets - anyone holding one can trade your paper account.",
+   "es": "Tus claves, su uso y el book que opera cada una aparecen aquí en cuanto inicias sesión. Las claves son secretas - cualquiera que tenga una puede operar tu cuenta de paper trading.",
    "kind": [
     "html"
    ],
@@ -147560,143 +147811,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 1
+   "w": 28
   },
-  "soTOGVOCjW": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/price?symbol=BTC</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/price?symbol=BTC</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "uclusjJRR9": {
-   "en": "Live price for any USDT pair. <b>No key needed</b> - try it right now in your browser.",
-   "es": "Precio en vivo para cualquier par USDT. <b>No necesita clave</b> - pruébalo ahora mismo en tu navegador.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "z5aP45vBIz": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "1VQXOquTig": {
-   "en": "OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b> Returns up to <b>1000 candles</b> per call, newest last - that is about 16 hours on 1m, 3 days on 5m, 10 days on 15m, 41 days on 1h, 166 days on 4h and roughly 3 years on 1d.",
-   "es": "Velas OHLC para tu estrategia (intervalos: 1, 5, 15, 30, 60, 240, 1440 minutos). <b>No necesita clave.</b> Devuelve hasta <b>1000 velas</b> por llamada, la más reciente al final - eso es cerca de 16 horas en 1m, 3 días en 5m, 10 días en 15m, 41 días en 1h, 166 días en 4h y aproximadamente 3 años en 1d.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 53
-  },
-  "9twjQgzY42": {
-   "en": "<b>Going further back:</b> pass <code>&amp;end=&lt;unix ms&gt;</code> to fetch the 1000 candles ending at that moment. Take the <code>time</code> of the first candle you received (it is in <b>seconds</b>), multiply by 1000, and use that as the next <code>end</code>. Repeat until you have the history your backtest needs:",
-   "es": "<b>Para ir más atrás:</b> pasa <code>&amp;end=&lt;unix ms&gt;</code> para obtener las 1000 velas que terminan en ese momento. Toma el <code>time</code> de la primera vela que recibiste (está en <b>segundos</b>), multiplícalo por 1000, y úsalo como el siguiente <code>end</code>. Repite hasta tener el historial que necesita tu backtest:",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 49
-  },
-  "yQ9NwdZWup": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "9QC73Qef5r": {
-   "en": "Open a simulated position at the live price. Body: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"margin_usd\":100,\"leverage\":20,\"sl\":58000,\"tp\":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>. Add <code>\"trail_pct\":1.5</code> for a <b>trailing stop</b> (see below) and <code>\"dry_run\":true</code> to get the priced trade back - entry, quantity, liquidation price and distance, the open fee and the full round trip - <b>without writing anything</b>. Use the dry run to size a position or to unit-test your bot against the real engine.",
-   "es": "Abre una posición simulada al precio en vivo. Body: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"margin_usd\":100,\"leverage\":20,\"sl\":58000,\"tp\":66000}</code> (sl/tp opcionales). Devuelve la posición, incluido su <code>liq_price</code>. Agrega <code>\"trail_pct\":1.5</code> para un <b>trailing stop</b> (ver abajo) y <code>\"dry_run\":true</code> para recibir de vuelta la operación cotizada - entrada, cantidad, precio de liquidación y distancia, la comisión de apertura y el round trip completo - <b>sin escribir nada</b>. Usa el dry run para calcular el tamaño de una posición o para probar tu bot contra el motor real.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 65
-  },
-  "XbcUCblHit": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- trailing stop</b>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- trailing stop</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "S75J6M-IU9": {
-   "en": "<code>trail_pct</code> sets a stop that <b>follows the best price seen since entry</b> at that percent distance, ratcheted <b>on the server</b>: from 1-minute candle extremes on the minute sweep and from the live price on every <code>/positions</code> read, so it keeps moving while your bot is offline and never loosens. A long opened at 60,000 with <code>trail_pct: 1</code> starts with its stop at 59,400; when price prints 63,000 the stop is 62,370. Positions carry <code>trail_pct</code> and <code>trail_hwm</code> (the extreme it is ratcheting from). Set or clear it later through <code>/sltp</code>.",
-   "es": "<code>trail_pct</code> establece un stop que <b>sigue el mejor precio visto desde la entrada</b> a esa distancia porcentual, ajustado <b>en el servidor</b>: desde los extremos de las velas de 1 minuto en el barrido por minuto, y desde el precio en vivo en cada lectura de <code>/positions</code>, así que sigue moviéndose mientras tu bot está desconectado y nunca se afloja. Un long abierto en 60,000 con <code>trail_pct: 1</code> empieza con su stop en 59,400; cuando el precio marca 63,000, el stop queda en 62,370. Las posiciones llevan <code>trail_pct</code> y <code>trail_hwm</code> (el extremo desde el que se ajusta). Puedes fijarlo o borrarlo más tarde a través de <code>/sltp</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 86
-  },
-  "E-aM-AQ0fQ": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- limit order</b>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- orden límite</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "jbI7XzWxjb": {
-   "en": "Add <code>\"type\":\"limit\"</code> and <code>\"limit_price\"</code> and the order <b>rests on the server</b> instead of filling now: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"limit\",\"limit_price\":58000,\"margin_usd\":100,\"leverage\":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross - the fill is found from the 1m high/low, so a wick that retraced between two checks still counts, and the position is stamped with the minute the market actually reached the level. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill. <code>sl</code>/<code>tp</code> are side-checked against the limit price. Returns <code>{\"ok\":true,\"order\":{...}}</code>.",
-   "es": "Agrega <code>\"type\":\"limit\"</code> y <code>\"limit_price\"</code> y la orden <b>queda pendiente en el servidor</b> en vez de ejecutarse ahora: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"limit\",\"limit_price\":58000,\"margin_usd\":100,\"leverage\":20}</code>. Se ejecuta a <b>tu</b> precio, no al precio en que el motor detectó el cruce - la ejecución se determina a partir del máximo/mínimo de 1m, así que una mecha que se retrajo entre dos verificaciones sigue contando, y la posición queda marcada con el minuto en que el mercado realmente alcanzó el nivel. Tu bot no tiene que estar corriendo. Un long límite debe estar <b>por debajo</b> del mercado y un short límite <b>por encima</b>; de lo contrario obtienes <code>limit_marketable</code> en vez de una ejecución silenciosa a mercado. <code>sl</code>/<code>tp</code> se verifican según el lado contra el precio límite. Devuelve <code>{\"ok\":true,\"order\":{...}}</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 100
-  },
-  "0263_sez20": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- stop entry (breakout)</b>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/open</code> <b>- entrada stop (ruptura)</b>",
+  "7WqWMc6_IM": {
+   "en": "<span class=\"kick\">Why not an exchange testnet</span>",
+   "es": "<span class=\"kick\">Por qué no una testnet de un exchange</span>",
    "kind": [
     "html"
    ],
@@ -147706,129 +147825,9 @@
    "n": 1,
    "w": 5
   },
-  "gcdxGXEBpg": {
-   "en": "<code>\"type\":\"stop\"</code> rests a <b>breakout entry</b>: a long <b>above</b> the market or a short <b>below</b> it, e.g. <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"stop\",\"limit_price\":66000,\"margin_usd\":100,\"leverage\":10}</code>. Same engine as a limit order - it fills <b>at the level</b> from 1m candles, with the browser closed - but the wrong side is refused (<code>stop_wrong_side</code>) so a stop and a limit can never be confused. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> and <code>dry_run</code> all apply.",
-   "es": "<code>\"type\":\"stop\"</code> deja pendiente una <b>entrada de ruptura</b>: un long <b>por encima</b> del mercado o un short <b>por debajo</b>, por ejemplo <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"stop\",\"limit_price\":66000,\"margin_usd\":100,\"leverage\":10}</code>. Mismo motor que una orden límite - se ejecuta <b>en el nivel</b> a partir de velas de 1m, con el navegador cerrado - pero el lado equivocado se rechaza (<code>stop_wrong_side</code>) para que una orden stop y una límite nunca se confundan. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> y <code>dry_run</code> aplican todos.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 54
-  },
-  "z3aCU73J0R": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/orders</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/orders</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "AmHnalgCWa": {
-   "en": "Your resting orders, each with <code>type: \"limit\" | \"stop\"</code>, plus the last 20 that filled, expired or were cancelled - a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.",
-   "es": "Tus órdenes pendientes, cada una con <code>type: \"limit\" | \"stop\"</code>, más las últimas 20 que se ejecutaron, expiraron o se cancelaron - una ejecutada lleva el <code>position_id</code> que creó. Las órdenes son válidas hasta que se cancelan, expiran a los 30 días, y pueden quedar hasta 20 pendientes por cuenta.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 40
-  },
-  "u9MlsUNH6t": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/modify_order</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/modify_order</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "q-WfqVV9zu": {
-   "en": "Change a resting order <b>in place</b>: <code>{\"order_id\":\"lo...\",\"limit_price\":58500,\"sl\":57000,\"tp\":62000,\"margin_usd\":150,\"leverage\":10,\"trail_pct\":1}</code> - send only what changes. Before this the only way was cancel and re-place, which lost the order's <code>client_order_id</code>. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change. A filled, cancelled or expired order answers <code>409</code>.",
-   "es": "Cambia una orden pendiente <b>en el lugar</b>: <code>{\"order_id\":\"lo...\",\"limit_price\":58500,\"sl\":57000,\"tp\":62000,\"margin_usd\":150,\"leverage\":10,\"trail_pct\":1}</code> - envía solo lo que cambia. Antes de esto, la única forma era cancelar y volver a colocar, lo que perdía el <code>client_order_id</code> de la orden. La dirección ahora se vuelve a derivar del mercado y la marca de vela se reinicia, así que un nivel movido nunca puede ejecutarse en una vela impresa antes del cambio. Una orden ejecutada, cancelada o expirada responde <code>409</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 56
-  },
-  "bGJY_BiFP3": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/cancel_order</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/cancel_order</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "9hI7C-r7JB": {
-   "en": "Cancel one resting order. Body: <code>{\"order_id\":\"lo...\"}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.",
-   "es": "Cancela una orden pendiente. Body: <code>{\"order_id\":\"lo...\"}</code>. Una ya ejecutada o cancelada devuelve <code>409</code>, así que un reintento nunca puede deshacer una ejecución.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 19
-  },
-  "SeSMhn1cYO": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/close</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/close</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "GG0ZOGUEZy": {
-   "en": "Close a position at the live price. Body: <code>{\"id\":\"bp...\",\"pct\":50}</code> - <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.",
-   "es": "Cierra una posición al precio en vivo. Body: <code>{\"id\":\"bp...\",\"pct\":50}</code> - <code>pct</code> es opcional (por defecto 100); los cierres parciales dividen la posición exactamente igual que en el sitio.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 23
-  },
-  "mTM7a--fPb": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/close_all</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/close_all</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "rJcjTq2cc6": {
-   "en": "Panic button - closes every open position at the live price in one call.",
-   "es": "Botón de pánico - cierra todas las posiciones abiertas al precio en vivo en una sola llamada.",
+  "sGTgSmcmTx": {
+   "en": "A testnet gives you fake prices. This gives you real ones and fake money.",
+   "es": "Una testnet te da precios falsos. Esto te da precios reales y dinero falso.",
    "kind": [
     "html"
    ],
@@ -147838,9 +147837,9 @@
    "n": 1,
    "w": 13
   },
-  "vyaBRQp207": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/positions?status=open</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/positions?status=open</code>",
+  "Jo6RQScEET": {
+   "en": "Testnet books are thin, their prices drift from the real market, and they reset without warning. Everything here is priced from the live multi-exchange feed our own charts run on - only the dollars are simulated.",
+   "es": "Los libros de órdenes de las testnets son poco profundos, sus precios se alejan del mercado real, y se reinician sin aviso. Aquí todo se cotiza con el feed multi-exchange en vivo sobre el que corren nuestros propios gráficos - solo los dólares son simulados.",
    "kind": [
     "html"
    ],
@@ -147848,491 +147847,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2
+   "w": 35
   },
-  "jFoGgx4n4z": {
-   "en": "All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically. <code>?status=open|closed</code> trims the body to what your loop actually reads; <code>?since=&lt;unix ms&gt;</code> and <code>If-None-Match</code> (304 when nothing changed) are supported too.",
-   "es": "Todas tus posiciones con <code>mark_price</code> y <code>unrealized_pnl_usd</code> en vivo; las liquidaciones cruzadas y el SL/TP se liquidan automáticamente. <code>?status=open|closed</code> recorta el body a lo que tu loop realmente lee; también se admiten <code>?since=&lt;unix ms&gt;</code> e <code>If-None-Match</code> (304 cuando nada cambió).",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 37
-  },
-  "_v5j2bwlu1": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/account</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/account</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "h2YRtHfh95": {
-   "en": "Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.",
-   "es": "Resumen de cuenta: posiciones abiertas, margen en uso, P&amp;L no realizado en vivo, P&amp;L realizado <b>de por vida</b>, ganadas/perdidas, tasa de acierto, más <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> y <code>return_pct</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 22
-  },
-  "I1UUi5OjtH": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/balance</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/balance</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "qDyj_xMMtR": {
-   "en": "Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.",
-   "es": "Solo el dinero: saldo inicial, saldo, equity, margen en uso, margen libre, P&amp;L no realizado. Más económico que <code>/account</code> cuando eso es todo lo que necesita tu lógica de tamaño.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "7NAX3GNXKb": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/markets</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/markets</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "wNfKDorx-v": {
-   "en": "Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.",
-   "es": "Todo lo que se puede operar, con <code>asset_class</code>, <code>max_leverage</code> y <code>taker_fee_pct</code> por símbolo. Filtra con <code>?class=crypto|stock|forex|metal|index</code>. Llama a esto una vez al iniciar en vez de descubrir los límites por prueba y error.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "_TGSZItEFP": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/sltp</code>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/sltp</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "tKyomxc0iU": {
-   "en": "Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{\"id\":\"bot...\",\"sl\":63500,\"tp\":66000,\"trail_pct\":1.5}</code> - send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.",
-   "es": "Mueve el stop-loss, el take-profit o el trailing stop en una posición <b>abierta</b> sin cerrarla. Body: <code>{\"id\":\"bot...\",\"sl\":63500,\"tp\":66000,\"trail_pct\":1.5}</code> - envía <code>null</code> para borrar uno, omite un campo para mantenerlo. Los niveles se verifican según el lado de la entrada. Antes de que esto existiera, había que cerrar y reabrir para mover un stop, lo que cambiaba tu entrada y pagaba un round trip completo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 54
-  },
-  "XizBBwDlct": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/fees</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/fees</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "cPPXEynFDO": {
-   "en": "Whose fee schedule your fills are charged at: the venues we model with taker, maker, our referral discount and the effective rate, plus your current default. <code>POST {\"venue\":\"bybit\"}</code> sets the account default; <code>fee_venue</code> on <code>/open</code> overrides it for one position. See <a href=\"#fees\">Fees as on the exchange you will actually use</a>.",
-   "es": "Con qué tabla de comisiones se cobran tus ejecuciones: los exchanges que modelamos con taker, maker, nuestro descuento de referido y la tasa efectiva, más tu valor por defecto actual. <code>POST {\"venue\":\"bybit\"}</code> fija el valor por defecto de la cuenta; <code>fee_venue</code> en <code>/open</code> lo anula para una posición. Ver <a href=\"#fees\">Comisiones como en el exchange que realmente usarás</a>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 50
-  },
-  "1Huhe6aoxJ": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/report?days=30</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/report?days=30</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "JjAOk_t_y8": {
-   "en": "The <a href=\"/trading-report/\">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.",
-   "es": "El <a href=\"/trading-report/\">trading report</a> de la cuenta detrás de la clave, medido desde sus propias operaciones cerradas: totales y <b>skill score</b> en todos los planes; win rate y rentabilidad por <b>moneda</b>, <b>franja de apalancamiento</b>, <b>lado</b>, <b>hora</b> y <b>día</b>, más los <b>hallazgos</b> escritos en API Pro y Max (<code>locked[]</code> nombra lo que queda fuera). Cada hallazgo lleva la <code>n</code> en la que se apoya y no dice nada por debajo de 8 operaciones.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 61
-  },
-  "fmaF14lTj-": {
-   "en": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/ai</code> <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "es": "<span class=\"m post\">POST</span><code class=\"u\">/api/bot/v1/ai</code> <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "Zts0qi4z_M": {
-   "en": "The chart panel's AI read, from the API: <code>{\"symbol\":\"BTC\",\"interval\":\"60\",\"question\":\"Is this leaning long or short?\"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.",
-   "es": "La lectura de IA del panel de gráficos, desde la API: <code>{\"symbol\":\"BTC\",\"interval\":\"60\",\"question\":\"Is this leaning long or short?\"}</code>. Mismo modelo, mismo prompt y la misma cuota de <b>50 al día</b> que Ask-AI en el sitio. Obtienes la <code>answer</code>, un <code>plan</code> analizado (sesgo, entrada, stop, objetivos) cuando el modelo detectó un setup, y el <code>brief</code> sobre el que razonó - precio, movimiento, máximos/mínimos de swing, medias móviles, RSI, ATR, Bollinger, cierres recientes - para que puedas registrar exactamente qué observó. Educativo, no asesoría financiera.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 73
-  },
-  "KiaS-5t_K_": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/webhooks</code> <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/webhooks</code> <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:10px;font-weight:800;border-radius:6px;padding:2px 7px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "0pNsoe2ren": {
-   "en": "Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href=\"#webhooks\">Webhooks</a> below. <code>POST {\"act\":\"add\",\"url\":\"https://…\"}</code> registers one (max 3), <code>{\"act\":\"test\",\"id\":…}</code> sends a ping and returns the status your server answered, <code>{\"act\":\"delete\",\"id\":…}</code> removes it.",
-   "es": "Eventos de trading <b>enviados a tu URL</b>, segundos después de que ocurren, esté tu bot conectado o no - ver <a href=\"#webhooks\">Webhooks</a> más abajo. <code>POST {\"act\":\"add\",\"url\":\"https://…\"}</code> registra uno (máx. 3), <code>{\"act\":\"test\",\"id\":…}</code> envía un ping y devuelve el estado que respondió tu servidor, <code>{\"act\":\"delete\",\"id\":…}</code> lo elimina.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 39
-  },
-  "0ja6X8gK30": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/trades?limit=100&amp;before=…</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/trades?limit=100&amp;before=…</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "5TTUgl-AAM": {
-   "en": "The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window - follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.",
-   "es": "El registro completo de operaciones cerradas con paginación. <code>/positions</code> está limitado a 100 filas; este recorre toda la ventana de retención - sigue <code>next_before</code> hasta que devuelva <code>null</code>. Úsalo para calcular estadísticas de estrategia sobre el registro completo en vez de una cola truncada.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 40
-  },
-  "aXNBjVKDRE": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/time</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/bot/v1/time</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "qtSO_DJXJe": {
-   "en": "Server clock. <b>No key needed.</b> Pass <code>?client_ts=&lt;your unix ms&gt;</code> and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.",
-   "es": "Reloj del servidor. <b>No necesita clave.</b> Pasa <code>?client_ts=&lt;your unix ms&gt;</code> y recibes de vuelta <code>drift_ms</code>. Un bot que agrupa velas contra un reloj local desviado construye barras que nadie más ve, y eso es un infierno para depurar desde afuera.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 36
-  },
-  "7cBx4-8rBi": {
-   "en": "Authenticate with the <code class=\"k\">X-API-Key</code> header on every call except <code class=\"k\">/price</code>, <code class=\"k\">/klines</code> and <code class=\"k\">/time</code>. <b>Official clients</b> (one file each, zero dependencies): <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
-   "es": "Autentica con el header <code class=\"k\">X-API-Key</code> en cada llamada excepto <code class=\"k\">/price</code>, <code class=\"k\">/klines</code> y <code class=\"k\">/time</code>. <b>Clientes oficiales</b> (un archivo cada uno, cero dependencias): <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, sondeo por ETag, back-off en 429 y verificación de firma de webhook incorporados.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 34
-  },
-  "-IDZNYIdT3": {
-   "en": "Fees as on the exchange you will actually use",
-   "es": "Comisiones como en el exchange que realmente usarás",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "FuI6TfZ_dh": {
-   "en": "By default every paper fill pays the MarginPad rate: 0.055% per side on crypto, both legs, charged as a round trip at close. That is a fair average, but it is nobody's exact bill. If you already know where the bot will run for real, <b>charge the paper account at that venue's schedule</b> - its published taker rate, less the referral discount a MarginPad sign-up gets there - so the forward test settles the way the live account will:",
-   "es": "Por defecto, cada ejecución simulada paga la tasa de MarginPad: 0.055% por lado en cripto, ambas piernas, cobradas como round trip al cierre. Eso es un promedio justo, pero no es la factura exacta de nadie. Si ya sabes dónde correrá el bot de verdad, <b>cobra a la cuenta simulada según la tabla de ese exchange</b> - su tasa taker publicada, menos el descuento de referido que consigue un registro de MarginPad allí - así el forward test se liquida como lo hará la cuenta real:",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 74
-  },
-  "upo80CSe0H": {
-   "en": "Our referral discount",
-   "es": "Nuestro descuento de referido",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "qd7_irvmK0": {
-   "en": "You pay per side",
-   "es": "Pagas por lado",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "eydfQmVuh6": {
-   "en": "4% (code <code>MARGINPAD</code>)",
-   "es": "4% (código <code>MARGINPAD</code>)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "G74DOB8A3i": {
-   "en": "OKX · Kraken",
-   "es": "OKX · Kraken",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "lflOEXK5sH": {
-   "en": "MarginPad default",
-   "es": "Valor por defecto de MarginPad",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "7hAPwZoT7s": {
-   "en": "no venue chosen",
-   "es": "sin exchange elegido",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "scnHJhfiJL": {
-   "en": "Rates are the venues' published base tier and the discounts we state on <a href=\"/exchanges/\">/exchanges/</a>; the API returns them with <code>source</code> so you know they are advertised numbers, not measurements. Both legs pay the taker rate (the paper engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only - stocks, forex, metals and indices keep the MarginPad class rates whatever the venue. Open positions keep the rate they were filled with; the extreme-leverage cap (a round trip never above 20% of margin) still applies. The same choice is the <b>\"Fees as on\"</b> selector in the <a href=\"/paper-trade\">Paper Trade</a> form, so a bot and its owner's manual trades pay identical fees.",
-   "es": "Las tasas son el nivel base publicado de los exchanges y los descuentos que indicamos en <a href=\"/exchanges/\">/exchanges/</a>; la API las devuelve con <code>source</code> para que sepas que son cifras publicitadas, no mediciones. Ambas piernas pagan la tasa taker (el motor de paper trading ejecuta a mercado; no se modela un rebate de maker en una entrada pendiente). Solo perpetuos cripto - acciones, forex, metales e índices mantienen las tasas de la clase de MarginPad sea cual sea el exchange. Las posiciones abiertas mantienen la tasa con la que se ejecutaron; el límite de apalancamiento extremo (un round trip nunca por encima del 20% del margen) sigue aplicando. La misma opción es el selector <b>\"Fees as on\"</b> en el formulario de <a href=\"/paper-trade\">Paper Trade</a>, así un bot y las operaciones manuales de su dueño pagan comisiones idénticas.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 111
-  },
-  "ijpcV_KBvi": {
-   "en": "Webhooks - events pushed to your server <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "es": "Webhooks - eventos enviados a tu servidor <span style=\"background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.4);color:#ffd75a;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em\">API PRO</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "s17oMZjT0c": {
-   "en": "Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.",
-   "es": "Medido antes de que esto existiera: <b>el 89.5% de cada llamada a esta API era hacer polling</b> a <code>/positions</code> y <code>/account</code> en busca de eventos. Un webhook invierte eso - te enviamos un POST cuando algo realmente ocurre, con la misma forma de <code>Position</code> que habría devuelto un poll, y funciona mientras tu bot está desconectado, reiniciando o desplegado en algún lugar que no puede mantener un socket.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 55
-  },
-  "ZnwoHvsCr3": {
-   "en": "<b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.",
-   "es": "<b>Eventos:</b> <code>position.opened</code> · <code>position.updated</code> (un stop o un objetivo se movió) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (lleva la posición que creó) · <code>order.expired</code> · <code>order.cancelled</code>. Omite <code>events</code> para recibirlos todos. Las operaciones hechas en el sitio en la misma cuenta también los disparan.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 34
-  },
-  "VAJpYvff14": {
-   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Up to 3 hooks per account; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
-   "es": "<b>Verifica cada entrega.</b> <code>X-MP-Signature</code> es <code>sha256=HMAC_SHA256(secret, raw body)</code> con el secreto que se devuelve al agregar el hook. Compáralo antes de parsear el body; ambos SDK incluyen <code>verify_webhook</code> / <code>verifyWebhook</code>. Responde <code>2xx</code> dentro de 6 segundos - cualquier otra cosa se reintenta 5 veces con backoff (30 s, 1, 2, 4 min), y un hook <b>se pausa tras 25 fallos consecutivos</b>; <code>GET /webhooks</code> muestra <code>active</code>, <code>consecutive_failures</code> y <code>last_error</code> para que veas por qué. Hasta 3 hooks por cuenta; las entregas son de mejor esfuerzo, el <code>snapshot</code> del WebSocket y <code>/positions</code> siguen siendo la fuente de verdad.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 83
-  },
-  "jwafciE7gN": {
-   "en": "<b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.",
-   "es": "<b>Pruébalo antes de escribir un receptor:</b> registra <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> como la URL, y luego abre <code>GET</code> en esa misma dirección - devuelve las últimas 20 entregas (headers y body) durante 15 minutos. Sin autenticación; el token es el secreto.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 38
-  },
-  "DTu-qrSki0": {
-   "en": "Response format - v1 and v2",
-   "es": "Formato de respuesta - v1 y v2",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "bibriinfvQ": {
-   "en": "<code class=\"k\">/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.",
-   "es": "<code class=\"k\">/api/bot/v1/*</code> está <b>congelada</b>. Sus bodies de respuesta no cambiarán; los bots escritos contra ella siguen funcionando indefinidamente, y aún recibe correcciones de exactitud.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 22
-  },
-  "AWjQXF4C_-": {
-   "en": "<code class=\"k\">/api/bot/v2/*</code> is the same API with the envelope our data endpoints already use - one predictable shape for success and failure, so you write the parsing once:",
-   "es": "<code class=\"k\">/api/bot/v2/*</code> es la misma API con el sobre (envelope) que ya usan nuestros endpoints de datos - una forma predecible para el éxito y el fallo, así escribes el parsing una sola vez:",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 26
-  },
-  "pCx2uYgBT0": {
-   "en": "Same paths, same parameters, same key - swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.",
-   "es": "Mismas rutas, mismos parámetros, misma clave - cambia <code>v1</code> por <code>v2</code> en la URL. Los valores de <code>code</code> de error son identificadores estables; <code>message</code> es para humanos y puede reformularse.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 27
-  },
-  "gC-kagmDaY": {
-   "en": "<span id=\"tiers\"></span>Plans",
-   "es": "<span id=\"tiers\"></span>Planes",
+  "FJtVh3_bcr": {
+   "en": "<span class=\"dn\">Execution</span>",
+   "es": "<span class=\"dn\">Ejecución</span>",
    "kind": [
     "html"
    ],
@@ -148342,9 +147861,237 @@
    "n": 1,
    "w": 1
   },
-  "t-IuWbGQXO": {
-   "en": "Every account starts on Free, which is the whole product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.",
-   "es": "Toda cuenta empieza en Free, que es el producto completo: el motor de ejecución, las tarifas reales de cada exchange, entradas limit y stop, trailing stops, replay, books, el stream por WebSocket y todos los datos de mercado sin clave. Los planes de pago suben los topes y añaden dos cosas: <b>webhooks</b> y <b>lecturas de mercado con IA</b>. No se guarda nada más.",
+  "lPGNC2wvsg": {
+   "en": "The server holds your orders",
+   "es": "El servidor mantiene tus órdenes",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "JADioKv5t7": {
+   "en": "Limit entries, stop entries, stop-losses, targets and trailing stops are all evaluated on our side against 1-minute candles. <b>Your bot can be offline, restarting or redeployed</b> and the fill still lands at your level, stamped with the minute the market actually reached it.",
+   "es": "Las entradas límite, las entradas stop, los stop-loss, los objetivos y los trailing stops se evalúan todos de nuestro lado contra velas de 1 minuto. <b>Tu bot puede estar offline, reiniciándose o siendo redesplegado</b> y la ejecución igual cae en tu nivel, marcada con el minuto en que el mercado realmente lo alcanzó.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 43
+  },
+  "7jn0A6Kad8": {
+   "en": "<span class=\"dn\">Costs</span>",
+   "es": "<span class=\"dn\">Costos</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "GeDiBQ-K3R": {
+   "en": "Fees that match your real bill",
+   "es": "Comisiones que coinciden con tu factura real",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "w8m5t-8APS": {
+   "en": "Both legs pay a taker fee, charged as a round trip at close, with funding accrued across marks. Name a venue and the paper account is charged at <b>that exchange's published schedule</b> less our referral discount - so a scalping strategy fails here for the same reason it would fail there.",
+   "es": "Ambas patas pagan una comisión taker, cobrada como ida y vuelta al cerrar, con el funding acumulado entre marcas. Indica un exchange y la cuenta de paper trading se cobra según <b>la tabla publicada de ese exchange</b> menos nuestro descuento por referido - así que una estrategia de scalping falla aquí por la misma razón que fallaría allá.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 46
+  },
+  "i7wmlZgiVi": {
+   "en": "<span class=\"dn\">Failure</span>",
+   "es": "<span class=\"dn\">Fallo</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "sW9EYFvNz8": {
+   "en": "Liquidation that behaves",
+   "es": "Una liquidación que se comporta",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "Wco0DkLzg6": {
+   "en": "Isolated margin, 0.5% maintenance, losses capped at your margin. A trailing stop is moved by each candle's extreme <b>after</b> that candle was checked against the stop in force - so a bar can never stop you out at a level it created itself.",
+   "es": "Margen aislado, 0.5% de mantenimiento, pérdidas limitadas a tu margen. Un trailing stop se mueve con el extremo de cada vela <b>después</b> de que esa vela se comprobó contra el stop vigente - así una barra nunca puede sacarte en un nivel que ella misma creó.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 39
+  },
+  "7hhGFmCH0p": {
+   "en": "<span class=\"dn\">Idempotency</span>",
+   "es": "<span class=\"dn\">Idempotencia</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "Ns4knViLRH": {
+   "en": "A timeout is not a mystery",
+   "es": "Un timeout no es un misterio",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "SJlISpfMgv": {
+   "en": "Send <code>client_order_id</code> and a retried open returns the position the first call created, flagged <code>idempotent: true</code>. Closing takes one too. This single field is the difference between a bot you trust unattended and one you babysit.",
+   "es": "Envía <code>client_order_id</code> y un reintento de apertura devuelve la posición que creó la primera llamada, marcada como <code>idempotent: true</code>. Cerrar también acepta uno. Este único campo es la diferencia entre un bot en el que confías sin vigilarlo y uno que tienes que vigilar de cerca.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 34
+  },
+  "njbOzk552T": {
+   "en": "<span class=\"dn\">Observability</span>",
+   "es": "<span class=\"dn\">Observabilidad</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "nW6aX6iO_G": {
+   "en": "Push, not poll",
+   "es": "Push, no polling",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "bbH4hdMgpD": {
+   "en": "A free WebSocket pushes position events and marks every ~2 s; webhooks POST the same shape to your own URL, HMAC-signed and retried, even while nothing of yours is connected. ETags make the polls you keep nearly free.",
+   "es": "Un WebSocket gratis empuja eventos de posiciones y marcas cada ~2 s; los webhooks envían la misma forma por POST a tu propia URL, firmados con HMAC y con reintentos, incluso cuando nada tuyo está conectado. Los ETag hacen que las peticiones que sigas haciendo salgan casi gratis.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 37
+  },
+  "Et9bkgqfO3": {
+   "en": "<span class=\"dn\">Measurement</span>",
+   "es": "<span class=\"dn\">Medición</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "I-O-wVPvO4": {
+   "en": "It grades your strategy",
+   "es": "Califica tu estrategia",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "lB1aObP-iL": {
+   "en": "Every book gets its own journal, equity curve and drawdown. <code>/v1/report</code> returns win rate and return by coin, leverage band, side and hour, with a skill score - and it <b>says nothing under eight trades</b> rather than inventing a pattern.",
+   "es": "Cada book tiene su propio diario, curva de equity y drawdown. <code>/v1/report</code> devuelve la tasa de acierto y el retorno por moneda, franja de apalancamiento, lado y hora, con un skill score - y <b>no dice nada por debajo de ocho operaciones</b> en lugar de inventar un patrón.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 37
+  },
+  "FZaMTUFJek": {
+   "en": "<span class=\"kick\">Plans</span>",
+   "es": "<span class=\"kick\">Planes</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "dvwK41uqFU": {
+   "en": "Free is the whole engine. You pay for headroom.",
+   "es": "Free es el motor completo. Pagas por margen de maniobra.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "q7_zqCFYX3": {
+   "en": "Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add two things - <b>webhooks</b> and <b>AI market reads</b>. Nothing else is held back.",
+   "es": "Toda cuenta empieza en Free y tiene el producto completo: el motor de trading, comisiones reales de exchanges, entradas límite y stop, trailing stops, replay, books, el stream de WebSocket y todos los datos de mercado sin clave. Los planes de pago suben los límites y añaden dos cosas - <b>webhooks</b> y <b>lecturas de mercado con IA</b>. No se retiene nada más.",
    "kind": [
     "html"
    ],
@@ -148363,7 +148110,7 @@
    "ctx": [
     "/trading-api/"
    ],
-   "n": 3,
+   "n": 1,
    "w": 1
   },
   "hwuDpCjXHC": {
@@ -148378,9 +148125,9 @@
    "n": 1,
    "w": 8
   },
-  "0yUVPSGWJb": {
-   "en": "<b>120</b> requests / minute per key",
-   "es": "<b>120</b> peticiones / minuto por clave",
+  "4lfU4Cn3-W": {
+   "en": "<b>120</b><span>REQ / MIN PER KEY</span>",
+   "es": "<b>120</b><span>PETICIONES / MIN POR CLAVE</span>",
    "kind": [
     "html"
    ],
@@ -148390,9 +148137,9 @@
    "n": 1,
    "w": 5
   },
-  "M_3l2WKz-z": {
-   "en": "<b>3</b> keys &middot; <b>50</b> open positions",
-   "es": "<b>3</b> claves &middot; <b>50</b> posiciones abiertas",
+  "WywbdmTWJo": {
+   "en": "<b>3</b> keys &middot; <b>50</b> open positions &middot; <b>1</b> book",
+   "es": "<b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>1</b> book",
    "kind": [
     "html"
    ],
@@ -148400,7 +148147,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 5
   },
   "ZkMr3pxNHV": {
    "en": "Full engine: market, limit &amp; stop orders, trailing stops, dry run, replay",
@@ -148462,18 +148209,6 @@
    "n": 1,
    "w": 3
   },
-  "EiJ8rmk3R4": {
-   "en": "<span class=\"appill\">MOST BOTS</span>",
-   "es": "<span class=\"appill\">MÁS ELEGIDO</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
   "ZtDF5rFw52": {
    "en": "Pro",
    "es": "Pro",
@@ -148485,6 +148220,18 @@
    ],
    "n": 1,
    "w": 1
+  },
+  "EiJ8rmk3R4": {
+   "en": "<span class=\"appill\">MOST BOTS</span>",
+   "es": "<span class=\"appill\">MÁS ELEGIDO</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
   },
   "olw_Dvmidn": {
    "en": "$19<small>/month</small>",
@@ -148510,9 +148257,9 @@
    "n": 1,
    "w": 13
   },
-  "9qV2hoRm9B": {
-   "en": "<b>600</b> requests / minute per key <span class=\"apx\">5&times; Free</span>",
-   "es": "<b>600</b> peticiones / minuto por clave <span class=\"apx\">5&times; Free</span>",
+  "ooCB2v3kHE": {
+   "en": "<b>600</b><span>REQ / MIN <span class=\"apx\">5&times; FREE</span></span>",
+   "es": "<b>600</b><span>PETICIONES / MIN <span class=\"apx\">5&times; FREE</span></span>",
    "kind": [
     "html"
    ],
@@ -148520,7 +148267,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 4
   },
   "LSVpmwcz0K": {
    "en": "<b>10</b> keys &middot; <b>200</b> open positions &middot; <b>5</b> books",
@@ -148630,9 +148377,9 @@
    "n": 1,
    "w": 13
   },
-  "VtAYexA-tS": {
-   "en": "<b>2000</b> requests / minute per key",
-   "es": "<b>2000</b> peticiones / minuto por clave",
+  "Y8v-nc02-k": {
+   "en": "<b>2000</b><span>REQ / MIN <span class=\"apx\">17&times; FREE</span></span>",
+   "es": "<b>2000</b><span>PETICIONES / MIN <span class=\"apx\">17&times; FREE</span></span>",
    "kind": [
     "html"
    ],
@@ -148714,45 +148461,81 @@
    "n": 1,
    "w": 49
   },
-  "rsOcqrRCH1": {
-   "en": "Pro &middot; $19",
-   "es": "Pro &middot; $19",
+  "Pt36n86lWm": {
+   "en": "Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it. Your live ceilings are always in <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - so a bot can read them instead of guessing.",
+   "es": "Los planes son mes a mes, pagados en cripto o directamente desde tu saldo de recompensas de MarginPad, y un mes comprado antes de tiempo se suma al que ya tienes en vez de reemplazarlo. Tus límites en vivo siempre están en <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - para que un bot los pueda leer en vez de adivinar.",
    "kind": [
     "html"
    ],
    "ctx": [
     "/trading-api/"
    ],
-   "n": 2,
+   "n": 1,
+   "w": 49
+  },
+  "ImCMP8GD9V": {
+   "en": "<span class=\"kick\">Reference</span>",
+   "es": "<span class=\"kick\">Referencia</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "AMocMKOPyg": {
+   "en": "<a href=\"#endpoints\">Endpoints</a>",
+   "es": "<a href=\"#endpoints\">Endpoints</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "D8nHRoniJo": {
+   "en": "<a href=\"#engine\">How the engine works</a>",
+   "es": "<a href=\"#engine\">Cómo funciona el motor</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "rBSB3sNX1u": {
+   "en": "<a href=\"#fees\">Venue fees</a>",
+   "es": "<a href=\"#fees\">Comisiones por exchange</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
    "w": 2
   },
-  "Apc0ithOlx": {
-   "en": "Max &middot; $49",
-   "es": "Max &middot; $49",
+  "uyfnDZjZ5Y": {
+   "en": "<a href=\"#reliable\">Bots that do not break</a>",
+   "es": "<a href=\"#reliable\">Bots que no se rompen</a>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/trading-api/"
    ],
-   "n": 2,
-   "w": 2
-  },
-  "QCPBgLn4gm": {
-   "en": "Requests per minute, per key",
-   "es": "Peticiones por minuto, por clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 2,
+   "n": 1,
    "w": 5
   },
-  "Zfkl2wWyyh": {
-   "en": "Market-data API (<code>/api/v1/*</code>) with your key",
-   "es": "API de datos de mercado (<code>/api/v1/*</code>) con tu clave",
+  "ChjrvOowTU": {
+   "en": "<a href=\"#stream\">WebSocket</a>",
+   "es": "<a href=\"#stream\">WebSocket</a>",
    "kind": [
     "html"
    ],
@@ -148760,11 +148543,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 1
   },
-  "hq7Z2S5OMQ": {
-   "en": "120 / min<br><span style=\"color:var(--faint)\">(60 / min per IP without a key)</span>",
-   "es": "120 / min<br><span style=\"color:var(--faint)\">(60 / min por IP sin clave)</span>",
+  "aQLXOhrMDX": {
+   "en": "<a href=\"#webhooks\">Webhooks</a>",
+   "es": "<a href=\"#webhooks\">Webhooks</a>",
    "kind": [
     "html"
    ],
@@ -148772,11 +148555,35 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 1
   },
-  "JInU8bezlq": {
-   "en": "<b>600 / min</b>",
-   "es": "<b>600 / min</b>",
+  "fzBn7n8tcN": {
+   "en": "<a href=\"#books\">Books</a>",
+   "es": "<a href=\"#books\">Books</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "e2D17aqH-I": {
+   "en": "<a href=\"#replay\">Replay</a>",
+   "es": "<a href=\"#replay\">Replay</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "9J9cz12aqY": {
+   "en": "<a href=\"#keys\">Managing keys</a>",
+   "es": "<a href=\"#keys\">Gestionar claves</a>",
    "kind": [
     "html"
    ],
@@ -148786,9 +148593,9 @@
    "n": 1,
    "w": 2
   },
-  "auvvOMuzpG": {
-   "en": "<b>2000 / min</b>",
-   "es": "<b>2000 / min</b>",
+  "9x6MgNgDoJ": {
+   "en": "<a href=\"#arena\">Bot arena</a>",
+   "es": "<a href=\"#arena\">Bot arena</a>",
    "kind": [
     "html"
    ],
@@ -148798,9 +148605,9 @@
    "n": 1,
    "w": 2
   },
-  "yIaIzJz7f0": {
-   "en": "API keys per account",
-   "es": "Claves API por cuenta",
+  "RRDwQV_JUE": {
+   "en": "<a href=\"#mcp\">MCP for AI clients</a>",
+   "es": "<a href=\"#mcp\">MCP para clientes de IA</a>",
    "kind": [
     "html"
    ],
@@ -148810,21 +148617,9 @@
    "n": 1,
    "w": 4
   },
-  "vtpmZXEb28": {
-   "en": "Open positions at once",
-   "es": "Posiciones abiertas a la vez",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "sC03RumwIi": {
-   "en": "<a href=\"#books\">Books</a> (separate journals)",
-   "es": "<a href=\"#books\">Books</a> (diarios separados)",
+  "1ShzZLSgsa": {
+   "en": "<a href=\"#v2\">v1 and v2</a>",
+   "es": "<a href=\"#v2\">v1 y v2</a>",
    "kind": [
     "html"
    ],
@@ -148834,33 +148629,9 @@
    "n": 1,
    "w": 3
   },
-  "egSfxSmbBw": {
-   "en": "<b>Webhooks</b> (signed, retried)",
-   "es": "<b>Webhooks</b> (firmados, con reintento)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "Y8vm_1TiGo": {
-   "en": "<b>AI market read</b> <code>/v1/ai</code>",
-   "es": "<b>Lectura de mercado con IA</b> <code>/v1/ai</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "lkbz7-6gky": {
-   "en": "<b>50 a day</b>",
-   "es": "<b>50 al día</b>",
+  "qO4qKCqf5C": {
+   "en": "<a href=\"#errors\">Error codes</a>",
+   "es": "<a href=\"#errors\">Códigos de error</a>",
    "kind": [
     "html"
    ],
@@ -148870,9 +148641,9 @@
    "n": 1,
    "w": 2
   },
-  "Rr595J11pR": {
-   "en": "<b>200 a day</b>",
-   "es": "<b>200 al día</b>",
+  "nc3-eL8fz0": {
+   "en": "<a href=\"#liq-api\">Liquidation data</a>",
+   "es": "<a href=\"#liq-api\">Datos de liquidaciones</a>",
    "kind": [
     "html"
    ],
@@ -148882,9 +148653,9 @@
    "n": 1,
    "w": 2
   },
-  "jwtET1XVkD": {
-   "en": "Trading report <code>/v1/report</code>",
-   "es": "Informe de trading <code>/v1/report</code>",
+  "AOaB2a2b4U": {
+   "en": "<a href=\"#workflow\">Backtest, paper, live</a>",
+   "es": "<a href=\"#workflow\">Backtest, paper trading, en vivo</a>",
    "kind": [
     "html"
    ],
@@ -148894,9 +148665,9 @@
    "n": 1,
    "w": 3
   },
-  "H-YuVE5ZPy": {
-   "en": "totals + skill score",
-   "es": "totales + puntaje de habilidad",
+  "n6jAgsmbXz": {
+   "en": "<a href=\"#faq\">FAQ &amp; guides</a>",
+   "es": "<a href=\"#faq\">FAQ &amp; guías</a>",
    "kind": [
     "html"
    ],
@@ -148904,23 +148675,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
-  },
-  "MpboSteX5t": {
-   "en": "<b>+ breakdowns &amp; findings</b>",
-   "es": "<b>+ desgloses y hallazgos</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 2,
    "w": 2
   },
-  "78T3Mjw3Ko": {
-   "en": "Fee schedule of a real venue (<a href=\"#fees\">9 venues</a>)",
-   "es": "Tarifas de un exchange real (<a href=\"#fees\">9 exchanges</a>)",
+  "txxScRokk2": {
+   "en": "Endpoints",
+   "es": "Endpoints",
    "kind": [
     "html"
    ],
@@ -148928,11 +148687,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 1
   },
-  "E8CxqGozMj": {
-   "en": "Market, limit &amp; stop orders, trailing stops, modify, dry run, replay, WebSocket, MCP",
-   "es": "Órdenes market, limit y stop, trailing stops, modificación, dry run, replay, WebSocket y MCP",
+  "zEarCTssOA": {
+   "en": "Twenty-seven of them. Everything is JSON over HTTPS, CORS on, one header. Swap <code>v1</code> for <code>v2</code> in any path for the <code>{ok,data,ts}</code> envelope.",
+   "es": "Veintisiete en total. Todo es JSON sobre HTTPS, con CORS activado, un solo header. Cambia <code>v1</code> por <code>v2</code> en cualquier ruta para obtener el envoltorio <code>{ok,data,ts}</code>.",
    "kind": [
     "html"
    ],
@@ -148940,23 +148699,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 12
+   "w": 23
   },
-  "3gEwNPG7LU": {
-   "en": "Margin per trade / leverage",
-   "es": "Margen por operación / apalancamiento",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 4
-  },
-  "9W_CFsQFFa": {
-   "en": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (the same on all three)",
-   "es": "$1&ndash;$100,000 &middot; 1&times;&ndash;1000&times; (igual en los tres)",
+  "69_xIz9zEl": {
+   "en": "Market data - no key required",
+   "es": "Datos de mercado - sin clave necesaria",
    "kind": [
     "html"
    ],
@@ -148964,11 +148711,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 5
   },
-  "xkRO1L157Q": {
-   "en": "Your current ceilings and entitlements are always in <code>GET /api/bot/v1/usage</code> (<code>limits</code>, <code>features</code>, <code>plan_until</code>), so a bot can read them instead of guessing. Plans are month by month, paid in crypto or straight from your MarginPad rewards balance, and a month bought early is added to the one you have rather than replacing it.",
-   "es": "Tus topes y permisos actuales están siempre en <code>GET /api/bot/v1/usage</code> (<code>limits</code>, <code>features</code>, <code>plan_until</code>), así que un bot puede leerlos en lugar de adivinarlos. Los planes van mes a mes, se pagan en cripto o directamente con tu saldo de recompensas de MarginPad, y un mes comprado antes de tiempo se suma al que ya tienes en vez de reemplazarlo.",
+  "kA-meGO5Oe": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/price<em>?symbol=BTC</em></span><span class=\"d\">Live price for any USDT pair. <b>No key needed</b> - try it right now in your browser.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/price<em>?symbol=BTC</em></span><span class=\"d\">Precio en vivo de cualquier par USDT. <b>No necesita clave</b> - pruébalo ahora mismo en tu navegador.</span>",
    "kind": [
     "html"
    ],
@@ -148976,11 +148723,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 52
+   "w": 19
   },
-  "l0qyi01Oet": {
-   "en": "<b>The market-data tier in one sentence:</b> every <code>/api/v1/*</code> endpoint stays keyless at 60 requests a minute per IP; send your <code>X-API-Key</code> on those same calls and they are metered against <b>your key</b> instead - 120 a minute on Free, 600 on Pro, 2000 on Max - so a bot behind a shared address stops sharing its budget with strangers. <code>X-RateLimit-Scope</code> on the response says which limit applied. <b>Keyless market data stays free and is not for sale.</b>",
-   "es": "<b>El nivel de datos de mercado en una frase:</b> todos los endpoints <code>/api/v1/*</code> siguen siendo accesibles sin clave a 60 peticiones por minuto y por IP; envía tu <code>X-API-Key</code> en esas mismas llamadas y se contarán contra <b>tu clave</b>: 120 por minuto en Free, 600 en Pro y 2000 en Max, de modo que un bot detrás de una dirección compartida deja de repartir su presupuesto con desconocidos. <code>X-RateLimit-Scope</code> en la respuesta indica qué límite se aplicó. <b>Los datos de mercado sin clave siguen siendo gratis y no están en venta.</b>",
+  "ZXdji5iLdx": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/klines<em>?symbol=BTC&amp;interval=60</em></span><span class=\"d\">OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b> Up to <b>1000 candles</b> per call, newest last - about 16 hours on 1m, 3 days on 5m, 10 days on 15m, 41 days on 1h, 166 days on 4h and roughly 3 years on 1d. Pass <code>&amp;end=&lt;unix ms&gt;</code> to page further back.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/klines<em>?symbol=BTC&amp;interval=60</em></span><span class=\"d\">Velas OHLC para tu estrategia (temporalidades: 1, 5, 15, 30, 60, 240, 1440 minutos). <b>No necesita clave.</b> Hasta <b>1000 velas</b> por llamada, la más reciente al final - unas 16 horas en 1m, 3 días en 5m, 10 días en 15m, 41 días en 1h, 166 días en 4h y aproximadamente 3 años en 1d. Pasa <code>&amp;end=&lt;unix ms&gt;</code> para paginar más atrás.</span>",
    "kind": [
     "html"
    ],
@@ -148988,83 +148735,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 71
+   "w": 62
   },
-  "-ZO1QHZNeT": {
-   "en": "Managing your keys",
-   "es": "Gestionar tus claves",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "lsf7S0Oi5o": {
-   "en": "You can hold several keys on one account - keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:",
-   "es": "Puedes tener varias claves en una cuenta - mantén separados un bot de backtest y un bot en vivo, y revoca uno sin tocar el otro. <b>El uso y los límites de peticiones se cuentan por clave</b>, así cada una tiene su propio presupuesto de 120/min y su propia línea en tus estadísticas. Con la sesión iniciada en el sitio, desde el navegador:",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 52
-  },
-  "0tpbWM1Ub3": {
-   "en": "A revoked key returns <code>401 revoked_key</code>. Keys are secrets - anyone holding one can trade your paper account.",
-   "es": "Una clave revocada devuelve <code>401 revoked_key</code>. Las claves son secretos - cualquiera que tenga una puede operar tu cuenta simulada.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "99PScDxk3C": {
-   "en": "Books - one strategy, one clean result <span style=\"background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a\">2.5</span>",
-   "es": "Libros - una estrategia, un resultado limpio <span style=\"background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a\">2.5</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "C5oT2ai6O7": {
-   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.",
-   "es": "Un <b>book</b> es un diario, un balance, un report y una curva de equity separados dentro de tu cuenta. Crea una clave con el nombre de un book y cada llamada hecha con esa clave opera ese book; tu cuenta principal y tus otros books nunca lo ven. Las cuentas Free tienen un book además del principal, API Pro cinco y Max veinte.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 52
-  },
-  "RYG7E50Nj1": {
-   "en": "<b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account’s hooks with <code>\"account\":\"rsi\"</code> in the payload, so one receiver serves every book.",
-   "es": "<b>Reset</b> se rechaza con <code>409 open_positions_exist</code> mientras algo esté abierto: cierra primero, luego reinicia. Las operaciones archivadas se conservan (nunca se eliminan), pero el informe, el registro, <code>/trades</code> y la curva de capital empiezan desde el reset, y un navegador que aún tenga el diario antiguo no puede reenviarlo. Los webhooks se disparan en los hooks de la cuenta con <code>\"account\":\"rsi\"</code> en el payload, así un solo receptor sirve a todos los libros.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 64
-  },
-  "nPbijpDKFw": {
-   "en": "<b>Usage per key:</b> <code>GET /api/bot/v1/usage</code> carries <code>usage_30d</code>, calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.",
-   "es": "<b>Uso por clave:</b> <code>GET /api/bot/v1/usage</code> lleva <code>usage_30d</code>, llamadas por día por endpoint más <code>refused</code> (los 429), así un bot puede ver qué tan cerca corre de su límite.",
+  "tTc7ysv8dz": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/markets</span><span class=\"d\">Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/markets</span><span class=\"d\">Todo lo operable, con <code>asset_class</code>, <code>max_leverage</code> y <code>taker_fee_pct</code> por símbolo. Filtra con <code>?class=crypto|stock|forex|metal|index</code>. Llama esto una vez al iniciar en lugar de descubrir los límites a prueba y error.</span>",
    "kind": [
     "html"
    ],
@@ -149074,9 +148749,9 @@
    "n": 1,
    "w": 27
   },
-  "xtHnxcwIwG": {
-   "en": "Replay - run your bot through a past day <span style=\"background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a\">2.6</span>",
-   "es": "Replay - corre tu bot a través de un día pasado <span style=\"background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.3);border-radius:6px;padding:2px 8px;font:700 11px 'Space Mono',monospace;vertical-align:middle;color:#c2f64a\">2.6</span>",
+  "92GegOlTOf": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/time<em>?client_ts=…</em></span><span class=\"d\">Server clock. <b>No key needed.</b> Pass your own unix ms and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/time<em>?client_ts=…</em></span><span class=\"d\">Reloj del servidor. <b>No necesita clave.</b> Pasa tu propio unix ms y recibes <code>drift_ms</code> de vuelta. Un bot que agrupa velas contra un reloj local desincronizado construye barras que nadie más ve, y eso es un infierno de depurar desde afuera.</span>",
    "kind": [
     "html"
    ],
@@ -149084,11 +148759,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 39
   },
-  "NAKFzwrwtE": {
-   "en": "Backtest with the code you will run live. Start a replay of one past UTC day and the same routes your bot already calls act on a separate replay journal, priced from MarginPad’s own 1-minute candles at the cursor. Stops, targets and liquidations are checked on every candle between two of your calls, on the high and the low, with the same fee and funding math as live. Nothing from a replay reaches the boards, the arena or your report.",
-   "es": "Haz backtest con el mismo código que correrás en vivo. Inicia un replay de un día UTC pasado y las mismas rutas que tu bot ya llama actúan sobre un diario de replay separado, cotizado con las propias velas de 1 minuto de MarginPad en el cursor. Los stops, objetivos y liquidaciones se verifican en cada vela entre dos de tus llamadas, sobre el máximo y el mínimo, con la misma matemática de comisiones y funding que en vivo. Nada de un replay llega a las tablas, la arena ni tu informe.",
+  "STUhlvbSjp": {
+   "en": "Trading",
+   "es": "Trading",
    "kind": [
     "html"
    ],
@@ -149096,11 +148771,191 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 77
+   "w": 1
   },
-  "sB2vXr33Tr": {
-   "en": "Speed goes from 1 (real time) to 600 (a day in 2.4 minutes). One replay per key at a time, crypto only, market orders only for now: read the replay price and candles from <code>GET /v1/replay</code>, since the keyless <code>/v1/price</code> and <code>/v1/klines</code> keep answering live data.",
-   "es": "La velocidad va de 1 (tiempo real) a 600 (un día en 2.4 minutos). Un replay por clave a la vez, solo cripto, por ahora solo órdenes a mercado: lee el precio y las velas del replay desde <code>GET /v1/replay</code>, ya que el <code>/v1/price</code> y el <code>/v1/klines</code> sin clave siguen respondiendo datos en vivo.",
+  "RGKlmSOOrq": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open</span><span class=\"d\">Open a simulated position at the live price. Body: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"margin_usd\":100,\"leverage\":20,\"sl\":58000,\"tp\":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>. Add <code>\"dry_run\":true</code> to get the priced trade back - entry, quantity, liquidation price and distance, the open fee and the full round trip - <b>without writing anything</b>. Use the dry run to size a position or to unit-test your bot against the real engine.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open</span><span class=\"d\">Abre una posición simulada al precio en vivo. Body: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"margin_usd\":100,\"leverage\":20,\"sl\":58000,\"tp\":66000}</code> (sl/tp opcionales). Devuelve la posición, incl. su <code>liq_price</code>. Añade <code>\"dry_run\":true</code> para recibir la operación cotizada - entrada, cantidad, precio de liquidación y distancia, la comisión de apertura y la ida y vuelta completa - <b>sin escribir nada</b>. Usa el dry run para dimensionar una posición o para probar tu bot contra el motor real.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 60
+  },
+  "x-KiOuuG5q": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>trail_pct</em></span><span class=\"d\"><code>trail_pct</code> sets a stop that <b>follows the best price seen since entry</b> at that percent distance, ratcheted <b>on the server</b>: from 1-minute candle extremes on the minute sweep and from the live price on every <code>/positions</code> read, so it keeps moving while your bot is offline and never loosens. A long opened at 60,000 with <code>trail_pct: 1</code> starts with its stop at 59,400; when price prints 63,000 the stop is 62,370. Positions carry <code>trail_pct</code> and <code>trail_hwm</code>.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>trail_pct</em></span><span class=\"d\"><code>trail_pct</code> fija un stop que <b>sigue el mejor precio visto desde la entrada</b> a esa distancia porcentual, ajustado <b>en el servidor</b>: desde los extremos de la vela de 1 minuto en el barrido de cada minuto y desde el precio en vivo en cada lectura de <code>/positions</code>, así que sigue moviéndose mientras tu bot está offline y nunca se afloja. Un long abierto en 60,000 con <code>trail_pct: 1</code> empieza con su stop en 59,400; cuando el precio marca 63,000, el stop queda en 62,370. Las posiciones llevan <code>trail_pct</code> y <code>trail_hwm</code>.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 76
+  },
+  "v7DD_ruc4p": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>type:\"limit\"</em></span><span class=\"d\">The order <b>rests on the server</b> instead of filling now: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"limit\",\"limit_price\":58000,\"margin_usd\":100,\"leverage\":20}</code>. It fills at <b>your</b> price, not at the price the engine noticed the cross - the fill is found from the 1m high/low, so a wick that retraced between two checks still counts. Your bot does not have to be running. A limit long must be <b>below</b> the market and a limit short <b>above</b> it; otherwise you get <code>limit_marketable</code> rather than a silent market fill.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>type:\"limit\"</em></span><span class=\"d\">La orden <b>queda pendiente en el servidor</b> en vez de ejecutarse ahora: <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"limit\",\"limit_price\":58000,\"margin_usd\":100,\"leverage\":20}</code>. Se ejecuta a <b>tu</b> precio, no al precio en que el motor notó el cruce - la ejecución se busca en el máximo/mínimo de 1m, así que una mecha que retrocedió entre dos revisiones igual cuenta. Tu bot no tiene que estar corriendo. Un limit long debe estar <b>por debajo</b> del mercado y un limit short <b>por encima</b>; si no, obtienes <code>limit_marketable</code> en vez de una ejecución silenciosa a mercado.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 74
+  },
+  "NURXXO-1Qk": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>type:\"stop\"</em></span><span class=\"d\">A <b>breakout entry</b>: a long <b>above</b> the market or a short <b>below</b> it, e.g. <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"stop\",\"limit_price\":66000,\"margin_usd\":100,\"leverage\":10}</code>. Same engine as a limit order - it fills <b>at the level</b> from 1m candles, with the browser closed - but the wrong side is refused (<code>stop_wrong_side</code>) so a stop and a limit can never be confused. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> and <code>dry_run</code> all apply.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/open <em>type:\"stop\"</em></span><span class=\"d\">Una <b>entrada de ruptura</b>: un long <b>por encima</b> del mercado o un short <b>por debajo</b>, p. ej. <code>{\"symbol\":\"BTC\",\"side\":\"long\",\"type\":\"stop\",\"limit_price\":66000,\"margin_usd\":100,\"leverage\":10}</code>. Mismo motor que una orden límite - se ejecuta <b>en el nivel</b> a partir de velas de 1m, con el navegador cerrado - pero el lado incorrecto se rechaza (<code>stop_wrong_side</code>) para que un stop y un límite nunca se confundan. <code>sl</code>, <code>tp</code>, <code>trail_pct</code>, <code>client_order_id</code> y <code>dry_run</code> aplican todos.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 55
+  },
+  "CnLYKcFqXb": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/close</span><span class=\"d\">Close a position at the live price. Body: <code>{\"id\":\"bp...\",\"pct\":50}</code> - <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/close</span><span class=\"d\">Cierra una posición al precio en vivo. Body: <code>{\"id\":\"bp...\",\"pct\":50}</code> - <code>pct</code> es opcional (100 por defecto); los cierres parciales dividen la posición exactamente igual que en el sitio.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 25
+  },
+  "oX1hX0rhOu": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/close_all</span><span class=\"d\">Panic button - closes every open position at the live price in one call.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/close_all</span><span class=\"d\">Botón de pánico - cierra todas las posiciones abiertas al precio en vivo en una sola llamada.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 15
+  },
+  "0i0e5sEg9T": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/sltp</span><span class=\"d\">Move the stop-loss, take-profit or trailing stop on an <b>open</b> position without closing it. Body: <code>{\"id\":\"bot...\",\"sl\":63500,\"tp\":66000,\"trail_pct\":1.5}</code> - send <code>null</code> to clear one, omit a field to keep it. Levels are checked against the entry side. Before this existed you had to close and reopen to move a stop, which changed your entry and paid a full round trip.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/sltp</span><span class=\"d\">Mueve el stop-loss, el take-profit o el trailing stop de una posición <b>abierta</b> sin cerrarla. Body: <code>{\"id\":\"bot...\",\"sl\":63500,\"tp\":66000,\"trail_pct\":1.5}</code> - envía <code>null</code> para borrar uno, omite un campo para mantenerlo. Los niveles se comprueban según el lado de la entrada. Antes de que existiera esto tenías que cerrar y reabrir para mover un stop, lo que cambiaba tu entrada y pagaba una ida y vuelta completa.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 56
+  },
+  "PzrQSvoYI5": {
+   "en": "Resting orders",
+   "es": "Órdenes pendientes",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "zWThJ4qioY": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/orders</span><span class=\"d\">Your resting orders, each with <code>type: \"limit\" | \"stop\"</code>, plus the last 20 that filled, expired or were cancelled - a filled one carries the <code>position_id</code> it created. Orders are good until cancelled, expire after 30 days, and 20 may rest per account.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/orders</span><span class=\"d\">Tus órdenes pendientes, cada una con <code>type: \"limit\" | \"stop\"</code>, más las últimas 20 que se ejecutaron, expiraron o se cancelaron - una ejecutada lleva el <code>position_id</code> que creó. Las órdenes son válidas hasta que se cancelan, expiran a los 30 días, y pueden quedar 20 pendientes por cuenta.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 42
+  },
+  "Nmbn4XEWCt": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/modify_order</span><span class=\"d\">Change a resting order <b>in place</b>: <code>{\"order_id\":\"lo...\",\"limit_price\":58500,\"sl\":57000,\"tp\":62000,\"margin_usd\":150,\"leverage\":10,\"trail_pct\":1}</code> - send only what changes. Before this the only way was cancel and re-place, which lost the order's <code>client_order_id</code>. The direction is re-derived from the market now and the candle watermark restarts, so a moved level can never fill on a bar printed before the change. A filled, cancelled or expired order answers <code>409</code>.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/modify_order</span><span class=\"d\">Cambia una orden pendiente <b>en el mismo lugar</b>: <code>{\"order_id\":\"lo...\",\"limit_price\":58500,\"sl\":57000,\"tp\":62000,\"margin_usd\":150,\"leverage\":10,\"trail_pct\":1}</code> - envía solo lo que cambia. Antes de esto la única forma era cancelar y volver a crearla, lo que perdía el <code>client_order_id</code> de la orden. La dirección ahora se recalcula a partir del mercado y la marca de vela se reinicia, así que un nivel movido nunca puede ejecutarse en una barra impresa antes del cambio. Una orden ejecutada, cancelada o expirada responde <code>409</code>.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 58
+  },
+  "PpTUmHkVgm": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/cancel_order</span><span class=\"d\">Cancel one resting order. Body: <code>{\"order_id\":\"lo...\"}</code>. Already filled or cancelled comes back <code>409</code>, so a retry can never undo a fill.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/cancel_order</span><span class=\"d\">Cancela una orden pendiente. Body: <code>{\"order_id\":\"lo...\"}</code>. Si ya se ejecutó o se canceló, responde <code>409</code>, así que un reintento nunca puede deshacer una ejecución.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "c7QapFj4vn": {
+   "en": "Account and state",
+   "es": "Cuenta y estado",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "7H_HLl_ROv": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/positions<em>?status=open</em></span><span class=\"d\">All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically. <code>?status=open|closed</code> trims the body to what your loop actually reads; <code>?since=&lt;unix ms&gt;</code> and <code>If-None-Match</code> (304 when nothing changed) are supported too.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/positions<em>?status=open</em></span><span class=\"d\">Todas tus posiciones con <code>mark_price</code> y <code>unrealized_pnl_usd</code> en vivo; las liquidaciones y el SL/TP alcanzados se resuelven automáticamente. <code>?status=open|closed</code> recorta el body a lo que tu loop realmente lee; también se admiten <code>?since=&lt;unix ms&gt;</code> e <code>If-None-Match</code> (304 cuando nada cambió).</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 40
+  },
+  "-df5KE8XNi": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/account</span><span class=\"d\">Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/account</span><span class=\"d\">Resumen de la cuenta: posiciones abiertas, margen en uso, P&amp;L no realizado en vivo, P&amp;L realizado de <b>toda la vida</b>, ganadas/perdidas, tasa de acierto, más <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> y <code>return_pct</code>.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 24
+  },
+  "Mun5qhHSc_": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/balance</span><span class=\"d\">Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/balance</span><span class=\"d\">Solo el dinero: saldo inicial, saldo, equity, margen en uso, margen libre, P&amp;L no realizado. Más barato que <code>/account</code> cuando eso es todo lo que necesita tu lógica de tamaño de posición.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 27
+  },
+  "SW5JUY0V3k": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/trades<em>?limit=100&amp;before=…</em></span><span class=\"d\">The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window - follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/trades<em>?limit=100&amp;before=…</em></span><span class=\"d\">El libro completo de operaciones cerradas con paginación. <code>/positions</code> está limitado a 100 filas; este pagina por toda la ventana de retención - sigue <code>next_before</code> hasta que vuelva <code>null</code>. Úsalo para calcular estadísticas de la estrategia sobre el registro completo en vez de una cola truncada.</span>",
    "kind": [
     "html"
    ],
@@ -149110,9 +148965,357 @@
    "n": 1,
    "w": 44
   },
-  "-AlrVUV6uC": {
-   "en": "Bot arena - a public scoreboard for bots",
-   "es": "Bot arena - una clasificación pública para bots",
+  "OoccYIf30h": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/accounts</span><span class=\"d\">Every <a href=\"#books\">book</a> on the account with its lifetime numbers and the keys bound to it.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/accounts</span><span class=\"d\">Cada <a href=\"#books\">book</a> de la cuenta con sus números de toda la vida y las claves ligadas a él.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "cNr3LvOJG-": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/equity<em>?days=30&amp;step_min=60</em></span><span class=\"d\">The equity curve of this book, bucketed, with <code>max_drawdown_pct</code> and the live unrealized point at the end.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/equity<em>?days=30&amp;step_min=60</em></span><span class=\"d\">La curva de equity de este book, en buckets, con <code>max_drawdown_pct</code> y el punto no realizado en vivo al final.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "EeSwiIf4mF": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/reset</span><span class=\"d\">This book back to $10,000 with <code>{\"confirm\":true}</code>: closes archived, orders cancelled. Refused with <code>409 open_positions_exist</code> while anything is open.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/reset</span><span class=\"d\">Devuelve este book a $10,000 con <code>{\"confirm\":true}</code>: los cierres se archivan, las órdenes se cancelan. Se rechaza con <code>409 open_positions_exist</code> mientras haya algo abierto.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "3iASaURKVd": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/usage</span><span class=\"d\">Your plan, your ceilings, what is left in the current window, and <code>usage_30d</code> - calls per day by endpoint plus <code>refused</code> (the 429s), so a bot can see how close it runs to its limit.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/usage</span><span class=\"d\">Tu plan, tus límites, lo que queda en la ventana actual y <code>usage_30d</code> - llamadas por día por endpoint más <code>refused</code> (los 429), para que un bot pueda ver qué tan cerca corre de su límite.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "S-_GFmhOkx": {
+   "en": "Costs, intelligence and delivery",
+   "es": "Costos, inteligencia y entrega",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "v1lG9yWWyp": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/fees</span><span class=\"d\">Whose fee schedule your fills are charged at: the venues we model with taker, maker, our referral discount and the effective rate, plus your current default. <code>POST {\"venue\":\"bybit\"}</code> sets the account default; <code>fee_venue</code> on <code>/open</code> overrides it for one position. See <a href=\"#fees\">venue fees</a>.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/fees</span><span class=\"d\">A qué tabla de comisiones se cobran tus ejecuciones: los exchanges que modelamos con taker, maker, nuestro descuento por referido y la tasa efectiva, más tu valor por defecto actual. <code>POST {\"venue\":\"bybit\"}</code> fija el valor por defecto de la cuenta; <code>fee_venue</code> en <code>/open</code> lo anula para una posición. Ver <a href=\"#fees\">comisiones por exchange</a>.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 45
+  },
+  "5btvpMDhjM": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\">The <a href=\"/trading-report/\">trading report</a> for the account behind the key, measured from its own closed trades: totals and the <b>skill score</b> on every plan; win rate and return by <b>coin</b>, <b>leverage band</b>, <b>side</b>, <b>hour</b> and <b>day</b> plus the written <b>findings</b> on API Pro and Max (<code>locked[]</code> names what is withheld). Every finding carries the <code>n</code> it rests on and says nothing under 8 trades.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/report<em>?days=30</em></span><span class=\"d\">El <a href=\"/trading-report/\">trading report</a> de la cuenta detrás de la clave, medido a partir de sus propias operaciones cerradas: totales y el <b>skill score</b> en todos los planes; tasa de acierto y retorno por <b>moneda</b>, <b>franja de apalancamiento</b>, <b>lado</b>, <b>hora</b> y <b>día</b> más los <b>hallazgos</b> escritos en API Pro y Max (<code>locked[]</code> indica qué se retiene). Cada hallazgo lleva el <code>n</code> en el que se apoya y no dice nada por debajo de 8 operaciones.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 64
+  },
+  "Ub6asJZ6hF": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/ai</span><span class=\"d\"><span class=\"tag pro\">API PRO</span>The chart panel's AI read, from the API: <code>{\"symbol\":\"BTC\",\"interval\":\"60\",\"question\":\"Is this leaning long or short?\"}</code>. Same model, same prompt and the same <b>50-a-day</b> quota as Ask-AI on the site. You get the <code>answer</code>, a parsed <code>plan</code> (bias, entry, stop, targets) when the model saw a setup, and the <code>brief</code> it reasoned over - price, move, swing high/low, moving averages, RSI, ATR, Bollinger, recent closes - so you can log exactly what it looked at. Educational, not financial advice.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/ai</span><span class=\"d\"><span class=\"tag pro\">API PRO</span>La lectura de IA del panel de gráficos, desde la API: <code>{\"symbol\":\"BTC\",\"interval\":\"60\",\"question\":\"Is this leaning long or short?\"}</code>. Mismo modelo, mismo prompt y la misma cuota de <b>50 al día</b> que Ask-AI en el sitio. Recibes la <code>answer</code>, un <code>plan</code> analizado (sesgo, entrada, stop, objetivos) cuando el modelo vio un setup, y el <code>brief</code> sobre el que razonó - precio, movimiento, máximo/mínimo del swing, medias móviles, RSI, ATR, Bollinger, cierres recientes - para que puedas registrar exactamente qué miró. Educativo, no es asesoría financiera.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 77
+  },
+  "GTWvHHyK18": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/v1/webhooks</span><span class=\"d\"><span class=\"tag pro\">API PRO</span>Trading events <b>pushed to your URL</b>, seconds after they happen, whether or not your bot is connected - see <a href=\"#webhooks\">webhooks</a>. <code>POST {\"act\":\"add\",\"url\":\"https://…\"}</code> registers one, <code>{\"act\":\"test\",\"id\":…}</code> sends a ping and returns the status your server answered, <code>{\"act\":\"delete\",\"id\":…}</code> removes it.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/v1/webhooks</span><span class=\"d\"><span class=\"tag pro\">API PRO</span>Eventos de trading <b>enviados a tu URL</b>, segundos después de que ocurren, esté o no conectado tu bot - ver <a href=\"#webhooks\">webhooks</a>. <code>POST {\"act\":\"add\",\"url\":\"https://…\"}</code> registra uno, <code>{\"act\":\"test\",\"id\":…}</code> envía un ping y devuelve el estado que respondió tu servidor, <code>{\"act\":\"delete\",\"id\":…}</code> lo elimina.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 40
+  },
+  "AVfsEa1gvV": {
+   "en": "<span class=\"m post\">POST</span><span class=\"u\">/v1/replay</span><span class=\"d\"><span class=\"tag ver\">2.6</span>Run your bot through one past UTC day on our own 1-minute candles - see <a href=\"#replay\">replay</a>.</span>",
+   "es": "<span class=\"m post\">POST</span><span class=\"u\">/v1/replay</span><span class=\"d\"><span class=\"tag ver\">2.6</span>Corre tu bot a través de un día UTC pasado sobre nuestras propias velas de 1 minuto - ver <a href=\"#replay\">replay</a>.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 18
+  },
+  "B09q6X92vQ": {
+   "en": "Machine-readable: <a href=\"/api/openapi.json\">OpenAPI 3.1 spec</a> with full request and response schemas · an <a href=\"/api-docs/\">interactive reference</a> you can fire calls from · the <a href=\"/api/changelog\">changelog</a> (<a href=\"/api/changelog?format=json\">JSON</a>).",
+   "es": "Legible por máquina: <a href=\"/api/openapi.json\">especificación OpenAPI 3.1</a> con los esquemas completos de petición y respuesta · una <a href=\"/api-docs/\">referencia interactiva</a> desde la que puedes disparar llamadas · el <a href=\"/api/changelog\">changelog</a> (<a href=\"/api/changelog?format=json\">JSON</a>).",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 22
+  },
+  "ea6_77tmLx": {
+   "en": "How the engine works",
+   "es": "Cómo funciona el motor",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "UlJe_gFx74": {
+   "en": "<b>Fills and prices</b>",
+   "es": "<b>Ejecuciones y precios</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "LyLV9TptGu": {
+   "en": "Orders fill instantly at the real live price (multi-exchange feed - the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.",
+   "es": "Las órdenes se ejecutan al instante al precio real en vivo (feed multi-exchange - los mismos precios que nuestro Paper Trade). Las ejecuciones vía API <b>no tienen slippage</b> (las del sitio web sí), así que trata los precios de entrada como algo optimistas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "smHBfc3PGB": {
+   "en": "<b>Trading fees - read this before you measure a strategy</b>",
+   "es": "<b>Comisiones de trading - lee esto antes de medir una estrategia</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "pgGZeUjF8R": {
+   "en": "Every position pays a <b>taker fee on both sides</b>, settled into <code>pnl_usd</code> at close. It is charged as a round trip: <code>fee = qty × (entry + exit) × rate</code>. Funding is accrued on positions held across funding marks and deducted the same way. Open positions already show P&amp;L <b>net</b> of the round trip in <code>unrealized_pnl_usd</code>, so what you see is what settles.",
+   "es": "Cada posición paga una <b>comisión taker en ambos lados</b>, que se liquida en <code>pnl_usd</code> al cerrar. Se cobra como un viaje redondo: <code>fee = qty × (entry + exit) × rate</code>. El funding se acumula en posiciones mantenidas a través de las marcas de funding y se descuenta de la misma manera. Las posiciones abiertas ya muestran el P&amp;L <b>neto</b> del viaje redondo en <code>unrealized_pnl_usd</code>, así que lo que ves es lo que se liquida.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 56
+  },
+  "4sORLM0-Il": {
+   "en": "Fee per side",
+   "es": "Comisión por lado",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "SEvbUo5IHB": {
+   "en": "Round trip on $10,000 notional",
+   "es": "Viaje redondo sobre un nocional de $10,000",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "8DnYw5wSTx": {
+   "en": "Crypto perps",
+   "es": "Perpetuos de cripto",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "G9bmSiLh7m": {
+   "en": "Stocks &amp; ETFs",
+   "es": "Acciones y ETFs",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "CD2OmYLmqf": {
+   "en": "Metals &amp; indices",
+   "es": "Metales e índices",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "kQiyDxsN-U": {
+   "en": "Forex majors",
+   "es": "Pares principales de forex",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "EhgNuhwX-z": {
+   "en": "Prefer the exact bill of the exchange you will run on? <a href=\"#fees\">Charge the paper account at its schedule</a>, referral discount included. Above roughly 180× leverage the rate tapers so the round trip can never exceed 20% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> - a scalp that clears less than the round trip is a loser no matter how often it is right.",
+   "es": "¿Prefieres la factura exacta del exchange en el que vas a operar? <a href=\"#fees\">Cobra a la cuenta simulada según su tarifario</a>, descuento por referido incluido. Por encima de unas 180× de apalancamiento, la tasa se reduce para que el viaje redondo nunca supere el 20% de tu margen. <code>GET /v1/markets</code> devuelve la tasa exacta y el tope de apalancamiento de cada símbolo. <b>Las estrategias de horizonte corto viven o mueren por este número</b> - un scalp que gana menos que el viaje redondo es una pérdida sin importar cuántas veces acierte.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 76
+  },
+  "v5gATWUo6s": {
+   "en": "<b>Margin, liquidation, SL/TP, trailing</b>",
+   "es": "<b>Margen, liquidación, SL/TP, trailing</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "9hlt_ZFmtz": {
+   "en": "Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> - when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.",
+   "es": "Margen aislado. Las pérdidas están limitadas a tu margen. El precio de liquidación usa una tasa de margen de mantenimiento del 0.5%; cuando el precio en vivo lo cruza, la posición se liquida automáticamente al precio de liquidación. <b>Las órdenes de stop-loss y take-profit también se ejecutan automáticamente</b> - cuando el precio cruza tu <code>sl</code> o tu <code>tp</code> (verificado contra las mechas de las velas de 1 minuto en el barrido por minuto, así que un pico que se retrajo igual cuenta), la posición se liquida a ese nivel. Un <b>trailing stop</b> avanza desde el mejor precio visto: en el barrido se mueve según el extremo de cada vela <i>después</i> de que esa vela ya fue verificada contra el stop vigente, así que una vela nunca puede sacarte a un nivel que ella misma creó.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 107
+  },
+  "mTXal1IbHL": {
+   "en": "<b>Balance and equity</b>",
+   "es": "<b>Saldo y equity</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "HPVM8ZJWuM": {
+   "en": "Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.",
+   "es": "Cada cuenta simulada empieza con un nominal de <b>$10,000</b>. <code>/v1/account</code> y <code>/v1/balance</code> reportan <code>balance_usd</code>, <code>equity_usd</code> y <code>free_margin_usd</code> para que puedas expresar los resultados como un rendimiento y no como una cifra en dólares sin más. Este saldo es un <b>marcador, no una restricción</b>: el margen no se le descuenta y una apertura nunca se rechaza por falta de fondos (<code>margin_enforced: false</code>). Dimensiona tus propias posiciones si quieres que la restricción sea real.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 64
+  },
+  "xWhT9MBoXk": {
+   "en": "<b>Rate-limit headers</b>",
+   "es": "<b>Headers de límite de peticiones</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "WzArw6MoR1": {
+   "en": "Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>X-RateLimit-Scope</code> says whether the key's limit or the per-IP one applied.",
+   "es": "Cada respuesta lleva <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> y <code>X-RateLimit-Reset</code> (segundos epoch); un 429 añade <code>Retry-After</code>. Los límites se cuentan <b>por clave</b>, así que una segunda clave tiene su propio presupuesto. <code>X-RateLimit-Scope</code> indica si se aplicó el límite de la clave o el de la IP.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "OaKBZG7B41": {
+   "en": "<b>Your bot's trades on the site</b>",
+   "es": "<b>Las operaciones de tu bot en el sitio</b>",
    "kind": [
     "html"
    ],
@@ -149122,9 +149325,9 @@
    "n": 1,
    "w": 6
   },
-  "QIK6GzVYzV": {
-   "en": "Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href=\"/arena/\">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.",
-   "es": "Toda cuenta o libro con al menos cinco cierres abiertos a través de la API en esta temporada de 14 días queda clasificado en <a href=\"/arena/\">/arena/</a> por PnL realizado neto de comisiones y funding, con tasa de acierto, rendimiento sobre la tarjeta de $10,000, ROE promedio y liquidaciones. Sin premios y sin nada que registrar: opera a través de la API y la tabla te incluye sola. JSON: <code>GET /api/arena</code>.",
+  "d1mc-URhdL": {
+   "en": "Positions opened via the API live on your account server-side, so they show in <a href=\"/paper-trade\">My Trades</a>, count for the season boards and XP, and feed your <a href=\"/trading-report/\">trading report</a> - the same report <code>GET /v1/report</code> returns to the bot.",
+   "es": "Las posiciones abiertas vía la API viven en tu cuenta del lado del servidor, así que aparecen en <a href=\"/paper-trade\">Mis Operaciones</a>, cuentan para las tablas de temporada y el XP, y alimentan tu <a href=\"/trading-report/\">informe de trading</a> - el mismo informe que <code>GET /v1/report</code> devuelve al bot.",
    "kind": [
     "html"
    ],
@@ -149132,7 +149335,139 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 60
+   "w": 37
+  },
+  "mQ2yRZor40": {
+   "en": "<b>The streaming API is free on purpose</b>",
+   "es": "<b>La API de streaming es gratis a propósito</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "2Ix8fBon86": {
+   "en": "Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.",
+   "es": "Ponerla detrás de un muro de pago empujaría a todos los demás de vuelta al polling, que nos cuesta mucho más que el stream - así que los incentivos se alinean: usa el WebSocket, ganamos los dos. Los datos de mercado siguen sin clave y gratis para siempre; una clave solo sube su límite.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 43
+  },
+  "-IDZNYIdT3": {
+   "en": "Fees as on the exchange you will actually use",
+   "es": "Comisiones como en el exchange que realmente usarás",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "FuI6TfZ_dh": {
+   "en": "By default every paper fill pays the MarginPad rate: 0.055% per side on crypto, both legs, charged as a round trip at close. That is a fair average, but it is nobody's exact bill. If you already know where the bot will run for real, <b>charge the paper account at that venue's schedule</b> - its published taker rate, less the referral discount a MarginPad sign-up gets there - so the forward test settles the way the live account will:",
+   "es": "Por defecto, cada ejecución simulada paga la tasa de MarginPad: 0.055% por lado en cripto, ambas piernas, cobradas como round trip al cierre. Eso es un promedio justo, pero no es la factura exacta de nadie. Si ya sabes dónde correrá el bot de verdad, <b>cobra a la cuenta simulada según la tabla de ese exchange</b> - su tasa taker publicada, menos el descuento de referido que consigue un registro de MarginPad allí - así el forward test se liquida como lo hará la cuenta real:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 74
+  },
+  "upo80CSe0H": {
+   "en": "Our referral discount",
+   "es": "Nuestro descuento de referido",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "qd7_irvmK0": {
+   "en": "You pay per side",
+   "es": "Pagas por lado",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "eydfQmVuh6": {
+   "en": "4% (code <code>MARGINPAD</code>)",
+   "es": "4% (código <code>MARGINPAD</code>)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "vfYA8Wg9F8": {
+   "en": "OKX &middot; Kraken",
+   "es": "OKX &middot; Kraken",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "lflOEXK5sH": {
+   "en": "MarginPad default",
+   "es": "Valor por defecto de MarginPad",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "7hAPwZoT7s": {
+   "en": "no venue chosen",
+   "es": "sin exchange elegido",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "scnHJhfiJL": {
+   "en": "Rates are the venues' published base tier and the discounts we state on <a href=\"/exchanges/\">/exchanges/</a>; the API returns them with <code>source</code> so you know they are advertised numbers, not measurements. Both legs pay the taker rate (the paper engine fills at market; a maker rebate on a resting entry is not modelled). Crypto perps only - stocks, forex, metals and indices keep the MarginPad class rates whatever the venue. Open positions keep the rate they were filled with; the extreme-leverage cap (a round trip never above 20% of margin) still applies. The same choice is the <b>\"Fees as on\"</b> selector in the <a href=\"/paper-trade\">Paper Trade</a> form, so a bot and its owner's manual trades pay identical fees.",
+   "es": "Las tasas son el nivel base publicado de los exchanges y los descuentos que indicamos en <a href=\"/exchanges/\">/exchanges/</a>; la API las devuelve con <code>source</code> para que sepas que son cifras publicitadas, no mediciones. Ambas piernas pagan la tasa taker (el motor de paper trading ejecuta a mercado; no se modela un rebate de maker en una entrada pendiente). Solo perpetuos cripto - acciones, forex, metales e índices mantienen las tasas de la clase de MarginPad sea cual sea el exchange. Las posiciones abiertas mantienen la tasa con la que se ejecutaron; el límite de apalancamiento extremo (un round trip nunca por encima del 20% del margen) sigue aplicando. La misma opción es el selector <b>\"Fees as on\"</b> en el formulario de <a href=\"/paper-trade\">Paper Trade</a>, así un bot y las operaciones manuales de su dueño pagan comisiones idénticas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 111
   },
   "6IGr08iBOa": {
    "en": "Writing a bot that does not break",
@@ -149170,9 +149505,9 @@
    "n": 1,
    "w": 19
   },
-  "AshlCHBzmO": {
-   "en": "<b>Closing takes one too.</b> Send <code>client_order_id</code> on <code>/close</code> and a retry reports what the first call did (<code>idempotent: true</code>) instead of an error you have to interpret:",
-   "es": "<b>Cerrar también necesita uno.</b> Envía <code>client_order_id</code> en <code>/close</code> y un reintento informa lo que hizo la primera llamada (<code>idempotent: true</code>) en vez de un error que tengas que interpretar:",
+  "QbxAkTFCfn": {
+   "en": "<b>Closing takes one too.</b> Send <code>client_order_id</code> on <code>/close</code> and a retry reports what the first call did (<code>idempotent: true</code>) instead of an error you have to interpret.",
+   "es": "<b>Cerrar también acepta uno.</b> Envía <code>client_order_id</code> en <code>/close</code> y un reintento reporta lo que hizo la primera llamada (<code>idempotent: true</code>) en vez de un error que tienes que interpretar.",
    "kind": [
     "html"
    ],
@@ -149290,6 +149625,198 @@
    "n": 1,
    "w": 37
   },
+  "PkQjoJXmgG": {
+   "en": "Webhooks - events pushed to your server <span class=\"tag pro\">API PRO</span>",
+   "es": "Webhooks - eventos enviados a tu servidor <span class=\"tag pro\">API PRO</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "s17oMZjT0c": {
+   "en": "Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.",
+   "es": "Medido antes de que esto existiera: <b>el 89.5% de cada llamada a esta API era hacer polling</b> a <code>/positions</code> y <code>/account</code> en busca de eventos. Un webhook invierte eso - te enviamos un POST cuando algo realmente ocurre, con la misma forma de <code>Position</code> que habría devuelto un poll, y funciona mientras tu bot está desconectado, reiniciando o desplegado en algún lugar que no puede mantener un socket.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 55
+  },
+  "ZnwoHvsCr3": {
+   "en": "<b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.",
+   "es": "<b>Eventos:</b> <code>position.opened</code> · <code>position.updated</code> (un stop o un objetivo se movió) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (lleva la posición que creó) · <code>order.expired</code> · <code>order.cancelled</code>. Omite <code>events</code> para recibirlos todos. Las operaciones hechas en el sitio en la misma cuenta también los disparan.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 34
+  },
+  "GthPqRi3aP": {
+   "en": "<b>Verify every delivery.</b> <code>X-MP-Signature</code> is <code>sha256=HMAC_SHA256(secret, raw body)</code> with the secret returned when you added the hook. Compare it before you parse the body; both SDKs ship <code>verify_webhook</code> / <code>verifyWebhook</code>. Answer <code>2xx</code> within 6 seconds - anything else is retried 5 times with backoff (30 s, 1, 2, 4 min), and a hook is <b>paused after 25 consecutive failures</b>; <code>GET /webhooks</code> shows <code>active</code>, <code>consecutive_failures</code> and <code>last_error</code> so you can see why. Three hooks per account on Pro, fifteen on Max; deliveries are best-effort, the WebSocket <code>snapshot</code> and <code>/positions</code> remain the source of truth.",
+   "es": "<b>Verifica cada entrega.</b> <code>X-MP-Signature</code> es <code>sha256=HMAC_SHA256(secret, raw body)</code> con el secreto devuelto cuando añadiste el hook. Compáralo antes de parsear el body; ambos SDKs incluyen <code>verify_webhook</code> / <code>verifyWebhook</code>. Responde <code>2xx</code> en menos de 6 segundos - cualquier otra cosa se reintenta 5 veces con backoff (30 s, 1, 2, 4 min), y un hook se <b>pausa después de 25 fallos consecutivos</b>; <code>GET /webhooks</code> muestra <code>active</code>, <code>consecutive_failures</code> y <code>last_error</code> para que veas por qué. Tres hooks por cuenta en Pro, quince en Max; las entregas son best-effort, el <code>snapshot</code> del WebSocket y <code>/positions</code> siguen siendo la fuente de verdad.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 87
+  },
+  "jwafciE7gN": {
+   "en": "<b>Try it before you write a receiver:</b> register <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> as the URL, then open <code>GET</code> on that same address - it echoes the last 20 deliveries (headers and body) for 15 minutes. No auth; the token is the secret.",
+   "es": "<b>Pruébalo antes de escribir un receptor:</b> registra <code>https://marginpad.io/api/whsink/&lt;any-token-you-choose&gt;</code> como la URL, y luego abre <code>GET</code> en esa misma dirección - devuelve las últimas 20 entregas (headers y body) durante 15 minutos. Sin autenticación; el token es el secreto.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 38
+  },
+  "9B2vKAWuEq": {
+   "en": "Books - one strategy, one clean result <span class=\"tag ver\">2.5</span>",
+   "es": "Books - una estrategia, un resultado limpio <span class=\"tag ver\">2.5</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "C5oT2ai6O7": {
+   "en": "A <b>book</b> is a separate journal, balance, report and equity curve inside your account. Mint a key with a book name and every call made with that key trades that book; your main account and your other books never see it. Free accounts get one book besides the main account, API Pro five and Max twenty.",
+   "es": "Un <b>book</b> es un diario, un balance, un report y una curva de equity separados dentro de tu cuenta. Crea una clave con el nombre de un book y cada llamada hecha con esa clave opera ese book; tu cuenta principal y tus otros books nunca lo ven. Las cuentas Free tienen un book además del principal, API Pro cinco y Max veinte.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 52
+  },
+  "8tgu7hreP1": {
+   "en": "<b>Reset</b> is refused with <code>409 open_positions_exist</code> while anything is open: close first, then reset. The archived trades are kept (never deleted) but the report, the ledger, <code>/trades</code> and the equity curve start from the reset, and a browser that still holds the old journal cannot push it back. Webhooks fire on the account's hooks with <code>\"account\":\"rsi\"</code> in the payload, so one receiver serves every book.",
+   "es": "<b>Reset</b> se rechaza con <code>409 open_positions_exist</code> mientras haya algo abierto: cierra primero, luego reinicia. Las operaciones archivadas se conservan (nunca se borran), pero el informe, el registro, <code>/trades</code> y la curva de equity empiezan desde el reset, y un navegador que aún tenga el diario antiguo no puede devolverlo. Los webhooks se disparan en los hooks de la cuenta con <code>\"account\":\"rsi\"</code> en el payload, así que un solo receptor sirve a todos los books.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 64
+  },
+  "5UVMfLnHlQ": {
+   "en": "Replay - run your bot through a past day <span class=\"tag ver\">2.6</span>",
+   "es": "Replay - corre tu bot a través de un día pasado <span class=\"tag ver\">2.6</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "0iFom1YR5F": {
+   "en": "Backtest with the code you will run live. Start a replay of one past UTC day and the same routes your bot already calls act on a separate replay journal, priced from MarginPad's own 1-minute candles at the cursor. Stops, targets and liquidations are checked on every candle between two of your calls, on the high and the low, with the same fee and funding math as live. Nothing from a replay reaches the boards, the arena or your report.",
+   "es": "Haz backtest con el mismo código que vas a correr en vivo. Inicia un replay de un día UTC pasado y las mismas rutas que tu bot ya llama actúan sobre un diario de replay separado, cotizado con las propias velas de 1 minuto de MarginPad en el cursor. Los stops, los objetivos y las liquidaciones se comprueban en cada vela entre dos de tus llamadas, sobre el máximo y el mínimo, con la misma matemática de comisiones y funding que en vivo. Nada de un replay llega a las tablas, a la arena o a tu informe.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 77
+  },
+  "sB2vXr33Tr": {
+   "en": "Speed goes from 1 (real time) to 600 (a day in 2.4 minutes). One replay per key at a time, crypto only, market orders only for now: read the replay price and candles from <code>GET /v1/replay</code>, since the keyless <code>/v1/price</code> and <code>/v1/klines</code> keep answering live data.",
+   "es": "La velocidad va de 1 (tiempo real) a 600 (un día en 2.4 minutos). Un replay por clave a la vez, solo cripto, por ahora solo órdenes a mercado: lee el precio y las velas del replay desde <code>GET /v1/replay</code>, ya que el <code>/v1/price</code> y el <code>/v1/klines</code> sin clave siguen respondiendo datos en vivo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 44
+  },
+  "-ZO1QHZNeT": {
+   "en": "Managing your keys",
+   "es": "Gestionar tus claves",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "jj-rJ75QMO": {
+   "en": "You can hold several keys on one account - keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own budget and its own line in your stats. Signed in on the site, from the browser:",
+   "es": "Puedes tener varias claves en una cuenta - mantén separados un bot de backtest y un bot en vivo, y revoca uno sin tocar el otro. <b>El uso y los límites de peticiones se cuentan por clave</b>, así que cada una tiene su propio presupuesto y su propia línea en tus estadísticas. Con la sesión iniciada en el sitio, desde el navegador:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 51
+  },
+  "fStslUZRBO": {
+   "en": "A revoked key returns <code>401 revoked_key</code>. Keys are secrets - anyone holding one can trade your paper account. <a href=\"#akb\">Create and revoke them at the top of this page</a>.",
+   "es": "Una clave revocada devuelve <code>401 revoked_key</code>. Las claves son secretas - cualquiera que tenga una puede operar tu cuenta de paper trading. <a href=\"#akb\">Créalas y revócalas arriba de esta página</a>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "-AlrVUV6uC": {
+   "en": "Bot arena - a public scoreboard for bots",
+   "es": "Bot arena - una clasificación pública para bots",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "QIK6GzVYzV": {
+   "en": "Every account or book with at least five closes opened through the API this 14-day season is ranked on <a href=\"/arena/\">/arena/</a> by realized P&amp;L net of fees and funding, with win rate, return on the $10,000 scorecard, average ROE and liquidations. No prizes and nothing to sign up for: trade through the API and the board picks you up. JSON: <code>GET /api/arena</code>.",
+   "es": "Toda cuenta o libro con al menos cinco cierres abiertos a través de la API en esta temporada de 14 días queda clasificado en <a href=\"/arena/\">/arena/</a> por PnL realizado neto de comisiones y funding, con tasa de acierto, rendimiento sobre la tarjeta de $10,000, ROE promedio y liquidaciones. Sin premios y sin nada que registrar: opera a través de la API y la tabla te incluye sola. JSON: <code>GET /api/arena</code>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 60
+  },
   "sQxOVc5itx": {
    "en": "Use it from Claude, ChatGPT or Cursor",
    "es": "Úsalo desde Claude, ChatGPT o Cursor",
@@ -149314,9 +149841,9 @@
    "n": 1,
    "w": 21
   },
-  "oFGo_gov7W": {
-   "en": "Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. <b>Twenty-three tools</b> are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open (with trailing stops and dry run) / limit and stop orders / modify / cancel / close / sltp / positions / orders / balance / trades / report / fees. <code>GET /mcp</code> in a browser returns the server descriptor.",
-   "es": "Agrégalo como servidor MCP remoto en tu cliente y define el encabezado <code>X-API-Key: mpb_…</code> si quieres las herramientas de paper trading. Las herramientas de datos de mercado no necesitan clave. Se exponen <b>veintitrés herramientas</b>: precios, velas, mercados, screener, funding, interés abierto, liquidaciones, fear and greed, el calendario económico, dos calculadoras, y apertura simulada (con trailing stops y modo de prueba) / órdenes límite y stop / modificar / cancelar / cerrar / sltp / posiciones / órdenes / saldo / operaciones / informe / comisiones. <code>GET /mcp</code> en un navegador devuelve el descriptor del servidor.",
+  "5Qgh0DHu4S": {
+   "en": "Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. <b>Twenty-seven tools</b> are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open (with trailing stops and dry run) / limit and stop orders / modify / cancel / close / sltp / positions / orders / balance / trades / report / fees / accounts / reset / equity / replay. <code>GET /mcp</code> in a browser returns the server descriptor.",
+   "es": "Añádelo como servidor MCP remoto en tu cliente y pon el header <code>X-API-Key: mpb_…</code> si quieres las herramientas de paper trading. Las herramientas de datos de mercado no necesitan clave. Se exponen <b>veintisiete herramientas</b>: precios, velas, mercados, screener, funding, interés abierto, liquidaciones, fear and greed, el calendario económico, dos calculadoras, y apertura en paper (con trailing stops y dry run) / órdenes límite y stop / modificar / cancelar / cerrar / sltp / posiciones / órdenes / saldo / operaciones / informe / comisiones / cuentas / reset / equity / replay. <code>GET /mcp</code> en un navegador devuelve el descriptor del servidor.",
    "kind": [
     "html"
    ],
@@ -149324,7 +149851,55 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 77
+   "w": 81
+  },
+  "DTu-qrSki0": {
+   "en": "Response format - v1 and v2",
+   "es": "Formato de respuesta - v1 y v2",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "XH4v8uogJ3": {
+   "en": "<code>/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.",
+   "es": "<code>/api/bot/v1/*</code> está <b>congelada</b>. Sus cuerpos de respuesta no van a cambiar; los bots escritos contra ella siguen funcionando indefinidamente, y todavía recibe correcciones de errores.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 22
+  },
+  "pQctStnAg7": {
+   "en": "<code>/api/bot/v2/*</code> is the same API with the envelope our data endpoints already use - one predictable shape for success and failure, so you write the parsing once:",
+   "es": "<code>/api/bot/v2/*</code> es la misma API con el envoltorio que ya usan nuestros endpoints de datos - una sola forma predecible para el éxito y el fallo, para que escribas el parseo una sola vez:",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "pCx2uYgBT0": {
+   "en": "Same paths, same parameters, same key - swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.",
+   "es": "Mismas rutas, mismos parámetros, misma clave - cambia <code>v1</code> por <code>v2</code> en la URL. Los valores de <code>code</code> de error son identificadores estables; <code>message</code> es para humanos y puede reformularse.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 27
   },
   "JsGqr9exIh": {
    "en": "Error codes",
@@ -149650,9 +150225,9 @@
    "n": 1,
    "w": 1
   },
-  "7Nwe4ZlxQ9": {
-   "en": "Three hooks per account. Delete one first.",
-   "es": "Tres webhooks por cuenta. Elimina uno primero.",
+  "HArS9eQv3S": {
+   "en": "Delete one first - three hooks on Pro, fifteen on Max.",
+   "es": "Elimina uno primero - tres hooks en Pro, quince en Max.",
    "kind": [
     "html"
    ],
@@ -149660,7 +150235,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 7
+   "w": 10
   },
   "7MeBbY6JF6": {
    "en": "<code>bad_url</code> / <code>bad_event</code>",
@@ -149698,9 +150273,9 @@
    "n": 1,
    "w": 1
   },
-  "QwRPXON1nG": {
-   "en": "The 50-a-day AI quota (shared with the site) is used. Resets 00:00 UTC.",
-   "es": "Se agotó la cuota diaria de 50 llamadas de IA (compartida con el sitio). Se reinicia a las 00:00 UTC.",
+  "ik6eEA1K_3": {
+   "en": "The daily AI quota (shared with the site) is used. Resets 00:00 UTC.",
+   "es": "Se usó la cuota diaria de IA (compartida con el sitio). Se reinicia a las 00:00 UTC.",
    "kind": [
     "html"
    ],
@@ -149722,9 +150297,9 @@
    "n": 1,
    "w": 1
   },
-  "w56cZQ8TJA": {
-   "en": "You hold 50 open positions. Close something.",
-   "es": "Ya tienes 50 posiciones abiertas. Cierra alguna.",
+  "TcNLCU9kbw": {
+   "en": "You are at your plan's open-position ceiling. Close something.",
+   "es": "Estás en el límite de posiciones abiertas de tu plan. Cierra algo.",
    "kind": [
     "html"
    ],
@@ -149732,7 +150307,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 7
+   "w": 9
   },
   "ldhOA49Y8x": {
    "en": "<code>already_closed</code>",
@@ -149806,21 +150381,9 @@
    "n": 1,
    "w": 4
   },
-  "t9VintXKQf": {
-   "en": "Machine-readable: <a href=\"/api/openapi.json\">OpenAPI spec</a> (full request and response schemas) · <a href=\"/api/changelog\">API changelog</a> · <a href=\"/api/changelog?format=json\">changelog as JSON</a>.",
-   "es": "Legible por máquinas: <a href=\"/api/openapi.json\">especificación OpenAPI</a> (esquemas completos de solicitud y respuesta) · <a href=\"/api/changelog\">changelog de la API</a> · <a href=\"/api/changelog?format=json\">changelog en JSON</a>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "Q-ZPJL1VbQ": {
-   "en": "Free Liquidation Data API <span style=\"background:rgba(255,98,88,.14);border:1px solid rgba(255,98,88,.4);color:#ff8a80;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em\">LIVE DATA</span>",
-   "es": "API gratis de datos de liquidaciones <span style=\"background:rgba(255,98,88,.14);border:1px solid rgba(255,98,88,.4);color:#ff8a80;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em\">DATOS EN VIVO</span>",
+  "QguMv2F3Iu": {
+   "en": "Free liquidation data API <span class=\"tag data\">LIVE DATA</span>",
+   "es": "API gratis de datos de liquidaciones <span class=\"tag data\">DATOS EN VIVO</span>",
    "kind": [
     "html"
    ],
@@ -149842,9 +150405,9 @@
    "n": 1,
    "w": 49
   },
-  "Xo3t7MrOdB": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/feed</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/feed</code>",
+  "ltUKKNeZlZ": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/feed</span><span class=\"d\">The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Events land here seconds after they happen (3s edge cache). Poll every 3-5s.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/feed</span><span class=\"d\">Las liquidaciones más recientes en TODOS los símbolos rastreados - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Los eventos llegan aquí segundos después de que ocurren (caché de borde de 3s). Haz polling cada 3-5s.</span>",
    "kind": [
     "html"
    ],
@@ -149852,11 +150415,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2
+   "w": 29
   },
-  "kLVWzYUxcN": {
-   "en": "The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Freshness: events land here seconds after they happen (3s edge cache). Poll every 3–5s.",
-   "es": "Las liquidaciones más recientes de TODOS los símbolos rastreados - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Frescura: los eventos llegan aquí segundos después de ocurrir (caché de 3s en el edge). Consulta cada 3–5s.",
+  "ca6OgeKu-X": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class=\"d\">Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class=\"d\">Eventos de liquidación crudos y recientes para un símbolo (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> es <code>long_liquidated</code> o <code>short_liquidated</code>, <code>notional</code> es el tamaño en USD.</span>",
    "kind": [
     "html"
    ],
@@ -149864,11 +150427,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 28
+   "w": 31
   },
-  "OvfI1AdxqO": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/liquidations/live?symbol=BTC&amp;limit=400</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/liquidations/live?symbol=BTC&amp;limit=400</code>",
+  "ssANC1XAIe": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/liquidations/recent<em>?symbol=BTC&amp;minutes=1440</em></span><span class=\"d\">Time-bucketed histogram (long vs short $ per bucket) for charts - the exact source of our heatmap's stats. <code>minutes</code>: up to 43200 (30 days).</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/liquidations/recent<em>?symbol=BTC&amp;minutes=1440</em></span><span class=\"d\">Histograma agrupado por tiempo (USD long vs short por bucket) para gráficos - la fuente exacta de las estadísticas de nuestro mapa de calor. <code>minutes</code>: hasta 43200 (30 días).</span>",
    "kind": [
     "html"
    ],
@@ -149876,11 +150439,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
+   "w": 26
   },
-  "m01dQ_5pH4": {
-   "en": "Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.",
-   "es": "Eventos de liquidación recientes en bruto para un símbolo (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> es <code>long_liquidated</code> o <code>short_liquidated</code>, <code>notional</code> es el tamaño en USD.",
+  "r0ayn7d4P4": {
+   "en": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/clusters<em>?symbol=BTC</em></span><span class=\"d\">Modeled liquidation clusters: price levels where liquidation liquidity is estimated to sit right now - <code>{clusters:[{price, side, est_notional}]}</code>. Refreshes continuously from live order flow.</span>",
+   "es": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/clusters<em>?symbol=BTC</em></span><span class=\"d\">Clusters de liquidación modelados: niveles de precio donde se estima que hay liquidez de liquidación ahora mismo - <code>{clusters:[{price, side, est_notional}]}</code>. Se actualiza continuamente a partir del flujo de órdenes en vivo.</span>",
    "kind": [
     "html"
    ],
@@ -149888,11 +150451,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 27
+   "w": 26
   },
-  "SaIbxgkuVc": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code>",
+  "C_8kWiWQQT": {
+   "en": "Attribution appreciated (link marginpad.io) but not required. Coverage is ~70%+ of the market's liquidation flow - the venues that move price. Educational use; no uptime SLA. Just want market data? The whole keyless surface is documented on the <a href=\"/free-crypto-api/\">free crypto data API</a> page.",
+   "es": "Se agradece la atribución (enlaza marginpad.io) pero no es obligatoria. La cobertura es ~70%+ del flujo de liquidaciones del mercado - los exchanges que mueven el precio. Uso educativo; sin SLA de uptime. ¿Solo quieres datos de mercado? Toda la superficie sin clave está documentada en la página de <a href=\"/free-crypto-api/\">API gratis de datos cripto</a>.",
    "kind": [
     "html"
    ],
@@ -149900,11 +150463,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 3
+   "w": 42
   },
-  "zOV5VQhFJw": {
-   "en": "Time-bucketed histogram (long vs short $ per bucket) for charts - the exact source of our heatmap&rsquo;s stats. <code>minutes</code>: up to 43200 (30 days).",
-   "es": "Histograma por intervalos de tiempo ($ long vs. short por intervalo) para gráficos - la fuente exacta de las estadísticas de nuestro mapa de calor. <code>minutes</code>: hasta 43200 (30 días).",
+  "1rsIufuUPe": {
+   "en": "Backtest, paper, live - in that order",
+   "es": "Backtest, paper, live - en ese orden",
    "kind": [
     "html"
    ],
@@ -149912,11 +150475,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 22
+   "w": 6
   },
-  "D1y_SAPALu": {
-   "en": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/clusters?symbol=BTC</code>",
-   "es": "<span class=\"m get\">GET</span><code class=\"u\">/api/v1/clusters?symbol=BTC</code>",
+  "K8Rp3cqggf": {
+   "en": "Most crypto trading bots that look profitable in a backtest <b>lose money the first week they go live</b>. Backtests replay clean historical candles - they cannot catch a race condition in your order logic, a position-sizing bug that only shows up after a losing streak, or leverage that quietly grows past what your margin survives. Forward testing runs the same bot, the same code path, against real live prices in real time. If the strategy has a flaw, it shows up here, where a bug costs you nothing.",
+   "es": "La mayoría de los bots de trading de cripto que parecen rentables en un backtest <b>pierden dinero la primera semana que salen en vivo</b>. Los backtests repiten velas históricas limpias: no detectan una condición de carrera en tu lógica de órdenes, un error de tamaño de posición que solo aparece tras una racha de pérdidas, ni un apalancamiento que crece en silencio más allá de lo que tu margen aguanta. El forward testing ejecuta el mismo bot, el mismo código, contra precios reales en vivo y en tiempo real. Si la estrategia tiene un fallo, aparece aquí, donde un error no te cuesta nada.",
    "kind": [
     "html"
    ],
@@ -149924,103 +150487,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2
-  },
-  "nt0doQFz_N": {
-   "en": "Modeled liquidation clusters: price levels where liquidation liquidity is estimated to sit right now - <code>{clusters:[{price, side, est_notional}]}</code>. Refreshes continuously from live order flow.",
-   "es": "Clústeres de liquidación modelados: niveles de precio donde se estima que hay liquidez de liquidación en este momento - <code>{clusters:[{price, side, est_notional}]}</code>. Se actualiza de forma continua a partir del flujo de órdenes en vivo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 23
-  },
-  "6hUymz5N_K": {
-   "en": "Attribution appreciated (link marginpad.io) but not required. Coverage is ~70%+ of the market&rsquo;s liquidation flow - the venues that move price. Educational use; no uptime SLA.",
-   "es": "Se agradece la atribución (enlazar marginpad.io) pero no es obligatoria. La cobertura es de ~70%+ del flujo de liquidaciones del mercado - los exchanges que mueven el precio. Uso educativo; sin SLA de disponibilidad.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "2bxA5dpkY3": {
-   "en": "3 · Two-minute quickstart",
-   "es": "3 · Guía rápida de dos minutos",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "AhdS-lSQbs": {
-   "en": "Why test a trading bot on paper first",
-   "es": "Por qué probar primero un bot de trading en simulado",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "UKLUKpV_n9": {
-   "en": "Most crypto trading bots that look profitable in a backtest <b>lose money the first week they go live</b>. Backtests replay clean historical candles - they can't catch a race condition in your order logic, a position-sizing bug that only shows up after a losing streak, or leverage that quietly grows past what your margin survives.",
-   "es": "La mayoría de los bots de trading de cripto que parecen rentables en un backtest <b>pierden dinero la primera semana en vivo</b>. Los backtests reproducen velas históricas limpias - no pueden detectar una condición de carrera en la lógica de tus órdenes, un error de dimensionamiento de posición que solo aparece después de una racha de pérdidas, o un apalancamiento que crece en silencio hasta superar lo que tu margen soporta.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 50
-  },
-  "HhbQagzRy_": {
-   "en": "<b>Forward testing</b> (paper trading) runs the same bot, the same code path, against <b>real live prices in real time</b>. Your bot places actual orders - they're just settled in simulated dollars. If the strategy has a flaw, it shows up here, where a bug costs you nothing, instead of on an exchange where it costs you the account.",
-   "es": "El <b>forward testing</b> (paper trading) ejecuta el mismo bot, el mismo código, contra <b>precios reales en vivo en tiempo real</b>. Tu bot coloca órdenes reales - solo que se liquidan en dólares simulados. Si la estrategia tiene un fallo, aparece aquí, donde un error no te cuesta nada, en vez de en un exchange donde te cuesta la cuenta.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 55
-  },
-  "f7t64BGjUH": {
-   "en": "The usual workflow: <a href=\"/crypto-backtester/\">backtest the idea</a> on historical data to filter out obvious losers, then point the bot at this API for days or weeks of live forward testing, and only fund a real exchange account once the paper results hold up. Track the results in the <a href=\"/trading-journal/\">Trading Journal</a> and compare against your manual trades in <a href=\"/paper-trade\">Paper Trade</a>.",
-   "es": "El flujo habitual: <a href=\"/crypto-backtester/\">haz un backtest de la idea</a> con datos históricos para descartar las perdedoras obvias, luego apunta el bot a esta API para días o semanas de forward testing en vivo, y solo financia una cuenta real en un exchange una vez que los resultados en simulado se sostengan. Sigue los resultados en el <a href=\"/trading-journal/\">Diario de Trading</a> y compáralos con tus operaciones manuales en <a href=\"/paper-trade\">Paper Trade</a>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 57
-  },
-  "9-qLTtyU0R": {
-   "en": "Backtesting vs paper trading vs going live",
-   "es": "Backtesting vs. paper trading vs. operar en vivo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
+   "w": 81
   },
   "IdVQND_bgY": {
    "en": "Backtesting",
@@ -150202,9 +150669,9 @@
    "n": 1,
    "w": 4
   },
-  "c_3tmer4G9": {
-   "en": "Free to use - trading fees &amp; funding are simulated",
-   "es": "Gratis - las comisiones de trading y el funding son simulados",
+  "m9x3AcLkKM": {
+   "en": "Free to use - fees &amp; funding simulated",
+   "es": "Gratis - comisiones &amp; funding simulados",
    "kind": [
     "html"
    ],
@@ -150212,7 +150679,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 6
   },
   "HUz5zaQvL1": {
    "en": "Fees + losses + funding",
@@ -150262,9 +150729,9 @@
    "n": 1,
    "w": 4
   },
-  "YoDJqIUiJN": {
-   "en": "Do all three, in that order. The middle step is the one most people skip - and the one that would have saved them.",
-   "es": "Haz las tres, en ese orden. El paso del medio es el que más gente se salta - y el que les habría salvado.",
+  "_wGGeGK0_e": {
+   "en": "The middle step is the one most people skip - and the one that would have saved them. <a href=\"/crypto-backtester/\">Backtest an idea here</a>, forward-test it on this API, then fund an account.",
+   "es": "El paso intermedio es el que la mayoría se salta, y el que les habría salvado. <a href=\"/crypto-backtester/\">Haz backtest de una idea aquí</a>, pruébala en forward testing con esta API y luego financia una cuenta.",
    "kind": [
     "html"
    ],
@@ -150272,7 +150739,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 23
+   "w": 30
   },
   "UWtC9gFmBt": {
    "en": "Step three: where to run the bot for real",
@@ -150310,6 +150777,18 @@
    "n": 1,
    "w": 45
   },
+  "7PIYatdXBs": {
+   "en": "<span class=\"gl-mark\" style=\"background:#3a2a05;color:#f7a600\">B</span><b id=\"glName\">Bybit</b><span class=\"gl-pill\">centralised &middot; deepest books</span>",
+   "es": "<span class=\"gl-mark\" style=\"background:#3a2a05;color:#f7a600\">B</span><b id=\"glName\">Bybit</b><span class=\"gl-pill\">centralizado &middot; libros más profundos</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
   "rG6kKhKoa2": {
    "en": "REST and WebSocket shapes close to what you just wrote, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.",
    "es": "Formatos de REST y WebSocket parecidos a lo que acabas de escribir, una clave separada por sub-cuenta, y uno de los feeds de donde vienen nuestros propios precios. La opción por defecto cuando quieres un libro de órdenes centralizado con rampas de entrada en fiat.",
@@ -150346,450 +150825,6 @@
    "n": 1,
    "w": 47
   },
-  "uotnR7ye0U": {
-   "en": "How the simulator works",
-   "es": "Cómo funciona el simulador",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "8ST_k6dNYV": {
-   "en": "<b>Fills &amp; prices</b>",
-   "es": "<b>Ejecuciones y precios</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "LyLV9TptGu": {
-   "en": "Orders fill instantly at the real live price (multi-exchange feed - the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.",
-   "es": "Las órdenes se ejecutan al instante al precio real en vivo (feed multi-exchange - los mismos precios que nuestro Paper Trade). Las ejecuciones vía API <b>no tienen slippage</b> (las del sitio web sí), así que trata los precios de entrada como algo optimistas.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 35
-  },
-  "smHBfc3PGB": {
-   "en": "<b>Trading fees - read this before you measure a strategy</b>",
-   "es": "<b>Comisiones de trading - lee esto antes de medir una estrategia</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "pgGZeUjF8R": {
-   "en": "Every position pays a <b>taker fee on both sides</b>, settled into <code>pnl_usd</code> at close. It is charged as a round trip: <code>fee = qty × (entry + exit) × rate</code>. Funding is accrued on positions held across funding marks and deducted the same way. Open positions already show P&amp;L <b>net</b> of the round trip in <code>unrealized_pnl_usd</code>, so what you see is what settles.",
-   "es": "Cada posición paga una <b>comisión taker en ambos lados</b>, que se liquida en <code>pnl_usd</code> al cerrar. Se cobra como un viaje redondo: <code>fee = qty × (entry + exit) × rate</code>. El funding se acumula en posiciones mantenidas a través de las marcas de funding y se descuenta de la misma manera. Las posiciones abiertas ya muestran el P&amp;L <b>neto</b> del viaje redondo en <code>unrealized_pnl_usd</code>, así que lo que ves es lo que se liquida.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 56
-  },
-  "4sORLM0-Il": {
-   "en": "Fee per side",
-   "es": "Comisión por lado",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "SEvbUo5IHB": {
-   "en": "Round trip on $10,000 notional",
-   "es": "Viaje redondo sobre un nocional de $10,000",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "8DnYw5wSTx": {
-   "en": "Crypto perps",
-   "es": "Perpetuos de cripto",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "G9bmSiLh7m": {
-   "en": "Stocks &amp; ETFs",
-   "es": "Acciones y ETFs",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "CD2OmYLmqf": {
-   "en": "Metals &amp; indices",
-   "es": "Metales e índices",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "kQiyDxsN-U": {
-   "en": "Forex majors",
-   "es": "Pares principales de forex",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "EhgNuhwX-z": {
-   "en": "Prefer the exact bill of the exchange you will run on? <a href=\"#fees\">Charge the paper account at its schedule</a>, referral discount included. Above roughly 180× leverage the rate tapers so the round trip can never exceed 20% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> - a scalp that clears less than the round trip is a loser no matter how often it is right.",
-   "es": "¿Prefieres la factura exacta del exchange en el que vas a operar? <a href=\"#fees\">Cobra a la cuenta simulada según su tarifario</a>, descuento por referido incluido. Por encima de unas 180× de apalancamiento, la tasa se reduce para que el viaje redondo nunca supere el 20% de tu margen. <code>GET /v1/markets</code> devuelve la tasa exacta y el tope de apalancamiento de cada símbolo. <b>Las estrategias de horizonte corto viven o mueren por este número</b> - un scalp que gana menos que el viaje redondo es una pérdida sin importar cuántas veces acierte.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 76
-  },
-  "v5gATWUo6s": {
-   "en": "<b>Margin, liquidation, SL/TP, trailing</b>",
-   "es": "<b>Margen, liquidación, SL/TP, trailing</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "9hlt_ZFmtz": {
-   "en": "Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> - when the price crosses your <code>sl</code> or <code>tp</code> (checked against 1-minute candle wicks on the minute sweep, so a spike that retraced still counts), the position settles at that level. A <b>trailing stop</b> ratchets from the best price seen: on the sweep it is moved by each candle's extreme <i>after</i> that candle has been checked against the stop in force, so a bar can never stop you out at a level it created itself.",
-   "es": "Margen aislado. Las pérdidas están limitadas a tu margen. El precio de liquidación usa una tasa de margen de mantenimiento del 0.5%; cuando el precio en vivo lo cruza, la posición se liquida automáticamente al precio de liquidación. <b>Las órdenes de stop-loss y take-profit también se ejecutan automáticamente</b> - cuando el precio cruza tu <code>sl</code> o tu <code>tp</code> (verificado contra las mechas de las velas de 1 minuto en el barrido por minuto, así que un pico que se retrajo igual cuenta), la posición se liquida a ese nivel. Un <b>trailing stop</b> avanza desde el mejor precio visto: en el barrido se mueve según el extremo de cada vela <i>después</i> de que esa vela ya fue verificada contra el stop vigente, así que una vela nunca puede sacarte a un nivel que ella misma creó.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 107
-  },
-  "F6QssYJDg1": {
-   "en": "<b>Limits &amp; rate-limit headers</b>",
-   "es": "<b>Límites y encabezados de límite de peticiones</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "shYhLXFujD": {
-   "en": "Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>GET /v1/usage</code> tells you your plan and what is left in the current window.",
-   "es": "Cada respuesta incluye <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> y <code>X-RateLimit-Reset</code> (segundos epoch); un 429 añade <code>Retry-After</code>. Los límites se cuentan <b>por clave</b>, así que una segunda clave tiene su propio cupo. <code>GET /v1/usage</code> te indica tu plan y lo que queda en la ventana actual.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 38
-  },
-  "8i_hHyVSB3": {
-   "en": "Market data, candles, calculators, liquidation feed",
-   "es": "Datos de mercado, velas, calculadoras, feed de liquidaciones",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "xmJ9Bhe-hX": {
-   "en": "Unlimited, no key",
-   "es": "Ilimitado, sin clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "t2rul0xbuL": {
-   "en": "Same",
-   "es": "Igual",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 4,
-   "w": 1
-  },
-  "5EruXKLWQr": {
-   "en": "Paper trading",
-   "es": "Trading simulado",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "ELKKjB5EUB": {
-   "en": "Full",
-   "es": "Completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "CMNsNs10Er": {
-   "en": "<b>WebSocket stream</b>",
-   "es": "<b>Stream de WebSocket</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "hFN4wxJrQK": {
-   "en": "Market-data calls with your key",
-   "es": "Llamadas de datos de mercado con tu clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "_RoKjIQua9": {
-   "en": "120 / min",
-   "es": "120 / min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "LravuDbmOu": {
-   "en": "600 / min",
-   "es": "600 / min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "3A1XPXFQw9": {
-   "en": "2000 / min",
-   "es": "2000 / min",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "lPzzwtwNll": {
-   "en": "API keys",
-   "es": "Claves API",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "Telmor6KYB": {
-   "en": "Open positions",
-   "es": "Posiciones abiertas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "ffzmZVlAwN": {
-   "en": "Webhooks &middot; AI market read &middot; report breakdowns",
-   "es": "Webhooks &middot; lecturas de mercado con IA &middot; desgloses del report",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "MT1FDNYmr9": {
-   "en": "3 hooks &middot; 50 reads/day &middot; full report",
-   "es": "3 hooks &middot; 50 lecturas/día &middot; report completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "yCo5qQyCAh": {
-   "en": "15 hooks &middot; 200 reads/day &middot; full report",
-   "es": "15 hooks &middot; 200 lecturas/día &middot; report completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "WNtnHlQG91": {
-   "en": "$1&ndash;$100,000 &middot; per-symbol caps",
-   "es": "$1&ndash;$100,000 &middot; topes por símbolo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "PZBNI8klSi": {
-   "en": "<b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does - so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently; a key only raises its ceiling.",
-   "es": "<b>El streaming de la API es gratis a propósito.</b> Ponerlo detrás de un muro de pago empujaría a todos los demás de vuelta al polling, que nos cuesta mucho más que el stream - así que los incentivos coinciden: usa el WebSocket y ganamos los dos. Los datos de mercado siguen siendo gratis y sin clave para siempre; una clave solo eleva el tope.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 50
-  },
-  "MKDbkSBpXG": {
-   "en": "<b>Balance &amp; equity</b>",
-   "es": "<b>Saldo y equity</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "HPVM8ZJWuM": {
-   "en": "Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.",
-   "es": "Cada cuenta simulada empieza con un nominal de <b>$10,000</b>. <code>/v1/account</code> y <code>/v1/balance</code> reportan <code>balance_usd</code>, <code>equity_usd</code> y <code>free_margin_usd</code> para que puedas expresar los resultados como un rendimiento y no como una cifra en dólares sin más. Este saldo es un <b>marcador, no una restricción</b>: el margen no se le descuenta y una apertura nunca se rechaza por falta de fondos (<code>margin_enforced: false</code>). Dimensiona tus propias posiciones si quieres que la restricción sea real.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 64
-  },
-  "ZukqhfrY_y": {
-   "en": "<b>See your bot's trades on the site</b>",
-   "es": "<b>Mira las operaciones de tu bot en el sitio</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "d1mc-URhdL": {
-   "en": "Positions opened via the API live on your account server-side, so they show in <a href=\"/paper-trade\">My Trades</a>, count for the season boards and XP, and feed your <a href=\"/trading-report/\">trading report</a> - the same report <code>GET /v1/report</code> returns to the bot.",
-   "es": "Las posiciones abiertas vía la API viven en tu cuenta del lado del servidor, así que aparecen en <a href=\"/paper-trade\">Mis Operaciones</a>, cuentan para las tablas de temporada y el XP, y alimentan tu <a href=\"/trading-report/\">informe de trading</a> - el mismo informe que <code>GET /v1/report</code> devuelve al bot.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 37
-  },
   "HKV_3sUe5L": {
    "en": "Is there a free liquidation data / heatmap API?",
    "es": "¿Hay una API gratis de datos de liquidaciones / mapa de calor?",
@@ -150802,9 +150837,9 @@
    "n": 1,
    "w": 7
   },
-  "B19PhYpvlw": {
-   "en": "Yes - MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See the \"Free Liquidation Data API\" section above.",
-   "es": "Sí - MarginPad expone liquidaciones en tiempo real agregadas de 9 exchanges como JSON gratis, sin necesidad de clave: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> y <code>/api/v1/clusters</code>. Los feeds comparables suelen costar $300+/mes. Consulta la sección \"API gratis de datos de liquidaciones\" más arriba.",
+  "jgygEWTIPD": {
+   "en": "Yes - MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See <a href=\"#liq-api\">the liquidation data section</a>.",
+   "es": "Sí - MarginPad expone liquidaciones en tiempo real agregadas de 9 exchanges como JSON gratis, sin necesidad de clave: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> y <code>/api/v1/clusters</code>. Los feeds comparables suelen costar $300+/mes. Consulta <a href=\"#liq-api\">la sección de datos de liquidaciones</a>.",
    "kind": [
     "html"
    ],
@@ -150812,7 +150847,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 32
+   "w": 29
   },
   "D1gEjuV0GS": {
    "en": "<b>Is the trading bot API really free?</b>",
@@ -150826,9 +150861,9 @@
    "n": 1,
    "w": 7
   },
-  "N6sgXy-irq": {
-   "en": "Yes. It's a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately.",
-   "es": "Sí. Es un simulador de paper trading - las posiciones usan precios de mercado reales en vivo, pero sin dinero real. Inicia sesión con un correo, genera una clave API y empieza a probar de inmediato.",
+  "wcklt8b7H_": {
+   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately. Paid plans only raise the ceilings.",
+   "es": "Sí. Es un simulador de paper trading: las posiciones usan precios reales del mercado en vivo, pero sin dinero real. Inicia sesión con un email, genera una clave API y empieza a probar de inmediato. Los planes de pago solo elevan los límites.",
    "kind": [
     "html"
    ],
@@ -150836,7 +150871,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 27
+   "w": 34
   },
   "sF9mIWv88e": {
    "en": "<b>Which programming languages can I use?</b>",
@@ -150850,9 +150885,9 @@
    "n": 1,
    "w": 5
   },
-  "Fvl9Y8A9pd": {
-   "en": "Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code class=\"k\">X-API-Key</code> header.",
-   "es": "Cualquier lenguaje que pueda hacer una solicitud HTTPS - Python, JavaScript/Node.js, Go, Rust, PHP, o simplemente curl. REST estándar, respuestas en JSON, un único encabezado <code class=\"k\">X-API-Key</code>.",
+  "cAD2IewaYc": {
+   "en": "Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code>X-API-Key</code> header.",
+   "es": "Cualquier lenguaje que pueda hacer una petición HTTPS: Python, JavaScript/Node.js, Go, Rust, PHP o curl a secas. REST estándar, respuestas JSON, un único header <code>X-API-Key</code>.",
    "kind": [
     "html"
    ],
@@ -150861,30 +150896,6 @@
    ],
    "n": 1,
    "w": 23
-  },
-  "-SfyqDwfaS": {
-   "en": "<b>Backtesting vs paper trading - what's the difference?</b>",
-   "es": "<b>Backtesting vs. paper trading - ¿cuál es la diferencia?</b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "Ly1a2rka9R": {
-   "en": "Backtesting replays historical candles (fast, but hides bugs and overfitting). Paper trading runs your bot on live prices in real time and catches what backtests can't. Do both - <a href=\"/crypto-backtester/\">backtest here</a>, then forward-test on this API.",
-   "es": "El backtesting reproduce velas históricas (rápido, pero oculta errores y sobreajuste). El paper trading ejecuta tu bot con precios en vivo en tiempo real y detecta lo que el backtesting no puede. Haz ambos - <a href=\"/crypto-backtester/\">haz el backtest aquí</a>, y luego haz forward testing en esta API.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 35
   },
   "T-R6a-9lvQ": {
    "en": "<b>Which coins can my bot trade?</b>",
@@ -150898,9 +150909,9 @@
    "n": 1,
    "w": 6
   },
-  "1I5DA4HJLf": {
-   "en": "Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins. Check a symbol with <code class=\"k\">GET /api/bot/v1/price?symbol=SOL</code>.",
-   "es": "Cualquier par USDT con precio en vivo en los principales exchanges - BTC, ETH, SOL y cientos de altcoins. Verifica un símbolo con <code class=\"k\">GET /api/bot/v1/price?symbol=SOL</code>.",
+  "pJUEKMRRDN": {
+   "en": "Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins, plus US stocks, forex majors, metals and indices as perps. Check a symbol with <code>GET /api/bot/v1/price?symbol=SOL</code>.",
+   "es": "Cualquier par USDT con precio en vivo en los principales exchanges: BTC, ETH, SOL y cientos de altcoins, además de acciones de EE. UU., pares forex principales, metales e índices como perpetuos. Comprueba un símbolo con <code>GET /api/bot/v1/price?symbol=SOL</code>.",
    "kind": [
     "html"
    ],
@@ -150908,7 +150919,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 21
+   "w": 31
   },
   "iqqcXWQtIU": {
    "en": "<b>Do I need an exchange account or a deposit?</b>",
@@ -150934,8 +150945,32 @@
    "n": 1,
    "w": 23
   },
-  "e9WkfSNAgN": {
-   "en": "Guides &amp; tutorials",
+  "k9SrVpPKSd": {
+   "en": "<b>Does MarginPad Premium include the API?</b>",
+   "es": "<b>¿Premium de MarginPad incluye la API?</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "Cvjb1W8ZoD": {
+   "en": "No. The Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website; the API plans unlock API limits. They are bought separately.",
+   "es": "No. La Bot API tiene sus propios planes y una suscripción Premium no cambia ningún límite de la API. Premium desbloquea funciones en el sitio web; los planes de la API desbloquean límites de la API. Se compran por separado.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 33
+  },
+  "4nwvMudklO": {
+   "en": "Guides and tutorials",
    "es": "Guías y tutoriales",
    "kind": [
     "html"
@@ -150944,11 +150979,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 2
+   "w": 3
   },
-  "WJ0bzxetqn": {
-   "en": "<b><a href=\"/blog/python-crypto-trading-bot-tutorial/\" style=\"color:#c2f64a\">Python Crypto Trading Bot Tutorial</a></b>",
-   "es": "<b><a href=\"/blog/python-crypto-trading-bot-tutorial/\" style=\"color:#c2f64a\">Tutorial: bot de trading de cripto en Python</a></b>",
+  "F60P7JihMj": {
+   "en": "<b><a href=\"/blog/python-crypto-trading-bot-tutorial/\">Python Crypto Trading Bot Tutorial</a></b>",
+   "es": "<b><a href=\"/blog/python-crypto-trading-bot-tutorial/\">Tutorial de bot de trading de cripto en Python</a></b>",
    "kind": [
     "html"
    ],
@@ -150970,33 +151005,9 @@
    "n": 1,
    "w": 22
   },
-  "T8zG0kxr5n": {
-   "en": "<b><a href=\"/blog/how-to-test-a-crypto-trading-bot/\" style=\"color:#c2f64a\">How to Test a Crypto Trading Bot for Free</a></b>",
-   "es": "<b><a href=\"/blog/how-to-test-a-crypto-trading-bot/\" style=\"color:#c2f64a\">Cómo probar un bot de trading de cripto gratis</a></b>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "lgsTerNZU-": {
-   "en": "The three-stage workflow that separates working bots from blown accounts: backtest, paper trade, then go live.",
-   "es": "El flujo de tres etapas que separa a los bots que funcionan de las cuentas reventadas: backtest, paper trade y luego en vivo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "NsxIipTvRR": {
-   "en": "<b><a href=\"/blog/nodejs-crypto-trading-bot-tutorial/\" style=\"color:#c2f64a\">Node.js Crypto Trading Bot Tutorial</a></b>",
-   "es": "<b><a href=\"/blog/nodejs-crypto-trading-bot-tutorial/\" style=\"color:#c2f64a\">Tutorial: bot de trading de cripto en Node.js</a></b>",
+  "5WXDvy3du3": {
+   "en": "<b><a href=\"/blog/nodejs-crypto-trading-bot-tutorial/\">Node.js Crypto Trading Bot Tutorial</a></b>",
+   "es": "<b><a href=\"/blog/nodejs-crypto-trading-bot-tutorial/\">Tutorial de bot de trading de cripto en Node.js</a></b>",
    "kind": [
     "html"
    ],
@@ -151018,9 +151029,33 @@
    "n": 1,
    "w": 15
   },
-  "JSC9LSrEvU": {
-   "en": "<b><a href=\"/blog/grid-trading-bot-explained/\" style=\"color:#c2f64a\">Grid Trading Bots Explained</a></b>",
-   "es": "<b><a href=\"/blog/grid-trading-bot-explained/\" style=\"color:#c2f64a\">Bots de grid trading explicados</a></b>",
+  "KDlUFcAWcs": {
+   "en": "<b><a href=\"/blog/how-to-test-a-crypto-trading-bot/\">How to Test a Crypto Trading Bot for Free</a></b>",
+   "es": "<b><a href=\"/blog/how-to-test-a-crypto-trading-bot/\">Cómo probar un bot de trading de cripto gratis</a></b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "lgsTerNZU-": {
+   "en": "The three-stage workflow that separates working bots from blown accounts: backtest, paper trade, then go live.",
+   "es": "El flujo de tres etapas que separa a los bots que funcionan de las cuentas reventadas: backtest, paper trade y luego en vivo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "6ExEGlNrXD": {
+   "en": "<b><a href=\"/blog/grid-trading-bot-explained/\">Grid Trading Bots Explained</a></b>",
+   "es": "<b><a href=\"/blog/grid-trading-bot-explained/\">Bots de grid trading explicados</a></b>",
    "kind": [
     "html"
    ],
@@ -151042,9 +151077,9 @@
    "n": 1,
    "w": 18
   },
-  "is5KWkMkdu": {
-   "en": "<b><a href=\"/blog/backtesting-vs-paper-trading-vs-live/\" style=\"color:#c2f64a\">Backtesting vs Paper Trading vs Live</a></b>",
-   "es": "<b><a href=\"/blog/backtesting-vs-paper-trading-vs-live/\" style=\"color:#c2f64a\">Backtesting vs. Paper Trading vs. en vivo</a></b>",
+  "mksfUJsYcu": {
+   "en": "<b><a href=\"/blog/backtesting-vs-paper-trading-vs-live/\">Backtesting vs Paper Trading vs Live</a></b>",
+   "es": "<b><a href=\"/blog/backtesting-vs-paper-trading-vs-live/\">Backtesting vs paper trading vs en vivo</a></b>",
    "kind": [
     "html"
    ],
@@ -151066,9 +151101,9 @@
    "n": 1,
    "w": 12
   },
-  "q5Hyot2Ubz": {
-   "en": "<b><a href=\"/blog/ai-crypto-trading-strategies-2026/\" style=\"color:#c2f64a\">AI Crypto Trading Strategies for 2026</a></b>",
-   "es": "<b><a href=\"/blog/ai-crypto-trading-strategies-2026/\" style=\"color:#c2f64a\">Estrategias de trading de cripto con IA para 2026</a></b>",
+  "u0evT_YkCT": {
+   "en": "<b><a href=\"/blog/ai-crypto-trading-strategies-2026/\">AI Crypto Trading Strategies for 2026</a></b>",
+   "es": "<b><a href=\"/blog/ai-crypto-trading-strategies-2026/\">Estrategias de trading de cripto con IA para 2026</a></b>",
    "kind": [
     "html"
    ],
@@ -151090,9 +151125,9 @@
    "n": 1,
    "w": 15
   },
-  "3CyPt39rPl": {
-   "en": "<b><a href=\"/blog/can-ai-trade-crypto-futures/\" style=\"color:#c2f64a\">Can AI Trade Crypto Futures?</a></b>",
-   "es": "<b><a href=\"/blog/can-ai-trade-crypto-futures/\" style=\"color:#c2f64a\">¿Puede la IA operar futuros de cripto?</a></b>",
+  "ovbxfiyn1H": {
+   "en": "<a href=\"/\">MarginPad</a> · <a href=\"/tools/\">Trading Tools</a> · <a href=\"/api-docs/\">API reference</a> · <a href=\"/crypto-backtester/\">Backtester</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/arena/\">Bot arena</a> · <a href=\"/trading-journal/\">Journal</a><br> <span>Simulated trading only. Not financial advice.</span>",
+   "es": "<a href=\"/\">MarginPad</a> · <a href=\"/tools/\">Herramientas de trading</a> · <a href=\"/api-docs/\">Referencia de la API</a> · <a href=\"/crypto-backtester/\">Backtester</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/arena/\">Bot arena</a> · <a href=\"/trading-journal/\">Diario</a><br> <span>Solo trading simulado. No es asesoría financiera.</span>",
    "kind": [
     "html"
    ],
@@ -151100,43 +151135,19 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 5
+   "w": 17
   },
-  "aYz4zjMVVq": {
-   "en": "A clear-eyed look at what AI signals and bots can and cannot do.",
-   "es": "Una mirada realista a lo que las señales y los bots de IA pueden y no pueden hacer.",
+  "jwPjg9Oaye": {
+   "en": "Quickstart language",
+   "es": "Idioma de inicio rápido",
    "kind": [
-    "html"
+    "attr:aria-label"
    ],
    "ctx": [
     "/trading-api/"
    ],
    "n": 1,
-   "w": 12
-  },
-  "qTpUc6FDI0": {
-   "en": "<a class=\"akb-btn\" href=\"#akb\" style=\"text-decoration:none\">Get your free key ↑</a>",
-   "es": "<a class=\"akb-btn\" href=\"#akb\" style=\"text-decoration:none\">Consigue tu clave gratis ↑</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "yfDb4pGXGe": {
-   "en": "<a href=\"/\">← MarginPad</a> · <a href=\"/tools/\">Trading Tools</a> · <a href=\"/crypto-backtester/\">Backtester</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/trading-journal/\">Journal</a><br> <span style=\"color:var(--faint)\">Simulated trading only. Not financial advice.</span>",
-   "es": "<a href=\"/\">← MarginPad</a> · <a href=\"/tools/\">Herramientas de Trading</a> · <a href=\"/crypto-backtester/\">Backtester</a> · <a href=\"/paper-trade\">Paper Trade</a> · <a href=\"/trading-journal/\">Diario</a><br> <span style=\"color:var(--faint)\">Solo trading simulado. No es asesoría financiera.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 13
+   "w": 2
   },
   "HQSpVAeDfF": {
    "en": "Name the key (e.g. grid-bot)",
@@ -151150,9 +151161,9 @@
    "n": 1,
    "w": 5
   },
-  "1TduDiawOB": {
-   "en": "Book (optional, e.g. rsi)",
-   "es": "Book (opcional, p. ej. rsi)",
+  "dYFdtRIpR_": {
+   "en": "Book (optional)",
+   "es": "Book (opcional)",
    "kind": [
     "attr:placeholder"
    ],
@@ -151160,19 +151171,19 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 2
   },
-  "G7tvGMa1lh": {
-   "en": "A book is a separate journal, balance and report. Leave empty for the main account.",
-   "es": "Un book es un diario, saldo e informe independientes. Déjalo vacío para la cuenta principal.",
+  "2xx4RSThtU": {
+   "en": "Reference",
+   "es": "Referencia",
    "kind": [
-    "attr:title"
+    "attr:aria-label"
    ],
    "ctx": [
     "/trading-api/"
    ],
    "n": 1,
-   "w": 13
+   "w": 1
   },
   "tE0nHo9tT9": {
    "en": "Test your crypto trading bot for FREE with a paper-trading REST API on real live prices: open and close leveraged positions, partial closes, SL/TP and liquidation simulation. No deposit, no KYC, no risk - just an API key.",
