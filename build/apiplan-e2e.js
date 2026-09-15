@@ -37,12 +37,12 @@ const usage = async () => (await bot('/usage')).body.data || {};
   const kj = await kr.json().catch(() => ({}));
   KEY = kj.key || (kj.keys && kj.keys[0] && kj.keys[0].k) || '';
   chk('API key created', /^mpb_/.test(KEY));
-  chk('key response carries the plan catalogue', Array.isArray(kj.plans) && kj.plans.length === 4 && kj.plans[1].price_usd === 29 && kj.plans[2].price_usd === 79 && kj.plans[3].price_usd === 199, (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
+  chk('key response carries the plan catalogue', Array.isArray(kj.plans) && kj.plans.length === 4 && kj.plans[1].price_usd === 29 && kj.plans[2].price_usd === 79 && kj.plans[3].price_usd === 159, (kj.plans || []).map(p => p.plan + ':' + p.price_usd));
 
   // ── the catalogue is public ───────────────────────────────────────────────────────────────────────────────
   const cat = await (await fetch(ORIGIN + '/api/apiplan')).json().catch(() => ({}));
   chk('GET /api/apiplan is keyless and lists four plans', Array.isArray(cat.plans) && cat.plans.length === 4 && cat.plans.map(p => p.plan).join(',') === 'free,pro,max,business', (cat.plans || []).map(p => p.plan));
-  chk('catalogue prices are $0 / $29 / $79 / $199', cat.plans && cat.plans[0].price_usd === 0 && cat.plans[1].price_usd === 29 && cat.plans[2].price_usd === 79 && cat.plans[3].price_usd === 199);
+  chk('catalogue prices are $0 / $29 / $79 / $159', cat.plans && cat.plans[0].price_usd === 0 && cat.plans[1].price_usd === 29 && cat.plans[2].price_usd === 79 && cat.plans[3].price_usd === 159);
   chk('catalogue states the separation from Premium', typeof cat.note === 'string' && /Premium/.test(cat.note) && /not raise/i.test(cat.note), cat.note);
 
   // ── Free ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
   await resync();
   u = await usage();
   chk('Business: 5000/min, 100 keys, 1000 positions, 50 books', u.plan === 'business' && u.limits.requests_per_minute === 5000 && u.limits.max_keys === 100 && u.limits.max_open_positions === 1000 && u.limits.max_books === 50, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
-  chk('Business: 50 webhooks and 500 AI reads a day, priced at $199', u.features.webhooks === 50 && u.features.ai_market_read === '500/day' && u.plan_price_usd === 199, u.features && { wh: u.features.webhooks, price: u.plan_price_usd });
+  chk('Business: 50 webhooks and 500 AI reads a day, priced at $159', u.features.webhooks === 50 && u.features.ai_market_read === '500/day' && u.plan_price_usd === 159, u.features && { wh: u.features.webhooks, price: u.plan_price_usd });
   r = await bot('/webhooks');
   chk('Business webhook cap is 50 in the DO too', r.status === 200 && r.body.data.max === 50, r.body.data && { max: r.body.data.max });
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });

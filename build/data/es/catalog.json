@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-15T02:12:49.223Z",
-  "pages": 373,
-  "occurrences": 25164,
-  "unique": 13326,
-  "words": 248022,
+  "generated": "2026-09-15T02:24:47.524Z",
+  "pages": 372,
+  "occurrences": 25024,
+  "unique": 13204,
+  "words": 246476,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-15T02:13:22.986Z"
+  "merged": "2026-09-15T02:24:59.368Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -34,7 +34,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 293,
+   "n": 292,
    "w": 2
   },
   "EEUXew76Qs": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1618,
+   "n": 1615,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -3413,10 +3413,9 @@
     "html"
    ],
    "ctx": [
-    "/about/",
-    "/api/"
+    "/about/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 3
   },
   "yVuIGjfsQT": {
@@ -8204,1538 +8203,6 @@
    "n": 1,
    "w": 15
   },
-  "O5K7jbnJ-I": {
-   "en": "MarginPad API - free crypto data, paper-trading Bot API, MCP | MarginPad",
-   "es": "API de MarginPad - datos cripto gratis, Bot API de paper trading, MCP | MarginPad",
-   "kind": [
-    "title"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "54cGAmkkQC": {
-   "en": "<a href=\"/free-crypto-api/\">Data API</a><a href=\"/trading-api/\">Bot API</a><a href=\"/api/changelog\">Changelog</a>",
-   "es": "<a href=\"/free-crypto-api/\">API de datos</a><a href=\"/trading-api/\">Bot API</a><a href=\"/api/changelog\">Registro de cambios</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "xUkHRcrqoJ": {
-   "en": "<a href=\"/\">Home</a> / API",
-   "es": "<a href=\"/\">Inicio</a> / API",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "yJGS1oO6RG": {
-   "en": "MarginPad API",
-   "es": "API de MarginPad",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 2,
-   "w": 2
-  },
-  "SAVt4JAGSs": {
-   "en": "Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar - keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.",
-   "es": "Todo lo que el sitio sabe, en JSON: precios y velas en vivo, un screener con puntuación, funding, interés abierto, long/short, liquidaciones medidas en nueve exchanges, un calendario económico - sin clave. Además, una <b>Bot API</b> de paper trading completa para probar un bot de trading con precios reales y dinero simulado, un <b>servidor MCP</b> remoto para que un asistente de IA use todo esto de forma nativa, una especificación OpenAPI 3.1 y clientes de un solo archivo para Python y JavaScript.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 64
-  },
-  "wG0P5U3AIJ": {
-   "en": "<span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 27 tools</span><span>Bot API 2.8.0</span>",
-   "es": "<span>Datos de mercado sin clave · 60 req/min</span><span>Clave gratuita · 120 req/min</span><span>API Pro · 600 req/min</span><span>Business · 5000 req/min</span><span>CORS en todo</span><span>OpenAPI 3.1</span><span>MCP · 27 herramientas</span><span>Bot API 2.8.0</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 27
-  },
-  "8x9tNGKWbj": {
-   "en": "<a class=\"way\" href=\"/free-crypto-api/\"><b>Market data</b><strong>Free crypto data API</strong><span>Prices, candles, screener, funding, OI, long/short, liquidations, calendar, Fear &amp; Greed, DeFi TVL. No key, no sign-up.</span><em>Docs &rarr;</em></a> <a class=\"way\" href=\"/trading-api/\"><b>Paper trading</b><strong>Bot API</strong><span>Open, close, limit &amp; stop orders, trailing stops, webhooks, WebSocket, a trading report. Real prices, simulated money.</span><em>Docs + free key &rarr;</em></a> <a class=\"way\" href=\"/mcp\"><b>AI assistants</b><strong>Remote MCP server</strong><span>27 tools for Claude, ChatGPT and Cursor: market data, calculators and your paper account.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class=\"way\" href=\"/api/openapi.json\"><b>Machine-readable</b><strong>OpenAPI 3.1 + clients</strong><span>The full spec with request and response schemas, and zero-dependency <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Spec &rarr;</em></a>",
-   "es": "<a class=\"way\" href=\"/free-crypto-api/\"><b>Datos de mercado</b><strong>API gratuita de datos cripto</strong><span>Precios, velas, screener, funding, OI, long/short, liquidaciones, calendario, Fear &amp; Greed y TVL de DeFi. Sin clave y sin registro.</span><em>Documentación &rarr;</em></a> <a class=\"way\" href=\"/trading-api/\"><b>Paper trading</b><strong>Bot API</strong><span>Abrir, cerrar, órdenes limit y stop, trailing stops, webhooks, WebSocket y un trading report. Precios reales, dinero simulado.</span><em>Documentación + clave gratuita &rarr;</em></a> <a class=\"way\" href=\"/mcp\"><b>Asistentes de IA</b><strong>Servidor MCP remoto</strong><span>27 herramientas para Claude, ChatGPT y Cursor: datos de mercado, calculadoras y tu cuenta de paper trading.</span><em>https://marginpad.io/mcp &rarr;</em></a> <a class=\"way\" href=\"/api/openapi.json\"><b>Legible por máquinas</b><strong>OpenAPI 3.1 + clientes</strong><span>La especificación completa con los esquemas de petición y respuesta, y los clientes sin dependencias <code>marginpad.py</code> / <code>marginpad.js</code>.</span><em>Especificación &rarr;</em></a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 82
-  },
-  "LMf5lvUztv": {
-   "en": "Market data - <code>/api/v1/*</code>, keyless",
-   "es": "Datos de mercado - <code>/api/v1/*</code>, sin clave",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "nKqNGXCHXw": {
-   "en": "Every response is the envelope <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> on failure) with CORS on, so a browser page can call it directly. <b>60 requests a minute per IP without a key.</b> Send a free <code>X-API-Key</code> (from <a href=\"/trading-api/\">/trading-api/</a>) on the same calls and they are metered against your key instead - 120 a minute on Free, 600 on <a href=\"/trading-api/#plans\">API Pro</a>, 2000 on Max and 5000 on Business. Full manual with examples: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
-   "es": "Cada respuesta llega en el sobre <code>{ ok, data, ts }</code> (<code>{ ok:false, error:{ code, message } }</code> si falla) con CORS activado, así que una página del navegador puede llamarla directamente. <b>60 peticiones por minuto y por IP sin clave.</b> Envía una <code>X-API-Key</code> gratuita (desde <a href=\"/trading-api/\">/trading-api/</a>) en esas mismas llamadas y se contarán contra tu clave: 120 por minuto en Free, 600 en <a href=\"/trading-api/#plans\">API Pro</a>, 2000 en Max y 5000 en Business. Manual completo con ejemplos: <a href=\"/free-crypto-api/\">/free-crypto-api/</a>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 68
-  },
-  "kuxjUIiP_o": {
-   "en": "Endpoint",
-   "es": "Endpoint",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 2,
-   "w": 1
-  },
-  "zf0MEHK-w2": {
-   "en": "Live price for one coin, aggregated across Binance / Bybit / OKX / Gate.",
-   "es": "Precio en vivo de una moneda, agregado entre Binance / Bybit / OKX / Gate.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "l8JhHbbpEt": {
-   "en": "Batch snapshot of the top coins in one call.",
-   "es": "Instantánea en lote de las principales monedas en una sola llamada.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "4IQra5fsai": {
-   "en": "<code>/api/v1/klines?symbol=BTC&amp;interval=60</code>",
-   "es": "<code>/api/v1/klines?symbol=BTC&amp;interval=60</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "-MDmIDUinM": {
-   "en": "OHLC candles: 1, 5, 15, 60, 240, 1440 minutes; up to 1000 per call, <code>&amp;end=</code> to page back.",
-   "es": "Velas OHLC: 1, 5, 15, 60, 240, 1440 minutos; hasta 1000 por llamada, <code>&amp;end=</code> para paginar hacia atrás.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 18
-  },
-  "wf8g635XRf": {
-   "en": "~500 liquid USDT-perp symbols by volume.",
-   "es": "~500 símbolos de perpetuos USDT líquidos por volumen.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "WhGEEbb9rA": {
-   "en": "Scored futures screener: 0-100 score, verdict, RSI, MACD, trend, ATR setup.",
-   "es": "Screener de futuros con puntuación: puntaje de 0 a 100 puntos, veredicto, RSI, MACD, tendencia, configuración de ATR.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "XWMptTE2n3": {
-   "en": "Funding rates across ~160 pairs, measured from exchange public endpoints.",
-   "es": "Tasas de funding en ~160 pares, medidas desde los endpoints públicos de los exchanges.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "gFT840Ur95": {
-   "en": "Open interest (USD) across ~160 pairs.",
-   "es": "Interés abierto (USD) en ~160 pares.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "Kag6656Ij_": {
-   "en": "Long/short account ratio for majors (Binance + OKX + Bybit).",
-   "es": "Ratio long/short de cuentas para las principales monedas (Binance + OKX + Bybit).",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "NXsX-1hgEA": {
-   "en": "24h liquidation totals per coin, longs vs shorts, from our own nine-exchange collector.",
-   "es": "Totales de liquidación de 24h por moneda, longs contra shorts, desde nuestro propio recolector de nueve exchanges.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "dd0E6Dov8X": {
-   "en": "Liquidations by exchange: 24h total, share, long/short split.",
-   "es": "Liquidaciones por exchange: total de 24h, participación, división long/short.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "PmPjOfoPXh": {
-   "en": "The newest liquidation events across all symbols (seconds behind the exchanges).",
-   "es": "Los eventos de liquidación más recientes en todos los símbolos (con segundos de retraso respecto a los exchanges).",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "2jIF9jPq4u": {
-   "en": "Raw recent liquidation events for one symbol.",
-   "es": "Eventos de liquidación recientes sin procesar para un símbolo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "VQgb9vG6w3": {
-   "en": "<code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code>",
-   "es": "<code>/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "Cn_5CtnZ83": {
-   "en": "Time-bucketed long/short histogram, up to 30 days.",
-   "es": "Histograma long/short agrupado por tiempo, hasta 30 días.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "IPaRCf96fk": {
-   "en": "Modelled liquidation clusters: price levels where forced selling sits right now.",
-   "es": "Clústeres de liquidación modelados: niveles de precio donde se concentra la venta forzada ahora mismo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "cr09PA4EW5": {
-   "en": "FOMC, CPI, NFP, options expiry and crypto milestones with UTC timestamps.",
-   "es": "FOMC, CPI, NFP, vencimiento de opciones e hitos cripto con marcas de tiempo UTC.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "E8LJVJp7tQ": {
-   "en": "Fear &amp; Greed index, value and classification.",
-   "es": "Índice Fear &amp; Greed, valor y clasificación.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "AIEQvOxODL": {
-   "en": "Top ~250 coins: price, market cap, 1h/24h/7d change, sparkline.",
-   "es": "Top ~250 monedas: precio, capitalización de mercado, cambio 1h/24h/7d, sparkline.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "BY3F2zfJIr": {
-   "en": "Total market cap, volume, BTC dominance.",
-   "es": "Capitalización total del mercado, volumen, dominancia de BTC.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "2ycj2JgUBv": {
-   "en": "Trending coins.",
-   "es": "Monedas en tendencia.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "B_JgEZ7Qr6": {
-   "en": "DeFi TVL: chains, protocols, stablecoins.",
-   "es": "TVL de DeFi: cadenas, protocolos, stablecoins.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "Y5OET42c5Y": {
-   "en": "<code>/api/latam/ar · /api/latam/br</code>",
-   "es": "<code>/api/latam/ar · /api/latam/br</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "-fas0LmFrJ": {
-   "en": "Regional quotes: USDT in Argentine pesos across 35 exchanges; Bitcoin and USDT in reais with the premium over the commercial dollar.",
-   "es": "Cotizaciones regionales: USDT en pesos argentinos en 35 exchanges; Bitcoin y USDT en reales con la prima sobre el dólar oficial.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 21
-  },
-  "iz0YtDVUBs": {
-   "en": "<code>/api/v1/calc/liquidation · position-size · pnl · risk-reward · take-profit</code>",
-   "es": "<code>/api/v1/calc/liquidation · position-size · pnl · risk-reward · take-profit</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "y78A_5_Opz": {
-   "en": "The five calculators below, in the same envelope.",
-   "es": "Las cinco calculadoras de abajo, en el mismo formato de sobre.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "nceMQOPvi7": {
-   "en": "Paper-trading Bot API - <code>/api/bot/v1/*</code> and <code>/api/bot/v2/*</code>",
-   "es": "Bot API de paper trading - <code>/api/bot/v1/*</code> y <code>/api/bot/v2/*</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "OG_-MYX1Fv": {
-   "en": "Point a trading bot at real live prices and settle every trade in simulated dollars: isolated margin, leverage up to 1000&times;, liquidations confirmed on 1-minute candles, taker fees and funding charged like an exchange. Sign in with an email and mint a key on <a href=\"/trading-api/\">/trading-api/</a>; positions live on your account and count for the season boards. <code>v1</code> response shapes are frozen; <code>v2</code> is the same API in the <code>{ ok, data, ts }</code> envelope. Auth: <code>X-API-Key</code>.",
-   "es": "Apunta un bot de trading a precios reales en vivo y liquida cada operación en dólares simulados: margen aislado, apalancamiento hasta 1000&times;, liquidaciones confirmadas en velas de 1 minuto, comisiones taker y funding cobrados como en un exchange real. Inicia sesión con un email y genera una clave en <a href=\"/trading-api/\">/trading-api/</a>; las posiciones viven en tu cuenta y cuentan para las tablas de temporada. Las formas de respuesta de <code>v1</code> están congeladas; <code>v2</code> es la misma API dentro del sobre <code>{ ok, data, ts }</code>. Autenticación: <code>X-API-Key</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 72
-  },
-  "ygMrWETfIu": {
-   "en": "What it does",
-   "es": "Qué hace",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "YgwixK7l7j": {
-   "en": "<code>/api/bot/v1/price · /klines · /time · /markets</code>",
-   "es": "<code>/api/bot/v1/price · /klines · /time · /markets</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "J8PzGXUAj_": {
-   "en": "Fill price, candles, server clock (with <code>drift_ms</code>) and every tradable symbol with its leverage cap and fee - the first three need no key.",
-   "es": "Precio de ejecución, velas, reloj del servidor (con <code>drift_ms</code>) y todos los símbolos operables con su tope de apalancamiento y comisión - los primeros tres no necesitan clave.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 23
-  },
-  "2QnqDQOXR7": {
-   "en": "Market open at the live price with optional <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class=\"tag n\">2.3</span>, <code>client_order_id</code> (idempotent retries) and <code>dry_run</code> <span class=\"tag n\">2.3</span> (price it, write nothing).",
-   "es": "Apertura a mercado al precio en vivo con <code>sl</code>, <code>tp</code>, <code>trail_pct</code> <span class=\"tag n\">2.3</span> opcionales, <code>client_order_id</code> (reintentos idempotentes) y <code>dry_run</code> <span class=\"tag n\">2.3</span> (calcula el precio, no escribe nada).",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 22
-  },
-  "PAqcSPCZf6": {
-   "en": "<code>/api/bot/v1/open <i>type: limit | stop</i></code>",
-   "es": "<code>/api/bot/v1/open <i>type: limit | stop</i></code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "pBZa4Pe828": {
-   "en": "Resting orders that fill AT your level from 1m candles while the bot is offline: a limit below the market or a stop entry above it <span class=\"tag n\">2.3</span>.",
-   "es": "Órdenes pendientes que se ejecutan EN tu nivel a partir de velas de 1m mientras el bot está desconectado: una orden límite por debajo del mercado o una entrada stop por encima <span class=\"tag n\">2.3</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "8Dms-ryz7i": {
-   "en": "Resting orders (with <code>type</code>) plus the last 20 that filled, expired or were cancelled.",
-   "es": "Órdenes pendientes (con <code>type</code>) más las últimas 20 que se ejecutaron, expiraron o se cancelaron.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "PHq_sV166G": {
-   "en": "Change a resting order in place: price, sl, tp, margin, leverage, trailing stop <span class=\"tag n\">2.3</span>.",
-   "es": "Modifica una orden pendiente sin cancelarla: precio, sl, tp, margen, apalancamiento, trailing stop <span class=\"tag n\">2.3</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "tWr4kQ-tq6": {
-   "en": "Cancel a resting order (a filled one answers 409, so a retry can never undo a fill).",
-   "es": "Cancela una orden pendiente (una ya ejecutada responde 409, así un reintento nunca puede deshacer una ejecución).",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "YJ_iacrtfN": {
-   "en": "<code>/api/bot/v1/close · /close_all</code>",
-   "es": "<code>/api/bot/v1/close · /close_all</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "MwaJqQnZyZ": {
-   "en": "Close one position, partially with <code>pct</code>, or everything; P&amp;L settles net of the round-trip fee and funding.",
-   "es": "Cierra una posición, parcialmente con <code>pct</code>, o todas; el P&amp;L se liquida neto de la comisión de ida y vuelta y el funding.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "cuq-F_RrPl": {
-   "en": "Move the stop-loss, take-profit or trailing stop on an open position without closing it.",
-   "es": "Modifica el stop-loss, take-profit o trailing stop de una posición abierta sin cerrarla.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "35_CxH-qJu": {
-   "en": "Positions with live mark price and P&amp;L; ETag / 304 when nothing changed; <code>?since=</code>.",
-   "es": "Posiciones con precio de marca en vivo y P&amp;L; ETag / 304 cuando nada cambió; <code>?since=</code>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "jN0nYDcr_7": {
-   "en": "<code>/api/bot/v1/trades · /account · /balance · /usage</code>",
-   "es": "<code>/api/bot/v1/trades · /account · /balance · /usage</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "ZWKfG2PXC-": {
-   "en": "Paged closed-trade ledger, lifetime account stats, balance and equity, your plan with limits and entitlements.",
-   "es": "Registro paginado de operaciones cerradas, estadísticas de la cuenta de por vida, saldo y equity, tu plan con límites y beneficios.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 15
-  },
-  "Y6wCdhtsRR": {
-   "en": "Charge your paper fills at a real venue’s taker schedule less our referral discount (Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid); POST sets the account default, <code>fee_venue</code> on open overrides it <span class=\"tag n\">2.4</span>.",
-   "es": "Cobra tus ejecuciones simuladas con la tabla de comisiones taker real de un exchange, menos nuestro descuento de referido (Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Hyperliquid); POST fija el valor predeterminado de la cuenta, <code>fee_venue</code> al abrir lo sobrescribe <span class=\"tag n\">2.4</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 33
-  },
-  "p0illEtk31": {
-   "en": "Your 30-day trading report: totals and skill score free; by coin / leverage / side / hour / day and written findings on API Pro and Max <span class=\"tag n\">2.3</span>.",
-   "es": "Tu trading report de 30 días: totales y skill score gratis; por moneda / apalancamiento / lado / hora / día y los hallazgos escritos en API Pro y Max <span class=\"tag n\">2.3</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 24
-  },
-  "alTIG0LDPN": {
-   "en": "<code>wss://marginpad.io/api/bot/v2/stream?api_key=…</code>",
-   "es": "<code>wss://marginpad.io/api/bot/v2/stream?api_key=…</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "pHzuSlYyuq": {
-   "en": "Position opened / updated / closed events and mark prices pushed every ~2 s. Free on every plan.",
-   "es": "Eventos de posición abierta / actualizada / cerrada y precios de marca enviados cada ~2 s. Gratis en todos los planes.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "rQ8E7ISN7A": {
-   "en": "<code>/api/bot/v1/webhooks <span class=\"tag p\">API Pro</span></code>",
-   "es": "<code>/api/bot/v1/webhooks <span class=\"tag p\">API Pro</span></code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "UME3N_u7fn": {
-   "en": "Trading events POSTed to your own URL, HMAC-SHA256 signed and retried, whether or not the bot is connected <span class=\"tag n\">2.3</span>.",
-   "es": "Eventos de trading enviados por POST a tu propia URL, firmados con HMAC-SHA256 y reintentados, esté o no conectado el bot <span class=\"tag n\">2.3</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 19
-  },
-  "uabKockYDU": {
-   "en": "<code>/api/bot/v1/ai <span class=\"tag p\">API Pro</span></code>",
-   "es": "<code>/api/bot/v1/ai <span class=\"tag p\">API Pro</span></code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "FfIQY-3LZJ": {
-   "en": "The chart panel&rsquo;s AI read from the API: an answer, a parsed plan and the brief it reasoned over, 50 a day <span class=\"tag n\">2.3</span>.",
-   "es": "La lectura de la IA del panel de gráficos a partir de la API: una respuesta, un plan ya interpretado y el resumen sobre el que razonó, 50 al día <span class=\"tag n\">2.3</span>.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 21
-  },
-  "ri-YoJn-WF": {
-   "en": "Plan",
-   "es": "Plan",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "N9NZ8TxDNv": {
-   "en": "Free ($0)",
-   "es": "Free ($0)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "H225DJ_D7_": {
-   "en": "Pro ($29/mo)",
-   "es": "Pro ($29/mes)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "AAB9cz9Dy7": {
-   "en": "Max ($79/mo)",
-   "es": "Max ($79/mes)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "woLC_G0eFk": {
-   "en": "Business ($199/mo)",
-   "es": "Business ($199/mes)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "kxOihczPFX": {
-   "en": "Requests / minute per key (trading and market data)",
-   "es": "Solicitudes por minuto por clave (trading y datos de mercado)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "Z8rfDY5AZp": {
-   "en": "API keys · open positions · resting orders",
-   "es": "Claves API · posiciones abiertas · órdenes pendientes",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "Jlf8hKwYrj": {
-   "en": "Market data, WebSocket, MCP, limit &amp; stop orders, trailing stops, modify, dry run, replay, venue fee schedules",
-   "es": "Datos de mercado, WebSocket, MCP, órdenes limit y stop, trailing stops, modificación, dry run, replay y tarifas por exchange",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "APVU1njyYR": {
-   "en": "included",
-   "es": "incluido",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 4,
-   "w": 1
-  },
-  "dj25905nTH": {
-   "en": "Webhooks · AI market read · report breakdowns",
-   "es": "Webhooks · lectura de mercado por IA · desgloses de informes",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "DhZJbi0ZDJ": {
-   "en": "3 hooks · 50/day · full report",
-   "es": "3 webhooks · 50/día · informe completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "ZosJhfJyV4": {
-   "en": "15 hooks · 200/day · full report",
-   "es": "15 hooks · 200/día · report completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "oQK3NmKfFw": {
-   "en": "50 hooks · 500/day · full report",
-   "es": "50 hooks · 500/día · report completo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "O5HxYx21Yk": {
-   "en": "API plans are separate from site <a href=\"/premium/\">Premium</a>: Premium does not raise any API limit, and an API plan does not unlock the site features.",
-   "es": "Los planes de API están separados de <a href=\"/premium/\">Premium</a> del sitio: Premium no sube ningún límite de la API, y un plan de API no desbloquea las funciones del sitio.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 24
-  },
-  "DoqQsaj1pu": {
-   "en": "Full documentation, the quickstart, error codes and the reliability notes (idempotency, ETags, the WebSocket) are on <a href=\"/trading-api/\">/trading-api/</a>. Every change is logged at <a href=\"/api/changelog\">/api/changelog</a> (JSON at <code>/api/changelog?format=json</code>); the current version is 2.8.0.",
-   "es": "La documentación completa, la guía rápida, los códigos de error y las notas de fiabilidad (idempotencia, ETags, el WebSocket) están en <a href=\"/trading-api/\">/trading-api/</a>. Cada cambio queda registrado en <a href=\"/api/changelog\">/api/changelog</a> (JSON en <code>/api/changelog?format=json</code>); la versión actual es la 2.8.0.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 32
-  },
-  "ueO5Y7Rdo_": {
-   "en": "When the bot is proven, it needs a real exchange key",
-   "es": "Cuando el bot ya está probado, necesita una clave real de un exchange",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "P8R-ySVPOX": {
-   "en": "Everything above settles in simulated dollars. Once a strategy has survived weeks of forward testing, the same code needs a live API to place real orders. Two venues we point bot builders at:",
-   "es": "Todo lo anterior se liquida en dólares simulados. Una vez que una estrategia sobrevive semanas de forward testing, ese mismo código necesita una API en vivo para colocar órdenes reales. Dos exchanges a los que orientamos a quienes construyen bots:",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 31
-  },
-  "N5aREcivgi": {
-   "en": "<span class=\"gl-mark\">HL</span><b>Hyperliquid</b><span class=\"gl-pill\">on-chain &middot; API-first</span>",
-   "es": "<span class=\"gl-mark\">HL</span><b>Hyperliquid</b><span class=\"gl-pill\">on-chain &middot; enfocado en la API</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/",
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 4
-  },
-  "pKtiAq7tGO": {
-   "en": "Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b>, hourly funding and an order book anyone can audit on-chain.",
-   "es": "Perpetuos en su propia cadena con una API pública REST y WebSocket, <b>subcuentas que tienen cada una su propia wallet de API</b>, funding cada hora y un libro de órdenes que cualquiera puede auditar on-chain.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 29
-  },
-  "-NlFlGAEEi": {
-   "en": "<b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span>",
-   "es": "<b>4%</b><span>de descuento en comisiones de trading<br>con el código <i>MARGINPAD</i></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/",
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 7
-  },
-  "d2s9fjOU4B": {
-   "en": "<a class=\"gl-cta\" href=\"https://app.hyperliquid.xyz/join/MARGINPAD\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Hyperliquid\" data-ex=\"Hyperliquid\">Join Hyperliquid &rarr;</a>",
-   "es": "<a class=\"gl-cta\" href=\"https://app.hyperliquid.xyz/join/MARGINPAD\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Hyperliquid\" data-ex=\"Hyperliquid\">Únete a Hyperliquid &rarr;</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/",
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 2
-  },
-  "fUhw3lDm3f": {
-   "en": "<span class=\"gl-mark\" style=\"background:#f7a600;color:#1a1200\">B</span><b id=\"glName\">Bybit</b><span class=\"gl-pill\">centralised &middot; deepest books</span>",
-   "es": "<span class=\"gl-mark\" style=\"background:#f7a600;color:#1a1200\">B</span><b id=\"glName\">Bybit</b><span class=\"gl-pill\">centralizado &middot; los libros más profundos</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "sHcNZqCUwy": {
-   "en": "REST and WebSocket shapes close to this API, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.",
-   "es": "Formatos REST y WebSocket muy parecidos a los de esta API, una clave distinta por subcuenta, y una de las fuentes de las que vienen nuestros propios precios. La opción por defecto cuando quieres un libro centralizado con rampas de entrada en fiat.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 32
-  },
-  "SZzYtm3B60": {
-   "en": "<a class=\"gl-cta\" id=\"glLink\" href=\"https://www.bybit.com/invite?ref=LZKBERJ\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Bybit\" data-ex=\"Bybit\">Open a Bybit account &rarr;</a>",
-   "es": "<a class=\"gl-cta\" id=\"glLink\" href=\"https://www.bybit.com/invite?ref=LZKBERJ\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Bybit\" data-ex=\"Bybit\">Abre una cuenta en Bybit &rarr;</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "f7fu7mQ6-s": {
-   "en": "<span class=\"gl-note\">Referral links - MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. Every API on this page stays free either way. Hyperliquid is not available to US persons under its terms.</span>",
-   "es": "<span class=\"gl-note\">Enlaces de referido - MarginPad puede ganar una comisión si abres una cuenta, sin costo para ti; el descuento de Hyperliquid es su propio descuento por referido. Todas las API de esta página siguen siendo gratis de todas formas. Hyperliquid no está disponible para personas de EE. UU. según sus términos.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 42
-  },
-  "s55Y0-j806": {
-   "en": "MCP - use it from Claude, ChatGPT or Cursor",
-   "es": "MCP - úsalo desde Claude, ChatGPT o Cursor",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "4c3sS2ZgWQ": {
-   "en": "Add <code>https://marginpad.io/mcp</code> as a remote MCP server (Streamable HTTP). Market-data tools need no key; set the header <code>X-API-Key</code> for the paper-trading tools. <b>27 tools:</b> get_price, get_klines, get_markets, get_screener, get_funding, get_open_interest, get_liquidations, get_fear_greed, get_economic_calendar, calc_liquidation, calc_position_size, paper_balance, paper_positions, paper_trades, paper_open, paper_close, paper_sltp, paper_modify_order, paper_fees, paper_report, paper_limit_order, paper_orders, paper_cancel_order.",
-   "es": "Añade <code>https://marginpad.io/mcp</code> como servidor MCP remoto (Streamable HTTP). Las herramientas de datos de mercado no necesitan clave; para las de paper trading, envía la cabecera <code>X-API-Key</code>. <b>27 herramientas:</b> get_price, get_klines, get_markets, get_screener, get_funding, get_open_interest, get_liquidations, get_fear_greed, get_economic_calendar, calc_liquidation, calc_position_size, paper_balance, paper_positions, paper_trades, paper_open, paper_close, paper_sltp, paper_modify_order, paper_fees, paper_report, paper_limit_order, paper_orders, paper_cancel_order.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 46
-  },
-  "Y8a59fa30M": {
-   "en": "Clients - one file, zero dependencies",
-   "es": "Clientes - un archivo, cero dependencias",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "FOcFZLaheq": {
-   "en": "<a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> (Python 3.8+, urllib only; <code>websockets</code> optional for the stream) and <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> (Node 18+ or a browser). Both cover market data, every paper-trading call, ETag polling, 429 back-off, the WebSocket stream and webhook signature verification.",
-   "es": "<a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> (Python 3.8+, solo urllib; <code>websockets</code> opcional para el stream) y <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> (Node 18+ o un navegador). Ambos cubren datos de mercado, todas las llamadas de paper trading, sondeo con ETag, back-off en el 429, el stream por WebSocket y la verificación de firma de los webhooks.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 34
-  },
-  "9pW51D2I7n": {
-   "en": "Calculators - <code>/api/*</code>, plain JSON",
-   "es": "Calculadoras - <code>/api/*</code>, JSON plano",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "ZX3fcBI_dV": {
-   "en": "A free, public JSON API for the most common crypto futures calculations. No API key, no signup, CORS-enabled - call it from anywhere.",
-   "es": "Una API JSON pública y gratuita para los cálculos más comunes de futuros de cripto. Sin clave API, sin registro, con CORS habilitado - llámala desde donde quieras.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 21
-  },
-  "Bt8bFzXOf5": {
-   "en": "Liquidation price",
-   "es": "Precio de liquidación",
-   "kind": [
-    "html",
-    "ld"
-   ],
-   "ctx": [
-    "/api/",
-    "/glossary/",
-    "/hyperliquid-liquidation-calculator/"
-   ],
-   "n": 4,
-   "w": 2
-  },
-  "h0_uvEpu8p": {
-   "en": "<b>GET</b> /api/liquidation?entry=60000&amp;leverage=10&amp;side=long&amp;mmr=0.5",
-   "es": "<b>GET</b> /api/liquidation?entry=60000&amp;leverage=10&amp;side=long&amp;mmr=0.5",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "YcQSjIFhQi": {
-   "en": "entry",
-   "es": "entry",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 2,
-   "w": 1
-  },
-  "tUl_2eIldm": {
-   "en": "required - entry price",
-   "es": "obligatorio - precio de entrada",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 2,
-   "w": 3
-  },
-  "SBclz1o4eP": {
-   "en": "leverage",
-   "es": "leverage",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 2,
-   "w": 1
-  },
-  "b9dQ4wfNLY": {
-   "en": "required - leverage multiple (>0)",
-   "es": "obligatorio - múltiplo de apalancamiento (>0)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "Fgzvwa1-CI": {
-   "en": "side",
-   "es": "side",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "daKcEYO9_p": {
-   "en": "optional - long (default) or short",
-   "es": "opcional - long (por defecto) o short",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "tzbYDe5L0R": {
-   "en": "mmr",
-   "es": "mmr",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "QyEnJmv92I": {
-   "en": "optional - maintenance margin rate %, default 0.5",
-   "es": "opcional - % de tasa de margen de mantenimiento, por defecto 0.5",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "08iCcuEopQ": {
-   "en": "Position size (by risk)",
-   "es": "Tamaño de posición (por riesgo)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "GBHcMlhTnF": {
-   "en": "<b>GET</b> /api/position-size?balance=5000&amp;risk=1&amp;entry=60000&amp;stop=58800&amp;leverage=10",
-   "es": "<b>GET</b> /api/position-size?balance=5000&amp;risk=1&amp;entry=60000&amp;stop=58800&amp;leverage=10",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "jfow4CRQZN": {
-   "en": "balance",
-   "es": "balance",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "wK6sM08aY9": {
-   "en": "required - account balance",
-   "es": "obligatorio - saldo de la cuenta",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "EaEQu-8bzA": {
-   "en": "risk",
-   "es": "risk",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "nfaCCPYNFb": {
-   "en": "required - risk per trade %",
-   "es": "obligatorio - % de riesgo por operación",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "G0gBWOHzDg": {
-   "en": "stop",
-   "es": "stop",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "cNJR6IY_LY": {
-   "en": "required - stop-loss price",
-   "es": "obligatorio - precio de stop-loss",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "pVyn22PvCq": {
-   "en": "optional - for margin required",
-   "es": "opcional - para el margen requerido",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "PUfyNyDls9": {
-   "en": "PnL / ROI / ROE",
-   "es": "PnL / ROI / ROE",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "8eC1BfoTub": {
-   "en": "<b>GET</b> /api/pnl?entry=60000&amp;exit=66000&amp;size=0.5&amp;leverage=10&amp;side=long",
-   "es": "<b>GET</b> /api/pnl?entry=60000&amp;exit=66000&amp;size=0.5&amp;leverage=10&amp;side=long",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "I3ZM-1M0Rh": {
-   "en": "Risk / reward",
-   "es": "Riesgo / beneficio",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "ne_UrIwSj6": {
-   "en": "<b>GET</b> /api/risk-reward?entry=60000&amp;stop=58000&amp;tp=66000",
-   "es": "<b>GET</b> /api/risk-reward?entry=60000&amp;stop=58000&amp;tp=66000",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "iFeCww10y7": {
-   "en": "Take-profit target",
-   "es": "Objetivo de take-profit",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "2FYhvH_rf0": {
-   "en": "<b>GET</b> /api/take-profit?entry=60000&amp;leverage=10&amp;roe=75&amp;side=long",
-   "es": "<b>GET</b> /api/take-profit?entry=60000&amp;leverage=10&amp;roe=75&amp;side=long",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "cEQARqPcLg": {
-   "en": "Notes",
-   "es": "Notas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/",
-    "/blog/best-crypto-exchanges-us-traders/"
-   ],
-   "n": 2,
-   "w": 1
-  },
-  "UU3CwO1z3R": {
-   "en": "Calculations use the isolated-margin estimate and are for educational use, not financial advice. Figures exclude exchange fees and funding. The API is provided free and as-is. If you build something with it, a link back to <a href=\"https://marginpad.io\">marginpad.io</a> is appreciated. Market data is free for public use, attribution appreciated; the Bot API is a simulator and never touches real funds. Educational only, not financial advice.",
-   "es": "Los cálculos usan la estimación de margen aislado y son solo para uso educativo, no es asesoría financiera. Las cifras no incluyen comisiones del exchange ni funding. La API se ofrece gratis y tal cual. Si construyes algo con ella, se agradece un enlace de vuelta a <a href=\"https://marginpad.io\">marginpad.io</a>. Los datos de mercado son de uso público gratuito, se agradece la atribución; la Bot API es un simulador y nunca toca fondos reales. Solo con fines educativos, no es asesoría financiera.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 62
-  },
-  "wP7nsGJUrx": {
-   "en": "Build something with it",
-   "es": "Construye algo con ella",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "tAgvWUZcD8": {
-   "en": "Get a free API key in a minute, or drop the MCP URL into your assistant and ask it what looks bullish right now.",
-   "es": "Consigue una clave API gratis en un minuto, o pega la URL del MCP en tu asistente y pregúntale qué se ve alcista ahora mismo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 22
-  },
-  "D0w8TYnaKJ": {
-   "en": "<a class=\"cta\" href=\"/trading-api/\">Get a free API key →</a>",
-   "es": "<a class=\"cta\" href=\"/trading-api/\">Consigue una clave API gratis →</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "FQPAwgWeum": {
-   "en": "<span>© 2026 MarginPad</span> <span><a href=\"/free-crypto-api/\">Data API</a> · <a href=\"/trading-api/\">Bot API</a> · <a href=\"/api/openapi.json\">OpenAPI</a> · <a href=\"/api/changelog\">Changelog</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a></span>",
-   "es": "<span>© 2026 MarginPad</span> <span><a href=\"/free-crypto-api/\">API de datos</a> · <a href=\"/trading-api/\">Bot API</a> · <a href=\"/api/openapi.json\">OpenAPI</a> · <a href=\"/api/changelog\">Registro de cambios</a> &middot; <a href=\"/terms/\">Términos</a> &middot; <a href=\"/privacy/\">Privacidad</a></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "62OckAWGjQ": {
-   "en": "Every MarginPad API on one page: a free keyless crypto market-data API (prices, candles, screener, funding, open interest, liquidations, calendar), a paper-trading Bot API with REST, WebSocket, webhooks, trailing stops and limit/stop orders, a remote MCP server with 27 tools, OpenAPI 3.1 and one-file Python and JS clients.",
-   "es": "Todas las API de MarginPad en una página: una API gratuita y sin clave de datos de mercado cripto (precios, velas, screener, funding, open interest, liquidaciones, calendario), una Bot API de paper trading con REST, WebSocket, webhooks, trailing stops y órdenes limit y stop, un servidor MCP remoto con 27 herramientas, OpenAPI 3.1 y clientes de un solo archivo en Python y JS.",
-   "kind": [
-    "attr:content"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 45
-  },
-  "xXQNiJsvNH": {
-   "en": "MarginPad API - free crypto data, paper-trading Bot API, MCP",
-   "es": "MarginPad API - datos cripto gratis, Bot API de paper trading, MCP",
-   "kind": [
-    "attr:content"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "ZwCENZmUld": {
-   "en": "Keyless market data at 60 req/min (120 with a free key, 600 on API Pro, 5000 on Business), a full paper-trading Bot API with webhooks and trailing stops, MCP with 27 tools, OpenAPI 3.1, Python and JS clients.",
-   "es": "Datos de mercado sin clave a 60 req/min (120 con una clave gratuita, 600 en API Pro, 5000 en Business), una Bot API completa de paper trading con webhooks y trailing stops, MCP con 27 herramientas, OpenAPI 3.1 y clientes en Python y JS.",
-   "kind": [
-    "attr:content"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 36
-  },
-  "I33l_E09sn": {
-   "en": "Free keyless crypto market-data API (prices, OHLC, screener, funding, open interest, liquidations, calendar, calculators), a paper-trading Bot API (REST, WebSocket, webhooks, limit/stop orders, trailing stops) and a remote MCP server with 27 tools. OpenAPI 3.1.",
-   "es": "API gratuita y sin clave de datos de mercado cripto (precios, OHLC, screener, funding, open interest, liquidaciones, calendario, calculadoras), una Bot API de paper trading (REST, WebSocket, webhooks, órdenes limit y stop, trailing stops) y un servidor MCP remoto con 27 herramientas. OpenAPI 3.1.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/api/"
-   ],
-   "n": 1,
-   "w": 33
-  },
   "xB-wafRBzr": {
    "en": "Crypto Liquidation Map, Heatmap & Calculators - MarginPad",
    "es": "Mapa de liquidaciones cripto, mapa de calor y calculadoras - MarginPad",
@@ -12824,9 +11291,9 @@
    "n": 1,
    "w": 19
   },
-  "4ijbDRzKZn": {
-   "en": "<span class=\"ml-h\" data-i18n=\"mlTools\">Tools</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glossary</a><span class=\"ml-sep\">·</span><a href=\"/api/\">Free API</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">US futures guide</a>",
-   "es": "<span class=\"ml-h\" data-i18n=\"mlTools\">Herramientas</span><a href=\"/funding-fee-calculator/\">Comisión de funding</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glosario</a><span class=\"ml-sep\">·</span><a href=\"/api/\">API gratis</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">Guía de futuros en EE. UU.</a>",
+  "6iu0AX3Eud": {
+   "en": "<span class=\"ml-h\" data-i18n=\"mlTools\">Tools</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glossary</a><span class=\"ml-sep\">·</span><a href=\"/trading-api/\">Free API</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">US futures guide</a>",
+   "es": "<span class=\"ml-h\" data-i18n=\"mlTools\">Herramientas</span><a href=\"/funding-fee-calculator/\">Funding fee</a><span class=\"ml-sep\">·</span><a href=\"/glossary/\">Glosario</a><span class=\"ml-sep\">·</span><a href=\"/trading-api/\">API gratuita</a><span class=\"ml-sep\">·</span><a href=\"/blog/crypto-futures-legal-in-the-us/\">Guía de futuros en EE. UU.</a>",
    "kind": [
     "html"
    ],
@@ -31570,6 +30037,18 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "cEQARqPcLg": {
+   "en": "Notes",
+   "es": "Notas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/best-crypto-exchanges-us-traders/"
+   ],
+   "n": 1,
+   "w": 1
   },
   "HvKV8ZvfwJ": {
    "en": "Kraken (Pro / futures)",
@@ -98587,9 +97066,9 @@
    "n": 1,
    "w": 62
   },
-  "hF9Kf-Z062": {
-   "en": "<b>Official clients</b>, one file each and zero dependencies: <a href=\"/assets/sdk/marginpad.py\"><b>marginpad.py</b></a> (Python 3.8+) and <a href=\"/assets/sdk/marginpad.js\"><b>marginpad.js</b></a> (Node 18+ or a browser). Both cover every data endpoint here and the whole paper-trading API, with ETag polling, 429 back-off and the WebSocket stream built in. Everything on one page: <a href=\"/api/\"><b>/api/</b></a>.",
-   "es": "<b>Clientes oficiales</b>, un archivo cada uno y cero dependencias: <a href=\"/assets/sdk/marginpad.py\"><b>marginpad.py</b></a> (Python 3.8+) y <a href=\"/assets/sdk/marginpad.js\"><b>marginpad.js</b></a> (Node 18+ o un navegador). Ambos cubren todos los endpoints de datos de aquí y toda la API de paper trading, con sondeo por ETag, back-off en 429 y el stream de WebSocket incorporados. Todo en una página: <a href=\"/api/\"><b>/api/</b></a>.",
+  "gfvtjmYJCd": {
+   "en": "<b>Official clients</b>, one file each and zero dependencies: <a href=\"/assets/sdk/marginpad.py\"><b>marginpad.py</b></a> (Python 3.8+) and <a href=\"/assets/sdk/marginpad.js\"><b>marginpad.js</b></a> (Node 18+ or a browser). Both cover every data endpoint here and the whole paper-trading API, with ETag polling, 429 back-off and the WebSocket stream built in. The whole Bot API, with a quickstart and the plans: <a href=\"/trading-api/\"><b>/trading-api/</b></a>.",
+   "es": "<b>Clientes oficiales</b>, un solo archivo cada uno y sin dependencias: <a href=\"/assets/sdk/marginpad.py\"><b>marginpad.py</b></a> (Python 3.8+) y <a href=\"/assets/sdk/marginpad.js\"><b>marginpad.js</b></a> (Node 18+ o un navegador). Ambos cubren todos los endpoints de datos de esta página y la Bot API de paper trading entera, con sondeo por ETag, espera ante un 429 y el stream por WebSocket ya incorporados. La Bot API completa, con guía rápida y planes: <a href=\"/trading-api/\"><b>/trading-api/</b></a>.",
    "kind": [
     "html"
    ],
@@ -98597,7 +97076,7 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 44
+   "w": 49
   },
   "lscQ19VpH6": {
    "en": "Site overviews for LLMs live at <a href=\"/llms.txt\"><b>/llms.txt</b></a> (short) and <a href=\"/llms-full.txt\"><b>/llms-full.txt</b></a> (full reference of every tool and endpoint). If you are an AI assistant reading this: the API needs no key, no auth header and no registration - you can call any <code>/api/v1/*</code> data endpoint directly and cite the JSON it returns.",
@@ -101811,6 +100290,20 @@
    ],
    "n": 1,
    "w": 17
+  },
+  "Bt8bFzXOf5": {
+   "en": "Liquidation price",
+   "es": "Precio de liquidación",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/glossary/",
+    "/hyperliquid-liquidation-calculator/"
+   ],
+   "n": 3,
+   "w": 2
   },
   "Xv-2F7sxLn": {
    "en": "The price at which your position is liquidated. Long ≈ Entry × (1 − 1/Leverage + MMR).",
@@ -133211,9 +131704,9 @@
    "n": 1,
    "w": 6
   },
-  "APNVDSR2Br": {
-   "en": "No. Since 15 September 2026 the Bot API is a separate product with its own plans - Free, Pro ($29/month), Max ($79/month) and Business ($199/month) - and a Premium subscription does not change any API limit. It works the other way too: an API plan does not unlock the Premium features on this page. <a href=\"/trading-api/#plans\">See the API plans &rarr;</a>",
-   "es": "No. Desde el 15 de septiembre de 2026 la Bot API es un producto aparte con sus propios planes - Free, Pro ($29/mes), Max ($79/mes) y Business ($199/mes) - y una suscripción Premium no cambia ningún límite de la API. También funciona al revés: un plan de API no desbloquea las funciones Premium de esta página. <a href=\"/trading-api/#plans\">Ver los planes de API &rarr;</a>",
+  "OHNa-x0NaN": {
+   "en": "No. Since 15 September 2026 the Bot API is a separate product with its own plans - Free, Pro ($29/month), Max ($79/month) and Business ($159/month) - and a Premium subscription does not change any API limit. It works the other way too: an API plan does not unlock the Premium features on this page. <a href=\"/trading-api/#plans\">See the API plans &rarr;</a>",
+   "es": "No. Desde el 15 de septiembre de 2026 la Bot API es un producto aparte con sus propios planes - Free, Pro ($29/mes), Max ($79/mes) y Business ($159/mes) - y una suscripción Premium no cambia ningún límite de la API. También funciona al revés: un plan de API no desbloquea las funciones Premium de esta página. <a href=\"/trading-api/#plans\">Ver los planes de API &rarr;</a>",
    "kind": [
     "html"
    ],
@@ -148473,9 +146966,9 @@
    "n": 1,
    "w": 1
   },
-  "lf7wjlw18p": {
-   "en": "$199<small>/month</small>",
-   "es": "$199<small>/mes</small>",
+  "V-l3rwdYxn": {
+   "en": "$159<small>/month</small>",
+   "es": "$159<small>/mes</small>",
    "kind": [
     "html"
    ],
@@ -148605,9 +147098,9 @@
    "n": 1,
    "w": 2
   },
-  "T0i6v5Fv9y": {
-   "en": "<span class=\"apn\">Business</span> &middot; $199",
-   "es": "<span class=\"apn\">Business</span> &middot; $199",
+  "NtPUbASe6J": {
+   "en": "<span class=\"apn\">Business</span> &middot; $159",
+   "es": "<span class=\"apn\">Business</span> &middot; $159",
    "kind": [
     "html"
    ],
@@ -151161,6 +149654,18 @@
    "n": 1,
    "w": 38
   },
+  "N5aREcivgi": {
+   "en": "<span class=\"gl-mark\">HL</span><b>Hyperliquid</b><span class=\"gl-pill\">on-chain &middot; API-first</span>",
+   "es": "<span class=\"gl-mark\">HL</span><b>Hyperliquid</b><span class=\"gl-pill\">on-chain &middot; enfocado en la API</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
   "dVT1HZ6o-J": {
    "en": "Perps on their own chain with a public REST and WebSocket API, <b>sub-accounts that each get their own API wallet</b> (the bot never holds your main key), hourly funding and a book anyone can audit on-chain. The closest thing to running against this API with real money.",
    "es": "Perpetuos en su propia cadena con una API REST y WebSocket pública, <b>sub-cuentas que tienen cada una su propia wallet de API</b> (el bot nunca tiene tu clave principal), funding cada hora y un libro de órdenes que cualquiera puede auditar on-chain. Lo más parecido a correr contra esta API pero con dinero real.",
@@ -151172,6 +149677,30 @@
    ],
    "n": 1,
    "w": 45
+  },
+  "-NlFlGAEEi": {
+   "en": "<b>4%</b><span>off trading fees<br>with code <i>MARGINPAD</i></span>",
+   "es": "<b>4%</b><span>de descuento en comisiones de trading<br>con el código <i>MARGINPAD</i></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "d2s9fjOU4B": {
+   "en": "<a class=\"gl-cta\" href=\"https://app.hyperliquid.xyz/join/MARGINPAD\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Hyperliquid\" data-ex=\"Hyperliquid\">Join Hyperliquid &rarr;</a>",
+   "es": "<a class=\"gl-cta\" href=\"https://app.hyperliquid.xyz/join/MARGINPAD\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" data-mpex=\"Hyperliquid\" data-ex=\"Hyperliquid\">Únete a Hyperliquid &rarr;</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
   },
   "7PIYatdXBs": {
    "en": "<span class=\"gl-mark\" style=\"background:#3a2a05;color:#f7a600\">B</span><b id=\"glName\">Bybit</b><span class=\"gl-pill\">centralised &middot; deepest books</span>",
@@ -151942,9 +150471,9 @@
    "n": 1,
    "w": 4
   },
-  "OzGunMTmJb": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
-   "es": "Free: 120 peticiones por minuto y por clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($29 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks y 50 lecturas de mercado con IA al día. API Max ($79 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks y 200 lecturas con IA al día. API Business ($199 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks y 500 lecturas con IA al día. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream por WebSocket y MCP están incluidos en los cuatro.",
+  "RqV-ZqXK0J": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($159 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
+   "es": "Free: 120 peticiones por minuto y por clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($29 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks y 50 lecturas de mercado con IA al día. API Max ($79 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks y 200 lecturas con IA al día. API Business ($159 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks y 500 lecturas con IA al día. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream por WebSocket y MCP están incluidos en los cuatro.",
    "kind": [
     "ld"
    ],

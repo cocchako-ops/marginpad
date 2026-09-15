@@ -53,7 +53,7 @@
  {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
  {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
  {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time - it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
- {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks and 50 AI market reads a day. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks and 200 AI reads a day. API Business ($159 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks and 500 AI reads a day. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four."}},
  {"@type":"Question","name":"Does MarginPad Premium include the API?","acceptedAnswer":{"@type":"Answer","text":"No. Since 15 September 2026 the Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts. The API plans unlock API limits. They are bought separately."}},
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
@@ -672,7 +672,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       </div>
       <div class="apcard" data-plan="business">
         <div class="aphead"><h3><span class="apn">Business</span></h3></div>
-        <div class="appx">$199<small>/month</small></div>
+        <div class="appx">$159<small>/month</small></div>
         <p class="apsub">For a desk running many strategies at once, or an app trading on behalf of its own users.</p>
         <div class="thr">
           <div class="thr-t"><i data-w="100" style="width:100%"></i></div>
@@ -689,7 +689,7 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     </div>
     <p id="apMsg" class="note" hidden></p>
     <div class="tw plantw"><table class="vs">
-      <tr><th>What changes with the plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $199</th></tr>
+      <tr><th>What changes with the plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $159</th></tr>
       <tr><td>Requests per minute, per key</td><td>120</td><td><b>600</b></td><td><b>2000</b></td><td><b>5000</b></td></tr>
       <tr><td>Market-data API (<code>/api/v1/*</code>) with your key<br><span class="sub">60 / min per IP without a key, on every plan</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
       <tr><td>API keys per account</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>

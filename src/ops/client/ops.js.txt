@@ -531,6 +531,40 @@
   var PM_KIND = function (k) { k = String(k || ''); if (k === 'founder') return '<span class="badge amber pmk" data-k="founder">FOUNDER</span>'; if (k.indexOf('signals:') === 0) return '<span class="badge pmk" data-k="signals">SIGNALS ' + esc(k.slice(8).toUpperCase()) + '</span>'; return '<span class="badge lime pmk" data-k="monthly">MONTHLY</span>'; };
   var PM_VIA = function (r) { if (r.via === 'balance') return 'rewards balance'; if (r.via === 'nowpayments') return 'NOWPayments' + (r.cur ? ' · ' + esc(r.cur) : ''); return r.src === 'derived' ? '<span class="meta" title="' + esc(r.note || '') + '">record predates the book</span>' : esc(r.via || '-'); };
   var PM_WHO = function (r) { if (r.chat) return (r.un ? userLink(r.un) + ' ' : '') + '<span class="meta">Telegram ' + esc(r.chat) + '</span>'; return r.un ? userLink(r.un) + ' ' + flag(r.cc) : '<span class="mono meta" title="account id">' + esc(String(r.uid || r.acct).slice(0, 10)) + '</span>'; };
+  // API-plan money (2026-09-15). It lives on the Premium desk because that is where the owner reads
+  // "who paid for what", but it is a SEPARATE book: the ledger's apipay table, never prempay. A $29 API
+  // sale inside the Premium totals would move every figure on this page, so the two are rendered as two
+  // blocks that never add up together. Empty until the first sale, and it says so rather than showing zeros.
+  var AP_PLAN = function (k) { k = String(k || ''); var c = k === 'business' ? 'lime' : k === 'max' ? 'amber' : ''; return '<span class="badge ' + c + '">' + esc(k || '?') + '</span>'; };
+  function apiRevenue(ap) {
+    if (!ap) return card('API plans', failHtml('the API plan desk did not answer'));
+    var pay = ap.payments || [], rows = (ap.rows || []).filter(function (r) { return r.live; });
+    var byName = {}; (ap.rows || []).forEach(function (r) { byName['u:' + r.uid] = r.username || ''; });
+    var m = {}, now = new Date();
+    pay.forEach(function (r) { var k = new Date(r.ts).toISOString().slice(0, 7); m[k] = (m[k] || 0) + (+r.cents || 0) / 100; });
+    var thisMonth = m[now.toISOString().slice(0, 7)] || 0;
+    var d30 = pay.filter(function (r) { return r.ts > Date.now() - 30 * 86400000; }).reduce(function (a2, r) { return a2 + (+r.cents || 0) / 100; }, 0);
+    var tiles = '<div class="grid g4">'
+      + tile(USD(ap.mrrUsd || 0), 'API MRR', ap.mrrUsd ? '' : 'dim', N(ap.paying || 0) + ' paying \u00b7 ' + N(ap.trials || 0) + ' on the free month')
+      + tile(USD(ap.lifetimeUsd || 0), 'paid for API plans, all time', ap.lifetimeUsd ? '' : 'dim', N(pay.length) + ' payment' + (pay.length === 1 ? '' : 's'))
+      + tile(USD(d30), 'last 30 days', d30 ? '' : 'dim', USD(thisMonth) + ' this month')
+      + tile(N(rows.length), 'accounts on a plan', rows.length ? '' : 'dim', 'Free $0 \u00b7 Pro $29 \u00b7 Max $79 \u00b7 Business $159')
+      + '</div>';
+    if (!pay.length) {
+      return card('API plans - money', tiles + '<div class="meta" style="margin-top:10px">No API plan has been paid for yet. The moment one is, every payment lands here with who, when, how much and how they paid - the same shape as the Premium book below, kept in its own ledger table so it can never move a Premium figure.</div>',
+        'separate from Premium on purpose \u00b7 a Premium subscription buys nothing on the API');
+    }
+    var cols = [
+      { h: 'who', grow: true, f: function (r) { var un = byName[r.acct] || ''; return un ? userLink(un) : '<span class="meta">' + esc(String(r.acct).replace(/^u:/, '').slice(0, 10)) + '</span>'; } },
+      { h: 'plan', f: function (r) { return AP_PLAN(r.kind); } },
+      { h: 'paid', num: true, f: function (r) { return '<b>' + USD((+r.cents || 0) / 100) + '</b>'; } },
+      { h: 'via', f: function (r) { return r.via === 'balance' ? 'rewards balance' : r.via === 'nowpayments' ? 'NOWPayments' + (r.cur ? ' \u00b7 ' + esc(r.cur) : '') : esc(r.via || '?'); } },
+      { h: 'when', f: function (r) { return dt(r.ts); } },
+      { h: 'runs until', f: function (r) { return r.until ? dt(r.until) : '<span class="meta">-</span>'; } }
+    ];
+    return card('API plans - money', tiles + tbl(cols, pay.slice(0, 60), 'no payments yet'),
+      'the ledger\u2019s own apipay table \u00b7 grants and the free month are NOT payments and never appear here');
+  }
   function premPayments(pp) {
     pp = pp || {}; var rows = pp.rows || [], t = pp.totals || {}, months = pp.months || [];
     if (pp.error && !rows.length) return card('Premium payments', failHtml('the payment book did not answer'));
@@ -554,10 +588,10 @@
     var best = top.length ? '<div class="line" style="margin-top:8px">Best customers: ' + top.map(function (p) { return (p.un ? userLink(p.un) : '<span class="mono">' + esc(String(p.uid || p.acct).slice(0, 10)) + '</span>') + ' <b>' + USD(p.cents / 100) + '</b> <span class="meta">' + N(p.n) + '×</span>'; }).join(' · ') + '</div>' : '';
     return tiles + card('Premium payments', strip + chips + table + best + (pp.backfill ? '<div class="line" style="margin-top:8px">imported just now: ' + N(pp.backfill.nowpay) + ' NOWPayments · ' + N(pp.backfill.balance) + ' from balance · ' + N(pp.backfill.derived) + ' derived from live subscriptions</div>' : ''), 'who paid, when, how much · NOWPayments IPN + rewards balance · DERIVED = date read back from the expiry, the record predates the book (2026-09-12)');
   }
-  simple('money/premium', { urls: ['/api/admin/premdesk', '/api/admin/money', '/api/admin/prempay'], every: 60000, wire: function (el) {
+  simple('money/premium', { urls: ['/api/admin/premdesk', '/api/admin/money', '/api/admin/prempay', '/api/admin/apiplans'], every: 60000, wire: function (el) {
     var ch = el.querySelector('#pmChips'); if (!ch) return;
     ch.addEventListener('click', function (e) { var c = e.target.closest('.chip'); if (!c) return; ch.querySelectorAll('.chip').forEach(function (x) { x.classList.toggle('on', x === c); }); var f = c.getAttribute('data-f'); ch.parentNode.querySelectorAll('table.tbl tbody tr').forEach(function (tr) { var k = tr.querySelector('.pmk'), v = tr.querySelector('.pmv'); var kk = k ? k.getAttribute('data-k') : '', vv = v ? v.getAttribute('data-v') : ''; tr.hidden = !!f && !(f === 'balance' ? vv === 'balance' : kk === f); }); });
-  }, html: function (d, mo, pp) {
+  }, html: function (d, mo, pp, ap) {
     var us = d.users || [], op = d.open || [], cl = d.closed || []; var now = Date.now(); mo = mo || {};
     var paidBy = {}; ((pp && pp.byPayer) || []).forEach(function (p) { paidBy[p.acct] = p; });
     var paid = us.filter(function (u) { return !u.founder; }), exp7 = us.filter(function (u) { return u.premUntil && u.premUntil < now + 7 * 86400000 && u.premUntil > now; }), idle = us.filter(function (u) { return now - (u.lastSeen || 0) > 7 * 86400000; });
@@ -566,7 +600,7 @@
     // the subscription math: $3.99 × paying members (column grants + IPN, founders excluded) against the faucet's run rate
     // MRR is the LEDGER's number (paid prem:sub rows, /api/admin/money premiumMrrUsd), never members × price: the premdesk list holds column GRANTS too, and grants are not revenue (2026-09-12)
     var PRICE = 3.99, mrr = (mo.premiumMrrUsd != null ? +mo.premiumMrrUsd : paid.length * PRICE), faucet30 = (+mo.dispensed7dUsd || 0) / 7 * 30, cover = faucet30 > 0 ? Math.round(mrr / faucet30 * 100) : null, risk = exp7.filter(function (u) { return !u.founder; }).length * PRICE;
-    return premPayments(pp) + '<div class="grid g4" style="margin-top:12px">' + tile(N(us.length), 'premium members', '', N(paid.length) + ' paying · ' + N(us.length - paid.length) + ' founders') + tile(N(exp7.length), 'expiring within 7 days', exp7.length ? 'amber' : 'dim', exp7.length ? exp7.map(function (u) { return '@' + esc(u.username); }).join(', ') : 'nobody lapses this week') + tile(N(idle.length), 'not seen for 7+ days', idle.length ? 'amber' : 'dim', 'paying, not using') + tile((realized >= 0 ? '+' : '-') + USD(Math.abs(realized), 0), 'realized P&amp;L, last ' + cl.length + ' closes', realized >= 0 ? '' : 'red', N(liqs) + ' liq · paper') + '</div>'
+    return apiRevenue(ap) + premPayments(pp) + '<div class="grid g4" style="margin-top:12px">' + tile(N(us.length), 'premium members', '', N(paid.length) + ' paying · ' + N(us.length - paid.length) + ' founders') + tile(N(exp7.length), 'expiring within 7 days', exp7.length ? 'amber' : 'dim', exp7.length ? exp7.map(function (u) { return '@' + esc(u.username); }).join(', ') : 'nobody lapses this week') + tile(N(idle.length), 'not seen for 7+ days', idle.length ? 'amber' : 'dim', 'paying, not using') + tile((realized >= 0 ? '+' : '-') + USD(Math.abs(realized), 0), 'realized P&amp;L, last ' + cl.length + ' closes', realized >= 0 ? '' : 'red', N(liqs) + ' liq · paper') + '</div>'
       + '<div class="grid g4" style="margin-top:12px">' + tile(USD(mrr), 'MRR', mrr ? '' : 'dim', (mo.premiumSubs != null ? N(mo.premiumSubs) + ' paid subs (grants excluded)' : N(paid.length) + ' × $3.99') + ' · ' + USD(mrr * 12, 0) + ' a year') + tile(cover != null ? cover + '%' : '-', 'of the faucet covered', cover != null && cover >= 100 ? '' : 'dim', 'MRR vs faucet at the 7-day run rate (' + USD(faucet30, 0) + ' / 30d)') + tile(USD(risk), 'MRR at risk this week', risk ? 'amber' : 'dim', 'paying members lapsing within 7 days') + tile(mo.premiumSubs != null ? N(mo.premiumSubs) : '-', 'paid subscriptions on record', 'dim', mo.premiumMrrUsd != null ? 'ledger MRR ' + USD(mo.premiumMrrUsd) : '') + '</div>'
       + card('Members', tbl([{ h: 'member', f: function (u) { return userLink(u.username, u.email) + (u.founder ? ' <span class="badge lime">FOUNDER</span>' : '') + (u.premUntil && u.premUntil < now + 7 * 86400000 && u.premUntil > now ? ' <span class="badge amber">LAPSES ' + dt(u.premUntil).slice(5, 10) + '</span>' : ''); } }, { h: 'where', f: function (u) { return flag(u.cc); } }, { h: 'until', mono: true, f: function (u) { return u.founder ? 'forever' : (u.premUntil ? dt(u.premUntil).slice(0, 10) : '-'); } }, { h: 'paid', r: true, mono: true, f: function (u) { var p = paidBy['u:' + u.uid]; return p ? '<b>' + USD(p.cents / 100) + '</b>' + (p.n > 1 ? ' <span class="meta">' + N(p.n) + '×</span>' : '') : (u.founder ? '<span class="meta">owner</span>' : '<span class="meta" title="Premium by owner grant, pass tier or code: no payment on record">grant</span>'); } }, { h: 'xp', r: true, mono: true, f: function (u) { return N(u.xp); } }, { h: 'open', r: true, mono: true, f: function (u) { return N(u.openN); } }, { h: 'closed', r: true, mono: true, f: function (u) { return N(u.closedN); } }, { h: 'seen', mono: true, f: function (u) { return '<span class="' + (now - (u.lastSeen || 0) > 7 * 86400000 ? 'dn' : '') + '">' + ago(u.lastSeen) + ' ago</span>'; } }], us.slice().sort(function (a, b) { return (b.lastSeen || 0) - (a.lastSeen || 0); })), 'click a member for the card · amber = lapses within 7 days')
       + fold('Open positions', tbl([{ h: 'who', f: function (t) { return userLink(t.who); } }, { h: 'market', mono: true, f: function (t) { return esc(t.sym) + ' <span class="' + (t.side === 'short' ? 'dn' : 'up') + '">' + esc(t.side) + '</span> ' + t.lev + 'x'; } }, { h: 'margin', r: true, mono: true, f: function (t) { return USD(t.margin, 0); } }, { h: 'entry', r: true, mono: true, f: function (t) { return N(+(+t.entry).toPrecision(6)); } }, { h: 'liq', r: true, mono: true, f: function (t) { return t.liq ? N(+(+t.liq).toPrecision(6)) : '-'; } }, { h: 'opened', mono: true, f: function (t) { return ago(t.ts) + ' ago'; } }], op.slice().sort(function (a, b) { return b.ts - a.ts; }), 'no open positions'), op.length + ' live · ' + Object.keys(byWho).length + ' members trading right now', false)
@@ -887,7 +921,7 @@
             + tile(USD(pl.mrrUsd || 0), 'API MRR', pl.mrrUsd ? '' : 'dim', 'paid plans only, grants and the free month excluded')
             + tile(USD(pl.lifetimeUsd || 0), 'paid for API plans, all time', pl.lifetimeUsd ? '' : 'dim', N((pl.payments || []).length) + ' payment' + ((pl.payments || []).length === 1 ? '' : 's'))
             + tile(N(rows.filter(function (r) { return r.src === 'trial' && r.days_left <= 3; }).length), 'free months ending in 3 days', 'dim', 'they drop to Free unless they pick a plan') + '</div>'
-            + card('Who is on a plan', tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $29 · Max $79 · Business $199 · site Premium does not raise any API limit');
+            + card('Who is on a plan', tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $29 · Max $79 · Business $159 · site Premium does not raise any API limit');
         })()
       + card('Keys in use', tbl(keyCols, live, 'no key made a call in the last 14 days'), live.length + ' keys with calls in the last 14 days · click the owner for the card')
       + card('What the API is used for', bars((d.byEp || []).map(function (e) { return { l: e.ep, n: e.n }; }), 'l', 'n'), 'calls per endpoint, last 14 days · price/klines are keyless and not attributed · data = market-data calls sent with a key')

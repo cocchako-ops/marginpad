@@ -12335,7 +12335,7 @@ const API_CHANGELOG = [
     date: '2026-09-15', version: '2.8.0', title: 'A fourth plan, and the prices the plans actually ship at',
     changes: [
       { type: 'changed', breaking: false, text: 'Prices, superseding the ones announced in 2.7.0 earlier the same day: API Pro is $29/month (600 requests/minute, 10 keys, 200 open positions, 5 books, 3 webhooks, 50 AI reads a day) and API Max is $79/month (2000/minute, 30 keys, 500 open positions, 20 books, 15 webhooks, 200 AI reads). Nobody had bought at the earlier numbers.' },
-      { type: 'added', breaking: false, text: 'API Business, $199/month: 5000 requests/minute per key, 100 keys, 1000 open positions, 50 books, 50 webhooks, 500 AI market reads a day. Same engine and same endpoints as every other plan - it is headroom for a desk running many strategies at once, not a different product.' },
+      { type: 'added', breaking: false, text: 'API Business, $159/month: 5000 requests/minute per key, 100 keys, 1000 open positions, 50 books, 50 webhooks, 500 AI market reads a day. Same engine and same endpoints as every other plan - it is headroom for a desk running many strategies at once, not a different product.' },
       { type: 'unchanged', breaking: false, text: 'Free is untouched: 120 requests/minute, 3 keys, 50 open positions, the whole trading engine, replay, books, the WebSocket stream and all keyless market data. Market data stays keyless and free on every plan.' },
     ],
   },
@@ -12670,7 +12670,7 @@ const API_PLANS = [
   { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0 },
   { id: 'pro', tier: 1, cents: 2900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 50 },
   { id: 'max', tier: 2, cents: 7900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 200 },
-  { id: 'business', tier: 3, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 500 },
+  { id: 'business', tier: 3, cents: 15900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 500 },
 ];
 const API_TIER_MAX = API_PLANS.length - 1;
 const API_PLAN_BY_ID = (id) => API_PLANS.filter((p) => p.id === String(id || '').toLowerCase())[0] || null;
@@ -12681,7 +12681,7 @@ function BOT_TIER_LIMITS(tier) {
 }
 // The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
-const API_UPGRADE_HINT = 'API Pro is $29 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads), Max is $79 (2000/min) and Business is $199 (5000/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
+const API_UPGRADE_HINT = 'API Pro is $29 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads), Max is $79 (2000/min) and Business is $159 (5000/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
 async function apiPlanOf(env, uid) {
@@ -12731,7 +12731,7 @@ const BOT_ERR = {
   stop_wrong_side: 'A stop entry waits on the breakout side of the market (a long above it, a short below it).',
   trail_pct_invalid: 'trail_pct is a percent distance between 0.05 and 50.',
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
-  plan_required: 'This is on API Pro ($29/month), Max ($79/month) and Business ($199/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
+  plan_required: 'This is on API Pro ($29/month), Max ($79/month) and Business ($159/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -13220,7 +13220,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($29/month, 3 hooks), Max ($79/month, 15) and Business ($199/month, 50). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($29/month, 3 hooks), Max ($79/month, 15) and Business ($159/month, 50). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -15437,6 +15437,11 @@ export default {
     if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
     if (/^\/pass\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/season/#pass', 301); // 2026-09-06: the pass lives on the season page now (the old static page was removed so this is reached)
     if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
+    // /api/ was a hub listing the three API surfaces. Measured 2026-09-15 over 30 days: ZERO crawls, zero
+    // assistant visits and zero US pageviews, while /trading-api/ took 35 and /free-crypto-api/ 13 - the hub
+    // was competing with the pages that actually answer. The EXACT path only: every real route under /api/
+    // (/api/v1/*, /api/bot/*, /api/apiplan…) must fall straight through to the router below.
+    if (/^\/(es\/)?api\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/', 301);
     { const _ob = url.pathname.match(/^\/blog\/([a-z0-9-]+)\/es\/?$/); if (_ob) return Response.redirect(url.origin + '/es/blog/' + _ob[1] + '/', 301); } // the three short Spanish blog stubs moved to the full /es/ twins (2026-09-12)
     // SPANISH SITE (2026-09-12, owner: "ceo sajt na španski"): /es/<path> is a full twin of the English page, written by
     // build/es/gen-pages.js from the SAME markup with the text swapped through build/data/es/catalog.json. "/es/*" is in
