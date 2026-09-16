@@ -128,14 +128,16 @@ const HEADER_CSS = `
   .hlink svg{flex-shrink:0}
   .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
   .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
-  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+  /* one row on a phone (2026-09-17): blog.css wraps the header at <=560 and mp-nav injects a Telegram link, so the nav used to drop to a second left-aligned row */
+  @media(max-width:720px){header{flex-wrap:nowrap;gap:8px;padding-top:11px;padding-bottom:11px}header .hnav{gap:2px;flex:0 0 auto}header .hnav .hbot,header .hnav .hjr,header .hnav .htg{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}header .hnav .hrwd{font-size:0;letter-spacing:0;gap:0;padding:7px}header .hnav .hrwd svg{width:17px;height:17px}}
 `;
 const CSS = HEADER_CSS + `
   :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6}
   .ex-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(52% 50% at 8% 0%,rgba(194,246,74,.08),transparent 60%),radial-gradient(48% 55% at 94% 20%,rgba(46,189,133,.06),transparent 60%)}
   .wrap{position:relative;z-index:1}
-  .ex-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
-  .ex-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+  /* "Updated 2026" is a pill at the end of the crumb row, not a second dotted eyebrow under it (owner 2026-09-17) */
+  .crumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+  .crumb-upd{margin-left:auto;font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a95a1;border:1px solid var(--line-bright);border-radius:99px;padding:4px 10px;white-space:nowrap}
   .lead{font-size:15.5px;line-height:1.6;color:var(--ink-dim);max-width:820px}
   .disc-top{margin:14px 0 2px;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);background:rgba(255,255,255,.03);border:1px solid var(--line-bright);border-radius:11px;padding:10px 13px;line-height:1.5}
   /* factor strip */
@@ -267,9 +269,8 @@ ${ld}
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / Exchange comparison</div>
+  <div class="crumb"><a href="/">Home</a> / Exchange comparison <span class="crumb-upd">Updated 2026</span></div>
   <article>
-    <div class="ex-eyebrow"><i></i>Updated 2026 · Trader-first</div>
     <h1>Crypto exchange comparison, from a trader’s seat</h1>
     <p class="lead">Not another affiliate top-10. This compares every major exchange by the things you actually <em>feel</em> mid-trade: how fees eat your PnL, how leverage sets your liquidation, how thin liquidity slips your fills, how funding bleeds a held position - and, just as important, whether the venue can be <strong>trusted with your money</strong>. Includes an honest look at the KuCoin controversy.</p>
     <div class="disc-top">Affiliate disclosure: some links below are referral links - they cost you nothing (often they add a fee discount or bonus) and help keep MarginPad’s tools free. Our ratings are our own editorial take, not paid placement. Not financial advice - always do your own research.</div>

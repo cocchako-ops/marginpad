@@ -61,7 +61,7 @@
   .oitbl td{font-family:'Space Mono',monospace;color:var(--ink)}
   .oitbl td.sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px}
   .oitbl .rk{color:var(--ink-faint);width:26px;text-align:right}
-  .oitbl td.ch.up{color:#34d99a;font-weight:700}.oitbl td.ch.dn{color:#ff7b72;font-weight:700}
+  .oitbl td.ch.up{color:#34d99a;font-weight:700}.oitbl td.ch.dn{color:#ff7b72;font-weight:700}.oitbl td.ch.na{color:var(--ink-faint)}
   .oitbl td.pc.up{color:#34d99a}.oitbl td.pc.dn{color:#ff7b72}
   .oinote{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;margin:8px 0 0}
   .oicta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
@@ -125,7 +125,7 @@
     <h2>Dónde se está acumulando el apalancamiento</h2>
     <p>Las tarjetas de arriba destacan las mayores entradas y salidas de OI en 24 horas - una lectura rápida de dónde se están acumulando los traders y hacia dónde se dirigen a la salida. Confirma los setups en el <a href="/es/screener">screener técnico</a> y calcula el tamaño con la <a href="/es/">calculadora de tamaño de posición</a>.</p>
 
-    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Datos de interés abierto agregados de las principales plataformas. Solo con fines informativos - no es asesoría financiera.</p>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Interés abierto de los perpetuos USDT de Bybit, actualizado cada cinco minutos; los cambios de 24h y 4h se miden contra las propias capturas horarias de MarginPad. Solo con fines informativos - no es asesoría financiera.</p>
   
 <div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
 </article>
@@ -137,20 +137,29 @@
   var topEl=document.getElementById('oiTop'),tEl=document.getElementById('oiTable'),uEl=document.getElementById('oiUpd');
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function pc(v){return (v>=0?'+':'')+(+v).toFixed(2)+'%';}
+  function has(v){return v!=null&&isFinite(v);} /* null is "not measured", never 0 (isFinite(null) is true) */
   function render(d){
     if(!d||d.error||!d.coins||!d.coins.length){topEl.innerHTML='<div class="oiload">Live data unavailable right now - retry shortly.</div>';tEl.innerHTML='';return;}
-    var c=d.coins.slice().filter(function(x){return isFinite(x.oiChg24h);});
+    var c=d.coins.slice().filter(function(x){return has(x.oiChg24h);});
     var byCh=c.slice().sort(function(a,b){return b.oiChg24h-a.oiChg24h;});
     var inflow=byCh[0], outflow=byCh[byCh.length-1];
-    topEl.innerHTML=(inflow?'<div class="oicard in"><div class="oi-k">Biggest OI inflow · 24h</div><div class="oi-row"><span class="oi-sym">'+inflow.s+'</span><span class="oi-val up">'+pc(inflow.oiChg24h)+'</span></div><div class="oi-hint">Leverage building fastest here - fresh positions piling in.</div></div>':'')
-      +(outflow?'<div class="oicard out"><div class="oi-k">Biggest OI outflow · 24h</div><div class="oi-row"><span class="oi-sym">'+outflow.s+'</span><span class="oi-val dn">'+pc(outflow.oiChg24h)+'</span></div><div class="oi-hint">Positions unwinding fastest here - traders heading for the exits.</div></div>':'');
-    var rows=d.coins.map(function(x,i){var och=(x.oiChg24h||0)>=0,pch=(x.chg24h||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+bn(x.oiUsd)+'</td><td class="ch '+(och?'up':'dn')+'">'+(isFinite(x.oiChg24h)?pc(x.oiChg24h):'-')+'</td><td class="hide pc '+(pch?'up':'dn')+'">'+(pch?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td></tr>';}).join('');
-    tEl.innerHTML='<table class="oitbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Open interest</th><th>OI 24h</th><th class="hide">Price 24h</th></tr></thead><tbody>'+rows+'</tbody></table>';
-    if(uEl)uEl.textContent='Updated just now · refreshes automatically';
+    if(inflow&&!(inflow.oiChg24h>0))inflow=null;
+    if(outflow&&!(outflow.oiChg24h<0))outflow=null;
+    var top=(inflow?'<div class="oicard in"><div class="oi-k">Biggest OI inflow · 24h</div><div class="oi-row"><span class="oi-sym">'+inflow.s+'</span><span class="oi-val up">'+pc(inflow.oiChg24h)+'</span></div><div class="oi-hint">Open positions growing fastest here - fresh positions piling in.</div></div>':'')
+      +(outflow?'<div class="oicard out"><div class="oi-k">Biggest OI outflow · 24h</div><div class="oi-row"><span class="oi-sym">'+outflow.s+'</span><span class="oi-val dn">'+pc(outflow.oiChg24h)+'</span></div><div class="oi-hint">Positions closing fastest here - traders heading for the exits.</div></div>':'');
+    topEl.innerHTML=top||'<div class="oiload">The 24h change is measured against our own hourly snapshot and the first day is still being recorded - the table below is live.</div>';
+    var rows=d.coins.map(function(x,i){
+      var h24=has(x.oiChg24h),h4=has(x.oiChg4h),pch=(x.chg24h||0)>=0;
+      return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+bn(x.oiUsd)+'</td>'
+        +'<td class="ch '+(h24?(x.oiChg24h>=0?'up':'dn'):'na')+'">'+(h24?pc(x.oiChg24h):'-')+'</td>'
+        +'<td class="hide ch '+(h4?(x.oiChg4h>=0?'up':'dn'):'na')+'">'+(h4?pc(x.oiChg4h):'-')+'</td>'
+        +'<td class="hide pc '+(pch?'up':'dn')+'">'+(pch?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td></tr>';}).join('');
+    tEl.innerHTML='<table class="oitbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Open interest</th><th>OI 24h</th><th class="hide">OI 4h</th><th class="hide">Price 24h</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    if(uEl)uEl.textContent='Updated just now · OI change = open contracts on Bybit USDT perpetuals against our own hourly snapshot, so a price move on its own never reads as inflow.';
   }
   function load(){fetch('/api/cg/openinterest',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
   load();setInterval(load,60000);
 })();</script>
-<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
 </body>
 </html>

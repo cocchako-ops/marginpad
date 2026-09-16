@@ -136,6 +136,8 @@ function plan(rel, html) {
     '/spot/': ['product', { title: 'Demo Spot', sub: 'A whole crypto life, simulated: card, exchange, self-custody wallet, memecoins.', accent: ACCENT.orange, path: '/spot/' }],
     '/trading-api/': ['product', { title: 'Trade MarginPad from your own bot', sub: 'REST, WebSocket and MCP. Python and JavaScript SDKs, zero dependencies.', accent: ACCENT.cyan, path: '/trading-api/', points: ['REST + WS', 'MCP, 23 tools', 'Webhooks', 'Free tier'] }],
     '/trading-report/': ['product', { title: 'How you actually trade', sub: 'Your real patterns, measured from every close - not a feeling.', accent: ACCENT.violet, path: '/trading-report/' }],
+    '/leaderboards/': ['competition', { title: 'Leaderboards', sub: 'Six season boards, every ranked trader, the prize per rank and the rule each board is scored by.', accent: ACCENT.gold, path: '/leaderboards/' }],
+    '/ai-indicators/': ['product', { title: 'The 4 AI indicators, explained', sub: 'Cascade Radar, Liquidation Magnet, Market Brain, Market Memory - what each measures and how to read it before a position.', accent: ACCENT.lime, path: '/ai-indicators/' }],
     '/community/': ['product', { title: 'The MarginPad floor', sub: 'Setups, screenshots and arguments, from people trading the same pairs.', accent: ACCENT.pink, path: '/community/' }],
     '/exchanges/': ['product', { title: 'Crypto futures exchanges, compared properly', sub: 'Fees, leverage, liquidity and what each one actually costs you.', accent: ACCENT.blue, path: '/exchanges/' }],
     '/levels/': ['product', { title: 'Levels and XP', sub: 'Bronze to Legendary, and what each one unlocks.', accent: ACCENT.gold, path: '/levels/' }],

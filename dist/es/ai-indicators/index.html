@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/ai-indicators/">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Los 4 indicadores de IA de MarginPad, explicados - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory</title>
+<meta name="description" content="Qué mide cada indicador de MarginPad Premium, qué dibuja en el gráfico y cómo leerlo antes de abrir una posición apalancada. Construido con nuestros propios datos de liquidaciones; cada flecha evalúa su propia tasa de acierto." />
+<link rel="canonical" href="https://marginpad.io/es/ai-indicators/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Los 4 indicadores de IA de MarginPad, explicados" />
+<meta property="og:description" content="Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo leerlo antes de una posición." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/es/ai-indicators/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;--violet:#b18cff;--cyan:#3fd8e6;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;}
+  a{color:var(--lime);}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 18px calc(56px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,6vw,50px);line-height:1.02;letter-spacing:-.035em;margin:12px 0 12px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:16px;margin:0 0 18px;max-width:62ch;}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0 34px;}
+  .fact{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:13px 14px;}
+  .fact b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1.05;}
+  .fact span{font-size:12px;color:var(--faint);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 30px;}
+  .toc a{font:700 12px 'Space Mono',monospace;color:var(--ink);text-decoration:none;border:1px solid var(--line2);border-radius:99px;padding:8px 13px;background:#0d1014;}
+  .toc a:hover{border-color:var(--lime);color:var(--lime);}
+  .ind{border:1px solid var(--line2);border-radius:20px;padding:24px;margin:0 0 20px;background:linear-gradient(180deg,var(--panel),#0c0f13);position:relative;overflow:hidden;scroll-margin-top:80px;}
+  .ind::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--ac,var(--lime));}
+  .ind-h{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .ind h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(23px,3.4vw,30px);letter-spacing:-.03em;margin:0;line-height:1.1;}
+  .ind h2 small{display:block;font:700 11px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac,var(--lime));margin-bottom:6px;}
+  .q{font-size:17px;font-weight:700;color:#fff;margin:14px 0 4px;}
+  .q em{font-style:normal;color:var(--ac,var(--lime));}
+  .ind p{margin:0 0 10px;color:var(--dim);font-size:14.5px;}
+  .ind p b,.ind li b{color:#fff;}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;margin-top:14px;align-items:start;}
+  @media(max-width:700px){.cols{grid-template-columns:1fr;}}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  .viz{background:#0a0d11;border:1px solid var(--line);border-radius:14px;padding:12px 12px 8px;}
+  .viz svg{width:100%;height:auto;display:block;}
+  .viz .cap{font-size:11.5px;color:var(--faint);margin:8px 2px 2px;line-height:1.45;}
+  .read{background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22);border-radius:14px;padding:14px 16px;margin-top:14px;}
+  .read .lbl{color:var(--lime);}
+  .read ul{margin:0;padding-left:18px;}
+  .read li{margin:0 0 7px;font-size:14px;color:var(--ink);}
+  .leg{margin-top:12px;font:600 12.5px 'Space Mono',monospace;color:#c7ccd4;background:#0a0d11;border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;line-height:1.5;overflow-wrap:anywhere;}
+  .leg i{font-style:normal;color:var(--faint);display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .lim{margin-top:12px;font-size:13px;color:var(--faint);}
+  .lim b{color:var(--dim);}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3vw,27px);letter-spacing:-.025em;margin:34px 0 10px;}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0 6px;}
+  .step{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:14px;position:relative;}
+  .step i{font:800 11px 'Space Mono',monospace;color:#0a0b0d;background:var(--lime);border-radius:6px;padding:2px 7px;font-style:normal;}
+  .step b{display:block;margin:8px 0 4px;color:#fff;}
+  .step span{font-size:12.5px;color:var(--dim);}
+  .hon{border:1px solid var(--line2);border-radius:16px;padding:18px 20px;background:#0d1014;margin-top:14px;}
+  .hon p{margin:0 0 8px;color:var(--dim);font-size:14px;}
+  .chip{display:inline-block;font:700 11.5px 'Space Mono',monospace;border-radius:7px;padding:3px 8px;margin-right:6px;}
+  .chip.g{color:var(--up);background:rgba(46,189,133,.14);} .chip.r{color:var(--red);background:rgba(255,98,88,.14);} .chip.n{color:#8fa3c4;background:rgba(143,163,196,.14);}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:8px;background:#0d1014;}
+  .faq summary{cursor:pointer;font-weight:700;padding:13px 0;color:#fff;}
+  .faq p{margin:0 0 14px;color:var(--dim);font-size:14px;}
+  .cta{margin:34px 0 10px;border:1px solid rgba(194,246,74,.3);border-radius:20px;padding:26px;text-align:center;background:linear-gradient(180deg,rgba(194,246,74,.07),transparent);}
+  .cta h3{margin:0 0 8px;}
+  .cta p{color:var(--dim);margin:0 0 16px;}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#0d1014;}
+  .btn.p{background:var(--lime);color:#0a0b0d;border-color:var(--lime);}
+  footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 0;border-top:1px solid var(--line);margin-top:30px;}
+  footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
+</style>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Los 4 indicadores de IA de MarginPad, explicados","description":"Qué mide cada indicador de MarginPad Premium, qué dibuja en el gráfico y cómo leerlo antes de abrir una posición apalancada.","url":"https://marginpad.io/es/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-17","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Son los indicadores de IA de MarginPad una señal de compra o venta?","acceptedAnswer":{"@type":"Answer","text":"No. Cada uno responde una pregunta que deberías hacerte antes de una posición: qué tan frágil está el mercado, hacia dónde es atraído el precio, hacia dónde se inclina la evidencia y qué pasó las últimas veces que se vio así. Las flechas aparecen solo en los extremos, y cada indicador de flechas muestra su propia tasa de acierto en el gráfico cargado para que puedas ver si tiene ventaja en ese símbolo y temporalidad."}},{"@type":"Question","name":"¿Con qué datos están construidos?","acceptedAnswer":{"@type":"Answer","text":"El feed propio de liquidaciones de MarginPad (nueve exchanges, recopilado internamente), un modelo de escalera de apalancamiento de dónde se liquidan las posiciones (el mismo modelo detrás del mapa de calor de liquidaciones), el historial de funding y el posicionamiento long/short de la multitud, además del precio y volumen del propio gráfico. Nada de esto viene de un proveedor externo de indicadores."}},{"@type":"Question","name":"¿Por qué solo cuatro indicadores?","acceptedAnswer":{"@type":"Answer","text":"Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (momentum MACD+RSI, squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición."}},{"@type":"Question","name":"¿Necesito Premium para usarlos?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los cuatro indicadores forman parte de MarginPad Premium ($3.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"Indicadores de IA","item":"https://marginpad.io/es/ai-indicators/"}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">Margin<b>Pad</b></a>
+    <nav class="hnav">
+      <a href="/es/charts">Gráficos</a> <a href="/es/premium/">Premium</a>
+      <button class="hauth" type="button" data-auth-open>Iniciar sesión</button>
+    </nav>
+  </header>
+
+  <span class="eyebrow"><i></i>MarginPad Premium</span>
+  <h1>Los 4 indicadores de IA, <em>explicados</em></h1>
+  <p class="sub">Cuatro lecturas construidas con datos que solo tiene MarginPad. Cada una responde una pregunta que deberías hacerte antes de abrir una posición apalancada, y aquí se explican como debieron explicarse desde el principio: qué mide, qué dibuja y qué hacer con el número.</p>
+
+  <div class="facts">
+    <div class="fact"><b>Nuestros datos</b><span>Feed propio de liquidaciones en nueve exchanges, modelo propio de escalera de apalancamiento, funding y posicionamiento de la multitud</span></div>
+    <div class="fact"><b>Autoevaluado</b><span>Cada flecha se puntúa con un objetivo de 1.5x ATR frente al stop en el gráfico cargado; la tasa de acierto aparece en la leyenda</span></div>
+    <div class="fact"><b>Cualquier símbolo, cualquier temporalidad</b><span>Se calculan en tu navegador a partir de las velas cargadas, así que funcionan en cualquier par que el gráfico pueda cargar</span></div>
+    <div class="fact"><b>Premium</b><span>$3.99 al mes o Founder por única vez, en /charts y en los gráficos móviles</span></div>
+  </div>
+
+  <nav class="toc" aria-label="En esta página">
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#honesty">La etiqueta de tasa de acierto</a><a href="#workflow">Cuál abrir primero</a>
+  </nav>
+
+  <section class="ind" id="cascade" style="--ac:#ffb020">
+    <div class="ind-h"><h2><small>1 · Fragilidad</small>Cascade Radar</h2></div>
+    <p class="q">¿Qué tan <em>frágil</em> está el mercado ahora mismo?</p>
+    <p>Una cascada de liquidaciones es una cadena: un cierre forzado empuja el precio hacia el siguiente stop, que fuerza el siguiente cierre. Que esa cadena pueda comenzar depende de dos cosas: cuánta posición apalancada hay cerca del precio actual y cuánto volumen ha estado absorbiendo el mercado. Cascade Radar mide ambas cosas.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Qué mide</p>
+        <p>En cada cierre abre una escalera de posiciones hipotéticas en <b>5x, 10x, 25x, 50x y 100x</b>, ponderadas por el valor operado de esa vela, y coloca sus precios de liquidación por encima y por debajo. Cuando el precio atraviesa un nivel, lo barre. Lo que queda es un mapa en vivo del <b>combustible de liquidación</b>; el radar suma el combustible dentro del 5% del precio (cuanto más cerca, más cuenta), lo divide entre el valor operado promedio de las últimas 20 velas y lo compara con las últimas 200 velas. El resultado es una <b>puntuación de 0 a 100</b>: 70 es frágil, 90 significa que un solo empujón puede iniciar la cadena.</p>
+        <p class="lbl">Qué ves</p>
+        <p>Un panel de 0 a 100 debajo de las velas con una línea en 90. La leyenda muestra la puntuación, una palabra para describirla (calma / frágil / EXTREMA) y, desde septiembre de 2026, <b>de qué lado está el combustible</b>. Una flecha <b>CASC</b> aparece solo cuando la puntuación es 90 o más y el combustible está claramente de un solo lado: roja encima de la vela cuando está por debajo del precio, verde debajo de la vela cuando está por encima.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Cascade Radar panel: a 0-100 fragility line crossing the 90 threshold, with the fuel sitting below price">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="34" x2="306" y2="34" stroke="rgba(255,215,90,.45)" stroke-dasharray="4 4"/><text x="16" y="29" fill="#8b95a1" font-size="9" font-family="Space Mono">90</text>
+          <polyline fill="none" stroke="#ffb020" stroke-width="2" points="14,118 40,104 62,110 84,92 106,96 128,78 150,84 172,66 194,58 216,44 238,30 258,22 280,28 306,24"/>
+          <circle cx="306" cy="24" r="3.5" fill="#ffb020"/>
+          <text x="196" y="130" fill="#ffb020" font-size="11" font-family="Space Mono" font-weight="700">Cascade 93/100</text>
+          <text x="196" y="143" fill="#8b95a1" font-size="9.5" font-family="Space Mono">fuel BELOW price (long liqs)</text>
+          <path d="M230 12 l8 0 l-4 6 z" fill="#ff6258"/><text x="242" y="18" fill="#ff6258" font-size="9" font-family="Space Mono" font-weight="700">CASC</text>
+        </svg>
+        <div class="cap">Extremo y unilateral: el combustible está debajo del precio, así que la flecha apunta hacia abajo. Un long aquí tiene una cadena de liquidaciones debajo.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">En palabras simples, antes de hacer clic</p><ul>
+      <li><b>La línea:</b> por debajo de 50 = calma, nada que hacer. Al superar 70 = frágil, un solo empujón puede iniciar una cadena de cierres forzados. Por encima de 90 = extremo.</li>
+      <li><b>Antes de un long:</b> línea por encima de 70 y la leyenda dice que el combustible está <b>debajo</b> = estarías comprando encima de una trampilla. Espera el lavado, o entra con la mitad del tamaño y un stop más amplio. Combustible <b>arriba</b> = un squeeze jugaría a tu favor.</li>
+      <li><b>Antes de un short:</b> el espejo. Combustible debajo es tu zona objetivo; combustible arriba y 70+ significa que eres tú quien está parado sobre la trampilla.</li>
+      <li><b>La flecha:</b> CASC roja sobre una vela = la cadena está preparada para caer; CASC verde debajo de una vela = preparada para subir.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea en la leyenda</i>Cascade 93/100 — fragilidad EXTREMA · combustible DEBAJO del precio (liqs long): una caída puede acelerarse<br>CASC 61% (11W/7L)</div>
+    <p class="lim"><b>Límites.</b> La escalera es un modelo de dónde <em>se liquidarían</em> las posiciones, no un feed de órdenes pendientes. Indica qué tan frágil está el mercado, no cuándo llegará el empujón.</p>
+  </section>
+
+  <section class="ind" id="magnet" style="--ac:#2ebd85">
+    <div class="ind-h"><h2><small>2 · Objetivos</small>Liquidation Magnet</h2></div>
+    <p class="q">¿Hacia dónde será <em>atraído</em> el precio a continuación?</p>
+    <p>El precio tiende a visitar grandes pozos de liquidaciones antes de revertirse: el pozo es donde esperan las órdenes forzadas, y las órdenes forzadas son las que mueven un mercado que nadie más quiere mover. El Magnet encuentra el pozo dominante de cada lado y dice cuál tira con más fuerza.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Qué mide</p>
+        <p>La misma escalera de apalancamiento de Cascade Radar, leída como una lista de pozos: nivel de precio, tamaño en dólares, y si son liquidaciones long (debajo del precio) o short (arriba). La <b>atracción</b> de cada pozo es su tamaño multiplicado por su proximidad; los pozos más allá del 9% se ignoran. La atracción más fuerte por arriba y la más fuerte por abajo son los dos imanes, y el mayor de los dos es el <b>lado que el precio es más probable que visite primero</b>.</p>
+        <p class="lbl">Qué ves</p>
+        <p>Dos líneas de precio sobre las velas: <b>roja</b> para el pozo de liquidaciones short por arriba, <b>verde</b> para el pozo de liquidaciones long por abajo, cada una etiquetada con su tamaño. La línea <b>en negrita</b> es el imán más fuerte, la delgada punteada es el más débil. La leyenda muestra ambos pozos con su distancia al precio.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Liquidation Magnet: a bold green pool line below price and a thin red pool line above">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <g stroke-width="1.5">
+            <line x1="40" y1="70" x2="40" y2="96" stroke="#2ebd85"/><rect x="36" y="76" width="8" height="14" fill="#2ebd85"/>
+            <line x1="62" y1="60" x2="62" y2="88" stroke="#ff6258"/><rect x="58" y="64" width="8" height="18" fill="#ff6258"/>
+            <line x1="84" y1="66" x2="84" y2="92" stroke="#2ebd85"/><rect x="80" y="70" width="8" height="16" fill="#2ebd85"/>
+            <line x1="106" y1="54" x2="106" y2="80" stroke="#2ebd85"/><rect x="102" y="58" width="8" height="18" fill="#2ebd85"/>
+            <line x1="128" y1="50" x2="128" y2="78" stroke="#ff6258"/><rect x="124" y="56" width="8" height="16" fill="#ff6258"/>
+            <line x1="150" y1="58" x2="150" y2="86" stroke="#ff6258"/><rect x="146" y="62" width="8" height="18" fill="#ff6258"/>
+            <line x1="172" y1="64" x2="172" y2="90" stroke="#2ebd85"/><rect x="168" y="70" width="8" height="14" fill="#2ebd85"/>
+            <line x1="194" y1="60" x2="194" y2="84" stroke="#2ebd85"/><rect x="190" y="64" width="8" height="14" fill="#2ebd85"/>
+          </g>
+          <line x1="14" y1="28" x2="306" y2="28" stroke="rgba(255,98,88,.6)" stroke-dasharray="5 4"/><text x="212" y="24" fill="#ff6258" font-size="9.5" font-family="Space Mono">SHORT $18.2M · +2.4%</text>
+          <line x1="14" y1="118" x2="306" y2="118" stroke="#2ebd85" stroke-width="2.4"/><text x="196" y="133" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">LONG $41.6M · −1.8%  ← pulled DOWN</text>
+          <line x1="14" y1="74" x2="306" y2="74" stroke="rgba(255,255,255,.25)" stroke-dasharray="2 3"/><text x="16" y="70" fill="#8b95a1" font-size="9" font-family="Space Mono">price</text>
+        </svg>
+        <div class="cap">El pozo más grande por abajo es el imán en negrita: la próxima visita más probable es un 1.8% hacia abajo. El stop de un long debe ir más allá de él, no solo por encima.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">En palabras simples, antes de hacer clic</p><ul>
+      <li><b>Las líneas:</b> roja arriba = dónde se liquidan los shorts, verde abajo = dónde se liquidan los longs. La más gruesa es el imán más fuerte y la próxima visita más probable.</li>
+      <li><b>Antes de un long:</b> línea gruesa por encima de ti = tu primer objetivo, toma algo de ganancia ahí. Línea gruesa por debajo de ti = espera primero una caída hasta ella; pon tu stop <b>debajo</b> de esa línea, no justo encima, o tu orden será la que caza el mercado.</li>
+      <li><b>Antes de un short:</b> el espejo. Una línea verde gruesa debajo es el objetivo; una línea roja gruesa arriba significa que el stop se queda más allá de ella.</li>
+      <li><b>Sin líneas dentro del 9%:</b> ambos lados ya fueron liquidados. Nada está tirando; espera un mercado más lento.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea en la leyenda</i>Magnet: atraído HACIA ABAJO · arriba 76,410 (+2.4%, $18.2M liqs short) · abajo 73,220 (−1.8%, $41.6M liqs long)</div>
+    <p class="lim"><b>Límites.</b> Un imán es una probabilidad, no un horario. Una noticia grande puede mover el precio a través de ambos pozos sin detenerse en ninguno.</p>
+  </section>
+
+  <section class="ind" id="brain" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>3 · Adaptativo</small>Market Brain</h2></div>
+    <p class="q">¿Hacia dónde se <em>inclina</em> la evidencia, y qué la impulsa?</p>
+    <p>La mayoría de los indicadores de “IA” son una fórmula con un nombre. Market Brain son ocho lecturas y un paso de aprendizaje: mide cuáles de las ocho realmente predijeron las próximas seis velas en <b>esta moneda, en esta temporalidad</b>, y las pondera en consecuencia. Un factor que no funciona aquí se pondera a sí mismo hasta cero.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Qué mide</p>
+        <p>Los ocho factores son <b>tendencia</b> (EMA 21 frente a 50 en unidades de ATR), <b>momentum</b> (histograma MACD y RSI), <b>volumen</b> (esta vela frente a las últimas 20, con signo según la dirección), <b>fragilidad</b> (el lado y la puntuación de Cascade Radar), <b>flujo real de liquidaciones</b> (liquidaciones long frente a short por vela según nuestro colector, ajustado por qué tan inusual fue la vela), <b>funding</b> (la tasa actual frente a su mediana, leída de forma contraria), <b>posicionamiento de la multitud</b> (proporción de cuentas long/short, leída de forma contraria) y <b>estructura</b> (dónde queda el cierre dentro del rango de 55 velas). Cada 10 velas el modelo vuelve a aprender un peso por factor a partir de las últimas 280 velas -la correlación entre el factor y lo que hizo el precio en las siguientes seis velas- y nunca a partir de velas que todavía no ha visto. La mezcla ponderada es la puntuación, de <b>-100 a +100</b>.</p>
+        <p class="lbl">Qué ves</p>
+        <p>Un panel con la puntuación y bandas en +55 y -55. Una flecha <b>BRAIN</b> aparece la primera vez que la puntuación cruza una banda y se rearma cuando vuelve a caer dentro de 25. Las flechas se retienen a propósito dentro de las 2.5 horas de un evento macro de alto impacto (FOMC, CPI). La leyenda muestra la puntuación, una palabra para describirla, los <b>dos factores que la impulsan</b> en ese momento, y la etiqueta de tasa de acierto.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Brain panel: a score line crossing the +55 band, with the two driving factors named">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="40" x2="306" y2="40" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="36" fill="#8b95a1" font-size="9" font-family="Space Mono">+55</text>
+          <line x1="14" y1="78" x2="306" y2="78" stroke="rgba(120,130,140,.4)" stroke-dasharray="2 3"/><text x="16" y="74" fill="#8b95a1" font-size="9" font-family="Space Mono">0</text>
+          <line x1="14" y1="116" x2="306" y2="116" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="112" fill="#8b95a1" font-size="9" font-family="Space Mono">−55</text>
+          <polyline fill="none" stroke="#c2f64a" stroke-width="2" points="14,96 36,102 58,90 80,84 102,70 124,76 146,62 168,52 190,44 212,34 234,30 256,36 278,26 306,30"/>
+          <path d="M208 22 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="220" y="22" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">BRAIN</text>
+          <text x="150" y="132" fill="#c2f64a" font-size="10.5" font-family="Space Mono" font-weight="700">Brain +62 · strong bullish lean</text>
+          <text x="150" y="144" fill="#8b95a1" font-size="9.5" font-family="Space Mono">driven by: liq flow + funding</text>
+        </svg>
+        <div class="cap">Un cruce de +55, impulsado por cierres forzados de shorts (short covering) y funding pagado por los shorts: la multitud está del lado equivocado y lo está pagando.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">En palabras simples, antes de hacer clic</p><ul>
+      <li><b>La línea:</b> subiendo = la evidencia se inclina alcista, bajando = bajista. Dentro de las bandas +55 / -55 el modelo no tiene una opinión clara.</li>
+      <li><b>Antes de un long:</b> quieres la línea por encima de +55, o subiendo a través de ella. Por debajo de -55 estás operando contra todo lo que el modelo aprendió aquí - no lo hagas.</li>
+      <li><b>Antes de un short:</b> el espejo, por debajo de -55. Dentro de las bandas: sin ventaja, reduce el tamaño u opera los niveles de Magnet en su lugar.</li>
+      <li><b>"Driven by":</b> "funding + crowd" = la multitud está atrapada y paga por quedarse dentro (un squeeze en formación); "liq flow" = ya está ocurriendo venta forzada o cobertura; "trend + momentum" = simple continuación.</li>
+      <li><b>El chip:</b> el porcentaje indica cuántas veces sus flechas funcionaron en este gráfico exacto. Por debajo del 50% = sin ventaja en esta moneda y temporalidad; ignora sus flechas ahí, haga lo que haga la línea.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de líneas en la leyenda</i>Brain +62 — fuerte inclinación alcista<br>BRAIN impulsado por: liq flow + funding<br>BRAIN 58% (14W/10L)</div>
+    <p class="lim"><b>Límites.</b> Aprender de 280 velas significa que los pesos van con retraso de unas cuantas decenas de velas frente a un cambio de régimen. Los factores de funding y posicionamiento de la multitud necesitan que el exchange los publique para ese par; donde no lo hace, esos dos factores leen cero y el modelo lo indica al no nombrarlos.</p>
+  </section>
+
+  <section class="ind" id="memory" style="--ac:#b18cff">
+    <div class="ind-h"><h2><small>4 · Pronóstico</small>Market Memory</h2></div>
+    <p class="q">Cuando esto se veía así antes, <em>¿qué pasó después</em>?</p>
+    <p>Market Memory no modela el mercado. Lo busca. Usando los mismos ocho factores que Market Brain, encuentra las velas pasadas cuyo estado completo más se parece al momento actual y reporta qué hizo el precio después de ellas. Es la memoria propia del mercado: una tasa base, etiquetada con honestidad.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">Qué mide</p>
+        <p>Cada vela es un punto en un espacio de ocho factores. Para la vela actual encuentra las <b>25 velas pasadas más cercanas</b> -solo velas lo bastante antiguas como para tener un resultado conocido de seis velas, así que ninguna respuesta se lee jamás del futuro- y promedia su movimiento posterior en unidades de ATR. También cuenta cuántas de esas 25 subieron. El panel de pronóstico muestra ese promedio a lo largo del tiempo; el actual se proyecta sobre el eje de precio.</p>
+        <p class="lbl">Qué ves</p>
+        <p>Un panel de pronóstico, una línea punteada <b>MEM</b> en el nivel proyectado (verde por encima del precio, roja por debajo), y una línea en la leyenda con el número de análogos, la tasa de subida y el movimiento proyectado. Una flecha <b>MEMO</b> aparece solo cuando los análogos coinciden: un movimiento esperado de al menos 0.85 ATR con un 62% o más de ellos del mismo lado.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Memory: price with a dashed projected level above it and the analog readout">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <polyline fill="none" stroke="#c7ccd4" stroke-width="1.6" points="14,104 40,98 66,108 92,90 118,94 144,80 170,86 196,72 222,78 238,70"/>
+          <circle cx="238" cy="70" r="3" fill="#fff"/>
+          <line x1="238" y1="70" x2="306" y2="46" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="14" y1="46" x2="306" y2="46" stroke="rgba(46,189,133,.7)" stroke-dasharray="5 4"/><text x="252" y="41" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">MEM</text>
+          <path d="M230 90 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="242" y="90" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">MEMO</text>
+          <text x="16" y="128" fill="#b18cff" font-size="10.5" font-family="Space Mono" font-weight="700">Memory: 25 analogs · 72% up</text>
+          <text x="16" y="141" fill="#8b95a1" font-size="9.5" font-family="Space Mono">proj +1.4% / 6 bars</text>
+        </svg>
+        <div class="cap">Veinticinco momentos parecidos, dieciocho de los cuales subieron, con un promedio de +1.4% en las siguientes seis velas. Eso es un objetivo y un horizonte, no una promesa.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">En palabras simples, antes de hacer clic</p><ul>
+      <li><b>La lectura:</b> "25 analogs · 72% up · proj +1.4%" = las últimas 25 veces que el mercado se vio así, el 72% subió, alrededor de un 1.4% durante las siguientes seis velas. Es una tasa base, no una predicción.</li>
+      <li><b>Antes de un long:</b> 65% de subida o más Y un movimiento proyectado mayor que tus comisiones y tu stop = adelante, con la línea punteada MEM como objetivo realista y seis velas como horizonte (seis horas en un gráfico de 1h).</li>
+      <li><b>Antes de un short:</b> el espejo, 35% de subida o menos.</li>
+      <li><b>45-55%:</b> la historia fue en ambas direcciones desde aquí - una moneda al aire. Quédate fuera, u opera los niveles de Magnet en lugar de una dirección. Un 72% de subida con un movimiento de +0.3% es deriva, no una ruptura: fíjate en el tamaño del movimiento, no solo en el porcentaje.</li>
+      <li><b>La flecha:</b> MEMO se activa solo cuando los análogos coinciden; es la forma más fuerte de esta lectura.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea en la leyenda</i>Memory: 25 análogos · 72% al alza · proy +1.40% / 6 velas</div>
+    <p class="lim"><b>Límites.</b> La memoria dura solo lo que la historia cargada (de unos cientos a unos miles de velas). En una moneda que se listó el mes pasado tiene poco que recordar, y necesita 160 velas antes de dibujar algo.</p>
+  </section>
+
+  <h3 id="honesty">La etiqueta de tasa de acierto: cada flecha se autoevalúa</h3>
+  <div class="hon">
+    <p>Cualquier indicador puede dibujar flechas sobre el pasado. Los indicadores de flechas de MarginPad evalúan cada flecha que dibujaron en el gráfico cargado: entrada en el cierre de la vela de la señal, objetivo y stop a 1.5x el ATR de 14 velas de distancia, revisando hasta 80 velas hacia adelante, y una vela que toca ambos cuenta como pérdida. La etiqueta aparece una vez que se han resuelto cinco flechas y se colorea según lo que indica:</p>
+    <p><span class="chip g">CASC 61% (11W/7L)</span> ventaja en este gráfico &nbsp; <span class="chip n">BRAIN 50% (6W/6L)</span> un volado &nbsp; <span class="chip r">MEMO 38% (5W/8L)</span> sin ventaja aquí - no lo uses</p>
+    <p>La etiqueta es por símbolo y por temporalidad, porque ahí es donde existe o no una ventaja. Un indicador que puntúa 61% en BTC 1h y 38% en el gráfico de 5m de una altcoin de bajo volumen te está diciendo exactamente dónde usarlo.</p>
+  </div>
+
+  <h3 id="workflow">Cuál abrir primero</h3>
+  <p style="color:var(--dim);margin:0 0 6px">Los cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior.</p>
+  <div class="flow">
+    <div class="step"><i>1</i><b>Cascade Radar</b><span>¿Está frágil el mercado, y de qué lado? Decide tu tamaño y qué tan amplio debe ser el stop.</span></div>
+    <div class="step"><i>2</i><b>Liquidation Magnet</b><span>¿Dónde están los pozos? Define el primer objetivo y te dice dónde no debe estar un stop.</span></div>
+    <div class="step"><i>3</i><b>Market Brain</b><span>¿Hacia dónde se inclina la evidencia aprendida, y por qué? Decide la dirección, o te dice que no hay ninguna.</span></div>
+    <div class="step"><i>4</i><b>Market Memory</b><span>¿Qué pasó las últimas 25 veces? Define un objetivo y un horizonte realistas, o advierte que la historia fue en ambas direcciones.</span></div>
+  </div>
+
+  <h3>Preguntas</h3>
+  <div class="faq">
+    <details><summary>¿Son estas señales de compra o venta?</summary><p>No. Cada uno responde una pregunta que deberías hacerte antes de una posición. Las flechas aparecen solo en los extremos, y cada indicador de flechas muestra su propia tasa de acierto en el gráfico cargado para que puedas ver si tiene ventaja en ese símbolo y temporalidad.</p></details>
+    <details><summary>¿Con qué datos están construidos?</summary><p>El feed propio de liquidaciones de MarginPad (nueve exchanges, recopilado internamente), el modelo de escalera de apalancamiento detrás del mapa de calor de liquidaciones, el historial de funding y el posicionamiento long/short de la multitud, además del precio y volumen del propio gráfico. Nada de esto viene de un proveedor de indicadores.</p></details>
+    <details><summary>¿Por qué solo cuatro?</summary><p>Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (un cruce de momentum MACD+RSI, un squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición.</p></details>
+    <details><summary>¿Necesito Premium?</summary><p>Sí. Los cuatro forman parte de MarginPad Premium ($3.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en <a href="/es/charts">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.</p></details>
+    <details><summary>¿Dónde los activo?</summary><p>En <a href="/es/charts">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los cuatro están arriba, en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos cuatro. Las lecturas aparecen en la leyenda, en la esquina superior izquierda del gráfico.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>Pruébalos en un gráfico en vivo</h3>
+    <p>Premium cuesta $3.99 al mes, o un solo pago como Founder. Todo lo demás en MarginPad sigue siendo gratis.</p>
+    <div class="btns"><a class="btn p" href="/es/premium/">Obtener Premium</a><a class="btn" href="/es/charts">Abrir los gráficos</a></div>
+  </div>
+
+  <footer>
+    <div><a href="/es/">Inicio</a> · <a href="/es/premium/">Premium</a> · <a href="/es/charts">Gráficos</a> · <a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/privacy/">Privacidad</a></div>
+    <div style="margin-top:8px">&copy; MarginPad &middot; Contenido educativo, no asesoría financiera. Los indicadores analizan datos y a veces se equivocarán.</div>
+  </footer>
+</div>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
+</body>
+</html>

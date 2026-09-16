@@ -242,6 +242,40 @@
   .pt-viz .ticket .pnl{display:block;margin-top:5px;font-size:13.5px;font-weight:700;color:var(--grn);font-variant-numeric:tabular-nums;}
   @media(max-width:940px){.pt-hero .in{grid-template-columns:1fr;}.pt-viz{min-height:190px;}}
 
+  /* ---------- COMPETITION card (2026-09-17) - DOM-second, full width, right under Paper Trade ---------- */
+  #trade .bento{grid-auto-flow:dense;} /* the card is s12 and sits second in the DOM: without dense the Screener would leave a 4-col hole beside Paper Trade on desktop */
+  .cp-hero{border-color:rgba(255,215,90,.32);background:radial-gradient(70% 90% at 0 0,rgba(255,215,90,.13),transparent 55%),radial-gradient(40% 70% at 100% 100%,rgba(194,246,74,.08),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.004)),var(--panel);}
+  .cp-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:28px;flex:1;position:relative;z-index:2;}
+  .cp-copy{display:flex;flex-direction:column;min-width:0;}
+  .cp-t{font-size:26px;}.cp-t b{color:var(--amber);}
+  .cp-pool{display:flex;flex-direction:column;gap:7px;margin-top:22px;}
+  .cp-pool b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(42px,4.4vw,58px);line-height:.95;letter-spacing:-.04em;background:linear-gradient(180deg,#fff 25%,var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .cp-pool span{color:var(--dim);font-size:13.5px;line-height:1.5;max-width:340px;}
+  .cp-rib{position:absolute;top:0;right:0;font:800 8.5px 'Space Mono',monospace;letter-spacing:.12em;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#ffb020);padding:4px 9px 3px;border-radius:0 12px 0 9px;font-style:normal;z-index:2;}
+  .cp-days{display:flex;align-items:center;gap:12px;margin-top:16px;}
+  .cp-strip{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;flex:1;max-width:250px;}
+  .cp-strip i{display:block;height:6px;border-radius:3px;background:#1a1f27;}.cp-strip i.on{background:var(--amber);box-shadow:0 0 8px -2px rgba(255,215,90,.9);}.cp-strip i.now{background:#fff;}
+  .cp-left{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);white-space:nowrap;}
+  .cp-fair{margin-top:auto;padding-top:16px;font-size:12px;line-height:1.5;color:var(--faint);max-width:330px;}
+  .cp-boards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-content:center;min-width:0;}
+  .cp-b{display:flex;flex-direction:column;gap:7px;padding:13px 14px 12px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);min-width:0;position:relative;overflow:hidden;transition:border-color .18s,background .18s;}
+  .cp-b::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:var(--bc,#ffd75a);opacity:.9;}
+  .cp-hero:hover .cp-b{border-color:rgba(255,255,255,.14);}
+  .cp-bn{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cp-bp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.02em;color:#fff;line-height:1;white-space:nowrap;}
+  .cp-bp small{font-size:10.5px;color:var(--faint);font-family:'Space Mono',monospace;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;}
+  .cp-bl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:7px;font-size:12.5px;min-width:0;margin-top:2px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
+  .cp-bl i{font:800 10px 'Space Mono',monospace;color:var(--amber);font-style:normal;background:rgba(255,215,90,.12);border-radius:5px;padding:2px 5px;}
+  .cp-bl b{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cp-bl em{font:700 11.5px 'Space Mono',monospace;font-style:normal;color:var(--grn);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .cp-bl em:empty{display:none;}
+  .cp-b.big{border-color:rgba(247,166,0,.45);background:linear-gradient(180deg,rgba(247,166,0,.13),rgba(247,166,0,.03));}
+  .cp-b.big .cp-bp{color:#f7a600;}
+  @media(max-width:1100px){.cp-boards{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:940px){.cp-in{grid-template-columns:1fr;gap:18px;}.cp-boards{grid-template-columns:repeat(3,minmax(0,1fr));}}
+  @media(max-width:640px){.cp-boards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}.cp-b{padding:11px 12px 10px;gap:6px;}.cp-bp{font-size:19px;white-space:normal;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;}.cp-bp small{margin-left:0;}.cp-t{font-size:22px;}.cp-pool b{font-size:40px;}.cp-pool span{font-size:13px;}.cp-fair{display:none;}.cp-pool{margin-top:16px;}
+    .cp-days{flex-wrap:wrap;gap:8px 12px;}.cp-strip{flex:1 1 100%;max-width:none;}} /* measured 2026-09-17 at 390px: the nowrap "ends in" text squeezed the 14-cell strip to 3 px, and "$10 first" was cut mid-word */
+
   /* ---------- Screener ---------- */
   .mv-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid rgba(255,255,255,.045);font-size:13px;position:relative;z-index:2;}
   .mv-row:first-of-type{border-top:none;}
@@ -375,33 +409,6 @@
 
   /* ---------- Leaderboard band ---------- */
   .lb-wrap{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;}
-/* This season (2026-09-06): the homepage keeps a compact season section; everything deep lives on /season/. */
-.ss-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr);gap:12px}
-.ss-card{display:block;min-width:0;background:linear-gradient(180deg,#12161d,#0c0f13);border:1px solid #2a323c;border-radius:16px;padding:16px 17px;color:inherit;text-decoration:none;position:relative}
-.ss-you{border-color:rgba(255,215,90,.4);background:radial-gradient(110% 80% at 100% 0,rgba(255,215,90,.1),transparent 55%),linear-gradient(180deg,#12161d,#0c0f13);transition:border-color .14s,transform .1s}
-.ss-you:hover{border-color:rgba(255,215,90,.8)}.ss-you:active{transform:translateY(1px)}
-.ss-k{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#ffd75a}
-.ss-k span{margin-left:auto;font-size:10px;color:#c2f64a;background:rgba(194,246,74,.12);border-radius:20px;padding:2px 8px}
-.ss-k .ss-dot{display:block;flex:0 0 7px;width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#2ebd85;box-shadow:0 0 10px #2ebd85;margin-left:auto;align-self:center}
-.ss-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin:12px 0 10px}
-.ss-days i{display:block;height:7px;border-radius:3px;background:#1a1f27}.ss-days i.on{background:#c2f64a;box-shadow:0 0 8px -2px rgba(194,246,74,.9)}.ss-days i.now{background:#fff}
-.ss-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1.05;color:#fff;margin:2px 0 10px}
-.ss-big b{color:#c2f64a}
-.ss-rows{display:grid;gap:6px}
-.ss-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;font-size:13px;color:#c7ccd4;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;min-width:0}
-.ss-row b{font-family:'Space Mono',monospace;font-size:12px;color:#fff;white-space:nowrap;text-align:right}.ss-row b.ok{color:#c2f64a}.ss-row b.pro{color:#c792ff}.ss-row b.gold{color:#ffd75a}
-.ss-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ss-go{margin-top:12px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a}.ss-go span{display:inline-block;transition:transform .15s}.ss-you:hover .ss-go span{transform:translateX(4px)}
-.ss-list{margin-top:10px;display:flex;flex-direction:column}
-.ss-r{display:grid;grid-template-columns:24px minmax(0,1fr) 78px 44px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #1f252e;font-size:13px;white-space:nowrap;min-height:34px}.ss-r:first-child{border-top:0}.ss-r>*{min-width:0}.ss-r.cl{grid-template-columns:minmax(0,1fr) 84px 92px 36px}
-.ss-r i{font:800 11px 'Space Mono',monospace;color:#5c656f;font-style:normal;text-align:right}.ss-r.t1 i{color:#ffd75a}.ss-r.t2 i{color:#cfd6df}.ss-r.t3 i{color:#d19a66}
-.ss-r .w{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ss-r .w:hover{color:#c2f64a}
-.ss-r .v{font:700 12px 'Space Mono',monospace;color:#c7ccd4;text-align:right;overflow:hidden;text-overflow:ellipsis}.ss-r .v.up{color:#2ebd85}.ss-r .v.dn{color:#ff5a4d}
-.ss-r .pz{font:700 11px 'Space Mono',monospace;color:#c2f64a;min-width:28px;text-align:right}
-.ss-r .sy{font:700 10.5px 'Space Mono',monospace;color:#9aa3ad;border:1px solid #2a323c;border-radius:6px;padding:2px 6px;text-align:center;overflow:hidden;text-overflow:ellipsis}.ss-r .sy.l{color:#2ebd85;border-color:rgba(46,189,133,.5)}.ss-r .sy.s{color:#ff5a4d;border-color:rgba(255,90,77,.5)}
-.ss-r .ago{font:600 10.5px 'Space Mono',monospace;color:#5c656f;text-align:right}
-.ss-empty{color:#5c656f;font-size:13px;padding:8px 0}
-.ss-more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;color:#ffd75a;text-decoration:none}
 /* member strip: replaces the hero for a signed-in visitor */
 .dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.35fr) minmax(220px,.8fr);align-items:stretch;gap:18px;margin:14px var(--pad) 0;padding:20px 22px;border-radius:22px;border:1px solid rgba(199,146,255,.3);background:radial-gradient(70% 90% at 0 0,rgba(199,146,255,.16),transparent 60%),radial-gradient(50% 80% at 100% 100%,rgba(194,246,74,.1),transparent 60%),linear-gradient(180deg,#12161d,#0b0e12);color:inherit;text-decoration:none;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 80px -40px rgba(199,146,255,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .2s,transform .2s}
 .dash:hover{border-color:rgba(194,246,74,.5);transform:translateY(-1px)}
@@ -443,8 +450,6 @@
    and the top of the page sat empty in between (owner 2026-09-10, measured). */
 body.mpa-dash .hero,html.mp-li .hero{display:none}
 html.mp-li .dash[hidden]{display:grid} /* the static markup below already carries the skeleton, so this is the right shape from frame one */
-@media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
-@media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
   .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;}
   .lb-info{border-color:rgba(255,215,90,.3);background:linear-gradient(160deg,rgba(255,215,90,.09),rgba(255,215,90,.015) 55%),var(--panel);}
@@ -1026,6 +1031,28 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       </div>
     </a>
 
+    <!-- COMPETITION (2026-09-17, owner: the prizes and the leaderboards sell themselves right under Paper Trade; the
+         old band-04 "This season" is gone). Static numbers are today's; the JS block below reads /api/competition. -->
+    <a class="tile s12 cp-hero" id="cpCard" href="/leaderboards/" style="--ac:#ffd75a">
+      <div class="cp-in">
+        <div class="cp-copy">
+          <div class="t-kick"><span class="dot"></span> Trading competition · <span id="cpEye">every 14 days</span></div>
+          <div class="t-title cp-t">Paper trades, <b>real prize money</b></div>
+          <div class="cp-pool"><b id="cpPool">$350</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Six boards, the top five on each, free to enter, no deposit.</span></div>
+          <div class="cp-days"><div class="cp-strip" id="cpDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="cp-left" id="cpLeft">14-day seasons</span></div>
+          <div class="cp-fair">Filled server-side against real exchange candles. A win needs 5% ROE and a real 0.2% move. Standings are public.</div>
+        </div>
+        <div class="cp-boards" id="cpBoards">
+          <div class="cp-b" data-b="roe" style="--bc:#c2f64a"><span class="cp-bn">Highest ROE</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-b" data-b="green" style="--bc:#2ebd85"><span class="cp-bn">Green days</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-b" data-b="winrate" style="--bc:#6aa3ff"><span class="cp-bn">Best win rate</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-b" data-b="xp" style="--bc:#9d7bff"><span class="cp-bn">Season XP</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-b" data-b="gold" style="--bc:#ffd75a"><i class="cp-rib">GOLD+</i><span class="cp-bn">The Gold Room</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-b big" data-b="bybit" style="--bc:#f7a600"><span class="cp-bn">Bybit volume · real</span><span class="cp-bp">$200<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+        </div>
+      </div>
+    </a>
+
     <a class="tile s4" href="/screener" style="--ac:#6aa3ff">
       <div class="t-kick"><span class="dot"></span> Top movers · 24h · live</div>
       <div class="t-title">Screener</div>
@@ -1213,31 +1240,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   <div class="exch-disc">Referral links - MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
 
-<section class="band" id="season" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">This season</h2><span class="band-s">Five boards pay the top 5 in real USDT every 14 days. The pass, the daily call, your goals and the live floor all live on one page.</span></div>
-  <div class="ss-grid">
-    <a class="ss-card ss-you" id="ssYou" href="/season/">
-      <div class="ss-k" id="ssEye">Season</div>
-      <div class="ss-days" id="ssDays"></div>
-      <div class="ss-big" id="ssBig">Your season</div>
-      <div class="ss-rows" id="ssRows"></div>
-      <div class="ss-go">Open your season <span>→</span></div>
-    </a>
-    <div class="ss-card ss-board">
-      <div class="ss-k" id="ssBoardK">Green days <span id="ssPz"></span></div>
-      <div class="ss-list" id="ssBoard"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/trading-competition/">The trading competition: six boards, $350 a season, free to enter &rarr;</a>
-    </div>
-    <div class="ss-card ss-live">
-      <div class="ss-k">Live floor <span class="ss-dot"></span></div>
-      <div class="ss-list" id="ssLive"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/season/#floor">Every close and every duel →</a>
-    </div>
-  </div>
-</section>
-
 <section class="band b-learn" style="--glow:rgba(255,215,90,.08);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">05</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout - the whole path is free.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout - the whole path is free.</span></div>
   <div class="bento">
 
     <a class="tile s4" href="/academy/" style="--ac:#c2f64a">
@@ -1688,15 +1692,48 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   // reflect sign-in state on the leaderboard CTA
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' - close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
-  /* This season (compact) + the member strip: one state from six endpoints, rendered twice. */
+  /* COMPETITION card (2026-09-17): one keyless read of /api/competition (edge-cached 120 s) fills the pool, the day
+     strip and the leader of each board. The static markup is today's numbers so a crawler reads a true page; this
+     block is the authority the moment it answers. Nothing here depends on sign-in. */
   (function(){
-    var you=document.getElementById('ssYou'),board=document.getElementById('ssBoard'),live=document.getElementById('ssLive'),dash=document.getElementById('dash');if(!you||!dash)return;
+    var card=document.getElementById('cpCard');if(!card)return;
+    function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function int(n){return Math.round(+n||0).toLocaleString('en-US');}
+    function val(id,v){v=+v||0;
+      if(id==='roe')return (v>=0?'+':'')+int(v)+'%';
+      if(id==='green')return int(v)+(v===1?' day':' days');
+      if(id==='winrate')return v.toFixed(1)+'%';
+      if(id==='xp')return int(v)+' XP';
+      if(id==='gold')return int(v)+' pts';
+      if(id==='bybit')return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e4?(v/1e3).toFixed(1)+'k':int(v));
+      return int(v);}
+    function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h';}
+    function paint(d){
+      if(!d||!d.boards||!d.boards.length)return;
+      var pool=+d.prize_pool_usd_per_season||0,month=+d.prize_pool_usd_per_month||0;
+      if(pool>0){document.getElementById('cpPool').textContent='$'+int(pool);
+        document.getElementById('cpPoolS').textContent='a season'+(month>pool?' ($'+int(month)+' a month)':'')+', paid in USD to your rewards balance. '+d.boards.length+' boards, the top five on each, free to enter, no deposit.';}
+      var sn=d.season||{},day=+sn.day_of_season||0,endMs=sn.ends?Date.parse(sn.ends):0;
+      if(day>0){document.getElementById('cpDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+        document.getElementById('cpEye').textContent='day '+day+' of 14';
+        document.getElementById('cpLeft').textContent=endMs>Date.now()?'ends in '+left(endMs-Date.now())+' · then a new one starts':'a new season starts today';}
+      d.boards.forEach(function(b){var el=card.querySelector('.cp-b[data-b="'+b.id+'"]');if(!el)return;
+        var pz=+b.prize_pool_usd||0,top=(b.prize_usd_top5||[])[0]||0;
+        if(pz>0)el.querySelector('.cp-bp').innerHTML='$'+int(pz)+'<small>pool · $'+int(top)+' first</small>';
+        var L=b.leader,bl=el.querySelector('.cp-bl');
+        if(L&&L.name){bl.innerHTML='<i>1</i><b title="'+esc(L.name)+'">'+esc(L.name)+'</b><em>'+esc(val(b.id,L.value))+'</em>';}
+        else{bl.innerHTML='<i>1</i><b>open - nobody ranked yet</b><em></em>';}});
+    }
+    function load(){fetch('/api/competition',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(paint).catch(function(){});}
+    setTimeout(load,250);setInterval(function(){if(!document.hidden)load();},300000);
+  })();
+  /* The member strip (was "This season" + the strip until 2026-09-17; the section is gone, the strip stays): one state from five endpoints. */
+  (function(){
+    var dash=document.getElementById('dash');if(!dash)return;
     var S={};
     function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
     function int(n){return Math.round(+n||0).toLocaleString('en-US');}
-    function money(v){v=+v||0;var a=Math.abs(v);return (v<0?'-$':'+$')+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'k':a.toFixed(2));}
     function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
-    function ago(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
     function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;}
     /* INSTANT MEMBER CARD (2026-09-10, owner: "it does not load right away like the paper trade card, so it"
        "appears later out of nowhere and the user wonders what they clicked"). Measured before: mpa-authed
@@ -1728,23 +1765,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       var m=me(),signed=!!m,sk=(S.pass&&S.pass.season)||(S.goals&&S.goals.season)||null;
       var day=sk?Math.min(14,Math.max(1,Math.floor((Date.now()-Date.parse(sk.from+'T00:00:00Z'))/86400000)+1)):0;
       var eye=sk?('Season '+(sk.idx+1)+' · day '+day+' of 14 · ends in '+left(sk.endMs-Date.now())):'Season';
-      document.getElementById('ssEye').textContent=eye;
-      document.getElementById('ssDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
-      var rows=[],P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
-      if(signed){
-        document.getElementById('ssBig').innerHTML='Your <b>season</b>';
-        if(P)rows.push('<div class="ss-row"><span>Pass tier</span><b class="pro">'+P.tier+' / '+(P.n||40)+(P.claimable?' · '+P.claimable+' to claim':'')+'</b></div>');
-        if(D){var t=D.me&&D.me.today;rows.push('<div class="ss-row"><span>Daily call</span><b class="'+(t?'ok':'')+'">'+(t?'made · $'+int(t.guess):(D.open?'open until '+D.cutoffH+':00 UTC':'closed today'))+'</b></div>');}
-        if(G){var pk=G.picks||[],dn=pk.filter(function(x){return x.done&&!x.paid;}).length;rows.push('<div class="ss-row"><span>Goals</span><b class="'+(dn?'gold':'')+'">'+(pk.length?pk.length+' picked'+(dn?' · '+dn+' to claim':''):'pick two')+'</b></div>');}
-        if(LB){var nm=(m.username||'').toLowerCase(),best=null;[['topGreen','Green days'],['top','Highest ROE'],['topWr','Win rate'],['topXp','Season XP'],['topGold','Gold Room']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1]};});rows.push('<div class="ss-row"><span>Boards</span><b class="'+(best&&best.rank<=5?'ok':'')+'">'+(best?'#'+best.rank+' '+best.name:'not ranked yet')+'</b></div>');}
-      }else{
-        document.getElementById('ssBig').innerHTML='Boards, pass, calls, goals';
-        rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">40 tiers · free track</b></div>');
-        rows.push('<div class="ss-row"><span>Daily call</span><b>'+(D?(D.open?'open · up to 12 Ticks':'closed today'):'one a day')+'</b></div>');
-        rows.push('<div class="ss-row"><span>Season goals</span><b class="gold">pick two · 100 XP each</b></div>');
-        if(H)rows.push('<div class="ss-row"><span>XP Happy Hour</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
-      }
-      document.getElementById('ssRows').innerHTML=rows.join('');
+      var P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
       /* strip */
       if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');document.documentElement.classList.add('mp-li');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
         document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
@@ -1766,22 +1787,19 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         if(todoH)document.getElementById('dashTodo').innerHTML=todoH;
         if(sk&&ch.length)snapPut({eye:eye,day:day,chips:ch.join(''),todo:todoH}); /* next visit paints this instantly */}
       else {dash.hidden=true;document.body.classList.remove('mpa-dash');document.documentElement.classList.remove('mp-li');} // signed out (or a session that expired behind the cached card): the hero comes back
-      /* leading board: green days, top 5 with prizes */
-      if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
-        board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet - 10 closes and a green season get you on.</div>';}
-      if(S.closes){live.innerHTML=S.closes.length?S.closes.slice(0,5).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="ss-r cl"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span><span class="v '+(c.liq?'dn':up?'up':'dn')+'">'+(c.liq?'REKT':money(c.pnl))+'</span><span class="ago">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="ss-empty">Quiet on the floor right now.</div>';}
       try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}
     }
     function load(all){var ps=[J('/api/pass').then(function(d){if(d&&d.tiers)S.pass=d;}),J('/api/goals').then(function(d){if(d&&d.catalogue)S.goals=d;}),J('/api/predict').then(function(d){if(d&&d.day)S.pred=d;})];
-      if(all){ps.push(J('/api/reward/lb').then(function(d){if(d&&d.weekStart)S.lb=d;}),J('/api/happyhour').then(function(d){if(d)S.hh=d;}),J('/api/trades/feed').then(function(d){if(d)S.closes=d.closes||[];}));}
+      if(all){ps.push(J('/api/reward/lb').then(function(d){if(d&&d.weekStart)S.lb=d;}),J('/api/happyhour').then(function(d){if(d)S.hh=d;}));}
       Promise.all(ps).then(paint);}
-    if(window.mpWhenVisible&&document.getElementById('season'))mpWhenVisible(document.getElementById('season'),function(){load(true);});else setTimeout(function(){load(true);},900);
-    setTimeout(function(){load(true);},1200); /* the strip sits above the fold: do not wait for the section to scroll into view */
+    /* the strip is the only reader now and it only exists for a member: a guest pays none of these five fetches */
+    function armed(){return !!me()||document.documentElement.classList.contains('mp-li');}
+    setTimeout(function(){if(armed())load(true);},1200);
     /* draw the card NOW from what we already hold, then let the fetches refresh it in place */
     quick(); var _qt=setInterval(function(){ if(me()){ quick(); clearInterval(_qt); } },80); setTimeout(function(){clearInterval(_qt);},8000); // mp-auth is deferred: poll briefly instead of testing once (the mpEx gotcha)
-    window.addEventListener('mp-auth-change',function(){quick();setTimeout(function(){load(true);},400);});
+    window.addEventListener('mp-auth-change',function(){quick();setTimeout(function(){if(armed())load(true);},400);});
     window.addEventListener('mp:xp',function(){setTimeout(function(){load(false);},1500);});
-    setInterval(function(){if(!document.hidden)load(true);},300000);
+    setInterval(function(){if(!document.hidden&&armed())load(true);},300000);
   })();
   /* Section-view beacon (2026-09-06): which homepage blocks people actually reach. One AE event per block per
      pageview at 30% visibility, so the next cut of this page is measured, not guessed. */
@@ -1789,7 +1807,10 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     if(!('IntersectionObserver' in window)||!navigator.sendBeacon)return;
     var els=[].slice.call(document.querySelectorAll('section.hero, section.band, .snap, .trust, footer.foot, #dash'));if(!els.length)return;
     var seen={};
-    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:.3});
+    /* "reached" = 30% of the block on screen, OR the block filling 60% of the viewport: a band taller than 3.3 screens
+       (band 01 on a phone since the competition card, 2026-09-17) can never show 30% of itself at once and would
+       otherwise never be counted, however long the reader spent in it. */
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:[.05,.15,.3]});
     els.forEach(function(el){io.observe(el);});
   })();
   /* Daily call: state comes whole from /api/predict; re-fetched on sign-in, after a call, and every 5 min. */
@@ -2178,8 +2199,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=8d881029"></script>
-<script defer src="/assets/mp-auth.js?v=540db9a3"></script>
-<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

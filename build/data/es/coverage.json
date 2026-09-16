@@ -72,6 +72,12 @@
   "missing": 0
  },
  {
+  "rel": "ai-indicators/index.html",
+  "cover": 0.96,
+  "hit": 120,
+  "missing": 5
+ },
+ {
   "rel": "alerts/index.html",
   "cover": 1,
   "hit": 48,
@@ -260,7 +266,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -1088,37 +1094,37 @@
  {
   "rel": "coin/bnb/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
   "rel": "coin/btc/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
   "rel": "coin/doge/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
   "rel": "coin/eth/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
   "rel": "coin/sol/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
   "rel": "coin/xrp/index.html",
   "cover": 1,
-  "hit": 41,
+  "hit": 48,
   "missing": 0
  },
  {
@@ -1351,9 +1357,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 0.9329446064139941,
-  "hit": 320,
-  "missing": 23
+  "cover": 1,
+  "hit": 359,
+  "missing": 0
  },
  {
   "rel": "fear-greed/index.html",
@@ -1562,7 +1568,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -1592,7 +1598,7 @@
  {
   "rel": "hyperliquid-whales/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 85,
   "missing": 0
  },
  {
@@ -1634,7 +1640,7 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 55,
   "missing": 0
  },
  {
@@ -1692,6 +1698,12 @@
   "missing": 0
  },
  {
+  "rel": "leaderboards/index.html",
+  "cover": 0.984375,
+  "hit": 63,
+  "missing": 1
+ },
+ {
   "rel": "levels/index.html",
   "cover": 1,
   "hit": 114,
@@ -1724,20 +1736,20 @@
  {
   "rel": "liquidation-statistics/index.html",
   "cover": 1,
-  "hit": 71,
+  "hit": 75,
   "missing": 0
  },
  {
   "rel": "liquidations/by-exchange/index.html",
   "cover": 1,
-  "hit": 63,
+  "hit": 67,
   "missing": 0
  },
  {
   "rel": "liquidations/index.html",
-  "cover": 1,
-  "hit": 77,
-  "missing": 0
+  "cover": 0.9893617021276596,
+  "hit": 93,
+  "missing": 1
  },
  {
   "rel": "long-short/index.html",
@@ -1748,7 +1760,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -1785,6 +1797,12 @@
   "rel": "matic-liquidation-calculator/index.html",
   "cover": 1,
   "hit": 68,
+  "missing": 0
+ },
+ {
+  "rel": "mcp-server-for-crypto-trading/index.html",
+  "cover": 1,
+  "hit": 62,
   "missing": 0
  },
  {
@@ -1922,7 +1940,7 @@
  {
   "rel": "premium/index.html",
   "cover": 1,
-  "hit": 87,
+  "hit": 114,
   "missing": 0
  },
  {
@@ -1939,9 +1957,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.978494623655914,
-  "hit": 182,
-  "missing": 4
+  "cover": 1,
+  "hit": 186,
+  "missing": 0
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2101,9 +2119,9 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 1,
-  "hit": 445,
-  "missing": 0
+  "cover": 0.9934497816593887,
+  "hit": 455,
+  "missing": 3
  },
  {
   "rel": "trading-competition/index.html",
@@ -2162,15 +2180,14 @@
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 60,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "where-to-start/index.html",
-  "cover": 0.18032786885245902,
-  "hit": 11,
-  "missing": 50,
-  "skipped": true
+  "cover": 1,
+  "hit": 65,
+  "missing": 0
  },
  {
   "rel": "widgets/index.html",

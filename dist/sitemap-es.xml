@@ -12,6 +12,7 @@
   <url><loc>https://marginpad.io/es/academy/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/ada-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/ada-liquidation-map/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/es/ai-indicators/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/alerts/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/algo-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/ape-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -278,6 +279,7 @@
   <url><loc>https://marginpad.io/es/kucoin-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/kucoin-pnl-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/kucoin-vs-kraken/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/es/leaderboards/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/levels/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/leverage-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/leverage-trading-simulator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -294,6 +296,7 @@
   <url><loc>https://marginpad.io/es/mana-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/markets/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/matic-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/es/mcp-server-for-crypto-trading/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/mexc-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/mexc-pnl-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/mkr-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -357,6 +360,7 @@
   <url><loc>https://marginpad.io/es/uni-liquidation-map/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/vault/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/where-can-i-test-a-trading-bot/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/es/where-to-start/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/widgets/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/wif-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/wif-liquidation-map/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

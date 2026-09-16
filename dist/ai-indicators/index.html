@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>The 4 MarginPad AI Indicators, Explained - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory</title>
+<meta name="description" content="What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position. Built on our own liquidation data; every arrow grades its own hit-rate." />
+<link rel="canonical" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/ai-indicators/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="The 4 MarginPad AI indicators, explained" />
+<meta property="og:description" content="Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ai-indicators/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;--violet:#b18cff;--cyan:#3fd8e6;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55;}
+  a{color:var(--lime);}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 18px calc(56px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,6vw,50px);line-height:1.02;letter-spacing:-.035em;margin:12px 0 12px;}
+  h1 em{font-style:normal;color:var(--lime);}
+  .sub{color:var(--dim);font-size:16px;margin:0 0 18px;max-width:62ch;}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0 34px;}
+  .fact{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:13px 14px;}
+  .fact b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1.05;}
+  .fact span{font-size:12px;color:var(--faint);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 30px;}
+  .toc a{font:700 12px 'Space Mono',monospace;color:var(--ink);text-decoration:none;border:1px solid var(--line2);border-radius:99px;padding:8px 13px;background:#0d1014;}
+  .toc a:hover{border-color:var(--lime);color:var(--lime);}
+  .ind{border:1px solid var(--line2);border-radius:20px;padding:24px;margin:0 0 20px;background:linear-gradient(180deg,var(--panel),#0c0f13);position:relative;overflow:hidden;scroll-margin-top:80px;}
+  .ind::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--ac,var(--lime));}
+  .ind-h{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .ind h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(23px,3.4vw,30px);letter-spacing:-.03em;margin:0;line-height:1.1;}
+  .ind h2 small{display:block;font:700 11px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ac,var(--lime));margin-bottom:6px;}
+  .q{font-size:17px;font-weight:700;color:#fff;margin:14px 0 4px;}
+  .q em{font-style:normal;color:var(--ac,var(--lime));}
+  .ind p{margin:0 0 10px;color:var(--dim);font-size:14.5px;}
+  .ind p b,.ind li b{color:#fff;}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;margin-top:14px;align-items:start;}
+  @media(max-width:700px){.cols{grid-template-columns:1fr;}}
+  .lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  .viz{background:#0a0d11;border:1px solid var(--line);border-radius:14px;padding:12px 12px 8px;}
+  .viz svg{width:100%;height:auto;display:block;}
+  .viz .cap{font-size:11.5px;color:var(--faint);margin:8px 2px 2px;line-height:1.45;}
+  .read{background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.22);border-radius:14px;padding:14px 16px;margin-top:14px;}
+  .read .lbl{color:var(--lime);}
+  .read ul{margin:0;padding-left:18px;}
+  .read li{margin:0 0 7px;font-size:14px;color:var(--ink);}
+  .leg{margin-top:12px;font:600 12.5px 'Space Mono',monospace;color:#c7ccd4;background:#0a0d11;border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;line-height:1.5;overflow-wrap:anywhere;}
+  .leg i{font-style:normal;color:var(--faint);display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .lim{margin-top:12px;font-size:13px;color:var(--faint);}
+  .lim b{color:var(--dim);}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3vw,27px);letter-spacing:-.025em;margin:34px 0 10px;}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0 6px;}
+  .step{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:14px;position:relative;}
+  .step i{font:800 11px 'Space Mono',monospace;color:#0a0b0d;background:var(--lime);border-radius:6px;padding:2px 7px;font-style:normal;}
+  .step b{display:block;margin:8px 0 4px;color:#fff;}
+  .step span{font-size:12.5px;color:var(--dim);}
+  .hon{border:1px solid var(--line2);border-radius:16px;padding:18px 20px;background:#0d1014;margin-top:14px;}
+  .hon p{margin:0 0 8px;color:var(--dim);font-size:14px;}
+  .chip{display:inline-block;font:700 11.5px 'Space Mono',monospace;border-radius:7px;padding:3px 8px;margin-right:6px;}
+  .chip.g{color:var(--up);background:rgba(46,189,133,.14);} .chip.r{color:var(--red);background:rgba(255,98,88,.14);} .chip.n{color:#8fa3c4;background:rgba(143,163,196,.14);}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:0 16px;margin-bottom:8px;background:#0d1014;}
+  .faq summary{cursor:pointer;font-weight:700;padding:13px 0;color:#fff;}
+  .faq p{margin:0 0 14px;color:var(--dim);font-size:14px;}
+  .cta{margin:34px 0 10px;border:1px solid rgba(194,246,74,.3);border-radius:20px;padding:26px;text-align:center;background:linear-gradient(180deg,rgba(194,246,74,.07),transparent);}
+  .cta h3{margin:0 0 8px;}
+  .cta p{color:var(--dim);margin:0 0 16px;}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#0d1014;}
+  .btn.p{background:var(--lime);color:#0a0b0d;border-color:var(--lime);}
+  footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 0;border-top:1px solid var(--line);margin-top:30px;}
+  footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
+</style>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The 4 MarginPad AI indicators, explained","description":"What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.","url":"https://marginpad.io/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-17","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are the MarginPad AI indicators a buy or sell signal?","acceptedAnswer":{"@type":"Answer","text":"No. Each one answers a question you should ask before a position: how fragile the market is, where price is being pulled, which way the evidence leans and what happened the last times it looked like this. Arrows appear only at extremes, and every arrow indicator prints its own hit-rate on the loaded chart so you can see whether it has an edge on that symbol and timeframe."}},{"@type":"Question","name":"What data are they built on?","acceptedAnswer":{"@type":"Answer","text":"MarginPad's own liquidation feed (nine exchanges, collected in-house), a leverage-ladder model of where positions get liquidated (the same model behind the liquidation heatmap), funding history and crowd long/short positioning, plus the chart's own price and volume. None of it comes from a third-party indicator vendor."}},{"@type":"Question","name":"Why only four indicators?","acceptedAnswer":{"@type":"Answer","text":"There were eight until September 2026. Four were generic technical analysis available on any chart (MACD+RSI momentum, Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position."}},{"@type":"Question","name":"Do I need Premium to use them?","acceptedAnswer":{"@type":"Answer","text":"Yes. The four indicators are part of MarginPad Premium ($3.99 a month, or a one-time Founder payment) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"AI indicators","item":"https://marginpad.io/ai-indicators/"}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">Margin<b>Pad</b></a>
+    <nav class="hnav">
+      <a href="/charts">Charts</a>
+      <a href="/premium/">Premium</a>
+      <button class="hauth" type="button" data-auth-open>Sign in</button>
+    </nav>
+  </header>
+
+  <span class="eyebrow"><i></i>MarginPad Premium</span>
+  <h1>The 4 AI indicators, <em>explained</em></h1>
+  <p class="sub">Four readouts built on data only MarginPad has. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.</p>
+
+  <div class="facts">
+    <div class="fact"><b>Our data</b><span>Own liquidation feed across nine exchanges, own leverage-ladder model, funding and crowd positioning</span></div>
+    <div class="fact"><b>Self-graded</b><span>Every arrow is scored 1.5x ATR target vs stop on the loaded chart; the hit-rate sits in the legend</span></div>
+    <div class="fact"><b>Any symbol, any timeframe</b><span>Computed in your browser from the loaded candles, so they work on every pair the chart can load</span></div>
+    <div class="fact"><b>Premium</b><span>$3.99 a month or Founder once, on /charts and the mobile charts</span></div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
+  </nav>
+
+  <section class="ind" id="cascade" style="--ac:#ffb020">
+    <div class="ind-h"><h2><small>1 · Fragility</small>Cascade Radar</h2></div>
+    <p class="q">How <em>fragile</em> is the market right now?</p>
+    <p>A liquidation cascade is a chain: one forced close pushes price into the next stop, which forces the next close. Whether that chain can start depends on two things: how much leveraged position sits close to the current price, and how much volume the market has been absorbing. Cascade Radar measures both.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">What it measures</p>
+        <p>At every close it opens a ladder of hypothetical positions at <b>5x, 10x, 25x, 50x and 100x</b>, weighted by that bar's traded value, and places their liquidation prices above and below. Price trading through a level sweeps it. What is left is a live map of <b>liquidation fuel</b>; the radar sums the fuel within 5% of price (closer counts more), divides it by the average traded value of the last 20 bars, and ranks that against the last 200 bars. The result is a <b>0-100 score</b>: 70 is fragile, 90 means one push can start the chain.</p>
+        <p class="lbl">What you see</p>
+        <p>A 0-100 panel under the candles with a line at 90. The legend prints the score, a word for it (calm / fragile / EXTREME) and, since September 2026, <b>which side the fuel sits on</b>. A <b>CASC</b> arrow fires only when the score is 90 or more and the fuel is clearly one-sided: red above the bar when it sits below price, green below the bar when it sits above.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Cascade Radar panel: a 0-100 fragility line crossing the 90 threshold, with the fuel sitting below price">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="34" x2="306" y2="34" stroke="rgba(255,215,90,.45)" stroke-dasharray="4 4"/><text x="16" y="29" fill="#8b95a1" font-size="9" font-family="Space Mono">90</text>
+          <polyline fill="none" stroke="#ffb020" stroke-width="2" points="14,118 40,104 62,110 84,92 106,96 128,78 150,84 172,66 194,58 216,44 238,30 258,22 280,28 306,24"/>
+          <circle cx="306" cy="24" r="3.5" fill="#ffb020"/>
+          <text x="196" y="130" fill="#ffb020" font-size="11" font-family="Space Mono" font-weight="700">Cascade 93/100</text>
+          <text x="196" y="143" fill="#8b95a1" font-size="9.5" font-family="Space Mono">fuel BELOW price (long liqs)</text>
+          <path d="M230 12 l8 0 l-4 6 z" fill="#ff6258"/><text x="242" y="18" fill="#ff6258" font-size="9" font-family="Space Mono" font-weight="700">CASC</text>
+        </svg>
+        <div class="cap">Extreme and one-sided: the fuel is under price, so the arrow points down. A long here has a chain of liquidations beneath it.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In plain words, before you click</p><ul>
+      <li><b>The line:</b> under 50 = calm, nothing to do. Rising past 70 = fragile, one push can start a chain of forced closes. Past 90 = extreme.</li>
+      <li><b>Before a long:</b> line above 70 and the legend says fuel <b>below</b> = you would be buying on top of a trapdoor. Wait for the flush, or take half size with a wider stop. Fuel <b>above</b> = a squeeze would run in your favour.</li>
+      <li><b>Before a short:</b> the mirror. Fuel below is your target zone; fuel above and 70+ means you are the one standing on the trapdoor.</li>
+      <li><b>The arrow:</b> red CASC over a candle = the chain is primed downwards; green CASC under a candle = primed upwards.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>Cascade 93/100 — EXTREME fragility · fuel BELOW price (long liqs): a dip can run<br>CASC 61% (11W/7L)</div>
+    <p class="lim"><b>Limits.</b> The ladder is a model of where positions <em>would</em> be liquidated, not a feed of resting orders. It says how fragile the market is, not when the push comes.</p>
+  </section>
+
+  <section class="ind" id="magnet" style="--ac:#2ebd85">
+    <div class="ind-h"><h2><small>2 · Targets</small>Liquidation Magnet</h2></div>
+    <p class="q">Where is price being <em>pulled</em> next?</p>
+    <p>Price tends to visit big pools of liquidations before it reverses: the pool is where forced orders are waiting, and forced orders are what moves a market that nobody else wants to move. The Magnet finds the dominant pool on each side and says which one is pulling harder.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">What it measures</p>
+        <p>The same leverage ladder as Cascade Radar, read as a list of pools: price level, size in dollars, and whether it is long liquidations (below price) or short liquidations (above). Each pool's <b>pull</b> is its size times its proximity; pools beyond 9% are ignored. The strongest pull above and the strongest below are the two magnets, and the larger of the two is the <b>side price is likelier to visit first</b>.</p>
+        <p class="lbl">What you see</p>
+        <p>Two price lines on the candles: <b>red</b> for the short-liquidation pool above, <b>green</b> for the long-liquidation pool below, each labelled with its size. The <b>bold</b> line is the stronger magnet, the thin dashed one the weaker. The legend prints both pools with their distance from price.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Liquidation Magnet: a bold green pool line below price and a thin red pool line above">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <g stroke-width="1.5">
+            <line x1="40" y1="70" x2="40" y2="96" stroke="#2ebd85"/><rect x="36" y="76" width="8" height="14" fill="#2ebd85"/>
+            <line x1="62" y1="60" x2="62" y2="88" stroke="#ff6258"/><rect x="58" y="64" width="8" height="18" fill="#ff6258"/>
+            <line x1="84" y1="66" x2="84" y2="92" stroke="#2ebd85"/><rect x="80" y="70" width="8" height="16" fill="#2ebd85"/>
+            <line x1="106" y1="54" x2="106" y2="80" stroke="#2ebd85"/><rect x="102" y="58" width="8" height="18" fill="#2ebd85"/>
+            <line x1="128" y1="50" x2="128" y2="78" stroke="#ff6258"/><rect x="124" y="56" width="8" height="16" fill="#ff6258"/>
+            <line x1="150" y1="58" x2="150" y2="86" stroke="#ff6258"/><rect x="146" y="62" width="8" height="18" fill="#ff6258"/>
+            <line x1="172" y1="64" x2="172" y2="90" stroke="#2ebd85"/><rect x="168" y="70" width="8" height="14" fill="#2ebd85"/>
+            <line x1="194" y1="60" x2="194" y2="84" stroke="#2ebd85"/><rect x="190" y="64" width="8" height="14" fill="#2ebd85"/>
+          </g>
+          <line x1="14" y1="28" x2="306" y2="28" stroke="rgba(255,98,88,.6)" stroke-dasharray="5 4"/><text x="212" y="24" fill="#ff6258" font-size="9.5" font-family="Space Mono">SHORT $18.2M · +2.4%</text>
+          <line x1="14" y1="118" x2="306" y2="118" stroke="#2ebd85" stroke-width="2.4"/><text x="196" y="133" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">LONG $41.6M · −1.8%  ← pulled DOWN</text>
+          <line x1="14" y1="74" x2="306" y2="74" stroke="rgba(255,255,255,.25)" stroke-dasharray="2 3"/><text x="16" y="70" fill="#8b95a1" font-size="9" font-family="Space Mono">price</text>
+        </svg>
+        <div class="cap">The larger pool below is the bold magnet: the likelier next visit is 1.8% down. A long's stop belongs beyond it, not just above it.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In plain words, before you click</p><ul>
+      <li><b>The lines:</b> red above = where shorts get liquidated, green below = where longs get liquidated. The bold one is the stronger pull and the likelier next visit.</li>
+      <li><b>Before a long:</b> bold line above you = your first target, take some profit there. Bold line below you = expect a dip to it first; put your stop <b>under</b> that line, not just above it, or yours is the order that gets hunted.</li>
+      <li><b>Before a short:</b> the mirror. A bold green line below is the target; a bold red line above means the stop stays beyond it.</li>
+      <li><b>No lines within 9%:</b> both sides were already flushed. Nothing is pulling; expect a slower market.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>Magnet: pulled DOWN · above 76,410 (+2.4%, $18.2M short liqs) · below 73,220 (−1.8%, $41.6M long liqs)</div>
+    <p class="lim"><b>Limits.</b> A magnet is a probability, not a schedule. Big news moves price through both pools without stopping at either.</p>
+  </section>
+
+  <section class="ind" id="brain" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>3 · Adaptive</small>Market Brain</h2></div>
+    <p class="q">Which way does the evidence <em>lean</em>, and what is driving it?</p>
+    <p>Most "AI" indicators are one formula with a name. Market Brain is eight readings and a learning step: it measures which of the eight actually predicted the next six bars on <b>this coin, on this timeframe</b>, and weights them accordingly. A factor that does not work here weights itself to zero.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">What it measures</p>
+        <p>The eight factors are <b>trend</b> (EMA 21 vs 50 in ATR units), <b>momentum</b> (MACD histogram and RSI), <b>volume</b> (this bar against the last 20, signed by direction), <b>fragility</b> (Cascade Radar's side and score), <b>real liquidation flow</b> (long vs short liquidations per bar from our collector, scaled by how unusual the bar was), <b>funding</b> (the current rate against its median, read contrarian), <b>crowd positioning</b> (long/short account ratio, read contrarian) and <b>structure</b> (where the close sits in the 55-bar range). Every 10 bars the model re-learns a weight per factor from the trailing 280 bars - the correlation between the factor and what price did over the next six bars - and never from bars it has not seen yet. The weighted blend is the score, <b>-100 to +100</b>.</p>
+        <p class="lbl">What you see</p>
+        <p>A panel with the score and bands at +55 and -55. A <b>BRAIN</b> arrow fires the first time the score crosses a band and re-arms once it falls back inside 25. Arrows are held back within 2.5 hours of a high-impact macro event (FOMC, CPI) on purpose. The legend prints the score, a word for it, the <b>two factors driving it</b> right now, and the hit-rate chip.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Brain panel: a score line crossing the +55 band, with the two driving factors named">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <line x1="14" y1="40" x2="306" y2="40" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="36" fill="#8b95a1" font-size="9" font-family="Space Mono">+55</text>
+          <line x1="14" y1="78" x2="306" y2="78" stroke="rgba(120,130,140,.4)" stroke-dasharray="2 3"/><text x="16" y="74" fill="#8b95a1" font-size="9" font-family="Space Mono">0</text>
+          <line x1="14" y1="116" x2="306" y2="116" stroke="rgba(255,215,90,.4)" stroke-dasharray="4 4"/><text x="16" y="112" fill="#8b95a1" font-size="9" font-family="Space Mono">−55</text>
+          <polyline fill="none" stroke="#c2f64a" stroke-width="2" points="14,96 36,102 58,90 80,84 102,70 124,76 146,62 168,52 190,44 212,34 234,30 256,36 278,26 306,30"/>
+          <path d="M208 22 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="220" y="22" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">BRAIN</text>
+          <text x="150" y="132" fill="#c2f64a" font-size="10.5" font-family="Space Mono" font-weight="700">Brain +62 · strong bullish lean</text>
+          <text x="150" y="144" fill="#8b95a1" font-size="9.5" font-family="Space Mono">driven by: liq flow + funding</text>
+        </svg>
+        <div class="cap">A crossing of +55, driven by forced short covering and funding paid by shorts: the crowd is on the wrong side and paying for it.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In plain words, before you click</p><ul>
+      <li><b>The line:</b> going up = the evidence leans bullish, going down = bearish. Inside the +55 / -55 bands the model has no strong opinion.</li>
+      <li><b>Before a long:</b> you want the line above +55, or rising through it. Below -55 you are trading against everything the model learned here - do not.</li>
+      <li><b>Before a short:</b> the mirror, below -55. Inside the bands: no edge, size down or trade the Magnet levels instead.</li>
+      <li><b>"Driven by":</b> "funding + crowd" = the crowd is trapped and paying to stay in (a squeeze setup); "liq flow" = forced selling or covering is already happening; "trend + momentum" = plain continuation.</li>
+      <li><b>The chip:</b> the percentage is how often its arrows worked on this exact chart. Under 50% = no edge on this coin and timeframe; ignore its arrows there, whatever the line does.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend lines</i>Brain +62 — strong bullish lean<br>BRAIN driven by: liq flow + funding<br>BRAIN 58% (14W/10L)</div>
+    <p class="lim"><b>Limits.</b> Learning from 280 bars means the weights lag a regime change by a few dozen bars. Funding and crowd factors need the exchange to publish them for the pair; where it does not, those two factors read zero and the model says so by not naming them.</p>
+  </section>
+
+  <section class="ind" id="memory" style="--ac:#b18cff">
+    <div class="ind-h"><h2><small>4 · Forecast</small>Market Memory</h2></div>
+    <p class="q">When it looked like this before, <em>what happened next</em>?</p>
+    <p>Market Memory does not model the market. It looks it up. Using the same eight factors as Market Brain, it finds the past bars whose whole state most resembles right now and reports what price did after them. It is the market's own memory: a base rate, honestly labelled.</p>
+    <div class="cols">
+      <div>
+        <p class="lbl">What it measures</p>
+        <p>Every bar is a point in eight-factor space. For the current bar it finds the <b>25 nearest past bars</b> - only bars old enough to have a known six-bar outcome, so no answer is ever read from the future - and averages their forward move in ATR units. It also counts how many of the 25 went up. The forecast panel shows that average over time; the current one is projected onto the price axis.</p>
+        <p class="lbl">What you see</p>
+        <p>A forecast panel, a dashed <b>MEM</b> line at the projected level (green above price, red below), and a legend line with the analog count, the up-rate and the projected move. A <b>MEMO</b> arrow fires only when the analogs agree: an expected move of at least 0.85 ATR with 62% or more of them on the same side.</p>
+      </div>
+      <div class="viz">
+        <svg viewBox="0 0 320 150" role="img" aria-label="Market Memory: price with a dashed projected level above it and the analog readout">
+          <rect x="0" y="0" width="320" height="150" rx="10" fill="#0a0d11"/>
+          <polyline fill="none" stroke="#c7ccd4" stroke-width="1.6" points="14,104 40,98 66,108 92,90 118,94 144,80 170,86 196,72 222,78 238,70"/>
+          <circle cx="238" cy="70" r="3" fill="#fff"/>
+          <line x1="238" y1="70" x2="306" y2="46" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <line x1="14" y1="46" x2="306" y2="46" stroke="rgba(46,189,133,.7)" stroke-dasharray="5 4"/><text x="252" y="41" fill="#2ebd85" font-size="9.5" font-family="Space Mono" font-weight="700">MEM</text>
+          <path d="M230 90 l8 0 l-4 -6 z" fill="#2ebd85"/><text x="242" y="90" fill="#2ebd85" font-size="9" font-family="Space Mono" font-weight="700">MEMO</text>
+          <text x="16" y="128" fill="#b18cff" font-size="10.5" font-family="Space Mono" font-weight="700">Memory: 25 analogs · 72% up</text>
+          <text x="16" y="141" fill="#8b95a1" font-size="9.5" font-family="Space Mono">proj +1.4% / 6 bars</text>
+        </svg>
+        <div class="cap">Twenty-five look-alike moments, eighteen of which went up, averaging +1.4% over the next six bars. That is a target and a horizon, not a promise.</div>
+      </div>
+    </div>
+    <div class="read"><p class="lbl">In plain words, before you click</p><ul>
+      <li><b>The readout:</b> "25 analogs · 72% up · proj +1.4%" = the last 25 times the market looked like this, 72% of them went up, by about 1.4% over the next six candles. A base rate, not a call.</li>
+      <li><b>Before a long:</b> 65% up or more AND a projected move bigger than your fees and your stop = go, with the dashed MEM line as a realistic target and six candles as the horizon (six hours on a 1h chart).</li>
+      <li><b>Before a short:</b> the mirror, 35% up or less.</li>
+      <li><b>45-55%:</b> history went both ways from here - a coin flip. Stay out, or trade the Magnet levels instead of a direction. 72% up with a +0.3% move is drift, not a breakout: read the size of the move, not only the percentage.</li>
+      <li><b>The arrow:</b> MEMO fires only when the analogs agree; it is the strongest form of this readout.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>Memory: 25 analogs · 72% up · proj +1.40% / 6 bars</div>
+    <p class="lim"><b>Limits.</b> The memory is only as long as the loaded history (a few hundred to a few thousand bars). On a coin that listed last month it has little to remember, and it needs 160 bars before it draws anything.</p>
+  </section>
+
+  <h3 id="honesty">The hit-rate chip: every arrow grades itself</h3>
+  <div class="hon">
+    <p>Any indicator can draw arrows on the past. MarginPad's arrow indicators grade every arrow they drew on the loaded chart: entry at the signal bar's close, target and stop both 1.5x the 14-bar ATR away, scanned up to 80 bars forward, and a bar that touches both counts as a loss. The chip appears once five arrows have resolved and is coloured for what it says:</p>
+    <p><span class="chip g">CASC 61% (11W/7L)</span> an edge on this chart &nbsp; <span class="chip n">BRAIN 50% (6W/6L)</span> a coin flip &nbsp; <span class="chip r">MEMO 38% (5W/8L)</span> no edge here - do not use it</p>
+    <p>The chip is per symbol and per timeframe, because that is where an edge lives or does not. An indicator that scores 61% on BTC 1h and 38% on a thin altcoin's 5m chart is telling you exactly where to use it.</p>
+  </div>
+
+  <h3 id="workflow">Which one to open first</h3>
+  <p style="color:var(--dim);margin:0 0 6px">The four are meant to be read in order, each narrowing what the last one said.</p>
+  <div class="flow">
+    <div class="step"><i>1</i><b>Cascade Radar</b><span>Is the market fragile, and on which side? Decides your size and how wide the stop must be.</span></div>
+    <div class="step"><i>2</i><b>Liquidation Magnet</b><span>Where are the pools? Sets the first target and tells you where a stop must not be.</span></div>
+    <div class="step"><i>3</i><b>Market Brain</b><span>Which way does the learned evidence lean, and why? Decides the direction, or tells you there is none.</span></div>
+    <div class="step"><i>4</i><b>Market Memory</b><span>What happened the last 25 times? Sets a realistic target and horizon, or warns that history went both ways.</span></div>
+  </div>
+
+  <h3>Questions</h3>
+  <div class="faq">
+    <details><summary>Are these buy or sell signals?</summary><p>No. Each one answers a question you should ask before a position. Arrows appear only at extremes, and every arrow indicator prints its own hit-rate on the loaded chart so you can see whether it has an edge on that symbol and timeframe.</p></details>
+    <details><summary>What data are they built on?</summary><p>MarginPad's own liquidation feed (nine exchanges, collected in-house), the leverage-ladder model behind the liquidation heatmap, funding history and crowd long/short positioning, plus the chart's own price and volume. None of it comes from an indicator vendor.</p></details>
+    <details><summary>Why only four?</summary><p>There were eight until September 2026. Four were generic technical analysis available on any chart (a MACD+RSI momentum cross, a Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position.</p></details>
+    <details><summary>Do I need Premium?</summary><p>Yes. The four are part of MarginPad Premium ($3.99 a month, or a one-time Founder payment) on the multi-chart workspace at <a href="/charts">/charts</a> and on the mobile charts. Every other indicator on the chart is free.</p></details>
+    <details><summary>Where do I turn them on?</summary><p>On <a href="/charts">/charts</a>, open a chart window's Indicators menu: the four sit at the top in lime. On a phone, the chart's indicator sheet lists the same four. The readouts appear in the legend at the top-left of the chart.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>Try them on a live chart</h3>
+    <p>Premium is $3.99 a month, or once as a Founder. Everything else on MarginPad stays free.</p>
+    <div class="btns"><a class="btn p" href="/premium/">Get Premium</a><a class="btn" href="/charts">Open the charts</a></div>
+  </div>
+
+  <footer>
+    <div><a href="/">Home</a> · <a href="/premium/">Premium</a> · <a href="/charts">Charts</a> · <a href="/liquidations/">Liquidations</a> · <a href="/privacy/">Privacy</a></div>
+    <div style="margin-top:8px">&copy; MarginPad &middot; Educational, not financial advice. The indicators analyse data and will be wrong sometimes.</div>
+  </footer>
+</div>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
+</body>
+</html>

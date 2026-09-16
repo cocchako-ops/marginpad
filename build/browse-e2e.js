@@ -128,6 +128,11 @@ async function openDrawer(page, url) {
     eq(st.noKw, 0, 'every main row carries search keywords (data-kw)');
     eq(st.rawKeys.length, 0, 'no untranslated raw i18n key is printed on screen' + (st.rawKeys.length ? ': ' + st.rawKeys.slice(0, 5).join(', ') : ''));
     ok(st.hrefs.indexOf('/api/') < 0, 'the retired /api/ row (a 301) is gone');
+    // 2026-09-17 (owner): no Simulators group - readers asked how it differs from Paper Trade and it does not;
+    // and Where to start is the FIRST row, above every section header.
+    ok(st.hrefs.every(h => h.indexOf('-simulator') < 0), 'no simulator rows in the drawer (they read as a second Paper Trade)');
+    const first = await page.evaluate(() => { const sc = document.querySelector('.mpnav .mpnav-scroll'); const els = [...sc.children].filter(e => e.id !== 'mpnavSugg'); const f = els[0]; return { href: f && f.getAttribute('href'), beforeSec: !!f && !f.classList.contains('mpnav-sec') && els.findIndex(e => e.classList.contains('mpnav-sec')) === 1 }; });
+    ok(first.href === '/where-to-start/' && first.beforeSec, 'Where to start is the first row of the drawer, above the first section (' + first.href + ')');
     ok(st.hrefs.filter(h => /^https?:/.test(h) && h.indexOf('marginpad.io') < 0).length <= 1, 'exactly one external link (Telegram)');
 
     // SEO parity: the four comparison pages must still be in the DOM, inside a collapsed group
@@ -215,6 +220,7 @@ async function openDrawer(page, url) {
     // 5 sections = 3.60 screens on a 390px phone, i.e. 0.100 screens per destination, with one 25-row block.
     // After: 48 destinations = 4.26 screens = 0.089 per destination, longest block 8 lines. More scroll in
     // total, less scroll per thing you can reach, and the 25-row dump is gone. 4.4 fails on creep.
+    // 2026-09-17: Simulators (one collapsed row) removed, Where to start moved above the sections, Leaderboards added: 48 destinations.
     ok(pr.screens <= 4.4, 'the drawer stays within its measured length budget (' + pr.screens + ' of 4.4 screens)');
     ok(pr.screens / 48 <= 0.100, 'and is no longer per destination than the menu it replaced (' + (pr.screens / 48).toFixed(3) + ' vs 0.100 screens each)');
     await ph.close();

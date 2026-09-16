@@ -7,6 +7,8 @@ const EXTRAS = [
   ['https://marginpad.io/free-crypto-api/', '0.9'],
   ['https://marginpad.io/premium/', '0.9'],
   ['https://marginpad.io/trading-report/', '0.8'],
+  ['https://marginpad.io/ai-indicators/', '0.8'],   // the four Premium indicators explained (2026-09-17)
+  ['https://marginpad.io/leaderboards/', '0.9'],    // full season standings + rules (2026-09-17); the homepage competition card links here
   ['https://marginpad.io/status/', '0.6'],
   ['https://marginpad.io/api-docs/', '0.8'],
   ['https://marginpad.io/arena/', '0.8'],

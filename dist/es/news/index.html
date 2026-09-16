@@ -247,7 +247,7 @@
   (function(){var t=document.getElementById('newsTicker');if(!t)return;var WANT=['BTC','ETH','SOL','BNB','XRP','DOGE'];function f(px){return '$'+(+px).toLocaleString('en-US',{maximumFractionDigits:+px>=1?2:5});}function tl(){fetch('/api/prices').then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.pairs)return;var by={};d.pairs.forEach(function(p){by[(p.symbol||'').replace('USDT','')]=p;});t.innerHTML=WANT.map(function(s){var p=by[s];if(!p)return '';var c=+p.changePct;return '<div class="nt-pill"><span class="nt-sym">'+s+'</span><span class="nt-px">'+f(p.price)+'</span><span class="nt-chg '+(c>=0?'up':'dn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span></div>';}).join('');}).catch(function(){});}tl();setInterval(tl,30000);})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=540db9a3"></script>
-<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
 </body>
 </html>

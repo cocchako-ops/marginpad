@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Trading Leaderboards - Live Season Standings, Prizes and Rules | MarginPad</title>
+<meta name="description" content="The six MarginPad season leaderboards in full: every ranked trader, the prize each rank pays, and the exact rules each board is scored by. Fourteen-day seasons, $350 a season, free to enter." />
+<link rel="canonical" href="https://marginpad.io/leaderboards/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/leaderboards/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/leaderboards/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/leaderboards/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="MarginPad Leaderboards - live standings, prizes, rules" />
+<meta property="og:description" content="Six season boards, every ranked trader, the prize per rank and the rules each board is scored by." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/leaderboards/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffd75a;--violet:#9d7bff;--blue:#6aa3ff;--orange:#f7a600;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;}
+  a{color:var(--lime);}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px 18px calc(56px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(32px,6vw,52px);line-height:1.02;letter-spacing:-.035em;margin:12px 0 10px;}
+  h1 em{font-style:normal;color:var(--amber);}
+  .sub{color:var(--dim);font-size:16px;margin:0 0 18px;max-width:64ch;}
+  /* season strip */
+  .season{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:10px;margin:0 0 22px;}
+  .sc{background:#0d1014;border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0;}
+  .sc .k{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);}
+  .sc .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:#fff;margin-top:6px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sc .v b{color:var(--amber);}
+  .sc .s{font:600 11px 'Space Mono',monospace;color:var(--faint);margin-top:6px;}
+  .days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:10px;}
+  .days i{display:block;height:6px;border-radius:3px;background:#1a1f27;}.days i.on{background:var(--amber);}.days i.now{background:#fff;box-shadow:0 0 8px var(--amber);}
+  @media(max-width:700px){.season{grid-template-columns:1fr 1fr}.sc:first-child{grid-column:1/-1}}
+  /* board tabs */
+  .tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:0 0 14px;}
+  @media(max-width:900px){.tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:520px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .tab{position:relative;text-align:left;font:inherit;color:inherit;background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:12px 12px 11px;cursor:pointer;min-width:0;transition:border-color .15s,transform .12s;overflow:hidden;}
+  .tab::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--bc,var(--amber));opacity:.9;}
+  .tab:hover{border-color:var(--line2);}
+  .tab.on{border-color:var(--bc,var(--amber));background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));}
+  .tab .n,.tab .p,.tab .l{display:block;}
+  .tab .n{font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tab .p{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:#fff;margin-top:5px;line-height:1;}
+  .tab .p small{font:600 9.5px 'Space Mono',monospace;color:var(--faint);margin-left:5px;letter-spacing:.06em;}
+  .tab .l{font:600 11px 'Space Mono',monospace;color:var(--dim);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tab .l b{color:var(--ink);}
+  .tab .rib{position:absolute;top:0;right:0;font:800 8px 'Space Mono',monospace;letter-spacing:.12em;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#ffb020);padding:3px 8px 2px;border-radius:0 12px 0 8px;font-style:normal;}
+  /* board panel */
+  .board{background:linear-gradient(180deg,var(--panel),#0c0f13);border:1px solid var(--line2);border-radius:20px;padding:18px 18px 16px;margin:0 0 18px;position:relative;overflow:hidden;}
+  .board::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--bc,var(--amber));}
+  .bh{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .bh h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.03em;margin:0;line-height:1.1;}
+  .bh h2 small{display:block;font:600 12.5px 'Familjen Grotesk',sans-serif;color:var(--dim);letter-spacing:0;margin-top:5px;}
+  .prizes{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .pz{display:inline-flex;flex-direction:column;align-items:center;min-width:52px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);}
+  .pz i{font:800 9px 'Space Mono',monospace;color:var(--faint);font-style:normal;}
+  .pz b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#fff;line-height:1.1;margin-top:2px;}
+  .pz.p1 b{color:var(--amber);}.pz.p2 b{color:#cfd6df;}.pz.p3 b{color:#d19a66;}
+  .you{margin:14px 0 0;padding:10px 12px;border-radius:10px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);font-size:13.5px;color:var(--ink);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .you b{color:var(--lime);}
+  .you a{font-weight:700;text-decoration:none;}
+  .you[hidden]{display:none;}
+  .tw{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
+  th{text-align:left;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:0 10px 9px 0;white-space:nowrap;}
+  td{padding:10px 10px 10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  td.rk{font:800 12px 'Space Mono',monospace;color:var(--faint);width:36px;}
+  tr.t1 td.rk{color:var(--amber);}tr.t2 td.rk{color:#cfd6df;}tr.t3 td.rk{color:#d19a66;}
+  tr.paid td{background:rgba(255,215,90,.03);}
+  tr.me td{background:rgba(194,246,74,.08);}
+  td.who{font-weight:700;color:#fff;max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+  td.who a{color:inherit;text-decoration:none;}
+  td.v{font-family:'Space Mono',monospace;font-weight:700;}
+  td.up{color:var(--up);}td.dn{color:var(--red);}
+  td.prz{font-family:'Space Mono',monospace;font-weight:800;color:var(--amber);text-align:right;}
+  th.r,td.r{text-align:right;}
+  .empty{padding:18px 0 6px;color:var(--faint);font-size:13.5px;}
+  .rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+  .rules .lbl{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  .rules ul{margin:0;padding-left:18px;}
+  .rules li{margin:0 0 6px;font-size:13.5px;color:var(--dim);}
+  .rules li b{color:var(--ink);}
+  /* general rules */
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3vw,27px);letter-spacing:-.025em;margin:30px 0 10px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;}
+  .rc{background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:14px 15px;}
+  .rc b{display:block;color:#fff;margin-bottom:5px;font-size:14.5px;}
+  .rc p{margin:0;font-size:13px;color:var(--dim);line-height:1.55;}
+  .cta{margin:28px 0 10px;border:1px solid rgba(255,215,90,.3);border-radius:20px;padding:24px;text-align:center;background:linear-gradient(180deg,rgba(255,215,90,.07),transparent);}
+  .cta h3{margin:0 0 8px;}
+  .cta p{color:var(--dim);margin:0 0 16px;}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;border:1px solid var(--line2);color:var(--ink);background:#0d1014;}
+  .btn.p{background:var(--lime);color:#0a0b0d;border-color:var(--lime);}
+  footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 0;border-top:1px solid var(--line);margin-top:30px;}
+  footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
+</style>
+<script defer src="/assets/sentry.js?v=43c384ca"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad Leaderboards","url":"https://marginpad.io/leaderboards/","description":"The six MarginPad season leaderboards in full: every ranked trader, the prize each rank pays, and the rules each board is scored by.","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"about":{"@type":"Event","name":"MarginPad Trading Competition Season","url":"https://marginpad.io/trading-competition/","eventAttendanceMode":"https://schema.org/OnlineEventAttendanceMode","isAccessibleForFree":true}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Leaderboards","item":"https://marginpad.io/leaderboards/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How long is a MarginPad season?","acceptedAnswer":{"@type":"Answer","text":"Fourteen days, starting every other Monday at 00:00 UTC. The top five on each board are paid automatically after the season ends and a new one starts at once."}},{"@type":"Question","name":"What does a leaderboard win pay?","acceptedAnswer":{"@type":"Answer","text":"Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Bybit volume board pays $100, $50, $25, $15 and $10. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The pool is $350 a season."}},{"@type":"Question","name":"How is a win counted on the boards?","acceptedAnswer":{"@type":"Answer","text":"Paper trades are filled server-side against real exchange candles, never reported by the browser. A closed trade counts as a win only with at least 5% ROE and a real 0.2% price move, so a scratch trade cannot pad a win rate. The win-rate board is ranked by Wilson score, so a short lucky streak cannot top it."}},{"@type":"Question","name":"Who can enter?","acceptedAnswer":{"@type":"Answer","text":"Any free MarginPad account. The paper boards need no deposit and no exchange account. The Gold Room needs the Gold level (12,000 XP). The Bybit volume board needs a Bybit account opened through MarginPad with its UID registered on the season page."}}]}</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/leaderboards.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/leaderboards.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">Margin<b>Pad</b></a>
+    <nav class="hnav">
+      <a href="/season/">Your season</a>
+      <a href="/paper-trade">Paper Trade</a>
+      <button class="hauth" type="button" data-auth-open>Sign in</button>
+    </nav>
+  </header>
+
+  <span class="eyebrow"><i></i>Trading competition</span>
+  <h1>Leader<em>boards</em></h1>
+  <p class="sub">Six boards, fourteen-day seasons, real prize money paid in USD to your rewards balance. Every ranked trader, every prize, and the exact rule each board is scored by - nothing else.</p>
+
+  <section class="season" aria-label="Season">
+    <div class="sc"><div class="k">Season</div><div class="v" id="sEye">Season · 14 days</div><div class="days" id="sDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="s" id="sLeft">ends every other Monday 00:00 UTC</div></div>
+    <div class="sc"><div class="k">Prize pool</div><div class="v"><b id="sPool">$350</b> a season</div><div class="s" id="sPoolS">$750 a month · paid in USD, withdrawable</div></div>
+    <div class="sc"><div class="k">Entry</div><div class="v">Free</div><div class="s">a MarginPad account, no deposit</div></div>
+  </section>
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="Boards">
+    <button type="button" class="tab on" role="tab" data-b="roe" style="--bc:#c2f64a"><span class="n">Highest ROE</span><span class="p">$30<small>POOL</small></span><span class="l" id="tl-roe">-</span></button>
+    <button type="button" class="tab" role="tab" data-b="green" style="--bc:#2ebd85"><span class="n">Green days</span><span class="p">$30<small>POOL</small></span><span class="l" id="tl-green">-</span></button>
+    <button type="button" class="tab" role="tab" data-b="winrate" style="--bc:#6aa3ff"><span class="n">Best win rate</span><span class="p">$30<small>POOL</small></span><span class="l" id="tl-winrate">-</span></button>
+    <button type="button" class="tab" role="tab" data-b="xp" style="--bc:#9d7bff"><span class="n">Season XP</span><span class="p">$30<small>POOL</small></span><span class="l" id="tl-xp">-</span></button>
+    <button type="button" class="tab" role="tab" data-b="gold" style="--bc:#ffd75a"><i class="rib">GOLD+</i><span class="n">The Gold Room</span><span class="p">$30<small>POOL</small></span><span class="l" id="tl-gold">-</span></button>
+    <button type="button" class="tab" role="tab" data-b="bybit" style="--bc:#f7a600"><span class="n">Bybit volume</span><span class="p">$200<small>POOL</small></span><span class="l" id="tl-bybit">-</span></button>
+  </div>
+
+  <section class="board" id="board" style="--bc:#c2f64a">
+    <div class="bh"><h2 id="bT">Highest ROE<small id="bS">the best return on a single closed trade this season</small></h2><div class="prizes" id="bPz"></div></div>
+    <div class="you" id="bYou" hidden></div>
+    <div class="tw"><table id="bTbl"><thead id="bHead"></thead><tbody id="bBody"><tr><td class="empty" colspan="6">Loading the standings…</td></tr></tbody></table></div>
+    <div class="rules"><p class="lbl">How this board is scored</p><ul id="bRules"></ul></div>
+  </section>
+
+  <h3>Rules every board shares</h3>
+  <div class="grid">
+    <div class="rc"><b>Fourteen-day seasons</b><p>A season starts every other Monday at 00:00 UTC and ends fourteen days later. Standings reset; nothing carries over except your account, your XP and your history.</p></div>
+    <div class="rc"><b>Paid automatically, in USD</b><p>The top five on each board are credited to their MarginPad rewards balance right after the season ends. No form, no claim. The balance is withdrawable under the rewards rules.</p></div>
+    <div class="rc"><b>Server-side fills only</b><p>Every paper trade is filled on the server against real exchange candles. A trade reported by a browser never counts, and a liquidation is settled on the candle that crosses it, wick or no wick.</p></div>
+    <div class="rc"><b>What counts as a win</b><p>A closed trade is a win only with at least 5% ROE and a real 0.2% move in price. Scratches, dust and closes within the spread do not pad a record.</p></div>
+    <div class="rc"><b>Members, one account each</b><p>Boards are for signed-in accounts. A second account on the same device or wallet is excluded, and duplicated trade journals (clones) are folded into one entry.</p></div>
+    <div class="rc"><b>Public standings, measured numbers</b><p>Every figure here is read from the same tables that pay the prizes. If a number is below its confidence threshold it is not shown, rather than shown wrong.</p></div>
+  </div>
+
+  <div class="cta">
+    <h3>Your trades already count</h3>
+    <p>Sign in, close ten trades this season, and you are on the paper boards. Everything else - the season pass, goals, the daily call - lives on your season page.</p>
+    <div class="btns"><a class="btn p" href="/paper-trade">Open Paper Trade</a><a class="btn" href="/season/">Your season</a><a class="btn" href="/trading-competition/">How the competition works</a></div>
+  </div>
+
+  <footer>
+    <div><a href="/">Home</a> · <a href="/season/">Season</a> · <a href="/trading-competition/">Competition</a> · <a href="/rewards/">Rewards</a> · <a href="/terms/">Terms</a></div>
+    <div style="margin-top:8px">&copy; MarginPad &middot; Paper trading is educational. Prizes are real, positions are not.</div>
+  </footer>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function int(n){return Math.round(+n||0).toLocaleString('en-US');}
+  function money(v){v=+v||0;var a=Math.abs(v);return (v<0?'-$':'$')+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e4?(a/1e3).toFixed(1)+'k':a.toLocaleString('en-US',{maximumFractionDigits:2}));}
+  function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h';}
+  var B={
+    roe:{key:'top',name:'Highest ROE',sub:'the best return on a single closed trade this season',col:'#c2f64a',
+      head:['#','Trader','Best trade ROE','P&amp;L','Pair','Prize'],
+      row:function(r){return '<td class="v up">'+(r.roe>=0?'+':'')+int(r.roe)+'%</td><td class="v '+(r.pnl>=0?'up':'dn')+'">'+money(r.pnl)+'</td><td>'+esc(String(r.symbol||'').toUpperCase())+(r.side?' <span style="color:'+(r.side==='short'?'#ff6258':'#2ebd85')+'">'+esc(r.side)+'</span>':'')+'</td>';},
+      rules:['Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).','A trade needs at least <b>5% ROE and a 0.2% real price move</b> to count; a scratch or a spread-width close never enters.','<b>Ten closed trades</b> in the season put you on the board; one lucky trade with nothing behind it does not rank.','Filled and closed server-side against real candles - a browser cannot report a trade onto this board.']},
+    green:{key:'topGreen',name:'Green days',sub:'the most days closed in profit this season',col:'#2ebd85',
+      head:['#','Trader','Green days','Red days','Trades','Prize'],
+      row:function(r){return '<td class="v up">'+int(r.days)+'</td><td class="v dn">'+int(r.red||0)+'</td><td class="v">'+int(r.trades||0)+'</td>';},
+      rules:['A day is <b>green</b> when the trades you closed that UTC day add up to a profit, red when they add up to a loss; a day with no closes is neither.','Ranked by green days; ties break on fewer red days, then on realized P&amp;L.','Consistency beats one big day: fourteen small green days rank above one giant win.','Ten closed trades in the season to enter.']},
+    winrate:{key:'topWr',name:'Best win rate',sub:'the highest share of winning closes, ranked so a short streak cannot win',col:'#6aa3ff',
+      head:['#','Trader','Win rate','Won / lost','Wilson score','Prize'],
+      row:function(r){return '<td class="v up">'+(+r.wr||0).toFixed(1)+'%</td><td class="v">'+int(r.w)+' / '+int(r.l)+'</td><td class="v">'+int(r.score)+'</td>';},
+      rules:['A close is a <b>win</b> only with at least 5% ROE and a 0.2% real move; everything else is a loss or ignored.','Ranked by the <b>Wilson lower bound</b> of the win rate, not the raw percentage - 9 wins of 10 ranks below 60 of 70, because the second record is the surer one.','Duplicated journals are folded into one entry before ranking.','Ten closed trades in the season to enter.']},
+    xp:{key:'topXp',name:'Season XP',sub:'the most XP earned since the season started',col:'#9d7bff',
+      head:['#','Trader','Season XP','Prize'],
+      row:function(r){return '<td class="v up">'+int(r.xp)+'</td>';},
+      rules:['Every XP source counts: closed trades, academy lessons, missions, duels, the daily call, Happy Hour.','Only XP earned <b>inside the season window</b> counts - lifetime XP decides your level, not this board.','Premium earns 5% more XP on everything, which is disclosed here so the board is read with that in mind.']},
+    gold:{key:'topGold',name:'The Gold Room',sub:'the best points score across wins and losses - Gold level and above',col:'#ffd75a',
+      head:['#','Trader','Points','Won / lost','Prize'],
+      row:function(r){return '<td class="v up">'+int(r.pts)+'</td><td class="v">'+int(r.w)+' / '+int(r.l)+'</td>';},
+      rules:['Open to accounts at <b>Gold level (12,000 XP) and above</b> - the room is the reward for getting there.','Points reward wins and charge losses, so a trader who only takes winners and holds losers does not climb.','Same win definition as every board: 5% ROE and a 0.2% real move.','Ten closed trades in the season to enter.']},
+    bybit:{key:'topBybit',name:'Bybit volume',sub:'real futures volume on a Bybit account opened through MarginPad',col:'#f7a600',
+      head:['#','Trader','Volume traded','Prize'],
+      row:function(r){return '<td class="v up">$'+(+r.vol||0).toLocaleString('en-US',{maximumFractionDigits:2})+'</td>';},
+      rules:['The one board scored on <b>real money</b>: futures volume traded on Bybit, read from the MarginPad affiliate report.','Open the Bybit account through MarginPad and <b>register its UID</b> on the season page; an unregistered UID stays off the board.','The report is uploaded a few times a day, so the figure lags Bybit by hours; the season is paid only once the final report is in.','MarginPad paper volume plays no part here.']}
+  };
+  var LB=null, CUR='roe', ME=null;
+  function me(){try{var m=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();return m&&m.username?String(m.username).toLowerCase():null;}catch(e){return null;}}
+  function paintSeason(){
+    if(!LB)return; var ws=+LB.weekStart, we=+LB.weekEnd, now=Date.now();
+    var day=Math.min(14,Math.max(1,Math.floor((now-ws)/86400000)+1));
+    $('sEye').textContent='Day '+day+' of 14';
+    $('sDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+    $('sLeft').textContent='ends in '+left(we-now)+' · '+new Date(we).toUTCString().slice(0,16)+' 00:00 UTC';
+    var P=LB.boardPrizes||{}, pool=0; Object.keys(P).forEach(function(k){pool+=(P[k]||[]).reduce(function(a,c){return a+(+c||0);},0);});
+    if(pool>0){$('sPool').textContent='$'+int(pool);$('sPoolS').textContent='$'+int(Math.round(pool*30/14/10)*10)+' a month · paid in USD, withdrawable';}
+    var PK={roe:'roe',green:'green',winrate:'wr',xp:'xp',gold:'gold',bybit:'bybit'};
+    Object.keys(B).forEach(function(k){var rows=LB[B[k].key]||[],pz=(P[PK[k]]||[]).reduce(function(a,c){return a+(+c||0);},0);
+      var t=document.querySelector('.tab[data-b="'+k+'"]'); if(t&&pz>0)t.querySelector('.p').innerHTML='$'+int(pz)+'<small>POOL</small>';
+      var l=$('tl-'+k); if(l)l.innerHTML=rows.length?'<b>'+esc(rows[0].who)+'</b> leads':'open';});
+  }
+  function paintBoard(){
+    var b=B[CUR], rows=(LB&&LB[b.key])||[], P=(LB&&LB.boardPrizes)||{}, PK={roe:'roe',green:'green',winrate:'wr',xp:'xp',gold:'gold',bybit:'bybit'}, pz=P[PK[CUR]]||[];
+    $('board').style.setProperty('--bc',b.col);
+    $('bT').innerHTML=esc(b.name)+'<small id="bS">'+esc(b.sub)+'</small>';
+    $('bPz').innerHTML=pz.map(function(v,i){return '<span class="pz p'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+int(v)+'</b></span>';}).join('');
+    $('bHead').innerHTML='<tr>'+b.head.map(function(h,i){return '<th'+(i>=2?' class="'+(i===b.head.length-1?'r':'')+'"':'')+'>'+h+'</th>';}).join('')+'</tr>';
+    var mine=me(), myRow=null;
+    $('bBody').innerHTML=rows.length?rows.map(function(r){var isMe=mine&&String(r.who||'').toLowerCase()===mine; if(isMe)myRow=r; var paid=r.rank<=pz.length;
+      return '<tr class="'+(r.rank<=3?'t'+r.rank:'')+(paid?' paid':'')+(isMe?' me':'')+'"><td class="rk">'+r.rank+'</td><td class="who"><a href="/community/u/'+encodeURIComponent(r.who)+'">'+esc(r.who)+'</a></td>'+b.row(r)+'<td class="prz">'+(paid?'$'+int(pz[r.rank-1]):'')+'</td></tr>';}).join('')
+      :'<tr><td class="empty" colspan="6">'+(CUR==='bybit'?'No registered Bybit account has traded this season yet.':'Nobody qualifies yet - ten closed trades this season put you here.')+'</td></tr>';
+    $('bRules').innerHTML=b.rules.map(function(x){return '<li>'+x+'</li>';}).join('');
+    var y=$('bYou');
+    if(mine){ y.hidden=false; y.innerHTML=myRow?('You are <b>#'+myRow.rank+'</b> on this board'+(myRow.rank<=pz.length?' - <b>$'+int(pz[myRow.rank-1])+'</b> if it holds':'')+'.'):('You are not on this board yet. '+(CUR==='bybit'?'<a href="/season/#boards">Register your Bybit UID</a>':CUR==='gold'?'It opens at Gold level (12,000 XP).':'<a href="/paper-trade">Close ten trades this season</a> to enter.')); }
+    else { y.hidden=false; y.innerHTML='<a href="#" data-auth-open>Sign in</a> to see where you stand - your trades already count.'; }
+  }
+  document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.tab[data-b]');if(!t)return;CUR=t.getAttribute('data-b');[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x===t);});paintBoard();try{history.replaceState(null,'','#'+CUR);}catch(_){ }});
+  (function(){var h=(location.hash||'').slice(1);if(B[h]){CUR=h;[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x.getAttribute('data-b')===h);});}})();
+  function load(){fetch('/api/reward/lb',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.weekStart)return;LB=j;paintSeason();paintBoard();}).catch(function(){});}
+  load(); setInterval(function(){if(!document.hidden)load();},120000);
+  window.addEventListener('mp-auth-change',function(){if(LB)paintBoard();});
+  window.__lbPage={get:function(){return LB;},cur:function(){return CUR;}};
+})();
+</script>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
+</body>
+</html>

@@ -2122,8 +2122,8 @@ async function ssrHubSentences(page, sym, env) {
     S.push('Open interest across ' + cs.length + ' tracked USDT-perp markets totals ' + _susd(tot) + ' right now, led by ' + top.map(c => c.s + ' (' + _susd(c.oiUsd) + ')').join(', ') + '.');
     const _c3 = cs.slice(0, 3).reduce((a, c) => a + (+c.oiUsd || 0), 0);
     if (tot > 0) S.push('The top three account for ' + Math.round(_c3 / tot * 100) + '% of all tracked open interest, so most leverage in this market sits in a handful of names.');
-    const mv = cs.filter(c => isFinite(+c.oiChg24h)).sort((a, b) => Math.abs(+b.oiChg24h) - Math.abs(+a.oiChg24h))[0];
-    if (mv && Math.abs(+mv.oiChg24h) >= 3) S.push('Biggest 24h OI shift among the majors: ' + mv.s + ' ' + (+mv.oiChg24h > 0 ? '+' : '') + (+mv.oiChg24h).toFixed(1) + '% - ' + (+mv.oiChg24h > 0 ? 'new leverage is building there' : 'leverage is unwinding there') + '.');
+    const mv = cs.slice(0, 30).filter(c => c.oiChg24h != null && isFinite(+c.oiChg24h)).sort((a, b) => Math.abs(+b.oiChg24h) - Math.abs(+a.oiChg24h))[0]; // top 30 by OI = "the majors"; null is not a change
+    if (mv && Math.abs(+mv.oiChg24h) >= 3) S.push('Biggest 24h OI shift among the majors: ' + mv.s + ' ' + (+mv.oiChg24h > 0 ? '+' : '') + (+mv.oiChg24h).toFixed(1) + '% in open contracts - ' + (+mv.oiChg24h > 0 ? 'new positions are being opened there' : 'positions are being closed there') + '.');
     return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
   }
   if (page === 'ls') {
@@ -2309,6 +2309,75 @@ async function handleCgLongShort(url, env) {
   if (coins.length) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// ---- Own open-interest history (2026-09-17). Coinglass supplied `open_interest_change_percent_24h` until its key
+// died on 2026-08-21; from that day every row on /open-interest/ carried oiChg24h:null and the page printed "+0.00%"
+// on all of them (isFinite(null) is true). The change is now MEASURED from our own hourly ring: the */10 cron keeps
+// one Bybit snapshot per UTC hour for 27 hours (KV oi:ring = {pts:[{t, m:{SYM: openContracts}}]}) and the endpoint
+// compares the OPEN CONTRACTS now against the snapshot nearest 24 h (and 4 h) ago. Contracts, not USD: a price move
+// changes USD open interest with nobody opening or closing a position, and "inflow" must mean positions.
+// First fill: while the ring holds no point old enough, ONE pass seeds it from Bybit's own 1h OI history for the
+// largest coins (KV oi:seeded, once) so the page does not sit blank for a day after deploy.
+const OI_RING_KEEP = 27, OI_SEED_N = 120;
+function oiRingRows(list) { // Bybit linear tickers -> {SYM: open contracts}, same liquidity threshold as the endpoint
+  const m = {};
+  (list || []).forEach(t => {
+    if (!/USDT$/.test(t.symbol)) return;
+    const oiU = +t.openInterestValue || 0, vol = +t.turnover24h || 0; if (oiU < 2e6 && vol < 5e6) return;
+    const oi = +t.openInterest || 0; if (!(oi > 0)) return;
+    m[t.symbol.replace(/USDT$/, '')] = oi;
+  });
+  return m;
+}
+async function oiRingRead(env) { try { const j = JSON.parse(await env.STATS.get('oi:ring') || 'null'); return (j && Array.isArray(j.pts)) ? j.pts : []; } catch (e) { return []; } }
+function oiRingAt(pts, ago, tol) { // the point nearest `ago` ms back, within tol ms, else null
+  const want = Date.now() - ago; let best = null, bd = Infinity;
+  for (const p of pts) { const d = Math.abs((+p.t || 0) - want); if (d < bd) { bd = d; best = p; } }
+  return (best && bd <= tol) ? best : null;
+}
+async function oiRingTick(env) { // */10 cron: records one point per UTC hour; seeds the history once
+  if (!env || !env.STATS) return;
+  let pts = await oiRingRead(env);
+  const now = Date.now(), hour = Math.floor(now / 3600000) * 3600000;
+  let dirty = false;
+  if (!pts.length || +pts[pts.length - 1].t < hour) {
+    const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } });
+    const j = await r.json();
+    const m = oiRingRows(j && j.result && j.result.list);
+    if (Object.keys(m).length >= 20) { pts.push({ t: hour, m }); dirty = true; } // a thin answer is not a snapshot
+  }
+  const oldest = pts.length ? Math.min(...pts.map(p => +p.t || now)) : now;
+  if (now - oldest < 22 * 3600000 && !(await env.STATS.get('oi:seeded'))) {
+    await env.STATS.put('oi:seeded', String(now), { expirationTtl: 7 * 86400 }); // before the fetches: a crash must not re-run 120 calls every 10 min
+    const last = pts[pts.length - 1], syms = last ? Object.keys(last.m) : [];
+    // rank by USD so the seed covers the rows a reader actually sees (the ring itself stores contracts)
+    let ranked = syms;
+    try {
+      const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } });
+      const j = await r.json(); const usd = {};
+      ((j && j.result && j.result.list) || []).forEach(t => { usd[t.symbol.replace(/USDT$/, '')] = +t.openInterestValue || 0; });
+      ranked = syms.slice().sort((a, b) => (usd[b] || 0) - (usd[a] || 0));
+    } catch (e) {}
+    ranked = ranked.slice(0, OI_SEED_N);
+    const byT = {}; pts.forEach(p => { byT[p.t] = p; });
+    for (let i = 0; i < ranked.length; i += 10) {
+      await Promise.all(ranked.slice(i, i + 10).map(async s => {
+        try {
+          const r = await fetch('https://api.bybit.com/v5/market/open-interest?category=linear&symbol=' + s + 'USDT&intervalTime=1h&limit=26');
+          const j = await r.json();
+          ((j && j.result && j.result.list) || []).forEach(x => {
+            const t = +x.timestamp, oi = +x.openInterest; if (!(t > 0) || !(oi > 0) || t >= hour) return;
+            if (!byT[t]) { byT[t] = { t, m: {}, seed: 1 }; }
+            if (byT[t].m[s] == null) byT[t].m[s] = oi;
+          });
+        } catch (e) {}
+      }));
+    }
+    pts = Object.values(byT).sort((a, b) => a.t - b.t); dirty = true;
+  }
+  if (!dirty) return;
+  while (pts.length > OI_RING_KEEP) pts.shift();
+  await env.STATS.put('oi:ring', JSON.stringify({ pts }));
+}
 // Open-interest scanner for the /open-interest page: OI + 24h OI change per coin, sorted by OI. Edge-cached 5 min.
 async function handleCgOpenInterest(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
@@ -2335,18 +2404,23 @@ async function handleCgOpenInterest(url, env) {
   agg.forEach(c => { c.agg = true; });
   const have = {}; agg.forEach(c => { have[c.s] = 1; });
   let coins = agg.slice();
+  // our own history: the change is open CONTRACTS now vs the ring point nearest 24 h / 4 h ago (see oiRingTick)
+  let p24 = null, p4 = null, ringFrom = null;
+  try { const pts = await oiRingRead(env); p24 = oiRingAt(pts, 24 * 3600000, 2 * 3600000); p4 = oiRingAt(pts, 4 * 3600000, 65 * 60000); if (pts.length) ringFrom = +pts[0].t || null; } catch (e) {}
+  const chgVs = (p, s, cur) => { const prev = p && p.m && +p.m[s]; return (prev > 0 && cur > 0) ? +((cur / prev - 1) * 100).toFixed(2) : null; };
   try { // free breadth: every Bybit USDT-perp's open interest in one call
     const br = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 300 } });
     const bj = await br.json();
     ((bj && bj.result && bj.result.list) || []).forEach(t => {
       if (!/USDT$/.test(t.symbol)) return; const s = t.symbol.replace(/USDT$/, ''); if (have[s]) return;
       const oi = +t.openInterestValue || 0, vol = +t.turnover24h || 0; if (oi < 2e6 && vol < 5e6) return;
-      have[s] = 1; coins.push({ s, oiUsd: oi, oiChg24h: null, price: +t.lastPrice, chg24h: (+t.price24hPcnt || 0) * 100, agg: false });
+      const cur = +t.openInterest || 0;
+      have[s] = 1; coins.push({ s, oiUsd: oi, oiChg24h: chgVs(p24, s, cur), oiChg4h: chgVs(p4, s, cur), price: +t.lastPrice, chg24h: (+t.price24hPcnt || 0) * 100, agg: false });
     });
   } catch (e) {}
   coins.sort((a, b) => b.oiUsd - a.oiUsd);
   coins = coins.slice(0, 160);
-  const out = { ts: Date.now(), coins };
+  const out = { ts: Date.now(), coins, change: { basis: 'open contracts on Bybit USDT perpetuals vs our own hourly snapshot', vs24h: p24 ? +p24.t : null, vs4h: p4 ? +p4.t : null, since: ringFrom } };
   const resp = jr(out, coins.length ? 'public, max-age=300' : 'no-store');
   if (coins.length) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -6171,7 +6245,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4d46d554" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e06a80fa" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13734,7 +13808,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '540db9a3';
+const ASSET_V = '6abb8590';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18501,6 +18575,11 @@ export default {
       let d = null; try { d = url.pathname.endsWith('/ar') ? await latamAr(env) : await latamBr(env); } catch (e) { d = null; }
       return new Response(JSON.stringify(d || { ok: false }), { status: d ? 200 : 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': (d && d.ok) ? 'public, max-age=60' : 'no-store', 'access-control-allow-origin': '*' } }); // an empty answer is never cached: the next reader gets a fresh try
     }
+    if (url.pathname === '/api/admin/oiring' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the own OI history ring behind /open-interest/ (2026-09-17): ?tick=1 runs the cron step now
+      if (url.searchParams.get('tick') === '1') { try { await oiRingTick(env); } catch (e) { return J({ error: String(e && e.message || e).slice(0, 200) }); } }
+      const pts = await oiRingRead(env), now = Date.now();
+      return J({ n: pts.length, seeded: !!(await env.STATS.get('oi:seeded')), oldestAgeH: pts.length ? +((now - pts[0].t) / 3600000).toFixed(2) : null, newestAgeH: pts.length ? +((now - pts[pts.length - 1].t) / 3600000).toFixed(2) : null, has24h: !!oiRingAt(pts, 24 * 3600000, 2 * 3600000), has4h: !!oiRingAt(pts, 4 * 3600000, 65 * 60000), pts: pts.map(p => ({ t: p.t, iso: new Date(p.t).toISOString(), coins: Object.keys(p.m || {}).length, seed: !!p.seed, btc: p.m && p.m.BTC })) });
+    }
     if (url.pathname === '/api/admin/latamdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // raw upstream probe for the LATAM sources (status + first bytes), no cache
       const probe = async (u) => { try { const r = await fetch(u, { headers: { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' } }); const t = await r.text(); return { status: r.status, ct: r.headers.get('content-type'), body: t.slice(0, 160) }; } catch (e) { return { err: String(e && e.message || e).slice(0, 200) }; } };
       const [a, b, c] = await Promise.all([probe('https://criptoya.com/api/dolar'), probe('https://criptoya.com/api/usdt/ars/1'), probe('https://economia.awesomeapi.com.br/last/USD-BRL')]);
@@ -18763,6 +18842,7 @@ export default {
     bg(ledgerBackup6h, 'backup6');
     bg(spotStuckNudge, 'spotnudge');
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
+    bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
@@ -20849,7 +20929,7 @@ function briefDeliveryText(M, mine) { // the morning line: market bias, setups, 
   if (ev) { const h = (ev.ts - now) / 3600e3; parts.push(ev.title + ' ' + (h < 1 ? 'within the hour' : h < 24 ? 'in ' + Math.round(h) + ' h' : 'in ' + Math.round(h / 24) + ' d')); }
   if (mine && mine.length) { const s = mine.reduce((a, p) => a + (+p.pnl || 0), 0); const ag = mine.filter(p => p.fundingAgainst).length; parts.push(mine.length + ' open position' + (mine.length === 1 ? '' : 's') + ' ' + (s >= 0 ? '+' : '-') + '$' + Math.abs(s).toFixed(2) + (ag ? ', funding against ' + ag + ' of them' : '')); }
   const esc = (x) => String(x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
-  return { title: 'Your Daily Brief', body: parts.join(' · '), tg: '<b>Your Daily Brief</b>\n' + parts.map(esc).join('\n') + '\n\n<a href="https://marginpad.io/paper-trade?brief=1">Open the full brief</a>' };
+  return { title: 'Your Daily Brief', body: parts.join(' · '), tg: '<b>Your Daily Brief</b>\n' + parts.map(esc).join('\n') + '\n\n<a href="https://marginpad.io/paper-trade?brief=1">Open the full brief</a> · <a href="https://marginpad.io/trading-report/">Your trading report</a>' }; // the report link rides with the brief on every surface that can carry a link (owner 2026-09-17)
 }
 /* ===== Public status (Phase 0 of the API plan, 2026-09-12): the page a builder opens before deciding to build on us. =====
    Every ten-minute cron pass samples three things a bot depends on - the trading store (one Durable Object round trip), the liquidation

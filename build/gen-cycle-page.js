@@ -25,7 +25,8 @@ const HEADER_CSS = `
   .hlink svg{flex-shrink:0}
   .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
   .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
-  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+  /* one row on a phone (2026-09-17): blog.css wraps the header at <=560 and mp-nav injects a Telegram link, so the nav used to drop to a second left-aligned row */
+  @media(max-width:720px){header{flex-wrap:nowrap;gap:8px;padding-top:11px;padding-bottom:11px}header .hnav{gap:2px;flex:0 0 auto}header .hnav .hbot,header .hnav .hjr,header .hnav .htg{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}header .hnav .hrwd{font-size:0;letter-spacing:0;gap:0;padding:7px}header .hnav .hrwd svg{width:17px;height:17px}}
 `;
 const CSS = HEADER_CSS + `
   :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6}

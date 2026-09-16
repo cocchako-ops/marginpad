@@ -18,13 +18,13 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad Premium - el kit de herramientas del trader profesional | $3.99/mes</title>
-<meta name="description" content="Desbloquea MarginPad Premium: 8 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Ask-AI en tus gráficos, Balance Mode, clasificaciones premium y más. $3.99/mes o $39.99 de por vida - paga con cripto." />
+<meta name="description" content="Desbloquea MarginPad Premium: 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Ask-AI en tus gráficos, Balance Mode, clasificaciones premium y más. $3.99/mes o $39.99 de por vida - paga con cripto." />
 <link rel="canonical" href="https://marginpad.io/es/premium/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/premium/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/premium/" />
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/premium/" />
 <meta property="og:title" content="MarginPad Premium - el kit de herramientas del trader profesional" />
-<meta property="og:description" content="8 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Ask-AI, Balance Mode y más. $3.99/mes o $39.99 de por vida - paga con cripto." />
+<meta property="og:description" content="4 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Ask-AI, Balance Mode y más. $3.99/mes o $39.99 de por vida - paga con cripto." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/premium/" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -110,6 +110,41 @@
   footer{text-align:center;color:var(--faint);font-size:12.5px;padding:30px 0 44px;border-top:1px solid var(--line);margin-top:20px}
   footer a{color:var(--dim);text-decoration:none;margin:0 8px}
   #pmsg{text-align:center;color:var(--dim);font-size:13px;min-height:18px;margin-top:10px}
+  /* member status (2026-09-17): a Premium member is told what they have and until when, not sold to */
+  .pmst{max-width:640px;margin:6px auto 0;text-align:left;background:linear-gradient(180deg,rgba(194,246,74,.08),rgba(194,246,74,.02));border:1px solid rgba(194,246,74,.4);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;align-items:center}
+  .pmst[hidden]{display:none}
+  .pmst .pmst-ic{grid-row:1/4;width:46px;height:46px;border-radius:14px;background:var(--lime);color:#0a0b0d;display:flex;align-items:center;justify-content:center}
+  .pmst .pmst-ic svg{width:24px;height:24px}
+  .pmst .pmst-k{font:800 10.5px "Space Mono",monospace;letter-spacing:.14em;color:var(--lime)}
+  .pmst .pmst-t{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1.1}
+  .pmst .pmst-u{font-size:13.5px;color:var(--dim);line-height:1.5}
+  .pmst .pmst-u b{color:#fff}
+  .pmst .pmst-a{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .pmst .pmst-a .btn{padding:11px 16px;font-size:14px}
+  body.pm-member .cta-row,body.pm-member .scarcity,body.pm-member .final{display:none}
+  /* the AI-indicators card opens a preview sheet (same idea as the fee window on a closed ticket) */
+  .fcard.tap{cursor:pointer}
+  .fcard.tap .tapk{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font:800 10.5px "Space Mono",monospace;letter-spacing:.08em;color:var(--lime)}
+  .fcard.tap:hover{border-color:rgba(194,246,74,.7)}
+  .ish{position:fixed;inset:0;z-index:2147483000;background:rgba(6,8,11,.72);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+  .ish[hidden]{display:none}
+  .ish-p{width:min(720px,100%);max-height:88vh;overflow:auto;background:#0f1319;border:1px solid #2a3440;border-radius:22px 22px 0 0;padding:20px 22px 26px;box-shadow:0 -20px 60px rgba(0,0,0,.6)}
+  @media(min-width:720px){.ish{align-items:center}.ish-p{border-radius:22px;max-height:84vh}}
+  .ish-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+  .ish-h h3{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .ish-x{border:1px solid var(--line);background:transparent;color:var(--dim);border-radius:10px;width:36px;height:36px;font-size:16px;cursor:pointer}
+  .ish-sub{color:var(--dim);font-size:13px;margin:0 0 14px;line-height:1.55}
+  .ish-i{border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-top:10px;background:var(--card)}
+  .ish-i h4{margin:0 0 4px;font-size:15px;color:#fff;display:flex;align-items:center;gap:8px}
+  .ish-i h4 i{font-style:normal;font:800 9px "Space Mono",monospace;letter-spacing:.08em;color:#0a0b0d;background:var(--lime);border-radius:5px;padding:2px 6px}
+  .ish-i .q{color:var(--lime);font-size:12.5px;font-weight:700;margin:0 0 6px}
+  .ish-i p{margin:0 0 6px;font-size:13px;color:var(--dim);line-height:1.55}
+  .ish-i p b{color:#fff}
+  .ish-i .r{margin:8px 0 0;padding:9px 11px;border-radius:9px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.18);font-size:12.5px;color:var(--ink);line-height:1.6}
+  .ish-i .r b{color:var(--lime)}
+  .ish-f{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .ish-f .btn{padding:11px 16px;font-size:14px}
+  .ish-f a.more{color:var(--lime);font-weight:700;font-size:13px;text-decoration:none}
   @media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.prices{grid-template-columns:1fr}}
   @media(max-width:480px){.grid{grid-template-columns:1fr}}
 </style>
@@ -144,24 +179,29 @@
     </div>
     <div class="scarcity"><span class="dot"></span>Founder es un único pago, para siempre: Premium de por vida, una insignia Founder, acceso anticipado a nuevas herramientas.</div>
     <div id="pmsg"></div>
+    <div class="pmst" id="pmStatus" hidden>
+      <div class="pmst-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="pmst-k">TU MEMBRESÍA</div>
+      <div class="pmst-t">Premium está activo en tu cuenta</div>
+      <div class="pmst-u" id="pmUntil">Comprobando tu plan…</div>
+    </div>
     <div class="trustrow"><span><b>Paga con cripto</b> · BTC, USDT y más</span><span>Cancela cuando quieras</span><span>Acceso <b>instantáneo</b></span></div>
   </div>
 </div>
 
 <section>
   <div class="wrap">
-    <div class="sh"><div class="k">LO QUE DESBLOQUEAS</div><h2>Todo, a un solo precio</h2><p>Doce mejoras que convierten MarginPad de un gráfico en una ventaja.</p></div>
+    <div class="sh"><div class="k">LO QUE DESBLOQUEAS</div><h2>Todo, a un solo precio</h2><p>Once mejoras que convierten a MarginPad de un gráfico en una ventaja.</p></div>
     <div class="grid">
-      <div class="fcard feat"><span class="pill">EXCLUSIVE</span><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><h3>8 indicadores de IA</h3><p>Market Brain, Cascade Radar, Liquidation Magnet, Market Memory y más - señales construidas sobre nuestros datos que ningún otro gráfico tiene, cada una mostrando su propia tasa de acierto en vivo.</p></div>
+      <div class="fcard feat tap" data-ind-sheet role="button" tabindex="0"><span class="pill">EXCLUSIVE</span><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><h3>4 indicadores de IA</h3><p>Cascade Radar, Liquidation Magnet, Market Brain y Market Memory - cuatro lecturas construidas sobre nuestros propios datos de liquidaciones, que ningún otro gráfico tiene, y cada una califica su propia tasa de acierto en vivo sobre el gráfico que estás viendo.</p><span class="tapk">Qué te dice cada uno &rarr;</span></div>
       <div class="fcard feat"><span class="pill">EXCLUSIVE</span><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>Mapa de calor de liquidaciones en vivo</h3><p>Ve exactamente dónde se eliminan las posiciones apalancadas y qué niveles está cazando el precio a continuación - el mapa por el que Coinglass cobra $300/mes, ilimitado.</p></div>
       <div class="fcard feat"><span class="pill">EXCLUSIVE</span><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18z"/></svg></div><h3>Pregúntale a la IA en tus gráficos</h3><p>Un analista integrado que lee cualquier gráfico y responde tus preguntas en palabras sencillas - 50 preguntas al día.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg></div><h3>Balance Mode</h3><p>Date un saldo de portafolio y opéralo como una cuenta real. Saldo, equity y margen disponible, todo dentro de My Trades.</p></div>
-      <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M20 20V8"/></svg></div><h3>Duelos y salón Premium</h3><p>Todos los formatos de duelo con apuestas en Ticks, hasta 10 desafíos abiertos a la vez, y el salón de chat exclusivo para Premium.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m3 19 2-2"/></svg></div><h3>Duelos Premium</h3><p>Desafía a cualquier trader a los 5 formatos de duelo - Profit, Survival, Streak, Sniper y ROE - apuesta Ticks y gana el bote. Los miembros gratuitos solo tienen el duelo básico de ROE.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>Salón de chat Premium</h3><p>Una sala de chat exclusiva para miembros donde solo pueden hablar los traders Premium - lejos del ruido, con tu nombre en dorado a la vista.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div><h3>Daily Brief</h3><p>Una instantánea matutina de los principales activos - tendencia en 1H y 4H, RSI y los próximos eventos macro de alto impacto, de un vistazo.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg></div><h3>+5% de XP en todo</h3><p>Sube de nivel más rápido en cada operación, lección y misión - Premium te da un impulso permanente de 5% de XP.</p></div>
-      <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></div><h3>Insignia PRO y todo en dorado</h3><p>Una insignia PRO dorada junto a tu nombre en cada chat y clasificación, una tarjeta de trader con estilo premium, tickets negro mate y dorado, e imágenes doradas para compartir tus operaciones.</p></div>
+      <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></div><h3>Insignia Premium y todo en dorado</h3><p>Una insignia Premium dorada junto a tu nombre en cada chat y clasificación, una tarjeta de trader con estilo premium, tickets negro mate y dorado, e imágenes doradas para compartir tus operaciones.</p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><h3>Alertas de posición</h3><p>Una alerta de precio te avisa cuando una moneda toca un número. Estas te dicen lo que solo nosotros podemos ver, porque manejamos tus posiciones: <b>liquidación acercándose</b>, un stop o un objetivo a punto de activarse, una orden límite a punto de ejecutarse. Notificación push del navegador y Telegram, con las distancias que elijas. <a href="/es/alerts/">Configúralas &rarr;</a></p></div>
       <div class="fcard"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></div><h3>Tu informe de trading</h3><p>Cómo operaste realmente, medido a partir de tus propias operaciones cerradas: tasa de acierto y rendimiento por <b>moneda</b>, por <b>rango de apalancamiento</b> y por <b>hora del día</b>, tiempo medio de retención, y la frase que explica el mes - "tus operaciones a 50-100x rinden -5.7% sobre el margen arriesgado, tus operaciones a 1-5x rinden -0.3%". <a href="/es/trading-report/">Mira el tuyo &rarr;</a></p></div>
     </div>
@@ -202,7 +242,7 @@
   <div class="wrap">
     <div class="sh"><div class="k">QUESTIONS</div><h2>Bueno saberlo</h2></div>
     <div class="faq">
-      <div class="qa"><h4>¿Qué obtengo exactamente?</h4><p>Todas las funciones Premium de arriba: los 8 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (50 al día), Balance Mode, las tablas de clasificación premium, el Daily Brief, +5% de XP, la insignia PRO, las alertas de posición y el trading report completo en el sitio. Con el tiempo se añaden nuevas herramientas Premium sin coste adicional.</p></div>
+      <div class="qa"><h4>¿Qué obtengo exactamente?</h4><p>Todas las funciones Premium mencionadas arriba - los 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (50/día), Balance Mode, los cinco formatos de duelo y el salón Premium, el Daily Brief, +5% de XP, la insignia Premium, las alertas de posición y el informe de trading completo en el sitio. Con el tiempo se añaden nuevas herramientas Premium sin costo adicional.</p></div>
       <div class="qa"><h4>¿Premium incluye la Bot API?</h4><p>No. Desde el 15 de septiembre de 2026 la Bot API es un producto aparte con sus propios planes - Free, Pro ($29/mes), Max ($79/mes) y Business ($159/mes) - y una suscripción Premium no cambia ningún límite de la API. También funciona al revés: un plan de API no desbloquea las funciones Premium de esta página. <a href="/es/trading-api/#plans">Ver los planes de API &rarr;</a></p></div>
       <div class="qa"><h4>¿Cómo pago?</h4><p>En cripto - Bitcoin, USDT o cualquier moneda importante - a través de NOWPayments. Nunca guardamos una clave privada ni datos de tarjeta. El acceso se activa en el momento en que se confirma tu pago.</p></div>
       <div class="qa"><h4>¿Puedo cancelar?</h4><p>Sí. El plan mensual simplemente no se renueva si no vuelves a pagar - no hay nada que cancelar ni compromiso alguno. Founder es un pago único para acceso de por vida.</p></div>
@@ -224,6 +264,17 @@
   </div>
 </div>
 
+<div class="ish" id="indSheet" hidden role="dialog" aria-modal="true" aria-labelledby="indSheetT">
+  <div class="ish-p">
+    <div class="ish-h"><h3 id="indSheetT">Los 4 indicadores de IA</h3><button type="button" class="ish-x" aria-label="Cerrar">&#10005;</button></div>
+    <p class="ish-sub">Cuatro lecturas construidas sobre datos que solo tiene MarginPad - nuestro propio feed de liquidaciones, la escalera de apalancamiento detrás del mapa de calor, el funding y el posicionamiento de la multitud - cada una responde una pregunta que deberías hacerte antes de abrir una posición. Cada indicador de flecha también se autoevalúa en el gráfico cargado (objetivo 1.5x ATR frente al stop) e imprime su propia tasa de acierto, así puedes ver cuándo funciona aquí y cuándo no.</p>
+    <div class="ish-i"><h4>Cascade Radar <i>FRAGILIDAD</i></h4><p class="q">¿Qué tan fácil es que el mercado caiga (o suba) en cadena ahora mismo?</p><p><b>Ves:</b> una línea de 0 a 100 debajo de las velas, con una marca en 90, y una línea de leyenda que dice de qué lado está el combustible.</p><p><b>Significa:</b> por debajo de 50 el mercado está en calma y este indicador no tiene nada que decir. Al superar 70 es frágil: hay suficientes posiciones apalancadas cerca del precio como para que un solo empujón las cierre por la fuerza y arrastre a las siguientes en cadena. La leyenda te dice hacia dónde correría la cadena: <b>fuel BELOW</b> = son los longs los que se liquidarían (el precio puede caer rápido), <b>fuel ABOVE</b> = shorts (el precio puede subir de golpe).</p><p class="r"><b>Antes de un long:</b> línea por encima de 70 y combustible debajo = estarías comprando encima de una trampilla; espera el lavado, o entra con la mitad del tamaño y un stop más amplio. Combustible arriba = el squeeze jugaría a tu favor.<br><b>Antes de un short:</b> el espejo - combustible debajo es tu zona objetivo, combustible arriba significa que eres tú quien está parado sobre la trampilla.<br><b>La flecha:</b> CASC roja sobre una vela = cadena preparada para caer; CASC verde debajo de una vela = preparada para subir.</p></div>
+    <div class="ish-i"><h4>Liquidation Magnet <i>OBJETIVOS</i></h4><p class="q">¿A dónde es probable que el precio vaya y toque a continuación?</p><p><b>Ves:</b> dos líneas horizontales sobre el precio - una <b>roja</b> arriba (donde se liquidan los shorts) y una <b>verde</b> abajo (donde se liquidan los longs). La más gruesa es el imán más fuerte; cada una lleva su tamaño en dólares.</p><p><b>Significa:</b> el precio es atraído primero hacia el mayor conjunto de órdenes forzadas, porque las órdenes forzadas mueven un mercado que nadie más está moviendo. La línea gruesa es la próxima visita más probable, y la leyenda muestra qué tan lejos están ambas.</p><p class="r"><b>Antes de un long:</b> línea gruesa por encima de ti = tu primer objetivo, toma algo de ganancia ahí. Línea gruesa por debajo de ti = espera primero una caída hasta ella; pon tu stop <b>debajo</b> de esa línea, no justo encima, o tu orden será la que caza el mercado.<br><b>Antes de un short:</b> el espejo - la línea verde gruesa debajo es el objetivo, la línea roja gruesa arriba significa mantener el stop más allá de ella.<br><b>Sin líneas:</b> ambos lados ya fueron liquidados; nada está tirando, espera un mercado más lento.</p></div>
+    <div class="ish-i"><h4>Market Brain <i>ADAPTATIVO</i></h4><p class="q">¿Hacia dónde se inclina la evidencia, y cuánto deberías confiar en ella aquí?</p><p><b>Ves:</b> una línea de -100 a +100 con dos bandas en +55 y -55, una línea de leyenda "driven by: X + Y", y un chip como <b>BRAIN 58% (14W/10L)</b>.</p><p><b>Significa:</b> la línea subiendo = la evidencia se inclina alcista, bajando = bajista. Combina ocho factores (tendencia, momentum, volumen, fragilidad, liquidaciones reales, funding, posicionamiento de la multitud, estructura) y, cada pocas velas, revisa cuáles de ellos realmente predijeron esta moneda en esta temporalidad, de modo que un factor que no funciona aquí no cuenta para nada. Dentro de las bandas el modelo no tiene una opinión clara. "Driven by" nombra las dos razones detrás del número.</p><p class="r"><b>Antes de un long:</b> quieres la línea por encima de +55, o subiendo a través de ella. Por debajo de -55 estás operando contra la evidencia aprendida - no lo hagas.<br><b>Antes de un short:</b> el espejo, por debajo de -55.<br><b>Dentro de las bandas:</b> sin ventaja aquí - reduce el tamaño o usa los niveles de Magnet en su lugar.<br><b>El chip:</b> el porcentaje indica cuántas veces sus flechas funcionaron en este gráfico exacto. Por debajo del 50% = el modelo no tiene ventaja en esta moneda y temporalidad; ignora sus flechas ahí, haga lo que haga la línea.</p></div>
+    <div class="ish-i"><h4>Market Memory <i>PRONÓSTICO</i></h4><p class="q">¿Qué pasó después las últimas 25 veces que se vio así?</p><p><b>Ves:</b> una línea morada debajo de las velas (el movimiento esperado), una línea punteada <b>MEM</b> sobre el precio en el nivel proyectado, y una leyenda como <b>25 analogs · 72% up · proj +1.4% / 6 bars</b>.</p><p><b>Significa:</b> encontró los 25 momentos pasados que más se parecen a ahora y reporta qué hizo el precio en las seis velas siguientes a ellos. Un 72% de subida y +1.4% significan que la mayoría de esos momentos subieron, en aproximadamente esa magnitud. Es una tasa base, no una predicción.</p><p class="r"><b>Antes de un long:</b> 65% de subida o más Y un movimiento proyectado mayor que tus comisiones y tu stop = adelante, con la línea MEM como objetivo realista y seis velas como horizonte (seis horas en un gráfico de 1h).<br><b>Antes de un short:</b> el espejo, 35% de subida o menos.<br><b>45-55%:</b> la historia fue en ambas direcciones desde aquí - una moneda al aire. Quédate fuera, u opera los niveles de Magnet en lugar de una dirección.<br><b>La flecha:</b> MEMO se activa solo cuando los análogos coinciden; es la forma más fuerte de esta lectura.</p></div>
+    <div class="ish-f"><button class="btn btn-primary" data-buy="monthly">Obtener Premium - $3.99/mes</button><a class="more" href="/es/ai-indicators/">Lee la guía completa con ejemplos &rarr;</a></div>
+  </div>
+</div>
 <footer class="wrap">
   <div><a href="/es/">Inicio</a> · <a href="/es/charts">Gráficos</a> · <a href="/es/rewards/">Recompensas</a> · <a href="/es/privacy/">Privacidad</a></div>
   <div style="margin-top:8px">© MarginPad · No es asesoría financiera</div>
@@ -246,13 +297,21 @@
         }).catch(function(){ if(btn){ btn.disabled=false; btn.style.opacity='1'; btn.textContent=label; } msg.textContent='Network error - please try again.'; });
     }
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
-    // if a premium member lands here, gently reflect it
-    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ msg.textContent = 'You are already a Premium member - thank you.'; } }).catch(function(){});
+    // Premium member: say what they have and until when (owner 2026-09-17), instead of a line under the buy buttons
+    function memberUntil(s){ if(!s.until) return s.source==='founder'?'Founder - lifetime, no renewals, ever.':'Lifetime access on this account.'; var d=new Date(s.until), days=Math.max(0,Math.ceil((d-Date.now())/864e5)); var when=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); return 'Active until <b>'+when+'</b> - '+(days===1?'1 day':days+' days')+' left. '+(s.source==='paid'?'Nothing renews on its own: pay again any time to extend, or let it lapse.':'Granted on your account.'); }
+    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); } var k=document.querySelector('section .sh .k'); if(k){ k.textContent='WHAT YOU HAVE'; k.nextElementSibling.textContent='Everything on your account'; } } }).catch(function(){});
+    // the AI-indicators card opens the preview sheet
+    var ish=document.getElementById('indSheet');
+    function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=event&type=indsheet&l=open&p=/premium/'); }catch(e){} }
+    function ishClose(){ if(!ish) return; ish.hidden=true; document.documentElement.style.overflow=''; }
+    document.addEventListener('click', function(e){ var c=e.target.closest&&e.target.closest('[data-ind-sheet]'); if(c){ e.preventDefault(); ishOpen(); return; } if(ish&&!ish.hidden&&(e.target===ish||(e.target.closest&&e.target.closest('.ish-x')))) ishClose(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') ishClose(); });
+    if(location.hash==='#indicators') setTimeout(ishOpen,300);
     function showBal(){ var bs=document.querySelectorAll('[data-buy="balance"]'); if(!bs.length) return; /* BOTH pricing blocks (top + bottom CTA) carry the button; getElementById reached only the first, so the bottom one stayed hidden for a member who could pay (2026-09-12) */ fetch('/api/reward/account',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var bal=a&&(a.balanceUsd!=null?+a.balanceUsd:(a.balance!=null?+a.balance/100:0)); if(bal>=3.99){ Array.prototype.forEach.call(bs,function(b){ b.hidden=false; b.textContent='Pay from my rewards balance - $3.99 (you have $'+bal.toFixed(2)+')'; }); } }).catch(function(){}); }
     showBal(); window.addEventListener('mp-auth-change', showBal);
   })();
 </script>
-<script defer src="/assets/mp-auth.js?v=540db9a3"></script>
-<script defer src="/assets/mp-nav.js?v=4d46d554"></script>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
 </body>
 </html>

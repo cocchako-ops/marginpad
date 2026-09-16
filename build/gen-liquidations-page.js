@@ -1,55 +1,150 @@
-/* /liquidations - live crypto liquidations tracker (Coinglass data, client-fetched from /api/cg/liquidations).
-   On-brand SEO data page. Run: node build/gen-liquidations-page.js  (also wired into build/build.js) */
+/* /liquidations/ - live crypto liquidations, OUR OWN measurement (collector rollup via /api/cg/liquidations).
+   Rebuilt 2026-09-17 (owner: "hocu da bude bas cool kao screener ... teksta da nema maltene ili da bude na kraju dole"):
+   a data page first - stat strip, a live tape of the latest forced closes, coin rows you can sort and tap, the venue
+   split - and the explanatory prose at the bottom, trimmed to what earns the page its search traffic. The first <h2>
+   sits in that prose on purpose: the worker's SSR box (handleSsrHub) is injected before the first <h2>, so the
+   crawler-facing sentences land with the prose and never between the reader and the data.
+   Run: node build/gen-liquidations-page.js  (also wired into build/build.js). Post-processors (mp-nav, hub links,
+   exchange rail, share card, sentry) are re-applied by build.js; the served page carries them, this template does not. */
 const fs = require('fs');
 const path = require('path');
-const { bakeI18n, COMMON } = require('./lib/i18n-bake');
 const OUT = path.join(__dirname, '..', 'dist', 'liquidations');
 
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const URL = 'https://marginpad.io/liquidations/';
 const TITLE = 'Crypto Liquidations Today - Live Liquidation Tracker';
-const DESC = 'Live crypto futures liquidations: total 24h liquidations, longs vs shorts, and the most-liquidated coins right now. Real-time data, free, no signup.';
+const DESC = 'Live crypto futures liquidations: total 24h liquidations, longs vs shorts, the most-liquidated coins and exchanges right now. Measured from nine exchange feeds, free, no signup.';
 const KW = 'crypto liquidations, liquidation tracker, liquidations today, btc liquidations, eth liquidations, long short liquidations, futures liquidations, liquidation data';
 
+// per-coin pages a row can deep-link to (read from dist at build time, so a link is never guessed)
+const MAPS = fs.readdirSync(path.join(__dirname, '..', 'dist')).filter(d => /-liquidation-map$/.test(d)).map(d => d.replace(/-liquidation-map$/, '').toUpperCase());
+const COINS = fs.existsSync(path.join(__dirname, '..', 'dist', 'coin')) ? fs.readdirSync(path.join(__dirname, '..', 'dist', 'coin')).map(d => d.toUpperCase()) : [];
+
 const CSS = `
-  .lqhero{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:16px;padding:20px;margin:14px 0 8px}
-  .lqhero-top{display:flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
-  .lqdot{width:8px;height:8px;border-radius:50%;background:#2ebd85;box-shadow:0 0 7px #2ebd85;animation:lqp 1.8s ease-in-out infinite}
-  @keyframes lqp{0%,100%{opacity:1}50%{opacity:.3}}
-  .lqlive-tag{color:#06231d;background:#2ebd85;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.1em}
-  .lqtot{font-family:'Space Mono',monospace;font-weight:800;font-size:38px;letter-spacing:-1px;line-height:1}
-  @media(max-width:600px){.lqtot{font-size:30px}}
-  .lqsub{color:var(--ink-dim);font-size:13px;margin-top:5px}
-  .lqls{display:flex;height:11px;border-radius:6px;overflow:hidden;background:var(--line);margin:16px 0 7px}
-  .lqls i{display:block;height:100%}.lqls .l{background:#ff5a4d}.lqls .s{background:#2ebd85}
-  .lqls-l{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700}
+  :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6}
+  .lq-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(52% 50% at 8% 0%,rgba(255,90,77,.07),transparent 60%),radial-gradient(48% 55% at 94% 20%,rgba(46,189,133,.06),transparent 60%)}
+  .wrap{position:relative;z-index:1}
+  .crumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+  .crumb-upd{margin-left:auto;font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a95a1;border:1px solid var(--line-bright);border-radius:99px;padding:4px 10px;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+  .crumb-upd i{width:7px;height:7px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn)}
+  article .lead{margin-bottom:14px}
+  /* stat strip */
+  .lq-top{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;gap:10px;margin:16px 0 12px}
+  .lq-stat{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:16px;padding:15px 16px;min-width:0}
+  .lq-stat .k{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:7px}
+  .lq-stat .v{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.03em;line-height:1.05;margin-top:8px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-stat.big .v{font-size:clamp(34px,4.2vw,50px);color:#fff}
+  .lq-stat .v.up{color:var(--grn)}.lq-stat .v.dn{color:var(--red)}
+  .lq-stat .s{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lqdot{width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 7px var(--grn)}
+  .lqls{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line);margin:12px 0 7px}
+  .lqls i{display:block;height:100%}.lqls .l{background:var(--red)}.lqls .s{background:var(--grn)}
+  .lqls-l{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;gap:8px}
   .lqls-l .lng{color:#ff7b72}.lqls-l .sht{color:#34d99a}
-  .lqtbl{width:100%;border-collapse:collapse;margin:10px 0 4px;font-size:14px}
-  .lqtbl th,.lqtbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  .lqtbl th:first-child,.lqtbl td:first-child{text-align:left}
-  .lqtbl th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
-  .lqtbl td{font-family:'Space Mono',monospace;color:var(--ink)}
-  .lqtbl td.sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px}
-  .lqtbl .rk{color:var(--ink-faint);width:26px;text-align:right}
-  .lqbar{display:inline-flex;width:74px;height:6px;border-radius:4px;overflow:hidden;background:var(--line);vertical-align:middle;margin-right:8px}
-  .lqbar i{display:block;height:100%}.lqbar .l{background:#ff5a4d}.lqbar .s{background:#2ebd85}
-  .lqnote{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;margin:8px 0 0}
-  .lqcta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .lqls-l small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint)}
+  @media(max-width:900px){.lq-top{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.lq-top{grid-template-columns:1fr 1fr;gap:8px}.lq-stat{padding:12px 13px}.lq-stat.big{grid-column:1/-1}.lq-stat .k{font-size:8.5px;letter-spacing:.06em}.lq-stat .s{white-space:normal;line-height:1.4}} /* measured at 390px: the two-word labels wrapped and the biggest-hit note was cut mid-word */
+  /* live tape */
+  .lq-tape{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 0 6px;margin:0 0 14px}
+  .lq-tape::-webkit-scrollbar{display:none}
+  .lq-ev{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;padding:7px 11px;border-radius:9px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink);white-space:nowrap}
+  .lq-ev b{font-weight:800}.lq-ev.l b{color:#ff7b72}.lq-ev.s b{color:#34d99a}
+  .lq-ev .x{color:var(--ink-faint);font-size:9.5px}
+  .lq-ev.head{background:transparent;border-style:dashed;color:var(--ink-faint);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+  /* chips + list */
+  .lq-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+  .lq-chips{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+  .lq-chips button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:7px 11px;border-radius:8px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink-faint);cursor:pointer;min-height:34px}
+  .lq-chips button:hover{color:var(--ink);border-color:var(--lime)}
+  .lq-chips button.on{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .lq-search{margin-left:auto;flex:1 1 150px;max-width:220px;min-width:120px;font-family:'Space Mono',monospace;font-size:12px;padding:8px 11px;border-radius:9px;border:1px solid var(--line-bright);background:#0b0d10;color:var(--ink);outline:none}
+  .lq-search:focus{border-color:var(--lime)}
+  .lq-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;margin:14px 0 9px}
+  .lq-h span:last-child{font-weight:400;text-transform:none;letter-spacing:0;font-size:10px}
+  .lq-list{display:flex;flex-direction:column;gap:6px}
+  .lq-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .12s,background .12s;position:relative}
+  .lq-row:hover{border-color:var(--lime);background:rgba(194,246,74,.03)}
+  .lq-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;height:48px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+  .lq-tile b{font-family:'Space Mono',monospace;font-size:14px;font-weight:800;line-height:1;color:var(--ink)}
+  .lq-tile small{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.1em;color:var(--ink-faint);margin-top:3px}
+  .lq-tile.t1 b{color:var(--red)}.lq-tile.t1{border-color:rgba(255,90,77,.35);background:rgba(255,90,77,.08)}
+  .lq-tile.t2 b{color:var(--amber)}.lq-tile.t2{border-color:rgba(255,176,32,.3);background:rgba(255,176,32,.06)}
+  .lq-main{min-width:0;display:flex;flex-direction:column;gap:6px}
+  .lq-main .l1{display:flex;align-items:center;gap:8px;min-width:0}
+  .lq-main .sym{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.01em;color:#fff;white-space:nowrap}
+  .lq-main .pill{font-family:'Space Mono',monospace;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.04em;white-space:nowrap}
+  .lq-main .pill.l{background:rgba(255,90,77,.16);color:#ff7b72}.lq-main .pill.s{background:rgba(46,189,133,.16);color:#34d99a}.lq-main .pill.e{background:rgba(255,255,255,.07);color:var(--ink-dim)}
+  .lq-main .tot{margin-left:auto;font-family:'Space Mono',monospace;font-size:13.5px;font-weight:800;color:var(--ink);white-space:nowrap}
+  .lq-main .bar{display:flex;height:6px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.05)}
+  .lq-main .bar i{display:block;height:100%}.lq-main .bar .l{background:var(--red)}.lq-main .bar .s{background:var(--grn)}
+  .lq-main .l2{display:flex;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint)}
+  .lq-main .l2 .lg{color:#ff7b72}.lq-main .l2 .sh{color:#34d99a}
+  .lq-more{display:block;width:100%;margin:10px 0 0;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:11px;border-radius:10px;border:1px dashed var(--line-bright);background:transparent;color:var(--ink-dim);cursor:pointer}
+  .lq-more:hover{color:var(--lime);border-color:var(--lime)}
+  .lq-empty{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);text-align:center;padding:22px 12px;border:1px dashed var(--line-bright);border-radius:12px}
+  .lq-sk{height:70px;border-radius:12px;margin-bottom:6px;background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.07),rgba(255,255,255,.03))}
+  /* venues + go deeper */
+  .lq-two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin:18px 0 6px}
+  @media(max-width:760px){.lq-two{grid-template-columns:1fr}}
+  .lq-card{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:13px 14px;min-width:0}
+  .lq-card .lq-h{margin:0 0 8px}
+  .lq-ven{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-family:'Space Mono',monospace;font-size:11.5px}
+  .lq-ven:first-child{border-top:0}
+  .lq-ven b{color:var(--ink);text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-ven .vb{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.05)}.lq-ven .vb i{display:block;height:100%}.lq-ven .vb .l{background:var(--red)}.lq-ven .vb .s{background:var(--grn)}
+  .lq-ven .vv{text-align:right;color:var(--ink);white-space:nowrap}.lq-ven .vv small{display:block;font-size:9px;color:var(--ink-faint)}
+  .lq-card .more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--lime);text-decoration:none;font-weight:700}
+  .lq-go{display:flex;flex-direction:column;gap:6px}
+  .lq-go a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;color:var(--ink);font-size:13px;padding:9px 11px;border-radius:10px;border:1px solid var(--line-bright);background:#0b0d10}
+  .lq-go a:hover{border-color:var(--lime)}
+  .lq-go a small{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);white-space:nowrap}
+  .lqcta{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}
   .lqcta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
-  .lqcta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
-  .lqload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
-  @media(max-width:600px){.lqtbl th.hide,.lqtbl td.hide{display:none}}
+  .lqcta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  .lq-prose{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+  .lq-prose h2{font-size:19px;margin:22px 0 8px}
+  .lq-prose p{font-size:14px;color:var(--ink-dim)}
+  .lq-prose .fine{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin-top:18px}
+  /* coin sheet */
+  [hidden]{display:none!important}
+  .lq-dim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:2147483000}
+  .lq-sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;overflow-y:auto;background:#0d0f12;border:1px solid var(--line-bright);border-radius:18px;z-index:2147483001;padding:18px 18px 20px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  @media(max-width:620px){.lq-sheet{left:0;top:auto;bottom:0;transform:none;width:100vw;max-height:92vh;border-radius:16px 16px 0 0;border-left:0;border-right:0;border-bottom:0;padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
+  .lq-sh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .lq-sh .t{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:#fff;line-height:1}
+  .lq-sh .t small{display:block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:400;color:var(--ink-faint);letter-spacing:0;margin-top:5px}
+  .lq-x{flex:0 0 auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);font-size:13px;cursor:pointer}
+  .lq-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+  .lq-tiles .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 10px;min-width:0}
+  .lq-tiles .k{font-family:'Space Mono',monospace;font-size:8.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase}
+  .lq-tiles .v{font-family:'Space Mono',monospace;font-size:13.5px;font-weight:800;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lq-tiles .v.up{color:#34d99a}.lq-tiles .v.dn{color:#ff7b72}
+  .lq-read{margin-top:12px;font-size:13px;color:var(--ink-dim);line-height:1.55;background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.2);border-radius:10px;padding:10px 12px}
+  .lq-read b{color:#fff}
+  .lq-lnk{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .lq-lnk a{flex:1;min-width:130px;text-align:center;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:10px 12px;border-radius:10px;border:1px solid var(--line-bright);background:transparent;color:var(--ink);text-decoration:none}
+  .lq-lnk a.go{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .lq-lnk a:hover{border-color:var(--lime)}
+  .lq-exh{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:14px 0 4px}
+  .lq-ex{display:flex;flex-direction:column;gap:6px}
+  .lq-ex a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid var(--line-bright);background:#0b0d10}
+  .lq-ex a i{width:8px;height:8px;border-radius:50%;background:var(--c,#f7a600);box-shadow:0 0 8px -1px var(--c,#f7a600);flex:0 0 auto}
+  .lq-ex a small{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint)}
+  .lq-ex a.off{opacity:.5}
+  @media(min-width:861px){.wrap{max-width:1180px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
 `;
 
 const LD = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Liquidations Tracker","url":"${URL}","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a liquidation in crypto?","acceptedAnswer":{"@type":"Answer","text":"A liquidation happens when a leveraged futures position is force-closed by the exchange because the trader's margin can no longer cover the loss. Long liquidations happen when price falls; short liquidations when price rises."}},{"@type":"Question","name":"What do long vs short liquidations mean?","acceptedAnswer":{"@type":"Answer","text":"Long liquidations are over-leveraged buyers wiped out by a price drop; short liquidations are sellers wiped out by a rally. A spike on one side often marks a local capitulation or squeeze."}}]}</script>`;
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Crypto futures liquidations, last 24 hours","description":"Forced closes of leveraged perpetual-futures positions across nine exchanges, measured continuously by MarginPad's own collector: market totals, long vs short, per coin and per exchange.","url":"${URL}","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"license":"https://marginpad.io/terms/","isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/venues"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>`;
+
+const FAQ = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a liquidation in crypto?","acceptedAnswer":{"@type":"Answer","text":"A liquidation happens when a leveraged futures position is force-closed by the exchange because the trader's margin can no longer cover the loss. Long liquidations happen when price falls; short liquidations when price rises."}},{"@type":"Question","name":"How much crypto is liquidated in 24 hours?","acceptedAnswer":{"@type":"Answer","text":"It swings with volatility. Quiet days clear tens of millions of dollars across all perpetual futures markets; a sharp move can clear more than a billion in a single day. The live figure on this page is measured continuously from exchange liquidation websockets and carries its own timestamp."}},{"@type":"Question","name":"Why do liquidation trackers show different numbers?","acceptedAnswer":{"@type":"Answer","text":"Exchanges publish forced closes at different granularity, some batch cascades into single events, and feeds throttle under exactly the load that produces the most liquidations. Trackers that model the missing data report higher totals than trackers that only count observed events. MarginPad counts observed events only, which puts our figures at the conservative end."}},{"@type":"Question","name":"Are stop-losses counted as liquidations?","acceptedAnswer":{"@type":"Answer","text":"No. A stop-loss is a voluntary exit you placed yourself; a liquidation is a forced close executed by the exchange when margin can no longer cover the loss. Only the second appears on a liquidation feed. The totals here also exclude options, dated futures and on-chain lending liquidations."}},{"@type":"Question","name":"Which exchange has the most liquidations?","acceptedAnswer":{"@type":"Answer","text":"It changes daily. Binance is usually largest by absolute size because it carries the most open leverage, but share moves sharply during cascades. The per-venue breakdown with the long and short split is on this page and at marginpad.io/liquidations/by-exchange/."}},{"@type":"Question","name":"Can I get liquidation data as a free API?","acceptedAnswer":{"@type":"Answer","text":"Yes, keyless and CORS-enabled: /api/v1/liquidations for market totals, /api/v1/venues for the per-exchange breakdown, /api/v1/liquidations/live for individual recent events and /api/v1/clusters for the heatmap bands."}}]}</script>`;
 
 let html = `<!DOCTYPE html>
 <html lang="en">
 <head>${GTAG}
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>${TITLE} | MarginPad</title>
 <meta name="description" content="${DESC}" />
 <meta name="keywords" content="${KW}" />
@@ -60,146 +155,201 @@ let html = `<!DOCTYPE html>
 <meta property="og:description" content="${DESC}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${URL}" />
-<meta property="og:image" content="https://marginpad.io/assets/og/liquidations.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og/liquidations.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${TITLE}" />
 <meta name="twitter:description" content="${DESC}" />
-<meta name="twitter:image" content="https://marginpad.io/assets/og/liquidations.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/liquidations.jpg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>${CSS}</style>
 ${LD}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidations","item":"${URL}"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much crypto is liquidated in 24 hours?","acceptedAnswer":{"@type":"Answer","text":"It swings with volatility. Quiet days clear tens of millions of dollars across all perpetual futures markets; a sharp move can clear more than a billion in a single day. The live figure on this page is measured continuously from exchange liquidation websockets and carries its own timestamp."}},{"@type":"Question","name":"Why do liquidation trackers show different numbers?","acceptedAnswer":{"@type":"Answer","text":"Exchanges publish forced closes at different granularity, some batch cascades into single events, and feeds throttle under exactly the load that produces the most liquidations. Trackers that model the missing data report higher totals than trackers that only count observed events. MarginPad counts observed events only, which puts our figures at the conservative end."}},{"@type":"Question","name":"Are stop-losses counted as liquidations?","acceptedAnswer":{"@type":"Answer","text":"No. A stop-loss is a voluntary exit you placed yourself; a liquidation is a forced close executed by the exchange when margin can no longer cover the loss. Only the second appears on a liquidation feed. The totals here also exclude options, dated futures and on-chain lending liquidations."}},{"@type":"Question","name":"Which exchange has the most liquidations?","acceptedAnswer":{"@type":"Answer","text":"It changes daily. Binance is usually largest by absolute size because it carries the most open leverage, but share moves sharply during cascades. The per-venue breakdown with the long and short split is at marginpad.io/liquidations/by-exchange/."}},{"@type":"Question","name":"Can I get liquidation data as a free API?","acceptedAnswer":{"@type":"Answer","text":"Yes, keyless and CORS-enabled: /api/v1/liquidations for market totals, /api/v1/venues for the per-exchange breakdown, /api/v1/liquidations/live for individual recent events and /api/v1/clusters for the heatmap bands."}}]}</script>
+${FAQ}
 </head>
 <body>
+<div class="lq-glow" aria-hidden="true"></div>
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
     <nav class="nav"><a href="/markets/">Markets</a><a href="/liquidations/">Liquidations</a><a href="/funding/">Funding</a><a href="/open-interest/">Open Interest</a><a href="/long-short/">Long/Short</a><a href="/screener">Screener</a></nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / Liquidations</div>
+  <div class="crumb"><a href="/">Home</a> / Liquidations <span class="crumb-upd"><i></i>Live · nine exchange feeds</span></div>
   <article>
     <h1>Crypto Liquidations Today</h1>
-    <p class="lead">Live crypto futures liquidations across every major exchange - how much was wiped out in the last 24 hours, whether longs or shorts took the pain, and which coins saw the most carnage. Data updates automatically.</p>
+    <p class="lead">Every forced close on nine perpetual-futures exchanges, counted by MarginPad's own collector as it happens: how much was wiped out in 24 hours, which side paid, which coins and which venues.</p>
 
-    <div class="lqhero">
-      <div class="lqhero-top"><span class="lqdot"></span>Market liquidations · 24h <span class="lqlive-tag">LIVE</span></div>
-      <div id="lqMarket"><div class="lqload">Loading live liquidation data…</div></div>
+    <section class="lq-top" id="lqTop" aria-label="24-hour totals">
+      <div class="lq-stat big"><div class="k"><i class="lqdot"></i>Liquidated · 24h</div><div class="v" id="lqTot">…</div><div class="s" id="lqTotS">measuring</div></div>
+      <div class="lq-stat"><div class="k">Longs vs shorts</div><div class="lqls" id="lqLs"><i class="l" style="width:50%"></i><i class="s" style="width:50%"></i></div><div class="lqls-l"><span class="lng" id="lqLong">…</span><span class="sht" id="lqShort">…</span></div></div>
+      <div class="lq-stat"><div class="k">Biggest single hit</div><div class="v" id="lqBig">…</div><div class="s" id="lqBigS">largest one forced close today</div></div>
+      <div class="lq-stat"><div class="k">Positions force-closed</div><div class="v" id="lqCnt">…</div><div class="s" id="lqCntS">in the last 24 hours</div></div>
+    </section>
+
+    <div class="lq-tape" id="lqTape" aria-label="Latest liquidations"><span class="lq-ev head">latest</span><span class="lq-ev">loading the feed…</span></div>
+
+    <div class="lq-bar">
+      <div class="lq-chips" id="lqChips" role="group" aria-label="Sort">
+        <button type="button" data-sort="liq" class="on">Top total</button><button type="button" data-sort="long">Longs wiped</button><button type="button" data-sort="short">Shorts wiped</button><button type="button" data-sort="lpct">Long-heavy</button><button type="button" data-sort="spct">Short-heavy</button>
+      </div>
+      <input class="lq-search" id="lqQ" type="search" placeholder="Find a coin" autocomplete="off" aria-label="Find a coin" />
     </div>
+    <div class="lq-h"><span>Most liquidated coins · 24h</span><span id="lqUpd"></span></div>
+    <div class="lq-list" id="lqList"><div class="lq-sk"></div><div class="lq-sk"></div><div class="lq-sk"></div><div class="lq-sk"></div></div>
+    <button type="button" class="lq-more" id="lqMore" hidden>Show every market</button>
 
-    <h2>Most liquidated coins · 24h</h2>
-    <div id="lqTable"><div class="lqload">Loading…</div></div>
-    <p class="lqnote" id="lqUpd"></p>
+    <div class="lq-two">
+      <div class="lq-card"><div class="lq-h"><span>By exchange · 24h</span><span>share of all liquidations</span></div><div id="lqVen"><div class="lq-sk" style="height:40px"></div><div class="lq-sk" style="height:40px"></div></div><a class="more" href="/liquidations/by-exchange/">Full breakdown by venue &rarr;</a></div>
+      <div class="lq-card"><div class="lq-h"><span>Go deeper</span></div><div class="lq-go">
+        <a href="/rekt/">Live feed, every event as it lands <small>/rekt</small></a>
+        <a href="/heatmap">Where the next stops are stacked <small>heatmap</small></a>
+        <a href="/how-many-traders-liquidated-today/">How many traders were liquidated today <small>one answer</small></a>
+        <a href="/liquidation-statistics/">Largest single hits, BTC and ETH <small>statistics</small></a>
+        <a href="/free-crypto-api/">This data as free JSON <small>API</small></a>
+      </div></div>
+    </div>
 
     <div class="lqcta">
-      <a class="go" href="/screener">Open the market screener →</a>
-      <a href="/rekt/">Live liquidation feed (Rekt)</a>
-      <a href="/paper-trade">Practice risk-free</a>
+      <a class="go" href="/paper-trade">Practice with leverage, risk nothing →</a>
+      <a href="/screener">Market screener</a>
+      <a href="/calculators?c=liq">Liquidation price calculator</a>
     </div>
 
-    <h2>What is a liquidation?</h2>
-    <p>A <strong>liquidation</strong> is when an exchange force-closes a leveraged futures position because the trader's margin can no longer cover the loss. The position is sold (or bought back) at market, and the trader loses their margin. At high leverage the liquidation price sits very close to entry, so even a small move against the position can trigger it.</p>
-
-    <h2>Long vs short liquidations</h2>
-    <p><strong>Long liquidations</strong> are over-leveraged buyers wiped out when price <em>falls</em>. <strong>Short liquidations</strong> are sellers wiped out when price <em>rises</em>. A large one-sided spike often marks a local extreme: a flush of long liquidations can mark a capitulation low, while a wave of short liquidations can fuel a short squeeze higher. The bar above shows which side is currently taking the most damage.</p>
-
-    <h2>How traders use liquidation data</h2>
-    <p>Clusters of liquidations act like fuel: when price reaches a zone packed with leveraged positions, the cascade of forced orders can accelerate the move. Watching where liquidations build up - and which side is heavier - helps you avoid getting caught in the same crowded trade, and spot where volatility is likely to spike next. Pair this page with the <a href="/screener">technical screener</a> for entries and the <a href="/">liquidation-price calculator</a> to size your own positions safely.</p>
-
-    <h2>Why liquidation totals differ between sites</h2>
-    <p>Compare any two liquidation trackers on the same day and the numbers will not match, often by a wide margin. That is expected, and the reason is worth knowing before you quote a figure. Exchanges publish forced closes at different granularity: some stream every individual fill, others batch a cascade into one aggregated event, and a few throttle the feed under load exactly when the most liquidations are happening. A tracker that models the gaps will always report more than one that only counts what it observed. MarginPad counts observed events and nothing else, so our totals sit at the conservative end. When a site reports a figure several times larger on a violent day, the difference is usually estimation, not better coverage.</p>
-
-    <h2>What this number does not include</h2>
-    <p>The total above covers <strong>perpetual futures liquidations on the venues we subscribe to</strong>. It excludes stop-losses and manual closes, which are not forced and never appear on a liquidation feed. It excludes options and dated futures. It excludes on-chain lending liquidations on protocols like Aave or Maker, which are a different mechanism entirely. And it excludes any venue that does not publish a public liquidation stream, which is most smaller exchanges. Read it as a measure of leveraged perp positioning being wiped out, not as every forced sale in crypto.</p>
-
-    <h2>Which exchange is liquidating the most</h2>
-    <p>Market-wide totals hide where the damage actually lands. The same collector breaks the 24-hour figure down per venue with the long and short split on <a href="/liquidations/by-exchange/">liquidations by exchange</a> - useful because share tells you more than dollars. A venue carrying more open leverage will always liquidate more money on the same move, so a big total is mostly a statement about size; a venue punching far above its usual share is the one that just had a cascade.</p>
-
-    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">Liquidation data aggregated across major exchanges. For information only - not financial advice. Trade responsibly.</p>
+    <section class="lq-prose">
+      <h2>What is a liquidation?</h2>
+      <p>A <strong>liquidation</strong> is an exchange force-closing a leveraged futures position because the trader's margin can no longer cover the loss. The position is sold (or bought back) at market and the margin is gone. At high leverage the liquidation price sits close to the entry, so a small move against the position is enough. <strong>Long liquidations</strong> are buyers wiped out by a drop; <strong>short liquidations</strong> are sellers wiped out by a rally. A one-sided spike often marks a local extreme: a flush of longs can be a capitulation low, a wave of shorts can fuel a squeeze.</p>
+      <h2>Why liquidation totals differ between sites</h2>
+      <p>Exchanges publish forced closes at different granularity - some stream every fill, some batch a cascade into one event, and feeds throttle under exactly the load that produces the most liquidations. A tracker that models the gaps reports more than one that counts what it observed. MarginPad counts observed events and nothing else, so these totals sit at the conservative end; a figure several times larger on a violent day is usually estimation, not coverage.</p>
+      <h2>What this number does not include</h2>
+      <p>Perpetual-futures liquidations on the venues we subscribe to, and nothing else: no stop-losses or manual closes (never forced, never on a feed), no options or dated futures, no on-chain lending liquidations on Aave or Maker, and no venue without a public liquidation stream. Read it as leveraged perp positioning being wiped out, not every forced sale in crypto.</p>
+      <p class="fine">Measured by MarginPad's collector from nine exchange websockets. For information only - not financial advice. Trade responsibly.</p>
+    </section>
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
     <span><a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/">Tools</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></span>
   </footer>
+
+  <div class="lq-dim" id="lqDim" hidden></div>
+  <div class="lq-sheet" id="lqSheet" hidden role="dialog" aria-modal="true" aria-labelledby="lqShT"><div class="lq-sh"><div class="t" id="lqShT">-</div><button type="button" class="lq-x" id="lqShX" aria-label="Close">&#10005;</button></div><div id="lqShB"></div></div>
 </div>
 <script>(function(){
-  var mEl=document.getElementById('lqMarket'),tEl=document.getElementById('lqTable'),uEl=document.getElementById('lqUpd');
+  var MAPS=${JSON.stringify(MAPS)},COINS=${JSON.stringify(COINS)};
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});};
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
-  function render(d){
-    if(!d||d.error||!d.market){mEl.innerHTML='<div class="lqload">Live data unavailable right now - retry shortly.</div>';tEl.innerHTML='';return;}
-    var m=d.market,lp=m.total?m.long/m.total*100:50,sp=100-lp;
-    mEl.innerHTML='<div class="lqtot">'+bn(m.total)+'</div><div class="lqsub">liquidated in the last 24 hours · '+(m.count||0)+' markets</div>'
-      +'<div class="lqls"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i></div>'
-      +'<div class="lqls-l"><span class="lng">Longs '+bn(m.long)+' ('+lp.toFixed(0)+'%)</span><span class="sht">('+sp.toFixed(0)+'%) '+bn(m.short)+' Shorts</span></div>';
-    var rows=(d.coins||[]).map(function(c,i){var clp=c.liq?c.long/c.liq*100:50;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+c.s+'</td><td><span class="lqbar"><i class="l" style="width:'+clp.toFixed(0)+'%"></i><i class="s" style="width:'+(100-clp).toFixed(0)+'%"></i></span>'+bn(c.liq)+'</td><td class="hide" style="color:#ff7b72">'+bn(c.long)+'</td><td class="hide" style="color:#34d99a">'+bn(c.short)+'</td></tr>';}).join('');
-    tEl.innerHTML='<table class="lqtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Liquidated 24h</th><th class="hide">Longs</th><th class="hide">Shorts</th></tr></thead><tbody>'+rows+'</tbody></table>';
-    if(uEl)uEl.textContent='Updated just now · refreshes automatically';
+  function ago(ts){var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d';}
+  var D=null,V=null,SORT='liq',Q='',ALL=false,CAP=30;
+  /* ── stat strip ─────────────────────────────────────────────────────────────────────────── */
+  function paintTop(d){
+    var m=d.market||{},lp=m.total?m.long/m.total*100:50,sp=100-lp;
+    $('lqTot').textContent=bn(m.total); $('lqTotS').textContent='across '+(m.coinsN||d.coins.length)+' markets on '+(d.exchanges||9)+' exchanges';
+    $('lqLs').innerHTML='<i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i>';
+    $('lqLong').innerHTML=lp.toFixed(0)+'% longs<small>'+bn(m.long)+'</small>'; $('lqShort').innerHTML=sp.toFixed(0)+'% shorts<small>'+bn(m.short)+'</small>';
+    var b=d.big; if(b&&b.usd){ var el=$('lqBig'); el.textContent=bn(b.usd); el.className='v '+(b.side==='long_liquidated'?'dn':'up'); $('lqBigS').textContent=(b.s||'')+' '+(b.side==='long_liquidated'?'long':'short')+' on '+(b.ex||'')+' - one forced close'; }
+    $('lqCnt').textContent=(m.count||0).toLocaleString('en-US'); $('lqCntS').textContent='positions in the last 24 hours';
+    $('lqUpd').textContent='updated '+new Date(d.ts||Date.now()).toUTCString().slice(17,22)+' UTC · refreshes every minute';
   }
-  function load(){fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
-  load();setInterval(load,60000);
+  /* ── coin rows ───────────────────────────────────────────────────────────────────────────── */
+  function rows(){
+    var cs=(D&&D.coins||[]).slice(), tot=(D&&D.market&&D.market.total)||1;
+    cs=cs.map(function(c){var lp=c.liq?c.long/c.liq*100:50;return {s:c.s,liq:c.liq,long:c.long,short:c.short,lp:lp,sp:100-lp,share:c.liq/tot*100};});
+    if(Q){var q=Q.toUpperCase();cs=cs.filter(function(c){return String(c.s).toUpperCase().indexOf(q)>=0;});}
+    if(SORT==='long')cs.sort(function(a,b){return b.long-a.long;});
+    else if(SORT==='short')cs.sort(function(a,b){return b.short-a.short;});
+    else if(SORT==='lpct')cs=cs.filter(function(c){return c.liq>=1e6;}).sort(function(a,b){return b.lp-a.lp;}); /* a $40k market at 100% long is noise, not a signal */
+    else if(SORT==='spct')cs=cs.filter(function(c){return c.liq>=1e6;}).sort(function(a,b){return b.sp-a.sp;});
+    else cs.sort(function(a,b){return b.liq-a.liq;});
+    return cs;
+  }
+  function paintList(){
+    var box=$('lqList'),cs=rows(),more=$('lqMore');
+    if(!cs.length){box.innerHTML='<div class="lq-empty">No market matches'+(Q?' "'+esc(Q)+'"':'')+'.</div>';more.hidden=true;return;}
+    var show=ALL||Q?cs:cs.slice(0,CAP);
+    box.innerHTML=show.map(function(c,i){
+      var dom=c.lp>=60?'l':(c.sp>=60?'s':'e'), pillT=dom==='l'?'LONGS '+c.lp.toFixed(0)+'%':dom==='s'?'SHORTS '+c.sp.toFixed(0)+'%':'EVEN';
+      var tcls=c.share>=15?'t1':(c.share>=5?'t2':'');
+      return '<button type="button" class="lq-row" data-sym="'+esc(c.s)+'">'+
+        '<span class="lq-tile '+tcls+'"><b>'+(c.share>=10?c.share.toFixed(0):c.share.toFixed(1))+'%</b><small>SHARE</small></span>'+
+        '<span class="lq-main"><span class="l1"><b class="sym">'+esc(c.s)+'</b><span class="pill '+dom+'">'+pillT+'</span><span class="tot">'+bn(c.liq)+'</span></span>'+
+        '<span class="bar"><i class="l" style="width:'+c.lp.toFixed(1)+'%"></i><i class="s" style="width:'+c.sp.toFixed(1)+'%"></i></span>'+
+        '<span class="l2"><span class="lg">'+bn(c.long)+' longs</span><span class="sh">'+bn(c.short)+' shorts</span></span></span></button>';
+    }).join('');
+    more.hidden=!(cs.length>show.length); if(!more.hidden)more.textContent='Show all '+cs.length+' markets';
+  }
+  /* ── venues ──────────────────────────────────────────────────────────────────────────────── */
+  function paintVen(v){
+    var box=$('lqVen'); if(!box)return; var vs=(v&&v.venues)||[];
+    if(!vs.length){box.innerHTML='<div class="lq-empty">Venue split appears with the next rollup.</div>';return;}
+    var mx=Math.max.apply(null,vs.map(function(x){return x.total||0;}))||1;
+    box.innerHTML=vs.slice(0,9).map(function(x){var lp=+x.longPct||50,w=(x.total||0)/mx*100;
+      return '<div class="lq-ven"><b>'+esc(x.venue)+'</b><span class="vb" style="width:'+Math.max(6,w).toFixed(0)+'%"><i class="l" style="width:'+lp.toFixed(0)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(0)+'%"></i></span><span class="vv">'+bn(x.total)+'<small>'+(+x.share||0).toFixed(1)+'% · '+lp.toFixed(0)+'% longs</small></span></div>';}).join('');
+  }
+  /* ── live tape ───────────────────────────────────────────────────────────────────────────── */
+  function paintTape(ev){
+    var t=$('lqTape'); if(!t)return; ev=(ev||[]).slice(0,14);
+    if(!ev.length){t.innerHTML='<span class="lq-ev head">latest</span><span class="lq-ev">quiet right now</span>';return;}
+    t.innerHTML='<span class="lq-ev head">latest</span>'+ev.map(function(e){var l=e.side==='long_liquidated';return '<span class="lq-ev '+(l?'l':'s')+'"><b>'+esc(e.symbol)+' '+(l?'LONG':'SHORT')+'</b>'+bn(e.notional)+'<span class="x">'+esc(e.exchange)+' · '+ago(e.ts)+' ago</span></span>';}).join('');
+  }
+  /* ── the coin sheet ──────────────────────────────────────────────────────────────────────── */
+  function shOpen(sym){
+    var c=(D&&D.coins||[]).filter(function(x){return x.s===sym;})[0]; if(!c)return;
+    var tot=(D.market&&D.market.total)||1, lp=c.liq?c.long/c.liq*100:50, sp=100-lp, share=c.liq/tot*100;
+    $('lqShT').innerHTML=esc(sym)+'<small>'+bn(c.liq)+' liquidated in 24h · '+share.toFixed(1)+'% of all liquidations</small>';
+    var read=lp>=65?'<b>Longs took the pain</b> - '+lp.toFixed(0)+'% of what was wiped on '+esc(sym)+' was buyers liquidated by a drop. A flush like this often marks a local low, but only once it stops.':
+             sp>=65?'<b>Shorts got squeezed</b> - '+sp.toFixed(0)+'% of what was wiped on '+esc(sym)+' was sellers liquidated by a rally. Squeezes feed on themselves until the short side is empty.':
+             '<b>Two-sided</b> - both longs and shorts were liquidated on '+esc(sym)+', which is what a range with leverage on both sides looks like.';
+    var links='<div class="lq-lnk">'+
+      '<a class="go" href="/paper-trade?coin='+encodeURIComponent(sym)+'">Trade '+esc(sym)+' on paper &rarr;</a>'+
+      (MAPS.indexOf(sym)>=0?'<a href="/'+esc(sym.toLowerCase())+'-liquidation-map/">'+esc(sym)+' liquidation map</a>':'')+
+      (COINS.indexOf(sym)>=0?'<a href="/coin/'+esc(sym.toLowerCase())+'/">'+esc(sym)+' coin page</a>':'<a href="/rekt/">Live feed</a>')+'</div>';
+    var ex='';
+    try{ if(window.mpEx){ var cc=window.mpEx.ccNow(), order=window.mpEx.rank(cc);
+      ex='<div class="lq-exh">Trade it for real</div><div class="lq-ex">'+order.slice(0,5).map(function(n){var p=window.mpEx.P[n]||{},blk=window.mpEx.blocked(n,cc),u=window.mpEx.url(n,sym);if(!u)return '';return '<a class="'+(blk?'off':'')+'" style="--c:'+(p.c||'#f7a600')+'" data-mpex="'+esc(n)+'" href="'+esc(u)+'" target="_blank" rel="sponsored noopener noreferrer"><i></i>'+esc(n)+'<small>'+(blk?'not available in '+esc(cc):(p.deep?esc(sym)+' perp':'open'))+'</small></a>';}).join('')+'</div>'; } }catch(e){}
+    $('lqShB').innerHTML='<div class="lq-tiles">'+
+      '<div class="c"><div class="k">Longs wiped</div><div class="v dn">'+bn(c.long)+'</div></div>'+
+      '<div class="c"><div class="k">Shorts wiped</div><div class="v up">'+bn(c.short)+'</div></div>'+
+      '<div class="c"><div class="k">Split</div><div class="v">'+lp.toFixed(0)+' / '+sp.toFixed(0)+'</div></div></div>'+
+      '<div class="lq-read">'+read+'</div>'+links+ex;
+    $('lqSheet').hidden=false; $('lqDim').hidden=false; document.documentElement.style.overflow='hidden';
+    try{ navigator.sendBeacon('/api/track?t=event&type=liqsheet&l='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
+  }
+  function shClose(){ $('lqSheet').hidden=true; $('lqDim').hidden=true; document.documentElement.style.overflow=''; }
+  document.addEventListener('click',function(e){
+    var r=e.target.closest&&e.target.closest('.lq-row[data-sym]'); if(r){shOpen(r.getAttribute('data-sym'));return;}
+    if(e.target.closest&&(e.target.closest('#lqShX')||e.target.closest('#lqDim'))){shClose();return;}
+    var c=e.target.closest&&e.target.closest('#lqChips button[data-sort]'); if(c){SORT=c.getAttribute('data-sort');[].forEach.call(c.parentNode.children,function(x){x.classList.toggle('on',x===c);});ALL=false;paintList();return;}
+    if(e.target.closest&&e.target.closest('#lqMore')){ALL=true;paintList();return;}
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape')shClose(); });
+  var qEl=$('lqQ'); if(qEl){ var qt; qEl.addEventListener('input',function(){ clearTimeout(qt); qt=setTimeout(function(){ Q=qEl.value.trim(); paintList(); },120); }); }
+  /* ── data ────────────────────────────────────────────────────────────────────────────────── */
+  function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
+  function load(){
+    J('/api/cg/liquidations').then(function(d){ if(!d||d.error||!d.market||!d.coins){ if(!D){$('lqTot').textContent='-';$('lqTotS').textContent='live data unavailable right now - retry shortly';$('lqList').innerHTML='<div class="lq-empty">Live data unavailable right now - retry shortly.</div>';} return; } D=d; paintTop(d); paintList(); });
+    J('/api/v1/venues').then(function(v){ if(v&&v.data)paintVen(v.data); });
+    J('/api/v1/feed?limit=200').then(function(j){ if(j&&j.events){ var ev=j.events.filter(function(e){return +e.notional>=10000;}); if(ev.length<6)ev=j.events.filter(function(e){return +e.notional>=1000;}); paintTape(ev); } }); /* the all-symbol feed; the tape shows what a reader would call a liquidation, not $28 dust */
+  }
+  load(); setInterval(load,60000);
+  window.__lq={rows:rows,get:function(){return D;}};
 })();</script>
+<script defer src="/assets/mp-auth.js?v=6abb8590"></script>
+<script defer src="/assets/mp-nav.js?v=f77a401b"></script>
 </body>
 </html>
 `;
 
 fs.mkdirSync(OUT, { recursive: true });
-
-// ---- translated /<lang>/liquidations/ variants ----
-const META = {
-  de:{t:'Krypto-Liquidationen heute - Live-Liquidations-Tracker',d:'Live-Liquidationen bei Krypto-Futures: gesamte 24h-Liquidationen, Longs vs. Shorts und die am stärksten liquidierten Coins gerade jetzt. Echtzeitdaten, kostenlos, ohne Anmeldung.',k:'krypto liquidationen, liquidations-tracker, liquidationen heute, btc liquidationen, long short liquidationen, futures liquidationen'},
-  es:{t:'Liquidaciones cripto hoy - Rastreador de liquidaciones en vivo',d:'Liquidaciones de futuros cripto en vivo: liquidaciones totales 24h, largos vs cortos y las monedas más liquidadas ahora mismo. Datos en tiempo real, gratis, sin registro.',k:'liquidaciones cripto, rastreador liquidaciones, liquidaciones hoy, liquidaciones btc, liquidaciones largos cortos, liquidaciones futuros'},
-  pt:{t:'Liquidações cripto hoje - Rastreador de liquidações ao vivo',d:'Liquidações de futuros cripto ao vivo: liquidações totais 24h, longs vs shorts e as moedas mais liquidadas agora. Dados em tempo real, grátis, sem cadastro.',k:'liquidações cripto, rastreador liquidações, liquidações hoje, liquidações btc, liquidações long short, liquidações futuros'},
-  fr:{t:'Liquidations crypto aujourd\'hui - Tracker de liquidations en direct',d:'Liquidations de futures crypto en direct : liquidations totales 24h, longs vs shorts et les cryptos les plus liquidées en ce moment. Données en temps réel, gratuit, sans inscription.',k:'liquidations crypto, tracker liquidations, liquidations aujourd\'hui, liquidations btc, liquidations long short, liquidations futures'},
-  nl:{t:'Crypto-liquidaties vandaag - Live liquidatie-tracker',d:'Live crypto-futuresliquidaties: totale 24u-liquidaties, longs vs shorts en de meest geliquideerde coins op dit moment. Realtime data, gratis, zonder registratie.',k:'crypto liquidaties, liquidatie tracker, liquidaties vandaag, btc liquidaties, long short liquidaties, futures liquidaties'},
-  ru:{t:'Ликвидации крипто сегодня - живой трекер ликвидаций',d:'Живые ликвидации криптофьючерсов: суммарные ликвидации за 24ч, лонги против шортов и самые ликвидируемые монеты прямо сейчас. Данные в реальном времени, бесплатно, без регистрации.',k:'ликвидации крипто, трекер ликвидаций, ликвидации сегодня, ликвидации btc, лонг шорт ликвидации, ликвидации фьючерсов'},
-  tr:{t:'Bugün kripto likidasyonları - Canlı likidasyon takipçisi',d:'Canlı kripto vadeli işlem likidasyonları: 24s toplam likidasyon, long vs short ve şu an en çok likide olan coinler. Gerçek zamanlı veri, ücretsiz, kayıt yok.',k:'kripto likidasyonları, likidasyon takipçisi, bugün likidasyonlar, btc likidasyon, long short likidasyon, vadeli likidasyon'},
-  zh:{t:'今日加密爆仓 - 实时爆仓追踪',d:'实时加密合约爆仓：24小时总爆仓、多头对空头，以及当前爆仓最多的币种。实时数据，免费，无需注册。',k:'加密爆仓, 爆仓追踪, 今日爆仓, btc 爆仓, 多空爆仓, 合约爆仓'},
-  ja:{t:'今日の暗号資産清算 - ライブ清算トラッカー',d:'ライブの暗号資産先物清算：24時間の総清算、ロング対ショート、現在最も清算された銘柄。リアルタイムデータ、無料、登録不要。',k:'暗号資産 清算, 清算トラッカー, 今日の清算, btc 清算, ロングショート清算, 先物清算'},
-  ko:{t:'오늘의 암호화폐 청산 - 실시간 청산 트래커',d:'실시간 암호화폐 선물 청산: 24시간 총 청산, 롱 vs 숏, 지금 가장 많이 청산된 코인. 실시간 데이터, 무료, 가입 불필요.',k:'암호화폐 청산, 청산 트래커, 오늘 청산, btc 청산, 롱숏 청산, 선물 청산'},
-  ar:{t:'تصفيات الكريبتو اليوم - متتبّع التصفيات المباشر',d:'تصفيات عقود الكريبتو الآجلة مباشرة: إجمالي تصفيات 24 ساعة، لونغ مقابل شورت، وأكثر العملات تصفيةً الآن. بيانات لحظية، مجاني، بدون تسجيل.',k:'تصفيات الكريبتو, متتبع التصفيات, تصفيات اليوم, تصفيات btc, تصفيات لونغ شورت, تصفيات العقود الآجلة'},
-  id:{t:'Likuidasi kripto hari ini - Pelacak likuidasi langsung',d:'Likuidasi futures kripto langsung: total likuidasi 24j, long vs short, dan koin paling banyak terlikuidasi saat ini. Data real-time, gratis, tanpa daftar.',k:'likuidasi kripto, pelacak likuidasi, likuidasi hari ini, likuidasi btc, likuidasi long short, likuidasi futures'}
-};
-const PH = COMMON.concat([
-  ['<h1>Crypto Liquidations Today</h1>', {de:'<h1>Krypto-Liquidationen heute</h1>',es:'<h1>Liquidaciones cripto hoy</h1>',pt:'<h1>Liquidações cripto hoje</h1>',fr:'<h1>Liquidations crypto aujourd\'hui</h1>',nl:'<h1>Crypto-liquidaties vandaag</h1>',ru:'<h1>Ликвидации крипто сегодня</h1>',tr:'<h1>Bugün kripto likidasyonları</h1>',zh:'<h1>今日加密爆仓</h1>',ja:'<h1>今日の暗号資産清算</h1>',ko:'<h1>오늘의 암호화폐 청산</h1>',ar:'<h1>تصفيات الكريبتو اليوم</h1>',id:'<h1>Likuidasi kripto hari ini</h1>'}],
-  ['Live crypto futures liquidations across every major exchange - how much was wiped out in the last 24 hours, whether longs or shorts took the pain, and which coins saw the most carnage. Data updates automatically.', {de:'Live-Liquidationen bei Krypto-Futures über alle großen Börsen - wie viel in den letzten 24 Stunden ausgelöscht wurde, ob Longs oder Shorts den Schmerz spürten und welche Coins am meisten bluteten. Die Daten aktualisieren sich automatisch.',es:'Liquidaciones de futuros cripto en vivo en los principales exchanges - cuánto se borró en las últimas 24 horas, si sufrieron los largos o los cortos, y qué monedas vieron la mayor carnicería. Los datos se actualizan automáticamente.',pt:'Liquidações de futuros cripto ao vivo em todas as grandes exchanges - quanto foi varrido nas últimas 24 horas, se longs ou shorts sofreram, e quais moedas tiveram o maior estrago. Os dados atualizam automaticamente.',fr:'Liquidations de futures crypto en direct sur tous les grands exchanges - combien a été effacé ces dernières 24 heures, si les longs ou les shorts ont souffert, et quelles cryptos ont subi le plus de dégâts. Les données se mettent à jour automatiquement.',nl:'Live crypto-futuresliquidaties op alle grote exchanges - hoeveel er in de laatste 24 uur werd weggevaagd, of longs of shorts de pijn voelden, en welke coins de meeste schade zagen. De data worden automatisch bijgewerkt.',ru:'Живые ликвидации криптофьючерсов на всех крупных биржах - сколько было стёрто за последние 24 часа, кто пострадал - лонги или шорты, и какие монеты понесли наибольшие потери. Данные обновляются автоматически.',tr:'Tüm büyük borsalarda canlı kripto vadeli işlem likidasyonları - son 24 saatte ne kadar silindi, acıyı long mu short mu çekti ve hangi coinler en çok zarar gördü. Veriler otomatik güncellenir.',zh:'各大交易所的实时加密合约爆仓 - 过去24小时被清洗了多少、是多头还是空头受创、哪些币种损失最重。数据自动更新。',ja:'主要取引所全体のライブ暗号資産先物清算 - 過去24時間でどれだけ消し飛んだか、ロングとショートのどちらが痛手を負ったか、どの銘柄が最も大きな打撃を受けたか。データは自動更新されます。',ko:'모든 주요 거래소의 실시간 암호화폐 선물 청산 - 지난 24시간 동안 얼마가 청산됐는지, 롱과 숏 중 누가 타격을 입었는지, 어떤 코인이 가장 큰 피해를 봤는지. 데이터는 자동 갱신됩니다.',ar:'تصفيات عقود الكريبتو الآجلة مباشرة عبر كل المنصات الكبرى - كم محُيَ خلال آخر 24 ساعة، وهل تألّم اللونغ أم الشورت، وأي العملات شهدت أكبر خسائر. تُحدَّث البيانات تلقائياً.',id:'Likuidasi futures kripto langsung di semua bursa besar - berapa banyak yang tersapu dalam 24 jam terakhir, apakah long atau short yang terkena, dan koin mana yang paling parah. Data diperbarui otomatis.'}],
-  ['>Market liquidations · 24h <span', {de:'>Markt-Liquidationen · 24h <span',es:'>Liquidaciones del mercado · 24h <span',pt:'>Liquidações do mercado · 24h <span',fr:'>Liquidations du marché · 24h <span',nl:'>Marktliquidaties · 24u <span',ru:'>Ликвидации рынка · 24ч <span',tr:'>Piyasa likidasyonları · 24s <span',zh:'>市场爆仓 · 24小时 <span',ja:'>市場清算 · 24時間 <span',ko:'>시장 청산 · 24시간 <span',ar:'>تصفيات السوق · 24س <span',id:'>Likuidasi pasar · 24j <span'}],
-  ['Loading live liquidation data…', {de:'Live-Liquidationsdaten werden geladen…',es:'Cargando datos de liquidaciones en vivo…',pt:'Carregando dados de liquidação ao vivo…',fr:'Chargement des données de liquidation en direct…',nl:'Live liquidatiegegevens laden…',ru:'Загрузка данных ликвидаций…',tr:'Canlı likidasyon verileri yükleniyor…',zh:'正在加载实时爆仓数据…',ja:'ライブ清算データを読み込み中…',ko:'실시간 청산 데이터 불러오는 중…',ar:'جارٍ تحميل بيانات التصفية المباشرة…',id:'Memuat data likuidasi langsung…'}],
-  ['<h2>Most liquidated coins · 24h</h2>', {de:'<h2>Am stärksten liquidierte Coins · 24h</h2>',es:'<h2>Monedas más liquidadas · 24h</h2>',pt:'<h2>Moedas mais liquidadas · 24h</h2>',fr:'<h2>Cryptos les plus liquidées · 24h</h2>',nl:'<h2>Meest geliquideerde coins · 24u</h2>',ru:'<h2>Самые ликвидируемые монеты · 24ч</h2>',tr:'<h2>En çok likide olan coinler · 24s</h2>',zh:'<h2>爆仓最多的币种 · 24小时</h2>',ja:'<h2>最も清算された銘柄 · 24時間</h2>',ko:'<h2>가장 많이 청산된 코인 · 24시간</h2>',ar:'<h2>أكثر العملات تصفيةً · 24س</h2>',id:'<h2>Koin paling banyak terlikuidasi · 24j</h2>'}],
-  ['>Loading…<', {de:'>Wird geladen…<',es:'>Cargando…<',pt:'>Carregando…<',fr:'>Chargement…<',nl:'>Laden…<',ru:'>Загрузка…<',tr:'>Yükleniyor…<',zh:'>加载中…<',ja:'>読み込み中…<',ko:'>불러오는 중…<',ar:'>جارٍ التحميل…<',id:'>Memuat…<'}],
-  ['>Open the market screener →</a>', {de:'>Markt-Screener öffnen →</a>',es:'>Abrir el screener de mercado →</a>',pt:'>Abrir o screener de mercado →</a>',fr:'>Ouvrir le screener de marché →</a>',nl:'>Open de markt-screener →</a>',ru:'>Открыть рыночный скринер →</a>',tr:'>Piyasa tarayıcısını aç →</a>',zh:'>打开市场选币器 →</a>',ja:'>マーケットスクリーナーを開く →</a>',ko:'>시장 스크리너 열기 →</a>',ar:'>افتح ماسح السوق →</a>',id:'>Buka screener pasar →</a>'}],
-  ['>Live liquidation feed (Rekt)</a>', {de:'>Live-Liquidations-Feed (Rekt)</a>',es:'>Feed de liquidaciones en vivo (Rekt)</a>',pt:'>Feed de liquidações ao vivo (Rekt)</a>',fr:'>Flux de liquidations en direct (Rekt)</a>',nl:'>Live liquidatie-feed (Rekt)</a>',ru:'>Живая лента ликвидаций (Rekt)</a>',tr:'>Canlı likidasyon akışı (Rekt)</a>',zh:'>实时爆仓动态 (Rekt)</a>',ja:'>ライブ清算フィード (Rekt)</a>',ko:'>실시간 청산 피드 (Rekt)</a>',ar:'>بث التصفيات الحي (Rekt)</a>',id:'>Feed likuidasi langsung (Rekt)</a>'}],
-  ['>Practice risk-free</a>', {de:'>Risikofrei üben</a>',es:'>Practica sin riesgo</a>',pt:'>Pratique sem risco</a>',fr:'>Pratiquez sans risque</a>',nl:'>Oefen risicovrij</a>',ru:'>Практика без риска</a>',tr:'>Risksiz pratik yap</a>',zh:'>零风险练习</a>',ja:'>リスクなしで練習</a>',ko:'>무위험 연습</a>',ar:'>تدرّب بدون مخاطر</a>',id:'>Berlatih tanpa risiko</a>'}],
-  ['<h2>What is a liquidation?</h2>', {de:'<h2>Was ist eine Liquidation?</h2>',es:'<h2>¿Qué es una liquidación?</h2>',pt:'<h2>O que é uma liquidação?</h2>',fr:'<h2>Qu\'est-ce qu\'une liquidation ?</h2>',nl:'<h2>Wat is een liquidatie?</h2>',ru:'<h2>Что такое ликвидация?</h2>',tr:'<h2>Likidasyon nedir?</h2>',zh:'<h2>什么是爆仓？</h2>',ja:'<h2>清算とは？</h2>',ko:'<h2>청산이란?</h2>',ar:'<h2>ما هي التصفية؟</h2>',id:'<h2>Apa itu likuidasi?</h2>'}],
-  ['<p>A <strong>liquidation</strong> is when an exchange force-closes a leveraged futures position because the trader\'s margin can no longer cover the loss. The position is sold (or bought back) at market, and the trader loses their margin. At high leverage the liquidation price sits very close to entry, so even a small move against the position can trigger it.</p>', {de:'<p>Eine <strong>Liquidation</strong> ist, wenn eine Börse eine gehebelte Futures-Position zwangsweise schließt, weil die Margin des Traders den Verlust nicht mehr decken kann. Die Position wird zum Marktpreis verkauft (oder zurückgekauft), und der Trader verliert seine Margin. Bei hohem Hebel liegt der Liquidationspreis sehr nah am Einstieg, sodass schon eine kleine Bewegung gegen die Position sie auslösen kann.</p>',es:'<p>Una <strong>liquidación</strong> ocurre cuando un exchange cierra a la fuerza una posición de futuros apalancada porque el margen del trader ya no puede cubrir la pérdida. La posición se vende (o se recompra) a mercado y el trader pierde su margen. Con alto apalancamiento el precio de liquidación está muy cerca de la entrada, así que incluso un pequeño movimiento en contra puede activarla.</p>',pt:'<p>Uma <strong>liquidação</strong> ocorre quando uma exchange fecha à força uma posição de futuros alavancada porque a margem do trader já não cobre a perda. A posição é vendida (ou recomprada) a mercado e o trader perde sua margem. Com alta alavancagem o preço de liquidação fica muito perto da entrada, então até um pequeno movimento contra a posição pode acioná-la.</p>',fr:'<p>Une <strong>liquidation</strong> survient quand un exchange ferme de force une position de futures à effet de levier parce que la marge du trader ne couvre plus la perte. La position est vendue (ou rachetée) au marché et le trader perd sa marge. À fort levier le prix de liquidation est très proche de l\'entrée, donc même un petit mouvement défavorable peut la déclencher.</p>',nl:'<p>Een <strong>liquidatie</strong> is wanneer een exchange een hefboom-futurespositie gedwongen sluit omdat de marge van de trader het verlies niet meer kan dekken. De positie wordt tegen marktprijs verkocht (of teruggekocht) en de trader verliest zijn marge. Bij hoge hefboom ligt de liquidatieprijs heel dicht bij de entry, dus zelfs een kleine beweging tegen de positie kan hem triggeren.</p>',ru:'<p><strong>Ликвидация</strong> - это когда биржа принудительно закрывает маржинальную фьючерсную позицию, потому что маржи трейдера больше не хватает на покрытие убытка. Позиция продаётся (или выкупается) по рынку, и трейдер теряет свою маржу. При высоком плече цена ликвидации очень близка к входу, поэтому даже небольшое движение против позиции может её запустить.</p>',tr:'<p><strong>Likidasyon</strong>, trader\'ın teminatı zararı artık karşılayamadığı için borsanın kaldıraçlı bir vadeli pozisyonu zorla kapatmasıdır. Pozisyon piyasadan satılır (veya geri alınır) ve trader teminatını kaybeder. Yüksek kaldıraçta likidasyon fiyatı girişe çok yakındır, bu yüzden pozisyona karşı küçük bir hareket bile onu tetikleyebilir.</p>',zh:'<p><strong>爆仓</strong>是指交易所强制平掉一个杠杆合约仓位，因为交易者的保证金已无法覆盖亏损。仓位按市价卖出（或买回），交易者损失保证金。在高杠杆下，强平价格非常接近入场价，因此即使行情小幅反向波动也可能触发爆仓。</p>',ja:'<p><strong>清算</strong>とは、トレーダーの証拠金が損失を賄えなくなったために取引所がレバレッジ先物ポジションを強制決済することです。ポジションは成行で売却（または買い戻し）され、トレーダーは証拠金を失います。高レバレッジでは清算価格がエントリーに非常に近く、ポジションに対するわずかな逆行でも発動します。</p>',ko:'<p><strong>청산</strong>은 트레이더의 증거금으로 더 이상 손실을 감당할 수 없어 거래소가 레버리지 선물 포지션을 강제로 종료하는 것입니다. 포지션은 시장가로 매도(또는 환매)되고 트레이더는 증거금을 잃습니다. 고배율에서는 청산 가격이 진입가에 매우 가까워, 포지션에 불리한 작은 움직임도 청산을 유발할 수 있습니다.</p>',ar:'<p><strong>التصفية</strong> هي عندما تُغلق المنصة بالقوة مركز عقود آجلة برافعة لأن هامش المتداول لم يعد يغطي الخسارة. يُباع المركز (أو يُعاد شراؤه) بسعر السوق، ويخسر المتداول هامشه. عند الرافعة العالية يكون سعر التصفية قريباً جداً من الدخول، فحتى حركة صغيرة عكس المركز قد تُطلقها.</p>',id:'<p><strong>Likuidasi</strong> adalah ketika bursa menutup paksa posisi futures berleverage karena margin trader tidak lagi bisa menutup kerugian. Posisi dijual (atau dibeli kembali) di pasar, dan trader kehilangan marginnya. Pada leverage tinggi harga likuidasi sangat dekat dengan entri, sehingga pergerakan kecil yang melawan posisi pun bisa memicunya.</p>'}],
-  ['<h2>Long vs short liquidations</h2>', {de:'<h2>Long- vs. Short-Liquidationen</h2>',es:'<h2>Liquidaciones de largos vs cortos</h2>',pt:'<h2>Liquidações de longs vs shorts</h2>',fr:'<h2>Liquidations longues vs courtes</h2>',nl:'<h2>Long- vs short-liquidaties</h2>',ru:'<h2>Ликвидации лонгов и шортов</h2>',tr:'<h2>Long vs short likidasyonları</h2>',zh:'<h2>多头与空头爆仓</h2>',ja:'<h2>ロングとショートの清算</h2>',ko:'<h2>롱 vs 숏 청산</h2>',ar:'<h2>تصفيات اللونغ مقابل الشورت</h2>',id:'<h2>Likuidasi long vs short</h2>'}],
-  ['<p><strong>Long liquidations</strong> are over-leveraged buyers wiped out when price <em>falls</em>. <strong>Short liquidations</strong> are sellers wiped out when price <em>rises</em>. A large one-sided spike often marks a local extreme: a flush of long liquidations can mark a capitulation low, while a wave of short liquidations can fuel a short squeeze higher. The bar above shows which side is currently taking the most damage.</p>', {de:'<p><strong>Long-Liquidationen</strong> sind überhebelte Käufer, die ausgelöscht werden, wenn der Preis <em>fällt</em>. <strong>Short-Liquidationen</strong> sind Verkäufer, die ausgelöscht werden, wenn der Preis <em>steigt</em>. Eine große einseitige Spitze markiert oft ein lokales Extrem: eine Flut von Long-Liquidationen kann ein Kapitulationstief markieren, während eine Welle von Short-Liquidationen einen Short-Squeeze nach oben befeuern kann. Der Balken oben zeigt, welche Seite gerade den meisten Schaden nimmt.</p>',es:'<p>Las <strong>liquidaciones de largos</strong> son compradores sobreapalancados barridos cuando el precio <em>cae</em>. Las <strong>liquidaciones de cortos</strong> son vendedores barridos cuando el precio <em>sube</em>. Un gran pico unilateral suele marcar un extremo local: una purga de liquidaciones largas puede marcar un suelo de capitulación, mientras que una ola de liquidaciones cortas puede alimentar un short squeeze al alza. La barra de arriba muestra qué lado está recibiendo más daño ahora.</p>',pt:'<p>As <strong>liquidações de longs</strong> são compradores super-alavancados varridos quando o preço <em>cai</em>. As <strong>liquidações de shorts</strong> são vendedores varridos quando o preço <em>sobe</em>. Um grande pico unilateral muitas vezes marca um extremo local: uma onda de liquidações longas pode marcar um fundo de capitulação, enquanto uma onda de liquidações curtas pode alimentar um short squeeze de alta. A barra acima mostra qual lado está sofrendo mais agora.</p>',fr:'<p>Les <strong>liquidations longues</strong> sont des acheteurs sur-leviérisés balayés quand le prix <em>baisse</em>. Les <strong>liquidations courtes</strong> sont des vendeurs balayés quand le prix <em>monte</em>. Un grand pic unilatéral marque souvent un extrême local : une vague de liquidations longues peut marquer un creux de capitulation, tandis qu\'une vague de liquidations courtes peut alimenter un short squeeze à la hausse. La barre ci-dessus montre quel côté subit le plus de dégâts en ce moment.</p>',nl:'<p><strong>Long-liquidaties</strong> zijn te zwaar gehefboomde kopers die worden weggevaagd als de prijs <em>daalt</em>. <strong>Short-liquidaties</strong> zijn verkopers die worden weggevaagd als de prijs <em>stijgt</em>. Een grote eenzijdige piek markeert vaak een lokaal extreem: een golf long-liquidaties kan een capitulatiebodem markeren, terwijl een golf short-liquidaties een short squeeze omhoog kan voeden. De balk hierboven toont welke kant nu de meeste schade krijgt.</p>',ru:'<p><strong>Ликвидации лонгов</strong> - это перегруженные плечом покупатели, которых стирает при <em>падении</em> цены. <strong>Ликвидации шортов</strong> - продавцы, которых стирает при <em>росте</em> цены. Крупный односторонний всплеск часто отмечает локальный экстремум: волна ликвидаций лонгов может отметить дно капитуляции, а волна ликвидаций шортов - разогнать шорт-сквиз вверх. Полоса выше показывает, какая сторона сейчас несёт больше всего урона.</p>',tr:'<p><strong>Long likidasyonları</strong>, fiyat <em>düştüğünde</em> silinen aşırı kaldıraçlı alıcılardır. <strong>Short likidasyonları</strong>, fiyat <em>yükseldiğinde</em> silinen satıcılardır. Büyük tek taraflı bir sıçrama genelde yerel bir uç noktayı işaret eder: bir long likidasyon dalgası kapitülasyon dibini işaret edebilir, bir short likidasyon dalgası ise yukarı bir short squeeze\'i körükleyebilir. Yukarıdaki çubuk şu an en çok hangi tarafın hasar aldığını gösterir.</p>',zh:'<p><strong>多头爆仓</strong>是价格<em>下跌</em>时被清洗的过度杠杆买方。<strong>空头爆仓</strong>是价格<em>上涨</em>时被清洗的卖方。大幅单边激增往往标志着局部极值：一波多头爆仓可能标志着投降式底部，而一波空头爆仓可能助推轧空上行。上方的条形图显示当前哪一方受创最重。</p>',ja:'<p><strong>ロング清算</strong>は価格が<em>下落</em>したときに消し飛ぶ過剰レバレッジの買い方です。<strong>ショート清算</strong>は価格が<em>上昇</em>したときに消し飛ぶ売り方です。大きな一方向のスパイクはしばしば局所的な極値を示します：ロング清算の殺到は投げ売りの底を、ショート清算の波はショートスクイーズの上昇を後押しすることがあります。上のバーは現在どちら側が最も損害を受けているかを示します。</p>',ko:'<p><strong>롱 청산</strong>은 가격이 <em>하락</em>할 때 청산되는 과도한 레버리지 매수자입니다. <strong>숏 청산</strong>은 가격이 <em>상승</em>할 때 청산되는 매도자입니다. 큰 일방적 급증은 종종 국지적 극단을 나타냅니다: 롱 청산의 쏟아짐은 투매 바닥을, 숏 청산의 물결은 숏 스퀴즈 상승을 부추길 수 있습니다. 위 막대는 현재 어느 쪽이 가장 큰 피해를 보는지 보여줍니다.</p>',ar:'<p><strong>تصفيات اللونغ</strong> هم مشترون مفرطو الرافعة يُمحَون عندما <em>ينخفض</em> السعر. <strong>تصفيات الشورت</strong> هم بائعون يُمحَون عندما <em>يرتفع</em> السعر. غالباً ما تشير قفزة كبيرة أحادية الجانب إلى طرف محلي: موجة تصفيات لونغ قد تشير إلى قاع استسلام، بينما موجة تصفيات شورت قد تغذّي ضغط شراء صاعداً. يُظهر الشريط أعلاه أي جانب يتلقى أكبر ضرر حالياً.</p>',id:'<p><strong>Likuidasi long</strong> adalah pembeli berleverage berlebihan yang tersapu saat harga <em>turun</em>. <strong>Likuidasi short</strong> adalah penjual yang tersapu saat harga <em>naik</em>. Lonjakan besar satu sisi sering menandai ekstrem lokal: gelombang likuidasi long bisa menandai dasar kapitulasi, sedangkan gelombang likuidasi short bisa memicu short squeeze ke atas. Bilah di atas menunjukkan sisi mana yang paling terdampak saat ini.</p>'}],
-  ['<h2>How traders use liquidation data</h2>', {de:'<h2>Wie Trader Liquidationsdaten nutzen</h2>',es:'<h2>Cómo usan los traders los datos de liquidación</h2>',pt:'<h2>Como os traders usam os dados de liquidação</h2>',fr:'<h2>Comment les traders utilisent les données de liquidation</h2>',nl:'<h2>Hoe traders liquidatiegegevens gebruiken</h2>',ru:'<h2>Как трейдеры используют данные ликвидаций</h2>',tr:'<h2>Trader\'lar likidasyon verisini nasıl kullanır</h2>',zh:'<h2>交易者如何使用爆仓数据</h2>',ja:'<h2>トレーダーは清算データをどう使うか</h2>',ko:'<h2>트레이더가 청산 데이터를 활용하는 법</h2>',ar:'<h2>كيف يستخدم المتداولون بيانات التصفية</h2>',id:'<h2>Bagaimana trader menggunakan data likuidasi</h2>'}],
-  ['Clusters of liquidations act like fuel: when price reaches a zone packed with leveraged positions, the cascade of forced orders can accelerate the move. Watching where liquidations build up - and which side is heavier - helps you avoid getting caught in the same crowded trade, and spot where volatility is likely to spike next. Pair this page with the <a href="/screener">technical screener</a> for entries and the <a href="/">liquidation-price calculator</a> to size your own positions safely.', {de:'Liquidations-Cluster wirken wie Treibstoff: erreicht der Preis eine Zone voller gehebelter Positionen, kann die Kaskade von Zwangsorders die Bewegung beschleunigen. Zu beobachten, wo sich Liquidationen aufbauen - und welche Seite schwerer ist - hilft dir, nicht im selben überfüllten Trade gefangen zu werden, und zu erkennen, wo die Volatilität als Nächstes hochschnellen dürfte. Kombiniere diese Seite mit dem <a href="/screener">technischen Screener</a> für Einstiege und dem <a href="/">Liquidationspreis-Rechner</a>, um deine eigenen Positionen sicher zu dimensionieren.',es:'Los clústeres de liquidaciones actúan como combustible: cuando el precio alcanza una zona repleta de posiciones apalancadas, la cascada de órdenes forzadas puede acelerar el movimiento. Vigilar dónde se acumulan las liquidaciones - y qué lado pesa más - te ayuda a no quedar atrapado en la misma operación saturada y a detectar dónde es probable que estalle la volatilidad. Combina esta página con el <a href="/screener">screener técnico</a> para entradas y la <a href="/">calculadora de precio de liquidación</a> para dimensionar tus posiciones con seguridad.',pt:'Clusters de liquidações agem como combustível: quando o preço atinge uma zona cheia de posições alavancadas, a cascata de ordens forçadas pode acelerar o movimento. Observar onde as liquidações se acumulam - e qual lado pesa mais - ajuda a não ficar preso na mesma operação lotada e a identificar onde a volatilidade deve disparar a seguir. Combine esta página com o <a href="/screener">screener técnico</a> para entradas e a <a href="/">calculadora de preço de liquidação</a> para dimensionar suas posições com segurança.',fr:'Les clusters de liquidations agissent comme du carburant : quand le prix atteint une zone remplie de positions à effet de levier, la cascade d\'ordres forcés peut accélérer le mouvement. Surveiller où les liquidations s\'accumulent - et quel côté pèse le plus - vous aide à ne pas être pris dans le même trade surchargé et à repérer où la volatilité risque d\'exploser ensuite. Associez cette page au <a href="/screener">screener technique</a> pour les entrées et à la <a href="/">calculatrice de prix de liquidation</a> pour dimensionner vos positions en toute sécurité.',nl:'Clusters van liquidaties werken als brandstof: als de prijs een zone vol hefboomposities bereikt, kan de cascade van gedwongen orders de beweging versnellen. Kijken waar liquidaties zich opbouwen - en welke kant zwaarder is - helpt je om niet vast te zitten in dezelfde overvolle trade en te zien waar de volatiliteit straks waarschijnlijk piekt. Combineer deze pagina met de <a href="/screener">technische screener</a> voor entries en de <a href="/">liquidatieprijs-calculator</a> om je eigen posities veilig te bepalen.',ru:'Кластеры ликвидаций работают как топливо: когда цена достигает зоны, набитой маржинальными позициями, каскад принудительных ордеров может ускорить движение. Наблюдение за тем, где накапливаются ликвидации - и какая сторона тяжелее - помогает не попасть в ту же перегруженную сделку и заметить, где дальше вероятен всплеск волатильности. Сочетайте эту страницу с <a href="/screener">техническим скринером</a> для входов и <a href="/">калькулятором цены ликвидации</a>, чтобы безопасно рассчитывать размер своих позиций.',tr:'Likidasyon kümeleri yakıt gibi davranır: fiyat kaldıraçlı pozisyonlarla dolu bir bölgeye ulaştığında, zorunlu emirlerin çağlayanı hareketi hızlandırabilir. Likidasyonların nerede biriktiğini - ve hangi tarafın daha ağır olduğunu - izlemek, aynı kalabalık işleme yakalanmamana ve volatilitenin bir sonraki fırlama yerini görmene yardımcı olur. Bu sayfayı girişler için <a href="/screener">teknik tarayıcı</a> ve kendi pozisyonlarını güvenle boyutlandırmak için <a href="/">likidasyon fiyatı hesaplayıcısı</a> ile birleştir.',zh:'爆仓密集区如同燃料：当价格到达堆满杠杆仓位的区域时，强制平仓的连锁反应会加速行情。观察爆仓在哪里堆积、哪一方更重，能帮你避免陷入同样拥挤的交易，并发现下一波波动可能在哪爆发。把本页与<a href="/screener">技术选币器</a>（找入场）和<a href="/">强平价格计算器</a>（安全确定仓位）配合使用。',ja:'清算のクラスターは燃料のように働きます：価格がレバレッジポジションで埋まったゾーンに達すると、強制注文の連鎖が動きを加速させます。清算がどこに積み上がるか、どちら側が重いかを見ることで、同じ混雑したトレードに巻き込まれるのを避け、次にボラティリティが急騰しそうな場所を見つけられます。このページを、エントリー用の<a href="/screener">テクニカルスクリーナー</a>と、自分のポジションを安全にサイズ調整する<a href="/">清算価格計算ツール</a>と組み合わせましょう。',ko:'청산 군집은 연료처럼 작동합니다: 가격이 레버리지 포지션으로 가득 찬 구간에 도달하면 강제 주문의 연쇄가 움직임을 가속할 수 있습니다. 청산이 어디에 쌓이는지, 어느 쪽이 더 무거운지 지켜보면 같은 과밀 거래에 갇히는 것을 피하고 다음 변동성이 터질 곳을 포착할 수 있습니다. 이 페이지를 진입용 <a href="/screener">기술 스크리너</a>와 자신의 포지션을 안전하게 산정하는 <a href="/">청산가 계산기</a>와 함께 사용하세요.',ar:'تعمل تجمّعات التصفيات كالوقود: عندما يصل السعر إلى منطقة مكتظة بالمراكز ذات الرافعة، يمكن لشلال الأوامر الإجبارية أن يُسرّع الحركة. مراقبة أين تتراكم التصفيات - وأي جانب أثقل - تساعدك على تجنّب الوقوع في الصفقة المزدحمة نفسها، ورصد أين يُرجَّح أن يقفز التقلّب تالياً. اجمع هذه الصفحة مع <a href="/screener">الماسح الفني</a> للدخولات ومع <a href="/">حاسبة سعر التصفية</a> لتحديد أحجام مراكزك بأمان.',id:'Klaster likuidasi bertindak seperti bahan bakar: saat harga mencapai zona penuh posisi berleverage, kaskade order paksa bisa mempercepat pergerakan. Mengamati di mana likuidasi menumpuk - dan sisi mana yang lebih berat - membantu kamu menghindari terjebak di perdagangan ramai yang sama, dan melihat di mana volatilitas kemungkinan melonjak berikutnya. Padukan halaman ini dengan <a href="/screener">screener teknikal</a> untuk entri dan <a href="/">kalkulator harga likuidasi</a> untuk menentukan ukuran posisimu dengan aman.'}],
-  ['Liquidation data aggregated across major exchanges. For information only - not financial advice. Trade responsibly.', {de:'Liquidationsdaten über große Börsen aggregiert. Nur zur Information - keine Finanzberatung. Handle verantwortungsvoll.',es:'Datos de liquidación agregados de los principales exchanges. Solo informativo - no es asesoramiento financiero. Opera con responsabilidad.',pt:'Dados de liquidação agregados das principais exchanges. Apenas informativo - não é aconselhamento financeiro. Opere com responsabilidade.',fr:'Données de liquidation agrégées sur les grands exchanges. À titre informatif uniquement - pas un conseil financier. Tradez de manière responsable.',nl:'Liquidatiegegevens geaggregeerd over grote exchanges. Alleen ter informatie - geen financieel advies. Handel verantwoord.',ru:'Данные ликвидаций агрегированы по крупным биржам. Только для информации - не финансовый совет. Торгуйте ответственно.',tr:'Likidasyon verileri büyük borsalar genelinde derlenmiştir. Yalnızca bilgi amaçlıdır - finansal tavsiye değildir. Sorumlu işlem yapın.',zh:'爆仓数据汇总自主流交易所。仅供参考 - 非投资建议。请理性交易。',ja:'清算データは主要取引所全体で集計。情報提供のみ - 投資助言ではありません。責任を持って取引してください。',ko:'청산 데이터는 주요 거래소 전반에서 집계. 정보 제공용 - 투자 자문 아님. 책임감 있게 거래하세요.',ar:'بيانات التصفية مُجمَّعة عبر المنصات الكبرى. لأغراض المعلومات فقط - ليست نصيحة مالية. تداول بمسؤولية.',id:'Data likuidasi diagregasi dari bursa-bursa besar. Hanya untuk informasi - bukan nasihat keuangan. Trading dengan bertanggung jawab.'}],
-  ['<div class="crumb"><a href="/">Home</a> / Liquidations</div>', {de:'<div class="crumb"><a href="/de/">Start</a> / Liquidationen</div>',es:'<div class="crumb"><a href="/es/">Inicio</a> / Liquidaciones</div>',pt:'<div class="crumb"><a href="/pt/">Início</a> / Liquidações</div>',fr:'<div class="crumb"><a href="/fr/">Accueil</a> / Liquidations</div>',nl:'<div class="crumb"><a href="/nl/">Home</a> / Liquidaties</div>',ru:'<div class="crumb"><a href="/ru/">Главная</a> / Ликвидации</div>',tr:'<div class="crumb"><a href="/tr/">Ana Sayfa</a> / Likidasyonlar</div>',zh:'<div class="crumb"><a href="/zh/">首页</a> / 爆仓</div>',ja:'<div class="crumb"><a href="/ja/">ホーム</a> / 清算</div>',ko:'<div class="crumb"><a href="/ko/">홈</a> / 청산</div>',ar:'<div class="crumb"><a href="/ar/">الرئيسية</a> / التصفيات</div>',id:'<div class="crumb"><a href="/id/">Beranda</a> / Likuidasi</div>'}],
-  ['liquidated in the last 24 hours · ', {de:'liquidiert in den letzten 24 Stunden · ',es:'liquidado en las últimas 24 horas · ',pt:'liquidado nas últimas 24 horas · ',fr:'liquidé ces dernières 24 heures · ',nl:'geliquideerd in de laatste 24 uur · ',ru:'ликвидировано за последние 24 часа · ',tr:'son 24 saatte likide edildi · ',zh:'过去24小时内被清算 · ',ja:'過去24時間で清算 · ',ko:'지난 24시간 동안 청산됨 · ',ar:'صُفّيت خلال آخر 24 ساعة · ',id:'dilikuidasi dalam 24 jam terakhir · '}],
-  [' markets</div>', {de:' Märkte</div>',es:' mercados</div>',pt:' mercados</div>',fr:' marchés</div>',nl:' markten</div>',ru:' рынков</div>',tr:' piyasa</div>',zh:' 个市场</div>',ja:' 市場</div>',ko:'개 시장</div>',ar:' سوق</div>',id:' pasar</div>'}],
-  ['class="lng">Longs ', {de:'class="lng">Longs ',es:'class="lng">Largos ',pt:'class="lng">Longs ',fr:'class="lng">Longs ',nl:'class="lng">Longs ',ru:'class="lng">Лонги ',tr:'class="lng">Longlar ',zh:'class="lng">多头 ',ja:'class="lng">ロング ',ko:'class="lng">롱 ',ar:'class="lng">لونغ ',id:'class="lng">Long '}],
-  [' Shorts</span>', {de:' Shorts</span>',es:' Cortos</span>',pt:' Shorts</span>',fr:' Shorts</span>',nl:' Shorts</span>',ru:' Шорты</span>',tr:' Shortlar</span>',zh:' 空头</span>',ja:' ショート</span>',ko:' 숏</span>',ar:' شورت</span>',id:' Short</span>'}],
-  ['<th>Liquidated 24h</th>', {de:'<th>Liquidiert 24h</th>',es:'<th>Liquidado 24h</th>',pt:'<th>Liquidado 24h</th>',fr:'<th>Liquidé 24h</th>',nl:'<th>Geliquideerd 24u</th>',ru:'<th>Ликвидировано 24ч</th>',tr:'<th>Likide 24s</th>',zh:'<th>24小时爆仓</th>',ja:'<th>24時間清算</th>',ko:'<th>24시간 청산</th>',ar:'<th>تصفية 24س</th>',id:'<th>Likuidasi 24j</th>'}],
-  ['Live data unavailable right now - retry shortly.', {de:'Live-Daten gerade nicht verfügbar - bitte gleich erneut versuchen.',es:'Datos en vivo no disponibles ahora - reintenta en breve.',pt:'Dados ao vivo indisponíveis agora - tente novamente em breve.',fr:'Données en direct indisponibles - réessayez bientôt.',nl:'Live data nu niet beschikbaar - probeer zo opnieuw.',ru:'Живые данные сейчас недоступны - повторите чуть позже.',tr:'Canlı veri şu an yok - birazdan tekrar deneyin.',zh:'实时数据暂不可用 - 请稍后重试。',ja:'ライブデータが現在利用できません - まもなく再試行してください。',ko:'실시간 데이터를 지금 사용할 수 없습니다 - 잠시 후 다시 시도하세요.',ar:'البيانات المباشرة غير متاحة الآن - أعد المحاولة قريباً.',id:'Data langsung tidak tersedia sekarang - coba lagi sebentar.'}],
-  ['Updated just now · refreshes automatically', {de:'Gerade aktualisiert · aktualisiert automatisch',es:'Actualizado ahora mismo · se actualiza automáticamente',pt:'Atualizado agora mesmo · atualiza automaticamente',fr:'Mis à jour à l\'instant · se met à jour automatiquement',nl:'Zojuist bijgewerkt · ververst automatisch',ru:'Обновлено только что · обновляется автоматически',tr:'Az önce güncellendi · otomatik yenilenir',zh:'刚刚更新 · 自动刷新',ja:'たった今更新 · 自動更新',ko:'방금 업데이트됨 · 자동 새로고침',ar:'حُدِّث للتو · يُحدَّث تلقائياً',id:'Baru saja diperbarui · menyegarkan otomatis'}]
-]);
-// Translated /<lang>/liquidations/ variants are RETIRED (2026-09-02): the worker 301s every translated subpage to its English
-// original (thin-page cleanup of 2026-08: 1,008 pages, 7 Google visits in 90 days), so baking them only produced 12 dead files plus
-// an hreflang cluster pointing at redirects. English only now; META/PH above stay for the day the decision is reversed.
-void bakeI18n; void META; void PH;
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
+// Translated /<lang>/liquidations/ variants are RETIRED (2026-09-02): the worker 301s every translated subpage to its
+// English original, so only the English page is written and any stale language dir is removed.
 for (const L of ['ar','de','es','fr','id','ja','ko','nl','pt','ru','tr','zh']) { const d = path.join(__dirname, '..', 'dist', L, 'liquidations'); if (fs.existsSync(d)) fs.rmSync(d, { recursive: true, force: true }); }
-console.log('wrote dist/liquidations/index.html (English only, ' + html.length + ' bytes)');
-// keep sitemap in sync (same pattern as the other generators)
+console.log('wrote dist/liquidations/index.html (English only, ' + html.length + ' bytes; ' + MAPS.length + ' map links, ' + COINS.length + ' coin links)');
 try {
   const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
   let sm = fs.readFileSync(smp, 'utf8');

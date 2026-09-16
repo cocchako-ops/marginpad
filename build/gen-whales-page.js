@@ -24,7 +24,8 @@ const HEADER_CSS = `
   .hlink svg{flex-shrink:0}
   .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
   .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
-  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+  /* one row on a phone (2026-09-17): blog.css wraps the header at <=560 and mp-nav injects a Telegram link, so the nav used to drop to a second left-aligned row */
+  @media(max-width:720px){header{flex-wrap:nowrap;gap:8px;padding-top:11px;padding-bottom:11px}header .hnav{gap:2px;flex:0 0 auto}header .hnav .hbot,header .hnav .hjr,header .hnav .htg{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}header .hnav .hrwd{font-size:0;letter-spacing:0;gap:0;padding:7px}header .hnav .hrwd svg{width:17px;height:17px}}
 `;
 const CSS = HEADER_CSS + `
   :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6;--wh:#5ec6ff}
@@ -147,7 +148,7 @@ const CSS = HEADER_CSS + `
   .wl-30{display:block;font-size:9px;color:var(--ink-faint);margin-top:2px}
   .wl-30.up{color:var(--grn)}.wl-30.dn{color:var(--red)}
   .wl-tbl.wide{overflow-x:auto}
-  .wl-thd.co,.wl-cr{display:grid;grid-template-columns:86px 58px minmax(190px,1fr) 68px 66px 100px 78px;gap:10px;align-items:center}
+  .wl-thd.co,.wl-cr{display:grid;grid-template-columns:86px 58px minmax(190px,1fr) 66px 100px 78px;gap:10px;align-items:center}
   .wl-thd.be,.wl-br{display:grid;grid-template-columns:30px minmax(150px,1fr) 110px 82px 110px;gap:10px;align-items:center}
   .wl-cr,.wl-br{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;margin-bottom:7px}
   .wl-br{cursor:pointer}.wl-br:hover{border-color:var(--lime)}
@@ -224,6 +225,58 @@ const CSS = HEADER_CSS + `
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
   @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
+  /* filters live in ONE sheet (2026-09-17, owner: the inline chip strip was "scattered all over the screen" on a phone) */
+  .wl-fbar{display:flex;align-items:center;gap:10px;margin:0 0 12px;min-width:0}
+  .wl-fbtn{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;letter-spacing:.04em;padding:8px 13px;border-radius:9px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink);cursor:pointer;flex:0 0 auto;min-height:38px}
+  .wl-fbtn svg{width:14px;height:14px}
+  .wl-fbtn:hover{border-color:var(--lime);color:var(--lime)}
+  .wl-fbtn.on{border-color:var(--lime);color:var(--lime);background:rgba(194,246,74,.08)}
+  .wl-fsum{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-fdim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:2147483000}
+  .wl-fsheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 24px));max-height:88vh;background:#0d0f12;border:1px solid var(--line-bright);border-radius:18px;z-index:2147483001;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  @media(max-width:620px){.wl-fsheet{left:0;top:auto;bottom:0;transform:none;width:100vw;max-height:92vh;border-radius:16px 16px 0 0;border-left:0;border-right:0;border-bottom:0}}
+  .wl-fh{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line-bright);flex:0 0 auto}
+  .wl-fh b{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:18px;letter-spacing:-.02em;color:var(--ink)}
+  .wl-fbody{padding:4px 16px 8px;overflow-y:auto;flex:1 1 auto}
+  .wl-fg{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .wl-fg:last-child{border-bottom:0}
+  .wl-fk{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px}
+  .wl-fsheet .wl-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .wl-fsheet .wl-chips button{padding:8px 12px;font-size:11.5px;min-height:36px}
+  .wl-fsheet .wl-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+  .wl-fsheet .wl-seg button{padding:9px 6px;font-size:11px;min-height:40px}
+  .wl-ff{display:flex;gap:8px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line-bright);flex:0 0 auto}
+  .wl-ff button{flex:1;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:12px;border-radius:10px;border:1px solid var(--line-bright);background:transparent;color:var(--ink);cursor:pointer;min-height:44px}
+  .wl-ff .wl-fdone{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .wl-tabs button i{display:none}
+  /* the glance (owner 2026-09-17): what whales are buying, before any table */
+  .wl-now{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin:12px 0 4px}
+  @media(max-width:760px){.wl-now{grid-template-columns:1fr}}
+  .wl-nowc{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:13px 14px;min-width:0}
+  .wl-nowc .wl-h2{margin:0 0 6px}
+  .wl-nowc .wl-h2 .sub{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-faint);margin-left:auto;font-size:10px;text-align:right}
+  .wl-nm{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);cursor:pointer}
+  .wl-nm:first-child{border-top:0}
+  .wl-nm:hover b{color:var(--lime)}
+  .wl-nm b{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-nm b small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint)}
+  .wl-nm .nb{display:flex;height:8px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.05)}.wl-nm .nb i{display:block;height:100%}.wl-nm .nb .l{background:var(--grn)}.wl-nm .nb .s{background:var(--red)}
+  .wl-nm .nl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;margin-top:3px;color:var(--ink-faint)}
+  .wl-nm .nv{font-family:'Space Mono',monospace;font-size:11px;font-weight:800;text-align:right;white-space:nowrap}
+  .wl-nm .nv small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint)}
+  .wl-nm .up{color:var(--grn)}.wl-nm .dn{color:var(--red)}
+  .wl-nt{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);cursor:pointer;font-family:'Space Mono',monospace}
+  .wl-nt:first-child{border-top:0}
+  .wl-nt .ck{font-size:10.5px;color:var(--ink-faint)}
+  .wl-nt .tx{font-size:11.5px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-nt .tx .act{font-weight:800}.wl-nt.l .tx .act{color:var(--grn)}.wl-nt.s .tx .act{color:var(--red)}
+  .wl-nt .am{font-size:12px;font-weight:800;white-space:nowrap}.wl-nt.l .am{color:var(--grn)}.wl-nt.s .am{color:var(--red)}
+  /* the drawer chart (owner 2026-09-17): a dot where the position was opened, a dashed line where it is liquidated */
+  .wd-chart{margin-top:9px;background:#0a0c0f;border:1px solid var(--line-bright);border-radius:10px;padding:8px 8px 6px}
+  .wd-chart svg{display:block;width:100%;height:auto}
+  .wd-chart .cap{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:5px}
+  .wd-chart .cap a{color:var(--lime);text-decoration:none;font-weight:700}
+  .wd-chart .none{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);padding:6px 2px}
   @media(min-width:861px){.wrap{max-width:1280px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
 `;
 
@@ -294,35 +347,31 @@ ${ld}
       <div class="wl-bar"><div class="lg" id="wlBarL" style="width:50%"></div><div class="sh" id="wlBarS" style="width:50%"></div></div>
       <div class="wl-pct"><span class="l" id="wlPctL">-</span><span class="s" id="wlPctS">-</span></div>
       <div class="wl-tiles">
-        <div class="wl-tile"><div class="k">Tracked whales</div><div class="v" id="wlCount">-</div></div>
+        <div class="wl-tile"><div class="k">Biggest bet right now</div><div class="v" id="wlBig">-</div></div>
         <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">-</div></div>
         <div class="wl-tile"><div class="k">Aggregate unrealized P&amp;L</div><div class="v" id="wlUpnl">-</div></div>
       </div>
+    </div>
+
+    <!-- the glance (owner 2026-09-17): what whales are buying, before any table -->
+    <div class="wl-now" id="wlNow">
+      <div class="wl-nowc"><div class="wl-h2">Where whale money sits <span class="sub">top markets by whale exposure</span></div><div id="wlNowM"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div></div>
+      <div class="wl-nowc"><div class="wl-h2">Latest big moves <span class="sub">executions, newest first</span></div><div id="wlNowT"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div></div>
     </div>
 
     <!-- ── four views, one at a time. The page used to stack every panel on top of the reader at once
          (owner 2026-09-14: "sad kad otvoris stranicu sve je nabacano i nista se ne vidi lepo"), and an
          empty right-hand column sat there saying "No recent moves". ─────────────────────────────── -->
     <div class="wl-tabs" role="tablist" aria-label="Whale views">
-      <button type="button" role="tab" data-view="pos" class="on">Positions <i id="wlTabPos"></i></button>
-      <button type="button" role="tab" data-view="trades">Trades <i id="wlTabTr"></i></button>
-      <button type="button" role="tab" data-view="coins">By market <i id="wlTabCo"></i></button>
-      <button type="button" role="tab" data-view="best">Best this month <i id="wlTabBe"></i></button>
+      <button type="button" role="tab" data-view="pos" class="on">Positions</button>
+      <button type="button" role="tab" data-view="trades">Trades</button>
+      <button type="button" role="tab" data-view="coins">By market</button>
+      <button type="button" role="tab" data-view="best">Best this month</button>
     </div>
 
     <!-- POSITIONS -->
     <section class="wl-view" id="vPos">
-      <div class="wl-bar2">
-        <div class="wl-chips" id="wlSym" role="group" aria-label="Market"></div>
-        <div class="wl-ctl">
-          <div class="wl-seg" id="wlSide" role="group" aria-label="Side">
-            <button type="button" data-side="" class="on">ALL</button><button type="button" data-side="l">LONG</button><button type="button" data-side="s">SHORT</button>
-          </div>
-          <div class="wl-seg" id="wlSort" role="group" aria-label="Sort">
-            <button type="button" data-sort="val" class="on">SIZE</button><button type="button" data-sort="pnl">P&amp;L</button><button type="button" data-sort="liq">NEAR LIQ</button><button type="button" data-sort="lev">LEV</button>
-          </div>
-        </div>
-      </div>
+      <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters</button><span class="wl-fsum" id="wlFsumPos">All markets &middot; Long &amp; short &middot; by size</span></div>
       <div class="wl-tbl">
         <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Liq price</span><span class="r">Unrealized</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
@@ -332,17 +381,7 @@ ${ld}
 
     <!-- TRADES -->
     <section class="wl-view" id="vTrades" hidden>
-      <div class="wl-bar2">
-        <div class="wl-chips" id="wlTrSym" role="group" aria-label="Market"></div>
-        <div class="wl-ctl">
-          <div class="wl-seg" id="wlTrAct" role="group" aria-label="Action">
-            <button type="button" data-act="" class="on">ALL</button><button type="button" data-act="open">OPENED</button><button type="button" data-act="close">CLOSED</button>
-          </div>
-          <div class="wl-seg" id="wlTz" role="group" aria-label="Time zone">
-            <button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button>
-          </div>
-        </div>
-      </div>
+      <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters</button><span class="wl-fsum" id="wlFsumTr">All markets &middot; Opened &amp; closed &middot; local time</span></div>
       <div class="wl-trades" id="wlTrades"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       <p class="wl-note" id="wlTrNote"></p>
     </section>
@@ -350,10 +389,10 @@ ${ld}
     <!-- BY MARKET -->
     <section class="wl-view" id="vCoins" hidden>
       <div class="wl-tbl wide">
-        <div class="wl-thd co"><span>Market</span><span class="r">24h</span><span>Whale money: long vs short</span><span class="cl r">Wallets</span><span class="cl r">Avg lev</span><span class="cl r">Funding / day</span><span class="cl r">Share of OI</span></div>
+        <div class="wl-thd co"><span>Market</span><span class="r">24h</span><span>Whale money: long vs short</span><span class="cl r">Avg lev</span><span class="cl r">Funding / day</span><span class="cl r">Share of OI</span></div>
         <div id="wlCoins"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">One row per market these whales hold. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now - a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
+      <p class="wl-note">One row per market these whales hold, largest exposure first. <b>Funding / day</b> is what their net side pays (red) or collects (green) in twenty-four hours at the rate Hyperliquid is charging right now - a crowded side is an expensive side. <b>Share of OI</b> is how much of that market&rsquo;s entire open interest sits in these wallets.</p>
     </section>
 
     <!-- BEST THIS MONTH -->
@@ -380,6 +419,20 @@ ${ld}
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only - not financial advice.</p>
   </article>
 
+  <!-- one sheet for every filter (owner 2026-09-17): opened from the Filters button on the Positions and Trades views -->
+  <div class="wl-fdim" id="wlFdim" hidden></div>
+  <div class="wl-fsheet" id="wlFilt" hidden role="dialog" aria-modal="true" aria-labelledby="wlFiltT">
+    <div class="wl-fh"><b id="wlFiltT">Filter positions</b><button type="button" class="wd-x" id="wlFiltX" aria-label="Close">&#10005;</button></div>
+    <div class="wl-fbody">
+      <div class="wl-fg" data-for="pos"><div class="wl-fk">Market</div><div class="wl-chips" id="wlSym" role="group" aria-label="Market"></div></div>
+      <div class="wl-fg" data-for="pos"><div class="wl-fk">Side</div><div class="wl-seg" id="wlSide" role="group" aria-label="Side"><button type="button" data-side="" class="on">ALL</button><button type="button" data-side="l">LONG</button><button type="button" data-side="s">SHORT</button></div></div>
+      <div class="wl-fg" data-for="pos"><div class="wl-fk">Sort by</div><div class="wl-seg" id="wlSort" role="group" aria-label="Sort"><button type="button" data-sort="val" class="on">SIZE</button><button type="button" data-sort="pnl">P&amp;L</button><button type="button" data-sort="liq">NEAR LIQ</button><button type="button" data-sort="lev">LEV</button></div></div>
+      <div class="wl-fg" data-for="trades"><div class="wl-fk">Market</div><div class="wl-chips" id="wlTrSym" role="group" aria-label="Market"></div></div>
+      <div class="wl-fg" data-for="trades"><div class="wl-fk">Action</div><div class="wl-seg" id="wlTrAct" role="group" aria-label="Action"><button type="button" data-act="" class="on">ALL</button><button type="button" data-act="open">OPENED</button><button type="button" data-act="close">CLOSED</button></div></div>
+      <div class="wl-fg" data-for="trades"><div class="wl-fk">Time zone</div><div class="wl-seg" id="wlTz" role="group" aria-label="Time zone"><button type="button" data-tz="local" class="on">LOCAL</button><button type="button" data-tz="utc">UTC</button></div></div>
+    </div>
+    <div class="wl-ff"><button type="button" id="wlFiltReset">Reset</button><button type="button" class="wl-fdone" id="wlFiltDone">Show results</button></div>
+  </div>
   <!-- ── one whale, everything we can say about them. Opened from any row on any view. ─────────── -->
   <div class="wl-dim" id="wdDim" hidden></div>
   <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Whale profile">
@@ -440,15 +493,15 @@ ${ld}
     var chips=document.getElementById('wlTrSym');
     if(chips&&chips.dataset.k!==syms.join(',')){
       chips.dataset.k=syms.join(',');
-      chips.innerHTML='<button type="button" data-sym="" class="'+(TF.sym?'':'on')+'">ALL '+all.length+'</button>'+
-        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(TF.sym===x?' class="on"':'')+'>'+esc(mkt(x))+' '+cnt[x]+'</button>';}).join('');
+      chips.innerHTML='<button type="button" data-sym="" class="'+(TF.sym?'':'on')+'">ALL</button>'+
+        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(TF.sym===x?' class="on"':'')+'>'+esc(mkt(x))+'</button>';}).join('');
     }
     var tr=all.filter(function(t){
       if(TF.sym&&t.sym!==TF.sym)return false;
       if(TF.act&&t.act!==TF.act)return false;
       return true;
     });
-    var n=document.getElementById('wlTabTr'); if(n)n.textContent=all.length?all.length:'';
+    fsum();
     var note=document.getElementById('wlTrNote');
     if(note)note.textContent=tr.length||d.fillWatch
       ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution - a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
@@ -496,8 +549,8 @@ ${ld}
     var chips=document.getElementById('wlSym');
     if(chips&&chips.dataset.k!==syms.join(',')){
       chips.dataset.k=syms.join(',');
-      chips.innerHTML='<button type="button" data-sym="" class="'+(F.sym?'':'on')+'">ALL '+all.length+'</button>'+
-        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(F.sym===x?' class="on"':'')+'>'+esc(mkt(x))+' '+counts[x]+'</button>';}).join('');
+      chips.innerHTML='<button type="button" data-sym="" class="'+(F.sym?'':'on')+'">ALL</button>'+
+        syms.map(function(x){return '<button type="button" data-sym="'+esc(x)+'"'+(F.sym===x?' class="on"':'')+'>'+esc(mkt(x))+'</button>';}).join('');
     }
     var rows=all.filter(function(p){
       if(F.sym&&p.sym!==F.sym)return false;
@@ -512,7 +565,7 @@ ${ld}
       if(F.sort==='liq'){var x=liqD(a),y=liqD(b); if(x==null)return 1; if(y==null)return -1; return x-y;}
       return b.val-a.val;
     });
-    var n=document.getElementById('wlTabPos'); if(n)n.textContent=all.length?all.length:'';
+    fsum();
     if(!rows.length){ box.innerHTML='<div class="wl-empty">Nothing matches that filter.<br><b>Clear it</b> to see all '+all.length+' tracked positions.</div>'; return; }
     box.innerHTML=rows.map(function(p,i){
       var dd=liqD(p), near=(dd!=null&&dd<8);
@@ -535,7 +588,7 @@ ${ld}
   function paintCoins(d){
     var box=document.getElementById('wlCoins'); if(!box)return;
     var cs=d.coins||[];
-    var n=document.getElementById('wlTabCo'); if(n)n.textContent=cs.length?cs.length:'';
+    cs=cs.slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);});
     if(!cs.length){ box.innerHTML='<div class="wl-empty">The market breakdown is built on the four-minute position sweep.<br>It appears with the next one.</div>'; return; }
     box.innerHTML=cs.map(function(c){
       var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100;
@@ -545,7 +598,6 @@ ${ld}
         '<span class="chg '+(c.chg>=0?'up':'dn')+'">'+(c.chg==null?'-':fmtPct(c.chg))+'</span>'+
         '<span class="wl-split"><span class="sb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span>'+
           '<span class="sl"><span class="l">'+usd(c.longUsd)+' long</span><span class="s">'+usd(c.shortUsd)+' short</span></span></span>'+
-        '<span class="wl-num">'+c.n+'<small>'+c.longN+'L / '+c.shortN+'S</small></span>'+
         '<span class="wl-num'+(c.lev>=20?' dn':'')+'">'+(c.lev?c.lev+'×':'-')+'</span>'+
         '<span class="wl-num '+(fd==null?'dim':(fd>=0?'up':'dn'))+'">'+(fd==null?'-':spnl(fd))+'<small>'+fund8(c.fund)+'/h</small></span>'+
         '<span class="wl-num dim">'+(c.oiShare==null?'-':c.oiShare+'%')+'<small>'+(c.oi?usd(c.oi):'')+'</small></span>'+
@@ -557,7 +609,6 @@ ${ld}
   function paintBest(d){
     var box=document.getElementById('wlBest'); if(!box)return;
     var bs=d.best||[];
-    var n=document.getElementById('wlTabBe'); if(n)n.textContent=bs.length?bs.length:'';
     if(!bs.length){ box.innerHTML='<div class="wl-empty">The month board is read from the Hyperliquid leaderboard, refreshed hourly.<br>It appears with the next refresh.</div>'; return; }
     box.innerHTML=bs.map(function(b,i){
       return '<div class="wl-br" data-w="'+esc(b.user)+'" role="button" tabindex="0">'+
@@ -617,11 +668,11 @@ ${ld}
            and withdrawals too, and a reader comparing the two without this line reads it as a contradiction */
         '<p class="wl-note" style="margin:6px 0 0">Account value moves with deposits and withdrawals as well as trading. The P&amp;L above is trading only.</p>';
     }
-    var pos=j.pos||[];
+    var pos=j.pos||[], trs=j.trades||[];
     H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
     if(!pos.length) H+='<div class="wl-empty">Flat right now - no open perpetual position.</div>';
     else H+=pos.map(function(p){
-      var dd=(p.liq&&p.entry)?null:null;
+      var ot=0; for(var q=0;q<trs.length;q++){ var tq=trs[q]; if(tq&&tq.act==='open'&&tq.sym===p.sym&&!!tq.long===!!p.long){ ot=+tq.ts||0; break; } }
       var mark=null; /* the profile does not carry a mark; the liq bar is drawn from entry vs liq */
       var room=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
       var bar=room!=null?Math.max(3,Math.min(100,room)):0;
@@ -637,6 +688,7 @@ ${ld}
           '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
         '</div>'+
         (room!=null?'<div class="lqb"><i class="'+cls+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
+        '<div class="wd-chart" data-sym="'+esc(mkt(p.sym))+'" data-entry="'+(+p.entry||0)+'" data-liq="'+(+p.liq||0)+'" data-long="'+(p.long?1:0)+'" data-lev="'+(p.lev||'')+'" data-ts="'+ot+'"><div class="wl-sk" style="height:120px"></div></div>'+
       '</div>';
     }).join('');
     var tr=j.trades||[];
@@ -655,6 +707,7 @@ ${ld}
       '<a href="'+HL+esc(j.a)+'" target="_blank" rel="noopener">Open on Hyperliquid</a>'+
       '<button type="button" data-copy="'+esc(j.a)+'">Copy address</button></div>';
     body.innerHTML=H;
+    try{ wdCharts(body,j); }catch(e){}
   }
   function wdOpen(a){
     a=String(a||'').toLowerCase(); if(!/^0x[0-9a-f]{40}$/.test(a))return;
@@ -677,7 +730,7 @@ ${ld}
     WD.open=false;
     var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
     if(dim)dim.hidden=true; if(dr)dr.hidden=true;
-    document.documentElement.style.overflow='';
+    if(!FS.open)document.documentElement.style.overflow='';
   }
   document.addEventListener('click',function(e){
     var t=e.target;
@@ -697,6 +750,98 @@ ${ld}
     if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('data-w')){ e.preventDefault(); wdOpen(e.target.getAttribute('data-w')); }
   });
 
+  /* ── the glance: what whales are buying right now (2026-09-17) ─────────────────────────────── */
+  function paintNow(d){
+    var mb=document.getElementById('wlNowM'), tb=document.getElementById('wlNowT'); if(!mb||!tb)return;
+    var cs=(d.coins||[]).slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);}).slice(0,5);
+    if(cs.length){ mb.innerHTML=cs.map(function(c){ var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100, net=c.longUsd-c.shortUsd;
+      return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="Show these positions">'+
+        '<b>'+esc(mkt(c.sym))+'<small>'+px(c.mark)+(c.chg==null?'':' · '+fmtPct(c.chg))+'</small></b>'+
+        '<span><span class="nb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span><span class="nl"><span>'+lp.toFixed(0)+'% long</span><span>'+(100-lp).toFixed(0)+'% short</span></span></span>'+
+        '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?'net long':'net short')+'<small>'+usd(Math.abs(net))+' of '+usd(tot)+'</small></span></div>'; }).join(''); }
+    else mb.innerHTML='<div class="wl-empty">The market breakdown appears with the next position sweep.</div>';
+    var fl=(d.fills||[]).slice(0,4);
+    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+      return '<div class="wl-nt '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="Open this wallet">'+
+        '<span class="ck">'+clock(t.ts).slice(0,5)+'</span>'+
+        '<span class="tx"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' '+t.lev+'x':'')+' · '+esc(shorta(t.user))+'</span>'+
+        '<span class="am">'+usd(t.usd)+'</span></div>'; }).join(''); }
+    else tb.innerHTML='<div class="wl-empty">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k recorded yet.</div>';
+  }
+  /* ── the filter sheet ──────────────────────────────────────────────────────────────────────── */
+  var FS={open:false,view:'pos'};
+  function fsum(){
+    var SORT={val:'by size',pnl:'by P&L',liq:'nearest liquidation first',lev:'by leverage'};
+    var a=document.getElementById('wlFsumPos'); if(a)a.textContent=[F.sym?mkt(F.sym):'All markets',F.side==='l'?'Longs':F.side==='s'?'Shorts':'Long & short',SORT[F.sort]||'by size'].join(' · ');
+    var b=document.getElementById('wlFsumTr'); if(b)b.textContent=[TF.sym?mkt(TF.sym):'All markets',TF.act==='open'?'Opened':TF.act==='close'?'Closed':'Opened & closed',TZ==='utc'?'UTC':'local time'].join(' · ');
+    var pb=document.querySelector('.wl-fbtn[data-fopen="pos"]'); if(pb)pb.classList.toggle('on',!!(F.sym||F.side||F.sort!=='val'));
+    var tbn=document.querySelector('.wl-fbtn[data-fopen="trades"]'); if(tbn)tbn.classList.toggle('on',!!(TF.sym||TF.act));
+  }
+  function fsOpen(v){
+    FS.open=true; FS.view=v;
+    var sh=document.getElementById('wlFilt'), dim=document.getElementById('wlFdim'); if(!sh)return;
+    [].forEach.call(sh.querySelectorAll('.wl-fg'),function(g){g.hidden=g.getAttribute('data-for')!==v;});
+    var t=document.getElementById('wlFiltT'); if(t)t.textContent=v==='trades'?'Filter trades':'Filter positions';
+    sh.hidden=false; if(dim)dim.hidden=false; document.documentElement.style.overflow='hidden';
+    try{ navigator.sendBeacon('/api/track?t=event&type=whfilt&l='+v+'&p=/hyperliquid-whales/'); }catch(e){}
+  }
+  function fsClose(){
+    FS.open=false;
+    var sh=document.getElementById('wlFilt'), dim=document.getElementById('wlFdim');
+    if(sh)sh.hidden=true; if(dim)dim.hidden=true; if(!WD.open)document.documentElement.style.overflow='';
+  }
+  function fsReset(){
+    if(FS.view==='trades'){ TF.sym=''; TF.act=''; [].forEach.call(document.querySelectorAll('#wlTrAct button'),function(x){x.classList.toggle('on',!x.getAttribute('data-act'));}); }
+    else { F.sym=''; F.side=''; F.sort='val'; [].forEach.call(document.querySelectorAll('#wlSide button'),function(x){x.classList.toggle('on',!x.getAttribute('data-side'));}); [].forEach.call(document.querySelectorAll('#wlSort button'),function(x){x.classList.toggle('on',x.getAttribute('data-sort')==='val');}); }
+    syncChips(); if(window.__wlLast){paintPos(window.__wlLast);paintTrades(window.__wlLast);}
+  }
+  document.addEventListener('click',function(e){
+    var o=e.target.closest&&e.target.closest('[data-fopen]'); if(o){fsOpen(o.getAttribute('data-fopen'));return;}
+    if(e.target.closest&&(e.target.closest('#wlFiltX')||e.target.closest('#wlFiltDone')||e.target.closest('#wlFdim'))){fsClose();return;}
+    if(e.target.closest&&e.target.closest('#wlFiltReset')){fsReset();return;}
+    var nm=e.target.closest&&e.target.closest('.wl-nm[data-sym]');
+    if(nm){ F.sym=nm.getAttribute('data-sym'); setView('pos'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); var sec=document.getElementById('vPos'); if(sec)sec.scrollIntoView({block:'start',behavior:'smooth'}); return; }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&FS.open)fsClose(); });
+  /* ── the drawer chart: each open position against the last days of price ───────────────────── */
+  var KL={};
+  function klines(sym){ var k=String(sym||'').toUpperCase(); var c=KL[k]; if(c&&Date.now()-c.t<60000)return c.p;
+    var p=fetch('/api/klines?symbol='+encodeURIComponent(k)+'&interval=60&limit=400').then(function(r){return r.ok?r.json():null;}).then(function(j){ var b=Array.isArray(j)?j:(j&&j.data)||[]; b=b.filter(function(x){return x&&+x.close>0&&+x.time>0;}); return b.length>=20?b:null; }).catch(function(){return null;});
+    KL[k]={t:Date.now(),p:p}; return p; }
+  function wdCharts(body,j){
+    [].forEach.call(body.querySelectorAll('.wd-chart[data-sym]'),function(el){
+      var sym=el.getAttribute('data-sym'), entry=+el.getAttribute('data-entry')||0, liq=+el.getAttribute('data-liq')||0, isL=el.getAttribute('data-long')==='1', ots=+el.getAttribute('data-ts')||0;
+      klines(sym).then(function(bars){
+        if(!bars){ el.innerHTML='<div class="none">No chart for '+esc(sym)+' - not a market our price feed carries.</div>'; return; }
+        var n=bars.length, from=n-96; /* four days of 1h candles by default; reach back to the open when we know it */
+        if(ots){ var oi=-1; for(var i=0;i<n;i++){ if(bars[i].time*1000>=ots){oi=i;break;} } if(oi>0) from=Math.min(from,Math.max(0,oi-12)); }
+        from=Math.max(0,from); var b=bars.slice(from), last=+b[b.length-1].close;
+        var W=320,H=120,PL=6,PR=62,PT=10,PB=12;
+        var lo=Infinity,hi=-Infinity; b.forEach(function(x){ if(+x.low<lo)lo=+x.low; if(+x.high>hi)hi=+x.high; });
+        var liqIn=liq>0&&Math.abs(liq-last)/last<=0.35; /* a liquidation 3x away would flatten the price line into a floor */
+        if(entry>0){lo=Math.min(lo,entry);hi=Math.max(hi,entry);} if(liqIn){lo=Math.min(lo,liq);hi=Math.max(hi,liq);}
+        if(!(hi>lo)){hi=lo*1.001;lo=lo*0.999;} var pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
+        var X=function(i){return PL+(i/Math.max(1,b.length-1))*(W-PL-PR);}, Y=function(v){return PT+(1-(v-lo)/(hi-lo))*(H-PT-PB);};
+        var path=b.map(function(x,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(+x.close).toFixed(1);}).join(' ');
+        var col=isL?'#2ebd85':'#ff5a4d';
+        var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(sym)+' price with entry and liquidation">';
+        s+='<path d="'+path+'" fill="none" stroke="#c7ccd4" stroke-width="1.4" stroke-linejoin="round"/>';
+        if(entry>0){ var ey=Y(entry); s+='<line x1="'+PL+'" y1="'+ey.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ey.toFixed(1)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/>';
+          var ex=W-PR-2; if(ots){ for(var k=0;k<b.length;k++){ if(b[k].time*1000>=ots){ex=X(k);break;} } }
+          s+='<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="4.5" fill="'+col+'" stroke="#0a0c0f" stroke-width="1.5"/>';
+          s+='<text x="'+(W-PR+4)+'" y="'+(ey+3).toFixed(1)+'" fill="'+col+'" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">ENTRY '+esc(px(entry).replace('$',''))+'</text>'; }
+        if(liq>0){ if(liqIn){ var ly=Y(liq); s+='<line x1="'+PL+'" y1="'+ly.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ly.toFixed(1)+'" stroke="#ff5a4d" stroke-width="1.4" stroke-dasharray="5 4"/>';
+            s+='<text x="'+(W-PR+4)+'" y="'+(ly+3).toFixed(1)+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq).replace('$',''))+'</text>'; }
+          else { var ay=isL?H-PB:PT+6; s+='<text x="'+PL+'" y="'+ay+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq))+' · '+(isL?'far below':'far above')+' this window</text>'; } }
+        var cy=Y(last); s+='<circle cx="'+(W-PR-2).toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="2.5" fill="#fff"/>';
+        s+='</svg>';
+        var dist=(liq>0&&last>0)?Math.abs(last-liq)/last*100:null;
+        var cap='<div class="cap"><span>1h candles · '+(ots?'dot = opened '+dayOf(ots)+' '+clock(ots).slice(0,5):'dot = entry level (opened before our feed)')+(dist!=null?' · liq '+dist.toFixed(1)+'% away':'')+'</span>'+
+          '<a href="/paper-trade?coin='+encodeURIComponent(sym)+'&side='+(isL?'long':'short')+(el.getAttribute('data-lev')?'&lev='+encodeURIComponent(el.getAttribute('data-lev')):'')+'">Trade it on paper →</a></div>';
+        el.innerHTML=s+cap;
+      });
+    });
+  }
   /* ── views + filters ───────────────────────────────────────────────────────────────────────── */
   function setView(v){
     VIEW=v; try{localStorage.setItem('mp_wl_view',v);}catch(_){}
@@ -745,10 +890,11 @@ ${ld}
       document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
       document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
       document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
-      document.getElementById('wlCount').textContent=(g.count||0).toLocaleString('en-US');
+      var bigP=(d.positions||[]).slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0]; var bigEl=document.getElementById('wlBig'); if(bigEl&&bigP){ bigEl.textContent=esc(mkt(bigP.sym))+' '+(bigP.long?'long':'short')+' '+usd(bigP.val); bigEl.className='v '+(bigP.long?'up':'dn'); }
       var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
       var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
     }
+    paintNow(d);
     if(d.positions&&d.positions.length)paintPos(d);
     paintTrades(d);
     paintCoins(d);

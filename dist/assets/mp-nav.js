@@ -128,6 +128,7 @@
     sim: '<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M6.5 13l3-3.5 2.5 2.5 4.5-5"/><path d="M9 20h6"/><path d="M12 17v3"/>',
     /* compete & earn */
     trophy: '<path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 2.6 4.9"/><path d="M17 5h2.5a2.5 2.5 0 0 1-2.6 4.9"/><path d="M12 14v3"/><path d="M8.5 21h7"/><path d="M9.5 21c0-2 1-2.6 2.5-4 1.5 1.4 2.5 2 2.5 4"/>',
+    ranks: '<path d="M4 6.5h9"/><path d="M4 12h13"/><path d="M4 17.5h6"/><circle cx="18.5" cy="6.5" r="2"/><path d="M18.5 10.5v7"/><path d="M16.5 15.5l2 2 2-2"/>',
     podium: '<rect x="9.4" y="8" width="5.2" height="12" rx="1"/><rect x="2.8" y="12" width="5.2" height="8" rx="1"/><rect x="16" y="15" width="5.2" height="5" rx="1"/><path d="M12 8V3.2"/><path d="M12 3.4l3 1.1-3 1.1z" fill="currentColor" stroke="none"/>',
     arena: '<rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M12 4.6V8"/><circle cx="12" cy="3.4" r="1.2"/><path d="M9.2 12.4v1.6M14.8 12.4v1.6"/><path d="M2.4 13v3M21.6 13v3"/>',
     gift: '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
@@ -211,23 +212,22 @@
     + '<div class="mpnav-sw"><input type="text" class="mpnav-search" placeholder="' + TR('brSearch') + '" autocomplete="off" aria-label="Search"></div>'
     + '<div class="mpnav-scroll">'
     + '<div class="mpnav-sugg" id="mpnavSugg" hidden></div>'
+    // Where to start sits ABOVE every section (owner 2026-09-17): the one row for a reader who does not yet know
+    // which section to open. It belongs to no section, so the search filter and the E2E leave it uncounted.
+    + row('brWtsT', 'brWtsS', '/where-to-start/', '#c2f64a', 'compass', 'start where to start beginner new first steps how to begin basics zero', 'START')
 
     + '<div class="mpnav-sec">' + TR('secTradeP') + '</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan', 'practice demo futures perpetual perps long short leverage position margin liquidation entry terminal trade paper testnet risk free')
     + row('brSpotT', 'brSpotS', '/spot/', '#c2f64a', 'spot', 'spot wallet memecoin meme coin card buy sell swap solana chain degen demo account portfolio')
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts', 'chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis')
-    + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr', 'screener scanner movers gainers losers volume funding open interest scan filter markets')
-    + xrow('sim', 'brSimT', 'brSimS', '#2ebd85', 'sim', 'simulator simulators practice stocks shares forex fx currency indices index sp500 nasdaq gold silver metals leverage no sign up')
-    + '<div class="mpnav-sub" data-sub="sim" hidden>'
-    + sub('/stock-trading-simulator/', 'Stock trading simulator', 'stocks shares equities apple tesla nvidia')
-    + sub('/forex-trading-simulator/', 'Forex trading simulator', 'forex fx currency eurusd gbpusd pairs')
-    + sub('/index-trading-simulator/', 'Index trading simulator', 'indices index sp500 nasdaq dow dax us30')
-    + sub('/leverage-trading-simulator/', 'Leverage trading simulator (1x-1000x)', 'leverage margin 100x 1000x high leverage')
-    + sub('/crypto-trading-simulator-no-sign-up/', 'No sign-up crypto simulator', 'no sign up no account anonymous guest instant')
-    + '</div>'
+    + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr', 'screener scanner movers gainers losers volume funding open interest scan filter markets stocks shares forex fx indices sp500 nasdaq gold silver metals')
+    // "Simulators" (the five SEO landing pages: stock / forex / index / leverage / no-sign-up) was REMOVED on
+    // 2026-09-17 - owner: readers asked what the difference from Paper Trade is, and there is none; every one of
+    // them opens the same terminal. The pages keep 15-21 static inbound links each (measured), so nothing orphans.
 
     + '<div class="mpnav-sec">' + TR('secCompete') + '</div>'
-    + row('brSeasonT', 'brSeasonS', '/season/', '#c2f64a', 'trophy', 'season pass tiers daily call goals streak boards leaderboard leaderboards standings rank prizes')
+    + row('brSeasonT', 'brSeasonS', '/season/', '#c2f64a', 'trophy', 'season pass tiers daily call goals streak boards standings rank prizes')
+    + row('Leaderboards', 'Every season board in full, prizes and rules', '/leaderboards/', '#ffd75a', 'ranks', 'leaderboard leaderboards standings ranking rank table tables rules prizes top traders who is winning')
     + row('brCompT', 'brCompS', '/trading-competition/', '#ffd75a', 'podium', 'competition competitions contest tournament prize prizes pool win money free entry leaderboard compete')
     + row('brArenaT', 'brArenaS', '/arena/', '#7cc4ff', 'arena', 'arena bot arena bots bot ranking api bots robot leaderboard win rate')
     + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', 'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite')
@@ -285,7 +285,6 @@
     + row('brCalT', 'brCalS', '/calendar/', '#ffd75a', 'cal', 'calendar events dates fomc cpi fed nfp unlocks economic schedule countdown')
 
     + '<div class="mpnav-sec">' + TR('secLearn') + '</div>'
-    + row('brWtsT', 'brWtsS', '/where-to-start/', '#c2f64a', 'compass', 'start where to start beginner new first steps how to begin basics zero', 'START')
     + row('brAcadT', 'brAcadS', '/academy/', '#c2f64a', 'cap', 'academy learn course courses lesson lessons school class study tutorial teach certificate quiz', 'HOT')
     + row('brGuidesT', 'brGuidesS', '/guides/', '#7fd957', 'book', 'guides guide how to explained liquidation explained leverage explained funding explained reference')
     + row('navBlog', 'brBlogS', '/blog/', '#ff8c5a', 'pencil', 'blog articles posts read writing stories')
@@ -613,8 +612,8 @@
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=540db9a3', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=540db9a3"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=6abb8590', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=6abb8590"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
