@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-17T12:11:48.005Z",
+  "generated": "2026-09-17T12:38:11.185Z",
   "pages": 376,
   "occurrences": 25478,
   "unique": 13476,
-  "words": 254366,
+  "words": 254381,
   "untranslated": 8,
   "untranslatedWords": 19,
-  "merged": "2026-09-17T12:12:43.506Z"
+  "merged": "2026-09-17T12:38:44.277Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -112387,9 +112387,9 @@
    "n": 1,
    "w": 6
   },
-  "TsQkl4sFrD": {
-   "en": "<span>Trade to enter</span><em>real accounts through MarginPad · Bybit every 14 days · Moon every 28</em>",
-   "es": "<span>Opera para entrar</span><em>cuentas reales vía MarginPad · Bybit cada 14 días · Moon cada 28</em>",
+  "X4Ln0ebcRC": {
+   "en": "<span>Trade to enter</span><em>real accounts through MarginPad · Bybit every season · Moon every two</em>",
+   "es": "<span>Opera para entrar</span><em>cuentas reales vía MarginPad · Bybit cada temporada · Moon cada dos</em>",
    "kind": [
     "html"
    ],
@@ -112397,7 +112397,7 @@
     "/"
    ],
    "n": 1,
-   "w": 14
+   "w": 13
   },
   "kwsq5uxRGD": {
    "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"cp-bp\">$200<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -117915,9 +117915,9 @@
    "n": 1,
    "w": 2
   },
-  "pJP0L2LLKm": {
-   "en": "Seven boards, real prize money paid in USD to your rewards balance. Five are free paper-trading boards, one is the Gold Room, and two are scored on real accounts opened through MarginPad: Bybit volume every season and King of the Moon over 28 days. Every ranked trader, every prize, and the exact rule each board is scored by.",
-   "es": "Siete tablas, premios en dinero real pagados en USD a tu saldo de recompensas. Cinco son tablas gratuitas de paper trading, una es la Gold Room y dos se puntúan con cuentas reales abiertas a través de MarginPad: volumen en Bybit cada temporada y King of the Moon durante 28 días. Cada trader clasificado, cada premio y la regla exacta con la que se puntúa cada tabla.",
+  "giZzB39TbZ": {
+   "en": "Seven boards, real prize money paid in USD to your rewards balance. Five are free paper-trading boards, one is the Gold Room, and two are scored on real accounts opened through MarginPad: Bybit volume every season and King of the Moon over two seasons. Every ranked trader, every prize, and the exact rule each board is scored by.",
+   "es": "Siete tablas, premios en dinero real pagados en USD a tu saldo de recompensas. Cinco son tablas gratuitas de paper trading, una es la Gold Room y dos se puntúan con cuentas reales abiertas a través de MarginPad: volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, cada premio y la regla exacta con la que se puntúa cada tabla.",
    "kind": [
     "html"
    ],
@@ -117990,9 +117990,9 @@
    "n": 1,
    "w": 2
   },
-  "UDUO_UI1ru": {
-   "en": "+ $300 King of the Moon every 28 days · paid in USD, withdrawable",
-   "es": "+ $300 en King of the Moon cada 28 días · pagados en USD, retirables",
+  "M5k4lDGVsG": {
+   "en": "+ $300 King of the Moon every two seasons · paid in USD, withdrawable",
+   "es": "+ $300 en King of the Moon cada dos temporadas · pagados en USD, retirables",
    "kind": [
     "html"
    ],
@@ -118111,9 +118111,9 @@
    "n": 1,
    "w": 6
   },
-  "x4PHo33rbG": {
-   "en": "<span class=\"n\"><i style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"p\">$300<small>POOL · 28 DAYS</small></span><span class=\"l\" id=\"tl-moon\">-</span>",
-   "es": "<span class=\"n\"><i style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"p\">$300<small>BOLSA · 28 DÍAS</small></span><span class=\"l\" id=\"tl-moon\">-</span>",
+  "xkHxeUXreh": {
+   "en": "<span class=\"n\"><i style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"p\">$300<small>POOL · 2 SEASONS</small></span><span class=\"l\" id=\"tl-moon\">-</span>",
+   "es": "<span class=\"n\"><i style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"p\">$300<small>BOLSA · 2 TEMPORADAS</small></span><span class=\"l\" id=\"tl-moon\">-</span>",
    "kind": [
     "html"
    ],
@@ -118121,7 +118121,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 8
+   "w": 7
   },
   "n_YyENIQxt": {
    "en": "Highest ROE<small id=\"bS\">the best return on a single closed trade this season</small>",
@@ -118183,9 +118183,9 @@
    "n": 1,
    "w": 2
   },
-  "IxD-1old3s": {
-   "en": "A season starts every other Monday at 00:00 UTC and ends fourteen days later. Standings reset; nothing carries over except your account, your XP and your history. King of the Moon is the one exception: a single 28-day contest with its own start and end.",
-   "es": "Una temporada empieza cada dos lunes a las 00:00 UTC y termina catorce días después. Las clasificaciones se reinician; nada se arrastra salvo tu cuenta, tu XP y tu historial. King of the Moon es la única excepción: un solo concurso de 28 días con su propio inicio y fin.",
+  "eYtgAIv2Lr": {
+   "en": "A season starts every other Monday at 00:00 UTC and ends fourteen days later. Standings reset; nothing carries over except your account, your XP and your history. King of the Moon is the one exception: a single contest spanning two seasons, ending when the season after the one it opened in ends.",
+   "es": "Una temporada empieza cada dos lunes a las 00:00 UTC y termina catorce días después. Las clasificaciones se reinician; nada se arrastra salvo tu cuenta, tu XP y tu historial. King of the Moon es la única excepción: un solo concurso que abarca dos temporadas y termina cuando acaba la temporada siguiente a aquella en la que abrió.",
    "kind": [
     "html"
    ],
@@ -118193,7 +118193,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 43
+   "w": 50
   },
   "I8z4b6SJEc": {
    "en": "<b>Paid automatically, in USD</b>",
@@ -118387,9 +118387,9 @@
    "n": 1,
    "w": 1
   },
-  "gWp59zHHm0": {
-   "en": "The seven MarginPad leaderboards in full: five free paper-trading boards, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over 28 days. Every ranked trader, the prize each rank pays, the exact rules.",
-   "es": "Las siete clasificaciones de MarginPad al completo: cinco tablas gratuitas de paper trading, la Gold Room y dos puntuadas con cuentas reales - volumen en Bybit cada temporada y King of the Moon durante 28 días. Cada trader clasificado, el premio que paga cada puesto, las reglas exactas.",
+  "DiD3T7Gnaj": {
+   "en": "The seven MarginPad leaderboards in full: five free paper-trading boards, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over two seasons. Every ranked trader, the prize each rank pays, the exact rules.",
+   "es": "Las siete clasificaciones de MarginPad al completo: cinco tablas gratuitas de paper trading, la Gold Room y dos puntuadas con cuentas reales - volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, el premio que paga cada puesto, las reglas exactas.",
    "kind": [
     "attr:content"
    ],
@@ -118507,9 +118507,9 @@
    "n": 1,
    "w": 5
   },
-  "5RekDKHHcf": {
-   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Bybit volume board pays $100, $50, $25, $15 and $10; King of the Moon pays $150, $70, $40, $25 and $15 over a 28-day contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The season pool is $350, plus $300 for King of the Moon every 28 days.",
-   "es": "Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla de volumen en Bybit paga $100, $50, $25, $15 y $10; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de 28 días. Los premios se abonan en USD al saldo de recompensas de MarginPad y son retirables. La bolsa de la temporada es de $350, más $300 para King of the Moon cada 28 días.",
+  "_-SMpIdMBx": {
+   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Bybit volume board pays $100, $50, $25, $15 and $10; King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The season pool is $350, plus $300 for King of the Moon every two seasons.",
+   "es": "Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla de volumen en Bybit paga $100, $50, $25, $15 y $10; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Los premios se abonan en USD al saldo de recompensas de MarginPad y son retirables. La bolsa de la temporada es de $350, más $300 para King of the Moon cada dos temporadas.",
    "kind": [
     "ld"
    ],
@@ -155383,9 +155383,9 @@
    "n": 1,
    "w": 4
   },
-  "2G9b3k8uT2": {
-   "en": "Real amount wagered on a Moon account opened through MarginPad - one 28-day contest, not a season.",
-   "es": "Importe real apostado en una cuenta de Moon abierta a través de MarginPad - un solo concurso de 28 días, no una temporada.",
+  "xvKfBQ03RQ": {
+   "en": "Real amount wagered on a Moon account opened through MarginPad - one contest across two seasons.",
+   "es": "Importe real apostado en una cuenta de Moon abierta a través de MarginPad - un solo concurso que abarca dos temporadas.",
    "kind": [
     "html"
    ],
@@ -155395,9 +155395,9 @@
    "n": 1,
    "w": 14
   },
-  "GjE0sIPFpB": {
-   "en": "$300 / 28 days",
-   "es": "$300 / 28 días",
+  "4R9BTi-6Mp": {
+   "en": "$300 / 2 seasons",
+   "es": "$300 / 2 temporadas",
    "kind": [
     "html"
    ],
@@ -155405,11 +155405,11 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 3
+   "w": 2
   },
-  "VoUVnymL_R": {
-   "en": "Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season; King of the Moon pays $150 / $70 / $40 / $25 / $15 per 28-day contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
-   "es": "Las tablas de paper trading pagan $10 / $8 / $6 / $4 / $2 a los cinco primeros. La tabla de volumen en Bybit paga $100 / $50 / $25 / $15 / $10 por temporada; King of the Moon paga $150 / $70 / $40 / $25 / $15 por concurso de 28 días. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
+  "kl-ePmD1Io": {
+   "en": "Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season; King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
+   "es": "Las tablas de paper trading pagan $10 / $8 / $6 / $4 / $2 a los cinco primeros. La tabla de volumen en Bybit paga $100 / $50 / $25 / $15 / $10 por temporada; King of the Moon paga $150 / $70 / $40 / $25 / $15 por concurso de dos temporadas. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
    "kind": [
     "html"
    ],
@@ -155515,9 +155515,9 @@
    "n": 1,
    "w": 56
   },
-  "TBXW8g7Zx8": {
-   "en": "<b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one 28-day contest rather than a season, and pays the top five $300. Claiming the <a href=\"/rewards/\">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href=\"/leaderboards/#moon\">the leaderboards page</a>.",
-   "es": "<b>King of the Moon</b> clasifica a los miembros por el importe real apostado en una cuenta de Moon abierta a través de MarginPad, durante un concurso de 28 días en lugar de una temporada, y paga $300 a los cinco primeros. Reclamar el <a href=\"/rewards/\">bono de registro de Moon</a> es el registro: le dice a MarginPad tu nombre de usuario en Moon, que Moon reporta enmascarado. La tabla parte de lo que cada cuenta había apostado el día en que abrió el concurso y cuenta solo lo que se añade después. Clasificación completa y reglas: <a href=\"/leaderboards/#moon\">la página de clasificaciones</a>.",
+  "2hIfxJLEEc": {
+   "en": "<b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one contest spanning two seasons (it ends when the season after the one it opened in ends), and pays the top five $300. Claiming the <a href=\"/rewards/\">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href=\"/leaderboards/#moon\">the leaderboards page</a>.",
+   "es": "<b>King of the Moon</b> clasifica a los miembros por el importe real apostado en una cuenta de Moon abierta a través de MarginPad, durante un concurso que abarca dos temporadas (termina cuando acaba la temporada siguiente a aquella en la que abrió), y paga $300 a los cinco primeros. Reclamar el <a href=\"/rewards/\">bono de registro de Moon</a> es el registro: le dice a MarginPad tu nombre de usuario en Moon, que Moon reporta enmascarado. La tabla parte de lo que cada cuenta había apostado el día en que abrió el concurso y cuenta solo lo que se añade después. Clasificación completa y reglas: <a href=\"/leaderboards/#moon\">la página de clasificaciones</a>.",
    "kind": [
     "html"
    ],
@@ -155525,7 +155525,7 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 79
+   "w": 90
   },
   "mrXSYz21Lq": {
    "en": "Why the standings can be trusted",
@@ -155638,9 +155638,9 @@
    "n": 2,
    "w": 4
   },
-  "FDxFw1uo_A": {
-   "en": "Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a 28-day contest. That is $350 a season across the six season boards, plus $300 every 28 days on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
-   "es": "Cada tabla paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla de volumen en Bybit paga $100, $50, $25, $15 y $10, y King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de 28 días. Eso son $350 por temporada entre las seis tablas de temporada, más $300 cada 28 días en Moon. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
+  "j-rxIKkE-w": {
+   "en": "Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $350 a season across the six season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
+   "es": "Cada tabla paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla de volumen en Bybit paga $100, $50, $25, $15 y $10, y King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Eso son $350 por temporada entre las seis tablas de temporada, más $300 cada dos temporadas en Moon. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
    "kind": [
     "html",
     "ld"
@@ -155716,9 +155716,9 @@
    "n": 2,
    "w": 8
   },
-  "m6-yh8phFf": {
-   "en": "Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays the top five $200 a season; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one 28-day contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.",
-   "es": "Sí, en dos tablas. La tabla de volumen en Bybit clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad y paga $200 por temporada a los cinco primeros; registra el UID de esa cuenta en la página de temporada para aparecer. King of the Moon clasifica a los miembros por el importe apostado en una cuenta de Moon abierta a través de MarginPad durante un concurso de 28 días y paga $300 a los cinco primeros; reclamar el bono de registro de Moon en la página de recompensas es el registro.",
+  "kTcozePirz": {
+   "en": "Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays the top five $200 a season; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one two-season contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.",
+   "es": "Sí, en dos tablas. La tabla de volumen en Bybit clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad y paga $200 por temporada a los cinco primeros; registra el UID de esa cuenta en la página de temporada para aparecer. King of the Moon clasifica a los miembros por el importe apostado en una cuenta de Moon abierta a través de MarginPad durante un concurso de dos temporadas y paga $300 a los cinco primeros; reclamar el bono de registro de Moon en la página de recompensas es el registro.",
    "kind": [
     "html",
     "ld"
@@ -155817,9 +155817,9 @@
    "n": 1,
    "w": 5
   },
-  "iVYOOnyGWc": {
-   "en": "Join a free crypto futures trading competition. Seven leaderboards, a $350 prize pool every 14 days plus $300 every 28 days, no deposit to enter. Paper boards are filled server-side against real exchange candles; two boards pay for real trading - Bybit volume and King of the Moon.",
-   "es": "Únete a una competición gratuita de trading de futuros de cripto. Siete clasificaciones, una bolsa de $350 cada 14 días más $300 cada 28 días, sin depósito para entrar. Las tablas de paper trading se ejecutan en el servidor contra velas reales de exchange; dos tablas pagan por operar de verdad - volumen en Bybit y King of the Moon.",
+  "UDBMgLcs9V": {
+   "en": "Join a free crypto futures trading competition. Seven leaderboards, a $350 prize pool every 14 days plus $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles; two boards pay for real trading - Bybit volume and King of the Moon.",
+   "es": "Únete a una competición gratuita de trading de futuros de cripto. Siete clasificaciones, una bolsa de $350 cada 14 días más $300 cada dos temporadas, sin depósito para entrar. Las tablas de paper trading se ejecutan en el servidor contra velas reales de exchange; dos tablas pagan por operar de verdad - volumen en Bybit y King of the Moon.",
    "kind": [
     "attr:content"
    ],

@@ -2642,7 +2642,7 @@ const COMP_BOARDS = [
   { id: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
   { id: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
   { id: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
-  { id: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a 28-day contest', unit: 'USD wagered', f: 'vol', days: 28 },
+  { id: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
@@ -2665,7 +2665,7 @@ async function handleCompetition(url, request, env, ctx) {
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
       entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : 'free_paper',
-      period_days: b.days || Math.round(LB_PERIOD / 86400000),
+      period_days: b.id === 'moon' && lb && lb.moonContest && lb.moonContest.days ? lb.moonContest.days : (b.days || Math.round(LB_PERIOD / 86400000)),
       ...(b.id === 'moon' && lb && lb.moonContest ? { contest: { starts: lb.moonContest.start ? new Date(lb.moonContest.start).toISOString() : null, ends: lb.moonContest.end ? new Date(lb.moonContest.end).toISOString() : null, updated: lb.moonContest.updated ? new Date(lb.moonContest.updated).toISOString() : null } } : {}),
     };
   });
@@ -2673,7 +2673,7 @@ async function handleCompetition(url, request, env, ctx) {
 
   const out = {
     name: 'MarginPad Season',
-    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume; a seventh, King of the Moon, is a 28-day contest scored from real wagering on Moon.',
+    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume; a seventh, King of the Moon, is a two-season contest scored from real wagering on Moon.',
     url: 'https://marginpad.io/trading-competition/',
     live: true,
     season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
@@ -12112,7 +12112,10 @@ function moonStandings(start, end) { // wagered during the contest = end - start
   return out;
 }
 async function moonSnap(env, contest, phase) { try { return JSON.parse((await env.STATS.get('moon:snap:' + contest + ':' + phase)) || 'null'); } catch (e) { return null; } }
-const MOON_CONTEST_DAYS = 28; // King of the Moon runs two seasons long (owner 2026-09-17: "28 dana, 2 sezone")
+const MOON_CONTEST_DAYS = 28; // the nominal length: King of the Moon runs TWO SEASONS - it ends when the season after the one it opened in ends (owner 2026-09-17:
+// "traje 2 sezone, a ova je vec pocela pa nek traje malo krace"), so a contest opened mid-season is shorter than 28 days. Never start.ts + 28 d.
+function moonContestEnd(startTs) { return lbPeriodStart(startTs) + 2 * LB_PERIOD; }
+function moonContestDays(start, end) { return Math.max(1, Math.round((end - start) / 86400000)); }
 async function moonPubSnapshot(env, id) { // the public board of the ACTIVE contest (or a named one) - rows keep uid for the payout, /lb strips it
   try { id = id || (await env.STATS.get('moon:active')) || ''; if (!id) return null; return JSON.parse((await env.STATS.get('lb:moon:' + id)) || 'null'); } catch (e) { return null; }
 }
@@ -12123,7 +12126,7 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   let membersN = 0; try { membersN = (await moonMembers(env)).filter(m => m.status === 'approved').length; } catch (e) {} // who can compete = every approved Moon sign-up
   const banned = {}; try { const bd = await bybitLedger(env, '/lbbans', {}); ((bd && bd.banned) || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
-  const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: start.ts + MOON_CONTEST_DAYS * 86400000, final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
+  const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v2')); } catch (e) {}
@@ -15909,7 +15912,7 @@ async function handleReward(url, request, env) {
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
         let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
-          topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: MOON_CONTEST_DAYS, final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
+          topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
@@ -17537,7 +17540,7 @@ export default {
       let active = ''; try { active = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
       const pub = await moonPubSnapshot(env, contest); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:moon:' + contest)); } catch (e) {}
       const cfgm = await rewardCfg(env);
-      return J({ contest, contests, active, isActive: active === contest, pub, paid: paidFlag, prizes: cfgm.lbMoon, days: MOON_CONTEST_DAYS, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
+      return J({ contest, contests, active, isActive: active === contest, pub, paid: paidFlag, prizes: cfgm.lbMoon, days: pub ? moonContestDays(pub.start, pub.end) : MOON_CONTEST_DAYS, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
     }
     if (url.pathname === '/api/admin/bybitlinks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let ab = {}; try { ab = await request.json(); } catch (e) {}
