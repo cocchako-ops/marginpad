@@ -114,7 +114,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else {
       for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue; if (b.low < pLo) pLo = b.low; if (b.high > pHi) pHi = b.high; }
       if (!isFinite(pLo)) { pLo = P.pMin; pHi = P.pMax; }
-      var yPad = (pHi - pLo) * 0.28; pLo -= yPad; pHi += yPad;
+      // A LIQUIDATION MAP HAS TO FRAME THE ZONES, NOT THE CANDLES. Measured 2026-09-18: BTC's 24h candle range was
+      // 1.8% wide while the nearest heavy standing zones sat +7.7% and -6.2% away, so the default view (candle range
+      // padded 28%) opened on a map with its own subject off screen - and once the heat was made visible, all of it
+      // was crushed against the top edge. Reach out to the strongest standing zone on each side of price instead.
+      var fr = frameZones(pLo, pHi);
+      var yPad = (fr.hi - fr.lo) * (fr.grew ? 0.1 : 0.28); pLo = fr.lo - yPad; pHi = fr.hi + yPad;
     }
     S.yLo = pLo; S.yHi = pHi;
     var X = function (t) { return (t - v.t0) / (v.t1 - v.t0) * W; };
@@ -127,18 +132,25 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.fillStyle = 'rgba(92,107,132,.85)'; ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'center';
     for (i = 1; i < 6; i++) { var tt = v.t0 + (v.t1 - v.t0) / 6 * i; ctx.fillText(tlabel(tt), W / 6 * i, H - 6); }
     // STANDING pool bands - the heat. Band starts when the crowd started building and runs to the right edge.
-    var bh = Math.max(2, H * (P.binH / (pHi - pLo)) * 1.15);
-    for (i = P.alive.length - 1; i >= 0; i--) { var s = P.alive[i];
-      if (poolGone(s)) continue;
-      if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
-      if (s.price < pLo || s.price > pHi) continue;
+    // A band is exactly one bin tall (1.02 closes the hairline seam). It used to be 1.15 bins with a halo 2.2 bins
+    // tall, which meant every band bled over its two neighbours - invisible while the alpha was near zero, and the
+    // moment the scale was fixed a dozen adjacent bands composited into one solid slab with no structure in it.
+    var bh = Math.max(2, H * (P.binH / (pHi - pLo)) * 1.02);
+    var vis = [];
+    for (i = 0; i < P.alive.length; i++) { var sv0 = P.alive[i];
+      if (poolGone(sv0)) continue;
+      if (S.sideF === 'long' && !sv0.long) continue; if (S.sideF === 'short' && sv0.long) continue;
+      if (sv0.price < pLo || sv0.price > pHi) continue;
+      vis.push(sv0);
+    }
+    heatScale(vis); // contrast is spread across the bands ON SCREEN, so the map always has a mid-tone
+    S.vis = vis;
+    for (i = vis.length - 1; i >= 0; i--) { var s = vis[i]; // P.alive is sorted desc, so this paints weak first, heavy on top
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
-      var al = 0.03 + Math.pow(s.a, 2.1) * 0.85; // owner 2026-07-25: weak pools nearly invisible, strong ones keep the punch - the yellow core is the highlight
-      ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (al * 0.5).toFixed(3) + ')' : 'rgba(255,98,88,' + (al * 0.5).toFixed(3) + ')';
-      if (s.a > 0.45) ctx.fillRect(x0, y - bh * 0.6, W - x0, bh * 2.2); // soft halo only for meaningful pools - small ones stay whisper-thin
+      var al = heatAlpha(s._h);
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + al.toFixed(3) + ')' : 'rgba(255,98,88,' + al.toFixed(3) + ')';
       ctx.fillRect(x0, y, W - x0, bh);
-      if (s.a > 0.62) { ctx.fillStyle = s.long ? 'rgba(194,246,74,' + Math.min(0.85, al * 0.75).toFixed(3) + ')' : 'rgba(255,179,71,' + Math.min(0.85, al * 0.75).toFixed(3) + ')'; ctx.fillRect(x0, y + bh * 0.28, W - x0, bh * 0.44); } // the yellow/amber highlight - slightly wider entry, brighter
+      if (s._h > 0.82 && bh > 5) { ctx.fillStyle = s.long ? 'rgba(194,246,74,' + Math.min(0.9, al * 0.8).toFixed(3) + ')' : 'rgba(255,179,71,' + Math.min(0.9, al * 0.8).toFixed(3) + ')'; ctx.fillRect(x0, y + bh * 0.3, W - x0, bh * 0.4); } // the yellow/amber core marks the very top of the visible field, and only where the band is tall enough to hold it
     }
     // candles
     var n = 0; for (i = 0; i < bars.length; i++) if (bars[i].time >= v.t0 && bars[i].time <= v.t1) n++;
@@ -151,14 +163,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var yO = Y(b.open), yC = Y(b.close); ctx.fillRect(x - cw / 2, Math.min(yO, yC), cw, Math.max(1.2, Math.abs(yC - yO)));
     }
     // real liquidations - subtle dots; only sizeable ones get an outline (toggleable via the Dots button)
+    // Measured 2026-09-18 on live BTC: of the 1000 newest events the MEDIAN notional is $994 and 506 of them are
+    // under $1K, so with no threshold half the confetti is thousand-dollar liquidations drawn at the same weight
+    // as the map itself. The size filter is the reader's, with the dollar figure said out loud.
+    S.dotsDrawn = 0;
     if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ts = e.ts / 1000;
       if (ts < v.t0 || ts > v.t1 || e.price < pLo || e.price > pHi) continue;
+      if (!dotOk(e)) continue;
       var lng = e.side === 'long_liquidated';
       if (S.sideF === 'long' && !lng) continue; if (S.sideF === 'short' && lng) continue;
       var r = Math.max(1.8, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6));
       ctx.beginPath(); ctx.arc(X(ts), Y(e.price), r, 0, 6.2832);
-      ctx.fillStyle = lng ? 'rgba(46,189,133,.30)' : 'rgba(255,98,88,.30)'; ctx.fill();
+      ctx.fillStyle = lng ? 'rgba(46,189,133,.26)' : 'rgba(255,98,88,.26)'; ctx.fill();
       if (e.notional >= 25000) { ctx.lineWidth = 1.2; ctx.strokeStyle = lng ? '#2ebd85' : '#ff6258'; ctx.stroke(); }
+      S.dotsDrawn++;
     }
     // big server-logged sweeps → distinct clickable dots (was a space-hungry "$52M longs liquidated" text label - terrible on mobile). Bigger + a glow ring so the huge ones stand out; hover/click shows the amount like every other dot.
     if (S.showDots && S.sweeps && S.sweeps.length) {
@@ -169,22 +187,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         ctx.beginPath(); ctx.moveTo(sx, sy - sr); ctx.lineTo(sx + sr, sy); ctx.lineTo(sx, sy + sr); ctx.lineTo(sx - sr, sy); ctx.closePath();
         ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgb(' + scol + ')'; ctx.stroke();
       } }
-    // top-3 standing pools labelled right on the map - instant read
-    var lab = 0, usedY = [];
-    for (i = 0; i < P.alive.length && lab < 3; i++) { var tp = P.alive[i];
-      if (poolGone(tp)) continue;
-      if (S.sideF === 'long' && !tp.long) continue; if (S.sideF === 'short' && tp.long) continue;
-      if (tp.price < pLo || tp.price > pHi) continue;
-      var ly = Y(tp.price), clash = false;
-      for (var u = 0; u < usedY.length; u++) if (Math.abs(usedY[u] - ly) < 16) { clash = true; break; }
-      if (clash) continue; usedY.push(ly); lab++;
-      var txt = (tp.long ? 'proj. long zone' : 'proj. short zone');
+    // ONE label per side, on the heaviest standing band on screen. It used to be the top THREE bands whatever side
+    // they were on, which while the heat was invisible looked like tidy annotation and, the moment the bands could
+    // actually be seen, printed "proj. long zone" three times stacked on top of each other. A label also has to
+    // earn its pixels: the price and the distance to it are the two things a reader wants and neither was there.
+    var lTop = null, sTop = null; // vis is sorted heaviest-first
+    for (i = 0; i < vis.length; i++) { var tp = vis[i];
+      if (tp.long) { if (!lTop) lTop = tp; } else if (!sTop) sTop = tp; //  first of each side = heaviest of each side
+      if (lTop && sTop) break;
+    }
+    [lTop, sTop].forEach(function (tp) {
+      if (!tp) return;
+      var ly = Y(tp.price);
+      if (ly < 12 || ly > H - 12) return;
+      var txt = (tp.long ? 'LONG ZONE ' : 'SHORT ZONE ') + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
       ctx.font = '700 11px "Space Mono",monospace';
       var tw = ctx.measureText(txt).width;
-      ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 16);
+      ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 17);
       ctx.fillStyle = tp.long ? '#7ee2b8' : '#ffa39b'; ctx.textAlign = 'left';
       ctx.fillText(txt, W - tw - 12, ly + 3);
-    }
+    });
     if (S.sel) {
       if (S.sel.type === 'clu') {
         var crefs = S.sel.refs || [];
@@ -329,6 +351,60 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     P.alive.forEach(function (q) { wSum += (+q.w || 0); wN++; });
     var wAvg = wN ? wSum / wN : 0;
     if (wAvg > 0) P.alive.forEach(function (q) { q.rel = (+q.w || 0) / wAvg; });
+  }
+  // ---- heat scale --------------------------------------------------------------------------------
+  // COLOUR IS A RANK INSIDE WHAT IS ON SCREEN, never a fraction of a global maximum. Measured 2026-09-18 on live
+  // BTC: the old curve (alpha = 0.03 + (w/wMax)^0.84 * 0.85) put 7 of 650 standing zones above alpha 0.5 and 312
+  // of them under 0.1 - half the map's own data painted at 3-10% opacity on a near-black ground. Of the canvas
+  // pixels that were lit at all, 28.16% were lit and 28.02% were BRIGHT: practically every lit pixel was a candle
+  // or a dot, so the map had no mid-tone and read as a candlestick chart with confetti. `wMax` is the heaviest
+  // band in the whole model and usually sits far outside the visible price range, so every band you are actually
+  // looking at was being measured against something off screen. drawProfile learned this on 2026-07-24 ("scale
+  // against the biggest VISIBLE pool") and the main canvas never did.
+  // Normalise to a high quantile of the VISIBLE set, then spread the field by rank, so a quiet window still
+  // separates its own heavy bands from its light ones.
+  // The curve is fitted to the MEASURED weight distribution of the bands on screen, not chosen by eye. Live BTC,
+  // 2026-09-18, 245 standing bands inside the framed window, each as a fraction of the visible p95:
+  //   p10 0.025 · p25 0.076 · p50 0.214 · p75 0.423 · p90 0.857 · max 3.19
+  // Ranking by percentile was tried first and is WRONG here: it hands the median band a fixed mid-tone whatever
+  // the field looks like, and with 245 bands tiling the column that painted 84% of the canvas (83% of it above
+  // half brightness - a wall with no structure). Magnitude against the visible p95 with gamma 1.3 puts the median
+  // band at alpha 0.13, p75 at 0.30, p90 at 0.74 - a field that is mostly dark, which is what makes the heavy
+  // bands mean something.
+  function heatScale(vis) {
+    var n = vis.length; if (!n) return;
+    var ws = vis.map(function (p) { return +p.w || 0; }).sort(function (a, b) { return a - b; });
+    var q = ws[Math.min(n - 1, Math.floor(n * 0.95))] || ws[n - 1] || 1; // the top 5% saturate instead of one outlier owning the scale
+    for (var i = 0; i < n; i++) { var p = vis[i];
+      p._h = Math.min(1, (+p.w || 0) / q);
+    }
+  }
+  function heatAlpha(h) { return 0.015 + Math.pow(h, 1.3) * 0.88; }
+  function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
+  // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
+  // from price so one stray far-out band can never flatten the candles into a hairline.
+  function frameZones(lo, hi) {
+    var P = S.pools, px = S.price, out = { lo: lo, hi: hi, grew: false };
+    if (!(px > 0) || !P || !P.alive || !P.alive.length) return out;
+    var bestUp = null, bestDn = null;
+    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i];
+      if (poolGone(x)) continue;
+      if (S.sideF === 'long' && !x.long) continue; if (S.sideF === 'short' && x.long) continue;
+      var d = (x.price - px) / px; if (Math.abs(d) > 0.15) continue;
+      var sc = magnetScore(x, px);
+      if (d > 0) { if (!bestUp || sc > bestUp.sc) bestUp = { p: x.price, sc: sc }; }
+      else { if (!bestDn || sc > bestDn.sc) bestDn = { p: x.price, sc: sc }; }
+    }
+    if (bestUp && bestUp.p > out.hi) { out.hi = bestUp.p; out.grew = true; }
+    if (bestDn && bestDn.p < out.lo) { out.lo = bestDn.p; out.grew = true; }
+    // ...but never at the cost of the price action. The candles keep at least 22% of the height; a zone further out
+    // than that is named in TARGETS and one tap away (the chips move the view), which is better than opening on a
+    // map where the candles are an 11% ribbon nobody can read.
+    if (out.grew) {
+      var cR = Math.max(hi - lo, px * 0.006), maxSpan = Math.max(cR / 0.22, px * 0.03);
+      if (out.hi - out.lo > maxSpan) { var mid = (lo + hi) / 2; out.lo = mid - maxSpan / 2; out.hi = mid + maxSpan / 2; }
+    }
+    return out;
   }
   function poolHit(my, H) { // nearest visible pool band to screen-y `my` (px), respecting side filter + current zoom
     if (!S || !(S.yHi > S.yLo) || !(H > 0)) return null;
@@ -489,7 +565,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var _ph = poolHit(my, r.height), best = _ph ? { s: _ph } : null, i;
       var bev = null, nNear = 0;
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
       var bsw = null;
       if (S.showDots && S.sweeps) for (i = 0; i < S.sweeps.length; i++) { var swv = S.sweeps[i]; if (S.sideF === 'long' && !swv.long) continue; if (S.sideF === 'short' && swv.long) continue; var sd0 = Math.hypot(S.X(swv.t / 1000) - mx, S.Y(swv.p) - my); if (sd0 < 16 && (!bsw || sd0 < bsw.d)) bsw = { d: sd0, s: swv }; }
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
@@ -544,7 +620,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       var hits = [], i;
       if (S.showDots && S.sweeps) { var swH = null; for (i = 0; i < S.sweeps.length; i++) { var sw4 = S.sweeps[i]; if (S.sideF === 'long' && !sw4.long) continue; if (S.sideF === 'short' && sw4.long) continue; var d4 = Math.hypot(S.X(sw4.t / 1000) - mx, S.Y(sw4.p) - my); if (d4 < 16 && (!swH || d4 < swH.d)) swH = { d: d4, s: sw4 }; } if (swH) { S.sel = { type: 'swp', ref: swH.s }; showSel(); sched(); return; } }
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
       var best = poolHit(my, r.height);
@@ -924,12 +1000,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? 'Last 4 hours' : wk === '12H' ? 'Last 12 hours' : wk === '1D' ? 'Last 24 hours' : wk === '3D' ? 'Last 3 days' : 'Last 7 days'; if (wk === '1D') o.selected = true; selW.appendChild(o); });
     var seg = el('div', 'hm-seg');
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
-    var dotsB = el('button', 'hm-btn hm-btnw', 'Dots'); dotsB.type = 'button'; dotsB.title = 'Show/hide real liquidation dots';
+    // Dots used to be an all-or-nothing toggle. It is a SIZE now, because the noise is not the dots, it is the
+    // thousand-dollar ones (measured: median event $994, 506 of 1000 under $1K). Off is still one pick away.
+    var DOTMIN = [['10000', '$10K+ liqs'], ['0', 'All liqs'], ['50000', '$50K+ liqs'], ['250000', '$250K+ liqs'], ['-1', 'No liq dots']];
+    var dotMin0 = 10000; try { var _dm = localStorage.getItem('mp_hm_dotmin'); if (_dm != null) dotMin0 = +_dm; else if (localStorage.getItem('mp_hm_dots') === '0') dotMin0 = -1; } catch (e) {}
+    var selD = el('select', 'hm-sel'); selD.setAttribute('aria-label', 'Liquidation dot size');
+    DOTMIN.forEach(function (d) { var o = document.createElement('option'); o.value = d[0]; o.textContent = d[1]; if (+d[0] === dotMin0) o.selected = true; selD.appendChild(o); });
+    selD.title = 'Hide liquidations below this size';
     var dl = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>'); dl.type = 'button'; dl.title = 'Download PNG';
     var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = 'Share on X';
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
-    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dotsB); bar.appendChild(dl); bar.appendChild(sh);
+    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(selD); bar.appendChild(dl); bar.appendChild(sh);
     var mast = el('div', 'hm-mast');
     mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 11 venues, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
@@ -947,14 +1029,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, showDots: (function(){ try { return localStorage.getItem('mp_hm_dots') !== '0'; } catch (e) { return true; } })(), bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: Math.max(0, dotMin0), showDots: dotMin0 >= 0, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
-    function dotsUi() { dotsB.classList.toggle('on', !!S.showDots); }
-    dotsUi();
-    dotsB.addEventListener('click', function () { if (!S) return; S.showDots = !S.showDots; try { localStorage.setItem('mp_hm_dots', S.showDots ? '1' : '0'); } catch (e) {} if (!S.showDots && S.sel && S.sel.type === 'ev') { S.sel = null; if (S.showSel) S.showSel(); } dotsUi(); sched(); });
+    selD.addEventListener('change', function () { if (!S) return; var v = +selD.value; S.showDots = v >= 0; S.dotMin = Math.max(0, v);
+      try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
+      if (S.sel && S.sel.type === 'ev' && !dotOk(S.sel.ref)) { S.sel = null; if (S.showSel) S.showSel(); } // never leave a selection pinned to a dot that is no longer drawn
+      updHead(); sched(); });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
