@@ -15843,13 +15843,13 @@ async function handleReward(url, request, env) {
   let doPath = path, fwdBody = raw;
   if (path === '/moonsign/submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: 'moon' }); }
   else if (path === '/moonsign/mine') doPath = '/exsign/mine';
-  else if (path === '/moonsign/list') doPath = '/exsign/list';
+  else if (path === '/moonsign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
   else if (path === '/moonsign/review') doPath = '/exsign/review';
   // /fomosign/* is the Fomo ($1 sign-up bonus, 2026-09-15) surface over the same exsign table, exactly as moonsign is.
   // Submit forces exchange:'fomo' server-side, so this path can never be used to claim a bonus for another venue.
   else if (path === '/fomosign/submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: 'fomo' }); }
   else if (path === '/fomosign/mine') doPath = '/exsign/mine';
-  else if (path === '/fomosign/list') doPath = '/exsign/list';
+  else if (path === '/fomosign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
   else if (path === '/fomosign/review') doPath = '/exsign/review';
   const fwd = new Request('https://do' + doPath + (request.method === 'GET' ? url.search : ''), {
     method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1), 'x-dayx': String(cfg.levelsEnabled !== false ? (LEVEL_DAY_MULT[suLevelK] || 1) : 1) },
@@ -20498,7 +20498,8 @@ export class RewardLedger {
     }
     if (path === '/exsign/list') { // admin: review queue + recent decisions (who opened an account where)
       const pending = this.rows("SELECT id,acct AS address,exchange,uid,ts,ip,cc FROM exsign WHERE status='pending' ORDER BY ts ASC LIMIT 100");
-      const decided = this.rows("SELECT id,acct AS address,exchange,uid,ts,status,note,amount,decided_ts FROM exsign WHERE status!='pending' ORDER BY decided_ts DESC LIMIT 30");
+      const decLim = url.searchParams.get('all') === '1' ? 5000 : 30; // ?all=1 = the whole history (owner export, 2026-09-17); the dashboard keeps the recent 30
+      const decided = this.rows("SELECT id,acct AS address,exchange,uid,ts,status,note,amount,decided_ts FROM exsign WHERE status!='pending' ORDER BY decided_ts DESC LIMIT " + decLim);
       return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100) });
     }
     if (path === '/exsign/review') { // admin: approve (credits the bonus) or reject (with a note the user sees)
