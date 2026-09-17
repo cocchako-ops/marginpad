@@ -21,6 +21,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-tg-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}' +
     '.hm-tg-exp{display:none}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
+    '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:5px 24px 5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:32px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
     '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:32px}' +
@@ -57,16 +58,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-mast-r{margin-left:auto;text-align:right}' +
     '.hm-mast-r .hm-px{margin-left:0;font-size:19px;line-height:1.15}' +
     '.hm-mast-r .hm-stats{display:block;margin-top:2px}' +
-    '.hm-bar .hm-btnw{margin-left:auto}' +
+    '.hm-bar-b{margin-left:auto}' +
     '.hm-tg-row>span:not(:first-child){background:#0d1116;border:1px solid #1d242f;border-radius:8px;padding:3.5px 9px;white-space:nowrap}' +
     '.hm-stage{border:1px solid #1c2230;border-radius:12px;overflow:hidden}' +
     '.hm-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}' +
     '.hm-foot-c{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 13px}' +
     '.hm-foot-h{font:700 10px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;margin-bottom:5px}' +
-    '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
+    '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
-    '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0}'+'.hm-bar{gap:7px;margin-bottom:7px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:7px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:40px;padding:2px 22px 2px 10px;font-size:13px;border-radius:9px;background-position:right 8px center}'+'.hm-seg{height:40px;border-radius:9px}'+'.hm-btn{width:40px;height:40px;border-radius:9px;flex:none}.hm-btn svg{width:16px;height:16px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -175,12 +176,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // under $1K, so with no threshold half the confetti is thousand-dollar liquidations drawn at the same weight
     // as the map itself. The size filter is the reader's, with the dollar figure said out loud.
     S.dotsDrawn = 0;
+    var dsc = Math.max(0.55, Math.min(1, W / 900)); // dot radius follows the canvas it is drawn on
     if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ts = e.ts / 1000;
       if (ts < v.t0 || ts > v.t1 || e.price < pLo || e.price > pHi) continue;
       if (!dotOk(e)) continue;
       var lng = e.side === 'long_liquidated';
       if (S.sideF === 'long' && !lng) continue; if (S.sideF === 'short' && lng) continue;
-      var r = Math.max(1.8, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6));
+      var r = Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * dsc);
       ctx.beginPath(); ctx.arc(X(ts), Y(e.price), r, 0, 6.2832);
       ctx.fillStyle = lng ? 'rgba(46,189,133,.26)' : 'rgba(255,98,88,.26)'; ctx.fill();
       if (e.notional >= 25000) { ctx.lineWidth = 1.2; ctx.strokeStyle = lng ? '#2ebd85' : '#ff6258'; ctx.stroke(); }
@@ -208,8 +210,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (!tp) return;
       var ly = Y(tp.price);
       if (ly < 12 || ly > PH - 12) return;
-      var txt = (tp.long ? 'LONG ZONE ' : 'SHORT ZONE ') + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
-      ctx.font = '700 11px "Space Mono",monospace';
+      var nar = W < 520;
+      var txt = (tp.long ? (nar ? 'LONG ' : 'LONG ZONE ') : (nar ? 'SHORT ' : 'SHORT ZONE ')) + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
+      ctx.font = '700 ' + (nar ? 10 : 11) + 'px "Space Mono",monospace';
       var tw = ctx.measureText(txt).width;
       ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 17);
       ctx.fillStyle = tp.long ? '#7ee2b8' : '#ffa39b'; ctx.textAlign = 'left';
@@ -412,7 +415,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // than that is named in TARGETS and one tap away (the chips move the view), which is better than opening on a
     // map where the candles are an 11% ribbon nobody can read.
     if (out.grew) {
-      var cR = Math.max(hi - lo, px * 0.006), maxSpan = Math.max(cR / 0.22, px * 0.03);
+      var cR = Math.max(hi - lo, px * 0.006), maxSpan = Math.max(cR / 0.3, px * 0.025);
       if (out.hi - out.lo > maxSpan) { var mid = (lo + hi) / 2; out.lo = mid - maxSpan / 2; out.hi = mid + maxSpan / 2; }
     }
     return out;
@@ -986,9 +989,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       }
       var lockedAt = 0; try { lockedAt = +localStorage.getItem(LOCKKEY) || 0; } catch (e) {}
       if (lockedAt && Date.now() - lockedAt < COOLDOWN) { lockNow(); return; } // already used the preview recently → stay locked across refreshes
-      var rib = el('div', 'hm-prevrib'); rib.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;background:rgba(10,12,16,.92);border:1px solid #c2f64a55;border-radius:20px;padding:5px 14px;font:11px "Space Mono",monospace;color:#c2f64a;pointer-events:none';
-      rib.textContent = 'Premium preview - locks in ' + fmtLeft(left); stage.appendChild(rib);
-      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview - locks in ' + fmtLeft(left); if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
+      // The countdown used to sit centred over the top of the map, where on a phone it wrapped to two lines and
+      // covered the thing it is advertising. It is a STATUS, not a map annotation, so it lives beside the LIVE
+      // pill in the masthead - unmissable, over nothing, and it cannot collide with the selection box or the
+      // profile column's own header the way any corner of the stage would.
+      var rib = el('span', 'hm-prevrib'); rib.style.cssText = 'display:inline-flex;align-items:center;background:rgba(194,246,74,.1);border:1px solid #c2f64a55;border-radius:20px;padding:2px 9px;font:10px "Space Mono",monospace;letter-spacing:.06em;color:#c2f64a;white-space:nowrap';
+      var ribTxt = function () { return 'PREVIEW ' + fmtLeft(left); };
+      rib.textContent = ribTxt();
+      (wrap.querySelector('.hm-mast-t') || stage).appendChild(rib);
+      var iv = setInterval(function () { left--; if (rib) rib.textContent = ribTxt(); if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
       S.timers.push(iv);
       var t = setTimeout(function () {
         if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
@@ -1022,7 +1031,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = 'Share on X';
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
-    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(selD); bar.appendChild(dl); bar.appendChild(sh);
+    // Two named groups, so the bar breaks where it MEANS to break. It used to be six siblings in a wrapping flex
+    // row: on a phone that orphaned Dots/Download/Share onto a second line hard against the right edge, grouped
+    // with nothing. Group A is what you are looking at, group B is what you do to it.
+    var barA = el('div', 'hm-bar-a'), barB = el('div', 'hm-bar-b');
+    barA.appendChild(selC); barA.appendChild(selW); barA.appendChild(selD);
+    barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
+    bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
     mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 11 venues, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
@@ -1035,7 +1050,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       '<div class="hm-foot-c"><div class="hm-foot-h">HOW TO READ IT</div>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. Drag to pan (any direction) \u00b7 scroll = zoom time \u00b7 Shift+scroll = zoom price \u00b7 double-click resets.</div>' +
       '<div class="hm-foot-c"><div class="hm-foot-h">WHAT THE NUMBERS MEAN</div>Click any band for two figures of different kinds. <b style="color:#c2f64a">Measured</b> is what our collector recorded actually liquidating in that price band over 24 hours - observed events, no model. The <b>x avg</b> figure is the model: how heavy that band is against the average band on screen. It is a ratio and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from candle history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x), which shows where size stacks relative to itself but not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC band by roughly thirty times what has ever actually liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright band as “there is probably size here”, and trust the measured figure when the two disagree.</div>' + '<div class="hm-foot-c"><div class="hm-foot-h">DATA</div>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</div>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
-    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> projected zone (swept)</span><span><b style="color:#e9e7df">▬</b> leverage cluster (est.)</span>';
+    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> zone swept</span><span><b style="color:#e9e7df">▬</b> leverage cluster (est.)</span>';
     wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
