@@ -12041,6 +12041,73 @@ function bybitParseReport(text, pickCol) {
   diag.skippedN = diag.skipped.length; diag.skipped = diag.skipped.slice(0, 12);
   return { rows, diag };
 }
+// ---- King of the Moon (2026-09-17, owner: "unesem moon username ovako sa zvezdicama i wager ... da se odmah zna koji nalog je to")
+// Moon's affiliate dashboard masks every username (stars + a visible tail: the last character of a name up to 4 characters, the
+// last three otherwise) and reports LIFETIME figures only (Overall Wagered), so a contest is the DIFFERENCE of two pastes, one at
+// the start and one at the end. Only a member who claimed the Moon sign-up bonus has told us a full Moon username, so only those
+// can be resolved from a mask - and by the owner's rule only those compete. Total Deposits is a COUNT, never an amount.
+function moonParseDump(text) { // the raw dashboard dump (mask line, then label/value lines) AND compact "mask wager" lines
+  const lines = String(text || '').replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+  const rows = [], skipped = [];
+  const money = v => { const m = String(v || '').replace(/[$,\s]/g, ''); return /^-?\d+(\.\d+)?$/.test(m) ? +m : null; };
+  const MASK = /^(\*+)([A-Za-z0-9_.\-]+)$/, LABEL = /^(total deposits:?|registered|vip level|last deposit date|overall wagered|overall commission)$/i;
+  let cur = null, expect = null;
+  for (const l of lines) {
+    let m;
+    if ((m = l.match(/^(\*+[A-Za-z0-9_.\-]+)[\s,;]+\$?([\d.,]+)$/))) { rows.push({ mask: m[1], wager: money(m[2]), dep: null, reg: '', lastDep: '', comm: null }); cur = null; expect = null; continue; }
+    if (MASK.test(l)) { cur = { mask: l, wager: null, dep: null, reg: '', lastDep: '', comm: null }; rows.push(cur); expect = null; continue; }
+    if (!cur) { if (!LABEL.test(l)) skipped.push(l); continue; }
+    if (LABEL.test(l)) { const k = l.toLowerCase(); expect = k.startsWith('total') ? 'dep' : k === 'registered' ? 'reg' : k === 'last deposit date' ? 'lastDep' : k === 'overall wagered' ? 'wager' : k === 'overall commission' ? 'comm' : 'vip'; continue; }
+    if (expect === 'dep') { const n = money(l); if (n != null) cur.dep = n; else skipped.push(l); }
+    else if (expect === 'reg' || expect === 'lastDep') cur[expect] = l;
+    else if (expect === 'wager' || expect === 'comm') { const n = money(l); if (n != null) cur[expect] = n; else skipped.push(l); }
+    else if (expect === 'vip') cur.vip = l;
+    else skipped.push(l);
+    expect = null;
+  }
+  const seen = {}; for (const r of rows) { if (r.wager == null) r.wager = 0; const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; }
+  for (const r of rows) r.dupMask = seen[r.mask.toLowerCase()] > 1; // the same mask twice = two Moon accounts nobody can tell apart
+  return { rows, skipped: skipped.slice(0, 20), skippedN: skipped.length };
+}
+function moonMaskOf(u) { u = String(u || ''); const k = u.length <= 4 ? 1 : 3; return u.length ? '*'.repeat(Math.max(0, u.length - k)) + u.slice(-k) : ''; }
+function moonMaskFits(u, mask) { const stars = (String(mask).match(/^\*+/) || [''])[0].length, suf = String(mask).slice(stars); return u.length === mask.length && suf.length > 0 && u.slice(-suf.length).toLowerCase() === suf.toLowerCase(); }
+async function moonMembers(env) { // every Moon sign-up row we hold: acct, full Moon username, MarginPad username, status
+  let rows = [];
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/list?all=1')); const d = await r.json(); rows = [...(d.pending || []), ...(d.decided || [])].filter(x => x.exchange === 'moon').map(x => ({ ...x, acct: x.address || x.acct })); } catch (e) {} // the DO lists the account as 'address'
+  let prof = {}; try { prof = await resolveProfiles(env, [...new Set(rows.map(x => x.acct).filter(Boolean))]); } catch (e) {}
+  return rows.map(x => ({ id: x.id, acct: x.acct, moon: String(x.uid || ''), status: x.status, name: (prof[String(x.acct || '').slice(2)] && prof[String(x.acct || '').slice(2)].username) || '', ts: +x.decided_ts || +x.ts || 0 }));
+}
+function moonResolve(rows, members) { // each pasted mask -> the ONE approved member whose full Moon username fits it
+  const approved = members.filter(m => m.status === 'approved'), used = new Set();
+  const out = rows.map(r => {
+    const c = approved.filter(m => moonMaskFits(m.moon, r.mask));
+    const other = c.length ? [] : members.filter(m => m.status !== 'approved' && moonMaskFits(m.moon, r.mask));
+    const status = c.length > 1 ? 'ambiguous' : r.dupMask ? 'dup_mask' : c.length === 1 ? 'ok' : other.length ? 'not_approved' : 'unregistered';
+    if (status === 'ok') used.add(c[0].acct);
+    return { ...r, status, acct: c.length === 1 ? c[0].acct : '', name: c.length === 1 ? c[0].name : '', moon: c.length === 1 ? c[0].moon : '', cands: c.length > 1 ? c.map(m => m.moon + ' (' + (m.name || '?') + ')') : other.map(m => m.moon + ' (' + m.status + ')') };
+  });
+  const missing = approved.filter(m => !used.has(m.acct)).map(m => ({ acct: m.acct, name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) }));
+  return { rows: out, missing };
+}
+function moonStandings(start, end) { // wagered during the contest = end - start, per resolved member; unrankable rows say why
+  if (!end) return null;
+  const base = new Map(); for (const r of (start && start.rows) || []) if (r.acct && r.status === 'ok') base.set(r.acct, r);
+  const regTs = v => { const m = String(v || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : 0; };
+  const out = [];
+  for (const r of end.rows || []) {
+    if (r.status !== 'ok' || !r.acct) continue;
+    const b = base.get(r.acct); let from = null, note = '';
+    if (b) from = +b.wager || 0;
+    else if (!start) note = 'no start snapshot';
+    else if (regTs(r.reg) && regTs(r.reg) >= start.ts - 86400000) { from = 0; note = 'registered after the start'; }
+    else note = 'not in the start snapshot';
+    out.push({ acct: r.acct, name: r.name, moon: r.moon, mask: r.mask, from, to: +r.wager || 0, delta: from == null ? null : Math.max(0, Math.round(((+r.wager || 0) - from) * 100) / 100), dep: r.dep, reg: r.reg, note });
+  }
+  out.sort((a, b) => (b.delta == null ? -1 : b.delta) - (a.delta == null ? -1 : a.delta) || String(a.name).localeCompare(String(b.name)));
+  let rank = 0; for (const o of out) if (o.delta != null && o.delta > 0) o.rank = ++rank;
+  return out;
+}
+async function moonSnap(env, contest, phase) { try { return JSON.parse((await env.STATS.get('moon:snap:' + contest + ':' + phase)) || 'null'); } catch (e) { return null; } }
 async function bybitUpload(env, ws) { try { return JSON.parse((await env.STATS.get('lb:bybitup:' + ws)) || 'null'); } catch (e) { return null; } }
 async function bybitRegistrations(env) { // Bybit UID → {uid, name, ts, e2e}: explicit registrations first, then UIDs a payout already went to
   const map = new Map();
@@ -17374,6 +17441,28 @@ export default {
     // "contact support and we will correct it", so support has to be able to. {username|uid, buid} sets it, buid:'' clears
     // it, force:true skips the affiliate-list check (a UID we know is ours before the list catches up). Every use is
     // written to the same 'bylog' ring as a member's own attempt, tagged admin, so the trail stays in one place.
+    if (url.pathname === '/api/admin/moonwager' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // King of the Moon desk (mp-ops Money > King of the Moon)
+      const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1';
+      if (request.method === 'POST') {
+        if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} return J({ ok: true, cleared: mb.phase, contest }); }
+        const members = await moonMembers(env);
+        const pasted = moonParseDump(mb.text), manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
+        const typed = new Map(); for (const r of manual.rows) typed.set(r.mask.toLowerCase(), r); // a typed pair beats the paste; pasted duplicates are KEPT (two Moon accounts with one mask must stay visible)
+        const merged = [...pasted.rows.filter(r => !typed.has(r.mask.toLowerCase())), ...[...typed.values()].map(r => ({ ...r, manual: true }))]; const seen = {}; for (const r of merged) { const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; } for (const r of merged) r.dupMask = seen[r.mask.toLowerCase()] > 1 || !!r.dupMask;
+        const res = moonResolve(merged, members);
+        const snap = { ts: Date.now(), contest, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
+        let saved = null;
+        if (mb.save && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.put('moon:snap:' + contest + ':' + mb.phase, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); saved = mb.phase; } catch (e) { return J({ error: 'kv' }, 500); } }
+        const start = mb.phase === 'start' ? snap : await moonSnap(env, contest, 'start'), end = mb.phase === 'end' ? snap : await moonSnap(env, contest, 'end');
+        return J({ ok: true, contest, phase: mb.phase || 'preview', saved, rows: res.rows, missing: res.missing, diag: snap.diag, n: snap.n, okN: snap.ok, members: members.filter(m => m.status === 'approved').length, standings: moonStandings(start, end), startTs: start ? start.ts : 0, endTs: end ? end.ts : 0 });
+      }
+      const start = await moonSnap(env, contest, 'start'), end = await moonSnap(env, contest, 'end');
+      let contests = []; try { const l = await env.STATS.list({ prefix: 'moon:snap:' }); contests = [...new Set(l.keys.map(k => k.name.split(':')[2]))].filter(c => !/^e2e/i.test(c)); } catch (e) {} // the E2E's own contest never shows on the desk
+      const members = await moonMembers(env);
+      const strip = x => x ? { ts: x.ts, n: x.n, ok: x.ok, rows: x.rows, missing: x.missing } : null;
+      return J({ contest, contests, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
+    }
     if (url.pathname === '/api/admin/bybitlinks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let ab = {}; try { ab = await request.json(); } catch (e) {}
       const who = await usersDO(env, '/xpdiag', { username: String(ab.username || ''), uid: String(ab.uid || '') });

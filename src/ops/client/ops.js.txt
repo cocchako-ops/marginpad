@@ -49,7 +49,7 @@
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
-    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'shop', title: 'Shop' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
@@ -683,6 +683,103 @@
         + '<div class="line"><b>UID already on another account</b> - two MarginPad accounts claim one Bybit UID. The earliest registration keeps it.</div>'
         + '<div class="line">The allowlist here is the same one that gates withdrawals, so a member who can withdraw to a UID is also eligible for this board.</div>', 'read before answering a support ticket about the Bybit board');
   } });
+
+  // ---------- MONEY / KING OF THE MOON ----------
+  // Moon's affiliate dashboard masks usernames (stars + a visible tail) and reports LIFETIME wagered only, so a contest is
+  // the difference of two pastes: one saved as START, one as END. A mask resolves to a member only through the full Moon
+  // username that member gave us when claiming the sign-up bonus - that is also who is allowed to compete (owner 2026-09-17).
+  VIEWS['money/moon'] = { render: function (el) {
+    var contest = ''; try { contest = localStorage.getItem('ops_moon_contest') || ''; } catch (e) {}
+    contest = contest || 'kotm1';
+    var pairs = [];
+    var ST = { ok: '<span class="badge ok">member</span>', ambiguous: '<span class="badge red">two members fit</span>', dup_mask: '<span class="badge red">same mask twice at Moon</span>', not_approved: '<span class="badge amber">claim not approved</span>', unregistered: '<span class="badge amber">never claimed the bonus</span>' };
+    var money = function (v) { return v == null ? '<span class="meta">-</span>' : '<span class="mono">$' + (+v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</span>'; };
+    var who = function (r) { return r.name ? userLink(r.name) : (r.acct ? '<span class="mono meta">' + esc(String(r.acct).slice(2, 10)) + '</span>' : '<span class="meta">-</span>'); };
+    var rowsTbl = function (rows) {
+      return tbl([
+        { h: 'Moon shows', mono: true, f: function (r) { return esc(r.mask) + (r.manual ? ' <span class="meta">typed</span>' : ''); } },
+        { h: 'wagered (lifetime)', r: true, f: function (r) { return money(r.wager); } },
+        { h: 'deposits', r: true, f: function (r) { return r.dep == null ? '<span class="meta">-</span>' : N(r.dep); } },
+        { h: 'registered', mono: true, f: function (r) { return r.reg ? esc(r.reg) : '<span class="meta">-</span>'; } },
+        { h: 'MarginPad member', f: who },
+        { h: 'Moon username', mono: true, f: function (r) { return r.moon ? esc(r.moon) : (r.cands && r.cands.length ? '<span class="meta">' + esc(r.cands.join(', ')) + '</span>' : '<span class="meta">-</span>'); } },
+        { h: 'status', f: function (r) { return ST[r.status] || esc(r.status); } }
+      ], rows, 'nothing parsed');
+    };
+    var standTbl = function (st) {
+      if (!st) return '<div class="empty">standings appear once an END snapshot is saved (a START first, then an END)</div>';
+      return tbl([
+        { h: '#', r: true, f: function (r) { return r.rank ? '<b>' + r.rank + '</b>' : '<span class="meta">-</span>'; } },
+        { h: 'member', f: who },
+        { h: 'Moon', mono: true, f: function (r) { return esc(r.moon); } },
+        { h: 'wagered at start', r: true, f: function (r) { return money(r.from); } },
+        { h: 'wagered at end', r: true, f: function (r) { return money(r.to); } },
+        { h: 'this contest', r: true, f: function (r) { return r.delta == null ? '<span class="meta">cannot rank</span>' : '<b>' + money(r.delta) + '</b>'; } },
+        { h: 'note', f: function (r) { return r.note ? '<span class="meta">' + esc(r.note) + '</span>' : ''; } }
+      ], st, 'no resolved member in the END snapshot');
+    };
+    function paint(d) {
+      var snapLine = function (x, ph) { return x ? '<b>' + ph.toUpperCase() + '</b> saved ' + dtFull(x.ts) + ' · ' + N(x.n) + ' Moon rows, ' + N(x.ok) + ' resolved to members' : '<b>' + ph.toUpperCase() + '</b> <span class="meta">not saved yet</span>'; };
+      el.innerHTML = '<div class="grid g4">'
+        + tile(N(d.members || 0), 'members who can compete', 'dim', 'approved Moon sign-ups = full username known')
+        + tile(d.start ? N(d.start.ok) : '-', 'resolved at START', d.start ? '' : 'dim', d.start ? dtFull(d.start.ts) : 'paste and save a start snapshot')
+        + tile(d.end ? N(d.end.ok) : '-', 'resolved at END', d.end ? '' : 'dim', d.end ? dtFull(d.end.ts) : 'paste and save an end snapshot')
+        + tile(d.standings ? N(d.standings.filter(function (r) { return r.rank; }).length) : '-', 'ranked', 'dim', 'members with wagered > 0 in the contest')
+        + '</div>'
+        + card('Paste what Moon shows', '<div class="line" style="margin-bottom:6px">Paste the affiliate page as it is (the masked name, then its Total Deposits / Registered / Overall Wagered lines) or one <span class="mono">mask wager</span> per line. Press <b>Resolve</b> to see which MarginPad member each mask is - nothing is stored. <b>Save as START</b> on day one and <b>Save as END</b> on the last day; the standings are the difference. Saving replaces that phase\'s snapshot for this contest.</div>'
+          + '<div class="bar" style="flex-wrap:wrap;gap:8px;margin-bottom:8px"><input class="in" id="mwContest" placeholder="contest id" value="' + esc(contest) + '" style="flex:0 1 160px"><span class="meta" style="font-size:12px">one id per contest, e.g. kotm1' + ((d.contests || []).length ? ' · saved: ' + d.contests.map(function (c) { return '<a href="#" data-mwc="' + esc(c) + '">' + esc(c) + '</a>'; }).join(', ') : '') + '</span></div>'
+          + '<textarea class="in" id="mwText" rows="8" placeholder="***X&#10;Total Deposits:&#10;5&#10;Registered&#10;08/03/2026&#10;...&#10;Overall Wagered&#10;$122.44&#10;&#10;or simply:  ****p03 122.44"></textarea>'
+          + '<div class="line" style="margin:12px 0 4px"><b>Or type them one at a time.</b> The masked name exactly as Moon shows it and its Overall Wagered. A typed pair beats the same mask in the paste.</div>'
+          + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="mwMask" placeholder="****p03" autocomplete="off" style="flex:0 1 170px"><input class="in" id="mwWager" placeholder="Overall Wagered" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="mwAdd">Add</button><span class="stat" id="mwAddSt"></span></div>'
+          + '<div id="mwPairs" style="margin-top:8px"></div>'
+          + '<div class="bar" style="margin-top:10px;flex-wrap:wrap;gap:8px"><button class="btn lime" id="mwResolve">Resolve</button><button class="btn" id="mwStart">Save as START</button><button class="btn" id="mwEnd">Save as END</button><span class="stat" id="mwSt"></span></div>'
+          + '<div id="mwOut" style="margin-top:10px"></div>')
+        + card('Snapshots for ' + esc(contest), '<div class="line">' + snapLine(d.start, 'start') + (d.start ? ' <a href="#" data-mwclear="start" class="meta">clear</a>' : '') + '</div><div class="line">' + snapLine(d.end, 'end') + (d.end ? ' <a href="#" data-mwclear="end" class="meta">clear</a>' : '') + '</div>'
+          + (d.start ? '<details style="margin-top:8px"><summary class="meta">start rows</summary>' + rowsTbl(d.start.rows) + '</details>' : '')
+          + (d.end ? '<details style="margin-top:8px"><summary class="meta">end rows</summary>' + rowsTbl(d.end.rows) + '</details>' : ''), '', '')
+        + card('Standings - wagered during the contest', standTbl(d.standings), d.standings ? N(d.standings.length) + ' members in the END snapshot · Moon dates are day-only, so a member registered on the start day counts from zero' : '', '')
+        + card('Who can compete', tbl([
+          { h: 'MarginPad member', f: function (r) { return userLink(r.name); } },
+          { h: 'Moon username', mono: true, f: function (r) { return esc(r.moon); } },
+          { h: 'Moon will show it as', mono: true, f: function (r) { return esc(r.mask); } }
+        ], d.roster || [], 'nobody approved yet'), N((d.roster || []).length) + ' approved Moon sign-ups', '<a href="#money/faucet">review sign-ups</a>');
+      wire();
+    }
+    function pairsText() { return pairs.map(function (p) { return p.mask + ' ' + p.wager; }).join('\n'); }
+    function drawPairs() { var b = $('mwPairs'); if (!b) return; b.innerHTML = pairs.length ? pairs.map(function (p, i) { return '<span class="badge" data-mwrm="' + i + '" style="cursor:pointer;margin:0 6px 6px 0" title="remove">' + esc(p.mask) + ' · $' + (+p.wager).toFixed(2) + ' ×</span>'; }).join('') : '<span class="meta" style="font-size:12px">no pairs typed</span>'; }
+    function send(phase, save) {
+      var c = ($('mwContest').value || '').trim() || 'kotm1'; contest = c; try { localStorage.setItem('ops_moon_contest', c); } catch (e) {}
+      var st = $('mwSt'); st.textContent = save ? 'saving…' : 'resolving…';
+      post('/api/admin/moonwager', { contest: c, text: $('mwText').value, manual: pairsText(), phase: phase, save: !!save }).then(function (j) {
+        if (!j || j.error) { st.textContent = 'failed: ' + (j && j.error || 'network'); return; }
+        var bad = j.rows.filter(function (r) { return r.status !== 'ok'; }).length;
+        st.textContent = N(j.n) + ' Moon rows · ' + N(j.okN) + ' resolved to members' + (bad ? ' · ' + N(bad) + ' not rankable' : '') + (j.diag.skippedN ? ' · ' + N(j.diag.skippedN) + ' lines ignored' : '') + (j.saved ? ' · saved as ' + j.saved.toUpperCase() : ' · nothing stored');
+        $('mwOut').innerHTML = rowsTbl(j.rows)
+          + (j.missing && j.missing.length ? '<div class="line" style="margin-top:8px"><b>' + N(j.missing.length) + ' approved members are not in this paste:</b> ' + j.missing.map(function (m) { return esc(m.name || m.moon) + ' <span class="mono meta">' + esc(m.mask) + '</span>'; }).join(', ') + '</div>' : '')
+          + (j.diag.skipped && j.diag.skipped.length ? '<div class="line meta" style="margin-top:6px">ignored: ' + esc(j.diag.skipped.join(' | ')) + '</div>' : '');
+        if (j.saved) { toast('Saved as ' + j.saved.toUpperCase() + ' for ' + c); load(true); }
+      });
+    }
+    function wire() {
+      $('mwAdd').onclick = function () { var m = ($('mwMask').value || '').trim(), w = String($('mwWager').value || '').replace(/[$,\s]/g, ''); if (!/^\*+[A-Za-z0-9_.\-]+$/.test(m)) { $('mwAddSt').textContent = 'the mask is stars + the visible tail, e.g. ****p03'; return; } if (!/^\d+(\.\d+)?$/.test(w)) { $('mwAddSt').textContent = 'wagered must be a number'; return; } pairs = pairs.filter(function (p) { return p.mask.toLowerCase() !== m.toLowerCase(); }); pairs.push({ mask: m, wager: +w }); $('mwMask').value = ''; $('mwWager').value = ''; $('mwAddSt').textContent = ''; drawPairs(); $('mwMask').focus(); };
+      $('mwWager').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); $('mwAdd').click(); } };
+      $('mwMask').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); $('mwWager').focus(); } };
+      $('mwResolve').onclick = function () { send('preview', false); };
+      $('mwStart').onclick = function () { if (!confirm('Save this paste as the START snapshot for ' + (($('mwContest').value || '').trim() || 'kotm1') + '? It replaces the previous start.')) return; send('start', true); };
+      $('mwEnd').onclick = function () { if (!confirm('Save this paste as the END snapshot for ' + (($('mwContest').value || '').trim() || 'kotm1') + '? It replaces the previous end.')) return; send('end', true); };
+      el.onclick = function (e) {
+        var rm = e.target.closest('[data-mwrm]'); if (rm) { pairs.splice(+rm.getAttribute('data-mwrm'), 1); drawPairs(); return; }
+        var cc = e.target.closest('[data-mwc]'); if (cc) { e.preventDefault(); contest = cc.getAttribute('data-mwc'); try { localStorage.setItem('ops_moon_contest', contest); } catch (x) {} load(true); return; }
+        var cl = e.target.closest('[data-mwclear]'); if (cl) { e.preventDefault(); var ph = cl.getAttribute('data-mwclear'); if (!confirm('Clear the ' + ph.toUpperCase() + ' snapshot for ' + contest + '?')) return; post('/api/admin/moonwager', { contest: contest, phase: ph, clear: true }).then(function () { toast('Cleared ' + ph); load(true); }); }
+      };
+      drawPairs();
+    }
+    function load(keep) {
+      var text = keep && $('mwText') ? $('mwText').value : '';
+      J('/api/admin/moonwager?contest=' + encodeURIComponent(contest)).then(function (d) { if (!d || d.error) { el.innerHTML = failHtml('could not load'); return; } paint(d); if (text && $('mwText')) $('mwText').value = text; stamp(); }).catch(function () { el.innerHTML = failHtml('could not load'); });
+    }
+    load();
+  } };
 
   // ---------- MONEY / SHOP ----------
   // /api/admin/shop: cosmetics (who got what, how, from whom), the DURABLE cash ledger (buys + refunds, consumables included),
