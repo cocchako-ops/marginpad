@@ -382,7 +382,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var cLo=Infinity,cHi=-Infinity;for(var i=from;i<=to;i++){var b=w.bars[i];if(!b)continue;if(b.low<cLo)cLo=b.low;if(b.high>cHi)cHi=b.high;}
     if(w.lastBar){if(w.lastBar.low<cLo)cLo=w.lastBar.low;if(w.lastBar.high>cHi)cHi=w.lastBar.high;}
     if(!(isFinite(cLo)&&isFinite(cHi)&&cHi>cLo))return orig?orig():null;
-    var cRange=cHi-cLo,lo=cLo,hi=cHi,budget=cRange*2.4,mp=w._mtPrices||[];
+    var cRange=cHi-cLo,lo=cLo,hi=cHi,budget=cRange*2.4,mp=(w._mtPrices||[]).concat(w._aiPrices||[]);/* the AI's drawn levels and its plan get the same treatment as an imported position: the scale stretches to include them, capped at 2.4x the candle range so a far target can never squash the candles into a flat line (2026-09-17 - a target 2% away sat off the top of the screen) */
     for(var k=0;k<mp.length;k++){var v=mp[k];if(!(v>0))continue;
       if(v<cLo){if((cLo-v)<=budget&&v<lo)lo=v;}
       else if(v>cHi){if((v-cHi)<=budget&&v>hi)hi=v;}}
@@ -592,8 +592,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* ---- CHART CONTROL (2026-09-17, owner: "AI treba da ima kontrolu nad chartom"): the model's ```actions block is EXECUTED the
      moment the answer lands - no button. Drawings go through the SAME engine the reader draws with (movable, deletable, saved per
      symbol:TF), tagged by:'ai' + a batch id so one answer's drawings can be undone or cleared as a set. ---- */
-  function aiClearAi(w){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return s.by!=='ai';});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
-  function aiUndoBatch(w,b){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.aiB===b);});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  /* WHAT THE AI DREW HAS TO FIT ON THE SCREEN: collect every price it put on the chart (drawn shapes + the plan's own levels) into
+     w._aiPrices, which the candle series' autoscale provider already knows how to make room for. Re-asserting autoScale is skipped
+     when the reader has panned the price axis themselves - their view is theirs. */
+  function aiRescale(w){if(!w||!w.candle)return;var ps=[];
+    (w.dr&&w.dr.shapes||[]).forEach(function(s){if(!(s.by==='ai'||s.ai))return;[s.p,s.p1,s.p2].forEach(function(v){if(+v>0)ps.push(+v);});if(s.pts)s.pts.forEach(function(q){if(+q.p>0)ps.push(+q.p);});});
+    var pl=w._aiPlanObj;if(pl){[pl.entry,pl.stop].forEach(function(v){if(+v>0)ps.push(+v);});(pl.targets||[]).forEach(function(v){if(+v>0)ps.push(+v);});}
+    w._aiPrices=ps;
+    try{if(!w._userPS)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
+    /* the price scale just moved, and a price-scale change fires no time-scale event, so the canvas (and the label layout that was
+       computed against the OLD scale) has to be re-projected once the new range has settled */
+    try{requestAnimationFrame(function(){if(!w.dead&&w.dr&&w.dr.redraw)w.dr.redraw();});}catch(e){}}
+  function aiClearAi(w){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return s.by!=='ai';});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
+  function aiUndoBatch(w,b){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.aiB===b);});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
   /* one draw action -> engine shapes. barsAgo counts back from the newest candle (negative = the future, capped at 40 ahead); a
      price outside 0.4x-2.5x of the last close is refused, so the model can never draw off the chart. A label becomes a text shape
      at the shape's end (the engine has no labels on lines and zones). */
@@ -725,7 +736,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
          target zone projected 14 candles ahead was three quarters off the edge. Widen the window just enough to hold what was drawn. */
       try{var mx=last0(w);var vr=w.chart.timeScale().getVisibleLogicalRange();
         if(vr&&mx>vr.to-2)w.chart.timeScale().setVisibleLogicalRange({from:vr.from,to:mx+2});}catch(e){}
-      if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+      if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();aiRescale(w);}return k;}
   function last0(w){var mx=-Infinity;(w.dr.shapes||[]).forEach(function(s){if(s.by!=='ai')return;[s.l,s.l1,s.l2].forEach(function(v){if(v!=null&&isFinite(v)&&v>mx)mx=v;});});return mx;}
   /* symbol / timeframe changes shared by the header controls and the AI - one path, the same side effects */
   function setWinSym(w,v){v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v||v===w.sym)return false;w.sym=v;var _si=w.el&&w.el.querySelector('.cwin-sym');if(_si)_si.value=v;w.mtOn=false;if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}importTrades(w);updateMTBtn(w);updateNotesBtn(w);loadData(w,true);savePersist();return true;}
@@ -765,7 +776,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
   function aiClearPlan(w){if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
     if(w&&w.dr&&w.dr.shapes){var before=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.shapes.length!==before&&w.dr.redraw)w.dr.redraw();}
-    w&&(w._aiPlanObj=null);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent='Show on chart';});}}catch(e){}}
+    w&&(w._aiPlanObj=null);if(w)aiRescale(w);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent='Show on chart';});}}catch(e){}}
   /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
   function aiFlash(w,price){if(!w||!w.candle||!(price>0))return;try{var l=w.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{w.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
   /* drew = the model drew the setup itself with actions. Then the plan contributes ONLY the trade levels (entry, stop, targets):
@@ -791,6 +802,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!noZones&&plan.zone&&+plan.zone.from>0&&+plan.zone.to>0)w.dr.shapes.push({t:'rect',l1:Math.max(0,n-hb),p1:+plan.zone.from,l2:n+hb,p2:+plan.zone.to,color:'#ffb020',w:1,dash:true,ai:1});
       if(w.dr.redraw)w.dr.redraw();}}catch(e){}
     try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.add('on');b.textContent='On chart';});}}catch(e){}
+    aiRescale(w);
     chartToast((plan.bias&&plan.bias!=='wait'?plan.bias.toUpperCase()+' plan drawn on ':'Levels drawn on ')+w.sym+' - tap a row in the card to find a level.');
   }
   function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short - no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
