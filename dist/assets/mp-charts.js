@@ -685,9 +685,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else if(sh==='arrow'){
       if(!okp(a.p2))return null; // only the destination is required now - the route is the chart's job, not the model's
       var hp2=snapLv(a.p2); // the head is a target: put it exactly on the level it is pointing at
-      var hz=(a.barsAgo2!=null&&+a.barsAgo2<0)?Math.min(FUT,-Math.round(+a.barsAgo2)):(+a.horizonBars>0?Math.round(+a.horizonBars):12);
-      var p0=(ctx&&ctx.px>0)?ctx.px:+a.p1; // the path leaves from where the market IS, not from a price the model picked
-      out.push(Object.assign({},base,{t:'path',pts:aiPathPts(p0,hp2,hz,ctx&&ctx.rhythm,px,last),head:1,w:2}));
+      var hz=(a.barsAgo2!=null&&+a.barsAgo2<0)?-Math.round(+a.barsAgo2):(+a.horizonBars>0?Math.round(+a.horizonBars):0); // a hint only - aiPathPts measures what the move really needs
+      var p0=(ctx&&ctx.px>0)?ctx.px:((+a.p1>0)?+a.p1:px); // the path leaves from where the market IS, not from a price the model picked
+      var pp=aiPathPts(p0,hp2,hz,ctx&&ctx.rhythm,px,last);
+      if(pp.length<2)return null; // no route, no shape - better nothing than a stray line
+      out.push(Object.assign({},base,{t:'path',pts:pp,head:1,w:2}));
       label(hp2);
     }
     else if(sh==='text'){if(!okp(a.p)||!a.txt)return null;out.push(Object.assign({},base,{t:'text',l:L(a.barsAgo,2),p:+a.p,txt:String(a.txt).trim().slice(0,40)}));}
@@ -696,18 +698,61 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return out;}
   /* HOW THIS MARKET MOVES, measured from its own pivots: how many candles a leg usually runs, and how far it swings. The projected
      path is built from these, so a market that grinds gets a grinding path and one that spikes gets a steep one. */
+  /* HOW LONG THIS MARKET USUALLY TAKES TO TRAVEL A GIVEN DISTANCE - measured, not modelled (2026-09-17, third attempt at the
+     slope). For a ladder of window lengths we take the typical absolute move over that many candles; the answer for a target D
+     away is the shortest window whose typical move reaches D, interpolated. This captures that price moves scale with roughly the
+     square root of time, which is why deriving a slope from swing amplitude (attempt 1) or from a single candle's range
+     (attempt 2) produced projections measured at 10x to 50x the market's real pace. */
+  function travelOf(bars,px){var out=[],ks=[3,5,8,13,21,34,55,89],n=bars.length;
+    ks.forEach(function(k){if(n<k+12||!(px>0))return;var d=[];
+      for(var i=k;i<n;i++){var a2=+bars[i].close,b2=+bars[i-k].close;if(a2>0&&b2>0)d.push(Math.abs(a2-b2)/px);}
+      if(!d.length)return;d.sort(function(x,y){return x-y;});
+      out.push({k:k,med:d[Math.floor(d.length*0.55)]||0});}); // a shade above the median: the move we are drawing is one that is going somewhere
+    return out;}
+  function barsToTravel(travel,dist){if(!travel.length||!(dist>0))return 12;
+    for(var i=0;i<travel.length;i++){if(travel[i].med>=dist){var pv=i?travel[i-1]:{k:1,med:0},span=travel[i].med-pv.med;
+      var f=span>0?(dist-pv.med)/span:0;return Math.max(3,Math.round(pv.k+(travel[i].k-pv.k)*f));}}
+    var lastT=travel[travel.length-1];if(!lastT.med)return 40;
+    return Math.max(3,Math.round(lastT.k*Math.pow(dist/lastT.med,2)));} // beyond anything measured: the same sqrt scaling, extrapolated
   function rhythmOf(bars,piv,px){var legB=[],legA=[],i;
     for(i=1;i<piv.length;i++){var db=Math.abs(piv[i].barsAgo-piv[i-1].barsAgo),dp=Math.abs(piv[i].price-piv[i-1].price);if(db>0){legB.push(db);legA.push(dp);}}
     var med=function(a){if(!a.length)return 0;a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length/2)];};
     var lb=med(legB)||8,la=(px>0?med(legA)/px:0)||0.01;
-    return {legBars:Math.max(2,Math.min(40,lb)),legAmp:Math.max(0.0015,Math.min(0.08,la))};}
+    /* NET PROGRESS PER CANDLE, which is the number that sets the slope - and it is far smaller than the swing amplitude, because a
+       market goes up then back down and keeps only a fraction. Measuring the slope from the swing size is what kept the projection
+       steep: SOL on 5m swings ~0.5% a leg but nets a tenth of that per candle. The floor is a fifth of a typical candle's own range,
+       so a dead-flat stretch cannot produce an infinite horizon. */
+    var n=bars.length,win=Math.max(10,Math.min(150,n-1));
+    var net=(px>0&&win>0)?Math.abs(+bars[n-1].close-+bars[n-1-win].close)/px/win:0;
+    var tr=0,cnt=0;for(i=Math.max(1,n-60);i<n;i++){var b2=bars[i];if(!b2)continue;tr+=Math.abs(+b2.high-+b2.low);cnt++;}
+    var perBar=(cnt&&px>0)?(tr/cnt)/px:0.002;
+    var drift=Math.max(net,perBar*0.18,0.00008);
+    return {legBars:Math.max(2,Math.min(40,lb)),legAmp:Math.max(0.0015,Math.min(0.08,la)),drift:drift,travel:travelOf(bars,px)};}
   /* The expected path: start at the market, end exactly on the target, and wave the way this market waves in between. The window
      sin(pi*t) pins both ends, so the curve leaves the last candle and arrives at the target without a kink. */
   function aiPathPts(fromP,toP,horizon,rhythm,px,last){
-    var H=Math.max(4,Math.min(30,Math.round(horizon||12))),r=rhythm||{legBars:8,legAmp:0.01};
-    var legs=H/Math.max(2,r.legBars),amp=r.legAmp*px*0.45;
+    var r=rhythm||{legBars:8,legAmp:0.01};
+    fromP=+fromP;toP=+toP;if(!(fromP>0)||!(toP>0))return []; // a path with no start or no destination is not a path
+    /* HOW LONG THE MOVE TAKES IS MEASURED, NOT TAKEN FROM THE MODEL (2026-09-17, owner: "opet je bila jako strma kad mi je
+       istrazivala sol 5m"). Read from his own account: asked for a gentler path, the model REDUCED horizonBars from 40 to 20 -
+       which makes the slope steeper, not gentler. It cannot judge time. So: this market's own legs say how long it takes to
+       cover the distance to the target, and the model's number only counts when it is LONGER (a slower read is a legitimate
+       opinion; a faster one is wishful). A 3% target on a chart that swings 0.25% per 8 candles is hours away, and now it is
+       drawn that way. */
+    var dist=(px>0)?Math.abs(toP-fromP)/px:0;
+    var barsNeeded=(r.travel&&r.travel.length)?barsToTravel(r.travel,dist):Math.ceil(dist/Math.max(0.00008,r.drift||0.0004));
+    /* The drawn window is capped so the projection cannot eat the whole chart. When the move honestly needs longer than that, the
+       path covers only the ground the market plausibly covers in those candles and POINTS at the target instead of arriving - the
+       target is already marked by its own zone and the TP lines, so nothing is lost and the slope stays truthful. */
+    if(!isFinite(barsNeeded)||barsNeeded<1)barsNeeded=12; // never let a bad measurement produce an empty path
+    var H=Math.max(6,Math.min(45,Math.max(barsNeeded,Math.round(+horizon||0))));if(!isFinite(H))H=12;
+    if(barsNeeded>H){var reach=H/barsNeeded;toP=fromP+(toP-fromP)*reach;dist*=reach;}
+    var legs=Math.max(0.55,Math.min(3.2,H/Math.max(2,r.legBars))); // more than ~3 cycles over one projection reads as a saw, not a path
+    /* The wave is TEXTURE, never the story: capped at a fifth of the whole move so no single leg is much steeper than the average
+       slope. With a smoothstep base the middle section accelerated and the last leg had to climb out of a trough almost vertically
+       - which is exactly the "jako strma" the owner saw. The base is linear now, with only a slight settle at the start. */
+    var amp=Math.min(r.legAmp*px*0.45,Math.abs(toP-fromP)*0.2);
     if(legs<1.15)amp*=0.3; // the horizon is shorter than one of this market's legs - a straight push is the honest picture
-    legs=Math.max(0.55,Math.min(4,legs));
     /* ONE POINT PER CANDLE, AND THE INDEX MUST BE A WHOLE NUMBER. Lightweight Charts' logicalToCoordinate answers 0 for a
        FRACTIONAL logical (measured 2026-09-17: 999 -> x 1251, 999.56 -> x 0, 1014 -> x 1311), so a path sampled between bars
        collapsed every middle point onto the left edge and painted lines across the whole chart. */
@@ -715,7 +760,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var seed=Math.abs(Math.round((fromP+toP)*100))%9973;
     var rnd=function(k){var x=Math.sin((seed+k*17.17)*12.9898)*43758.5453;return x-Math.floor(x);};
     for(i=0;i<=N;i++){var t=i/N,win=Math.sin(Math.PI*t);
-      var base=fromP+(toP-fromP)*(t*t*(3-2*t)); // ease in and out: price rarely leaves in a constant ramp
+      var base=fromP+(toP-fromP)*(t*(0.82+0.18*t)); // near-linear average progress, a touch slower off the mark
       var wave=Math.sin(t*Math.PI*2*legs)*amp*win;
       var jit=(rnd(i)-0.5)*amp*0.22*win; // a hand's wobble, deterministic from the prices so a redraw never moves it
       out.push({l:last+i,p:base+wave+jit});}
@@ -805,9 +850,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiRescale(w);
     chartToast((plan.bias&&plan.bias!=='wait'?plan.bias.toUpperCase()+' plan drawn on ':'Levels drawn on ')+w.sym+' - tap a row in the card to find a level.');
   }
-  function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short - no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
-  function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);
-    try{var _hh=aiHistLoad(w),_lp=null,_la=null;for(var _i=_hh.length-1;_i>=0;_i--){if(!_la&&_hh[_i].role==='ai')_la=_hh[_i];if(_hh[_i].plan){_lp=_hh[_i].plan;break;}}if(_lp){chips=[['','Re-read now'],['Why this stop and not tighter?','Why this stop'],['What exactly would prove this plan wrong?','What kills it'],['What is the plan if it goes the other way instead?','Other side']];if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}
+  /* The opening message says what this assistant is FOR (2026-09-17, owner: "AI treba da bude samouveren i da sluzi korisniku da
+     pronadje prilike za njega i umesto njega ... tu sam da te odvratim od blundersa"). It is not a chart-reading toy that helps you
+     click buy now - it hunts for a setup on the coin and timeframe YOU picked, and says when there is nothing worth taking. */
+  function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>Hi - I’m your chart assistant.</b><br>I look for the opportunity on whatever coin and timeframe you put in front of me: where a setup is worth taking, at what price it is worth taking it, and what would make it a mistake. I draw it on the chart so you can see whether it lines up - you decide whether to take it. I will also tell you plainly when there is nothing here and waiting is the trade.<br>Right now you are on <b>'+escHtml(w.sym+' '+tfLabel(w.tf))+'</b>. Switch coin or timeframe any time and ask again.<br><button class="cwin-ai-chip" data-q="Find me the best opportunity on this chart right now - where would a good entry be, and what would make it a mistake?" style="margin-top:11px">Find me an opportunity</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
+  function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['Find me the best opportunity on this chart right now - where would a good entry be, and what would make it a mistake?','Find an opportunity'],['Where would you want to be filled, and why not at the current price?','Best entry'],['Where are the key support and resistance levels?','Levels'],['What would make this a blunder?','What to avoid']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);
+    try{var _hh=aiHistLoad(w),_lp=null,_la=null;for(var _i=_hh.length-1;_i>=0;_i--){if(!_la&&_hh[_i].role==='ai')_la=_hh[_i];if(_hh[_i].plan){_lp=_hh[_i].plan;break;}}if(_lp){chips=[['','Re-read now'],['Why that entry and not the current price?','Why that entry'],['What exactly would prove this plan wrong?','What kills it'],['What is the plan if it goes the other way instead?','Other side']];if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}
       /* the model proposes the next chips itself (2026-09-17) - what the reader is most likely to say next, in their language; a chip IS the question */
       if(_la&&_la.chips&&_la.chips.length){chips=_la.chips.map(function(c){return [c,c];});chips.push(['','Re-read now']);if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}}catch(e){}
     box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
@@ -1225,7 +1273,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;window.__mpAi={split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
+  try{window.__mpAiContext=aiContext;window.__mpAi={rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}

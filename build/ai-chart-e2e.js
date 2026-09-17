@@ -113,7 +113,7 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
       await page.waitForFunction("!!document.querySelector('.cwin-ai-panel') && !document.querySelector('.cwin-ai-panel').hidden && !document.querySelector('.cwin-ai-panel').classList.contains('gated')", { timeout: 15000 }).catch(() => {});
       const w0 = await page.evaluate(() => { const p = document.querySelector('.cwin-ai-panel'); return p ? Math.round(p.getBoundingClientRect().width) : 0; });
       if (!w0) { chk('desktop: the AI panel opened', false, await page.evaluate(() => ({ wins: (window.__mpWinsDbg || []).length, btn: document.querySelectorAll('.cwin-ai').length }))); await ctx.close(); return; }
-      await page.evaluate(() => { const c = document.querySelector('.cwin-ai-panel .cwin-ai-chip[data-q=""]'); c && c.click(); });
+      await page.evaluate(() => { const c = document.querySelector('.cwin-ai-panel .cwin-ai-chips .cwin-ai-chip'); c && c.click(); });
       await page.waitForFunction("!!document.querySelector('.cwin-ai-panel .aiacts')", { timeout: 20000 }).catch(() => {});
       await new Promise(r => setTimeout(r, 700));
       const d = await page.evaluate(() => {
@@ -146,7 +146,7 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
       const g = await page.evaluate(() => { // the guard rails, run against the real pure function with deliberately bad actions
         const w = window.__mpWinsDbg[0], n = w.bars.length, px = +w.bars[n - 1].close, last = n - 1;
         let lo = Infinity, hi = -Infinity; for (let i = Math.max(0, n - 200); i < n; i++) { if (w.bars[i].low < lo) lo = w.bars[i].low; if (w.bars[i].high > hi) hi = w.bars[i].high; }
-        const S = (a) => window.__mpAi.shapeOf(a, n, px, { lo, hi });
+        const S = (a) => window.__mpAi.shapeOf(a, n, px, { lo, hi, px, bars: w.bars, rhythm: window.__mpAi.rhythm(w), snap: [] });
         const wall = S({ shape: 'zone', from: lo, to: hi, barsAgo1: 60, label: 'wall' });
         const past = S({ shape: 'zone', from: px * 0.98, to: px * 0.99, barsAgo1: 120, barsAgo2: 60, label: 'stale' });
         const flat = S({ shape: 'zone', from: px, to: px, barsAgo1: 30, label: 'pool' });
@@ -154,9 +154,17 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
         const far = S({ shape: 'arrow', p2: px * 1.02, barsAgo2: -10 });
         const mad = S({ shape: 'hline', p: px * 9 });
         const zr = wall.filter(s => s.t === 'rect')[0], pr = past.filter(s => s.t === 'rect')[0], fr = flat.filter(s => s.t === 'rect')[0], ar = far.filter(s => s.t === 'path')[0];
-        return { wallH: (zr.p2 - zr.p1) / (hi - lo), pastEnd: pr.l2 - last, flatH: (fr.p2 - fr.p1) / px, stub: stub, madPrice: mad, arrowStart: last - ar.pts[0].l };
+        // the projected slope must be paced like this market: what the path covers over its horizon vs what the market typically covers
+        const pth = S({ shape: 'arrow', p2: px * 1.02, barsAgo2: -12 }).filter(s => s.t === 'path')[0];
+        const H = Math.round(pth.pts[pth.pts.length - 1].l - pth.pts[0].l);
+        const moved = Math.abs(pth.pts[pth.pts.length - 1].p - pth.pts[0].p) / px * 100;
+        const d2 = []; for (let i = H; i < n; i++) { const a3 = +w.bars[i].close, b3 = +w.bars[i - H].close; if (a3 > 0 && b3 > 0) d2.push(Math.abs(a3 - b3) / px * 100); }
+        d2.sort((x, y) => x - y); const typical = d2.length ? d2[Math.floor(d2.length * 0.55)] : 0;
+        return { wallH: (zr.p2 - zr.p1) / (hi - lo), pastEnd: pr.l2 - last, flatH: (fr.p2 - fr.p1) / px, stub: stub, madPrice: mad, arrowStart: last - ar.pts[0].l,
+          slopeH: H, slopeRatio: typical ? +(moved / typical).toFixed(2) : null };
       });
       chk('desktop: GEOMETRY guard rails hold on bad input - a full-range zone is clamped to a band, a zone stranded in the past is extended past the newest candle, a flat zone gets a real height, a 2-bar trend and an off-chart price are refused, the projected path still leaves from the market', g.wallH <= 0.29 && g.pastEnd >= 6 && g.flatH > 0.002 && g.stub === null && g.madPrice === null && g.arrowStart <= 2, g);
+      chk('desktop: SLOPE - a 2% projection is paced like this market: over its own horizon the path covers no more ground than the market typically covers in that many candles (a ruler-straight dash to the target measured 10x-50x too fast)', g.slopeH >= 8 && g.slopeRatio != null && g.slopeRatio <= 1.4, { horizonBars: g.slopeH, ratioVsMarket: g.slopeRatio });
       const pers = await page.evaluate(() => {
         const w = window.__mpWinsDbg[0]; w.dr.save(); let stored = null; try { stored = JSON.parse(localStorage.getItem('mp_charts_draw') || '{}'); } catch (e) {}
         const rec = stored && stored[w.sym + ':' + w.tf]; return { aiKept: rec ? rec.shapes.filter(s => s.by === 'ai').length : 0, overlayKept: rec ? rec.shapes.filter(s => s.ai).length : 0, total: rec ? rec.shapes.length : 0 };
@@ -164,7 +172,9 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
       chk('desktop: the AI\'s drawings persist like the reader\'s own (the store keeps by:ai shapes, never the plan overlay)', pers.aiKept >= 5 && pers.overlayKept === 0, pers);
       const undo = await page.evaluate(async () => {
         const w = window.__mpWinsDbg[0], p = document.querySelector('.cwin-ai-panel'); const before = w.dr.shapes.filter(s => s.by === 'ai').length;
-        p.querySelector('.aiundo').click(); await new Promise(r => setTimeout(r, 200));
+        const u = p.querySelector('.aiundo');
+        if (!u) return { before, after: before, btn: false, rsiStill: !!w.inds.rsi, missing: true, receipts: [...p.querySelectorAll('.aiacts span')].map(x => x.textContent), bubbles: p.querySelectorAll('.aimsg.ai').length };
+        u.click(); await new Promise(r => setTimeout(r, 200));
         return { before, after: w.dr.shapes.filter(s => s.by === 'ai').length, btn: !!p.querySelector('.aiundo'), rsiStill: !!w.inds.rsi };
       });
       chk('desktop: Undo removes exactly that answer\'s drawings and nothing else (RSI stays on)', undo.before >= 5 && undo.after === 0 && !undo.btn && undo.rsiStill, undo);
@@ -199,7 +209,7 @@ const HDR = { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e'
       await new Promise(r => setTimeout(r, 600));
       const m = await page.evaluate(() => { const ps = window.__mfcPanes(), p = ps.find(x => x._aiPlan) || ps[0]; const card = document.querySelector('#mfcAB .aiplan-card'); const ai = (p.w && p.w.dr) ? p.w.dr.shapes.filter(s => s.by === 'ai') : []; return { card: !!card, bias: card && card.getAttribute('data-bias'), rows: card ? card.querySelectorAll('.aipr').length : 0, lines: (p._aiPlan || []).length, bold: !!document.querySelector('#mfcAB .mfc-ai-msg.ai b'), trade: card ? (card.querySelector('a.aipc-trade') || {}).getAttribute('href') : null, rsi: !!p.inds.rsi, aiKinds: ai.map(s => s.t), receipts: [...document.querySelectorAll('#mfcAB .aiacts span')].map(s => s.textContent), chips: [...document.querySelectorAll('#mfcAC .cwin-ai-chip')].map(c => c.textContent), sx: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, sym: p.sym }; });
       chk('mobile: the sheet renders markdown + the plan card, draws the plan lines, Trade it links the terminal prefilled', m.card && m.bias === 'short' && m.rows >= 5 && m.lines >= 5 && m.bold && /\/paper-trade\?coin=[A-Z0-9]+&side=short&sl=\d/.test(m.trade || '') && /&tp=\d/.test(m.trade || '') && /&lev=8/.test(m.trade || '') && !m.sx, m);
-      chk('mobile: the actions executed on the pane - RSI on, the model\'s shapes in the pane\'s engine, receipt + the model\'s chips (the default chips offered "Draw the setup" before)', m.rsi && m.aiKinds.indexOf('ray') >= 0 && m.aiKinds.indexOf('rect') >= 0 && m.aiKinds.indexOf('path') >= 0 && m.receipts.some(t => /^Opened RSI/.test(t)) && m.receipts.some(t => /^Drew 4/.test(t)) && m.chips[0] === 'Draw the 4H too' && chips0.some(c => /Draw the setup/.test(c)), { rsi: m.rsi, kinds: m.aiKinds, receipts: m.receipts, chips: m.chips, chips0 });
+      chk('mobile: the actions executed on the pane - RSI on, the model\'s shapes in the pane\'s engine, receipt + the model\'s chips (the default chips offered "Draw the setup" before)', m.rsi && m.aiKinds.indexOf('ray') >= 0 && m.aiKinds.indexOf('rect') >= 0 && m.aiKinds.indexOf('path') >= 0 && m.receipts.some(t => /^Opened RSI/.test(t)) && m.receipts.some(t => /^Drew 4/.test(t)) && m.chips[0] === 'Draw the 4H too' && chips0.some(c => /Find an opportunity/.test(c)), { rsi: m.rsi, kinds: m.aiKinds, receipts: m.receipts, chips: m.chips, chips0 });
       const mh = await page.evaluate(async () => { const x = document.querySelector('.mfc-sheet-x'); x && x.click(); await new Promise(r => setTimeout(r, 200)); const gone = !document.getElementById('mfcAB'); document.querySelector('[data-act="ai"]').click(); await new Promise(r => setTimeout(r, 400)); return { gone, msgs: document.querySelectorAll('#mfcAB .mfc-ai-msg').length, card: !!document.querySelector('#mfcAB .aiplan-card'), receipts: document.querySelectorAll('#mfcAB .aiacts span').length, chips: [...document.querySelectorAll('#mfcAC .cwin-ai-chip')].map(c => c.textContent) }; });
       chk('mobile: closing and reopening the sheet shows the same thread (it used to start empty every time)', mh.gone && mh.msgs === 2 && mh.card && mh.receipts >= 3 && mh.chips[0] === 'Draw the 4H too', mh);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'ai-chart-mobile.png') });
