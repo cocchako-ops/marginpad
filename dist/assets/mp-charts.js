@@ -463,11 +463,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     out.sort(function(a,b){return a.barsAgo-b.barsAgo;});return out.slice(0,max||16);}
   /* horizontal levels price actually RESPECTED: pivot prices clustered within a tolerance, ranked by how many pivots touched
      them. A level with 3 touches is worth drawing; one with 1 is a number the model made up. */
+  /* A LEVEL IS A PRICE THAT EXISTS ON THE CHART, NOT THE AVERAGE OF A CLUSTER (2026-09-17, owner: "gledam sad support level, i malo
+     je omasio sa crtezom"). The first cut reported the MEAN of the clustered pivots, which sits between the wicks and lands the line
+     just off every one of them. A support is drawn at the LOW of the touches and a resistance at the HIGH - the price the market
+     actually printed - so the line rests on the candles. */
   function levelsOf(piv,price,tol){var out=[];
-    piv.forEach(function(p){var hit=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].price-p.price)/price<=tol){hit=out[i];break;}}
-      if(hit){hit.touches++;hit.price=(hit.price*(hit.touches-1)+p.price)/hit.touches;if(p.barsAgo<hit.lastBarsAgo)hit.lastBarsAgo=p.barsAgo;}
-      else out.push({price:p.price,touches:1,lastBarsAgo:p.barsAgo});});
-    return out.filter(function(l){return l.touches>=2;}).sort(function(a,b){return b.touches-a.touches;}).slice(0,6);}
+    piv.forEach(function(p){var hit=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].ref-p.price)/price<=tol){hit=out[i];break;}}
+      if(hit){hit.touches++;hit.ref=(hit.ref*(hit.touches-1)+p.price)/hit.touches;if(p.price<hit.lo)hit.lo=p.price;if(p.price>hit.hi)hit.hi=p.price;if(p.kind==='high')hit.h++;else hit.l++;if(p.barsAgo<hit.lastBarsAgo)hit.lastBarsAgo=p.barsAgo;}
+      else out.push({ref:p.price,lo:p.price,hi:p.price,h:p.kind==='high'?1:0,l:p.kind==='low'?1:0,touches:1,lastBarsAgo:p.barsAgo});});
+    return out.filter(function(l){return l.touches>=2;}).sort(function(a,b){return b.touches-a.touches;}).slice(0,6)
+      .map(function(l){var res=l.h>=l.l;return {price:res?l.hi:l.lo,kind:res?'resistance':'support',touches:l.touches,lastTouchBarsAgo:l.lastBarsAgo};});}
   /* Build a rich, pre-computed technical brief of the window so the AI reasons over real numbers (computed regardless of which indicators the user has toggled). */
   function aiContext(w){
     var bars=w.bars||[],n=bars.length,last=bars[n-1]||{},price=last.close;
@@ -513,7 +518,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var piv=null,lvls=null,struct=null;
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
       piv=_P.map(function(p){return {barsAgo:p.barsAgo,price:_p6(p.price),kind:p.kind};});
-      lvls=levelsOf(_P,price,0.004).map(function(l){return {price:_p6(l.price),touches:l.touches,lastTouchBarsAgo:l.lastBarsAgo};});
+      lvls=levelsOf(_P,price,0.004).map(function(l){return {price:_p6(l.price),kind:l.kind,touches:l.touches,lastTouchBarsAgo:l.lastTouchBarsAgo};});
       var _hs=_P.filter(function(p){return p.kind==='high';}).slice(0,3),_ls=_P.filter(function(p){return p.kind==='low';}).slice(0,3);
       if(_hs.length>=2&&_ls.length>=2){var _hh=_hs[0].price>_hs[1].price,_hl=_ls[0].price>_ls[1].price;
         struct=(_hh&&_hl)?'higher highs and higher lows (uptrend structure)':((!_hh&&!_hl)?'lower highs and lower lows (downtrend structure)':'mixed - range or a transition');}
@@ -605,6 +610,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var FUT=30,last=n-1;
     var L=function(ba,dflt){ba=(ba==null||ba==='')?dflt:+ba;if(!isFinite(ba))ba=dflt||0;ba=Math.max(-FUT,Math.min(n-1,Math.round(ba)));return last-ba;};
     var okp=function(p){p=+p;return p>0&&(!(px>0)||(p>=px*0.4&&p<=px*2.5));};
+    /* SNAP EVERY DRAWN PRICE TO SOMETHING REAL (2026-09-17, owner: "malo je omasio sa crtezom ... hocu da sve bude zategnuto 100%").
+       The model decides WHAT to draw and roughly where; the chart decides the exact price. `snapLv` pulls a level onto the nearest
+       price the market actually printed (a pivot, a level it respected, a liquidation pool, a moving average) when it is already
+       close, and `snapBar` pulls a line anchor onto that candle's own high or low - which is what makes a trend line rest on the
+       wicks instead of floating a few pixels off them. Outside the tolerance the model's number is kept: it may be a projection
+       nothing has touched yet, and inventing a snap there would be worse than leaving it. */
+    var snaps=(ctx&&ctx.snap)||[],bars=(ctx&&ctx.bars)||null;
+    var snapLv=function(p,tol){p=+p;if(!(p>0)||!snaps.length)return p;var best=p,bd=Infinity;
+      for(var i=0;i<snaps.length;i++){var d=Math.abs(snaps[i]-p);if(d<bd){bd=d;best=snaps[i];}}
+      return (px>0&&bd/px<=(tol||0.0035))?best:p;};
+    var snapBar=function(p,ba){p=+p;if(!(p>0)||!bars||ba==null||ba==='')return p;var i=last-Math.round(+ba);if(!(i>=0&&i<n))return p;
+      var b=bars[i];if(!b)return p;var hi=+b.high,lo=+b.low,d=Math.abs(p-hi)<=Math.abs(p-lo)?hi:lo;
+      return (px>0&&Math.abs(d-p)/px<=0.015)?d:p;};
     var rng=(ctx&&ctx.hi>ctx.lo)?(ctx.hi-ctx.lo):(px>0?px*0.2:0);
     var proj=function(l1,y1,l2,y2){return (l2===l1)?y2:(y1+(y2-y1)*((last+5-l1)/(l2-l1)));}; // where a ray actually is at the label column
     var bandMax=rng>0?rng*0.28:Infinity; // a band wider than ~a quarter of the chart is a wall, not a zone
@@ -614,19 +632,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        few bars of air to the right of the last candle - that is where a charting app puts its labels, and so do we. */
     var LBL=last+5;
     var label=function(p){if(lbl)out.push(Object.assign({},base,{t:'text',l:LBL,p:p,txt:lbl,w:2,ar:1}));};
-    if(sh==='hline'){if(!okp(a.p))return null;out.push(Object.assign({t:'hline',p:+a.p},base));label(+a.p);}
+    if(sh==='hline'){if(!okp(a.p))return null;var hp=snapLv(a.p);out.push(Object.assign({t:'hline',p:hp},base));label(hp);}
     else if(sh==='zone'||sh==='rect'){
-      var f=+(a.from!=null?a.from:a.p1),t2=+(a.to!=null?a.to:a.p2);
+      var f=snapLv(a.from!=null?a.from:a.p1),t2=snapLv(a.to!=null?a.to:a.p2);
       if(!okp(f)||!okp(t2))return null;
       var zl=Math.min(f,t2),zh=Math.max(f,t2);
       if(zh-zl>bandMax){var mid=(zh+zl)/2;zl=mid-bandMax/2;zh=mid+bandMax/2;} // clamp the wall into a band
       // a band the model gave as a single price (from == to, common for a liquidation pool) renders as a hairline that reads as
       // a stray duplicate line - give it a real half-height, ~0.25% of price, so it reads as the area it is
       var minH=Math.max(rng*0.012,px*0.0025);if(zh-zl<minH*2){var m2=(zh+zl)/2;zl=m2-minH;zh=m2+minH;}
-      // left edge: where the model says it formed (default ~a third of the loaded window back); right edge ALWAYS past the newest candle
-      var l1=L(a.barsAgo1!=null?a.barsAgo1:(a.barsAgo!=null?a.barsAgo:Math.round(n*0.35)));
-      var l2=L(a.barsAgo2!=null?Math.min(+a.barsAgo2,-10):-10);
-      if(l2<last+6)l2=last+10; if(l1>last-2)l1=Math.max(0,last-Math.round(n*0.2));
+      /* A ZONE POINTS FORWARD UNLESS IT IS EXPLICITLY A HISTORICAL AREA (2026-09-17, owner: "ove kvadrate dosta crta iza, gde su bile
+         svece zatvorene, nego ispred gde treba da budu zatvorene"). A target or an entry area is about candles that have NOT printed
+         yet, so it starts at the market and runs into the empty space on the right. Only a supply/demand block the model dates with
+         barsAgo1 is drawn back to where it formed - and even then its right edge still reaches past the newest candle. */
+      var back=(+a.barsAgo1>0)?Math.round(+a.barsAgo1):0;
+      var l1=back>0?L(back):last;
+      var l2=L(a.barsAgo2!=null?Math.min(+a.barsAgo2,-8):-(back>0?10:14));
+      if(l2<l1+8)l2=l1+(back>0?10:14);
       out.push(Object.assign({},base,{t:'rect',l1:l1,p1:zl,l2:l2,p2:zh,w:1}));
       label(zh);
     }
@@ -634,6 +656,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!okp(a.p1)||!okp(a.p2))return null;
       var c1=L(a.barsAgo1,Math.round(n*0.6)),c2=L(a.barsAgo2,0);
       if(Math.abs(c2-c1)<4)return null;
+      a=Object.assign({},a,{p1:snapBar(a.p1,a.barsAgo1),p2:snapBar(a.p2,a.barsAgo2)});
       var wdt=+a.width;if(!(wdt>0))wdt=Math.abs(+a.p2-+a.p1)*0.5||rng*0.08;wdt=Math.min(wdt,bandMax);
       var up=(a.side==='below')?-1:1;
       out.push(Object.assign({},base,{t:'ray',l1:c1,p1:+a.p1,l2:c2,p2:+a.p2}));
@@ -644,11 +667,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!okp(a.p1)||!okp(a.p2))return null;
       var t1=L(a.barsAgo1,Math.round(n*0.5)),tt2=L(a.barsAgo2,0);
       if(Math.abs(tt2-t1)<4)return null; // two anchors one candle apart are not a line
+      a=Object.assign({},a,{p1:snapBar(a.p1,a.barsAgo1),p2:snapBar(a.p2,a.barsAgo2)});
       out.push(Object.assign({},base,{t:sh,l1:t1,p1:+a.p1,l2:tt2,p2:+a.p2}));
       if(sh!=='fib')label(sh==='ray'?proj(t1,+a.p1,tt2,+a.p2):+a.p2);
     }
     else if(sh==='arrow'){
       if(!okp(a.p1)||!okp(a.p2))return null;
+      a=Object.assign({},a,{p2:snapLv(a.p2)}); // the arrow's head is a target: put it exactly on the level it is pointing at
       var a1=L(a.barsAgo1,4),a2=L(a.barsAgo2,-12);
       if(a1<last-12)a1=last-4; // an expected-path arrow starts AT the market, never 100 candles back
       if(a2<=a1)a2=last+12; if(a2>last+FUT)a2=last+FUT;
@@ -661,9 +686,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return out;}
   function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;var n=w.bars.length,px=+w.bars[n-1].close,k=0;
     var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){var b=w.bars[i];if(!b)continue;if(+b.low<lo)lo=+b.low;if(+b.high>hi)hi=+b.high;}
-    var ctx={lo:lo,hi:hi};
+    // the snap table: every price this chart can prove - the pivots, the levels it respected, the liquidation pools around price
+    var snap=[];try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(w.bars,_k,16);
+      _P.forEach(function(q){snap.push(q.price);});
+      levelsOf(_P,px,0.004).forEach(function(q){snap.push(q.price);});
+      poolsNow(w.bars).forEach(function(q){if(q&&q.price>0&&Math.abs(q.price-px)/px<=0.09)snap.push(q.price);});
+      snap.push(lo,hi);}catch(e){}
+    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars};
     (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;});
-    if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+    if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);
+      /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
+         target zone projected 14 candles ahead was three quarters off the edge. Widen the window just enough to hold what was drawn. */
+      try{var mx=last0(w);var vr=w.chart.timeScale().getVisibleLogicalRange();
+        if(vr&&mx>vr.to-2)w.chart.timeScale().setVisibleLogicalRange({from:vr.from,to:mx+2});}catch(e){}
+      if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  function last0(w){var mx=-Infinity;(w.dr.shapes||[]).forEach(function(s){if(s.by!=='ai')return;[s.l,s.l1,s.l2].forEach(function(v){if(v!=null&&isFinite(v)&&v>mx)mx=v;});});return mx;}
   /* symbol / timeframe changes shared by the header controls and the AI - one path, the same side effects */
   function setWinSym(w,v){v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v||v===w.sym)return false;w.sym=v;var _si=w.el&&w.el.querySelector('.cwin-sym');if(_si)_si.value=v;w.mtOn=false;if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}importTrades(w);updateMTBtn(w);updateNotesBtn(w);loadData(w,true);savePersist();return true;}
   function setWinTf(w,tf){tf=String(tf||'');var ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(!ok||tf===w.tf)return false;w.tf=tf;try{Array.prototype.forEach.call(w.el.querySelectorAll('.cwin-tf button'),function(b){b.classList.toggle('on',b.getAttribute('data-tf')===tf);});}catch(e){}if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}loadData(w,true);savePersist();return true;}
