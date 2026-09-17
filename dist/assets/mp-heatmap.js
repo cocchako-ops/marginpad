@@ -33,7 +33,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
     '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 320px);max-height:820px}' +
     '.hm-cv{flex:1;min-width:0;display:block;border-radius:10px 0 0 10px;background:#07090c;cursor:crosshair}' +
-    '.hm-prof{width:132px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
+    '.hm-prof{width:104px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
     '.hm-tip{position:absolute;pointer-events:none;background:rgba(10,12,16,.97);border:1px solid #2a3345;border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.55;color:#dbe4f5;z-index:5;display:none;font-family:"Space Mono",monospace;white-space:nowrap}' +
     '.hm-tip b{color:#fff}.hm-tip .l{color:#2ebd85}.hm-tip .s{color:#ff6258}' +
     '.hm-foot{margin-top:8px;font-size:11px;color:#5c6b84;line-height:1.55}' +
@@ -66,7 +66,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
-    '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:64px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -122,20 +122,28 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var yPad = (fr.hi - fr.lo) * (fr.grew ? 0.1 : 0.28); pLo = fr.lo - yPad; pHi = fr.hi + yPad;
     }
     S.yLo = pLo; S.yHi = pHi;
+    // THE AXES GET THEIR OWN ROOM. Both scales used to be painted INSIDE the plot - prices at x=6 over the candle
+    // bodies, times at H-6 over whatever band ran along the bottom - so the two numbers a reader needs most were
+    // the two hardest to read, and on a 248px phone canvas the price column alone covered a fifth of the drawing.
+    // Time goes in a strip under the plot; price moves out to the right-hand column next to the profile bars.
+    var AXH = W < 520 ? 16 : 20, PH = Math.max(40, H - AXH);
+    S.plotH = PH;
     var X = function (t) { return (t - v.t0) / (v.t1 - v.t0) * W; };
-    var Y = function (p) { return H - (p - pLo) / (pHi - pLo) * H; };
+    var Y = function (p) { return PH - (p - pLo) / (pHi - pLo) * PH; };
     S.X = X; S.Y = Y;
     // grid + time ticks
     ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1; ctx.beginPath();
-    for (i = 1; i < 6; i++) { var gy = H / 6 * i; ctx.moveTo(0, gy); ctx.lineTo(W, gy); }
+    for (i = 1; i < 6; i++) { var gy = PH / 6 * i; ctx.moveTo(0, gy); ctx.lineTo(W, gy); }
     ctx.stroke();
-    ctx.fillStyle = 'rgba(92,107,132,.85)'; ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'center';
-    for (i = 1; i < 6; i++) { var tt = v.t0 + (v.t1 - v.t0) / 6 * i; ctx.fillText(tlabel(tt), W / 6 * i, H - 6); }
+    ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
+    ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
+    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'center';
+    for (i = 1; i < 6; i++) { var tt = v.t0 + (v.t1 - v.t0) / 6 * i; ctx.fillText(tlabel(tt), W / 6 * i, PH + AXH - 5); }
     // STANDING pool bands - the heat. Band starts when the crowd started building and runs to the right edge.
     // A band is exactly one bin tall (1.02 closes the hairline seam). It used to be 1.15 bins with a halo 2.2 bins
     // tall, which meant every band bled over its two neighbours - invisible while the alpha was near zero, and the
     // moment the scale was fixed a dozen adjacent bands composited into one solid slab with no structure in it.
-    var bh = Math.max(2, H * (P.binH / (pHi - pLo)) * 1.02);
+    var bh = Math.max(2, PH * (P.binH / (pHi - pLo)) * 1.02);
     var vis = [];
     for (i = 0; i < P.alive.length; i++) { var sv0 = P.alive[i];
       if (poolGone(sv0)) continue;
@@ -199,7 +207,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     [lTop, sTop].forEach(function (tp) {
       if (!tp) return;
       var ly = Y(tp.price);
-      if (ly < 12 || ly > H - 12) return;
+      if (ly < 12 || ly > PH - 12) return;
       var txt = (tp.long ? 'LONG ZONE ' : 'SHORT ZONE ') + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
       ctx.font = '700 11px "Space Mono",monospace';
       var tw = ctx.measureText(txt).width;
@@ -217,14 +225,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         }
       } else if (S.sel.type === 'pool') { var sp = S.sel.ref;
         if (sp.price >= pLo && sp.price <= pHi) {
-          var shh = Math.max(3, H * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
+          var shh = Math.max(3, PH * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
           ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, W - sx0, shh);
           ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.4; ctx.strokeRect(sx0 + 0.5, sy0 - 2, W - sx0 - 1, shh + 4);
         }
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref, swts = sw.t / 1000;
         if (swts >= v.t0 && swts <= v.t1 && sw.p >= pLo && sw.p <= pHi) {
           var swr = 6, swx = X(swts), swy = Y(sw.p), swc = sw.long ? '46,189,133' : '255,98,88'; // fixed size - selected sweep is the SAME hollow diamond, just emphasized (crosshair + white outline), never a giant filled disc
-          ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, swy); ctx.lineTo(W, swy); ctx.moveTo(swx, 0); ctx.lineTo(swx, H); ctx.stroke(); ctx.restore(); // crosshair guides to both axes so it's obvious which dot is selected
+          ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, swy); ctx.lineTo(W, swy); ctx.moveTo(swx, 0); ctx.lineTo(swx, PH); ctx.stroke(); ctx.restore(); // crosshair guides to both axes so it's obvious which dot is selected
           ctx.beginPath(); ctx.moveTo(swx, swy - swr); ctx.lineTo(swx + swr, swy); ctx.lineTo(swx, swy + swr); ctx.lineTo(swx - swr, swy); ctx.closePath(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgb(' + swc + ')'; ctx.stroke();
           ctx.beginPath(); ctx.moveTo(swx, swy - swr - 3); ctx.lineTo(swx + swr + 3, swy); ctx.lineTo(swx, swy + swr + 3); ctx.lineTo(swx - swr - 3, swy); ctx.closePath(); ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
         }
@@ -259,19 +267,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         }
       }
     }
-    // live price
+    // live price - the LINE stays on the plot, the TAG moved to the price axis where a price tag belongs
     if (S.price > 0 && S.price > pLo && S.price < pHi) {
       var py = Y(S.price);
       ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(194,246,74,.85)'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = '#0a0b0d'; var pt = fpx(S.price); ctx.font = '700 11px "Space Mono",monospace';
-      var ptw = ctx.measureText(pt).width;
-      ctx.fillStyle = '#c2f64a'; ctx.fillRect(W - ptw - 14, py - 9, ptw + 10, 17);
-      ctx.fillStyle = '#0a0b0d'; ctx.textAlign = 'left'; ctx.fillText(pt, W - ptw - 9, py + 4);
     }
-    // y labels
-    ctx.fillStyle = 'rgba(143,163,196,.8)'; ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'left';
-    for (i = 1; i < 6; i++) { var lp = pHi - (pHi - pLo) / 6 * i; ctx.fillText(fpx(lp), 6, H / 6 * i - 3); }
     drawProfile(pLo, pHi);
   }
 
@@ -280,7 +281,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var W = cv.clientWidth, H = cv.clientHeight;
     if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    var P = S.pools, Y = function (p) { return H - (p - pLo) / (pHi - pLo) * H; }, i;
+    var PH = S.plotH || H; // the same plot height the main canvas uses, or the two panels would not line up
+    var P = S.pools, Y = function (p) { return PH - (p - pLo) / (pHi - pLo) * PH; }, i;
     // scale against the biggest VISIBLE pool - normalizing to the global max (often far off-screen)
     // squashed every visible bar to a 2px sliver and the panel read as empty (owner report 2026-07-24)
     var vis = [];
@@ -289,28 +291,37 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (S.sideF === 'long' && !s0.long) continue; if (S.sideF === 'short' && s0.long) continue;
       if (s0.price < pLo || s0.price > pHi) continue; vis.push(s0); }
     var wMax = 0; for (i = 0; i < vis.length; i++) if (vis[i].w > wMax) wMax = vis[i].w;
-    var bh = Math.max(3, H * (P.binH / (pHi - pLo)));
+    var bh = Math.max(3, PH * (P.binH / (pHi - pLo)));
     for (i = vis.length - 1; i >= 0; i--) { var s = vis[i];
       var y = Y(s.price), rel = s.w / (wMax || 1);
-      var bw = 4 + rel * (W - 20);
+      var bw = 4 + rel * (W - 8);
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (0.3 + rel * 0.6).toFixed(2) + ')' : 'rgba(255,98,88,' + (0.3 + rel * 0.6).toFixed(2) + ')';
       ctx.fillRect(0, y - bh / 2, bw, bh); }
-    // Label the heaviest visible bands with how they compare to an average band. A ratio is what the
-    // model can support; a dollar amount here would be invented.
-    var lab = vis.slice(0, 3);
-    for (var li = 0; li < lab.length; li++) {
-      var tp = lab[li], ty = Y(tp.price);
-      if (!(tp.rel > 1.2)) continue;
-      ctx.font = '700 9.5px "Space Mono",monospace'; ctx.textAlign = 'right';
-      var mt = tp.rel.toFixed(1) + 'x avg';
-      var mw = ctx.measureText(mt).width;
-      ctx.fillStyle = 'rgba(7,9,12,.82)';
-      ctx.fillRect(W - mw - 10, ty - 7, mw + 8, 13);
-      ctx.fillStyle = tp.long ? '#7ee2b8' : '#ffa39b';
-      ctx.fillText(mt, W - 6, ty + 3);
+    // THE PRICE AXIS LIVES HERE NOW. The bars keep the full column and the five tick labels sit on top of them,
+    // right-aligned on their own backing - five occluded rows out of ninety, against a price column that used to
+    // be painted over the candles themselves. The "x avg" ratio labels that used to own this edge are gone with
+    // it: the figure is still on the band's tooltip and in the selection box, where it is explained rather than
+    // abbreviated.
+    var pxY = (S.price > 0 && S.price > pLo && S.price < pHi) ? Y(S.price) : -999;
+    ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'right';
+    for (i = 1; i < 6; i++) {
+      var lp = pHi - (pHi - pLo) / 6 * i, ly = PH / 6 * i, lt = fpx(lp), lw = ctx.measureText(lt).width;
+      if (Math.abs(ly - pxY) < 13) continue; // a tick under the live-price chip is a number nobody can read
+      ctx.fillStyle = 'rgba(7,9,12,.86)'; ctx.fillRect(W - lw - 9, ly - 7, lw + 9, 14);
+      ctx.fillStyle = 'rgba(167,184,212,.95)'; ctx.fillText(lt, W - 4, ly + 3);
     }
-    ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-    ctx.fillText('PROJECTED ZONES', W / 2, 12);
+    if (pxY > -900) {
+      var py = pxY, pt = fpx(S.price);
+      ctx.font = '700 11px "Space Mono",monospace';
+      ctx.fillStyle = '#c2f64a'; ctx.fillRect(0, py - 9, W, 18);
+      ctx.fillStyle = '#0a0b0d'; ctx.fillText(pt, W - 4, py + 4);
+    }
+    ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
+    ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
+    ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
+    var zw = ctx.measureText('ZONES').width;
+    ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect((W - zw) / 2 - 4, 2, zw + 8, 13);
+    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText('ZONES', W / 2, 12);
   }
 
   // ---- band sizing -------------------------------------------------------------------------------
@@ -562,8 +573,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt; if (S.bars.length && S.view.t0 < S.bars[0].time + (S.bars[1] ? (S.bars[1].time - S.bars[0].time) : 60) * 30) loadMore(0);
-        var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
-      var _ph = poolHit(my, r.height), best = _ph ? { s: _ph } : null, i;
+        var dp = (my - S.drag.y) / (S.plotH || r.height) * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
+      var _ph = poolHit(my, S.plotH || r.height), best = _ph ? { s: _ph } : null, i;
       var bev = null, nNear = 0;
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
       var bsw = null;
@@ -623,7 +634,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
-      var best = poolHit(my, r.height);
+      var best = poolHit(my, S.plotH || r.height);
       if (best) { S.sel = { type: 'pool', ref: best }; showSel(); sched(); return; }
       if (S.sel) { S.sel = null; showSel(); sched(); }
     });
@@ -634,7 +645,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ev.preventDefault();
       var r = cv.getBoundingClientRect(), f = ev.deltaY > 0 ? 1.18 : 0.85;
       if (ev.shiftKey || ev.ctrlKey) { // price-axis zoom around the cursor
-        var fy = (ev.clientY - r.top) / r.height;
+        var fy = Math.max(0, Math.min(1, (ev.clientY - r.top) / (S.plotH || r.height)));
         var lo = S.yView ? S.yView.lo : S.yLo, hi = S.yView ? S.yView.hi : S.yHi;
         var pv = hi - fy * (hi - lo), nsp = (hi - lo) * f;
         S.yView = { lo: pv - (1 - fy) * nsp, hi: pv + fy * nsp }; sched(); return;
@@ -670,7 +681,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         ev.preventDefault();
         var dt = (tX.x - (ev.touches[0].clientX - r.left)) / r.width * (tX.t1 - tX.t0);
         S.view.t0 = tX.t0 + dt; S.view.t1 = tX.t1 + dt;
-        var dp = ((ev.touches[0].clientY - r.top) - tX.y) / r.height * (tX.yHi - tX.yLo);
+        var dp = ((ev.touches[0].clientY - r.top) - tX.y) / (S.plotH || r.height) * (tX.yHi - tX.yLo);
         S.yView = { lo: tX.yLo + dp, hi: tX.yHi + dp }; sched();
       }
     }, { passive: false });
@@ -680,7 +691,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var pf = S.pf, g = null, moved = 0;
       function yr() { return { lo: S.yView ? S.yView.lo : S.yLo, hi: S.yView ? S.yView.hi : S.yHi }; }
       function apply(dy) { if (Math.abs(dy) > 4) moved = 1; var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
-      function pfPick(cy) { var r = pf.getBoundingClientRect(), s = poolHit(cy - r.top, r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
+      function pfPick(cy) { var r = pf.getBoundingClientRect(), s = poolHit(cy - r.top, S.plotH || r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
       pf.style.cursor = 'ns-resize'; pf.title = 'Drag to zoom the price axis';
       pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; moved = 0; ev.preventDefault(); });
       pf.addEventListener('click', function (ev) { if (moved) { moved = 0; return; } pfPick(ev.clientY); });
