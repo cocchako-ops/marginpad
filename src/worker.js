@@ -17491,10 +17491,33 @@ export default {
     // written to the same 'bylog' ring as a member's own attempt, tagged admin, so the trail stays in one place.
     if (url.pathname === '/api/admin/moonwager' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // King of the Moon desk (mp-ops Money > King of the Moon)
       const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
-      const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1';
+      let activeId = ''; try { activeId = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
+      const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || activeId || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1'; // no id = the live contest
       if (request.method === 'POST') {
         if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} const pubc = await moonBoardRebuild(env, contest); return J({ ok: true, cleared: mb.phase, contest, pub: pubc }); }
         if (mb.activate) { try { await env.STATS.put('moon:active', contest); } catch (e) {} const puba = await moonBoardRebuild(env, contest); return J({ ok: true, activated: contest, pub: puba }); }
+        if (mb.markFinal != null) { // flip the FINAL flag on the stored END without pasting anything (the Bybit panel carries final on the upload; here the owner may decide after the fact)
+          const endf = await moonSnap(env, contest, 'end'); if (!endf) return J({ error: 'no_end', hint: 'no END report is stored for ' + contest + ' yet - paste one first' }, 400);
+          endf.final = mb.markFinal === true; try { await env.STATS.put('moon:snap:' + contest + ':end', JSON.stringify(endf), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
+          const pubf = await moonBoardRebuild(env, contest); return J({ ok: true, final: endf.final, pub: pubf });
+        }
+        if (mb.patch) { // TYPED PAIRS PATCH THE STORED END, NEVER REPLACE IT (same rule as the Bybit desk, 2026-09-15): Moon shows lifetime totals, so a
+          // typed "mask wager" is that account's new total; the mask is updated or added and everybody else keeps the figure of the last report.
+          const manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
+          if (!manual.rows.length) return J({ error: 'nothing_typed', hint: 'type at least one mask and its wagered total' }, 400);
+          const startp = await moonSnap(env, contest, 'start'); if (!startp) return J({ error: 'no_start', hint: 'the contest has no START yet - paste the opening Moon page and save it as START first' }, 400);
+          const endp = await moonSnap(env, contest, 'end');
+          const keep = r => ({ mask: r.mask, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual });
+          const rows = ((endp ? endp.rows : startp.rows) || []).map(keep); // no END yet = the last known figures are the START ones
+          let updated = 0, added = 0;
+          for (const r of manual.rows) { const i = rows.findIndex(x => x.mask.toLowerCase() === r.mask.toLowerCase()); if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
+          const seenp = {}; for (const r of rows) { const k = r.mask.toLowerCase(); seenp[k] = (seenp[k] || 0) + 1; } for (const r of rows) r.dupMask = seenp[r.mask.toLowerCase()] > 1;
+          const membersp = await moonMembers(env), resp = moonResolve(rows, membersp);
+          const snapp = { ts: Date.now(), contest, final: !!(endp && endp.final), rows: resp.rows, missing: resp.missing, n: resp.rows.length, ok: resp.rows.filter(r => r.status === 'ok').length, diag: { pasted: 0, manual: manual.rows.length, skipped: [], skippedN: 0, patched: true } };
+          try { await env.STATS.put('moon:snap:' + contest + ':end', JSON.stringify(snapp), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
+          const pubp = await moonBoardRebuild(env, contest);
+          return J({ ok: true, patch: true, updated, added, contest, n: snapp.n, okN: snapp.ok, rows: resp.rows, pub: pubp, standings: moonStandings(startp, snapp), final: snapp.final });
+        }
         const members = await moonMembers(env);
         const pasted = moonParseDump(mb.text), manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
         const typed = new Map(); for (const r of manual.rows) typed.set(r.mask.toLowerCase(), r); // a typed pair beats the paste; pasted duplicates are KEPT (two Moon accounts with one mask must stay visible)

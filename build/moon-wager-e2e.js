@@ -147,6 +147,19 @@ Total Deposits
   const xr = (s3.standings || []).find(r => r.mask === '***X');
   ok(!xr || xr.delta == null, '***X (not a member here) never ranks; a resolved member missing from START would carry delta null');
 
+  // 3b. typed pairs PATCH the stored END (lifetime totals): one mask updated, one added, everybody else untouched; final flag flips without a paste
+  const pt = await post({ patch: true, manual: '****p03 200\n**raz 77' }); // ***X is already in the END from the save above; **raz is not
+  ok(pt.ok && pt.patch && pt.updated === 1 && pt.added === 1, 'patch: Ladyp03 updated + **raz added (' + pt.updated + '/' + pt.added + ')');
+  const g4 = await get();
+  ok(g4.end && g4.end.rows.length === 4 && g4.end.rows.find(r => r.mask === '****p03').wager === 200 && g4.end.rows.find(r => r.mask === '*****006').wager === 40, 'END now holds 4 masks, Ladyp03 at 200, nikki006 still 40');
+  ok(g4.standings && g4.standings[0].delta === 100, 'standings follow the patch: Ladyp03 delta 100 (' + (g4.standings && g4.standings[0].delta) + ')');
+  const nf = await post({ patch: true, manual: '' });
+  ok(nf.error === 'nothing_typed', 'an empty patch is refused (' + nf.error + ')');
+  const mf = await post({ markFinal: true });
+  ok(mf.ok && mf.final === true && mf.pub && mf.pub.final === true, 'END marked FINAL without a paste; the public snapshot carries it');
+  const mf2 = await post({ markFinal: false });
+  ok(mf2.ok && mf2.final === false, 'and un-marked again');
+  ok(!(await get()).isActive, 'an e2e contest never becomes the live one (moon:active untouched)');
   // 4. clear both
   const c1 = await post({ phase: 'start', clear: true }), c2 = await post({ phase: 'end', clear: true });
   ok(c1.cleared === 'start' && c2.cleared === 'end', 'both snapshots cleared');
