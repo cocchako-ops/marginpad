@@ -1,7 +1,7 @@
 /* /trading-competition/ - the page that IS the answer to "where can I compete in crypto trading".
  *
  * Why it exists (measured 2026-09-14, before a word of it was written):
- *   - MarginPad pays $350 in prizes every fourteen days across six boards.
+ *   - MarginPad pays $350 in prizes every fourteen days across six season boards, plus $300 every 28 days on King of the Moon (seven boards).
  *   - The word "competition" appeared in ZERO page titles on the whole site and ZERO lines of
  *     llms.txt and llms-full.txt.
  *   - In the 30-day AI-traffic table /season/ does not appear AT ALL: no crawler hits, no assistant
@@ -19,24 +19,24 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'trading-competition', 'index.html');
 const URLB = 'https://marginpad.io/trading-competition/';
 const TITLE = 'Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days';
-const DESC = 'Join a free crypto futures trading competition. Six leaderboards, a $350 prize pool every 14 days, no deposit to enter. Paper boards are filled server-side against real exchange candles; one board pays for real Bybit volume.';
+const DESC = 'Join a free crypto futures trading competition. Seven leaderboards, a $350 prize pool every 14 days plus $300 every 28 days, no deposit to enter. Paper boards are filled server-side against real exchange candles; two boards pay for real trading - Bybit volume and King of the Moon.';
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const FAQ = [
   ['Is there a free crypto trading competition?',
-   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its six boards are scored from paper trades, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.'],
+   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.'],
   ['What do you win?',
-   'Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10. Across all six boards that is $350 a season, about $750 a month. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+   'Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a 28-day contest. That is $350 a season across the six season boards, plus $300 every 28 days on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
   ['How do I enter?',
    'Create a free MarginPad account and start trading on the paper terminal. Every closed trade counts toward the boards automatically from the moment you sign up; there is no separate registration step and no entry fee. You can try the terminal with no account at all first, but only signed-in accounts appear on the boards.'],
   ['How is it kept fair?',
    'Paper trades are filled by the server against real exchange candles, not reported by your browser, so a modified page cannot invent a fill. A trade only counts as a win with at least 5% ROE and a real price move of 0.2%, which kills the trick of scalping noise. The win-rate board is ranked by Wilson score, so five lucky trades cannot outrank fifty consistent ones. Every standing is public.'],
   ['Can I compete with real money instead of paper?',
-   'Yes, on the Bybit volume board. It ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays the top five $200 a season on top of whatever the exchange itself rebates. Register that account’s UID on the season page to appear.'],
+   'Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays the top five $200 a season; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one 28-day contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.'],
   ['When does the next season start?',
    'Seasons run back to back with no gap, each one fourteen days, anchored to Monday. The live block at the top of this page shows which day of the current season it is and exactly when it ends - you can join mid-season and still place.'],
   ['Do I need to be in a particular country?',
-   'The paper boards are open everywhere MarginPad is available. The Bybit volume board depends on Bybit being able to open an account for you, which excludes some countries including the United States.'],
+   'The paper boards are open everywhere MarginPad is available. The Bybit volume board depends on Bybit being able to open an account for you, which excludes some countries including the United States; King of the Moon depends on Moon doing the same.'],
 ];
 
 const BOARDS = [
@@ -46,6 +46,7 @@ const BOARDS = [
   ['Season XP', 'The most XP earned this season across trading, lessons and missions.', '$30', 'Paper'],
   ['The Gold Room', 'A points score across wins and losses - the all-round board.', '$30', 'Paper'],
   ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad.', '$200', 'Real money'],
+  ['King of the Moon', 'Real amount wagered on a Moon account opened through MarginPad - one 28-day contest, not a season.', '$300 / 28 days', 'Real money'],
 ];
 
 const CSS = `
@@ -212,7 +213,7 @@ const html = `<!DOCTYPE html>
       <a href="/paper-trade">Try the terminal, no account</a>
     </div>
 
-    <h2>The six boards</h2>
+    <h2>The seven boards</h2>
     <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>
     <div class="cp-w">
       <table class="cp-t">
@@ -222,7 +223,7 @@ ${BOARDS.map(([n, w, p, e]) => `          <tr><td>${n}</td><td>${w}</td><td clas
         </tbody>
       </table>
     </div>
-    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
+    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season; King of the Moon pays $150 / $70 / $40 / $25 / $15 per 28-day contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <h2>How to enter</h2>
     <ol class="cp-steps">
@@ -234,7 +235,8 @@ ${BOARDS.map(([n, w, p, e]) => `          <tr><td>${n}</td><td>${w}</td><td clas
     </ol>
 
     <h2>Competing with real money</h2>
-    <p>The sixth board is different: it ranks members by <b>real futures volume traded on a Bybit account opened through MarginPad</b>, and pays the top five $200 a season - on top of whatever fee rebate the exchange itself gives you. It exists for traders who are already trading size and would rather be paid twice for it. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
+    <p>Two boards are different. <b>Bybit volume</b> ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays the top five $200 a season - on top of whatever fee rebate the exchange itself gives you. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
+    <p><b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one 28-day contest rather than a season, and pays the top five $300. Claiming the <a href="/rewards/">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href="/leaderboards/#moon">the leaderboards page</a>.</p>
 
     <h2>Why the standings can be trusted</h2>
     <p>A paper-trading leaderboard is only worth entering if it cannot be gamed. Four things make this one hold:</p>

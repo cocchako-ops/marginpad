@@ -18,7 +18,8 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
   ok(c && c.live === true, 'GET /api/competition answers');
   ok(c.prize_pool_usd_per_season > 0, 'it names the prize pool ($' + c.prize_pool_usd_per_season + ' a season, $' + c.prize_pool_usd_per_month + ' a month)');
   ok(c.entry && c.entry.cost_usd === 0, 'and that entry is free');
-  ok((c.boards || []).length === 6, 'all six boards (' + (c.boards || []).length + ')');
+  ok((c.boards || []).length === 7, 'all seven boards (' + (c.boards || []).length + ')');
+  { const m = (c.boards || []).find(x => x.id === 'moon'); ok(m && m.period_days === 28 && m.entry === 'real_money' && m.prize_pool_usd === 300 && m.contest && m.contest.starts, 'King of the Moon: 28 days, real money, $300, contest window stated'); }
   ok((c.boards || []).every(b => b.prize_pool_usd > 0), 'every board has a prize pool', (c.boards || []).find(b => !b.prize_pool_usd));
   ok((c.boards || []).every(b => !b.leader || b.leader.value != null), 'a board with a leader always has that leader\'s score', (c.boards || []).find(b => b.leader && b.leader.value == null));
   ok(c.season && c.season.day_of_season >= 1 && c.season.day_of_season <= c.season.days, 'the season says which day it is (' + c.season.day_of_season + ' of ' + c.season.days + ')', c.season);

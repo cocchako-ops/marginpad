@@ -1622,7 +1622,7 @@
  {
   "rel": "index.html",
   "cover": 1,
-  "hit": 218,
+  "hit": 222,
   "missing": 0
  },
  {
@@ -1700,7 +1700,7 @@
  {
   "rel": "leaderboards/index.html",
   "cover": 1,
-  "hit": 64,
+  "hit": 68,
   "missing": 0
  },
  {
@@ -2125,9 +2125,9 @@
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 1,
-  "hit": 96,
-  "missing": 0
+  "cover": 0.9900990099009901,
+  "hit": 100,
+  "missing": 1
  },
  {
   "rel": "trading-journal/index.html",

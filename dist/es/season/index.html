@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Temporada de la competencia de trading - clasificaciones y premios en vivo | MarginPad</title>
-<meta name="description" content="Las clasificaciones en vivo de la competencia de trading cripto de MarginPad. Seis tablas, $350 en premios cada 14 días, inscripción gratis. Además el pase de temporada de 40 niveles, la predicción diaria de BTC, tus dos objetivos y el piso en vivo de cierres y duelos." />
+<meta name="description" content="Las clasificaciones en vivo de la competición de trading de cripto de MarginPad. Siete tablas, $350 en premios cada 14 días, entrada gratis. Además, el pase de temporada de 40 niveles, la predicción diaria de BTC, tus dos metas y el parqué en vivo de cierres y duelos." />
 <link rel="canonical" href="https://marginpad.io/es/season/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/season/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/season/" />
@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Tu temporada - MarginPad" />
-<meta property="og:description" content="Seis tablas que pagan USDT real, un pase de 40 niveles, una predicción diaria de BTC, objetivos de temporada y el piso en vivo. Catorce días, y luego empieza de nuevo." />
+<meta property="og:description" content="Siete tablas que pagan USDT real, un pase de 40 niveles, una predicción diaria de BTC, metas de temporada y el parqué en vivo. Catorce días, y vuelve a empezar." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/season/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -192,7 +192,7 @@ h1 b{color:var(--lime)}
 .code{display:flex;gap:7px}.code input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0}.code input:focus{border-color:var(--pro)}
 /* board switcher: five cards, one selected */
 /* board switcher v3 (owner 2026-09-13: "kartice mnogooo bolje", Bybit first) - six cards, one selected; glow lives INSIDE the card, never a drop shadow under it */
-.bsw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.bsw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px} /* seven cards since 2026-09-17 (King of the Moon): four a row, seven in one row were 150px each */
 .bs{position:relative;text-align:left;background:#0b0e13;border:1px solid var(--line2);border-radius:18px;padding:14px 14px 13px;cursor:pointer;color:inherit;min-width:0;min-height:156px;display:flex;flex-direction:column;overflow:visible;isolation:isolate;transition:border-color .22s,transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s;--c:#ffd75a} /* overflow visible: the glow ring and the pointer tail were clipped (owner 2026-09-13) */
 .bs::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%);opacity:.55;transition:opacity .26s;z-index:-1}
 .bs .wm{position:absolute;right:8px;bottom:6px;width:60px;height:60px;color:var(--c);opacity:.07;transform:rotate(-8deg);transition:opacity .26s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:-1}
@@ -214,6 +214,10 @@ h1 b{color:var(--lime)}
 .bs.on .chk{transform:scale(1)}.bs .chk svg{width:11px;height:11px}
 /* the Bybit card: the partner's full wordmark, navy ground, orange glow, and the plain words */
 .bs.bybit{--c:#f7a600;background:linear-gradient(160deg,#141a33,#0b0e13 70%)}
+.bs.moon{--c:#b39dff;background:linear-gradient(160deg,#1a1430,#0b0e13 70%)}
+.bs .logo.moonlogo{display:flex;align-items:center;gap:6px;font:800 19px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:#fff}.bs .logo.moonlogo svg{height:20px;width:20px}
+.bybox2.moon{border-color:rgba(179,157,255,.38);background:linear-gradient(140deg,rgba(179,157,255,.13),rgba(179,157,255,.02) 60%)}.bybox2.moon .pill{color:#b39dff}.bybox2.moon .btn{background:#b39dff}.bybox2.moon .byfull{border-top-color:rgba(179,157,255,.3);background:linear-gradient(90deg,#b39dff,#cdbfff)}
+.bybanner.moon{background:linear-gradient(90deg,rgba(179,157,255,.16),rgba(179,157,255,.03));border-color:rgba(179,157,255,.38)}.bybanner.moon .r{color:#b39dff}
 .bs .pb{font:800 8.5px 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--c)}
 .bs .logo{height:24px;display:block;color:#fff;margin:6px 0 0}.bs .logo svg{height:24px;width:auto;display:block}
 .bybit-logo{color:#fff}
@@ -307,7 +311,7 @@ h1 b{color:var(--lime)}
 /* toast */
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
-@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(6,minmax(176px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 0 14px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
+@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(7,minmax(176px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 0 14px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
 @media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 124px 46px}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(40,112px)}.road::before,.road .fill{left:46px}}
 </style>
 <meta property="og:image" content="https://marginpad.io/assets/og/season.jpg" />
@@ -331,7 +335,7 @@ h1 b{color:var(--lime)}
       <div>
         <span class="eyebrow"><i></i><span id="eyeb">Temporada</span></span>
         <h1 id="h1">Tu <b>temporada</b></h1>
-        <div class="lead" id="lead">Catorce días. Seis tablas que pagan USDT reales, un pase de 40 niveles que desbloqueas con el XP que ya ganas, una predicción de BTC al día, dos objetivos que eliges tú mismo y el floor en vivo. Luego vuelve a empezar.</div>
+        <div class="lead" id="lead">Catorce días. Siete tablas que pagan USDT real, un pase de 40 niveles que desbloqueas con el XP que ya ganas, una predicción de BTC al día, dos metas que eliges tú y el parqué en vivo. Después vuelve a empezar.</div>
         <div class="days" id="days" aria-label="Días de temporada"></div>
         <div class="dl"><div>termina en<b id="ends">-</b></div><div>pagos<b>00:00 UTC, fin de temporada</b></div><div>pronosticando hoy<b id="callers">-</b></div></div>
       </div>
@@ -421,6 +425,7 @@ h1 b{color:var(--lime)}
       <div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Cargando…</div></div></div>
       <div class="bd-note" id="bdNote"></div>
       <div id="bybox" hidden></div>
+      <div id="moonbox" hidden></div>
       <details class="rules"><summary>Cómo cuenta cada tabla</summary>
         <p><b>Días verdes.</b> Cuenta los días de la temporada en los que terminaste en ganancia - todo lo que cerraste ese día, sumado. Un día solo se pone verde con al menos 3 operaciones cerradas, así que una micro-operación con suerte no puede comprar un día. Necesitas 10 operaciones cerradas en la temporada, y debes estar en positivo en la temporada en general, para entrar en la clasificación. Los empates se resuelven a favor de la mayor ganancia de temporada. Los días corren desde el inicio de la temporada en UTC.</p>
         <p><b>ROE más alto.</b> Tu mejor operación individual cerrada en paper trading de la temporada, según el ROE (ganancia como % del margen). Solo cuentan las operaciones abiertas y cerradas esta temporada, ejecutadas y cerradas por el servidor. El ROE debe ser físicamente posible para el movimiento y el apalancamiento - los números fabricados se descartan.</p>
@@ -670,6 +675,7 @@ h1 b{color:var(--lime)}
     /* the volume column holds an EXACT figure now ($1,234,567.89 is 14 characters), so it is sized for that
        rather than for "$1.2M" - a fixed template that is too narrow ellipsises the number it exists to show */
     {k:'bybit',key:'topBybit',name:'Bybit volume',c:'#f7a600',cols:'36px minmax(104px,1fr) 150px 56px',head:['#','Trader','Bybit volume','pays'],cells:function(r){return [volF(r.vol)];},lead:function(r){return volF(r.vol);}},
+    {k:'moon',key:'topMoon',name:'King of the Moon',c:'#b39dff',cols:'36px minmax(104px,1fr) 150px 56px',head:['#','Trader','Wagered on Moon','pays'],cells:function(r){return [volF(r.vol)];},lead:function(r){return volF(r.vol);}},
     {k:'green',key:'topGreen',name:'Green days',c:'#2ebd85',cols:'36px minmax(140px,1fr) 78px 64px 84px 96px 56px',head:['#','Trader','green','red','trades','season P&L','pays'],cells:function(r){return [r.days+' green',r.red+' red',int(r.trades)+' tr',money(r.pnl)];},lead:function(r){return r.days+' green';}},
     {k:'roe',key:'top',name:'Highest ROE',c:'#c2f64a',cols:'36px minmax(140px,1fr) 88px 120px 96px 56px',head:['#','Trader','best ROE','trade','P&L','pays'],cells:function(r){return [pct(r.roe),'<span class="tag '+(r.side==='short'?'s':'l')+'">'+esc(String(r.symbol||'').toUpperCase())+' '+(r.side==='short'?'Short':'Long')+'</span>',money(r.pnl)];},lead:function(r){return pct(r.roe);}},
     {k:'wr',key:'topWr',name:'Win rate',c:'#57c7f7',cols:'36px minmax(140px,1fr) 78px 104px 76px 56px',head:['#','Trader','win rate','record','score','pays'],cells:function(r){return [r.wr+'%',r.w+'W · '+r.l+'L',String(r.score)];},lead:function(r){return r.wr+'%';}},
@@ -681,24 +687,27 @@ h1 b{color:var(--lime)}
   function volF(v){return '$'+(+v||0).toLocaleString('en-US',{maximumFractionDigits:2});} // traded volume: unsigned, exact
   var BYBIT_SVG='<svg class="bybit-logo" viewBox="0 0 13547 4513" role="img" aria-label="Bybit" xmlns="http://www.w3.org/2000/svg"><g id="Bybit_x0020_Logo.cdr"> <polygon fill="#f7a600" points="9655,3480 9655,-1 10355,-1 10355,3480 "/> <path fill="currentColor" d="M1500 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="4732,3086 4732,4514 4037,4514 4037,3086 2960,1033 3720,1033 4389,2436 5049,1033 5809,1033 "/> <path fill="currentColor" d="M7793 4514l-1500 0 0 -3481 1440 0c700,0 1107,381 1107,978 0,386 -262,636 -443,719 216,98 493,318 493,782 0,650 -458,1002 -1097,1002zm-116 -2875l0 0 -685 0 0 802 685 0c297,0 463,-161 463,-401 0,-239 -166,-401 -463,-401zm45 1413l0 0 -730 0 0 856 730 0c317,0 468,-195 468,-430 0,-235 -151,-425 -468,-425z"/> <polygon fill="currentColor" points="12610,1639 12610,4514 11911,4514 11911,1639 10974,1639 10974,1033 13547,1033 13547,1639 "/> </g></svg>'; /* official Bybit wordmark (Wikimedia Commons file Bybit_Logo.svg), navy recoloured to currentColor for the dark card */
   IC.bybit='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg>';
+  IC.moon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5z"/></svg>';
+  var MOON_WM='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5z"/></svg><span>Moon</span>'; /* no official Moon mark shipped with the site - a crescent and the name, in the card\'s own type */
   var curBoard='bybit'; /* the partner board opens first (owner 2026-09-13) */
   function paintBoards(){var D=LB;if(!D)return;var pz=D.boardPrizes||{},m=me(),nm=(m&&m.username||'').toLowerCase();
     $('bsw').innerHTML=BOARDS.map(function(b){var rows=D[b.key]||[],p=pz[b.k]||[],tot=p.reduce(function(a,c){return a+c;},0),ld=rows[0],mine=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];
-      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'">'
+      return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':b.k==='moon'?' moon':'')+'" data-board="'+b.k+'" style="--c:'+b.c+'">'
         +'<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></span>'
         +'<div class="wm">'+(IC[b.k]||'')+'</div>'
-        +(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
-        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5</small>':'title<small>Gold+ only</small>')+'</div>'
+        +(b.k==='bybit'?'<div class="pb">Powered by</div><div class="logo">'+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':b.k==='moon'?'<div class="pb">King of the Moon</div><div class="logo moonlogo">'+MOON_WM+'</div><span class="tagv">Moon wager based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
+        +'<div class="big">'+(tot?'$'+tot+'<small>to the top 5'+(b.k==='moon'?' \u00b7 28 days':'')+'</small>':'title<small>Gold+ only</small>')+'</div>'
         +'<div class="ld"><i>1</i>'+(ld?'<span title="'+esc(ld.who)+'">'+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':'<span>nobody yet</span><b>\u2014</b>')+'</div>'
         +'<div class="you'+(mine?' in':'')+'">'+(nm?(mine?'you: #'+mine.rank+(mine.rank<=5&&p[mine.rank-1]?' \u00b7 $'+p[mine.rank-1]:''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
     var B=BOARDS.filter(function(b){return b.k===curBoard;})[0],rows=D[B.key]||[],prizes=pz[B.k]||[];
     var head='<div class="tr th" style="grid-template-columns:'+B.cols+'">'+B.head.map(function(h,i){return '<div'+(i>=2?' style="text-align:right"':'')+'>'+h+'</div>';}).join('')+'</div>';
-    var fit=curBoard==='bybit'&&!rows.length; if(fit)head=''; $('tbl').classList.toggle('fit',fit); /* an empty Bybit board has no columns to head: the banner, prize preview and note wrap to the box instead of scrolling */
-    var body=rows.length?rows.slice(0,10).map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(i+1)+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):(curBoard==='bybit'?'<div class="pzprev"><div class="pzh">Prize preview \u2014 how the $'+prizes.reduce(function(a,c){return a+c;},0)+' splits</div><div class="pzl">'+prizes.map(function(pv,i){return '<div class="pzc r'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+pv+'</b></div>';}).join('')+'</div><div class="empty">The board fills from Bybit\'s report after the first upload of the season. Register your Bybit UID below so your volume counts.</div></div>':'<div class="empty">Nobody qualifies yet this season. The rules below say what it takes.</div>');
-    var banner=curBoard==='bybit'?'<div class="bybanner"><div class="l">'+BYBIT_SVG+'<span>Bybit volume based leaderboard</span></div><div class="r"><b>$'+prizes.reduce(function(a,c){return a+c;},0)+'</b>prize pool \u00b7 top 5 paid</div></div>':'';
+    var fit=(curBoard==='bybit'||curBoard==='moon')&&!rows.length; if(fit)head=''; $('tbl').classList.toggle('fit',fit); /* an empty Bybit board has no columns to head: the banner, prize preview and note wrap to the box instead of scrolling */
+    var body=rows.length?rows.slice(0,10).map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var pay=r.rank<=5&&prizes[r.rank-1]?'$'+prizes[r.rank-1]:'';return '<div class="tr'+(r.rank<=3?' t'+r.rank:'')+(isMe?' me':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(i+1)+'"><div class="rk">'+r.rank+'</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a><span data-lvln="'+esc(r.who)+'"></span></div>'+B.cells(r).map(function(v){return '<div class="v'+(/^<span/.test(v)?' dim':'')+'">'+v+'</div>';}).join('')+'<div class="pay">'+pay+'</div></div>';}).join(''):(curBoard==='bybit'?'<div class="pzprev"><div class="pzh">Prize preview \u2014 how the $'+prizes.reduce(function(a,c){return a+c;},0)+' splits</div><div class="pzl">'+prizes.map(function(pv,i){return '<div class="pzc r'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+pv+'</b></div>';}).join('')+'</div><div class="empty">The board fills from Bybit\'s report after the first upload of the season. Register your Bybit UID below so your volume counts.</div></div>':curBoard==='moon'?'<div class="pzprev"><div class="pzh">Prize preview \u2014 how the $'+prizes.reduce(function(a,c){return a+c;},0)+' splits</div><div class="pzl">'+prizes.map(function(pv,i){return '<div class="pzc r'+(i+1)+'"><i>#'+(i+1)+'</i><b>$'+pv+'</b></div>';}).join('')+'</div><div class="empty">Nobody has wagered on Moon since the contest opened'+(D.moonContest?' on '+dayS(D.moonContest.start):'')+'. The next Moon report after someone does fills this table. Claim the Moon sign-up bonus below so your Moon username is registered.</div></div>':'<div class="empty">Nobody qualifies yet this season. The rules below say what it takes.</div>');
+    var banner=curBoard==='bybit'?'<div class="bybanner"><div class="l">'+BYBIT_SVG+'<span>Bybit volume based leaderboard</span></div><div class="r"><b>$'+prizes.reduce(function(a,c){return a+c;},0)+'</b>prize pool \u00b7 top 5 paid</div></div>'
+      :curBoard==='moon'?'<div class="bybanner moon"><div class="l">'+MOON_WM.replace('<span>Moon</span>','')+'<span>King of the Moon \u00b7 '+(D.moonContest?'day '+moonDay(D)+' of 28':'28-day contest')+'</span></div><div class="r"><b>$'+prizes.reduce(function(a,c){return a+c;},0)+'</b>prize pool \u00b7 top 5 paid</div></div>':'';
     $('tbl').innerHTML=banner+head+body;
     (function(){var tb=$('tbl');tb.classList.remove('in');requestAnimationFrame(function(){requestAnimationFrame(function(){tb.classList.add('in');});});})();
-    paintNote(D,prizes);paintBybox(D);
+    paintNote(D,prizes);paintBybox(D);paintMoonbox(D);
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
     /* board switch (owner 2026-09-13: "slajdovanje mnogo više cool"): the table slides out toward the card you left and in from the one you picked,
      then the rows settle one after another (CSS transitions driven from here - no @keyframes, the owner's Windows has animations off). */
@@ -710,7 +719,23 @@ h1 b{color:var(--lime)}
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
     if(curBoard==='gold'){el.textContent='Gold+ members only \u00b7 a title, not a payout, until the season of '+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
     if(curBoard==='bybit'){el.textContent='';return;} /* no note under the Bybit board (owner 2026-09-13): the banner, the prize preview and the registration box say it all */
+    if(curBoard==='moon'){var MC=D.moonContest;el.textContent=MC?('One 28-day contest, not a season \u00b7 '+dayS(MC.start)+' to '+dayS(MC.end)+' \u00b7 counts only what is wagered after the start'+(MC.updated&&MC.updated>MC.start?' \u00b7 last Moon report '+dayS(MC.updated):' \u00b7 no Moon report since the start yet')):'The contest has not opened yet.';return;}
     el.textContent='Top 5 paid at season end: '+prizes.map(function(p,i){return '#'+(i+1)+' $'+p;}).join(' \u00b7 ');}
+  function dayS(t){return new Date(t).toUTCString().slice(5,16);}
+  function moonDay(D){var MC=D.moonContest;return MC?Math.min(28,Math.max(1,Math.floor((Date.now()-MC.start)/86400000)+1)):0;}
+  /* King of the Moon: only a Moon account opened through MarginPad competes, and the registration IS the approved Moon sign-up bonus claim - that is
+     how MarginPad knows the full Moon username behind the mask Moon shows us. Eligibility is read from the member's own claim (/api/reward/moonsign/mine). */
+  var MOL=null;
+  function paintMoonbox(D){var box=$('moonbox');if(!box)return;if(curBoard!=='moon'){box.hidden=true;return;}box.hidden=false;var m=me();
+    var full='<a class="byfull" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored"><span><em class="lg">No Moon account through MarginPad yet? Open one with our link \u2014 that is the account that counts.</em><em class="sm">Not on Moon yet? Open one here</em></span><b>Open Moon \u2192</b></a>';
+    var head=function(st,stTxt){return '<div class="bh"><span class="pill">King of the Moon \u00b7 registration</span><span class="st '+st+'">'+stTxt+'</span></div>';};
+    if(!m){box.innerHTML='<div class="bybox2 moon">'+head('wait','not registered')+'<div class="bt">Enter with the Moon account you opened through MarginPad</div><div class="bd">Sign in, then claim the $1 Moon sign-up bonus on the rewards page with your Moon username. An approved claim is the whole registration \u2014 from then on what you wager on Moon counts toward the $300.</div><div class="bf"><button type="button" class="btn" data-auth-open>Sign in</button></div>'+full+'</div>';return;}
+    if(!MOL){box.innerHTML='<div class="bybox2 moon">'+head('wait','checking\u2026')+'<div class="bt">Checking your Moon registration\u2026</div></div>';J('/api/reward/moonsign/mine').then(function(d){MOL=d||{signups:[]};paintMoonbox(D);}).catch(function(){MOL={signups:[]};paintMoonbox(D);});return;}
+    var sg=MOL.signups||[],ap=sg.filter(function(x){return x.status==='approved';})[0],pd=sg.filter(function(x){return x.status==='pending';})[0];
+    box.innerHTML='<div class="bybox2 moon">'+head(ap?'ok':(pd?'wait':'no'),ap?'\u2713 eligible':(pd?'under review':'not registered'))
+      +'<div class="bt">'+(ap?'You are in \u2014 Moon user '+esc(ap.uid)+' is registered':(pd?'Your Moon sign-up is being reviewed':'Claim the Moon sign-up bonus to enter'))+'</div>'
+      +'<div class="bd">'+(ap?'Everything you wager on Moon'+(D.moonContest?' since '+dayS(D.moonContest.start):'')+' counts toward the $300 \u2014 the board refreshes with each Moon report.':(pd?'Once it is approved you are in \u2014 nothing else to do.':'The $1 Moon sign-up bonus on the rewards page registers your Moon username with us; an approved claim puts you on this board. Only a Moon account opened through MarginPad qualifies.'))+'</div>'
+      +'<div class="bf">'+(ap?'<span class="uidv">Moon '+esc(ap.uid)+'</span>':'<a class="btn" href="/es/rewards/#moonCard" style="text-decoration:none;display:inline-block">'+(pd?'See your claim':'Claim the Moon bonus')+'</a>')+'</div>'+full+'</div>';}
   /* Bybit board: only a Bybit account opened through MarginPad competes - the member links that UID here (checked against the affiliate list; one UID, one account) */
   var BYL=null;
   function paintBybox(D){var box=$('bybox');if(!box)return;if(curBoard!=='bybit'){box.hidden=true;return;}box.hidden=false;var m=me();

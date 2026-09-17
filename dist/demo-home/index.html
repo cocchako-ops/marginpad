@@ -209,10 +209,12 @@
   .pt-viz .ticket .pnl{display:block;margin-top:5px;font-size:13.5px;font-weight:700;color:var(--grn);font-variant-numeric:tabular-nums;}
   @media(max-width:940px){.pt-hero .in{grid-template-columns:1fr;}.pt-viz{min-height:190px;}}
 
-  /* ---------- COMPETITION card (2026-09-17) - DOM-second, full width, right under Paper Trade ---------- */
+  /* ---------- COMPETITION card (2026-09-17, regrouped the same day: owner "free to enter / trade to enter odvojeno, Gold+ odvojen,
+     previse sareno") - DOM-second, full width, right under Paper Trade. ONE colour: the card is gold, everything else is ink and
+     hairlines. The two real-account boards are the prize of the card: a metallic border and a bigger number, no colour. ---------- */
   #trade .bento{grid-auto-flow:dense;} /* the card is s12 and sits second in the DOM: without dense the Screener would leave a 4-col hole beside Paper Trade on desktop */
-  .cp-hero{border-color:rgba(255,215,90,.32);background:radial-gradient(70% 90% at 0 0,rgba(255,215,90,.13),transparent 55%),radial-gradient(40% 70% at 100% 100%,rgba(194,246,74,.08),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.004)),var(--panel);}
-  .cp-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:28px;flex:1;position:relative;z-index:2;}
+  .cp-hero{border-color:rgba(255,215,90,.28);background:radial-gradient(70% 90% at 0 0,rgba(255,215,90,.11),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.004)),var(--panel);}
+  .cp-in{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.5fr);gap:28px;flex:1;position:relative;z-index:2;}
   .cp-copy{display:flex;flex-direction:column;min-width:0;}
   .cp-t{font-size:26px;}.cp-t b{color:var(--amber);}
   .cp-pool{display:flex;flex-direction:column;gap:7px;margin-top:22px;}
@@ -224,23 +226,44 @@
   .cp-strip i{display:block;height:6px;border-radius:3px;background:#1a1f27;}.cp-strip i.on{background:var(--amber);box-shadow:0 0 8px -2px rgba(255,215,90,.9);}.cp-strip i.now{background:#fff;}
   .cp-left{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);white-space:nowrap;}
   .cp-fair{margin-top:auto;padding-top:16px;font-size:12px;line-height:1.5;color:var(--faint);max-width:330px;}
-  .cp-boards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-content:center;min-width:0;}
-  .cp-b{display:flex;flex-direction:column;gap:7px;padding:13px 14px 12px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);min-width:0;position:relative;overflow:hidden;transition:border-color .18s,background .18s;}
-  .cp-b::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:var(--bc,#ffd75a);opacity:.9;}
-  .cp-hero:hover .cp-b{border-color:rgba(255,255,255,.14);}
-  .cp-bn{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .cp-bp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.02em;color:#fff;line-height:1;white-space:nowrap;}
-  .cp-bp small{font-size:10.5px;color:var(--faint);font-family:'Space Mono',monospace;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;}
+  /* three groups: free (a full row of four), Gold (one), trade to enter (two) */
+  .cp-boards{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.1fr);gap:12px 14px;align-content:center;min-width:0;}
+  .cp-grp{min-width:0;display:flex;flex-direction:column;gap:8px;}
+  .cp-grp.free{grid-column:1/-1;}
+  .cp-gh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07);min-width:0;}
+  .cp-gh span{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap;}
+  .cp-gh em{font-style:normal;font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .cp-grp.gold .cp-gh span{color:var(--amber);}
+  .cp-grp.real .cp-gh{border-bottom-color:rgba(255,255,255,.16);}
+  .cp-tiles{display:grid;gap:8px;min-width:0;}
+  .cp-grp.free .cp-tiles{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .cp-grp.real .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .cp-b{display:flex;flex-direction:column;gap:6px;padding:12px 13px 11px;border-radius:13px;background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.07);min-width:0;position:relative;overflow:hidden;transition:border-color .18s,background .18s,transform .18s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+  .cp-hero:hover .cp-b{border-color:rgba(255,255,255,.13);}
+  .cp-bn{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
+  .cp-dot{width:6px;height:6px;border-radius:50%;background:var(--d,#fff);box-shadow:0 0 7px var(--d,#fff);flex:none;}
+  .cp-bp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1;white-space:nowrap;}
+  .cp-bp small{font-size:10px;color:var(--faint);font-family:'Space Mono',monospace;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;}
   .cp-bl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:7px;font-size:12.5px;min-width:0;margin-top:2px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
-  .cp-bl i{font:800 10px 'Space Mono',monospace;color:var(--amber);font-style:normal;background:rgba(255,215,90,.12);border-radius:5px;padding:2px 5px;}
+  .cp-bl i{font:800 10px 'Space Mono',monospace;color:var(--dim);font-style:normal;background:rgba(255,255,255,.08);border-radius:5px;padding:2px 5px;}
   .cp-bl b{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .cp-bl em{font:700 11.5px 'Space Mono',monospace;font-style:normal;color:var(--grn);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .cp-bl em{font:700 11.5px 'Space Mono',monospace;font-style:normal;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums;}
   .cp-bl em:empty{display:none;}
-  .cp-b.big{border-color:rgba(247,166,0,.45);background:linear-gradient(180deg,rgba(247,166,0,.13),rgba(247,166,0,.03));}
-  .cp-b.big .cp-bp{color:#f7a600;}
-  @media(max-width:1100px){.cp-boards{grid-template-columns:repeat(2,minmax(0,1fr));}}
-  @media(max-width:940px){.cp-in{grid-template-columns:1fr;gap:18px;}.cp-boards{grid-template-columns:repeat(3,minmax(0,1fr));}}
-  @media(max-width:640px){.cp-boards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}.cp-b{padding:11px 12px 10px;gap:6px;}.cp-bp{font-size:19px;white-space:normal;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;}.cp-bp small{margin-left:0;}.cp-t{font-size:22px;}.cp-pool b{font-size:40px;}.cp-pool span{font-size:13px;}.cp-fair{display:none;}.cp-pool{margin-top:16px;}
+  /* Gold: the one warm tile, because the room is named after the colour */
+  .cp-grp.gold .cp-b{border-color:rgba(255,215,90,.34);background:linear-gradient(180deg,rgba(255,215,90,.11),rgba(255,215,90,.02));}
+  .cp-grp.gold .cp-bp{color:var(--amber);}
+  .cp-grp.gold .cp-bl i{color:var(--amber);background:rgba(255,215,90,.12);}
+  /* Trade to enter: metallic hairline border (gradient in the border box), a taller number, the venue named by a single dot */
+  .cp-grp.real .cp-b{padding:14px 15px 13px;border:1px solid transparent;background:linear-gradient(165deg,#131820,#0b0e13 72%) padding-box,linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.08) 38%,rgba(255,255,255,.1) 62%,rgba(255,255,255,.42)) border-box;box-shadow:0 14px 34px -22px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.16);}
+  .cp-hero:hover .cp-grp.real .cp-b{transform:translateY(-1px);}
+  .cp-grp.real .cp-bn{color:var(--dim);}
+  .cp-grp.real .cp-bp{font-size:27px;background:linear-gradient(180deg,#fff 30%,#aeb7c4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .cp-grp.real .cp-bp small{-webkit-text-fill-color:var(--faint);}
+  .cp-grp.real .cp-bl{border-top-color:rgba(255,255,255,.1);}
+  .cp-grp.real .cp-bl i{color:#fff;background:rgba(255,255,255,.12);}
+  @media(max-width:1100px){.cp-grp.free .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:940px){.cp-in{grid-template-columns:1fr;gap:18px;}.cp-grp.free .cp-tiles{grid-template-columns:repeat(4,minmax(0,1fr));}}
+  @media(max-width:640px){.cp-boards{grid-template-columns:1fr;gap:12px;}.cp-grp.free .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.cp-grp.real .cp-tiles{grid-template-columns:1fr;} /* measured 2026-09-17 at 390px: two real tiles side by side cut KING OF THE MOON to MOO */.cp-b{padding:11px 12px 10px;gap:6px;}.cp-bp{font-size:19px;white-space:normal;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;}.cp-bp small{margin-left:0;}.cp-grp.real .cp-bp{font-size:23px;}.cp-t{font-size:22px;}.cp-pool b{font-size:40px;}.cp-pool span{font-size:13px;}.cp-fair{display:none;}.cp-pool{margin-top:16px;}
     .cp-days{flex-wrap:wrap;gap:8px 12px;}.cp-strip{flex:1 1 100%;max-width:none;}} /* measured 2026-09-17 at 390px: the nowrap "ends in" text squeezed the 14-cell strip to 3 px, and "$10 first" was cut mid-word */
 
   /* ---------- Screener ---------- */
@@ -1003,17 +1026,33 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         <div class="cp-copy">
           <div class="t-kick"><span class="dot"></span> Trading competition · <span id="cpEye">every 14 days</span></div>
           <div class="t-title cp-t">Paper trades, <b>real prize money</b></div>
-          <div class="cp-pool"><b id="cpPool">$350</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Six boards, the top five on each, free to enter, no deposit.</span></div>
+          <div class="cp-pool"><b id="cpPool">$350</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Five paper boards free to enter, plus two scored on real accounts - Bybit volume and King of the Moon.</span></div>
           <div class="cp-days"><div class="cp-strip" id="cpDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="cp-left" id="cpLeft">14-day seasons</span></div>
           <div class="cp-fair">Filled server-side against real exchange candles. A win needs 5% ROE and a real 0.2% move. Standings are public.</div>
         </div>
         <div class="cp-boards" id="cpBoards">
-          <div class="cp-b" data-b="roe" style="--bc:#c2f64a"><span class="cp-bn">Highest ROE</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
-          <div class="cp-b" data-b="green" style="--bc:#2ebd85"><span class="cp-bn">Green days</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
-          <div class="cp-b" data-b="winrate" style="--bc:#6aa3ff"><span class="cp-bn">Best win rate</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
-          <div class="cp-b" data-b="xp" style="--bc:#9d7bff"><span class="cp-bn">Season XP</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
-          <div class="cp-b" data-b="gold" style="--bc:#ffd75a"><i class="cp-rib">GOLD+</i><span class="cp-bn">The Gold Room</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
-          <div class="cp-b big" data-b="bybit" style="--bc:#f7a600"><span class="cp-bn">Bybit volume · real</span><span class="cp-bp">$200<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+          <div class="cp-grp free">
+            <div class="cp-gh"><span>Free to enter</span><em>paper trades · no deposit · every 14 days</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="roe"><span class="cp-bn">Highest ROE</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="green"><span class="cp-bn">Green days</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="winrate"><span class="cp-bn">Best win rate</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="xp"><span class="cp-bn">Season XP</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
+          <div class="cp-grp gold">
+            <div class="cp-gh"><span>Gold level</span><em>12,000 XP and up</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="gold"><i class="cp-rib">GOLD+</i><span class="cp-bn">The Gold Room</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
+          <div class="cp-grp real">
+            <div class="cp-gh"><span>Trade to enter</span><em>real accounts through MarginPad · Bybit every 14 days · Moon every 28</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="bybit"><span class="cp-bn"><i class="cp-dot" style="--d:#f7a600"></i>Bybit volume</span><span class="cp-bp">$200<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="moon"><span class="cp-bn"><i class="cp-dot" style="--d:#b39dff"></i>King of the Moon</span><span class="cp-bp">$300<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
         </div>
       </div>
     </a>
@@ -1248,7 +1287,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/leverage-trading-simulator/">Leverage simulator</a><a href="/crypto-trading-simulator-no-sign-up/">No sign-up simulator</a><a href="/screener">Screener</a><a href="/rekt/">Rekt - Liquidations</a><a href="/crypto-liquidations-today/">Liquidations today</a><a href="/alerts/">Price Alerts</a></div>
     <div><h5>Analyze</h5><a href="/calculators">Calculators</a><a href="/tools/">Trading Tools</a><a href="/trading-api/">Bot API</a><a href="/coins/">Markets</a><a href="/defi/">DeFi</a></div>
     <div><h5>Guides</h5><a href="/blog/what-is-liquidation-in-crypto/">What is liquidation?</a><a href="/blog/what-is-funding-rate/">Funding rates explained</a><a href="/blog/crypto-leverage-explained/">Leverage explained</a><a href="/blog/best-crypto-futures-exchanges/">Best futures exchanges</a><a href="/blog/btc-dominance-altcoin-season/">BTC dominance &amp; altseason</a><a href="/blog/paper-trade-crypto-futures/">How to paper trade</a></div>
-    <div><h5>Learn &amp; earn</h5><a href="/academy/">Academy</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Ad disclosure: referral links</a></div>
+    <div><h5>Learn &amp; earn</h5><a href="/academy/">Academy</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="/leaderboards/">Leaderboards</a><a href="/trading-competition/">Trading competition</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Ad disclosure: referral links</a></div>
   </div>
   <div class="foot-word">MARGINPAD</div>
   <div class="foot-bottom"><span>© 2026 MarginPad · Simulated trading only · Not financial advice</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">About</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">Contact</a><a href="/terms/" style="display:inline;padding:0 12px 0 0">Terms</a><a href="/privacy/" style="display:inline;padding:0">Privacy</a></span></div>
@@ -1670,21 +1709,21 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       if(id==='winrate')return v.toFixed(1)+'%';
       if(id==='xp')return int(v)+' XP';
       if(id==='gold')return int(v)+' pts';
-      if(id==='bybit')return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e4?(v/1e3).toFixed(1)+'k':int(v));
+      if(id==='bybit'||id==='moon')return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e4?(v/1e3).toFixed(1)+'k':v>=100?int(v):(+v).toFixed(2));
       return int(v);}
     function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h';}
     function paint(d){
       if(!d||!d.boards||!d.boards.length)return;
       var pool=+d.prize_pool_usd_per_season||0,month=+d.prize_pool_usd_per_month||0;
       if(pool>0){document.getElementById('cpPool').textContent='$'+int(pool);
-        document.getElementById('cpPoolS').textContent='a season'+(month>pool?' ($'+int(month)+' a month)':'')+', paid in USD to your rewards balance. '+d.boards.length+' boards, the top five on each, free to enter, no deposit.';}
+        document.getElementById('cpPoolS').textContent='a season'+(month>pool?' ($'+int(month)+' a month)':'')+', paid in USD to your rewards balance. '+'Five paper boards free to enter, plus two scored on real accounts - Bybit volume and King of the Moon.';}
       var sn=d.season||{},day=+sn.day_of_season||0,endMs=sn.ends?Date.parse(sn.ends):0;
       if(day>0){document.getElementById('cpDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
         document.getElementById('cpEye').textContent='day '+day+' of 14';
         document.getElementById('cpLeft').textContent=endMs>Date.now()?'ends in '+left(endMs-Date.now())+' · then a new one starts':'a new season starts today';}
       d.boards.forEach(function(b){var el=card.querySelector('.cp-b[data-b="'+b.id+'"]');if(!el)return;
         var pz=+b.prize_pool_usd||0,top=(b.prize_usd_top5||[])[0]||0;
-        if(pz>0)el.querySelector('.cp-bp').innerHTML='$'+int(pz)+'<small>pool · $'+int(top)+' first</small>';
+        if(pz>0)el.querySelector('.cp-bp').innerHTML='$'+int(pz)+'<small>pool · $'+int(top)+' first'+'</small>';
         var L=b.leader,bl=el.querySelector('.cp-bl');
         if(L&&L.name){bl.innerHTML='<i>1</i><b title="'+esc(L.name)+'">'+esc(L.name)+'</b><em>'+esc(val(b.id,L.value))+'</em>';}
         else{bl.innerHTML='<i>1</i><b>open - nobody ranked yet</b><em></em>';}});

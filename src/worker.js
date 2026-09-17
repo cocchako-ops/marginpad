@@ -2642,10 +2642,11 @@ const COMP_BOARDS = [
   { id: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
   { id: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
   { id: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
+  { id: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a 28-day contest', unit: 'USD wagered', f: 'vol', days: 28 },
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v1');
+  const ck = new Request('https://marginpad.io/__competition_v2'); // v2: King of the Moon (28-day contest, own window)
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -2663,20 +2664,23 @@ async function handleCompetition(url, request, env, ctx) {
       entries: rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
-      entry: b.id === 'bybit' ? 'real_money' : 'free_paper',
+      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : 'free_paper',
+      period_days: b.days || Math.round(LB_PERIOD / 86400000),
+      ...(b.id === 'moon' && lb && lb.moonContest ? { contest: { starts: lb.moonContest.start ? new Date(lb.moonContest.start).toISOString() : null, ends: lb.moonContest.end ? new Date(lb.moonContest.end).toISOString() : null, updated: lb.moonContest.updated ? new Date(lb.moonContest.updated).toISOString() : null } } : {}),
     };
   });
-  const total = boards.reduce((a, b) => a + b.prize_pool_usd, 0);
+  const total = boards.filter(b => b.period_days === Math.round(LB_PERIOD / 86400000)).reduce((a, b) => a + b.prize_pool_usd, 0); // per SEASON = the fourteen-day boards; the Moon contest runs 28 days and is stated on its own board
 
   const out = {
     name: 'MarginPad Season',
-    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume.',
+    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume; a seventh, King of the Moon, is a 28-day contest scored from real wagering on Moon.',
     url: 'https://marginpad.io/trading-competition/',
     live: true,
     season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
               day_of_season: Math.floor((now - from) / 86400000) + 1, ends_in_hours: Math.max(0, Math.round((to - now) / 3600000)) },
     prize_pool_usd_per_season: total,
-    prize_pool_usd_per_month: Math.round(total * (30 / (LB_PERIOD / 86400000))),
+    prize_pool_usd_per_month: Math.round(total * (30 / (LB_PERIOD / 86400000)) + boards.filter(b => b.period_days !== Math.round(LB_PERIOD / 86400000)).reduce((a, b) => a + b.prize_pool_usd * 30 / b.period_days, 0)), // fourteen-day boards scaled to a month + the 28-day Moon contest scaled to a month
+    prize_pool_usd_all_boards: boards.reduce((a, b) => a + b.prize_pool_usd, 0),
     paid_in: 'USD credited to the MarginPad rewards balance, withdrawable',
     entry: {
       cost_usd: 0,
@@ -11710,8 +11714,8 @@ async function rewardCfg(env) {
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
-  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbBybit = arr5(m.lbBybit, [100, 50, 25, 15, 10]); /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbBybit,raw: m };
+  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbBybit = arr5(m.lbBybit, [100, 50, 25, 15, 10]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]); /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbBybit, lbMoon,raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -11890,11 +11894,11 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
- const boardName = board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
+ const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
-  const achieveTxt = board === 'bybit' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
+  const achieve = board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'moon' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered on Moon during the contest') : board === 'bybit' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -12108,6 +12112,47 @@ function moonStandings(start, end) { // wagered during the contest = end - start
   return out;
 }
 async function moonSnap(env, contest, phase) { try { return JSON.parse((await env.STATS.get('moon:snap:' + contest + ':' + phase)) || 'null'); } catch (e) { return null; } }
+const MOON_CONTEST_DAYS = 28; // King of the Moon runs two seasons long (owner 2026-09-17: "28 dana, 2 sezone")
+async function moonPubSnapshot(env, id) { // the public board of the ACTIVE contest (or a named one) - rows keep uid for the payout, /lb strips it
+  try { id = id || (await env.STATS.get('moon:active')) || ''; if (!id) return null; return JSON.parse((await env.STATS.get('lb:moon:' + id)) || 'null'); } catch (e) { return null; }
+}
+async function moonBoardRebuild(env, id) { // START + END snapshots -> standings -> public rows; called after every desk save and clear
+  const start = await moonSnap(env, id, 'start'), end = await moonSnap(env, id, 'end');
+  if (!start) { try { await env.STATS.delete('lb:moon:' + id); } catch (e) {} try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {} return null; }
+  const st = moonStandings(start, end) || [];
+  let membersN = 0; try { membersN = (await moonMembers(env)).filter(m => m.status === 'approved').length; } catch (e) {} // who can compete = every approved Moon sign-up
+  const banned = {}; try { const bd = await bybitLedger(env, '/lbbans', {}); ((bd && bd.banned) || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
+  const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
+  const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: start.ts + MOON_CONTEST_DAYS * 86400000, final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
+  try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v2')); } catch (e) {}
+  return snap;
+}
+async function payMoonPrizes(env) { // */10 cron: the active contest, once its 28 days are over AND the END paste is marked FINAL; paid once (flag lbpaid:moon:<id>)
+  if (!env.STATS || !env.REWARDS || !env.USERS) return;
+  const now = Date.now(); let id = ''; try { id = (await env.STATS.get('moon:active')) || ''; } catch (e) {} if (!id) return;
+  const flag = 'lbpaid:moon:' + id; let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {} if (done) return;
+  const pub = await moonPubSnapshot(env, id); if (!pub || now < pub.end) return;
+  if (!pub.final) { // nag the owner ONCE per contest: the money waits for a final paste
+    const nk = 'lbpaid:moon:nag:' + id; let nag = false; try { nag = !!(await env.STATS.get(nk)); } catch (e) {}
+    if (!nag && now - pub.end > 3600000) { try { await tgAdmin(env, '<b>King of the Moon:</b> the contest ' + id + ' ended ' + new Date(pub.end).toISOString().slice(0, 10) + ' and its last paste is not marked FINAL - nothing is paid until you paste the closing Moon page in mp-ops > Money > King of the Moon and tick final.', { kind: 'lbmoon', sev: 'amber' }); await env.STATS.put(nk, '1', { expirationTtl: 60 * 86400 }); } catch (e) {} }
+    return;
+  }
+  const cfg = await rewardCfg(env);
+  const top = (pub.rows || []).filter(x => x.uid && x.vol > 0).slice(0, 5);
+  const winners = top.map((x, i) => ({ acct: 'u:' + x.uid, cents: Math.round((cfg.lbMoon[i] || 0) * 100), rank: i + 1, board: 'moon' })).filter(w => w.cents > 0);
+  let paid = [];
+  if (winners.length) { const pj = await bybitLedger(env, '/paywinners', { week: pub.start, winners }); if (!pj || !pj.ok) { try { await tgAdmin(env, '<b>King of the Moon payout FAILED</b> for ' + id + ' - ledger unreachable, will retry next cron', { kind: 'lbmoon', sev: 'red' }); } catch (e) {} return; } paid = pj.payouts || []; }
+  try { await env.STATS.put(flag, '1', { expirationTtl: 400 * 86400 }); } catch (e) {}
+  if (paid.length) {
+    const prof = await resolveProfiles(env, paid.map(p => p.acct));
+    for (const p of paid) { const x = top[p.rank - 1] || {}; const u = prof[String(p.acct).replace(/^u:/, '')] || {};
+      try { await evPush(env, null, 'lbpaid', (u.username || x.who || '') + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' moon)', ''); } catch (e) {}
+      if (u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, username: u.username || x.who || '', board: 'moon', vol: x.vol || 0, n: 0 }); } catch (e) {} } }
+  }
+  try { await tgAdmin(env, '<b>King of the Moon paid</b> for ' + id + ': ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(0)).join(' · ') : 'nobody eligible'), { kind: 'lbmoon', sev: 'green' }); } catch (e) {}
+}
 async function bybitUpload(env, ws) { try { return JSON.parse((await env.STATS.get('lb:bybitup:' + ws)) || 'null'); } catch (e) { return null; } }
 async function bybitRegistrations(env) { // Bybit UID → {uid, name, ts, e2e}: explicit registrations first, then UIDs a payout already went to
   const map = new Map();
@@ -12175,7 +12220,7 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => ({ rank: r.rank, who: r.name, vol: r.vol })), n: b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0 };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 60 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v8')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {}
   return snap;
 }
 async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0 }; }
@@ -12215,7 +12260,7 @@ async function promoteLbPending(env) {
     let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) { return null; }
     const p = cfg.lbPending;
     if (!p || !(+p.fromWs > 0) || Date.now() < +p.fromWs) return null;
-    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit'].filter(k => Array.isArray(p[k]));
+    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon'].filter(k => Array.isArray(p[k]));
     if (!keys.length) { delete cfg.lbPending; await env.STATS.put('rwd:cfg', JSON.stringify(cfg)); return null; }
     const lines = [];
     for (const k of keys) { lines.push(k + ': ' + JSON.stringify(cfg[k] || []) + ' -> ' + JSON.stringify(p[k])); cfg[k] = p[k]; }
@@ -15651,7 +15696,7 @@ async function handleReward(url, request, env) {
       // happens AFTER a season ends - so editing them mid-season silently changes what the season that just finished
       // pays out. With `nextSeason:true` the new numbers are parked in `lbPending` and promoted by `promoteLbPending`
       // the moment the next season starts; without it they apply immediately, exactly as before.
-      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit'];
+      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon'];
       const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       const boardsIn = BOARD_KEYS.filter(k => k in b && Array.isArray(b[k]));
       if (b.nextSeason && boardsIn.length) {
@@ -15680,7 +15725,7 @@ async function handleReward(url, request, env) {
       } catch (e) {}
       return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2) } });
     }
-    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
+    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -15719,7 +15764,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
- const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit }; // (unchanged) - reward config snapshot passed to the DO
+ const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon }; // (unchanged) - reward config snapshot passed to the DO
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -15823,7 +15868,7 @@ async function handleReward(url, request, env) {
     return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL });
   }
   if (path === '/lb' && request.method === 'GET') {
-    const lbCk = new Request('https://marginpad.io/__reward_lb_v8'); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_v9'); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -15861,13 +15906,16 @@ async function handleReward(url, request, env) {
           .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h - a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
+        // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
+        let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+          topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: MOON_CONTEST_DAYS, final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
     let out = bodyText;
- try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: cfg.lbBybit }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
+ try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: cfg.lbBybit, moon: cfg.lbMoon }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board - DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel - same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -17445,23 +17493,28 @@ export default {
       const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1';
       if (request.method === 'POST') {
-        if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} return J({ ok: true, cleared: mb.phase, contest }); }
+        if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} const pubc = await moonBoardRebuild(env, contest); return J({ ok: true, cleared: mb.phase, contest, pub: pubc }); }
+        if (mb.activate) { try { await env.STATS.put('moon:active', contest); } catch (e) {} const puba = await moonBoardRebuild(env, contest); return J({ ok: true, activated: contest, pub: puba }); }
         const members = await moonMembers(env);
         const pasted = moonParseDump(mb.text), manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
         const typed = new Map(); for (const r of manual.rows) typed.set(r.mask.toLowerCase(), r); // a typed pair beats the paste; pasted duplicates are KEPT (two Moon accounts with one mask must stay visible)
         const merged = [...pasted.rows.filter(r => !typed.has(r.mask.toLowerCase())), ...[...typed.values()].map(r => ({ ...r, manual: true }))]; const seen = {}; for (const r of merged) { const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; } for (const r of merged) r.dupMask = seen[r.mask.toLowerCase()] > 1 || !!r.dupMask;
         const res = moonResolve(merged, members);
-        const snap = { ts: Date.now(), contest, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
+        const snap = { ts: Date.now(), contest, final: mb.phase === 'end' && mb.final === true, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
         let saved = null;
-        if (mb.save && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.put('moon:snap:' + contest + ':' + mb.phase, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); saved = mb.phase; } catch (e) { return J({ error: 'kv' }, 500); } }
+        if (mb.save && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.put('moon:snap:' + contest + ':' + mb.phase, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); saved = mb.phase; if (mb.phase === 'start' && !/^e2e/i.test(contest)) { try { await env.STATS.put('moon:active', contest); } catch (e) {} } } catch (e) { return J({ error: 'kv' }, 500); } } // saving a START makes this the ACTIVE contest the public board reads
+        const pub = saved ? await moonBoardRebuild(env, contest) : null;
         const start = mb.phase === 'start' ? snap : await moonSnap(env, contest, 'start'), end = mb.phase === 'end' ? snap : await moonSnap(env, contest, 'end');
-        return J({ ok: true, contest, phase: mb.phase || 'preview', saved, rows: res.rows, missing: res.missing, diag: snap.diag, n: snap.n, okN: snap.ok, members: members.filter(m => m.status === 'approved').length, standings: moonStandings(start, end), startTs: start ? start.ts : 0, endTs: end ? end.ts : 0 });
+        return J({ ok: true, contest, phase: mb.phase || 'preview', saved, pub, rows: res.rows, missing: res.missing, diag: snap.diag, n: snap.n, okN: snap.ok, members: members.filter(m => m.status === 'approved').length, standings: moonStandings(start, end), startTs: start ? start.ts : 0, endTs: end ? end.ts : 0 });
       }
       const start = await moonSnap(env, contest, 'start'), end = await moonSnap(env, contest, 'end');
       let contests = []; try { const l = await env.STATS.list({ prefix: 'moon:snap:' }); contests = [...new Set(l.keys.map(k => k.name.split(':')[2]))].filter(c => !/^e2e/i.test(c)); } catch (e) {} // the E2E's own contest never shows on the desk
       const members = await moonMembers(env);
-      const strip = x => x ? { ts: x.ts, n: x.n, ok: x.ok, rows: x.rows, missing: x.missing } : null;
-      return J({ contest, contests, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
+      const strip = x => x ? { ts: x.ts, n: x.n, ok: x.ok, final: !!x.final, rows: x.rows, missing: x.missing } : null;
+      let active = ''; try { active = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
+      const pub = await moonPubSnapshot(env, contest); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:moon:' + contest)); } catch (e) {}
+      const cfgm = await rewardCfg(env);
+      return J({ contest, contests, active, isActive: active === contest, pub, paid: paidFlag, prizes: cfgm.lbMoon, days: MOON_CONTEST_DAYS, start: strip(start), end: strip(end), standings: moonStandings(start, end), members: members.filter(m => m.status === 'approved').length, roster: members.filter(m => m.status === 'approved').map(m => ({ name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) })) });
     }
     if (url.pathname === '/api/admin/bybitlinks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       let ab = {}; try { ab = await request.json(); } catch (e) {}
@@ -18959,7 +19012,8 @@ export default {
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
     bg(payWeeklyPrizes, 'prizes');
-    bg(payBybitPrizes, 'bybitprizes'); // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
+    bg(payBybitPrizes, 'bybitprizes');
+    bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before

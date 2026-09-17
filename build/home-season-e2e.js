@@ -6,7 +6,7 @@
 
    Proven on production in a real browser:
      guest desktop/phone: band 04 gone, #cpCard is the SECOND tile of band 01, reachable (elementFromPoint at its
-       centre after scrolling it into view), six board tiles each naming a leader from /api/competition, the pool
+       centre after scrolling it into view), seven board tiles each naming a leader from /api/competition, the pool
        figure equals prize_pool_usd_per_season, the day strip has 14 cells with the current day marked, the whole
        card is one link to /season/, no horizontal scroll, no leftover ss-* nodes
      desktop: the Screener tile sits on the SAME row as Paper Trade (grid-auto-flow:dense closed the hole)
@@ -78,7 +78,7 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       chk(vp.t + ' guest: pool equals /api/competition, day strip has 14 cells with today marked', g.pool === '$' + comp.prize_pool_usd_per_season && g.days === 14 && g.dayNow === 1 && g.dayOn === comp.season.day_of_season && /day \d+ of 14/.test(g.eye), { pool: g.pool, eye: g.eye, left: g.left, dayOn: g.dayOn });
       const liveBoards = comp.boards.filter(b => b.leader && b.leader.name);
       const named = g.boards.filter(b => b.who && b.who !== '-' && !/nobody/.test(b.who));
-      chk(vp.t + ' guest: six board tiles, each with a pool and the live leader from the API', g.boards.length === 6 && named.length === liveBoards.length && g.boards.every(b => /^\$\d+\s*pool · \$\d+ first$/.test(b.pool)) && liveBoards.every(b => named.some(n => n.id === b.id && n.who === b.leader.name)), g.boards.map(b => b.id + ':' + b.who + ' ' + b.v));
+      chk(vp.t + ' guest: seven board tiles, each with a pool and the live leader from the API', g.boards.length === 7 && named.length === liveBoards.length && g.boards.every(b => /^\$\d+\s*pool · \$\d+ first$/.test(b.pool)) && liveBoards.every(b => named.some(n => n.id === b.id && n.who === b.leader.name)), g.boards.map(b => b.id + ':' + b.who + ' ' + b.v));
       chk(vp.t + ' guest: strip hidden, hero shown on desktop, band numbering closed up (01-04)', !g.dash && (vp.w > 500 ? g.hero : true) && g.bandIdx.join(',') === '01,02,03,04', { dash: g.dash, hero: g.hero, bands: g.bandIdx });
       if (vp.w > 500) chk('desktop: Screener sits on the same row as Paper Trade (dense grid, no hole)', g.sameRow, { pt: g.ptTop, scr: g.scrTop });
       else chk('phone: every board tile at least 150 px wide (two columns)', g.boards.every(b => b.w >= 150), g.boards.map(b => b.w));

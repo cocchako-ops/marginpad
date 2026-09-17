@@ -2,7 +2,7 @@
 
    Proven on production:
      raw: 200, indexable, canonical, WebPage + FAQPage + Breadcrumb JSON-LD, six tab buttons and a rules block in the static HTML
-     browser desktop + phone: season strip filled from /api/reward/lb (day of 14, ends-in), six tabs each naming the live leader,
+     browser desktop + phone: season strip filled from /api/reward/lb (day of 14, ends-in), seven tabs each naming the live leader,
        the ROE table lists the same names in the same order as the API with prizes on the top five, switching to the Bybit board
        swaps the columns, the Gold Room tab carries the GOLD+ ribbon, the first row is reachable at its centre, no sideways scroll,
        every row links a trader profile, the guest "you" line asks to sign in, a member (simulated) sees "You are #N" when ranked
@@ -18,7 +18,7 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
 (async () => {
   const r = await fetch(ORIGIN + '/leaderboards/?cb=' + Date.now()); const raw = await r.text();
   const lb = await (await fetch(ORIGIN + '/api/reward/lb', { cache: 'no-store' })).json();
-  chk('raw: 200, indexable, canonical, JSON-LD (WebPage, FAQPage, Breadcrumb), six tabs, rules in static HTML', r.status === 200 && /index, follow/.test(raw) && /rel="canonical" href="https:\/\/marginpad.io\/leaderboards\/"/.test(raw) && /"@type":"WebPage"/.test(raw) && /"@type":"FAQPage"/.test(raw) && /"@type":"BreadcrumbList"/.test(raw) && (raw.match(/class="tab[ "]/g) || []).length === 6 && /Rules every board shares/.test(raw));
+  chk('raw: 200, indexable, canonical, JSON-LD (WebPage, FAQPage, Breadcrumb), seven tabs, rules in static HTML', r.status === 200 && /index, follow/.test(raw) && /rel="canonical" href="https:\/\/marginpad.io\/leaderboards\/"/.test(raw) && /"@type":"WebPage"/.test(raw) && /"@type":"FAQPage"/.test(raw) && /"@type":"BreadcrumbList"/.test(raw) && (raw.match(/class="tab[ "]/g) || []).length === 7 && /Rules every board shares/.test(raw));
   const home = await (await fetch(ORIGIN + '/?cb=' + Date.now())).text();
   chk('homepage: the competition card links /leaderboards/ and carries no Enter button', /id="cpCard" href="\/leaderboards\/"/.test(home) && !/Enter free/.test(home) && /class="cp-rib">GOLD\+/.test(home));
   await withBrowser(async (browser) => {
@@ -45,7 +45,7 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
         return { eye: (document.getElementById('sEye') || {}).textContent, left: (document.getElementById('sLeft') || {}).textContent, days: document.querySelectorAll('#sDays i.on').length, tabs: document.querySelectorAll('.tab').length, leaders: [...document.querySelectorAll('.tab .l')].map(x => x.textContent).filter(t => /leads|open/.test(t)).length, names: rows.map(tr => (tr.querySelector('td.who') || {}).textContent), prizes: rows.slice(0, 5).map(tr => (tr.querySelector('td.prz') || {}).textContent), links: rows.filter(tr => tr.querySelector('td.who a[href^="/community/u/"]')).length, reach, sx: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, rib: !!document.querySelector('.tab[data-b="gold"] .rib'), you: (document.getElementById('bYou') || {}).textContent, rules: document.querySelectorAll('#bRules li').length };
       });
       const apiNames = (lb.top || []).map(x => x.who);
-      chk(vp.t + ': season strip filled, six tabs each naming a leader, GOLD+ ribbon on the Gold Room', /Day \d+ of 14/.test(g.eye) && /ends in/.test(g.left) && g.days >= 1 && g.tabs === 6 && g.leaders === 6 && g.rib, { eye: g.eye, left: g.left, leaders: g.leaders, rib: g.rib });
+      chk(vp.t + ': season strip filled, seven tabs each naming a leader, GOLD+ ribbon on the Gold Room', /Day \d+ of 14/.test(g.eye) && /ends in/.test(g.left) && g.days >= 1 && g.tabs === 7 && g.leaders === 7 && g.rib, { eye: g.eye, left: g.left, leaders: g.leaders, rib: g.rib });
       chk(vp.t + ': the ROE table lists the API names in order, prizes on the top five, every row links a profile, first row reachable, no sideways scroll, rules listed', g.names.join('|') === apiNames.join('|') && g.prizes.every(p => /^\$\d+$/.test(p)) && g.links === g.names.length && g.reach && !g.sx && g.rules >= 3, { n: g.names.length, api: apiNames.length, prizes: g.prizes, reach: g.reach, sx: g.sx });
       chk(vp.t + ': a guest is asked to sign in to see where they stand', /Sign in/.test(g.you || ''), g.you);
       const sw = await page.evaluate(async () => { document.querySelector('.tab[data-b="bybit"]').click(); await new Promise(r => setTimeout(r, 200)); return { head: [...document.querySelectorAll('#bHead th')].map(x => x.textContent), title: (document.getElementById('bT') || {}).textContent, hash: location.hash, pz: document.querySelectorAll('#bPz .pz').length, first: (document.querySelector('#bPz .pz b') || {}).textContent }; });
