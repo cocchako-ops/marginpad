@@ -14644,6 +14644,8 @@ async function handleAuth(url, request, env, ctx) {
     return jr(d, d.error ? (d.error === 'locked' ? 403 : 400) : 200);
   }
   if (path === '/notifs') { // signed-in user's social notifications (list, or ?seen=1 to mark read)
+    const auid = url.searchParams.get('uid'); // admin-key READ hook (2026-09-17): proves a pushed notification landed on an account; never marks seen
+    if (auid && adminKeyFrom(request, url) === adminKeyOf(env)) { try { const r = await stub.fetch(new Request('https://do/unotifs?uid=' + encodeURIComponent(auid))); return jr(await r.json()); } catch (e) { return jr({ notifs: [], unread: 0 }); } }
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ notifs: [], unread: 0 });
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ notifs: [], unread: 0 }); }
@@ -15876,6 +15878,9 @@ async function handleReward(url, request, env) {
       if (path === '/support' && _rd.ok) await evPush(env, request, 'support', '', '/rewards/');
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
+  if (r.status === 200 && (path === '/moonsign/review' || path === '/fomosign/review') && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17)
+    try { const data = JSON.parse(txt); if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + (path.indexOf('fomo') >= 0 ? 'Fomo' : 'Moon') + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
+  }
   if (r.status === 200 && path === '/moonsign/list') { // only moon rows belong to this surface
     try { const data = JSON.parse(txt); data.pending = (data.pending || []).filter(x => x.exchange === 'moon'); data.decided = (data.decided || []).filter(x => x.exchange === 'moon'); data.moonUsd = full.moonC / 100; txt = JSON.stringify(data); } catch (e) {}
   }
@@ -20506,7 +20511,7 @@ export class RewardLedger {
       const id = String(body.id || ''), action = String(body.action || '');
       const p = this.rows('SELECT * FROM exsign WHERE id=?', id)[0];
       if (!p) return this.j({ error: 'not_found' }, 404);
-      if (p.status !== 'pending') return this.j({ error: 'already_decided' }, 409);
+      if (p.status !== 'pending' && !(action === 'approve' && body.force === true && p.status === 'rejected')) return this.j({ error: 'already_decided' }, 409); // force = the owner re-approves a row rejected by mistake (2026-09-17, Ladyp03); an approved row is never paid twice
       if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
       const amt = p.exchange === 'moon' ? (cfg.moonC == null ? 100 : cfg.moonC) : p.exchange === 'fomo' ? (cfg.fomoC == null ? 100 : cfg.fomoC) : (cfg.exsignC == null ? 300 : cfg.exsignC);
@@ -20517,6 +20522,7 @@ export class RewardLedger {
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt); // counts in the Dispensed-today tile (visibility, not a gate - manual approval is the gate)
       sql.exec("UPDATE exsign SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
       this.log('exsign_paid', p.acct, p.cc || '', '', amt);
+      if (body.force === true) this.log('exsign_repaid', p.acct, p.cc || '', 'was rejected, re-approved by the owner', amt);
       return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
     }
     if (path === '/xengage/submit') { // user claims they liked/commented one of our X posts; goes to manual review
