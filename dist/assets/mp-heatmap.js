@@ -802,7 +802,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-t10-r .rk{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#141a26;color:#8fa3c4;font-size:10px;font-weight:700}' +
     '.hm-t10-r .rk1{background:rgba(255,215,90,.16);color:#ffd75a}.hm-t10-r .rk2{background:rgba(201,212,232,.14);color:#c9d4e8}.hm-t10-r .rk3{background:rgba(201,127,74,.16);color:#c97f4a}' +
     '.hm-t10-r .dt{color:#5c6b84}.hm-t10-r b{color:#fff}.hm-t10-r .why{color:#8fa3c4;font-family:"Familjen Grotesk",sans-serif;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-    '@media(max-width:980px){.hm-mkt-grid{grid-template-columns:1fr}.hm-tm{height:250px}.hm-mkt-chips{margin-left:0;width:100%}.hm-t10-r .why{white-space:normal}.hm-mkt-l,.hm-mkt-r{display:contents}.hm-tmw{order:1}.hm-tots{order:2}.hm-story{order:3}.hm-ext{order:4}.hm-t10{order:5}}';
+    '.hm-ext-r2{padding:9px 0;border-bottom:1px solid #10151f;font:11.5px "Space Mono",monospace}' +
+    '.hm-ext-r2:last-child{border-bottom:0}' +
+    '.hm-ext-r2 .e1{display:flex;align-items:baseline;gap:8px}' +
+    '.hm-ext-r2 .e1 .ex{color:#dbe4f5;text-transform:capitalize;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.hm-ext-r2 .e1 b{color:#fff;white-space:nowrap}' +
+    '.hm-ext-r2 .e2{display:flex;align-items:center;gap:10px;margin-top:6px}' +
+    '.hm-ext-r2 .e2 .shr{flex:1;min-width:24px;position:relative;height:8px;background:#10151f;border-radius:4px;overflow:hidden}' +
+    '.hm-ext-r2 .e2 .shr i{position:absolute;left:0;top:0;bottom:0;background:rgba(194,246,74,.4);border-radius:4px}' +
+    '.hm-ext-r2 .e2 em{font-style:normal;font-size:10px;color:#c9d4e8;white-space:nowrap}' +
+    '.hm-ext-r2 .e2 .tl,.hm-ext-r2 .e2 .ts{font-size:10.5px;white-space:nowrap}' +
+    '@media(max-width:980px){.hm-ext{overflow-x:visible}.hm-mkt-grid{grid-template-columns:1fr}.hm-tm{height:250px}.hm-mkt-chips{margin-left:0;width:100%}.hm-t10-r .why{white-space:normal}.hm-mkt-l,.hm-mkt-r{display:contents}.hm-tmw{order:1}.hm-tots{order:2}.hm-story{order:3}.hm-ext{order:4}.hm-t10{order:5}}';
   function layoutTreemap(items, W, H) { // squarified treemap: items [{v,...}] sorted desc -> [{x,y,w,h,it}]
     var sum = 0; items.forEach(function (i) { sum += i.v; }); if (!(sum > 0)) return [];
     var scaled = items.map(function (i) { return { it: i, a: i.v / sum * W * H }; });
@@ -848,7 +858,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-ct-r .rk2c{color:#5c6b84}.hm-ct-r .sym{color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.hm-ct-r .pxc{color:#c9d4e8;white-space:nowrap}.hm-ct-r .pxc i{font-style:normal;font-size:9.5px;display:block}' +
     '.hm-ct-r .hv{border-radius:5px;padding:4px 6px;color:#eef3ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-    '@media(max-width:980px){.hm-tmd-g{grid-template-columns:1fr 1fr}}';
+    '@media(max-width:980px){.hm-tmd-g{grid-template-columns:1fr 1fr}' +
+    '.hm-ct-hd,.hm-ct-r{grid-template-columns:24px minmax(0,1fr) minmax(0,84px) minmax(0,72px) minmax(0,72px);min-width:0;gap:5px;font-size:10.5px}' +
+    '.hm-ct-tw{overflow-x:hidden}' +
+    '.hm-tmd{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);max-height:60vh;z-index:2147482000}}';
   function buildMkt(wrap) {
     if (!document.getElementById('hmMktCss')) { var st = document.createElement('style'); st.id = 'hmMktCss'; st.textContent = MKT_CSS + MKT_CSS2; document.head.appendChild(st); }
     var M = { win: '24H', p: null, px: {}, exSort: { k: 'v', d: -1 }, ctSort: { k: 't24', d: -1 }, ctQ: '' };
@@ -919,8 +932,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (hh) { var k = hh.getAttribute('data-ck'); if (M.ctSort.k === k) M.ctSort.d = -M.ctSort.d; else M.ctSort = { k: k, d: -1 }; ctRender(); return; }
       var row = ev.target.closest('.hm-ct-r'); if (row) { var sy = row.getAttribute('data-sym'); if (sy) showDet(sy); }
     });
+    function narrow() { return window.innerWidth <= 980; }
     function ctRender() {
       if (!M.p) return;
+      var NAR = narrow();
       var map = {};
       ['h1', 'h4', 'h12', 'h24'].forEach(function (k) {
         ((M.p[k] || {}).bySym || []).forEach(function (r) {
@@ -937,15 +952,22 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       function tint(c, v) { if (!(v > 0) || !mx[c]) return ''; var a = (0.07 + 0.55 * Math.sqrt(v / mx[c])).toFixed(2); return 'background:rgba(' + (c.charAt(c.length - 1) === 'l' ? '46,189,133' : '255,98,88') + ',' + a + ')'; }
       var arrow = function (k) { return M.ctSort.k === k ? (M.ctSort.d < 0 ? ' ↓' : ' ↑') : ''; };
       var hcell = function (k, lb) { return '<span data-ck="' + k + '"' + (M.ctSort.k === k ? ' class="on"' : '') + '>' + lb + arrow(k) + '</span>'; };
-      var h = '<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>' +
-        hcell('h1l', '1h Long') + hcell('h1s', '1h Short') + hcell('h4l', '4h Long') + hcell('h4s', '4h Short') +
-        hcell('h12l', '12h Long') + hcell('h12s', '12h Short') + hcell('h24l', '24h Long') + hcell('h24s', '24h Short') + '</div>';
+      // ELEVEN COLUMNS DO NOT FIT A PHONE AND NEVER DID: the grid carried min-width:1000px inside a 314px box,
+      // so 68% of it sat off screen behind a horizontal scroll with no affordance, inside a vertical scroll box,
+      // inside the page scroll. On a narrow screen it shows the window the chips at the top of this section have
+      // already selected - which is what those chips are for - and the other three windows are one tap away in
+      // the coin sheet.
+      var WK = WINH[M.win];
+      var h = '<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>' + (NAR
+        ? hcell(WK + 'l', M.win.toLowerCase() + ' Long') + hcell(WK + 's', M.win.toLowerCase() + ' Short')
+        : hcell('h1l', '1h Long') + hcell('h1s', '1h Short') + hcell('h4l', '4h Long') + hcell('h4s', '4h Short') +
+          hcell('h12l', '12h Long') + hcell('h12s', '12h Short') + hcell('h24l', '24h Long') + hcell('h24s', '24h Short')) + '</div>';
       ctN.textContent = rows.length + ' coins';
       rows.forEach(function (r, i) {
         var pr = M.px[r.sym], pxs = pr ? '$' + fpx(pr.price) : (r.px > 0 ? '$' + fpx(r.px) : '-');
         var chg = pr && pr.chg != null ? '<i style="color:' + (pr.chg >= 0 ? '#2ebd85' : '#ff6258') + '">' + (pr.chg >= 0 ? '+' : '') + (+pr.chg).toFixed(2) + '%</i>' : '';
         h += '<div class="hm-ct-r" data-sym="' + r.sym + '"><span class="rk2c">' + (i + 1) + '</span><span class="sym">' + r.sym + '</span><span class="pxc">' + pxs + chg + '</span>';
-        CK.forEach(function (c) { h += '<span class="hv" style="' + tint(c, r[c]) + '">' + (r[c] > 0 ? money(r[c]) : '$0') + '</span>'; });
+        (NAR ? [WK + 'l', WK + 's'] : CK).forEach(function (c) { h += '<span class="hv" style="' + tint(c, r[c]) + '">' + (r[c] > 0 ? money(r[c]) : '$0') + '</span>'; });
         h += '</div>';
       });
       var sc0 = ctTb.scrollTop; ctTb.innerHTML = h; ctTb.scrollTop = sc0;
@@ -979,10 +1001,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var exr = (A.byEx || []).map(function (r) { return { ex: r.e, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
       exr.sort(function (a, b) { return ((a[M.exSort.k] || 0) - (b[M.exSort.k] || 0)) * M.exSort.d; });
       var earr = function (k) { return M.exSort.k === k ? (M.exSort.d < 0 ? ' ↓' : ' ↑') : ''; };
-      var eh = '<div class="hm-ext-h"><span>Exchange</span><span data-k="v"' + (M.exSort.k === 'v' ? ' class="on"' : '') + '>Liquidations' + earr('v') + '</span><span data-k="l"' + (M.exSort.k === 'l' ? ' class="on"' : '') + '>Long' + earr('l') + '</span><span data-k="s"' + (M.exSort.k === 's' ? ' class="on"' : '') + '>Short' + earr('s') + '</span><span>Share</span></div>';
+      // A FIVE-COLUMN GRID WITH min-width:460px IN A 314px BOX CUTS THE NUMBERS IN HALF - measured: rows read
+      // "$16." and "$216" with the share column entirely off screen and nothing saying it could be scrolled to.
+      // A stacked row fits, keeps every figure whole, and needs no horizontal scroll at all.
+      var NARX = narrow();
+      var eh = NARX ? '' : '<div class="hm-ext-h"><span>Exchange</span><span data-k="v"' + (M.exSort.k === 'v' ? ' class="on"' : '') + '>Liquidations' + earr('v') + '</span><span data-k="l"' + (M.exSort.k === 'l' ? ' class="on"' : '') + '>Long' + earr('l') + '</span><span data-k="s"' + (M.exSort.k === 's' ? ' class="on"' : '') + '>Short' + earr('s') + '</span><span>Share</span></div>';
       exr.forEach(function (r) {
-        var share = T.v ? r.v / T.v * 100 : 0;
-        eh += '<div class="hm-ext-r"><span class="ex">' + r.ex.replace('binance-coin', 'binance COIN-M') + '</span><b>' + money(r.v) + '</b><span class="tl">' + money(r.l) + '</span><span class="ts">' + money(r.s) + '</span><span class="shr"><i style="width:' + Math.min(100, share).toFixed(1) + '%"></i><em>' + share.toFixed(1) + '%</em></span></div>';
+        var share = T.v ? r.v / T.v * 100 : 0, nm = r.ex.replace('binance-coin', 'binance COIN-M');
+        if (NARX) {
+          eh += '<div class="hm-ext-r2"><div class="e1"><span class="ex">' + nm + '</span><b>' + money(r.v) + '</b></div>' +
+            '<div class="e2"><span class="shr"><i style="width:' + Math.min(100, share).toFixed(1) + '%"></i></span><em>' + share.toFixed(1) + '%</em>' +
+            '<span class="tl">L ' + money(r.l) + '</span><span class="ts">S ' + money(r.s) + '</span></div></div>';
+        } else {
+          eh += '<div class="hm-ext-r"><span class="ex">' + nm + '</span><b>' + money(r.v) + '</b><span class="tl">' + money(r.l) + '</span><span class="ts">' + money(r.s) + '</span><span class="shr"><i style="width:' + Math.min(100, share).toFixed(1) + '%"></i><em>' + share.toFixed(1) + '%</em></span></div>';
+        }
       });
       exT.innerHTML = eh;
       ctRender();
