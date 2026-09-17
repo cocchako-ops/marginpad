@@ -513,7 +513,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
     var _lockedIds=[],_onIds=[],_wi=w.inds||{};INDS.forEach(function(t){if(MP_INDS[t[0]]&&!indAllowed())_lockedIds.push(t[0]);if(_wi[t[0]])_onIds.push(t[0]);});
-    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','hline','arrow','text','fib','rect','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
+    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','hline','forecast','text','fib','rect','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
     /* the structure a human would draw on: real pivots, the levels price kept respecting, and how many bars one screen holds */
     var piv=null,lvls=null,struct=null;
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
@@ -603,8 +603,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* the price scale just moved, and a price-scale change fires no time-scale event, so the canvas (and the label layout that was
        computed against the OLD scale) has to be re-projected once the new range has settled */
     try{requestAnimationFrame(function(){if(!w.dead&&w.dr&&w.dr.redraw)w.dr.redraw();});}catch(e){}}
-  function aiClearAi(w){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return s.by!=='ai';});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
-  function aiUndoBatch(w,b){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.aiB===b);});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
+  function aiClearAi(w){aiGhostClear(w);if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return s.by!=='ai';});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
+  function aiUndoBatch(w,b){if(w&&w._ghostB===b)aiGhostClear(w);if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.aiB===b);});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}aiRescale(w);return k;}
   /* one draw action -> engine shapes. barsAgo counts back from the newest candle (negative = the future, capped at 40 ahead); a
      price outside 0.4x-2.5x of the last close is refused, so the model can never draw off the chart. A label becomes a text shape
      at the shape's end (the engine has no labels on lines and zones). */
@@ -709,11 +709,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!d.length)return;d.sort(function(x,y){return x-y;});
       out.push({k:k,med:d[Math.floor(d.length*0.55)]||0});}); // a shade above the median: the move we are drawing is one that is going somewhere
     return out;}
-  function barsToTravel(travel,dist){if(!travel.length||!(dist>0))return 12;
-    for(var i=0;i<travel.length;i++){if(travel[i].med>=dist){var pv=i?travel[i-1]:{k:1,med:0},span=travel[i].med-pv.med;
-      var f=span>0?(dist-pv.med)/span:0;return Math.max(3,Math.round(pv.k+(travel[i].k-pv.k)*f));}}
-    var lastT=travel[travel.length-1];if(!lastT.med)return 40;
-    return Math.max(3,Math.round(lastT.k*Math.pow(dist/lastT.med,2)));} // beyond anything measured: the same sqrt scaling, extrapolated
+  /* What this market typically travels over a window of k candles, read off the ladder and interpolated; outside it, price moves
+     scale with roughly the square root of time, so that is how it extrapolates. This is the number that keeps the forecast honest:
+     over 18 candles a market covers what it covers, and the drawn run may not exceed it. */
+  function travelAt(travel,k){if(!travel||!travel.length||!(k>0))return 0;
+    if(k<=travel[0].k)return travel[0].med*Math.sqrt(k/travel[0].k);
+    for(var i=1;i<travel.length;i++){if(travel[i].k>=k){var a=travel[i-1],b=travel[i],f=(b.k>a.k)?(k-a.k)/(b.k-a.k):0;return a.med+(b.med-a.med)*f;}}
+    var l=travel[travel.length-1];return l.med*Math.sqrt(k/l.k);}
   function rhythmOf(bars,piv,px){var legB=[],legA=[],i;
     for(i=1;i<piv.length;i++){var db=Math.abs(piv[i].barsAgo-piv[i-1].barsAgo),dp=Math.abs(piv[i].price-piv[i-1].price);if(db>0){legB.push(db);legA.push(dp);}}
     var med=function(a){if(!a.length)return 0;a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length/2)];};
@@ -727,7 +729,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var tr=0,cnt=0;for(i=Math.max(1,n-60);i<n;i++){var b2=bars[i];if(!b2)continue;tr+=Math.abs(+b2.high-+b2.low);cnt++;}
     var perBar=(cnt&&px>0)?(tr/cnt)/px:0.002;
     var drift=Math.max(net,perBar*0.18,0.00008);
-    return {legBars:Math.max(2,Math.min(40,lb)),legAmp:Math.max(0.0015,Math.min(0.08,la)),drift:drift,travel:travelOf(bars,px)};}
+    return {legBars:Math.max(2,Math.min(40,lb)),legAmp:Math.max(0.0015,Math.min(0.08,la)),drift:drift,barRange:perBar,travel:travelOf(bars,px)};}
   /* The expected path: start at the market, end exactly on the target, and wave the way this market waves in between. The window
      sin(pi*t) pins both ends, so the curve leaves the last candle and arrives at the target without a kink. */
   function aiPathPts(fromP,toP,horizon,rhythm,px,last){
@@ -740,13 +742,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        opinion; a faster one is wishful). A 3% target on a chart that swings 0.25% per 8 candles is hours away, and now it is
        drawn that way. */
     var dist=(px>0)?Math.abs(toP-fromP)/px:0;
-    var barsNeeded=(r.travel&&r.travel.length)?barsToTravel(r.travel,dist):Math.ceil(dist/Math.max(0.00008,r.drift||0.0004));
-    /* The drawn window is capped so the projection cannot eat the whole chart. When the move honestly needs longer than that, the
-       path covers only the ground the market plausibly covers in those candles and POINTS at the target instead of arriving - the
-       target is already marked by its own zone and the TP lines, so nothing is lost and the slope stays truthful. */
-    if(!isFinite(barsNeeded)||barsNeeded<1)barsNeeded=12; // never let a bad measurement produce an empty path
-    var H=Math.max(6,Math.min(45,Math.max(barsNeeded,Math.round(+horizon||0))));if(!isFinite(H))H=12;
-    if(barsNeeded>H){var reach=H/barsNeeded;toP=fromP+(toP-fromP)*reach;dist*=reach;}
+    /* A FORECAST IS 15-20 CANDLES (owner 2026-09-17: "nek predvidi 15-20 sveca"). The length is fixed, so the honest question is
+       not how long the target takes but HOW FAR this market plausibly gets in that many candles: `travelAt` answers it from the
+       measured travel ladder, and when the target is further the run covers that ground and points at it instead of pretending to
+       arrive. The target is already marked by its own zone and the TP lines, so nothing is lost. */
+    var H=Math.max(15,Math.min(20,Math.round(+horizon||18)));if(!isFinite(H))H=18;
+    var typ=(r.travel&&r.travel.length)?travelAt(r.travel,H):0;
+    if(typ>0&&dist>typ){var reach=typ/dist;toP=fromP+(toP-fromP)*reach;dist=typ;}
     var legs=Math.max(0.55,Math.min(3.2,H/Math.max(2,r.legBars))); // more than ~3 cycles over one projection reads as a saw, not a path
     /* The wave is TEXTURE, never the story: capped at a fifth of the whole move so no single leg is much steeper than the average
        slope. With a smoothstep base the middle section accelerated and the last leg had to climb out of a trough almost vertically
@@ -765,6 +767,33 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var jit=(rnd(i)-0.5)*amp*0.22*win; // a hand's wobble, deterministic from the prices so a redraw never moves it
       out.push({l:last+i,p:base+wave+jit});}
     return out;}
+  /* THE FORECAST IS DRAWN AS CANDLES, NOT AN ARROW (2026-09-17, owner: "umesto tih strelica ... da da providne predikcije sveca ...
+     kao da su svece vec bile ali neka okvirna predikcija i da budu malo vise providne u odnosu na prave svece"). They are a REAL
+     Lightweight Charts candlestick series on the same price and time axes, so they are welded to the chart exactly like the real
+     candles - no canvas projection to drift - and they are drawn translucent with a faint border so nobody can mistake them for
+     something that happened. Each bar opens where the last one closed and closes on the measured path, so the run of green and red
+     bodies comes out of the market's own rhythm rather than being decided by hand. */
+  function aiGhostClear(w){if(!w)return;if(w._ghost){try{w.chart.removeSeries(w._ghost);}catch(e){}w._ghost=null;}w._ghostBars=null;w._ghostB=null;}
+  function aiGhost(w,pts,rhythm,batch){
+    if(!w||!w.chart||!pts||pts.length<2||!w.bars||!w.bars.length)return 0;
+    var iv=parseInt(w.tf,10)*60;if(!(iv>0))return 0;
+    var last=w.bars[w.bars.length-1];if(!last||!(+last.time>0))return 0;
+    var r=rhythm||{},px=+last.close||0,rng=Math.max(px*0.0004,(r.barRange>0?r.barRange:0.004)*px);
+    var seed=Math.abs(Math.round((pts[pts.length-1].p||1)*100))%9973;
+    var rnd=function(k){var x=Math.sin((seed+k*7.31)*12.9898)*43758.5453;return x-Math.floor(x);};
+    var data=[],prev=px,i;
+    for(i=1;i<pts.length;i++){
+      var o=prev,c=+pts[i].p;if(!(c>0))continue;
+      var top=rng*(0.12+rnd(i)*0.45),bot=rng*(0.12+rnd(i+499)*0.45);
+      data.push({time:+last.time+i*iv,open:o,high:Math.max(o,c)+top,low:Math.min(o,c)-bot,close:c});
+      prev=c;}
+    if(data.length<2)return 0;
+    if(!w._ghost){var fmt=null;try{fmt=window.mpPriceFmt?window.mpPriceFmt(w.bars,px):null;}catch(e){}
+      try{w._ghost=w.chart.addCandlestickSeries({upColor:'rgba(46,189,133,.30)',downColor:'rgba(255,90,77,.30)',borderVisible:true,borderUpColor:'rgba(46,189,133,.58)',borderDownColor:'rgba(255,90,77,.58)',wickUpColor:'rgba(46,189,133,.46)',wickDownColor:'rgba(255,90,77,.46)',priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,priceFormat:fmt||undefined});}catch(e){w._ghost=null;}}
+    if(!w._ghost)return 0;
+    try{w._ghost.setData(data);}catch(e){return 0;}
+    w._ghostBars=data;w._ghostB=batch;
+    return data.length;}
   function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;var n=w.bars.length,px=+w.bars[n-1].close,k=0;
     var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){var b=w.bars[i];if(!b)continue;if(+b.low<lo)lo=+b.low;if(+b.high>hi)hi=+b.high;}
     // the snap table: every price this chart can prove - the pivots, the levels it respected, the liquidation pools around price
@@ -775,7 +804,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       snap.push(lo,hi);}catch(e){}
     var rhythm=null;try{rhythm=rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16),px);}catch(e){}
     var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars,rhythm:rhythm,px:px};
-    (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;});
+    var ghost=0;
+    (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;
+      var _sh=String(a.shape||'').toLowerCase();
+      if(_sh==='arrow'||_sh==='forecast'||_sh==='path'){ // the expected path is a run of translucent candles now, not a line
+        var hp2=(function(){var v=+a.p2;return v>0?v:0;})();
+        if(!(hp2>0))return;
+        var hz=(a.barsAgo2!=null&&+a.barsAgo2<0)?-Math.round(+a.barsAgo2):(+a.horizonBars>0?Math.round(+a.horizonBars):0);
+        var pp=aiPathPts(px,hp2,hz,rhythm,px,n-1);
+        var g=aiGhost(w,pp,rhythm,batch);
+        if(g){ghost=g;k++;
+          var lb2=String(a.label||'').trim().slice(0,40);
+          if(lb2)w.dr.shapes.push({t:'text',l:n-1+5,p:pp[pp.length-1].p,txt:lb2,color:/^#[0-9a-fA-F]{6}$/.test(String(a.color||''))?a.color:'#3fd8e6',w:2,ar:1,bg:1,by:'ai',aiB:batch});}
+        return;}
+      var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;});
+    if(ghost)try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr)w.chart.timeScale().setVisibleLogicalRange({from:_vr.from,to:n-1+ghost+2});}catch(e){}
     if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);
       /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
          target zone projected 14 candles ahead was three quarters off the edge. Widen the window just enough to hold what was drawn. */
@@ -819,7 +862,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+escHtml(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';
     h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
-  function aiClearPlan(w){if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
+  function aiClearPlan(w){aiGhostClear(w);if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
     if(w&&w.dr&&w.dr.shapes){var before=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.shapes.length!==before&&w.dr.redraw)w.dr.redraw();}
     w&&(w._aiPlanObj=null);if(w)aiRescale(w);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent='Show on chart';});}}catch(e){}}
   /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
@@ -1215,6 +1258,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // re-project drawings whenever the chart pans/zooms (its time scale exists once buildChart finishes - poll briefly)
     w._drawC=function(){if(w._drRaf||w.dead)return;w._drRaf=true;requestAnimationFrame(function(){w._drRaf=false;if(!w.dead)redraw();});}; // rAF-coalesce: pan/zoom + live ticks fire many times/frame; one canvas re-projection per frame is enough
     (function attach(tries){if(w.dead)return;if(w.chart){try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(){w._drawC();});}catch(e){}return;}if((tries||0)<50)setTimeout(function(){attach((tries||0)+1);},120);})(0);
+    /* THE CANVAS HAS TO FOLLOW THE PRICE AXIS TOO (2026-09-17, owner: "crtezi nisu zalepljeni na chart kao sto su svece
+       zalepljene, pa kad pomeram chart slika se poremeti"). subscribeVisibleLogicalRangeChange fires for the TIME axis only, so a
+       vertical drag, an autoscale re-fit or an indicator pane resizing the price scale moved the candles while the drawings stayed
+       exactly where they were last painted - measured at 127px of drift after one vertical pan (build/glue-probe.js). Earlier runs
+       read 1px only because a live tick happened to repaint in between, which is why this hid for so long. One rAF per window
+       compares where two reference prices project to and repaints only when that actually moved; with no drawings on the chart it
+       is a single property read per frame, and rAF is already paused while the tab is hidden. */
+    w._pwRaf=requestAnimationFrame(function pw(){
+      if(w.dead){w._pwRaf=0;return;}
+      try{
+        if(w.dr&&w.dr.shapes&&(w.dr.shapes.length||w.dr.cur)&&w.candle){
+          if(!(w._pwRef>0)&&w.bars&&w.bars.length){var _lc=+w.bars[w.bars.length-1].close;if(_lc>0)w._pwRef=_lc;}
+          if(w._pwRef>0){var _a=w.candle.priceToCoordinate(w._pwRef),_b=w.candle.priceToCoordinate(w._pwRef*1.01);
+            if(_a!==w._pwA||_b!==w._pwB){w._pwA=_a;w._pwB=_b;redraw();}}
+        }
+      }catch(e){}
+      w._pwRaf=requestAnimationFrame(pw);
+    });
     setTimeout(size,60);
   }
   function mpDrawT(s){return s;}
@@ -1273,7 +1334,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;window.__mpAi={rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
+  try{window.__mpAiContext=aiContext;window.__mpAi={ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}
@@ -1345,7 +1406,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.sub||w._subSync)return;w._subSync=1;try{w.sub.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;}); /* keep the oscillator sub-pane locked to the main time axis */
       w.legItems=[];var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);w.legEl=lg;try{w.chart.subscribeCrosshairMove(function(param){cwLeg(w,param);syncCrosshair(w,param);});}catch(_){}try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreW(w);});}catch(_){} }catch(e){return;}
     loadData(w,true); }); }
-  function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol - drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF - clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
+  function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol - drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}w._pwRef=null;w._pwA=null;w._pwB=null;/* AI-drawn plan lines AND the forecast candles are a snapshot for the old symbol/TF - clear on switch; the price-axis watcher needs a fresh reference too */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
     var _q=w._kq=(w._kq||0)+1;/* request ticket: a full-window klines response only applies while it is the NEWEST full-window request for this window (2026-09-02) */
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle||_q!==w._kq)return;
@@ -1548,7 +1609,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     Array.prototype.forEach.call(w.el.querySelectorAll('.cwin-rz'),function(h){h.addEventListener('pointerdown',function(e){startResize(w,h.getAttribute('data-rz'),e);});});
   }
   function renumber(){for(var i=0;i<wins.length;i++){var n=wins[i].el&&wins[i].el.querySelector('.cwin-num');if(n)n.textContent=String(i+1);}}
-  function closeWin(w){w.dead=true;if(w.poll)clearInterval(w.poll);if(w.refreshT)clearInterval(w.refreshT);try{if(w.dr&&w.dr.ro)w.dr.ro.disconnect();}catch(e){}try{if(w.chart)w.chart.remove();}catch(e){}try{if(w.sub)w.sub.remove();}catch(e){}w.sub=null;w.subSeries=null;w.chart=null;w.candle=null;w.indSeries=null;w.indLines=null;/* release the disposed LWC instance + its retained closures for GC */if(w.el&&w.el.parentNode)w.el.parentNode.removeChild(w.el);wins=wins.filter(function(x){return x!==w;});renumber();updateCount();savePersist();if(!wins.length)showEmpty(true);}
+  function closeWin(w){w.dead=true;if(w.poll)clearInterval(w.poll);if(w.refreshT)clearInterval(w.refreshT);if(w._pwRaf){try{cancelAnimationFrame(w._pwRaf);}catch(e){}w._pwRaf=0;}try{if(w.dr&&w.dr.ro)w.dr.ro.disconnect();}catch(e){}try{if(w.chart)w.chart.remove();}catch(e){}try{if(w.sub)w.sub.remove();}catch(e){}w.sub=null;w.subSeries=null;w.chart=null;w.candle=null;w.indSeries=null;w.indLines=null;/* release the disposed LWC instance + its retained closures for GC */if(w.el&&w.el.parentNode)w.el.parentNode.removeChild(w.el);wins=wins.filter(function(x){return x!==w;});renumber();updateCount();savePersist();if(!wins.length)showEmpty(true);}
   function addWin(cfg){ if(wins.length>=MAXn())return; cfg=cfg||{}; showEmpty(false);
     var w={sym:cfg.sym||nextSym(),tf:cfg.tf||'60',inds:cfg.inds||{sig:false,sr:false,bs:false,ema:false},emaList:cfg.emaList||(cfg.emaP?[cfg.emaP]:[21]),smaList:cfg.smaList||(cfg.smaP?[cfg.smaP]:[50]),bars:[],dead:false,id:cfg.id||(++winSeq)};
     var symOpts=SYMS.map(function(s){return '<option'+(s===w.sym?' selected':'')+'>'+s+'</option>';}).join('');

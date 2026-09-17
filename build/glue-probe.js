@@ -76,5 +76,8 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       console.log(`   ${String(r.tag).padEnd(38)} y ${String(r.expY).padStart(4)}/${String(r.painted).padStart(4)} d=${dy}   x ${String(r.expX).padStart(4)}/${String(r.textX).padStart(4)} d=${dx} y2 d=${dy2}   css ${r.canvasCssH} bmp ${r.bitmapH} dr ${r.drH}${(dy > 3 || dx > 6) ? '  <-- NOT GLUED' : ''}`); });
     await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'glue.png') });
     await ctx.close();
+    const bad = rows.filter(r => { const dy = (r.expY == null || r.painted == null) ? 99 : Math.abs(r.expY - r.painted); const dx = (r.expX == null || r.textX == null) ? 99 : Math.abs(r.expX - r.textX); return dy > 3 || dx > 6; });
+    console.log('  ' + (rows.length - bad.length) + ' of ' + rows.length + ' states glued' + (bad.length ? ' - FAILED on: ' + bad.map(r => r.tag).join(', ') : ''));
+    process.exitCode = bad.length ? 1 : 0;
   });
 })();
