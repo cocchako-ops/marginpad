@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-16T23:31:24.107Z",
+  "generated": "2026-09-17T00:02:00.071Z",
   "pages": 376,
-  "occurrences": 25460,
-  "unique": 13467,
-  "words": 253972,
-  "untranslated": 9,
-  "untranslatedWords": 24,
-  "merged": "2026-09-16T23:36:14.966Z"
+  "occurrences": 25465,
+  "unique": 13466,
+  "words": 253997,
+  "untranslated": 7,
+  "untranslatedWords": 15,
+  "merged": "2026-09-17T00:02:23.956Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1617,
+   "n": 1623,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -112301,18 +112301,6 @@
    "n": 1,
    "w": 17
   },
-  "_ZcrsdIUFs": {
-   "en": "<span class=\"btn-l\">Enter free →</span>",
-   "es": "<span class=\"btn-l\">Participa gratis →</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 2
-  },
   "1wziG0A87f": {
    "en": "<span class=\"cp-bn\">Highest ROE</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "es": "<span class=\"cp-bn\">ROE más alto</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -112361,9 +112349,9 @@
    "n": 1,
    "w": 4
   },
-  "RGj3YuqXmn": {
-   "en": "<span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "KhyidvtVnW": {
+   "en": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>bote</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "kind": [
     "html"
    ],
@@ -112371,7 +112359,7 @@
     "/"
    ],
    "n": 1,
-   "w": 5
+   "w": 6
   },
   "zH4Tfux4sx": {
    "en": "<span class=\"cp-bn\">Bybit volume · real</span><span class=\"cp-bp\">$200<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -118039,7 +118027,7 @@
   },
   "P67Gjq8-n1": {
    "en": "<i class=\"rib\">GOLD+</i><span class=\"n\">The Gold Room</span><span class=\"p\">$30<small>POOL</small></span><span class=\"l\" id=\"tl-gold\">-</span>",
-   "es": "",
+   "es": "<i class=\"rib\">GOLD+</i><span class=\"n\">The Gold Room</span><span class=\"p\">$30<small>BOTE</small></span><span class=\"l\" id=\"tl-gold\">-</span>",
    "kind": [
     "html"
    ],
@@ -122417,7 +122405,7 @@
   },
   "X7kI-XZojY": {
    "en": "Longs vs shorts",
-   "es": "",
+   "es": "Largos vs cortos",
    "kind": [
     "html"
    ],
@@ -134695,9 +134683,9 @@
    "n": 1,
    "w": 5
   },
-  "kA65aYQ03i": {
-   "en": "A built-in analyst that reads any chart and answers your questions in plain words - 50 questions a day.",
-   "es": "Un analista integrado que lee cualquier gráfico y responde tus preguntas en palabras sencillas - 50 preguntas al día.",
+  "kNuytFUKna": {
+   "en": "A built-in analyst that reads any chart in plain words and draws its answer on it: entry, stop, targets and the risk-reward zones, with one tap to paper-trade the setup. It sees our liquidation pools and the four indicators too. 50 questions a day.",
+   "es": "Un analista integrado que lee cualquier gráfico en palabras sencillas y dibuja su respuesta encima: entrada, stop, objetivos y las zonas de riesgo-recompensa, con un toque para operar el setup en papel. También ve nuestros pools de liquidaciones y los cuatro indicadores. 50 preguntas al día.",
    "kind": [
     "html"
    ],
@@ -134705,7 +134693,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 16
+   "w": 42
   },
   "XRxxWRlldJ": {
    "en": "Balance Mode",

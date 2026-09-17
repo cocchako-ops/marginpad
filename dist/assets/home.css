@@ -1466,6 +1466,28 @@
   .aiplan:hover{border-color:#5a82bd;color:#dff0ff;box-shadow:0 0 12px -3px rgba(127,182,255,.5);}
   .aiplan.done{color:#41e3a3;border-color:rgba(46,189,133,.5);background:rgba(46,189,133,.1);}
   .aiplan svg{flex-shrink:0;}
+  /* the AI plan card (2026-09-17): the answer becomes a drawn setup - rows flash their level on the chart */
+  .aiplan-card{margin-top:9px;border:1px solid #2a3a52;border-radius:11px;background:linear-gradient(180deg,#121a28,#0d131d);padding:9px 10px 10px;}
+  .aipc-h{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:7px;}
+  .aipc-b{font:800 10px 'Space Mono',monospace;letter-spacing:.1em;padding:3px 8px;border-radius:6px;}
+  .aipc-b.long{background:rgba(46,189,133,.18);color:#41e3a3;}.aipc-b.short{background:rgba(255,90,77,.18);color:#ff8a80;}.aipc-b.w{background:rgba(255,176,32,.16);color:#ffc45a;}
+  .aipc-c,.aipc-rr,.aipc-lv{font:700 10px 'Space Mono',monospace;color:#8fa3c4;border:1px solid #2a3a52;border-radius:6px;padding:2px 7px;}
+  .aipc-rr{color:#9bd6ff;}
+  .aipc-rows,.aipc-lv-rows{display:flex;flex-direction:column;gap:3px;}
+  .aipc-lv-rows{margin-top:5px;padding-top:5px;border-top:1px dashed #233043;}
+  .aipr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid transparent;border-left:3px solid #8a93a0;border-radius:7px;padding:5px 8px;color:#d3dae4;font:inherit;font-size:12px;cursor:pointer;}
+  .aipr:hover{border-color:#3a567c;background:rgba(127,182,255,.08);}
+  .aipr.e{border-left-color:#3fd8e6;}.aipr.s{border-left-color:#ff5a4d;}.aipr.t{border-left-color:#2ebd85;}.aipr.l{border-left-color:#8a93a0;}
+  .aipr span{color:#8fa3c4;font-size:11px;}.aipr b{font-family:'Space Mono',monospace;font-size:12px;color:#fff;}.aipr i{font:700 10.5px 'Space Mono',monospace;font-style:normal;color:#8fa3c4;min-width:52px;text-align:right;}
+  .aipr.t i{color:#41e3a3;}.aipr.s i{color:#ff8a80;}
+  .aipc-inv{margin-top:7px;font-size:11.5px;line-height:1.45;color:#aeb8c6;}.aipc-inv span{display:inline-block;font:800 9px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#ffc45a;margin-right:6px;}
+  .aipc-act{display:flex;gap:6px;margin-top:9px;}
+  .aipc-act button{flex:1;font:700 11.5px 'Familjen Grotesk',sans-serif;border-radius:8px;padding:7px 9px;cursor:pointer;border:1px solid #3a567c;background:#16283d;color:#9bd6ff;transition:.12s;}
+  .aipc-act .aipc-on.on{color:#41e3a3;border-color:rgba(46,189,133,.5);background:rgba(46,189,133,.1);}
+  .aipc-act .aipc-trade{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d;}
+  .aipc-act button:hover{filter:brightness(1.08);}
+  .mfc-ai-msg .aiplan-card{margin-top:8px;}.mfc-ai-msg .aipc-act .aipc-trade{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
+  .mfc-ai-msg.ai b{color:#fff;}.mfc-ai-msg.ai code{font-family:'Space Mono',monospace;font-size:.9em;}
   .aimsg.ai code{font-family:'Space Mono',monospace;font-size:.9em;background:#0c1119;border:1px solid #283342;border-radius:5px;padding:1px 5px;color:#9bd6ff;}
   .aimsg-empty{color:#7f8a99;font-size:12.5px;line-height:1.65;padding:6px 2px;}
   .aimsg-empty b{color:#aeb8c6;}

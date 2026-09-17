@@ -477,8 +477,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // downsampled recent path (so the model sees the trajectory)
     var rc=c.slice(-24).map(_p6);
     // open paper-trade position on this symbol
-    var pos=null;if(w.mtOn){try{var j=jload();for(var i=0;i<j.length;i++){var e=j[i];if(e.status==='open'&&e.sym===w.sym){var dir=e.side==='short'?-1:1,liq=e.liq?+e.liq:null,lev=+e.lev||1;pos={side:e.side==='short'?'short':'long',entry:_p6(+e.entry),leverage:lev,liq:_p6(liq),pnlPctRoe:+(((price-e.entry)/e.entry)*100*lev*dir).toFixed(1),distanceToLiqPct:liq?+(((price-liq)/price)*100*dir).toFixed(2):null};break;}}}catch(e){}}/* only let the AI see a position if the user actually imported it onto THIS chart (mtOn) - otherwise it must not assume any position */
+    var pos=null;if(w.mtOn){try{var j=jload();for(var i=0;i<j.length;i++){var e=j[i];if(e.status==='open'&&e.sym===w.sym){var dir=e.side==='short'?-1:1,liq=e.liq?+e.liq:null,lev=+e.lev||1;pos={side:e.side==='short'?'short':'long',entry:_p6(+e.entry),leverage:lev,liq:_p6(liq),pnlPctRoe:+(((price-e.entry)/e.entry)*100*lev*dir).toFixed(1),distanceToLiqPct:liq?+(((price-liq)/price)*100*dir).toFixed(2):null,stop:_p6(+e.stop||+e.sl||null),takeProfit:_p6(+e.tp||null)};break;}}}catch(e){}}/* only let the AI see a position if the user actually imported it onto THIS chart (mtOn) - otherwise it must not assume any position */
     var indsOn=[];for(var k in w.inds){if(w.inds[k])indsOn.push(k);}
+    /* MarginPad's own data (2026-09-17): the pools our leverage-ladder model puts around price, the Premium readouts the
+       user has switched on, and the levels they drew themselves - so the coach can name a target nobody else's chart has */
+    var pools=null;try{var _pl=poolsNow(bars).filter(function(q){return q.price>0&&Math.abs(q.price-price)/price<=0.09;});var _up=_pl.filter(function(q){return q.price>price;}).sort(function(a,b){return b.w-a.w;}).slice(0,3),_dn=_pl.filter(function(q){return q.price<price;}).sort(function(a,b){return b.w-a.w;}).slice(0,3);var _pm=function(q){return {price:_p6(q.price),distPct:+((q.price-price)/price*100).toFixed(2),sizeUsd:Math.round(q.w),side:q.long?'long liquidations':'short liquidations'};};if(_up.length||_dn.length)pools={above:_up.map(_pm),below:_dn.map(_pm),note:'estimated from a leverage-ladder model of positions opened on these candles'};}catch(e){}
+    var ro=null;try{var _r={};if(w.inds.casc&&w._casc){var _cs=w._casc.score[w._casc.score.length-1],_cd=(w._casc.dir&&w._casc.dir[w._casc.dir.length-1])||0;if(isFinite(_cs))_r.cascadeRadar={fragility0to100:Math.round(_cs),fuelSide:Math.abs(_cd)>=0.3?(_cd>0?'below price (long liquidations)':'above price (short liquidations)'):'balanced'};}
+      if(w.inds.magnet&&w._mag){_r.liquidationMagnet={pulledTowards:w._mag.side||null,above:w._mag.up?{price:_p6(w._mag.up.price),distPct:+(w._mag.up.dist*100).toFixed(2),sizeUsd:Math.round(w._mag.up.w)}:null,below:w._mag.dn?{price:_p6(w._mag.dn.price),distPct:+(w._mag.dn.dist*100).toFixed(2),sizeUsd:Math.round(w._mag.dn.w)}:null};}
+      if(w.inds.brain&&w._brain){var _bs=w._brain.score[w._brain.score.length-1];if(isFinite(_bs))_r.marketBrain={score:Math.round(_bs),lean:_bs>=55?'strong bullish':_bs<=-55?'strong bearish':'no strong lean',drivenBy:(w._brain.top||[]).join(' + ')||null,hitRate:(w._sigStats&&w._sigStats.BRAIN)?w._sigStats.BRAIN.pct+'% ('+w._sigStats.BRAIN.w+'W/'+w._sigStats.BRAIN.l+'L)':null};}
+      if(w.inds.memory&&w._mem&&w._mem.proj){_r.marketMemory={analogs:w._mem.proj.n,upRatePct:Math.round(w._mem.proj.up*100),projectedMovePct:+(w._mem.proj.ret*100).toFixed(2),projectedPrice:_p6(w._mem.proj.p),horizonBars:6};}
+      if(Object.keys(_r).length)ro=_r;}catch(e){}
+    var ud=null;try{if(w.dr&&w.dr.shapes){var _ls=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;if(sh.t==='hline'&&sh.p>0)_ls.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray')&&sh.p2>0)_ls.push({kind:sh.t==='ray'?'ray':'trend line',endsAt:_p6(sh.p2),startsAt:_p6(sh.p1)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)_ls.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});});if(_ls.length)ud=_ls.slice(0,6);}}catch(e){}
     return {
       symbol:w.sym, timeframe:tfWords(w.tf), barsLoaded:n,
       price:_p6(price), lastBarChangePct:chgBar, changePctOver150Bars:chgWin,
@@ -492,7 +501,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       rsi14:rsi!=null?+rsi.toFixed(1):null, rsiState:rsiState, rsiSlope:(rsi!=null&&rsiPrev!=null)?(rsi>rsiPrev?'rising':rsi<rsiPrev?'falling':'flat'):null,
       macd:{line:_p6(macd),signal:_p6(msig),histogram:_p6(mhist),position:(macd!=null&&msig!=null)?(macd>msig?'above signal (bullish)':'below signal (bearish)'):null,momentum:(mhist!=null&&mhistPrev!=null)?(Math.abs(mhist)>Math.abs(mhistPrev)?'expanding':'contracting'):null},
       atrPct:atrPct, bollingerPercentB:bbPctB, bollingerBandwidthPct:bbWidth,
-      indicatorsUserHasOn:indsOn, recentCloses:rc, openPosition:pos
+      indicatorsUserHasOn:indsOn, recentCloses:rc, openPosition:pos,
+      liquidationPools:pools, premiumReadouts:ro, userDrawings:ud
     };
   }
   function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+' / '+limit+' today';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}
@@ -503,6 +513,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var COPY_SVG='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
   /* split a trade-plan JSON block (```plan {...}```) off the prose so it never shows as raw text, and parse it for the "Add to chart" button */
   function _aiPlanOk(p){return p&&typeof p==='object'&&(p.entry||p.stop||p.bias||(p.levels&&p.levels.length)||(p.targets&&p.targets.length));}
+  /* the plan card (2026-09-17): bias + confidence, entry / stop / targets with their distance from the live price, R:R, the
+     invalidation line, and the two actions. Rows carry data-px so a tap flashes that level on the chart. */
+  function aiRR(plan){var e=+plan.entry,st=+plan.stop,t=(plan.targets||[]).map(Number).filter(function(x){return x>0;})[0];if(!(e>0&&st>0&&t>0))return null;var risk=Math.abs(e-st),rew=Math.abs(t-e);return risk>0?+(rew/risk).toFixed(2):null;}
+  function aiPlanCard(plan,price){if(!plan)return '';var bias=String(plan.bias||'').toLowerCase(),isW=bias==='wait'||!(bias==='long'||bias==='short');
+    var pct=function(v){v=+v;if(!(v>0&&price>0))return '';var d=(v-price)/price*100;return '<i>'+(d>=0?'+':'')+d.toFixed(2)+'%</i>';};
+    var row=function(k,v,cls){v=+v;if(!(v>0))return '';return '<button type="button" class="aipr '+(cls||'')+'" data-px="'+v+'"><span>'+k+'</span><b>'+cwFmt(v)+'</b>'+pct(v)+'</button>';};
+    var rr=aiRR(plan),conf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
+    var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(isW?'WAIT':bias.toUpperCase())+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
+    if(!isW)h+='<div class="aipc-rows">'+row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+(plan.targets||[]).map(function(t,i){return row('Target '+(i+1),t,'t');}).join('')+'</div>';
+    var lv=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lv.length)h+='<div class="aipc-lv-rows">'+lv.slice(0,4).map(function(l){return '<button type="button" class="aipr l" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,18))+'</span><b>'+cwFmt(+l.price)+'</b>'+pct(l.price)+'</button>';}).join('')+'</div>';
+    if(plan.invalidation)h+='<div class="aipc-inv"><span>Wrong if</span>'+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
+    if(plan.manage)h+='<div class="aipc-inv"><span>Your position</span>'+escHtml(String(plan.manage).slice(0,160))+'</div>';
+    h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+'">On chart</button>'+(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+'">Trade it</button>':'')+'</div></div>';return h;}
   /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence - and to the closing fence not having streamed in yet. */
   function aiSplitPlan(text){text=String(text||'');
     var re=/```[a-zA-Z]*\s*([\s\S]*?)```/g,m,plan=null,idx=-1;
@@ -510,20 +533,39 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(plan!=null)return {prose:text.slice(0,idx).replace(/\s+$/,''),plan:plan};
     var oi=text.search(/```[a-zA-Z]*\s*\{/);if(oi>=0&&text.indexOf('```',oi+3)<0)return {prose:text.slice(0,oi).replace(/\s+$/,''),plan:null};/* opening fence streaming in - hide the partial JSON */
     return {prose:text,plan:null};}
-  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan)h+='<button class="aiplan" type="button" data-plan="'+escAttr(JSON.stringify(m.plan))+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg><span>Draw this plan on the chart</span></button>';h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
+  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;h+=aiPlanCard(m.plan,_pr);}h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
-  function aiClearPlan(w){if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}}
+  function aiClearPlan(w){if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
+    if(w&&w.dr&&w.dr.shapes){var before=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.shapes.length!==before&&w.dr.redraw)w.dr.redraw();}
+    w&&(w._aiPlanObj=null);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent='Show on chart';});}}catch(e){}}
+  /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
+  function aiFlash(w,price){if(!w||!w.candle||!(price>0))return;try{var l=w.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{w.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
   function aiDrawPlan(w,plan){
     if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];
     function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title}));}catch(e){}}
+    w._aiPlanObj=plan;
     if(plan.entry)pl(plan.entry,'#3fd8e6','AI ENTRY',0,2);
     if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);
     (plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});
-    (plan.levels||[]).forEach(function(l){if(l)pl(l.price,'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
-    chartToast('AI plan drawn on '+w.sym+' - '+(plan.bias?plan.bias.toUpperCase()+' setup. ':'')+'Change symbol/timeframe to clear.');
+    (plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
+    /* the risk and the reward as ZONES ahead of the last candle (owner 2026-09-17: show the target, not only a line):
+       drawing-engine rects flagged ai - drawn by the same canvas as the user's shapes, excluded from persistence */
+    try{if(w.dr&&w.dr.shapes&&w.bars&&w.bars.length>2&&plan.entry>0){var n=w.bars.length-1,hb=Math.max(6,Math.min(60,Math.round(+plan.horizonBars||14))),e=+plan.entry,st=+plan.stop,tg=(plan.targets||[]).map(Number).filter(function(x){return x>0;});
+      var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
+      if(st>0)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
+      if(tg.length){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
+      if(st>0)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1});
+      tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1});});
+      var rr=aiRR(plan);if(rr!=null)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1});
+      if(plan.zone&&+plan.zone.from>0&&+plan.zone.to>0)w.dr.shapes.push({t:'rect',l1:Math.max(0,n-hb),p1:+plan.zone.from,l2:n+hb,p2:+plan.zone.to,color:'#ffb020',w:1,dash:true,ai:1});
+      if(w.dr.redraw)w.dr.redraw();}}catch(e){}
+    try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.add('on');b.textContent='On chart';});}}catch(e){}
+    chartToast((plan.bias&&plan.bias!=='wait'?plan.bias.toUpperCase()+' plan drawn on ':'Levels drawn on ')+w.sym+' - tap a row in the card to find a level.');
   }
   function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short - no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
-  function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
+  function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);
+    try{var _hh=aiHistLoad(w),_lp=null;for(var _i=_hh.length-1;_i>=0;_i--){if(_hh[_i].plan){_lp=_hh[_i].plan;break;}}if(_lp){chips=[['','Re-read now'],['Why this stop and not tighter?','Why this stop'],['What exactly would prove this plan wrong?','What kills it'],['What is the plan if it goes the other way instead?','Other side']];if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}}catch(e){}
+    box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
   var aiPremium=false;
   function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium - $3.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
   function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in to use Ask AI - a built-in analyst that reads any chart. It is part of MarginPad Premium ($3.99/mo): <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
@@ -556,7 +598,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiEl.querySelector('.cwin-ai-chips').addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cwin-ai-chip');if(c)askAi(c.getAttribute('data-q'));});
     aiEl.querySelector('.cwin-ai-body').addEventListener('click',function(e){
       var ch=e.target.closest&&e.target.closest('.cwin-ai-chip');if(ch){askAi(ch.getAttribute('data-q'));return;}
-      var pb=e.target.closest&&e.target.closest('.aiplan');if(pb){var pj=pb.getAttribute('data-plan');try{aiDrawPlan(aiW,JSON.parse(pj));pb.classList.add('done');var sp=pb.querySelector('span');if(sp)sp.textContent='On chart ✓';}catch(_){}return;}
+      var pr=e.target.closest&&e.target.closest('.aipr');if(pr){aiFlash(aiW,+pr.getAttribute('data-px'));return;}
+      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){aiClearPlan(aiW);}else{try{aiDrawPlan(aiW,JSON.parse(ob.getAttribute('data-plan')));}catch(_){}}return;}
+      var tb=e.target.closest&&e.target.closest('.aipc-trade');if(tb){try{var _pl=JSON.parse(tb.getAttribute('data-plan'));openQuickTrade({sym:aiW&&aiW.sym,side:_pl.bias==='short'?'short':'long',sl:+_pl.stop||null,tp:(+((_pl.targets||[])[0])||null),lev:+_pl.leverage||null});try{if(window.__mpTrack)window.__mpTrack('aitrade',(aiW&&aiW.sym)+' '+_pl.bias);}catch(_e){}}catch(_){}return;}
       var b=e.target.closest&&e.target.closest('.aicopy');if(!b)return;var t=b.parentNode.querySelector('.aitxt');if(t&&navigator.clipboard){navigator.clipboard.writeText(t.innerText||t.textContent||'').then(function(){var o=b.innerHTML;b.textContent='✓';setTimeout(function(){b.innerHTML=o;},1200);}).catch(function(){});}
     });
     aiEl.querySelector('.cwin-ai-h').addEventListener('pointerdown',aiDragStart);
@@ -583,7 +627,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail('Streaming not supported here.');});return;}
       var reader=resp.body.getReader(),dec=new TextDecoder(),buf='';
       function atBottom(){return (body.scrollHeight-body.scrollTop-body.clientHeight)<60;} // only auto-scroll if the user is already at the bottom - never yank them down while they read/scroll up
-      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplitPlan(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back - try again.</span>';return;}var atB=atBottom();bub.innerHTML=aiAiInner({text:prose,plan:sp.plan});if(atB)body.scrollTop=body.scrollHeight;var h2=aiHistLoad(w);h2.push({role:'ai',text:prose,plan:sp.plan||undefined,ts:Date.now()});aiHistSave(w,h2);}
+      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplitPlan(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back - try again.</span>';return;}var atB=atBottom();bub.innerHTML=aiAiInner({text:prose,plan:sp.plan});if(atB)body.scrollTop=body.scrollHeight;var h2=aiHistLoad(w);h2.push({role:'ai',text:prose,plan:sp.plan||undefined,ts:Date.now()});aiHistSave(w,h2);if(sp.plan){try{aiDrawPlan(w,sp.plan);}catch(e){}aiSetChips(w);}}
       function pump(){reader.read().then(function(res){
         if(res.done){finish();return;}
         buf+=dec.decode(res.value,{stream:true});var idx;
@@ -723,7 +767,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function grid(){var b=w.bars;if(!b||b.length<2)return null;var iv=(b[b.length-1].time-b[0].time)/(b.length-1);return iv>0?{t0:b[0].time,iv:iv}:null;}
     function dKey(){var k=(w.sym||'')+':'+(w.tf||'');return k===':'?null:k;}
     function save(){var g=grid(),k=dKey();if(!g||!k)return;var all=drawStoreAll();
-      var ser=[];w.dr.shapes.slice(-80).forEach(function(s){var o;try{o=JSON.parse(JSON.stringify(s));}catch(e){return;}delete o._bb;
+      var ser=[];w.dr.shapes.filter(function(s){return !s.ai;}).slice(-80).forEach(function(s){var o;try{o=JSON.parse(JSON.stringify(s));}catch(e){return;}delete o._bb;
         var tm=function(l){return g.t0+l*g.iv;};
         if(o.l!=null)o.l=tm(o.l);if(o.l1!=null)o.l1=tm(o.l1);if(o.l2!=null)o.l2=tm(o.l2);
         if(o.pts)o.pts=o.pts.filter(function(pt){return pt&&pt.l!=null&&pt.p!=null;}).map(function(pt){return {l:tm(pt.l),p:pt.p};});
@@ -886,7 +930,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
+  try{window.__mpAiContext=aiContext;window.__mpAi={splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR};}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}
@@ -1319,7 +1363,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var advc=qtEl.querySelector('.cqt-adv-chk'),advf=qtEl.querySelector('.cqt-adv-fields');if(advc)advc.addEventListener('change',function(){advf.hidden=!advc.checked;});
     qtEl.querySelector('.cqt-open').addEventListener('click',doOpenPos);
     document.addEventListener('mp:price',function(ev){if(!qtEl||qtEl.hidden||!ev.detail)return;var ss=qtEl.querySelector('.cqt-sym');if(!ss||ev.detail.sym!==ss.value)return;if(qtEl._raf)return;qtEl._raf=true;requestAnimationFrame(function(){qtEl._raf=false;updateQT();});}); }
-  function openQuickTrade(){ if(!qtEl)buildQT(); var sym=(wins.length&&wins[0].sym)||'BTC',sel=qtEl.querySelector('.cqt-sym'); for(var i=0;i<sel.options.length;i++)if(sel.options[i].value===sym){sel.selectedIndex=i;break;} qtSide='long'; var sb=qtEl.querySelector('.cqt-side'); sb.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-side')==='long');}); qtLev=10; var lr=qtEl.querySelector('.cqt-lev'); if(lr)lr.value=String(qtLevToPos(10)); var ac=qtEl.querySelector('.cqt-adv-chk'); if(ac)ac.checked=false; var af=qtEl.querySelector('.cqt-adv-fields'); if(af)af.hidden=true; qtEl.querySelector('.cqt-msg').textContent=''; var _ql=qtEl.querySelector('.cqt-lim'); if(_ql)_ql.value=''; qtSetType('market'); qtEl.hidden=false; updateQT();
+  /* opts (2026-09-17, the AI plan card): {sym, side, sl, tp, lev} prefill the ticket; the module vars move WITH the DOM so
+     the readout and the open path agree (a DOM-only prefill used to desync qtSide/qtLev) */
+  function openQuickTrade(opts){ opts=opts||{}; if(!qtEl)buildQT(); var sym=(SYMS.indexOf(opts.sym)>=0?opts.sym:null)||(wins.length&&wins[0].sym)||'BTC',sel=qtEl.querySelector('.cqt-sym'); for(var i=0;i<sel.options.length;i++)if(sel.options[i].value===sym){sel.selectedIndex=i;break;} qtSide=(opts.side==='short')?'short':'long'; var sb=qtEl.querySelector('.cqt-side'); sb.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-side')===qtSide);}); qtLev=(opts.lev>0)?Math.max(1,Math.min(1000,Math.round(+opts.lev))):10; var lr=qtEl.querySelector('.cqt-lev'); if(lr)lr.value=String(qtLevToPos(qtLev)); var _pre=(opts.sl>0||opts.tp>0); var ac=qtEl.querySelector('.cqt-adv-chk'); if(ac)ac.checked=_pre; var af=qtEl.querySelector('.cqt-adv-fields'); if(af)af.hidden=!_pre; var _tp=qtEl.querySelector('.cqt-tp'),_sl=qtEl.querySelector('.cqt-sl'); if(_tp)_tp.value=(opts.tp>0)?String(+(+opts.tp).toPrecision(8)):''; if(_sl)_sl.value=(opts.sl>0)?String(+(+opts.sl).toPrecision(8)):''; qtEl.querySelector('.cqt-msg').textContent=_pre?'Prefilled from the AI plan - check every number before you open.':''; var _ql=qtEl.querySelector('.cqt-lim'); if(_ql)_ql.value=''; qtSetType('market'); qtEl.hidden=false; updateQT();
     if(!(qtPrice(sym)>0))fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};updateQT();}}); }
   // ---- movable calculator popup ----
   var calcEl=null;

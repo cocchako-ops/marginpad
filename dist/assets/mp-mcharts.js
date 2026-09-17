@@ -403,7 +403,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
   function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);} // draw event also fires on MOBILE (2026-08-11) - the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
-  function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
+  function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}mAiClear(p);}
+  /* the AI plan on a pane: price lines only (the pane's canvas belongs to the user's drawings) */
+  function mAiClear(p){if(p&&p._aiPlan){p._aiPlan.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p._aiPlan=null;}}
+  function mAiDraw(p,plan){if(!p||!p.candle||!plan)return;mAiClear(p);p._aiPlan=[];
+    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{p._aiPlan.push(p.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title}));}catch(e){}}
+    if(plan.entry)pl(plan.entry,'#3fd8e6','AI ENTRY',0,2);if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);(plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});}
+  function mAiFlash(p,price){if(!p||!p.candle||!(price>0))return;try{var l=p.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{p.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
   function toggleTrades(btn){var on=!btn.classList.contains('on');btn.classList.toggle('on',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
   function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));mfcSave();}
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}
@@ -623,15 +629,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function ctx(){
       // use the desktop's rich analysis builder (price, swing highs/lows, EMA/SMA, RSI, MACD, ATR…) so the AI can actually read the chart
       try{if(window.__mpAiContext&&p.bars&&p.bars.length>10){var rc=window.__mpAiContext({sym:p.sym,tf:p.tf,bars:p.bars});if(rc){rc.indicatorsShown=Object.keys(p.inds).filter(function(k){return p.inds[k];});return rc;}}}catch(e){}
-      var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;return 'Symbol '+p.sym+' on '+tfLabel(p.tf)+' timeframe. Current price '+(pr?fp(pr):'unknown')+'.';
+      var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;return {symbol:p.sym,timeframe:tfLabel(p.tf),price:pr||null,note:'Only a few candles loaded - limited read.'};
     }
     function send(){var q=(inp.value||'').trim();if(!q||busy)return;busy=true;inp.value='';add('me',q);var bub=add('ai','…');
       fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:[],stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
         if(!resp.ok){busy=false;bub.textContent=resp.status===429?'Daily AI limit reached - resets tomorrow.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI is part of MarginPad Premium ($3.99/mo) - upgrade from your profile to use it.':'Could not reach AI - try again.'));return;}
         if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';
-        (function pump(){rd.read().then(function(res){if(res.done){busy=false;if(!acc)bub.textContent='No answer - try again.';return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;bub.textContent=acc;msgs.scrollTop=msgs.scrollHeight;}}catch(e){}}pump();}).catch(function(){busy=false;});})();
+        var AI=window.__mpAi||null;
+        function show(final){var sp=AI?AI.splitPlan(acc):{prose:acc,plan:null};if(AI)bub.innerHTML=AI.mdLite(sp.prose||acc);else bub.textContent=sp.prose||acc;
+          if(final&&sp.plan&&AI){var pr=(p.bars&&p.bars.length)?+p.bars[p.bars.length-1].close:0;bub.innerHTML+=AI.planCard(sp.plan,pr);
+            /* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */
+            var tb=bub.querySelector('.aipc-trade');if(tb){var q='/paper-trade?coin='+encodeURIComponent(p.sym)+'&side='+(sp.plan.bias==='short'?'short':'long')+(sp.plan.stop>0?'&sl='+encodeURIComponent(+sp.plan.stop):'')+((sp.plan.targets||[])[0]>0?'&tp='+encodeURIComponent(+sp.plan.targets[0]):'')+(sp.plan.leverage>0?'&lev='+Math.round(+sp.plan.leverage):'');var a=document.createElement('a');a.className='aipc-trade';a.href=q;a.textContent='Trade it';tb.parentNode.replaceChild(a,tb);}
+            mAiDraw(p,sp.plan);p._aiPlanObj=sp.plan;}
+          msgs.scrollTop=msgs.scrollHeight;}
+        (function pump(){rd.read().then(function(res){if(res.done){busy=false;if(!acc)bub.textContent='No answer - try again.';else show(true);return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;show(false);}}catch(e){}}pump();}).catch(function(){busy=false;});})();
       }).catch(function(){busy=false;bub.textContent='Network error - try again.';});}
+    msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent='Show on chart';}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent='On chart';}catch(_){}}}});
     btn.addEventListener('click',send);inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});setTimeout(function(){inp.focus();},40);}
   // ---- open / close ----
   var entered=false;
