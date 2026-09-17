@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-17T00:02:00.071Z",
+  "generated": "2026-09-17T00:12:41.737Z",
   "pages": 376,
   "occurrences": 25465,
   "unique": 13466,
-  "words": 253997,
+  "words": 253999,
   "untranslated": 7,
   "untranslatedWords": 15,
-  "merged": "2026-09-17T00:02:23.956Z"
+  "merged": "2026-09-17T00:13:05.920Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -15967,9 +15967,9 @@
    "n": 1,
    "w": 21
   },
-  "tbOqsuHLbh": {
-   "en": "Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early, and a 100% rate with positions still open is marked with an asterisk rather than believed. <b>Fills</b> reads <i>defaults</i> unless that account switched realism on: by default a market order fills at the live price with no slippage and maintenance margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows. Both can be switched on per account or per call - see <a href=\"/trading-api/#realism\">realistic fills</a>. Every trade opened before 16 September 2026 ran on the defaults. Machine-readable: <a href=\"/api/arena\">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.",
-   "es": "El retorno es el P&L realizado sobre el saldo de $10,000 del marcador. La tasa de acierto solo tiene sentido con cierres: las entradas con menos de 20 cierres son prematuras, y una tasa del 100% con posiciones aún abiertas se marca con un asterisco en lugar de darse por buena. <b>Ejecuciones</b> muestra <i>predeterminados</i> a menos que esa cuenta haya activado el realismo: por defecto, una orden a mercado se ejecuta al precio en vivo sin slippage y el margen de mantenimiento es un 0.5% fijo, lo cual es más sencillo que en un exchange real y cada vez más a medida que crece la posición. Ambos se pueden activar por cuenta o por llamada; consulta <a href=\"/trading-api/#realism\">ejecuciones realistas</a>. Toda operación abierta antes del 16 de septiembre de 2026 funcionó con los valores predeterminados. Legible por máquina: <a href=\"/api/arena\">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba quedan excluidas. Solo con fines educativos; no es asesoría financiera.",
+  "RFK2UmADEU": {
+   "en": "Return is realized P&L over the $10,000 scorecard balance. Win rate needs closes to mean anything: entries below 20 closes are early, and a 100% rate with positions still open is marked with an asterisk rather than believed. <b>Fills</b> reads <i>easy mode</i> unless that account switched realism on: on easy mode a market order fills at the live price with no slippage and maintenance margin is a flat 0.5%, which is easier than a real venue and increasingly so as a position grows. Both can be switched on per account or per call - see <a href=\"/trading-api/#realism\">realistic fills</a>. Every trade opened before 16 September 2026 ran on easy mode. Machine-readable: <a href=\"/api/arena\">GET /api/arena</a>, refreshed every minute. Test accounts are excluded. Educational only; not financial advice.",
+   "es": "El retorno es el P&L realizado sobre el saldo de referencia de $10,000. La tasa de acierto solo significa algo con cierres: las entradas con menos de 20 cierres son tempranas, y una tasa del 100% con posiciones aún abiertas se marca con un asterisco en lugar de creerse. <b>Fills</b> muestra <i>modo fácil</i> salvo que esa cuenta haya activado el realismo: en modo fácil una orden a mercado se ejecuta al precio en vivo sin slippage y el margen de mantenimiento es un 0.5% fijo, más fácil que en cualquier exchange real y cada vez más a medida que crece la posición. Ambos pueden activarse por cuenta o por llamada - ver <a href=\"/trading-api/#realism\">ejecuciones realistas</a>. Toda operación abierta antes del 16 de septiembre de 2026 corrió en modo fácil. Legible por máquinas: <a href=\"/api/arena\">GET /api/arena</a>, actualizado cada minuto. Las cuentas de prueba están excluidas. Solo con fines educativos; no es asesoramiento financiero.",
    "kind": [
     "html"
    ],
@@ -15977,7 +15977,7 @@
     "/arena/"
    ],
    "n": 1,
-   "w": 115
+   "w": 117
   },
   "mSiNc0ZOJw": {
    "en": "Positions still open right now. A win rate counted from closes alone says nothing about these.",
