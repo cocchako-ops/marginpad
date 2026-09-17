@@ -631,7 +631,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        the shape's own anchor put it in the middle of the candles, over the price action it is describing. The chart always shows a
        few bars of air to the right of the last candle - that is where a charting app puts its labels, and so do we. */
     var LBL=last+5;
-    var label=function(p){if(lbl)out.push(Object.assign({},base,{t:'text',l:LBL,p:p,txt:lbl,w:2,ar:1}));};
+    var label=function(p){if(lbl)out.push(Object.assign({},base,{t:'text',l:LBL,p:p,txt:lbl,w:2,ar:1,bg:1}));};
     if(sh==='hline'){if(!okp(a.p))return null;var hp=snapLv(a.p);out.push(Object.assign({t:'hline',p:hp},base));label(hp);}
     else if(sh==='zone'||sh==='rect'){
       var f=snapLv(a.from!=null?a.from:a.p1),t2=snapLv(a.to!=null?a.to:a.p2);
@@ -672,17 +672,42 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(sh!=='fib')label(sh==='ray'?proj(t1,+a.p1,tt2,+a.p2):+a.p2);
     }
     else if(sh==='arrow'){
-      if(!okp(a.p1)||!okp(a.p2))return null;
-      a=Object.assign({},a,{p2:snapLv(a.p2)}); // the arrow's head is a target: put it exactly on the level it is pointing at
-      var a1=L(a.barsAgo1,4),a2=L(a.barsAgo2,-12);
-      if(a1<last-12)a1=last-4; // an expected-path arrow starts AT the market, never 100 candles back
-      if(a2<=a1)a2=last+12; if(a2>last+FUT)a2=last+FUT;
-      out.push(Object.assign({},base,{t:'arrow',l1:a1,p1:+a.p1,l2:a2,p2:+a.p2,w:2}));
-      label(+a.p2);
+      if(!okp(a.p2))return null; // only the destination is required now - the route is the chart's job, not the model's
+      var hp2=snapLv(a.p2); // the head is a target: put it exactly on the level it is pointing at
+      var hz=(a.barsAgo2!=null&&+a.barsAgo2<0)?Math.min(FUT,-Math.round(+a.barsAgo2)):(+a.horizonBars>0?Math.round(+a.horizonBars):12);
+      var p0=(ctx&&ctx.px>0)?ctx.px:+a.p1; // the path leaves from where the market IS, not from a price the model picked
+      out.push(Object.assign({},base,{t:'path',pts:aiPathPts(p0,hp2,hz,ctx&&ctx.rhythm,px,last),head:1,w:2}));
+      label(hp2);
     }
     else if(sh==='text'){if(!okp(a.p)||!a.txt)return null;out.push(Object.assign({},base,{t:'text',l:L(a.barsAgo,2),p:+a.p,txt:String(a.txt).trim().slice(0,40)}));}
     else if(sh==='vline'){out.push(Object.assign({},base,{t:'vline',l:L(a.barsAgo,0)}));}
     else return null;
+    return out;}
+  /* HOW THIS MARKET MOVES, measured from its own pivots: how many candles a leg usually runs, and how far it swings. The projected
+     path is built from these, so a market that grinds gets a grinding path and one that spikes gets a steep one. */
+  function rhythmOf(bars,piv,px){var legB=[],legA=[],i;
+    for(i=1;i<piv.length;i++){var db=Math.abs(piv[i].barsAgo-piv[i-1].barsAgo),dp=Math.abs(piv[i].price-piv[i-1].price);if(db>0){legB.push(db);legA.push(dp);}}
+    var med=function(a){if(!a.length)return 0;a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length/2)];};
+    var lb=med(legB)||8,la=(px>0?med(legA)/px:0)||0.01;
+    return {legBars:Math.max(2,Math.min(40,lb)),legAmp:Math.max(0.0015,Math.min(0.08,la))};}
+  /* The expected path: start at the market, end exactly on the target, and wave the way this market waves in between. The window
+     sin(pi*t) pins both ends, so the curve leaves the last candle and arrives at the target without a kink. */
+  function aiPathPts(fromP,toP,horizon,rhythm,px,last){
+    var H=Math.max(4,Math.min(30,Math.round(horizon||12))),r=rhythm||{legBars:8,legAmp:0.01};
+    var legs=H/Math.max(2,r.legBars),amp=r.legAmp*px*0.45;
+    if(legs<1.15)amp*=0.3; // the horizon is shorter than one of this market's legs - a straight push is the honest picture
+    legs=Math.max(0.55,Math.min(4,legs));
+    /* ONE POINT PER CANDLE, AND THE INDEX MUST BE A WHOLE NUMBER. Lightweight Charts' logicalToCoordinate answers 0 for a
+       FRACTIONAL logical (measured 2026-09-17: 999 -> x 1251, 999.56 -> x 0, 1014 -> x 1311), so a path sampled between bars
+       collapsed every middle point onto the left edge and painted lines across the whole chart. */
+    var N=H,out=[],i;
+    var seed=Math.abs(Math.round((fromP+toP)*100))%9973;
+    var rnd=function(k){var x=Math.sin((seed+k*17.17)*12.9898)*43758.5453;return x-Math.floor(x);};
+    for(i=0;i<=N;i++){var t=i/N,win=Math.sin(Math.PI*t);
+      var base=fromP+(toP-fromP)*(t*t*(3-2*t)); // ease in and out: price rarely leaves in a constant ramp
+      var wave=Math.sin(t*Math.PI*2*legs)*amp*win;
+      var jit=(rnd(i)-0.5)*amp*0.22*win; // a hand's wobble, deterministic from the prices so a redraw never moves it
+      out.push({l:last+i,p:base+wave+jit});}
     return out;}
   function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;var n=w.bars.length,px=+w.bars[n-1].close,k=0;
     var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){var b=w.bars[i];if(!b)continue;if(+b.low<lo)lo=+b.low;if(+b.high>hi)hi=+b.high;}
@@ -692,7 +717,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       levelsOf(_P,px,0.004).forEach(function(q){snap.push(q.price);});
       poolsNow(w.bars).forEach(function(q){if(q&&q.price>0&&Math.abs(q.price-px)/px<=0.09)snap.push(q.price);});
       snap.push(lo,hi);}catch(e){}
-    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars};
+    var rhythm=null;try{rhythm=rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16),px);}catch(e){}
+    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars,rhythm:rhythm,px:px};
     (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;});
     if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);
       /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
@@ -759,9 +785,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
       if(st>0&&!noZones)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
       if(tg.length&&!noZones){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
-      if(st>0)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1});
-      tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1});});
-      var rr=aiRR(plan);if(rr!=null)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1});
+      if(st>0)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1,bg:1});
+      tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1,bg:1});});
+      var rr=aiRR(plan);if(rr!=null)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1,bg:1});
       if(!noZones&&plan.zone&&+plan.zone.from>0&&+plan.zone.to>0)w.dr.shapes.push({t:'rect',l1:Math.max(0,n-hb),p1:+plan.zone.from,l2:n+hb,p2:+plan.zone.to,color:'#ffb020',w:1,dash:true,ai:1});
       if(w.dr.redraw)w.dr.redraw();}}catch(e){}
     try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.add('on');b.textContent='On chart';});}}catch(e){}
@@ -963,8 +989,31 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var bx=Math.min(Math.max(cx-tw/2-6,2),Math.max(2,w.dr.W-tw-14)),by=Math.min(ya+hh+6,w.dr.H-22);
       ctx.fillStyle='rgba(10,13,17,.92)';ctx.fillRect(bx,by,tw+12,18);ctx.strokeRect(bx,by,tw+12,18);
       ctx.fillStyle=col;ctx.textBaseline='middle';ctx.fillText(lbl,bx+6,by+9);ctx.restore();}
-    function drawText(s){var x=xOf(s.l),y=yOf(s.p);if(x==null||y==null){s._bb=null;return;}ctx.save();var fs=12+((s.w||2)-2)*3;ctx.font='600 '+fs+"px 'Familjen Grotesk',sans-serif";ctx.fillStyle=s.color;ctx.textBaseline='alphabetic';var tw=ctx.measureText(s.txt||'').width;if(s.ar)x=Math.max(2,x-tw);/* ar = right-aligned: the label ENDS at its anchor, so a label parked at the right edge runs into the gutter instead of under the price axis (2026-09-17) */ctx.fillText(s.txt||'',x,y);s._bb={x:x,y:y,w:tw,h:fs};ctx.restore();}
+    function drawText(s){var x=xOf(s.l),y=yOf(s.p);if(x==null||y==null){s._bb=null;return;}y+=(+s._dy||0);/* _dy = the collision nudge computed in layoutLabels, render-only */ctx.save();var fs=12+((s.w||2)-2)*3;ctx.font='600 '+fs+"px 'Familjen Grotesk',sans-serif";ctx.fillStyle=s.color;ctx.textBaseline='alphabetic';var tw=ctx.measureText(s.txt||'').width;if(s.ar)x=Math.max(2,x-tw);/* ar = right-aligned: the label ENDS at its anchor, so a label parked at the right edge runs into the gutter instead of under the price axis (2026-09-17) */
+      /* A NUMBER YOU CANNOT READ IS WORSE THAN NO NUMBER (owner 2026-09-17): a label printed straight onto a trend line or a
+         candle disappears into it. `bg` lays the chart's own ground under the text first, so the ink always wins. */
+      if(s.bg){var pad=4;ctx.fillStyle='rgba(10,13,17,.82)';ctx.beginPath();var rx=x-pad,ry=y-fs+1,rw=tw+pad*2,rh=fs+4,rr=4;
+        ctx.moveTo(rx+rr,ry);ctx.arcTo(rx+rw,ry,rx+rw,ry+rh,rr);ctx.arcTo(rx+rw,ry+rh,rx,ry+rh,rr);ctx.arcTo(rx,ry+rh,rx,ry,rr);ctx.arcTo(rx,ry,rx+rw,ry,rr);ctx.closePath();ctx.fill();ctx.fillStyle=s.color;}
+      ctx.fillText(s.txt||'',x,y);s._bb={x:x,y:y,w:tw,h:fs};ctx.restore();}
+    /* A PREDICTION IS NOT A RULER LINE (2026-09-17, owner: "nek prati malo kako je chart izgledao pre toga ... ostro crtanje
+       strelice dolazi u obzir samo ako trend stvarno tako izgleda da ce naglo cena da skoci"). A straight diagonal to the target
+       tells the reader price gets there in three candles. `path` is a smoothed poly-line - quadratic curves through the midpoints,
+       so there is not a sharp corner anywhere - drawn twice: a wide soft pass for the marker bleed and a crisp one over it. */
+    function drawPath(s){var p=s.pts;if(!p||p.length<2)return;var pts=[],i;
+      for(i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;pts.push([xx,yy]);}
+      if(pts.length<2)return;
+      var trace=function(){ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+        for(var k=1;k<pts.length-1;k++){var mx=(pts[k][0]+pts[k+1][0])/2,my=(pts[k][1]+pts[k+1][1])/2;ctx.quadraticCurveTo(pts[k][0],pts[k][1],mx,my);}
+        ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]);ctx.stroke();};
+      ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);
+      ctx.strokeStyle=s.color;ctx.globalAlpha=.20;ctx.lineWidth=(s.w||2)*3.2;trace();
+      ctx.globalAlpha=1;ctx.lineWidth=s.w||2;trace();
+      if(s.head&&pts.length>1){var a=pts[pts.length-2],b=pts[pts.length-1],ang=Math.atan2(b[1]-a[1],b[0]-a[0]),AL=8+(s.w||2)*2.6;
+        ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-AL*Math.cos(ang-0.42),b[1]-AL*Math.sin(ang-0.42));
+        ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-AL*Math.cos(ang+0.42),b[1]-AL*Math.sin(ang+0.42));ctx.stroke();}
+      ctx.restore();}
     function strokeShape(s){
+      if(s.t==='path'){drawPath(s);return;}
       if(s.t==='fib'){drawFib(s);return;}
       if(s.t==='measure'){drawMeasure(s);return;}
       if(s.t==='text'){drawText(s);return;}
@@ -980,13 +1029,22 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var xa=Math.min(q2.x1,q2.x2),ya=Math.min(q2.y1,q2.y2),ww=Math.abs(q2.x2-q2.x1),hh=Math.abs(q2.y2-q2.y1);
         ctx.fillStyle=s.color;ctx.globalAlpha=.11;ctx.fillRect(xa,ya,ww,hh);ctx.globalAlpha=1;ctx.strokeRect(xa,ya,ww,hh);}
       ctx.restore();}
-    function drawHandles(s){var hs=[];
+    function drawHandles(s){var hs=[];if(s.t==='path')return;
       if(s.t==='hline'){var hy=yOf(s.p);if(hy!=null)hs.push([w.dr.W/2,hy]);}
       else if(s.t==='vline'){var vx=xOf(s.l);if(vx!=null)hs.push([vx,w.dr.H/2]);}
       else if(s.t==='text'){var b=s._bb;if(b)hs.push([b.x-8,b.y-b.h/2]);}
       else if(s.t!=='pen'){var q=proj2(s);if(q.x1!=null&&q.y1!=null)hs.push([q.x1,q.y1]);if(q.x2!=null&&q.y2!=null)hs.push([q.x2,q.y2]);}
       ctx.save();ctx.setLineDash([]);for(var i=0;i<hs.length;i++){ctx.beginPath();ctx.arc(hs[i][0],hs[i][1],5,0,6.2832);ctx.fillStyle='#0c1116';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#3fd8e6';ctx.stroke();}ctx.restore();}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);}
+    /* Every AI label sits in the same right-hand gutter, so two levels a few pixels apart printed on top of each other and
+       neither could be read. Collisions are resolved in SCREEN space right before painting - each label is nudged just enough to
+       clear the one above it - and the nudge is render-only, so the shape it belongs to never moves. */
+    function layoutLabels(){var ls=[];
+      w.dr.shapes.forEach(function(s){if(s.t!=='text'||!(s.by==='ai'||s.ai))return;s._dy=0;var y=yOf(s.p);if(y!=null)ls.push({s:s,y:y});});
+      if(ls.length<2)return;
+      ls.sort(function(a,b){return a.y-b.y;});
+      var GAP=16,prev=-1e9;
+      ls.forEach(function(o){var y=o.y;if(y-prev<GAP)y=prev+GAP;o.s._dy=y-o.y;prev=y;});}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);}
     w.dr.redraw=redraw;
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
     function grid(){var b=w.bars;if(!b||b.length<2)return null;var iv=(b[b.length-1].time-b[0].time)/(b.length-1);return iv>0?{t0:b[0].time,iv:iv}:null;}
@@ -1016,7 +1074,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(s.t==='hline'){var hy=yOf(s.p);return hy!=null&&Math.abs(y-hy)<=TH;}
       if(s.t==='vline'){var vx=xOf(s.l);return vx!=null&&Math.abs(x-vx)<=TH;}
       if(s.t==='text'){var b=s._bb;return !!b&&x>=b.x-6&&x<=b.x+b.w+6&&y>=b.y-b.h-6&&y<=b.y+6;}
-      if(s.t==='pen'){var p=s.pts||[],lx=null,ly=null;for(var i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;if(lx!=null&&d2seg(x,y,lx,ly,xx,yy)<=TH)return true;lx=xx;ly=yy;}return false;}
+      if(s.t==='pen'||s.t==='path'){var p=s.pts||[],lx=null,ly=null;for(var i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;if(lx!=null&&d2seg(x,y,lx,ly,xx,yy)<=TH)return true;lx=xx;ly=yy;}return false;}
       if(s.t==='fib'){for(var j=0;j<FIBLV.length;j++){var fy=yOf(s.p1+(s.p2-s.p1)*FIBLV[j]);if(fy!=null&&Math.abs(y-fy)<=5)return true;}return false;}
       var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null)return false;
       if(s.t==='trend'||s.t==='arrow')return d2seg(x,y,q.x1,q.y1,q.x2,q.y2)<=TH;
