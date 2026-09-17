@@ -17,9 +17,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     
     '.hm-wrap{background:#0b0d10;border:1px solid #1c2230;border-radius:14px;padding:12px 14px 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;display:flex;flex-direction:column}' +
     '.hm-bar{order:1}.hm-targets{order:2}.hm-stage{order:3}.hm-foot{order:4}' +
-    '.hm-tg-h{display:none}' +
-    '.hm-tg-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}' +
-    '.hm-tg-exp{display:none}' +
+    '.hm-tg-h{display:none;font:700 10px "Space Mono",monospace;letter-spacing:.1em;color:#c2f64a;margin-bottom:6px}' +
+    '.hm-tg-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}' +
+    '.hm-tg-r{display:flex;align-items:center;gap:8px;min-width:0}' +
+    '.hm-tg-d{font:700 9.5px "Space Mono",monospace;letter-spacing:.1em;flex:none;width:42px}' +
+    '.hm-tg-d.up{color:#ff8f86}.hm-tg-d.dn{color:#66d3a5}' +
+    '.hm-tg-c{display:flex;gap:6px;min-width:0;flex:1}' +
+    '.hm-tg-none{font:11px "Space Mono",monospace;color:#3a465c;padding:5px 2px}' +
+    '.hm-tgb{flex:1 1 0;min-width:0;display:block;background:#0d1116;border:1px solid #1d242f;border-left:3px solid #5c6b84;border-radius:8px;padding:5px 8px;cursor:pointer;font-family:inherit;text-align:left}' +
+    '.hm-tgb.l{border-left-color:#2ebd85}.hm-tgb.s{border-left-color:#ff6258}' +
+    '.hm-tgb:hover{border-color:#3a465c;background:#111720}.hm-tgb.on{border-color:#c2f64a}' +
+    '.hm-tgb b{display:block;font:700 12px "Space Mono",monospace;color:#e9e7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-tgb i{display:block;font-style:normal;font:10px "Space Mono",monospace;color:#5c6b84;margin-top:1px}' +
+    '.hm-tg-sq{display:inline-block;margin-top:7px;background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:3px 9px;font:700 10.5px "Space Mono",monospace}' +
+    '.hm-tg-exp{display:none;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:5px 24px 5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:32px}' +
@@ -32,7 +43,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
-    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 320px);max-height:820px}' +
+    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 344px);max-height:820px}' +
     '.hm-cv{flex:1;min-width:0;display:block;border-radius:10px 0 0 10px;background:#07090c;cursor:crosshair}' +
     '.hm-prof{width:104px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
     '.hm-tip{position:absolute;pointer-events:none;background:rgba(10,12,16,.97);border:1px solid #2a3345;border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.55;color:#dbe4f5;z-index:5;display:none;font-family:"Space Mono",monospace;white-space:nowrap}' +
@@ -47,7 +58,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-cl-it:hover{background:rgba(255,255,255,.07)}' +
     '.hm-cl-it .ag{color:#5c6b84;margin-left:auto;font-size:10px}' +
     '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
-    '@media(max-width:980px){.hm-selbox{max-width:78%;font-size:10.5px}}' +
+    '@media(max-width:980px){.hm-selbox{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);max-width:none;font-size:11px;z-index:2147482000;box-shadow:0 12px 34px rgba(0,0,0,.6);max-height:52vh;overflow-y:auto;overscroll-behavior:contain}}' +
     '.hm-mast{order:0;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:2px 2px 10px}' +
     '.hm-mast-l{min-width:0}' +
     '.hm-mast-t{display:flex;align-items:center;gap:10px;font:700 13.5px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a}' +
@@ -59,14 +70,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-mast-r .hm-px{margin-left:0;font-size:19px;line-height:1.15}' +
     '.hm-mast-r .hm-stats{display:block;margin-top:2px}' +
     '.hm-bar-b{margin-left:auto}' +
-    '.hm-tg-row>span:not(:first-child){background:#0d1116;border:1px solid #1d242f;border-radius:8px;padding:3.5px 9px;white-space:nowrap}' +
     '.hm-stage{border:1px solid #1c2230;border-radius:12px;overflow:hidden}' +
     '.hm-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}' +
     '.hm-foot-c{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 13px}' +
     '.hm-foot-h{font:700 10px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;margin-bottom:5px}' +
+    'summary.hm-foot-h{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin-bottom:0;padding:2px 0}' +
+    'summary.hm-foot-h::-webkit-details-marker{display:none}' +
+    'summary.hm-foot-h::after{content:"+";margin-left:auto;color:#5c6b84;font-size:13px;line-height:1}' +
+    'details[open]>summary.hm-foot-h::after{content:"−"}' +
+    'details.hm-foot-c[open]>summary.hm-foot-h{margin-bottom:6px}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
-    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
+    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
     '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0}'+'.hm-bar{gap:7px;margin-bottom:7px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:7px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:40px;padding:2px 22px 2px 10px;font-size:13px;border-radius:9px;background-position:right 8px center}'+'.hm-seg{height:40px;border-radius:9px}'+'.hm-btn{width:40px;height:40px;border-radius:9px;flex:none}.hm-btn svg{width:16px;height:16px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
@@ -422,7 +437,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function poolHit(my, H) { // nearest visible pool band to screen-y `my` (px), respecting side filter + current zoom
     if (!S || !(S.yHi > S.yLo) || !(H > 0)) return null;
-    var P = S.pools, rng = S.yHi - S.yLo, bh = H * (P.binH / rng), tol = Math.max(bh / 2 + 4, 10), best = null;
+    var P = S.pools, rng = S.yHi - S.yLo, bh = H * (P.binH / rng);
+    var tol = Math.max(bh / 2 + 4, (S.cv && S.cv.clientWidth < 520) ? 20 : 10), best = null;
     for (var i = 0; i < P.alive.length; i++) { var s = P.alive[i];
       if (poolGone(s)) continue;
       if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
@@ -547,20 +563,41 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var up = [], dn = [];
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (poolGone(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
-    var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
+    S._tg = up.slice(0, 3).concat(dn.slice(0, 3)); // the chips address these by index, so a tap can move the view to one
+    var cell = function (x) {
+      var d = ((x.price - px) / px * 100), i = S._tg.indexOf(x);
+      return '<button type="button" class="hm-tgb ' + (x.long ? 'l' : 's') + '" data-tg="' + i + '" title="Show this zone on the map">' +
+        '<b>' + fpx(x.price) + '</b><i>' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></button>';
+    };
+    var side = function (arr, cls, lab) {
+      return '<div class="hm-tg-r"><span class="hm-tg-d ' + cls + '">' + lab + '</span><div class="hm-tg-c">' +
+        (arr.length ? arr.slice(0, 3).map(cell).join('') : '<span class="hm-tg-none">none within 12%</span>') + '</div></div>';
+    };
     var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
-    var row1 = '<span style="color:#5c6b84;font-weight:700"><span class="hm-tg-lab">TARGETS </span>\u2191</span>' + (up.length ? up.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
-    var row2 = '<span style="color:#5c6b84;font-weight:700;margin-left:6px">\u2193</span>' + (dn.length ? dn.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
-    h += '<div class="hm-tg-row">' + row1 + row2;
+    h += '<div class="hm-tg-g">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + '</div>';
     // squeeze: strong pools close on BOTH sides
     var wMax = P.alive.length ? P.alive[0].w : 0;
     var nu = up[0], nd = dn[0];
     if (nu && nd && Math.abs(nu.price - px) / px < 0.03 && Math.abs(nd.price - px) / px < 0.03 && nu.w > wMax * 0.35 && nd.w > wMax * 0.35) {
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
-      h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">SQUEEZE SETUP' + lean + '</span>';
+      h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += '</div><div class="hm-tg-exp">Projected leverage zones near the current price \u2014 green = longs would liquidate there (below), red = shorts (above). Estimated from volume \u00d7 leverage, not realized liquidations. Price tends to sweep the largest ones. Drag the map with one finger, pinch with two.</div>';
+    h += '<div class="hm-tg-exp">Projected leverage zones near the price — <span style="color:#66d3a5">green</span> is where longs would liquidate, <span style="color:#ff8f86">red</span> where shorts would. Estimated from volume × leverage, not realized liquidations. Tap one to show it on the map.</div>';
     S.tgEl.innerHTML = h;
+  }
+
+  // A target you can read but not reach is half a feature: the nearest heavy zone is often outside the default
+  // frame (the price action keeps 30% of the height on purpose), so the chip that names it moves the view to it.
+  function focusPool(x) {
+    if (!S || !x) return;
+    var px = S.price > 0 ? S.price : x.price;
+    var span = Math.max(Math.abs(x.price - px) * 2.4, px * 0.02), mid = (x.price + px) / 2;
+    S.yView = { lo: mid - span / 2, hi: mid + span / 2 };
+    S.sel = { type: 'pool', ref: x };
+    if (S.showSel) S.showSel();
+    sched();
+    try { window.mpHaptic && window.mpHaptic('tap'); } catch (e) {}
+    try { var st = S.cv && S.cv.parentNode; if (st && st.getBoundingClientRect().top < 0) st.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {}
   }
   function updHead() {
     if (!S) return;
@@ -982,7 +1019,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px;cursor:pointer';
         ov.innerHTML = '<div style="font:700 11px \'Space Mono\',monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
           '<div style="font:800 22px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
-          '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped - plus 8 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$3.99/mo</b>.</div>' +
+          '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped - plus 4 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$3.99/mo</b>.</div>' +
           '<span class="hm-pw-btn" style="margin-top:10px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>';
         stage.appendChild(ov);
         ov.addEventListener('click', function () { location.href = '/premium'; });
@@ -1039,16 +1076,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
-    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 11 venues, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
+    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 9 exchanges, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
     var selBox = el('div', 'hm-selbox');
     stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl); stage.appendChild(selBox);
+    // On a phone these three cards were 514px of prose under the map - a 1,000-character methodology essay
+    // among them. They are disclosures there, and stay open on a desktop where the room exists. The gesture
+    // help now describes the device it is read on: a phone has no scroll wheel and no double-click, so
+    // telling a thumb about Shift+scroll was help written for somebody else.
+    var FOPEN = window.innerWidth > 980 ? ' open' : '';
+    var GEST = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
+      ? ' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.'
+      : ' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.';
     var foot = el('div', 'hm-foot',
-      '<div class="hm-foot-c"><div class="hm-foot-h">HOW TO READ IT</div>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. Drag to pan (any direction) \u00b7 scroll = zoom time \u00b7 Shift+scroll = zoom price \u00b7 double-click resets.</div>' +
-      '<div class="hm-foot-c"><div class="hm-foot-h">WHAT THE NUMBERS MEAN</div>Click any band for two figures of different kinds. <b style="color:#c2f64a">Measured</b> is what our collector recorded actually liquidating in that price band over 24 hours - observed events, no model. The <b>x avg</b> figure is the model: how heavy that band is against the average band on screen. It is a ratio and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from candle history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x), which shows where size stacks relative to itself but not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC band by roughly thirty times what has ever actually liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright band as “there is probably size here”, and trust the measured figure when the two disagree.</div>' + '<div class="hm-foot-c"><div class="hm-foot-h">DATA</div>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</div>');
+      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. ' + GEST + '</details>' +
+      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Click any band for two figures of different kinds. <b style="color:#c2f64a">Measured</b> is what our collector recorded actually liquidating in that price band over 24 hours - observed events, no model. The <b>x avg</b> figure is the model: how heavy that band is against the average band on screen. It is a ratio and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from candle history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x), which shows where size stacks relative to itself but not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC band by roughly thirty times what has ever actually liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright band as “there is probably size here”, and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> zone swept</span><span><b style="color:#e9e7df">▬</b> leverage cluster (est.)</span>';
     wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
@@ -1064,6 +1109,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
       if (S.sel && S.sel.type === 'ev' && !dotOk(S.sel.ref)) { S.sel = null; if (S.showSel) S.showSel(); } // never leave a selection pinned to a dot that is no longer drawn
       updHead(); sched(); });
+    tgEl.addEventListener('click', function (ev) { // delegated: updTargets rewrites this block on every tick
+      var t = ev.target.closest('.hm-tgb'); if (!t || !S || !S._tg) return;
+      var x = S._tg[+t.getAttribute('data-tg')]; if (!x) return;
+      tgEl.querySelectorAll('.hm-tgb').forEach(function (b2) { b2.classList.toggle('on', b2 === t); });
+      focusPool(x);
+    });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
@@ -1087,7 +1138,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ox.textAlign = 'right'; ox.fillStyle = '#8fa3c4'; ox.font = '700 17px "Space Mono",monospace';
       ox.fillText('marginpad.io/heatmap', W - 22, HEAD / 2 + 1);
       ox.textAlign = 'left'; ox.fillStyle = '#5c6b84'; ox.font = '13px "Space Mono",monospace';
-      ox.fillText('Real liquidations live from 9 exchangess = where liquidations are stacking', 22, H - FOOT / 2);
+      ox.fillText('Real liquidations, live from 9 exchanges - the bright bands are where they stack next', 22, H - FOOT / 2);
       return out;
     }
     sh.addEventListener('click', function () { try {
