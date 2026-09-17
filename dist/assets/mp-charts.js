@@ -487,8 +487,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(w.inds.brain&&w._brain){var _bs=w._brain.score[w._brain.score.length-1];if(isFinite(_bs))_r.marketBrain={score:Math.round(_bs),lean:_bs>=55?'strong bullish':_bs<=-55?'strong bearish':'no strong lean',drivenBy:(w._brain.top||[]).join(' + ')||null,hitRate:(w._sigStats&&w._sigStats.BRAIN)?w._sigStats.BRAIN.pct+'% ('+w._sigStats.BRAIN.w+'W/'+w._sigStats.BRAIN.l+'L)':null};}
       if(w.inds.memory&&w._mem&&w._mem.proj){_r.marketMemory={analogs:w._mem.proj.n,upRatePct:Math.round(w._mem.proj.up*100),projectedMovePct:+(w._mem.proj.ret*100).toFixed(2),projectedPrice:_p6(w._mem.proj.p),horizonBars:6};}
       if(Object.keys(_r).length)ro=_r;}catch(e){}
-    var ud=null;try{if(w.dr&&w.dr.shapes){var _ls=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;if(sh.t==='hline'&&sh.p>0)_ls.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray')&&sh.p2>0)_ls.push({kind:sh.t==='ray'?'ray':'trend line',endsAt:_p6(sh.p2),startsAt:_p6(sh.p1)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)_ls.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});});if(_ls.length)ud=_ls.slice(0,6);}}catch(e){}
+    var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
+    /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
+    var _lockedIds=[],_onIds=[],_wi=w.inds||{};INDS.forEach(function(t){if(MP_INDS[t[0]]&&!indAllowed())_lockedIds.push(t[0]);if(_wi[t[0]])_onIds.push(t[0]);});
+    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','hline','rect','arrow','text','fib','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded; negative = future (max -30)'};
     return {
+      chartTools:tools, aiDrawings:ad,
       symbol:w.sym, timeframe:tfWords(w.tf), barsLoaded:n,
       price:_p6(price), lastBarChangePct:chgBar, changePctOver150Bars:chgWin,
       loadedHigh:_p6(lh), loadedLow:_p6(ll), positionWithinRangePct:rangePos,
@@ -506,9 +510,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     };
   }
   function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+' / '+limit+' today';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}
-  function aiHistKey(w){return 'mp_ai_'+(w.id||w.sym);}
-  function aiHistLoad(w){try{var a=JSON.parse(localStorage.getItem(aiHistKey(w))||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
-  function aiHistSave(w,arr){try{if(arr.length>40)arr=arr.slice(-40);localStorage.setItem(aiHistKey(w),JSON.stringify(arr));}catch(e){}}
+  /* HISTORY IS PER SYMBOL, NOT PER WINDOW (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): the key used to be the
+     window id, so closing the window - or opening the same coin in another window, or the phone - started from nothing. One thread
+     per coin now: localStorage `mp_ai_s_<SYM>` (instant paint) mirrored to the server (`/api/ai/chart?hist=SYM`, KV per account),
+     so it survives a reload, a cleared cache and a second device. The mobile sheet reads and writes the same key. */
+  function aiHistKey(w){return 'mp_ai_s_'+String(w.sym||'').toUpperCase();}
+  function aiHistLoad(w){try{var a=JSON.parse(localStorage.getItem(aiHistKey(w))||'null');if(!Array.isArray(a)){var old=JSON.parse(localStorage.getItem('mp_ai_'+(w.id||w.sym))||'[]');a=Array.isArray(old)?old:[];if(a.length)localStorage.setItem(aiHistKey(w),JSON.stringify(a));}/* one-time carry-over of the old per-window thread */return a;}catch(e){return [];}}
+  function aiHistSave(w,arr,noPush){try{if(arr.length>40)arr=arr.slice(-40);localStorage.setItem(aiHistKey(w),JSON.stringify(arr));}catch(e){}if(!noPush)aiHistPush(w,arr);}
+  var _aiPushT={};
+  function aiHistPush(w,arr){var sym=String(w.sym||'').toUpperCase();if(!sym)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return;clearTimeout(_aiPushT[sym]);_aiPushT[sym]=setTimeout(function(){var slim=(arr||[]).slice(-40).map(function(m){var o={role:m.role,text:String(m.text||'').slice(0,3000),ts:m.ts||Date.now()};if(m.plan)o.plan=m.plan;if(m.acts)o.acts=m.acts.slice(0,12);if(m.chips)o.chips=m.chips.slice(0,4);return o;});fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:'hist',sym:sym,msgs:slim,clear:!slim.length})}).catch(function(){});},400);}
+  /* merge the server copy into the local one by timestamp (a message is the same message when role+ts match) and hand back the union */
+  function aiHistPull(w,cb){var sym=String(w.sym||'').toUpperCase();var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me||!sym){cb&&cb(null);return;}
+    fetch('/api/ai/chart?hist='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||!Array.isArray(j.msgs)||w.dead||String(w.sym||'').toUpperCase()!==sym){cb&&cb(null);return;}
+      var loc=aiHistLoad(w),seen={},all=[];loc.concat(j.msgs).forEach(function(m){if(!m||typeof m.text!=='string')return;var k=(m.role==='user'?'u':'a')+':'+(m.ts||0);if(seen[k])return;seen[k]=1;all.push(m);});all.sort(function(a,b){return (a.ts||0)-(b.ts||0);});
+      var changed=all.length!==loc.length;aiHistSave(w,all,!changed);cb&&cb(changed?all:null);});}
+  /* the user-visible receipt of what an answer DID on the chart ("Opened RSI", "Drew 4 shapes"), kept on the message so the
+     thread re-renders with it and the model sees it in the history as "[Did: ...]" */
+  function aiActsNote(m){return (m&&m.acts&&m.acts.length)?('\n[Did on the chart: '+m.acts.join('; ')+']'):'';}
   function mdLite(t){t=escHtml(String(t||''));t=t.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');t=t.replace(/`([^`]+)`/g,'<code>$1</code>');t=t.replace(/(^|\n)\s*[-*•]\s+/g,'$1• ');t=t.replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>');return t;}
   var COPY_SVG='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
   /* split a trade-plan JSON block (```plan {...}```) off the prose so it never shows as raw text, and parse it for the "Add to chart" button */
@@ -527,20 +545,79 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(plan.manage)h+='<div class="aipc-inv"><span>Your position</span>'+escHtml(String(plan.manage).slice(0,160))+'</div>';
     h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+'">On chart</button>'+(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+'">Trade it</button>':'')+'</div></div>';return h;}
   /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence - and to the closing fence not having streamed in yet. */
-  function aiSplitPlan(text){text=String(text||'');
-    var re=/```[a-zA-Z]*\s*([\s\S]*?)```/g,m,plan=null,idx=-1;
-    while((m=re.exec(text))){var b=m[1].trim();if(b.charAt(0)==='{'){try{var p=JSON.parse(b);if(_aiPlanOk(p)){plan=p;idx=m.index;}}catch(e){}}}
-    if(plan!=null)return {prose:text.slice(0,idx).replace(/\s+$/,''),plan:plan};
-    var oi=text.search(/```[a-zA-Z]*\s*\{/);if(oi>=0&&text.indexOf('```',oi+3)<0)return {prose:text.slice(0,oi).replace(/\s+$/,''),plan:null};/* opening fence streaming in - hide the partial JSON */
-    return {prose:text,plan:null};}
-  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;h+=aiPlanCard(m.plan,_pr);}h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
+  /* Every fenced JSON block comes off the prose: the ```plan object (bias/entry/stop...), the ```actions object ({actions:[],chips:[]})
+     or a bare array of actions. Prose = everything before the first parsed block; a fence still streaming in is hidden too. */
+  function aiSplit(text){text=String(text||'');
+    var re=/```[a-zA-Z]*\s*([\s\S]*?)```/g,m,plan=null,acts=null,chips=null,idx=-1;
+    while((m=re.exec(text))){var b=m[1].trim();if(b.charAt(0)!=='{'&&b.charAt(0)!=='[')continue;var p;try{p=JSON.parse(b);}catch(e){continue;}if(idx<0)idx=m.index;
+      if(Array.isArray(p)){acts=p;continue;}
+      if(p&&typeof p==='object'){if(Array.isArray(p.actions)||Array.isArray(p.chips)){if(Array.isArray(p.actions))acts=p.actions;if(Array.isArray(p.chips))chips=p.chips;}else if(_aiPlanOk(p))plan=p;}}
+    var prose;if(idx>=0)prose=text.slice(0,idx).replace(/\s+$/,'');else{var oi=text.search(/```[a-zA-Z]*\s*[\{\[]/);prose=(oi>=0&&text.indexOf('```',oi+3)<0)?text.slice(0,oi).replace(/\s+$/,''):text;}
+    return {prose:prose,plan:plan,actions:acts,chips:chips?chips.map(function(c){return String(c||'').trim().slice(0,40);}).filter(Boolean).slice(0,4):null};}
+  function aiSplitPlan(text){var s=aiSplit(text);return {prose:s.prose,plan:s.plan};}
+  /* ---- CHART CONTROL (2026-09-17, owner: "AI treba da ima kontrolu nad chartom"): the model's ```actions block is EXECUTED the
+     moment the answer lands - no button. Drawings go through the SAME engine the reader draws with (movable, deletable, saved per
+     symbol:TF), tagged by:'ai' + a batch id so one answer's drawings can be undone or cleared as a set. ---- */
+  function aiClearAi(w){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return s.by!=='ai';});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  function aiUndoBatch(w,b){if(!w||!w.dr||!w.dr.shapes)return 0;var n=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(s){return !(s.by==='ai'&&s.aiB===b);});var k=n-w.dr.shapes.length;if(k){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  /* one draw action -> engine shapes. barsAgo counts back from the newest candle (negative = the future, capped at 40 ahead); a
+     price outside 0.4x-2.5x of the last close is refused, so the model can never draw off the chart. A label becomes a text shape
+     at the shape's end (the engine has no labels on lines and zones). */
+  function aiShapeOf(a,n,px){if(!a||typeof a!=='object'||!(n>1))return null;
+    var L=function(ba){ba=+ba;if(!isFinite(ba))ba=0;ba=Math.max(-40,Math.min(n-1,Math.round(ba)));return n-1-ba;};
+    var okp=function(p){p=+p;return p>0&&(!(px>0)||(p>=px*0.4&&p<=px*2.5));};
+    var col=/^#[0-9a-fA-F]{6}$/.test(String(a.color||''))?a.color:'#3fd8e6',base={color:col,w:2,dash:!!a.dash,by:'ai'},out=[],lbl=String(a.label||'').trim().slice(0,40),sh=String(a.shape||'').toLowerCase();
+    if(sh==='hline'){if(!okp(a.p))return null;out.push(Object.assign({t:'hline',p:+a.p},base));if(lbl)out.push(Object.assign({t:'text',l:L(Math.min(n-1,Math.max(8,Math.round(n*0.08)))),p:+a.p,txt:lbl},base));}
+    else if(sh==='trend'||sh==='ray'||sh==='arrow'||sh==='rect'||sh==='fib'){if(!okp(a.p1)||!okp(a.p2))return null;var s=Object.assign({t:sh,l1:L(a.barsAgo1),p1:+a.p1,l2:L(a.barsAgo2),p2:+a.p2},base);if(sh==='rect')s.w=1;out.push(s);if(lbl&&sh!=='fib')out.push(Object.assign({t:'text',l:sh==='rect'?Math.min(s.l1,s.l2):s.l2,p:sh==='rect'?Math.max(s.p1,s.p2):s.p2,txt:lbl},base));}
+    else if(sh==='text'){if(!okp(a.p)||!a.txt)return null;out.push(Object.assign({t:'text',l:L(a.barsAgo),p:+a.p,txt:String(a.txt).trim().slice(0,40)},base));}
+    else if(sh==='vline'){out.push(Object.assign({t:'vline',l:L(a.barsAgo)},base));}
+    else return null;
+    return out;}
+  function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;var n=w.bars.length,px=+w.bars[n-1].close,k=0;
+    (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;var sh=aiShapeOf(a,n,px);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;});
+    if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}return k;}
+  /* symbol / timeframe changes shared by the header controls and the AI - one path, the same side effects */
+  function setWinSym(w,v){v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v||v===w.sym)return false;w.sym=v;var _si=w.el&&w.el.querySelector('.cwin-sym');if(_si)_si.value=v;w.mtOn=false;if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}importTrades(w);updateMTBtn(w);updateNotesBtn(w);loadData(w,true);savePersist();return true;}
+  function setWinTf(w,tf){tf=String(tf||'');var ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(!ok||tf===w.tf)return false;w.tf=tf;try{Array.prototype.forEach.call(w.el.querySelectorAll('.cwin-tf button'),function(b){b.classList.toggle('on',b.getAttribute('data-tf')===tf);});}catch(e){}if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}loadData(w,true);savePersist();return true;}
+  function whenLoaded(w,b0){return new Promise(function(res){var t0=Date.now();(function poll(){if(w.dead){res(false);return;}if(w.bars!==b0&&w.bars&&w.bars.length&&w._ls===w.sym&&w._lt===w.tf){res(true);return;}if(Date.now()-t0>9000){res(false);return;}setTimeout(poll,120);})();});}
+  function indName(id){for(var i=0;i<INDS.length;i++)if(INDS[i][0]===id)return INDS[i][1];return id;}
+  function aiSetInd(w,id,on,periods){var known=false;for(var i=0;i<INDS.length;i++)if(INDS[i][0]===id)known=true;if(!known)return null;
+    if(MP_INDS[id]&&!indAllowed())return indName(id)+' is locked (Premium indicator)';
+    on=on!==false;w.inds[id]=on;
+    if(on&&(id==='ema'||id==='sma')&&Array.isArray(periods)&&periods.length){var ps=periods.map(Number).filter(function(p){return p>=2&&p<=500;}).slice(0,3);if(ps.length){ps.sort(function(a,b){return a-b;});if(id==='ema')w.emaList=ps;else w.smaList=ps;}}
+    applyInds(w);updateIndN(w);savePersist();
+    try{if(indMenuEl&&indMenuW===w&&!indMenuEl.hidden){var it=indMenuEl.querySelector('.cwin-ind-item[data-ind="'+id+'"]');if(it)it.classList.toggle('on',on);}}catch(e){}
+    try{if(on&&window.__mpTrack)window.__mpTrack('ind',indName(id)+' (ai)');}catch(e){}
+    return (on?'Opened ':'Closed ')+indName(id)+((on&&(id==='ema'||id==='sma')&&periods&&periods.length)?' '+(id==='ema'?w.emaList:w.smaList).join('/'):'');}
+  /* run the model's actions on the window, in order: symbol/timeframe first (they reload the candles), everything else once the
+     new candles are in. Resolves with the receipt list. Never throws - a bad action is skipped, the rest still run. */
+  function aiExec(w,acts,batch){var out=[];if(!w||!Array.isArray(acts)||!acts.length)return Promise.resolve(out);
+    acts=acts.slice(0,14);var reload=false,b0=w.bars;
+    acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
+      if(a.a==='symbol'&&a.sym){if(setWinSym(w,a.sym)){reload=true;out.push('Switched to '+w.sym);}}
+      else if(a.a==='timeframe'&&a.tf){if(setWinTf(w,String(a.tf))){reload=true;out.push('Switched to '+tfLabel(w.tf));}}
+    }catch(e){}});
+    var p=reload?whenLoaded(w,b0):Promise.resolve(true);
+    return p.then(function(){if(w.dead)return out;var drawn=0,cleared=0;
+      acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
+        if(a.a==='indicator'&&a.id){var r=aiSetInd(w,String(a.id).toLowerCase(),a.on,a.periods);if(r)out.push(r);}
+        else if(a.a==='clear_ai'){cleared+=aiClearAi(w);}
+        else if(a.a==='draw'){drawn+=aiDrawActs(w,[a],batch);}
+        else if(a.a==='zoom'&&+a.bars>0){var n=w.bars?w.bars.length:0,k=Math.max(20,Math.min(600,Math.round(+a.bars)));if(n&&w.chart){w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k),to:n+6});out.push('Zoomed to '+k+' candles');}}
+      }catch(e){}});
+      if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
+      if(drawn){out.push('Drew '+drawn+' shape'+(drawn===1?'':'s'));try{if(window.__mpTrack)window.__mpTrack('draw',(w.sym||'')+' (ai)');}catch(e){}}
+      return out;});}
+  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;h+=aiPlanCard(m.plan,_pr);}
+    if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+escHtml(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';
+    h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
   function aiClearPlan(w){if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
     if(w&&w.dr&&w.dr.shapes){var before=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.shapes.length!==before&&w.dr.redraw)w.dr.redraw();}
     w&&(w._aiPlanObj=null);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent='Show on chart';});}}catch(e){}}
   /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
   function aiFlash(w,price){if(!w||!w.candle||!(price>0))return;try{var l=w.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{w.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
-  function aiDrawPlan(w,plan){
+  function aiDrawPlan(w,plan,noZones){ /* noZones: the model drew the setup itself with actions - only the level lines + labels then, no second set of rectangles */
     if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];
     function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title}));}catch(e){}}
     w._aiPlanObj=plan;
@@ -552,8 +629,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        drawing-engine rects flagged ai - drawn by the same canvas as the user's shapes, excluded from persistence */
     try{if(w.dr&&w.dr.shapes&&w.bars&&w.bars.length>2&&plan.entry>0){var n=w.bars.length-1,hb=Math.max(6,Math.min(60,Math.round(+plan.horizonBars||14))),e=+plan.entry,st=+plan.stop,tg=(plan.targets||[]).map(Number).filter(function(x){return x>0;});
       var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
-      if(st>0)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
-      if(tg.length){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
+      if(st>0&&!noZones)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
+      if(tg.length&&!noZones){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
       if(st>0)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1});
       tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1});});
       var rr=aiRR(plan);if(rr!=null)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1});
@@ -564,7 +641,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short - no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
   function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);
-    try{var _hh=aiHistLoad(w),_lp=null;for(var _i=_hh.length-1;_i>=0;_i--){if(_hh[_i].plan){_lp=_hh[_i].plan;break;}}if(_lp){chips=[['','Re-read now'],['Why this stop and not tighter?','Why this stop'],['What exactly would prove this plan wrong?','What kills it'],['What is the plan if it goes the other way instead?','Other side']];if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}}catch(e){}
+    try{var _hh=aiHistLoad(w),_lp=null,_la=null;for(var _i=_hh.length-1;_i>=0;_i--){if(!_la&&_hh[_i].role==='ai')_la=_hh[_i];if(_hh[_i].plan){_lp=_hh[_i].plan;break;}}if(_lp){chips=[['','Re-read now'],['Why this stop and not tighter?','Why this stop'],['What exactly would prove this plan wrong?','What kills it'],['What is the plan if it goes the other way instead?','Other side']];if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}
+      /* the model proposes the next chips itself (2026-09-17) - what the reader is most likely to say next, in their language; a chip IS the question */
+      if(_la&&_la.chips&&_la.chips.length){chips=_la.chips.map(function(c){return [c,c];});chips.push(['','Re-read now']);if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);}}catch(e){}
     box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
   var aiPremium=false;
   function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium - $3.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
@@ -573,6 +652,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* The panel stays attached to its chart window via an offset (aiOffX/aiOffY from the window's top-right) - so it moves WITH the window on drag/scroll, but the user can freely drag it anywhere (which just updates the offset). */
   function aiFollow(){
     if(!aiEl||aiEl.hidden||!aiW||!aiW.el||aiW.dead){aiRaf=0;if(aiW&&aiW.dead)aiClose();return;}
+    var _hs=aiW.sym+'|'+aiW.tf;if(aiEl._hs!==_hs){/* the window changed coin or timeframe (header pick or an AI action): header + thread follow it */var _sc=String(aiEl._hs||'').split('|')[0]!==aiW.sym;aiEl._hs=_hs;try{aiEl.querySelector('.cwin-ai-sym').textContent=aiW.sym+' · '+tfLabel(aiW.tf);if(_sc&&!aiBusy&&!aiEl.classList.contains('gated')){aiRenderBody(aiW);aiSetChips(aiW);aiHistPull(aiW,function(all){if(all&&!aiBusy&&aiEl&&!aiEl.hidden){aiRenderBody(aiW);aiSetChips(aiW);}});}}catch(e){}}
     if(!aiDragging){
       var r=aiW.el.getBoundingClientRect(),pw=aiEl.offsetWidth||360,ph=aiEl.offsetHeight||440,vw=window.innerWidth,vh=window.innerHeight;
       var left=Math.max(6,Math.min(r.right+aiOffX,vw-pw-6)),top=Math.max(6,Math.min(r.top+aiOffY,vh-ph-6));
@@ -591,7 +671,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiEl=el('<div class="cwin-ai-panel" hidden><div class="cwin-ai-h"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#7fb6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><b>Ask AI</b><span class="cwin-ai-sym"></span><span class="cwin-ai-quota"></span><button class="cwin-ai-clear" type="button" title="Clear this chat" aria-label="Clear chat"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button><button class="cwin-ai-x" type="button" aria-label="Close">&#10005;</button></div><div class="cwin-ai-body"></div><div class="cwin-ai-chips"><button class="cwin-ai-chip" data-q="">Quick read</button><button class="cwin-ai-chip" data-q="What is the trend and momentum here?">Trend</button><button class="cwin-ai-chip" data-q="Where are the key support and resistance levels?">Levels</button><button class="cwin-ai-chip" data-q="What would confirm or invalidate this setup?">What to watch</button></div><div class="cwin-ai-in"><input type="text" placeholder="Ask about this chart…" maxlength="280"><button class="cwin-ai-send" type="button" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></div><div class="cwin-ai-note">Reads the live chart each time · AI can be wrong · not financial advice</div></div>');
     document.body.appendChild(aiEl);
     aiEl.querySelector('.cwin-ai-x').addEventListener('click',aiClose);
-    aiEl.querySelector('.cwin-ai-clear').addEventListener('click',function(){if(aiW&&confirm('Clear this chart’s AI chat history?')){aiHistSave(aiW,[]);aiRenderBody(aiW);}});
+    aiEl.querySelector('.cwin-ai-clear').addEventListener('click',function(){if(aiW&&confirm('Clear this chart’s AI chat history and the AI drawings?')){aiHistSave(aiW,[]);aiClearAi(aiW);aiClearPlan(aiW);aiRenderBody(aiW);aiSetChips(aiW);}});
     var inp=aiEl.querySelector('.cwin-ai-in input');
     aiEl.querySelector('.cwin-ai-send').addEventListener('click',function(){askAi(inp.value);});
     inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();askAi(inp.value);}});
@@ -599,6 +679,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiEl.querySelector('.cwin-ai-body').addEventListener('click',function(e){
       var ch=e.target.closest&&e.target.closest('.cwin-ai-chip');if(ch){askAi(ch.getAttribute('data-q'));return;}
       var pr=e.target.closest&&e.target.closest('.aipr');if(pr){aiFlash(aiW,+pr.getAttribute('data-px'));return;}
+      var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=aiUndoBatch(aiW,+un.getAttribute('data-b'));un.remove();chartToast(k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):'Those drawings are already gone.');return;}
       var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){aiClearPlan(aiW);}else{try{aiDrawPlan(aiW,JSON.parse(ob.getAttribute('data-plan')));}catch(_){}}return;}
       var tb=e.target.closest&&e.target.closest('.aipc-trade');if(tb){try{var _pl=JSON.parse(tb.getAttribute('data-plan'));openQuickTrade({sym:aiW&&aiW.sym,side:_pl.bias==='short'?'short':'long',sl:+_pl.stop||null,tp:(+((_pl.targets||[])[0])||null),lev:+_pl.leverage||null});try{if(window.__mpTrack)window.__mpTrack('aitrade',(aiW&&aiW.sym)+' '+_pl.bias);}catch(_e){}}catch(_){}return;}
       var b=e.target.closest&&e.target.closest('.aicopy');if(!b)return;var t=b.parentNode.querySelector('.aitxt');if(t&&navigator.clipboard){navigator.clipboard.writeText(t.innerText||t.textContent||'').then(function(){var o=b.innerHTML;b.textContent='✓';setTimeout(function(){b.innerHTML=o;},1200);}).catch(function(){});}
@@ -613,8 +694,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!aiPremium){aiShowPremiumGate();return;}
     var w=aiW,q=String(question||'').trim();if(!q)q='Give me a sharp, practical read on this chart right now.';
     /* the Ask-AI mission credit and the 'ai' activity event are recorded server-side by /api/ai/chart (2026-09-02) - no client beacon, so desktop and the mobile sheet count identically */
-    var hist=aiHistLoad(w);hist.push({role:'user',text:q,ts:Date.now()});aiHistSave(w,hist);
-    var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text};});
+    var wk={sym:w.sym,id:w.id};/* the thread this question belongs to - fixed NOW, because an action may switch the window to another coin before the answer lands */
+    var uEntry={role:'user',text:q,ts:Date.now()};var hist=aiHistLoad(wk);hist.push(uEntry);aiHistSave(wk,hist,true);
+    var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+aiActsNote(m)};});
     aiBusy=true;aiRenderBody(w);
     var inp=aiEl.querySelector('.cwin-ai-in input');if(inp)inp.value='';
     var body=aiEl.querySelector('.cwin-ai-body');
@@ -627,7 +709,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail('Streaming not supported here.');});return;}
       var reader=resp.body.getReader(),dec=new TextDecoder(),buf='';
       function atBottom(){return (body.scrollHeight-body.scrollTop-body.clientHeight)<60;} // only auto-scroll if the user is already at the bottom - never yank them down while they read/scroll up
-      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplitPlan(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back - try again.</span>';return;}var atB=atBottom();bub.innerHTML=aiAiInner({text:prose,plan:sp.plan});if(atB)body.scrollTop=body.scrollHeight;var h2=aiHistLoad(w);h2.push({role:'ai',text:prose,plan:sp.plan||undefined,ts:Date.now()});aiHistSave(w,h2);if(sp.plan){try{aiDrawPlan(w,sp.plan);}catch(e){}aiSetChips(w);}}
+      function finish(){aiBusy=false;bub.classList.remove('streaming');var sp=aiSplit(acc),prose=sp.prose||acc;if(!got||!prose){bub.innerHTML='<span style="color:#ff8a80">No answer came back - try again.</span>';return;}var atB=atBottom();
+        var entry={role:'ai',text:prose,plan:sp.plan||undefined,chips:(sp.chips&&sp.chips.length)?sp.chips:undefined,ts:Date.now(),b:Date.now()};
+        bub.innerHTML=aiAiInner(entry);if(atB)body.scrollTop=body.scrollHeight;
+        var h2=aiHistLoad(wk);h2.push(entry);aiHistSave(wk,h2,true);aiSetChips(wk);
+        var hasDraw=(sp.actions||[]).some(function(a){return a&&a.a==='draw';});
+        if(sp.plan){try{aiDrawPlan(w,sp.plan,hasDraw);}catch(e){}}
+        /* EXECUTE, then write the receipt onto the message (thread + server) and re-render the bubble with it */
+        aiExec(w,sp.actions,entry.b).then(function(acts){
+          if(acts&&acts.length){entry.acts=acts;var h3=aiHistLoad(wk);for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts;break;}}aiHistSave(wk,h3);
+            try{if(bub.isConnected){var atB2=atBottom();bub.innerHTML=aiAiInner(entry);if(atB2)body.scrollTop=body.scrollHeight;}}catch(e){}
+            if(!acts.some(function(a){return /^Switched to/.test(a);}))chartToast(acts.join(' · '));}
+          else aiHistPush(wk,aiHistLoad(wk));
+          if(!w.dead&&String(w.sym||'').toUpperCase()!==String(wk.sym||'').toUpperCase()){/* the AI moved this window to another coin: carry the question + answer into that coin's thread so the reader keeps the context they were in */var hn=aiHistLoad(w);hn.push(uEntry,entry);aiHistSave(w,hn);if(aiW===w&&aiEl&&!aiEl.hidden){aiRenderBody(w);aiSetChips(w);aiEl.querySelector('.cwin-ai-sym').textContent=w.sym+' · '+tfLabel(w.tf);}}
+        });}
       function pump(){reader.read().then(function(res){
         if(res.done){finish();return;}
         buf+=dec.decode(res.value,{stream:true});var idx;
@@ -644,9 +739,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiEl.querySelector('.cwin-ai-sym').textContent=w.sym+' · '+tfLabel(w.tf);
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){aiShowGate();}else if(!aiPremium){aiShowPremiumGate();}else{aiEl.classList.remove('gated');aiSetChips(w);aiRenderBody(w);}
-    aiEl.hidden=false;
+    aiEl.hidden=false;aiEl._hs=w.sym+'|'+w.tf;
     if(aiRaf)cancelAnimationFrame(aiRaf);aiRaf=requestAnimationFrame(aiFollow);
-    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(!aiPremium){aiShowPremiumGate();}else{aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);}}}).catch(function(){});
+    /* the local thread painted at once; the server copy (other device, cleared cache) merges in behind it */
+    if(me)aiHistPull(w,function(all){if(all&&aiW===w&&!aiBusy&&aiEl&&!aiEl.hidden&&!aiEl.classList.contains('gated')){aiRenderBody(w);aiSetChips(w);}});
+    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(!aiPremium){aiShowPremiumGate();}else{var wasGated=!!(aiEl&&aiEl.classList.contains('gated'));aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);if(wasGated&&aiW===w&&!aiBusy&&!aiEl.hidden){aiSetChips(w);aiRenderBody(w);}/* the FIRST open of a session showed the Premium gate until this answer came back and then never painted the thread (the gate HTML stayed in the body until the next question) - now that the thread persists, that was the thread "lost" on every reload */}}}).catch(function(){});
   }
   /* Set a price alert straight from the chart - tap a level, it creates a real /api/alerts alert + draws an anchored line */
   // remove an alert's line + cancel it server-side (silent skips the toast / used on failed creates)
@@ -930,7 +1027,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;window.__mpAi={splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR};}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
+  try{window.__mpAiContext=aiContext;window.__mpAi={split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}
@@ -1180,11 +1277,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     w.el.addEventListener('pointerdown',function(){bringFront(w);});
     function clearDraw(){if(w.dr){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}}
     var _si=w.el.querySelector('.cwin-sym');
-    _si.addEventListener('change',function(){var v=String(this.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v){this.value=w.sym;return;}this.value=v;if(v===w.sym)return;w.sym=v;w.mtOn=false;clearDraw();importTrades(w);updateMTBtn(w);updateNotesBtn(w);loadData(w,true);savePersist();});
+    _si.addEventListener('change',function(){var v=String(this.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v){this.value=w.sym;return;}this.value=v;if(v===w.sym)return;setWinSym(w,v);});
     _si.addEventListener('mousedown',function(e){e.stopPropagation();});
     _si.addEventListener('click',function(e){e.stopPropagation();if(symMenuEl&&!symMenuEl.hidden&&symMenuInput===this){symMenuEl.hidden=true;return;}openSymMenu(this,w);}); // click the picker again to close it (toggle)
     if(window.mpLoadTokens)window.mpLoadTokens(function(){if(symMenuEl&&!symMenuEl.hidden)renderSymList();});
-    w.el.querySelector('.cwin-tf').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');w.tf=b.getAttribute('data-tf');clearDraw();loadData(w,true);savePersist();});
+    w.el.querySelector('.cwin-tf').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var tf=b.getAttribute('data-tf');if(!setWinTf(w,tf)){/* the same timeframe re-clicked = a fresh reload, as before */this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');clearDraw();loadData(w,true);savePersist();}});
     var indBtn=w.el.querySelector('.cwin-ind-btn');if(indBtn)indBtn.addEventListener('click',function(e){e.stopPropagation();openIndMenu(w,indBtn);});updateIndN(w);
     var aiBtn=w.el.querySelector('.cwin-ai');if(aiBtn)aiBtn.addEventListener('click',function(e){e.stopPropagation();openAiPanel(w,aiBtn);});
     var mtBtn=w.el.querySelector('.cwin-mt');if(mtBtn)mtBtn.addEventListener('click',function(e){e.stopPropagation();w.mtOn=!w.mtOn;importTrades(w);});updateMTBtn(w);

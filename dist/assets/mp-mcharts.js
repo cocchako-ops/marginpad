@@ -623,30 +623,81 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function buildAi(body,p){
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){body.innerHTML='<p style="color:#cfd4da;font-size:14px;line-height:1.5">'+mcT('mcAiSignin','Sign in (free) to ask the AI about this chart.')+'</p><button class="mfc-b on" data-auth-open style="margin-top:10px">'+mcT('mcSigninFree','Sign in free')+'</button>';return;}
-    body.innerHTML='<div class="mfc-ai-body" id="mfcAB"><div class="mfc-ai-msg ai">'+mcT('mcAskAbout','Ask me about')+' '+p.sym+' '+tfLabel(p.tf)+' - '+mcT('mcAiHint','trend, levels, or what the indicators suggest.')+'</div></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
-    var msgs=body.querySelector('#mfcAB'),inp=body.querySelector('#mfcAI'),btn=body.querySelector('#mfcAS'),busy=false;
-    function add(cls,txt){var d=document.createElement('div');d.className='mfc-ai-msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+    /* THE SAME THREAD AS THE DESKTOP (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): the sheet used to start empty on
+       every open and sent history:[] - so a follow-up had no context and closing the sheet lost everything. It now reads and writes
+       the per-symbol store mp-charts owns (localStorage + the server copy), sends the thread, executes the model's actions on the
+       pane and offers the chips the model proposes. */
+    var AI=window.__mpAi||null,WK={sym:p.sym};
+    body.innerHTML='<div class="mfc-ai-body" id="mfcAB"></div><div class="mfc-ai-chips" id="mfcAC"></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
+    var msgs=body.querySelector('#mfcAB'),chipsEl=body.querySelector('#mfcAC'),inp=body.querySelector('#mfcAI'),btn=body.querySelector('#mfcAS'),busy=false;
+    function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function hist(k){return AI?AI.histLoad(k||WK):[];}
+    function save(arr,noPush,k){if(AI)AI.histSave(k||WK,arr,noPush);}
+    function px(){return (p.bars&&p.bars.length)?+p.bars[p.bars.length-1].close:0;}
+    function tradeUrl(plan){return '/paper-trade?coin='+encodeURIComponent(p.sym)+'&side='+(plan.bias==='short'?'short':'long')+(plan.stop>0?'&sl='+encodeURIComponent(+plan.stop):'')+((plan.targets||[])[0]>0?'&tp='+encodeURIComponent(+plan.targets[0]):'')+(plan.leverage>0?'&lev='+Math.round(+plan.leverage):'');}
+    function aiHtml(m){var h=AI?AI.mdLite(m.text):esc(m.text);if(m.plan&&AI)h+=AI.planCard(m.plan,px());
+      if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+esc(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';return h;}
+    function row(m){return m.role==='user'?('<div class="mfc-ai-msg me">'+esc(m.text)+'</div>'):('<div class="mfc-ai-msg ai">'+aiHtml(m)+'</div>');}
+    function fixTrade(){/* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */Array.prototype.forEach.call(msgs.querySelectorAll('button.aipc-trade'),function(tb){try{var pl=JSON.parse(tb.getAttribute('data-plan')||'{}');var a=document.createElement('a');a.className='aipc-trade';a.href=tradeUrl(pl);a.textContent=tb.textContent||'Trade it';tb.parentNode.replaceChild(a,tb);}catch(e){}});}
+    function renderChips(){var arr=hist(),last=null;for(var i=arr.length-1;i>=0;i--){if(arr[i].role==='ai'){last=arr[i];break;}}
+      var chips=(last&&last.chips&&last.chips.length)?last.chips.map(function(c){return [c,c];}):[['',mcT('mcAiQuick','Read this chart')],['Draw the setup on the chart','Draw the setup'],['What do the indicators I have on say?','My indicators']];
+      if(arr.length)chips.push(['',mcT('mcAiReread','Re-read now')]);
+      chipsEl.innerHTML=chips.slice(0,5).map(function(c){return '<button class="cwin-ai-chip" type="button" data-q="'+esc(c[0])+'">'+esc(c[1])+'</button>';}).join('');}
+    function render(){var arr=hist();if(!arr.length)msgs.innerHTML='<div class="mfc-ai-msg ai">'+mcT('mcAskAbout','Ask me about')+' '+esc(p.sym)+' '+tfLabel(p.tf)+' - '+mcT('mcAiHint','trend, levels, or what the indicators suggest.')+' '+mcT('mcAiDo','I can also draw the setup and open indicators for you - just say so.')+'</div>';else msgs.innerHTML=arr.map(row).join('');fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();}
     function ctx(){
       // use the desktop's rich analysis builder (price, swing highs/lows, EMA/SMA, RSI, MACD, ATR…) so the AI can actually read the chart
-      try{if(window.__mpAiContext&&p.bars&&p.bars.length>10){var rc=window.__mpAiContext({sym:p.sym,tf:p.tf,bars:p.bars});if(rc){rc.indicatorsShown=Object.keys(p.inds).filter(function(k){return p.inds[k];});return rc;}}}catch(e){}
+      try{if(window.__mpAiContext&&p.bars&&p.bars.length>10){var rc=window.__mpAiContext({sym:p.sym,tf:p.tf,bars:p.bars,inds:p.inds,dr:p.w&&p.w.dr,emaList:[],smaList:[]});if(rc){var al=mAllowed(),on=[],lk=[];INDS.forEach(function(d){if(p.inds[d[0]])on.push(d[0]);if(mEx(d[0])&&!al)lk.push(d[0]);});
+        rc.indicatorsShown=on;rc.chartTools={indicators:{ids:INDS.map(function(d){return d[0];}),on:on,locked:lk,note:'moving averages are separate ids here: ema9 ema21 ema50 ema100 ema200 sma20 sma50 sma100 sma200'},shapes:['trend','ray','hline','rect','arrow','text','fib','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:p.tf,canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+p.bars.length+' candles are loaded; negative = future (max -30)'};return rc;}}}catch(e){}
       var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;return {symbol:p.sym,timeframe:tfLabel(p.tf),price:pr||null,note:'Only a few candles loaded - limited read.'};
     }
-    function send(){var q=(inp.value||'').trim();if(!q||busy)return;busy=true;inp.value='';add('me',q);var bub=add('ai','…');
-      fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:[],stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
+    function send(qIn){var q=String(qIn!=null?qIn:(inp.value||'')).trim();if(busy)return;if(!q)q='Give me a sharp, practical read on this chart right now.';busy=true;inp.value='';
+      var uEntry={role:'user',text:q,ts:Date.now()};var h=hist();h.push(uEntry);save(h,true);
+      var payloadHist=h.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+(AI?AI.actsNote(m):'')};});
+      render();var bub=document.createElement('div');bub.className='mfc-ai-msg ai';bub.textContent='…';msgs.appendChild(bub);msgs.scrollTop=msgs.scrollHeight;
+      fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
         if(!resp.ok){busy=false;bub.textContent=resp.status===429?'Daily AI limit reached - resets tomorrow.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI is part of MarginPad Premium ($3.99/mo) - upgrade from your profile to use it.':'Could not reach AI - try again.'));return;}
         if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';
-        var AI=window.__mpAi||null;
-        function show(final){var sp=AI?AI.splitPlan(acc):{prose:acc,plan:null};if(AI)bub.innerHTML=AI.mdLite(sp.prose||acc);else bub.textContent=sp.prose||acc;
-          if(final&&sp.plan&&AI){var pr=(p.bars&&p.bars.length)?+p.bars[p.bars.length-1].close:0;bub.innerHTML+=AI.planCard(sp.plan,pr);
-            /* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */
-            var tb=bub.querySelector('.aipc-trade');if(tb){var q='/paper-trade?coin='+encodeURIComponent(p.sym)+'&side='+(sp.plan.bias==='short'?'short':'long')+(sp.plan.stop>0?'&sl='+encodeURIComponent(+sp.plan.stop):'')+((sp.plan.targets||[])[0]>0?'&tp='+encodeURIComponent(+sp.plan.targets[0]):'')+(sp.plan.leverage>0?'&lev='+Math.round(+sp.plan.leverage):'');var a=document.createElement('a');a.className='aipc-trade';a.href=q;a.textContent='Trade it';tb.parentNode.replaceChild(a,tb);}
-            mAiDraw(p,sp.plan);p._aiPlanObj=sp.plan;}
-          msgs.scrollTop=msgs.scrollHeight;}
-        (function pump(){rd.read().then(function(res){if(res.done){busy=false;if(!acc)bub.textContent='No answer - try again.';else show(true);return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;show(false);}}catch(e){}}pump();}).catch(function(){busy=false;});})();
+        function show(){var sp=AI?AI.split(acc):{prose:acc};if(AI)bub.innerHTML=AI.mdLite(sp.prose||acc);else bub.textContent=sp.prose||acc;msgs.scrollTop=msgs.scrollHeight;}
+        function finish(){busy=false;if(!acc){bub.textContent='No answer - try again.';return;}var sp=AI?AI.split(acc):{prose:acc,plan:null,actions:null,chips:null};
+          var entry={role:'ai',text:sp.prose||acc,plan:sp.plan||undefined,chips:(sp.chips&&sp.chips.length)?sp.chips:undefined,ts:Date.now(),b:Date.now()};
+          var h2=hist();h2.push(entry);save(h2,true);bub.innerHTML=aiHtml(entry);fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();
+          if(sp.plan){mAiDraw(p,sp.plan);p._aiPlanObj=sp.plan;}
+          mAiExec(p,sp.actions,entry.b).then(function(acts){
+            if(acts&&acts.length){entry.acts=acts;var h3=hist();for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts;break;}}save(h3);if(bub.isConnected){bub.innerHTML=aiHtml(entry);fixTrade();}if(window.mpToast&&!acts.some(function(a){return /^Switched to/.test(a);}))window.mpToast({msg:acts.join(' · '),kind:'info',ms:3600,key:'aiacts'});}
+            else save(hist());
+            if(String(p.sym).toUpperCase()!==String(WK.sym).toUpperCase()){var nk={sym:p.sym},hn=hist(nk);hn.push(uEntry,entry);save(hn,false,nk);WK=nk;inp.placeholder=mcT('mcAskPh','Ask about')+' '+p.sym+'…';render();}});}
+        (function pump(){rd.read().then(function(res){if(res.done){finish();return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;show();}}catch(e){}}pump();}).catch(function(){finish();});})();
       }).catch(function(){busy=false;bub.textContent='Network error - try again.';});}
-    msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent='Show on chart';}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent='On chart';}catch(_){}}}});
-    btn.addEventListener('click',send);inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});setTimeout(function(){inp.focus();},40);}
+    msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}
+      var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=(AI&&p.w)?AI.undo(p.w,+un.getAttribute('data-b')):0;un.remove();if(window.mpToast)window.mpToast({msg:k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):'Those drawings are already gone.',kind:'info',ms:3000});return;}
+      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent='Show on chart';}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent='On chart';}catch(_){}}}});
+    chipsEl.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cwin-ai-chip');if(c)send(c.getAttribute('data-q'));});
+    btn.addEventListener('click',function(){send();});inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});
+    render();if(AI)AI.histPull(WK,function(all){if(all&&!busy&&body.isConnected)render();});
+    setTimeout(function(){inp.focus();},40);}
+  function mIndName(id){for(var i=0;i<INDS.length;i++)if(INDS[i][0]===id)return INDS[i][1];return id;}
+  /* the pane-side half of chart control (mirror of the desktop aiExec, by hand): symbol / timeframe / indicators are pane
+     operations here; drawing, clearing and undo go through the shared engine helpers on p.w */
+  function mAiExec(p,acts,batch){var out=[];if(!p||!Array.isArray(acts)||!acts.length)return Promise.resolve(out);acts=acts.slice(0,14);var reload=false,b0=p.bars;
+    acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
+      if(a.a==='symbol'&&a.sym){var v=String(a.sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(v&&v!==p.sym){p.sym=v;clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();mfcSave();reload=true;out.push('Switched to '+v);}}
+      else if(a.a==='timeframe'&&a.tf){var tf=String(a.tf),ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(ok&&tf!==p.tf){p.tf=tf;clearPaneDraw(p);loadKlines(p);syncBar();mfcSave();reload=true;out.push('Switched to '+tfLabel(tf));}}
+    }catch(e){}});
+    var pr=reload?new Promise(function(res){var t0=Date.now();(function poll(){if(p.dead){res(false);return;}if(p.bars!==b0&&p.bars&&p.bars.length){res(true);return;}if(Date.now()-t0>9000){res(false);return;}setTimeout(poll,120);})();}):Promise.resolve(true);
+    return pr.then(function(){var drawn=0,cleared=0,AI=window.__mpAi||null,al=mAllowed();
+      acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
+        if(a.a==='indicator'&&a.id){var id=String(a.id).toLowerCase(),on=a.on!==false,ids=[];
+          if((id==='ema'||id==='sma')&&Array.isArray(a.periods)&&a.periods.length)a.periods.forEach(function(per){ids.push(id+Math.round(+per));});else if(id==='ema'||id==='sma')ids.push(id==='ema'?'ema21':'sma50');else ids.push(id);
+          ids.forEach(function(k){var known=false;for(var i=0;i<INDS.length;i++)if(INDS[i][0]===k)known=true;if(!known)return;if(mEx(k)&&!al){out.push(mIndName(k)+' is locked (Premium indicator)');return;}p.inds[k]=on;out.push((on?'Opened ':'Closed ')+mIndName(k));try{if(on&&window.__mpTrack)window.__mpTrack('ind',mIndName(k)+' (ai)');}catch(_){}});
+          applyInds(p);mfcSave();}
+        else if(a.a==='clear_ai'&&AI&&p.w){cleared+=AI.clearAi(p.w);}
+        else if(a.a==='draw'&&AI&&p.w){drawn+=AI.draw(p.w,[a],batch);}
+        else if(a.a==='zoom'&&+a.bars>0&&p.chart&&p.bars&&p.bars.length){var n=p.bars.length,k2=Math.max(20,Math.min(600,Math.round(+a.bars)));p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k2),to:n+6});out.push('Zoomed to '+k2+' candles');}
+      }catch(e){}});
+      if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
+      if(drawn){out.push('Drew '+drawn+' shape'+(drawn===1?'':'s'));try{if(window.__mpTrack)window.__mpTrack('draw',(p.sym||'')+' (ai)');}catch(e){}}
+      return out;});}
   // ---- open / close ----
   var entered=false;
   function rotOff(){try{return localStorage.getItem('mp_mfc_rot_off')==='1';}catch(e){return false;}}
