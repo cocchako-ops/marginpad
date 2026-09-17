@@ -513,7 +513,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
     var _lockedIds=[],_onIds=[],_wi=w.inds||{};INDS.forEach(function(t){if(MP_INDS[t[0]]&&!indAllowed())_lockedIds.push(t[0]);if(_wi[t[0]])_onIds.push(t[0]);});
-    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','hline','forecast','text','fib','rect','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
+    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','pitchfork','forecast','text','hline','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
     /* the structure a human would draw on: real pivots, the levels price kept respecting, and how many bars one screen holds */
     var piv=null,lvls=null,struct=null;
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
@@ -631,9 +631,34 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var snapLv=function(p,tol){p=+p;if(!(p>0)||!snaps.length)return p;var best=p,bd=Infinity;
       for(var i=0;i<snaps.length;i++){var d=Math.abs(snaps[i]-p);if(d<bd){bd=d;best=snaps[i];}}
       return (px>0&&bd/px<=(tol||0.0035))?best:p;};
-    var snapBar=function(p,ba){p=+p;if(!(p>0)||!bars||ba==null||ba==='')return p;var i=last-Math.round(+ba);if(!(i>=0&&i<n))return p;
-      var b=bars[i];if(!b)return p;var hi=+b.high,lo=+b.low,d=Math.abs(p-hi)<=Math.abs(p-lo)?hi:lo;
+    var snapBar=function(p,ba,side){p=+p;if(!(p>0)||!bars||ba==null||ba==='')return p;var i=last-Math.round(+ba);if(!(i>=0&&i<n))return p;
+      var b=bars[i];if(!b)return p;var hi=+b.high,lo=+b.low;
+      var d=(side==='highs')?hi:((side==='lows')?lo:(Math.abs(p-hi)<=Math.abs(p-lo)?hi:lo));
       return (px>0&&Math.abs(d-p)/px<=0.015)?d:p;};
+    /* WHICH SIDE OF THE CANDLES THE LINE RIDES (2026-09-17): a trend line is drawn along the HIGHS or along the LOWS, never one of
+       each - and the model twice handed back a line it called "lower highs" anchored on a rising pair. The side is taken from what
+       the line claims to be, then from the measured structure, and BOTH anchors are snapped to that side. The line then rides the
+       wicks a human would have used, whatever the label says. */
+    var sideOf=function(a2){var t=String((a2&&(a2.side||a2.label))||'').toLowerCase();
+      if(/high|resist|down|bear|ceiling|supply/.test(t))return 'highs';
+      if(/low|support|up|bull|floor|demand|base/.test(t))return 'lows';
+      var st=String((ctx&&ctx.structure)||'').toLowerCase();
+      if(/lower highs/.test(st))return 'highs';if(/higher highs/.test(st))return 'lows';return null;};
+    /* A LINE MUST NOT CONTRADICT ITS OWN NAME (2026-09-17): the model kept handing back a RISING pair for a line it called
+       "Downtrend" / "Lower highs". A line along the highs has to fall and a line along the lows has to rise, so when the pair it
+       named breaks that, we do not draw the contradiction and we do not drop the idea either - we look through the pivots it was
+       given and take the most recent pair of that kind which actually satisfies it. Nothing suitable: no line. */
+    var fixPair=function(side,b1,q1,b2,q2){ // b1/q1 = older anchor, b2/q2 = newer
+      if(!side)return [b1,q1,b2,q2];
+      var okNow=(side==='highs')?(q1>q2):(q1<q2);
+      if(okNow)return [b1,q1,b2,q2];
+      var pv=(ctx&&ctx.piv)||[],kind=(side==='highs')?'high':'low';
+      var arr=pv.filter(function(x){return x.kind===kind;}); // newest first
+      for(var i=0;i<arr.length;i++)for(var j=i+1;j<arr.length;j++){
+        var nw=arr[i],od=arr[j];
+        if(Math.abs(od.barsAgo-nw.barsAgo)<4)continue;
+        if((side==='highs')?(od.price>nw.price):(od.price<nw.price))return [od.barsAgo,od.price,nw.barsAgo,nw.price];}
+      return null;};
     var rng=(ctx&&ctx.hi>ctx.lo)?(ctx.hi-ctx.lo):(px>0?px*0.2:0);
     var proj=function(l1,y1,l2,y2){return (l2===l1)?y2:(y1+(y2-y1)*((last+5-l1)/(l2-l1)));}; // where a ray actually is at the label column
     var bandMax=rng>0?rng*0.28:Infinity; // a band wider than ~a quarter of the chart is a wall, not a zone
@@ -660,27 +685,35 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var l1=back>0?L(back):last;
       var l2=L(a.barsAgo2!=null?Math.min(+a.barsAgo2,-8):-(back>0?10:14));
       if(l2<l1+8)l2=l1+(back>0?10:14);
-      out.push(Object.assign({},base,{t:'rect',l1:l1,p1:zl,l2:l2,p2:zh,w:1}));
-      label(zh);
+      out.push(Object.assign({},base,{t:'zone',l1:l1,p1:zl,l2:null,p2:zh,w:1,txt:lbl}));/* l2 null = run to the right edge; the engine prints both bounds and the band's width */
     }
     else if(sh==='channel'){
       if(!okp(a.p1)||!okp(a.p2))return null;
-      var c1=L(a.barsAgo1,Math.round(n*0.6)),c2=L(a.barsAgo2,0);
+      var _cb1=(a.barsAgo1==null?Math.round(n*0.6):+a.barsAgo1),_cb2=(a.barsAgo2==null?0:+a.barsAgo2);
+      var _csd=sideOf(a);
+      var _cp1=snapBar(a.p1,_cb1,_csd),_cp2=snapBar(a.p2,_cb2,_csd);
+      if(_cb2>_cb1){var _t=_cb1;_cb1=_cb2;_cb2=_t;var _tp2=_cp1;_cp1=_cp2;_cp2=_tp2;}
+      var _cfx=fixPair(_csd,_cb1,_cp1,_cb2,_cp2);if(!_cfx)return null;_cb1=_cfx[0];_cp1=_cfx[1];_cb2=_cfx[2];_cp2=_cfx[3];
+      var c1=L(_cb1,Math.round(n*0.6)),c2=L(_cb2,0);
       if(Math.abs(c2-c1)<4)return null;
-      a=Object.assign({},a,{p1:snapBar(a.p1,a.barsAgo1),p2:snapBar(a.p2,a.barsAgo2)});
-      var wdt=+a.width;if(!(wdt>0))wdt=Math.abs(+a.p2-+a.p1)*0.5||rng*0.08;wdt=Math.min(wdt,bandMax);
+      var wdt=+a.width;if(!(wdt>0))wdt=Math.abs(_cp2-_cp1)*0.5||rng*0.08;wdt=Math.min(wdt,bandMax);
       var up=(a.side==='below')?-1:1;
-      out.push(Object.assign({},base,{t:'ray',l1:c1,p1:+a.p1,l2:c2,p2:+a.p2}));
-      out.push(Object.assign({},base,{t:'ray',l1:c1,p1:+a.p1+wdt*up,l2:c2,p2:+a.p2+wdt*up,dash:true}));
-      label(proj(c1,+a.p1,c2,+a.p2));
+      out.push(Object.assign({},base,{t:'ray',l1:c1,p1:_cp1,l2:c2,p2:_cp2,anch:1,txt:lbl}));
+      out.push(Object.assign({},base,{t:'ray',l1:c1,p1:_cp1+wdt*up,l2:c2,p2:_cp2+wdt*up,dash:true}));
     }
     else if(sh==='trend'||sh==='ray'||sh==='fib'){
       if(!okp(a.p1)||!okp(a.p2))return null;
-      var t1=L(a.barsAgo1,Math.round(n*0.5)),tt2=L(a.barsAgo2,0);
+      /* ANCHORS RUN OLDEST FIRST (2026-09-17, owner: "linija ide u nazad a ne znam odakle"). The model handed back the NEWER pivot
+         as p1 and the older one as p2, so the ray extended backwards through the history instead of forward. Order is normalised
+         here, which makes "a ray always points into the future" a property of the tool rather than a hope. */
+      var _b1=(a.barsAgo1==null?Math.round(n*0.5):+a.barsAgo1),_b2=(a.barsAgo2==null?0:+a.barsAgo2);
+      var _sd=(sh==='fib')?null:sideOf(a);
+      var _p1=snapBar(a.p1,_b1,_sd),_p2=snapBar(a.p2,_b2,_sd);
+      if(_b2>_b1){var _tb=_b1;_b1=_b2;_b2=_tb;var _tp=_p1;_p1=_p2;_p2=_tp;}
+      if(sh!=='fib'){var _fx=fixPair(_sd,_b1,_p1,_b2,_p2);if(!_fx)return null;_b1=_fx[0];_p1=_fx[1];_b2=_fx[2];_p2=_fx[3];}
+      var t1=L(_b1,Math.round(n*0.5)),tt2=L(_b2,0);
       if(Math.abs(tt2-t1)<4)return null; // two anchors one candle apart are not a line
-      a=Object.assign({},a,{p1:snapBar(a.p1,a.barsAgo1),p2:snapBar(a.p2,a.barsAgo2)});
-      out.push(Object.assign({},base,{t:sh,l1:t1,p1:+a.p1,l2:tt2,p2:+a.p2}));
-      if(sh!=='fib')label(sh==='ray'?proj(t1,+a.p1,tt2,+a.p2):+a.p2);
+      out.push(Object.assign({},base,{t:sh,l1:t1,p1:_p1,l2:tt2,p2:_p2,anch:sh==='fib'?0:1,txt:sh==='fib'?'':lbl}));
     }
     else if(sh==='arrow'){
       if(!okp(a.p2))return null; // only the destination is required now - the route is the chart's job, not the model's
@@ -692,6 +725,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       out.push(Object.assign({},base,{t:'path',pts:pp,head:1,w:2}));
       label(hp2);
     }
+    else if(sh==='level'||sh==='hray'){ // a level that became relevant at a candle: starts there, runs right, price printed at the anchor
+      if(!okp(a.p))return null;var hp3=snapLv(a.p);
+      out.push(Object.assign({},base,{t:'hray',p:hp3,l1:L(a.barsAgo1!=null?a.barsAgo1:a.barsAgo,Math.round(n*0.25)),txt:lbl}));}
+    else if(sh==='pattern'||sh==='poly'){ // head-and-shoulders, triangles, wedges, flags, Elliott counts - one primitive
+      var raw=Array.isArray(a.points)?a.points:[];if(raw.length<2)return null;
+      var pp2=[];raw.slice(0,12).forEach(function(q){if(!q||!okp(q.price))return;
+        pp2.push({l:L(q.barsAgo,0),p:snapBar(q.price,q.barsAgo),lab:String(q.label||'').slice(0,14)});});
+      if(pp2.length<2)return null;
+      out.push(Object.assign({},base,{t:'poly',pts:pp2}));
+      if(lbl)label(pp2[pp2.length-1].p);}
+    else if(sh==='position'||sh==='rr'){ // the broker terminal's risk-reward block
+      if(!okp(a.entry)||!okp(a.stop))return null;
+      var tg2=(Array.isArray(a.targets)?a.targets:[a.target]).map(Number).filter(function(v){return okp(v);}).slice(0,3);
+      out.push(Object.assign({},base,{t:'pos',l1:L(a.barsAgo1!=null?a.barsAgo1:6,6),p:snapLv(a.entry,0.002),stop:snapLv(a.stop,0.002),tgts:tg2.map(function(v){return snapLv(v,0.002);}),w:1}));}
+    else if(sh==='fibext'||sh==='fibx'){ // extension: the AB leg projected from C
+      if(!okp(a.p1)||!okp(a.p2)||!okp(a.p3))return null;
+      out.push(Object.assign({},base,{t:'fibx',l1:L(a.barsAgo1,Math.round(n*0.5)),p1:snapBar(a.p1,a.barsAgo1),l2:L(a.barsAgo2,Math.round(n*0.3)),p2:snapBar(a.p2,a.barsAgo2),l3:L(a.barsAgo3,Math.round(n*0.1)),p3:snapBar(a.p3,a.barsAgo3),w:1}));}
+    else if(sh==='pitchfork'||sh==='fork'){
+      if(!okp(a.p1)||!okp(a.p2)||!okp(a.p3))return null;
+      out.push(Object.assign({},base,{t:'fork',l1:L(a.barsAgo1,Math.round(n*0.6)),p1:snapBar(a.p1,a.barsAgo1),l2:L(a.barsAgo2,Math.round(n*0.4)),p2:snapBar(a.p2,a.barsAgo2),l3:L(a.barsAgo3,Math.round(n*0.2)),p3:snapBar(a.p3,a.barsAgo3),txt:lbl}));}
     else if(sh==='text'){if(!okp(a.p)||!a.txt)return null;out.push(Object.assign({},base,{t:'text',l:L(a.barsAgo,2),p:+a.p,txt:String(a.txt).trim().slice(0,40)}));}
     else if(sh==='vline'){out.push(Object.assign({},base,{t:'vline',l:L(a.barsAgo,0)}));}
     else return null;
@@ -803,7 +856,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       poolsNow(w.bars).forEach(function(q){if(q&&q.price>0&&Math.abs(q.price-px)/px<=0.09)snap.push(q.price);});
       snap.push(lo,hi);}catch(e){}
     var rhythm=null;try{rhythm=rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16),px);}catch(e){}
-    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars,rhythm:rhythm,px:px};
+    var struct2=null;try{var _pv2=pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16),_h2=_pv2.filter(function(q){return q.kind==='high';}).slice(0,3),_l2=_pv2.filter(function(q){return q.kind==='low';}).slice(0,3);
+      if(_h2.length>=2&&_l2.length>=2)struct2=(_h2[0].price>_h2[1].price&&_l2[0].price>_l2[1].price)?'higher highs and higher lows':((_h2[0].price<_h2[1].price&&_l2[0].price<_l2[1].price)?'lower highs and lower lows':'mixed');}catch(e){}
+    var ctx={lo:lo,hi:hi,snap:snap,bars:w.bars,rhythm:rhythm,px:px,structure:struct2,piv:(function(){try{return pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(n/40))),16);}catch(e){return [];}})()};
     var ghost=0;
     (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;
       var _sh=String(a.shape||'').toLowerCase();
@@ -884,9 +939,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
       if(st>0&&!noZones)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
       if(tg.length&&!noZones){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
-      if(st>0)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1,bg:1});
-      tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1,bg:1});});
-      var rr=aiRR(plan);if(rr!=null)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1,bg:1});
+      if(st>0&&!noZones)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1,bg:1});
+      if(!noZones)tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1,bg:1});});
+      var rr=aiRR(plan);if(rr!=null&&!noZones)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1,bg:1});
       if(!noZones&&plan.zone&&+plan.zone.from>0&&+plan.zone.to>0)w.dr.shapes.push({t:'rect',l1:Math.max(0,n-hb),p1:+plan.zone.from,l2:n+hb,p2:+plan.zone.to,color:'#ffb020',w:1,dash:true,ai:1});
       if(w.dr.redraw)w.dr.redraw();}}catch(e){}
     try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.add('on');b.textContent='On chart';});}}catch(e){}
@@ -1115,8 +1170,95 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-AL*Math.cos(ang-0.42),b[1]-AL*Math.sin(ang-0.42));
         ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-AL*Math.cos(ang+0.42),b[1]-AL*Math.sin(ang+0.42));ctx.stroke();}
       ctx.restore();}
+    /* ---- a broker-grade kit (2026-09-17, owner: "za vrhunsku analizu trebaju i vrhunski alati ... alate za crtanje koje koriste
+       brokeri, berze i slicno, da moze da nacrta kompleksno koliko god hoce"). Everything here is anchored in (bar, price) like
+       the rest of the engine, so it pans and zooms with the candles. ---- */
+    function inkTxt(x,y,str,col,size,align){ // a readable number anywhere on the chart: the ground first, then the ink
+      if(!str)return;ctx.save();ctx.font='700 '+(size||10)+"px 'Space Mono',monospace";var tw=ctx.measureText(str).width;
+      if(align==='r')x-=tw;else if(align==='c')x-=tw/2;
+      ctx.fillStyle='rgba(10,13,17,.86)';ctx.fillRect(x-3,y-(size||10),tw+6,(size||10)+4);
+      ctx.fillStyle=col;ctx.textBaseline='alphabetic';ctx.fillText(str,x,y);ctx.restore();}
+    function anchDot(x,y,col){ctx.save();ctx.beginPath();ctx.arc(x,y,3.4,0,6.2832);ctx.fillStyle='#0c1116';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=col;ctx.stroke();ctx.restore();}
+    var _pct=function(a,b){return (b&&isFinite(a)&&isFinite(b))?(((a-b)/b)*100):null;};
+    /* ZONE: from the candle it formed on, far to the right, with BOTH bounds and the band's own height printed on it - the owner
+       could not read where a liquidity pool started or ended, and a box with no numbers is decoration. */
+    function drawZone(s){var q=proj2(s);if(q.y1==null||q.y2==null)return;
+      var x1=(s.l1==null)?0:xOf(s.l1),x2=(s.l2==null)?w.dr.W:xOf(s.l2);
+      if(x1==null)x1=0;if(x2==null)x2=w.dr.W;
+      var xa=Math.min(x1,x2),xb=Math.max(x1,x2),ya=Math.min(q.y1,q.y2),yb=Math.max(q.y1,q.y2);
+      if(xb-xa<4)xb=xa+4;if(yb-ya<3){ya-=1.5;yb+=1.5;}
+      ctx.save();ctx.setLineDash(s.dash?[6,5]:[]);ctx.lineWidth=1;ctx.strokeStyle=s.color;
+      ctx.fillStyle=s.color;ctx.globalAlpha=.10;ctx.fillRect(xa,ya,xb-xa,yb-ya);
+      ctx.globalAlpha=.75;ctx.beginPath();ctx.moveTo(xa,ya);ctx.lineTo(xb,ya);ctx.moveTo(xa,yb);ctx.lineTo(xb,yb);ctx.stroke();
+      ctx.globalAlpha=.35;ctx.beginPath();ctx.moveTo(xa,ya);ctx.lineTo(xa,yb);ctx.stroke();ctx.restore();
+      var hi=Math.max(+s.p1,+s.p2),lo=Math.min(+s.p1,+s.p2),th=_pct(hi,lo);
+      inkTxt(xa+6,ya-3,cwFmt(hi),s.color,10);
+      inkTxt(xa+6,yb+12,cwFmt(lo),s.color,10);
+      if(s.txt)inkTxt(xa+6,(ya+yb)/2+4,String(s.txt)+(th!=null?'  ('+th.toFixed(2)+'% wide)':''),s.color,10.5);
+      else if(th!=null)inkTxt(xa+6,(ya+yb)/2+4,th.toFixed(2)+'% wide',s.color,10);}
+    /* HORIZONTAL RAY: a level that only became relevant at a certain candle, so it starts there instead of crossing the history */
+    function drawHray(s){var y=yOf(s.p),x1=xOf(s.l1);if(y==null)return;if(x1==null)x1=0;
+      ctx.save();setStyle(s);ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(w.dr.W,y);ctx.stroke();ctx.restore();
+      anchDot(x1,y,s.color);inkTxt(x1+8,y-5,cwFmt(s.p)+(s.txt?'  '+s.txt:''),s.color,10);}
+    /* POLYLINE with named points: one primitive for head-and-shoulders, triangles, wedges, flags and Elliott counts */
+    function drawPoly(s){var p=s.pts||[];if(p.length<2)return;var pts=[],i;
+      for(i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;pts.push([xx,yy,p[i].lab]);}
+      if(pts.length<2)return;
+      ctx.save();setStyle(s);ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+      for(i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();ctx.restore();
+      for(i=0;i<pts.length;i++){anchDot(pts[i][0],pts[i][1],s.color);
+        if(pts[i][2])inkTxt(pts[i][0],pts[i][1]-8,String(pts[i][2]).slice(0,14),s.color,10,'c');}}
+    /* POSITION / RISK-REWARD tool - the one every broker terminal has: entry, the risk block and the reward block, with the
+       prices, the distances and the reward-to-risk printed on them. */
+    function drawPos(s){var ye=yOf(s.p),ys=yOf(s.stop),x1=xOf(s.l1);if(ye==null||ys==null)return;if(x1==null)x1=0;
+      var tg=(s.tgts||[]).map(Number).filter(function(v){return v>0;}),xb=w.dr.W-2;
+      var g=tg.length?yOf(tg[tg.length-1]):null;
+      ctx.save();
+      if(ys!=null){ctx.fillStyle='#ff5a4d';ctx.globalAlpha=.09;ctx.fillRect(x1,Math.min(ye,ys),xb-x1,Math.abs(ys-ye));
+        ctx.globalAlpha=.6;ctx.strokeStyle='#ff5a4d';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(x1,Math.min(ye,ys),xb-x1,Math.abs(ys-ye));}
+      if(g!=null){ctx.fillStyle='#2ebd85';ctx.globalAlpha=.09;ctx.fillRect(x1,Math.min(ye,g),xb-x1,Math.abs(g-ye));
+        ctx.globalAlpha=.6;ctx.strokeStyle='#2ebd85';ctx.lineWidth=1;ctx.strokeRect(x1,Math.min(ye,g),xb-x1,Math.abs(g-ye));}
+      ctx.globalAlpha=1;ctx.strokeStyle='#3fd8e6';ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x1,ye);ctx.lineTo(xb,ye);ctx.stroke();ctx.restore();
+      var rr=null;if(tg.length&&Math.abs(+s.p-+s.stop)>0)rr=Math.abs(tg[0]-+s.p)/Math.abs(+s.p-+s.stop);
+      /* THE REWARD-TO-RISK IS THE NUMBER THAT SAYS WHETHER THIS IS A TRADE AT ALL, so it is coloured like a verdict rather than
+         printed like a fact: a plan risking more than it stands to make is a blunder, and the reader should see that at a glance
+         (owner 2026-09-17: "tu sam da te odvratim od blundersa" - one model plan came back at R:R 0.29). */
+      var rc='#3fd8e6',rw='';
+      if(rr!=null){if(rr<1){rc='#ff5a4d';rw='  POOR - risks more than it makes';}else if(rr<1.5){rc='#ffb020';rw='  thin';}else if(rr>=2.5)rc='#41e3a3';}
+      inkTxt(x1+7,ye-5,'ENTRY '+cwFmt(s.p)+(rr!=null?'   R:R '+rr.toFixed(2)+rw:''),rr!=null?rc:'#3fd8e6',10.5);
+      inkTxt(x1+7,ys+(ys>ye?12:-4),'STOP '+cwFmt(s.stop)+'  '+(_pct(+s.stop,+s.p)||0).toFixed(2)+'%','#ff8a80',10);
+      tg.forEach(function(v,i){var yy=yOf(v);if(yy==null)return;inkTxt(x1+7,yy+(yy<ye?-4:12),'TP'+(i+1)+' '+cwFmt(v)+'  '+(_pct(v,+s.p)||0).toFixed(2)+'%','#41e3a3',10);});}
+    /* FIBONACCI EXTENSION - three points (A, B, C): projections of the AB leg measured from C */
+    function drawFibx(s){var pA=+s.p1,pB=+s.p2,pC=+s.p3,xa=xOf(s.l1),xb=xOf(s.l2),xc=xOf(s.l3);
+      if(!(pA>0&&pB>0&&pC>0))return;var LV=[0,0.618,1,1.618,2.618];
+      ctx.save();ctx.lineWidth=1;ctx.font="10px 'Space Mono',monospace";
+      if(xa!=null&&xb!=null&&xc!=null){ctx.globalAlpha=.4;ctx.strokeStyle=s.color;ctx.setLineDash([4,3]);
+        ctx.beginPath();ctx.moveTo(xa,yOf(pA));ctx.lineTo(xb,yOf(pB));ctx.lineTo(xc,yOf(pC));ctx.stroke();ctx.setLineDash([]);}
+      var x0=(xc==null?0:xc);
+      LV.forEach(function(L){var pr=pC+(pB-pA)*L,yy=yOf(pr);if(yy==null)return;
+        ctx.globalAlpha=(L===1||L===1.618)?.85:.45;ctx.strokeStyle=s.color;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(w.dr.W,yy);ctx.stroke();
+        ctx.globalAlpha=1;inkTxt(x0+6,yy-3,(L*100).toFixed(1)+'%  '+cwFmt(pr),s.color,9.5);});
+      ctx.restore();}
+    /* ANDREWS PITCHFORK - median line from A through the midpoint of BC, with the two parallels */
+    function drawFork(s){var xa=xOf(s.l1),xb=xOf(s.l2),xc=xOf(s.l3),ya=yOf(s.p1),yb=yOf(s.p2),yc=yOf(s.p3);
+      if(xa==null||xb==null||xc==null||ya==null||yb==null||yc==null)return;
+      var mx=(xb+xc)/2,my=(yb+yc)/2,en=rayEnd(xa,ya,mx,my),dx=(yb-yc)?0:0;
+      ctx.save();setStyle(s);ctx.globalAlpha=.9;
+      ctx.beginPath();ctx.moveTo(xa,ya);ctx.lineTo(en.x,en.y);ctx.stroke();
+      ctx.globalAlpha=.6;ctx.setLineDash([5,4]);
+      [[xb,yb],[xc,yc]].forEach(function(pt){var ox=pt[0]-mx,oy=pt[1]-my,e2=rayEnd(xa+ox,ya+oy,pt[0],pt[1]);
+        ctx.beginPath();ctx.moveTo(xa+ox,ya+oy);ctx.lineTo(e2.x,e2.y);ctx.stroke();});
+      ctx.globalAlpha=.25;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(xb,yb);ctx.lineTo(xc,yc);ctx.stroke();
+      ctx.restore();anchDot(xa,ya,s.color);anchDot(xb,yb,s.color);anchDot(xc,yc,s.color);
+      if(s.txt)inkTxt(en.x,en.y-6,String(s.txt).slice(0,18),s.color,10,'r');}
     function strokeShape(s){
       if(s.t==='path'){drawPath(s);return;}
+      if(s.t==='zone'){drawZone(s);return;}
+      if(s.t==='hray'){drawHray(s);return;}
+      if(s.t==='poly'){drawPoly(s);return;}
+      if(s.t==='pos'){drawPos(s);return;}
+      if(s.t==='fibx'){drawFibx(s);return;}
+      if(s.t==='fork'){drawFork(s);return;}
       if(s.t==='fib'){drawFib(s);return;}
       if(s.t==='measure'){drawMeasure(s);return;}
       if(s.t==='text'){drawText(s);return;}
@@ -1125,6 +1267,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else if(s.t==='trend'||s.t==='ray'||s.t==='arrow'){var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null){ctx.restore();return;}
         var ex=q.x2,ey=q.y2;if(s.t==='ray'){var en=rayEnd(q.x1,q.y1,q.x2,q.y2);ex=en.x;ey=en.y;}
         ctx.beginPath();ctx.moveTo(q.x1,q.y1);ctx.lineTo(ex,ey);ctx.stroke();
+        if(s.anch){anchDot(q.x1,q.y1,s.color);anchDot(q.x2,q.y2,s.color);if(s.txt)inkTxt(q.x1+8,q.y1-6,String(s.txt).slice(0,20),s.color,10);}/* a line that starts off-screen with a label in the gutter told the reader nothing about where it comes FROM (owner 2026-09-17) */
         if(s.t==='arrow'){var ang=Math.atan2(q.y2-q.y1,q.x2-q.x1),AL=7+(s.w||2)*2.5;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(q.x2,q.y2);ctx.lineTo(q.x2-AL*Math.cos(ang-0.45),q.y2-AL*Math.sin(ang-0.45));ctx.moveTo(q.x2,q.y2);ctx.lineTo(q.x2-AL*Math.cos(ang+0.45),q.y2-AL*Math.sin(ang+0.45));ctx.stroke();}}
       else if(s.t==='hline'){var hy=yOf(s.p);if(hy==null){ctx.restore();return;}ctx.beginPath();ctx.moveTo(0,hy);ctx.lineTo(w.dr.W,hy);ctx.stroke();ctx.setLineDash([]);ctx.font="10px 'Space Mono',monospace";ctx.fillStyle=s.color;ctx.textBaseline='bottom';var pt=cwFmt(s.p);ctx.fillText(pt,Math.max(4,w.dr.W-ctx.measureText(pt).width-6),hy-3);}
       else if(s.t==='vline'){var vx=xOf(s.l);if(vx==null){ctx.restore();return;}ctx.beginPath();ctx.moveTo(vx,0);ctx.lineTo(vx,w.dr.H);ctx.stroke();}
@@ -1132,7 +1275,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var xa=Math.min(q2.x1,q2.x2),ya=Math.min(q2.y1,q2.y2),ww=Math.abs(q2.x2-q2.x1),hh=Math.abs(q2.y2-q2.y1);
         ctx.fillStyle=s.color;ctx.globalAlpha=.11;ctx.fillRect(xa,ya,ww,hh);ctx.globalAlpha=1;ctx.strokeRect(xa,ya,ww,hh);}
       ctx.restore();}
-    function drawHandles(s){var hs=[];if(s.t==='path')return;
+    function drawHandles(s){var hs=[];if(s.t==='path'||s.t==='poly'||s.t==='zone'||s.t==='pos'||s.t==='fibx'||s.t==='fork'||s.t==='hray')return;
       if(s.t==='hline'){var hy=yOf(s.p);if(hy!=null)hs.push([w.dr.W/2,hy]);}
       else if(s.t==='vline'){var vx=xOf(s.l);if(vx!=null)hs.push([vx,w.dr.H/2]);}
       else if(s.t==='text'){var b=s._bb;if(b)hs.push([b.x-8,b.y-b.h/2]);}
@@ -1177,7 +1320,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(s.t==='hline'){var hy=yOf(s.p);return hy!=null&&Math.abs(y-hy)<=TH;}
       if(s.t==='vline'){var vx=xOf(s.l);return vx!=null&&Math.abs(x-vx)<=TH;}
       if(s.t==='text'){var b=s._bb;return !!b&&x>=b.x-6&&x<=b.x+b.w+6&&y>=b.y-b.h-6&&y<=b.y+6;}
-      if(s.t==='pen'||s.t==='path'){var p=s.pts||[],lx=null,ly=null;for(var i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;if(lx!=null&&d2seg(x,y,lx,ly,xx,yy)<=TH)return true;lx=xx;ly=yy;}return false;}
+      if(s.t==='hray'){var hy2=yOf(s.p),hx2=xOf(s.l1);return hy2!=null&&Math.abs(y-hy2)<=TH&&(hx2==null||x>=hx2-TH);}
+      if(s.t==='zone'||s.t==='pos'||s.t==='fibx'||s.t==='fork'){return false;}/* composite tools are not draggable - they are rebuilt from the analysis */
+      if(s.t==='pen'||s.t==='path'||s.t==='poly'){var p=s.pts||[],lx=null,ly=null;for(var i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;if(lx!=null&&d2seg(x,y,lx,ly,xx,yy)<=TH)return true;lx=xx;ly=yy;}return false;}
       if(s.t==='fib'){for(var j=0;j<FIBLV.length;j++){var fy=yOf(s.p1+(s.p2-s.p1)*FIBLV[j]);if(fy!=null&&Math.abs(y-fy)<=5)return true;}return false;}
       var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null)return false;
       if(s.t==='trend'||s.t==='arrow')return d2seg(x,y,q.x1,q.y1,q.x2,q.y2)<=TH;
