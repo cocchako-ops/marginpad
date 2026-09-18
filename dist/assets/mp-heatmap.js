@@ -232,7 +232,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var ly = Y(tp.price);
       if (ly < 12 || ly > PH - 12) return;
       var nar = W < 520;
-      var txt = (tp.long ? (nar ? 'LONG ' : 'LONG ZONE ') : (nar ? 'SHORT ' : 'SHORT ZONE ')) + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
+      var txt = (tp.long ? (nar ? 'LONGS ' : 'LONGS LIQUIDATE ') : (nar ? 'SHORTS ' : 'SHORTS LIQUIDATE ')) + fpx(tp.price) + (S.price > 0 ? '  ' + ((tp.price - S.price) / S.price * 100 >= 0 ? '+' : '') + ((tp.price - S.price) / S.price * 100).toFixed(1) + '%' : '');
       ctx.font = '700 ' + (nar ? 10 : 11) + 'px "Space Mono",monospace';
       var tw = ctx.measureText(txt).width;
       ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 17);
@@ -360,7 +360,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
     ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
     ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-    var zt = 'ZONES x avg';
+    var zt = W < 90 ? 'x TYPICAL' : 'LEVELS - x TYPICAL';
     var zw = ctx.measureText(zt).width;
     ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect((W - zw) / 2 - 4, 2, zw + 8, 13);
     ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText(zt, W / 2, 12);
@@ -439,6 +439,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function dotNear(e, mx, my, slack, floor) { var d = Math.hypot(S.X(e.ts / 1000) - mx, S.Y(e.price) - my); return d <= Math.max(floor, dotR(e) + slack) ? d : -1; }
   function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
   function relTxt(r) { return (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
+  function relPhrase(r, sh) {
+    var t = relTxt(r);
+    if (r >= 1.15) return (sh ? 'about <b>' + t + '</b> heavier than a typical level' : 'About <b>' + t + '</b> heavier than a typical level on this screen.');
+    if (r <= 0.85) return (sh ? 'lighter than a typical level <b>(' + t + ')</b>' : 'Lighter than a typical level on this screen <b>(' + t + ')</b>.');
+    return (sh ? 'about as heavy as a typical level' : 'About as heavy as a typical level on this screen.');
+  }
   // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
   // from price so one stray far-out band can never flatten the candles into a hairline.
   function frameZones(lo, hi) {
@@ -612,7 +618,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += '<div class="hm-tg-exp">Projected leverage zones near the price — <span style="color:#66d3a5">green</span> is where longs would liquidate, <span style="color:#ff8f86">red</span> where shorts would. Estimated from volume × leverage, not realized liquidations. Tap one to show it on the map.</div>';
+    h += '<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>';
     S.tgEl.innerHTML = h;
   }
 
@@ -655,12 +661,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
       var h = '';
       if (best) { var s2 = best.s, r2 = relOf(s2);
-        h += '<b>' + fpx(s2.price) + '</b> - <span class="' + (s2.long ? 'l' : 's') + '">projected ' + (s2.long ? 'long' : 'short') + '-liq zone</span>';
-        if (r2 > 0) h += '<br><b>' + relTxt(r2) + '</b> the average band on screen <span style="color:#8b95a1">(model)</span>';
-        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + '</b> really liquidated here in 24h <span style="color:#8b95a1">(measured)</span>' : '<span style="color:#8b95a1">nothing measured liquidating here in 24h</span>');
+        h += '<b>' + fpx(s2.price) + '</b> - where <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs' : 'shorts') + '</span> get liquidated';
+        if (r2 > 0) h += '<br>' + relPhrase(r2, 1) + ' <span style="color:#8b95a1">(our estimate)</span>';
+        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + '</b> really liquidated here in 24h' : '<span style="color:#8b95a1">nothing really liquidated here in 24h</span>');
       }
-      if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + '<span class="' + (sw3.long ? 'l' : 's') + '">price swept a projected ' + (sw3.long ? 'long' : 'short') + ' zone</span>'; }
-      else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more - click to list</span>' : ''); }
+      if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + 'price already went through this level - the <span class="' + (sw3.long ? 'l' : 's') + '">' + (sw3.long ? 'longs' : 'shorts') + '</span> here are gone'; }
+      else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + 'a <span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'long' : 'short') + '</span> worth ' + money(e2.notional) + ' was liquidated on ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more - click to list them</span>' : ''); }
       tip.innerHTML = h; tip.style.display = 'block';
       var tx = mx + 14, ty = my + 12;
       if (tx + tip.offsetWidth > r.width - 4) tx = mx - tip.offsetWidth - 12;
@@ -693,11 +699,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         return;
       }
       if (S.sel.type === 'ev') { var e = S.sel.ref, lg = e.side === 'long_liquidated';
-        h += '<span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'LONG' : 'SHORT') + ' liquidation</span> <b>' + money(e.notional) + '</b> @ <b>' + fpx(e.price) + '</b><br>' + String(e.exchange).toUpperCase() + ' · ' + ago2(e.ts);
+        h = '<span class="k">REAL LIQUIDATION</span>'
+          + 'A <span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'long' : 'short') + '</span> worth <b>' + money(e.notional) + '</b> was liquidated at <b>' + fpx(e.price) + '</b>.<br>'
+          + 'On ' + String(e.exchange).toUpperCase() + ', ' + ago2(e.ts) + '.';
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
-        h += '<span class="' + (sw.long ? 'l' : 's') + '">price swept a projected ' + (sw.long ? 'long' : 'short') + ' leverage zone</span> @ <b>' + fpx(sw.p) + '</b><br>the model projected ' + (sw.long ? 'long' : 'short') + ' liquidations clustering here (estimated, not measured) · ' + ago2(sw.t);
-      } else { var pl2 = S.sel.ref;
-        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> actually liquidated in this band in the last 24h <span style="color:#8b95a1">(measured)</span><br>' : '<span style="color:#8b95a1">nothing has actually liquidated in this band in the last 24h (measured)</span><br>') + (relOf(pl2) > 0 ? '<b>' + relTxt(relOf(pl2)) + '</b> the average standing band on screen <span style="color:#8b95a1">(model - relative weight, not dollars)</span><br>' : '') + (S.price > 0 ? 'price must move <b>' + Math.abs((pl2.price - S.price) / S.price * 100).toFixed(2) + '%</b> to reach it<br>' : '') + 'building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
+        h = '<span class="k">ALREADY SWEPT</span>'
+          + 'Price went through <b>' + fpx(sw.p) + '</b> ' + ago2(sw.t) + '.<br>'
+          + 'Any <span class="' + (sw.long ? 'l' : 's') + '">' + (sw.long ? 'longs' : 'shorts') + '</span> sitting here would have been liquidated then. '
+          + '<span style="color:#8b95a1">This was our estimate of where they sat, not a record of what closed.</span>';
+      } else { var pl2 = S.sel.ref, dPct = S.price > 0 ? (pl2.price - S.price) / S.price * 100 : null;
+        h = '<span class="k">LIQUIDATION LEVEL</span>'
+          + '<b>' + fpx(pl2.price) + '</b> - where <span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'longs' : 'shorts') + '</span> get liquidated.<br>'
+          + (dPct != null ? 'Price has to ' + (dPct >= 0 ? 'rise' : 'fall') + ' <b>' + Math.abs(dPct).toFixed(2) + '%</b> to reach it.<br>' : '')
+          + (relOf(pl2) > 0 ? relPhrase(relOf(pl2)) + ' <span style="color:#8b95a1">That is our estimate from price history, not a dollar figure.</span><br>' : '')
+          + (pl2.obs > 0
+              ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> really was liquidated here in the last 24 hours.'
+              : '<span style="color:#8b95a1">Nothing has actually been liquidated here in the last 24 hours.</span>')
+          + '<br><span style="color:#8b95a1">Building for ' + ago2(pl2.t0 * 1000).replace(' ago', '') + '.</span>';
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
@@ -713,6 +731,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (S.showDots && S.sweeps) { var swH = null; for (i = 0; i < S.sweeps.length; i++) { var sw4 = S.sweeps[i]; if (S.sideF === 'long' && !sw4.long) continue; if (S.sideF === 'short' && sw4.long) continue; var d4 = Math.hypot(S.X(sw4.t / 1000) - mx, S.Y(sw4.p) - my); if (d4 < 16 && (!swH || d4 < swH.d)) swH = { d: d4, s: sw4 }; } if (swH) { S.sel = { type: 'swp', ref: swH.s }; showSel(); sched(); return; } }
       var SLACK = COARSE ? 16 : 10; // a fingertip covers more of the map than a pointer does
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var dd = dotNear(e, mx, my, SLACK, 16); if (dd >= 0) hits.push({ d: dd, e: e }); }
+      S._lastHits = hits.length; // read-only mirror: how many dots the last click collected
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
       var best = poolHit(my, S.plotH || r.height);
@@ -1184,9 +1203,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       : ' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.';
     var foot = el('div', 'hm-foot',
       '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. ' + GEST + '</details>' +
-      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Click any band for two figures of different kinds. <b style="color:#c2f64a">Measured</b> is what our collector recorded actually liquidating in that price band over 24 hours - observed events, no model. The <b>x avg</b> figure is the model: how heavy that band is against the average band on screen. It is a ratio and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from candle history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x), which shows where size stacks relative to itself but not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC band by roughly thirty times what has ever actually liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright band as “there is probably size here”, and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
+      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over 24 hours - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
-    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> zone swept</span><span><b style="color:#e9e7df">▬</b> leverage cluster (est.)</span>';
+    legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>';
     wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
@@ -1278,6 +1297,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       for (i = 0; i < h.length; i++) { if (h[i] > mx) mx = h[i]; if (h[i] < mn) mn = h[i]; if (h[i] > 0.5) strong++; else if (h[i] > 0.12) mid++; else faint++; }
       return {
         coin: S.coin, win: S.win, side: S.sideF, dotMin: S.dotMin, showDots: !!S.showDots,
+        hitRadius: function (notional) { return Math.max(16, dotR({ notional: notional }) + (COARSE ? 16 : 10)); },
+        lastHits: S._lastHits || 0,
         plotH: S.plotH || 0, canvasH: S.cv ? S.cv.clientHeight : 0, canvasW: S.cv ? S.cv.clientWidth : 0,
         bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint, maxAlpha: +mx.toFixed(3), minAlpha: +(mn < 9 ? mn : 0).toFixed(3),
         dotsDrawn: S.dotsDrawn || 0, events: S.events.length,

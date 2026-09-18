@@ -16,7 +16,7 @@
 // manual sweep (`node build/e2e-browser.js --kill`) can also target only ours.
 
 const puppeteer = require('puppeteer-core');
-const os = require('os'), path = require('path'), { execSync } = require('child_process');
+const os = require('os'), path = require('path'), fs = require('fs'), { execSync } = require('child_process');
 
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const TAG = 'mp-e2e-profile';
@@ -32,7 +32,21 @@ function killTree(pid) {
 }
 
 // Run fn(browser) with a GUARANTEED teardown. opts.timeoutMs (default 240000) self-terminates before an external kill.
+let swept = false;
+function sweepOldProfiles() { // older than 6h: certainly not a live run, including a crashed one
+  if (swept) return; swept = true;
+  try {
+    const tmp = os.tmpdir(), cut = Date.now() - 6 * 3600 * 1000;
+    for (const name of fs.readdirSync(tmp)) {
+      if (name.indexOf(TAG) !== 0) continue;
+      const full = path.join(tmp, name);
+      try { if (fs.statSync(full).mtimeMs < cut) fs.rmSync(full, { recursive: true, force: true }); } catch (e) {}
+    }
+  } catch (e) {}
+}
+
 async function withBrowser(fn, { args = [], extraLaunch = {}, timeoutMs = 240000 } = {}) {
+  sweepOldProfiles();
   const userDataDir = path.join(os.tmpdir(), TAG + '-' + process.pid + '-' + Date.now());
   const browser = await puppeteer.launch({
     executablePath: CHROME,
@@ -43,7 +57,8 @@ async function withBrowser(fn, { args = [], extraLaunch = {}, timeoutMs = 240000
   });
   const pid = browser.process() && browser.process().pid;
   let done = false;
-  const teardown = () => { if (done) return; done = true; killTree(pid); };
+  const rmProfile = () => { try { fs.rmSync(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 120 }); } catch (e) {} };
+  const teardown = () => { if (done) return; done = true; killTree(pid); rmProfile(); };
   const onExit = () => teardown();
   const onSig = (sig) => { teardown(); process.exit(sig === 'SIGINT' ? 130 : 143); };
   process.once('exit', onExit);

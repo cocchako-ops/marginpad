@@ -275,18 +275,36 @@ const LAYOUT = () => {
     await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '0'; s.dispatchEvent(new Event('change')); });
     await new Promise(r => setTimeout(r, 2500));
     const box = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
-    let lists = 0, biggest = 0, offEdge = 0;
-    for (let fy = 0.32; fy <= 0.68; fy += 0.05) for (let fx = 0.12; fx <= 0.94; fx += 0.05) {
-      await page.mouse.move(box.x + box.w * fx, box.y + box.h * fy);
-      await new Promise(r => setTimeout(r, 25));
-      const t = await page.evaluate(() => { const e = document.querySelector('.hm-tip'); if (!e || getComputedStyle(e).display === 'none') return null; const r = e.getBoundingClientRect(); const c = document.querySelector('.hm-cv').getBoundingClientRect(); return { l: Math.round(r.left - c.left), r: Math.round(c.right - r.right) }; });
-      if (t && (t.l < 0 || t.r < 0)) offEdge++;
-      await page.mouse.click(box.x + box.w * fx, box.y + box.h * fy);
-      await new Promise(r => setTimeout(r, 30));
-      const n = await page.evaluate(() => { const sb = document.querySelector('.hm-selbox'); if (!sb || getComputedStyle(sb).display === 'none') return 0; return sb.querySelectorAll('.hm-cl-it[data-ci]').length; });
-      if (n > 1) { lists++; if (n > biggest) biggest = n; }
+    // CLICK WHERE THE DOTS ARE, NOT ON A BLIND GRID. Liquidations hug the price line, so most of the canvas is
+    // empty: measured, 208 of 210 grid clicks collected zero dots while the two that landed on the ribbon
+    // collected two each. A grid made this a weather report - it passed on a busy day and failed on a quiet one
+    // while the code was identical. The sweep follows the live price line, which is where the data lives.
+    let biggest = 0, offEdge = 0, tried = 0;
+    const yOfPrice = await page.evaluate(() => {
+      const s = window.__mpHeat.state();
+      if (!(s.price > 0) || !(s.yHi > s.yLo)) return null;
+      return s.plotH * (1 - (s.price - s.yLo) / (s.yHi - s.yLo));
+    });
+    for (let fx = 0.10; fx <= 0.96 && yOfPrice != null; fx += 0.012) {
+      for (const dy of [-14, 0, 14, 28, -28]) {
+        const y = box.y + yOfPrice + dy;
+        if (y < box.y + 4 || y > box.y + box.h - 4) continue;
+        await page.mouse.move(box.x + box.w * fx, y);
+        await new Promise(r => setTimeout(r, 18));
+        const t = await page.evaluate(() => { const e = document.querySelector('.hm-tip'); if (!e || getComputedStyle(e).display === 'none') return null; const r = e.getBoundingClientRect(); const c = document.querySelector('.hm-cv').getBoundingClientRect(); return { l: Math.round(r.left - c.left), r: Math.round(c.right - r.right) }; });
+        if (t && (t.l < 0 || t.r < 0)) offEdge++;
+        await page.mouse.click(box.x + box.w * fx, y);
+        await new Promise(r => setTimeout(r, 22));
+        const n = await page.evaluate(() => window.__mpHeat.state().lastHits);
+        tried++;
+        if (n > biggest) biggest = n;
+      }
     }
-    ok('clicking into a clump of dots lists them instead of picking one', lists > 0 && biggest >= 5, { lists, biggest });
+    ok('clicking a dot on the price line collects the circles around it, not just one', biggest >= 2,
+      JSON.stringify({ clicks: tried, mostCollected: biggest }));
+    const rad = await page.evaluate(() => { const s = window.__mpHeat.state(); return { small: s.hitRadius(1000), mid: s.hitRadius(50000), big: s.hitRadius(5000000) }; });
+    ok('a small dot is never harder to hit than the flat radius it replaced', rad.small >= 16, JSON.stringify(rad));
+    ok('and a big dot reaches further, so overlapping circles collect together', rad.big > rad.small && rad.big >= 18, JSON.stringify(rad));
     ok('the hover tip never hangs off either edge of the canvas', offEdge === 0, offEdge);
     await page.close();
   }, { timeoutMs: 280000 });
