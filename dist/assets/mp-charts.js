@@ -473,6 +473,134 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else out.push({ref:p.price,lo:p.price,hi:p.price,h:p.kind==='high'?1:0,l:p.kind==='low'?1:0,touches:1,lastBarsAgo:p.barsAgo});});
     return out.filter(function(l){return l.touches>=2;}).sort(function(a,b){return b.touches-a.touches;}).slice(0,6)
       .map(function(l){var res=l.h>=l.l;return {price:res?l.hi:l.lo,kind:res?'resistance':'support',touches:l.touches,lastTouchBarsAgo:l.lastBarsAgo};});}
+  /* ── DETECT IN CODE, EXPLAIN IN THE MODEL (2026-09-18, owner: "naoruzaj ga sto bolje") ──────────────────────────
+     Everything below is computed from the candles that are already loaded and handed to the model as a FACT in the
+     brief. Two reasons it lives here and not in the system prompt: a prompt instruction is billed on EVERY call
+     while a brief field is billed only on the call that needs it, and a model asked to SPOT a pattern from raw
+     numbers invents them - a model TOLD that a fair-value gap sits at 80,120-80,380 simply talks about it.
+     Budget: the server slices JSON.stringify(brief) at 5200 chars. Measured before this block: 3,547 on BTC 1h.
+     ------------------------------------------------------------------------------------------------------------ */
+
+  /* VOLUME - the candles have carried `vol` since the first version and the brief never sent it, so the model could
+     not tell a breakout with participation from one without. `relVol` is the last bar against the 20-bar median
+     (median, not mean: one news candle drags a mean for twenty bars). `node` is the price level the most volume
+     actually traded at across the loaded window - a real magnet, and the one level type we had no answer for. */
+  function volOf(bars){
+    if(!bars||bars.length<25)return null;
+    var n=bars.length,v=[],i;
+    for(i=0;i<n;i++){var q=+bars[i].vol;v.push(isFinite(q)?q:0);}
+    var tail=v.slice(-21,-1).slice().sort(function(a,b){return a-b;}),med=tail[Math.floor(tail.length/2)]||0;
+    if(!med)return null;
+    var last=v[n-1],prev=v.slice(-6,-1),up=0,dn=0;
+    for(i=0;i<prev.length;i++){var k=n-6+i;if(+bars[k].close>=+bars[k].open)up+=v[k];else dn+=v[k];}
+    // volume-at-price over the loaded window, 24 buckets - the fattest bucket is the node
+    var lo=Infinity,hi=-Infinity;for(i=0;i<n;i++){if(+bars[i].low<lo)lo=+bars[i].low;if(+bars[i].high>hi)hi=+bars[i].high;}
+    var node=null;
+    if(hi>lo){var B=24,w2=(hi-lo)/B,acc=new Array(B);for(i=0;i<B;i++)acc[i]=0;
+      for(i=0;i<n;i++){var mid=(+bars[i].high+ +bars[i].low)/2,b=Math.min(B-1,Math.max(0,Math.floor((mid-lo)/w2)));acc[b]+=v[i];}
+      var best=0;for(i=1;i<B;i++)if(acc[i]>acc[best])best=i;
+      if(acc[best]>0)node=_p6(lo+(best+0.5)*w2);}
+    return {lastBarVsMedian20:+(last/med).toFixed(2),
+      state:last>=med*1.8?'much heavier than usual':last>=med*1.25?'heavier than usual':last<=med*0.6?'unusually thin':'normal',
+      last5BuyersVsSellers:(up+dn)>0?Math.round(up/(up+dn)*100)+'% of the last 5 bars’ volume traded on up-candles':null,
+      heaviestTradedPrice:node,
+      note:'heaviestTradedPrice is where the most volume changed hands on screen - price tends to return to it'};}
+
+  /* HIGHER TIMEFRAME, WITHOUT A SINGLE EXTRA REQUEST. A desk always checks the frame above before taking a trade,
+     and the prompt has been telling the model "never draw a level from another timeframe" - a prohibition, because
+     it had no higher-timeframe levels to use. Aggregating the bars already loaded (4 of them into 1) gives exactly
+     that frame with no fetch, no new failure mode and no latency. */
+  function aggBars(bars,f){var out=[],i,j;
+    for(i=bars.length%f;i+f<=bars.length;i+=f){var o=bars[i],h=-Infinity,l=Infinity,vv=0;
+      for(j=i;j<i+f;j++){if(+bars[j].high>h)h=+bars[j].high;if(+bars[j].low<l)l=+bars[j].low;vv+=(+bars[j].vol||0);}
+      out.push({time:o.time,open:+o.open,high:h,low:l,close:+bars[i+f-1].close,vol:vv});}
+    return out;}
+  function htfOf(bars,tf,price){
+    var f=4,lab=tfWords?tfWords(String((+tf||60)*f)):'higher timeframe';
+    var hb=aggBars(bars,f);if(hb.length<40)return null;
+    var k=Math.max(2,Math.min(9,Math.round(hb.length/40))),P=pivotsOf(hb,k,16);
+    if(P.length<4)return null;
+    var hs=P.filter(function(p){return p.kind==='high';}).slice(0,2),ls=P.filter(function(p){return p.kind==='low';}).slice(0,2),st=null;
+    if(hs.length>=2&&ls.length>=2){var hh=hs[0].price>hs[1].price,hl=ls[0].price>ls[1].price;
+      st=(hh&&hl)?'uptrend':((!hh&&!hl)?'downtrend':'range or transition');}
+    return {timeframe:lab,structure:st,
+      levels:levelsOf(P,price,0.006).slice(0,3).map(function(l){return {price:_p6(l.price),kind:l.kind,touches:l.touches};}),
+      note:'from the same candles aggregated x'+f+'. A level here outranks one on the chart in view; say which frame you are quoting.'};}
+
+  /* FAIR VALUE GAPS - mechanical, three candles: bar i-1 high below bar i+1 low is a gap price jumped through
+     without trading. It needs NO new drawing primitive, the model already has `zone`. Kept only while unfilled and
+     within 6% of price, newest first. This is the vocabulary most of our readers actually use. */
+  function fvgOf(bars,price){
+    var n=bars.length,out=[],i;
+    for(i=n-2;i>=2&&out.length<4;i--){
+      var a=bars[i-1],c=bars[i+1];if(!a||!c)continue;
+      var up=+c.low-+a.high,dn=+a.low-+c.high,from,to,side;
+      if(up>0){from=+a.high;to=+c.low;side='bullish';}else if(dn>0){from=+c.high;to=+a.low;side='bearish';}else continue;
+      if((to-from)/price<0.0012)continue;               // a gap thinner than 0.12% is noise at this scale
+      var filled=false;for(var j=i+2;j<n;j++){if(+bars[j].low<=from&&+bars[j].high>=to){filled=true;break;}}
+      if(filled)continue;
+      if(Math.abs((from+to)/2-price)/price>0.06)continue;
+      out.push({from:_p6(from),to:_p6(to),side:side,barsAgo:n-1-i,widthPct:+((to-from)/price*100).toFixed(2)});}
+    return out.length?out:null;}
+
+  /* VOLATILITY AS A PERCENTILE OF THIS MARKET'S OWN HISTORY. "ATR 1.2%" means nothing on its own - 1.2% is a dead
+     day on DOGE and a violent one on BTC. Against its own 200-bar distribution it becomes a regime the model can
+     act on: a squeeze is where breakouts come from, an expansion is where stops get run. */
+  function volRegimeOf(bars){
+    var n=bars.length;if(n<80)return null;
+    var tr=[],i;for(i=1;i<n;i++){var h=+bars[i].high,l=+bars[i].low,pc=+bars[i-1].close;
+      tr.push(Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc)));}
+    var atr=function(end){var s=0,m=Math.min(14,end);for(var j=end-m;j<end;j++)s+=tr[j];return s/m;};
+    var cur=atr(tr.length),hist=[];
+    for(i=40;i<tr.length;i+=2)hist.push(atr(i));
+    if(hist.length<20)return null;
+    hist.sort(function(a,b){return a-b;});
+    var below=0;for(i=0;i<hist.length;i++)if(hist[i]<cur)below++;
+    var pct=Math.round(below/hist.length*100);
+    return {atrPercentileVsOwnHistory:pct,
+      regime:pct<=20?'squeeze - unusually quiet for this market, breakouts start here':pct>=80?'expansion - unusually wild, stops get run and ranges fail':'normal'};}
+
+  /* NAMED SETUPS, detected here rather than guessed there. Each one is a plain statement the model can build an
+     answer on; an empty list is an honest answer too and stops it inventing a pattern to look useful. */
+  function setupsOf(bars,piv,lvls,price,vr){
+    var out=[],n=bars.length;
+    try{
+      /* liquidity sweep: a wick took out an earlier pivot and the candle closed back inside - the classic stop run.
+         THE PIVOT BEING SWEPT IS BY DEFINITION OLDER THAN THE SWEEP. The first cut put the recency test on the
+         PIVOT (barsAgo<=6), so the only pivots it would consider were ones no candle had had time to sweep yet -
+         it could never fire, on any chart, and would have read as a permanently quiet market. The recency belongs
+         on the sweep CANDLE; the pivot just has to be old enough to have stops resting on it. */
+      var cands=piv.filter(function(p){return p.barsAgo>=3&&p.barsAgo<=80;});
+      cands.forEach(function(p){
+        for(var i=Math.max(1,n-4);i<n;i++){if((n-1-i)>=p.barsAgo)continue;var b=bars[i];
+          if(p.kind==='high'&&+b.high>p.price&&+b.close<p.price)out.push({name:'liquidity sweep of the high at '+_p6(p.price),meaning:'stops above were taken and price closed back under - often the top of the move'});
+          else if(p.kind==='low'&&+b.low<p.price&&+b.close>p.price)out.push({name:'liquidity sweep of the low at '+_p6(p.price),meaning:'stops below were taken and price closed back above - often the bottom of the move'});}});
+      // failed breakout of a respected level
+      (lvls||[]).slice(0,3).forEach(function(l){
+        var broke=false,backIn=false;
+        for(var i=Math.max(0,n-8);i<n;i++){var b=bars[i];
+          if(l.kind==='resistance'&&+b.high>l.price)broke=true;
+          if(l.kind==='resistance'&&broke&&+b.close<l.price)backIn=true;
+          if(l.kind==='support'&&+b.low<l.price)broke=true;
+          if(l.kind==='support'&&broke&&+b.close>l.price)backIn=true;}
+        if(broke&&backIn)out.push({name:'failed break of the '+l.kind+' at '+_p6(l.price),meaning:'price went through and could not hold it - the level is still in charge'});});
+      // compression: quiet regime plus a narrowing range over the last 20 bars
+      if(vr&&vr.atrPercentileVsOwnHistory<=25){
+        var hi=-Infinity,lo=Infinity;for(var i=n-20;i<n;i++){if(+bars[i].high>hi)hi=+bars[i].high;if(+bars[i].low<lo)lo=+bars[i].low;}
+        if((hi-lo)/price<0.02)out.push({name:'range compression',meaning:'the last 20 candles sit inside '+(+((hi-lo)/price*100).toFixed(2))+'% - energy is building for a break, direction not yet decided'});}
+    }catch(e){}
+    var seen={},ded=[];out.forEach(function(s){if(seen[s.name])return;seen[s.name]=1;ded.push(s);});
+    return ded.length?ded.slice(0,3):null;}
+
+  /* The UTC day boundary, so the model can mark it with the `vline` it already has. Crypto never closes, but the
+     00:00 UTC open is the one line every desk still draws, and the brief had no notion of time-of-day at all. */
+  function sessionOf(bars){
+    var n=bars.length;
+    for(var i=n-1;i>0&&i>n-400;i--){
+      var a=new Date((+bars[i-1].time)*1000).getUTCDate(),b=new Date((+bars[i].time)*1000).getUTCDate();
+      if(a!==b)return {lastUtcDayOpenBarsAgo:n-1-i,note:'draw it with a vline when the day boundary matters'};}
+    return null;}
+
   /* Build a rich, pre-computed technical brief of the window so the AI reasons over real numbers (computed regardless of which indicators the user has toggled). */
   function aiContext(w){
     var bars=w.bars||[],n=bars.length,last=bars[n-1]||{},price=last.close;
@@ -523,7 +651,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(_hs.length>=2&&_ls.length>=2){var _hh=_hs[0].price>_hs[1].price,_hl=_ls[0].price>_ls[1].price;
         struct=(_hh&&_hl)?'higher highs and higher lows (uptrend structure)':((!_hh&&!_hl)?'lower highs and lower lows (downtrend structure)':'mixed - range or a transition');}
     }catch(e){}
-    var vis=null;try{var _vr=w.chart&&w.chart.timeScale().getVisibleLogicalRange();if(_vr)vis={oldestBarsAgo:Math.max(0,Math.round(n-1-_vr.from)),newestBarsAgo:Math.round(Math.max(0,n-1-_vr.to)),barsOnScreen:Math.round(_vr.to-_vr.from)};}catch(e){}
+    var vis=null;try{var _vrr=w.chart&&w.chart.timeScale().getVisibleLogicalRange();if(_vrr)vis={oldestBarsAgo:Math.max(0,Math.round(n-1-_vrr.from)),newestBarsAgo:Math.round(Math.max(0,n-1-_vrr.to)),barsOnScreen:Math.round(_vrr.to-_vrr.from)};}catch(e){}
+    /* the new measured blocks - every one guarded, because a null field costs 4 chars and a thrown one costs the whole brief */
+    var _vol=null,_vr=null,_htf=null,_fvg=null,_setups=null,_sess=null;
+    try{_vol=volOf(bars);}catch(e){}
+    try{_vr=volRegimeOf(bars);}catch(e){}
+    try{_htf=htfOf(bars,w.tf,price);}catch(e){}
+    try{_fvg=fvgOf(bars,price);}catch(e){}
+    try{_setups=setupsOf(bars,_P||[],lvls||[],price,_vr);}catch(e){}
+    try{_sess=sessionOf(bars);}catch(e){}
     return {
       chartTools:tools, aiDrawings:ad,
       swingPivots:piv, respectedLevels:lvls, structure:struct, visibleWindow:vis,
@@ -540,7 +676,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       macd:{line:_p6(macd),signal:_p6(msig),histogram:_p6(mhist),position:(macd!=null&&msig!=null)?(macd>msig?'above signal (bullish)':'below signal (bearish)'):null,momentum:(mhist!=null&&mhistPrev!=null)?(Math.abs(mhist)>Math.abs(mhistPrev)?'expanding':'contracting'):null},
       atrPct:atrPct, bollingerPercentB:bbPctB, bollingerBandwidthPct:bbWidth,
       indicatorsUserHasOn:indsOn, recentCloses:rc, openPosition:pos,
-      liquidationPools:pools, premiumReadouts:ro, userDrawings:ud
+      liquidationPools:pools, premiumReadouts:ro, userDrawings:ud,
+      /* computed above - all from these same candles, nothing fetched (2026-09-18) */
+      volume:_vol, volatility:_vr, higherTimeframe:_htf, fairValueGaps:_fvg, setups:_setups, session:_sess
     };
   }
   function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+' / '+limit+' today';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}
