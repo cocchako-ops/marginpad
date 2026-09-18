@@ -2359,8 +2359,7 @@ async function oiRingTick(env) { // */10 cron: records one point per UTC hour; s
   const now = Date.now(), hour = Math.floor(now / 3600000) * 3600000;
   let dirty = false;
   if (!pts.length || +pts[pts.length - 1].t < hour) {
-    const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } });
-    const j = await r.json();
+    let j = null; try { const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } }); j = await r.json(); } catch (e) { j = null; }
     const m = oiRingRows(j && j.result && j.result.list);
     if (Object.keys(m).length >= 20) { pts.push({ t: hour, m }); dirty = true; } // a thin answer is not a snapshot
   }
@@ -2371,8 +2370,8 @@ async function oiRingTick(env) { // */10 cron: records one point per UTC hour; s
     // rank by USD so the seed covers the rows a reader actually sees (the ring itself stores contracts)
     let ranked = syms;
     try {
-      const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } });
-      const j = await r.json(); const usd = {};
+      let j = null; try { const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } }); j = await r.json(); } catch (e) { j = null; }
+      const usd = {};
       ((j && j.result && j.result.list) || []).forEach(t => { usd[t.symbol.replace(/USDT$/, '')] = +t.openInterestValue || 0; });
       ranked = syms.slice().sort((a, b) => (usd[b] || 0) - (usd[a] || 0));
     } catch (e) {}
@@ -2381,8 +2380,7 @@ async function oiRingTick(env) { // */10 cron: records one point per UTC hour; s
     for (let i = 0; i < ranked.length; i += 10) {
       await Promise.all(ranked.slice(i, i + 10).map(async s => {
         try {
-          const r = await fetch('https://api.bybit.com/v5/market/open-interest?category=linear&symbol=' + s + 'USDT&intervalTime=1h&limit=26');
-          const j = await r.json();
+          let j = null; try { const r = await fetch('https://api.bybit.com/v5/market/open-interest?category=linear&symbol=' + s + 'USDT&intervalTime=1h&limit=26'); j = await r.json(); } catch (e) { j = null; }
           ((j && j.result && j.result.list) || []).forEach(x => {
             const t = +x.timestamp, oi = +x.openInterest; if (!(t > 0) || !(oi > 0) || t >= hour) return;
             if (!byT[t]) { byT[t] = { t, m: {}, seed: 1 }; }
@@ -5558,7 +5556,13 @@ async function handleTrack(url, request, env, ctx) {
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, label, (request.cf && request.cf.country) || '', (p.get('p') || '/').slice(0, 90), _evSrc(p), getCookie(request, 'mp_un') ? 'user' : 'guest'], doubles: [1] }); } catch (e) {} // blob7 = signed in or not (2026-09-04): the guest funnel (how many trade without an account, how many convert) needs the split per day
     if (type === 'exchange' || type === 'tool') { // affiliate click-outs only (exchange = Bybit/Binance/…, tool = TradingView/Koinly/3Commas). NOT 'hotpair' - Trending now opens Paper Trade, it is not a money click.
       const d2 = new Date().toISOString().slice(0, 10);
-      if (partner) { await inc('aff:total'); await inc('aff:day:' + d2, 3456000); }   // affiliate-click totals + daily series - REAL partners only
+      if (partner) { await inc('aff:total'); await inc('aff:day:' + d2, 3456000);   // affiliate-click totals + daily series - REAL partners only
+        try { const who = getCookie(request, 'mp_un'); const cc = (request.cf && request.cf.country) || '';
+          ctx && ctx.waitUntil ? ctx.waitUntil(tgOwner(env, 'money-click', 'Money click: ' + partner, [
+            (who ? '@' + decodeURIComponent(who) : 'a signed-out visitor') + ' from ' + ccName(cc),
+            'From ' + ((p.get('p') || '/').slice(0, 60))], 'https://marginpad.io/api/stats#money/revenue')) : null;
+        } catch (e) {}
+      }
       else { await inc('aff:junk'); await inc('affjunk:day:' + d2, 3456000);          // an unknown label: counted apart so the noise stays visible without polluting revenue
         // and counted BY LABEL, because the raw label used to be overwritten with 'other' before anything recorded it
         try { await inc('affjunk:lbl:' + ((rawLabel || '(empty)').toLowerCase().replace(/[^a-z0-9._-]/g, '') || 'blank').slice(0, 24), 3456000); } catch (e) {}
@@ -5675,6 +5679,19 @@ async function perfWrap(env, ctx, g, samp, fn) { // samp = 1-in-N sampling (1 = 
 // no call site had to change; it is stable per alarm because every alarm starts with a fixed phrase.
 function alertKindOf(text) { const t = String(text || '').replace(/<[^>]+>/g, ' ').replace(/[^A-Za-z ]+/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase(); const k = t.split(' ').filter(w => w.length > 1).slice(0, 4).join('-').slice(0, 36); return k || 'misc'; }
 function alertSevOf(text) { const t = String(text || ''); if (/recovered|login OK|E2E session|paid<\/b>|digest|expiring|minted|config changed|Ticks adjust|self-heal|premium signals request|content post/i.test(t)) return 'info'; if (/FAIL|DOWN|STALE|DEAD|BREACH|SILENT|PAO|not being paged|errRate|wrong passwords|Cron task|Server error|Collector je/i.test(t)) return 'red'; return 'warn'; }
+// One shape for the events the owner asked to be told about. `kind` drives the alert-centre dedup key, so a
+// burst of one kind can still be acked or snoozed as a group without silencing the others.
+async function tgOwner(env, kind, title, lines, link) {
+  try {
+    const NL = String.fromCharCode(10);
+    const body = '<b>' + title + '</b>'
+      + (lines && lines.length ? NL + lines.filter(Boolean).join(NL) : '')
+      + (link ? NL + '<a href="' + link + '">Open in ops</a>' : '');
+    return await tgAdmin(env, body, { kind: kind, sev: 'info' });
+  } catch (e) { return null; }
+}
+function ccName(cc) { try { return cc ? (new Intl.DisplayNames(['en'], { type: 'region' })).of(cc) || cc : 'unknown country'; } catch (e) { return cc || 'unknown country'; }
+}
 async function tgAdmin(env, text, opts) { // tgApi never throws (null on network error, {ok:false} on API error) - the old version returned true unconditionally, so nothing could ever learn that admin alerts were dead. opts {kind, sev} override the derived alert identity (digests whose text starts with a username need it).
   if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false;
   const kind = (opts && opts.kind) || alertKindOf(text), sev = (opts && opts.sev) || alertSevOf(text), plain = String(text || '').replace(/<[^>]+>/g, '').slice(0, 220);
@@ -6678,7 +6695,8 @@ async function checkOpsAlerts(env) {
             ? '<b>' + fmtU(e2) + '</b> otvorio ' + (e2.side === 'short' ? 'SHORT' : 'LONG') + ' ' + e2.sym + ' ' + Math.round(+e2.lev || 1) + 'x · <b>$' + Math.round(+e2.margin).toLocaleString('en-US') + '</b>'
             : '<b>' + fmtU(e2) + '</b> LIKVIDIRAN na ' + e2.sym + ' ' + (e2.side === 'short' ? 'SHORT' : 'LONG') + ' · −$' + Math.round(Math.abs(+e2.pnl || +e2.margin)).toLocaleString('en-US'));
           const extra = hot.length > 6 ? '\n… i još ' + (hot.length - 6) : '';
-          if (await tgAdmin(env, lines.join('\n') + extra + '\n<a href="https://marginpad.io/api/stats">Live trades →</a>', { kind: 'live-trades', sev: 'info' })) await env.STATS.put('alrt:tevts', String(maxTs));
+          if (!cfg.tgTrades) { await env.STATS.put('alrt:tevts', String(maxTs)); }
+          else if (await tgAdmin(env, lines.join('\n') + extra + '\n<a href="https://marginpad.io/api/stats">Live trades →</a>', { kind: 'live-trades', sev: 'info' })) await env.STATS.put('alrt:tevts', String(maxTs));
         } else {
           await env.STATS.put('alrt:tevts', String(maxTs)); // advance the watermark even with nothing hot
         }
@@ -13452,6 +13470,14 @@ async function handleBot(url, request, env, ctx) {
     const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, until: sub.until || 0, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
+    if (act === 'create' && r.key) { try {
+      const un4 = getCookie(request, 'mp_un'); const cc4 = (request.cf && request.cf.country) || '';
+      const pn4 = tgOwner(env, 'api-key', 'New API key minted', [
+        (un4 ? '@' + decodeURIComponent(un4) : 'uid ' + String(kuid).slice(0, 12)) + ' from ' + ccName(cc4),
+        'Plan: ' + (sub.plan || 'free') + (r.book ? ' - book "' + r.book + '"' : ''),
+        'Somebody is starting to build on the API.'], 'https://marginpad.io/api/stats#trading/botapi');
+      if (ctx && ctx.waitUntil) ctx.waitUntil(pn4);
+    } catch (e) {} }
     if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; } // the countdown the page prints
     r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
     return jb(r, 200);
@@ -14496,7 +14522,13 @@ async function handleAuth(url, request, env, ctx) {
     h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + opts); // display name so the admin logs show the username instead of just a country
     try { const un = (d.user && (d.user.username || String(d.user.email || '').split('@')[0])) || ''; const srcL = String(b.src || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40); const pr = evPush(env, request, d.isNew ? 'signup' : 'login', un + (d.isNew && srcL ? ' | from ' + srcL : ''), '/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr); else await pr; } catch (e) {} // signup label carries the landing source (first-touch, from the client) so the ops live log reads "created an account - landed from Google" (owner 2026-09-02)
     try { const un2 = (d.user && (d.user.username || String(d.user.email || '').split('@')[0])) || ''; const pa = authLogPush(env, d.isNew ? 'signup' : 'login', request, d.user && d.user.id, un2); if (ctx && ctx.waitUntil) ctx.waitUntil(pa); else await pa; } catch (e) {}
-    if (d.isNew) { try { const ref = String(b.ref || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); if (ref && ref !== d.user.id) { const did = getCookie(request, 'mp_did') || ''; const rp = stub.fetch(new Request('https://do/refrecord', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, referred: d.user.id, did }) })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); else await rp; } } catch (e) {} } // invite-a-friend: log who referred this new signup
+    if (d.isNew) { try { const un3 = (d.user && (d.user.username || String(d.user.email || '').split('@')[0])) || 'someone';
+      const cc3 = (request.cf && request.cf.country) || '';
+      const src3 = String(b.src || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40);
+      const pn = tgOwner(env, 'new-account', 'New account: @' + un3, ['From ' + ccName(cc3) + (src3 ? ' - arrived via ' + src3 : ''), 'Signed up just now'], 'https://marginpad.io/api/stats#people/activity');
+      if (ctx && ctx.waitUntil) ctx.waitUntil(pn);
+    } catch (e) {}
+    try { const ref = String(b.ref || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); if (ref && ref !== d.user.id) { const did = getCookie(request, 'mp_did') || ''; const rp = stub.fetch(new Request('https://do/refrecord', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, referred: d.user.id, did }) })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); else await rp; } } catch (e) {} } // invite-a-friend: log who referred this new signup
     return new Response(JSON.stringify({ ok: true, user: d.user, isNew: d.isNew }), { status: 200, headers: h });
   }
   if (path === '/referral') { // self: referral link + stats for the /rewards "invite a friend" card
@@ -16055,7 +16087,13 @@ async function handleReward(url, request, env) {
       else if (path === '/fomosign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 100, { note: 'Fomo sign-up approved' }); try { await evPush(env, null, 'exsignpaid', 'fomo', '/rewards/'); } catch (e) {} }
       else if (path === '/xengage/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 30, { note: 'X engagement approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
       if (path === '/claim' && _rd.ok) await evPush(env, request, 'claim', '+$' + (+_rd.credited || 0).toFixed(2), '/rewards/');
-      if (path === '/withdraw' && _rd.ok) await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
+      if (path === '/withdraw' && _rd.ok) { await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
+        try { const amt = (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), un5 = getCookie(request, 'mp_un');
+          const pn5 = tgOwner(env, 'withdrawal', 'Withdrawal requested: $' + amt, [
+            (un5 ? '@' + decodeURIComponent(un5) : 'a member') + ' from ' + ccName((request.cf && request.cf.country) || ''),
+            'You pay these by hand - it sits in the queue until you mark it paid.'], 'https://marginpad.io/api/stats#money/withdrawals');
+          await pn5; } catch (e) {}
+      }
       if (path === '/promo/submit' && _rd.ok) { let _pl = ''; try { _pl = String((JSON.parse(raw || '{}').platform) || '').toUpperCase(); } catch (e) {} await evPush(env, request, 'promo', _pl === 'X' ? 'on X' : _pl === 'REDDIT' ? 'on Reddit' : _pl === 'TIKTOK' ? 'on TikTok' : '', '/rewards/'); }
       if (path === '/exsign/submit' && _rd.ok) { let _ex = ''; try { _ex = String((JSON.parse(raw || '{}').exchange) || ''); } catch (e) {} await evPush(env, request, 'exsign', _ex, '/rewards/'); }
       if (path === '/moonsign/submit' && _rd.ok) await evPush(env, request, 'exsign', 'moon', '/rewards/');
@@ -17476,6 +17514,21 @@ export default {
       const res = await usersDO(env, '/tradesweepall', { prices, onlyUid: su, graceMin: 0, srvCandle: false });
       try { await webhookDrain(env); } catch (e) {}
       return J(res || { error: 'unavailable' });
+    }
+    // Preview the owner's own notifications without waiting for a real one: GET /api/admin/notiftest sends one
+    // of each shape to the admin chat. This exists because these five are rare by design - a withdrawal or an
+    // API key can be days apart - so there was no way to see what they look like, or to prove they still send
+    // after a refactor, short of waiting.
+    if (url.pathname === '/api/admin/notiftest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const only = String(url.searchParams.get('kind') || '').toLowerCase();
+      const want = k => !only || only === k;
+      const sent = [];
+      if (want('money-click')) sent.push(['money-click', await tgOwner(env, 'money-click', 'Money click: Bybit', ['@someone from Nigeria', 'From /heatmap'], 'https://marginpad.io/api/stats#money/revenue')]);
+      if (want('new-account')) sent.push(['new-account', await tgOwner(env, 'new-account', 'New account: @someone', ['From Pakistan - arrived via google.com', 'Signed up just now'], 'https://marginpad.io/api/stats#people/activity')]);
+      if (want('withdrawal')) sent.push(['withdrawal', await tgOwner(env, 'withdrawal', 'Withdrawal requested: $5.00', ['@someone from Nigeria', 'You pay these by hand - it sits in the queue until you mark it paid.'], 'https://marginpad.io/api/stats#money/withdrawals')]);
+      if (want('api-key')) sent.push(['api-key', await tgOwner(env, 'api-key', 'New API key minted', ['@someone from Germany', 'Plan: free', 'Somebody is starting to build on the API.'], 'https://marginpad.io/api/stats#trading/botapi')]);
+      if (want('purchase')) sent.push(['purchase', await tgOwner(env, 'purchase', 'Paid: API Pro - $29.00', ['@someone from India', 'Paid with crypto through NOWPayments.'], 'https://marginpad.io/api/stats#money/premium')]);
+      return new Response(JSON.stringify({ ok: true, sent: sent.map(x => ({ kind: x[0], delivered: !!x[1] })) }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8' } });
     }
     if (url.pathname === '/api/admin/wrappreview' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Daily Wrap v2: render today's wrap now (no channel post); ?send=admin DMs it to the owner chat; ?chat=<id>&sections=majors,liq renders a personal edition
       const d = await wrapData(env); if (!d) return J({ error: 'no_data' }, 503);
@@ -19073,11 +19126,49 @@ export default {
     // LOUD: a swallowed error just trades "one task kills all" for "each task silently dies" - same bug, distributed.
     // So every failure writes an AE row (blob2=task) AND pages the owner once/20h per task. This is the ONLY reason
     // you'd ever find out a cron task started failing.
+    // What each cron task is for, and what a reader of the site loses while it is down. The owner gets one line
+    // he can act on instead of a stack trace: what broke, what it feeds, and whether it can wait.
+    const CRON_WHAT = {
+      oiring: ['records one open-interest snapshot an hour', 'the 24h and 4h OI change on /open-interest/ freezes; the page shows a dash, never a wrong number'],
+      heatpools: ['rebuilds the liquidation-map zones', '/heatmap stops adding new zones and falls back to the browser-side model'],
+      sweep: ['settles server-held paper positions against real candles', 'SL, TP and liquidations stop firing - this one needs you TODAY'],
+      prizes: ['pays the season leaderboards', 'winners are not paid until it runs again; it is idempotent, so a late run still pays once'],
+      bybitprizes: ['pays the Bybit volume board', 'that board is unpaid until the next run'],
+      moonprizes: ['pays King of the Moon', 'that contest is unpaid until the next run'],
+      backup: ['nightly Durable Object backup to R2', 'no fresh restore point - data is fine, the safety net is not'],
+      backup6: ['six-hourly rewards-ledger backup', 'no fresh restore point for the money ledger'],
+      webhooks: ['delivers Bot API webhooks', 'paying API customers stop receiving events'],
+      posalerts: ['position alerts for Premium members', 'nobody is warned about their own liquidation or stop'],
+      acctalerts: ['price and account alerts', 'alerts members set do not fire'],
+      subs: ['expires Premium and API subscriptions', 'lapsed plans keep working, so this leaks access rather than breaking it'],
+      apiexp: ['warns API customers before their plan ends', 'a customer can be cut off with no notice'],
+      spotorders: ['fills Demo Spot limit orders', 'spot limit orders sit unfilled'],
+      wrap: ['the daily market wrap to the channel', 'the channel is quiet today'],
+      brief: ['the morning brief', 'you do not get your own daily read'],
+      snapshot: ['the daily stats snapshot', 'day-over-day figures lose a day'],
+      liqarch: ['archives liquidations to R2', 'raw liquidations age out without being archived - this loses data'],
+      uptime: ['stamps the cron heartbeat', '/api/health starts answering 503 to your external monitor'],
+      latam: ['refreshes the LATAM quote history', '/dolar-cripto/ and /bitcoin-hoje/ show older points'],
+      scrwarm: ['warms the screener cache', 'the screener is slower on a cold hit'],
+      whale: ['the Hyperliquid whale feed', '/hyperliquid-whales/ stops updating'],
+    };
     const bg = (fn, label) => { // label is EXPLICIT (not fn.name) - fn.name becomes garbage under minify and would collapse every dedup key into one
       const onErr = e => {
         const nm = label || (fn && fn.name) || '?', msg = String((e && e.message) || e).slice(0, 200);
         try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cronerr'], blobs: ['cronerr', nm, msg.slice(0, 90)], doubles: [1] }); } catch (_) {}
-        try { ctx.waitUntil((async () => { if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return; const k = 'alrt:cronerr:' + nm; const last = +(await env.STATS.get(k) || 0); if (Date.now() - last > 20 * 3600000) { await env.STATS.put(k, String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Cron task failed: ' + nm + '</b>\n<code>' + msg + '</code>\nOther */10 tasks kept running (isolated). Investigate.'); } })()); } catch (_) {}
+        try { ctx.waitUntil((async () => { if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return; const k = 'alrt:cronerr:' + nm;
+          const last = +(await env.STATS.get(k) || 0);
+          if (Date.now() - last <= 20 * 3600000) return;
+          await env.STATS.put(k, String(Date.now()), { expirationTtl: 3 * 86400 });
+          const w = CRON_WHAT[nm];
+          const NL = String.fromCharCode(10);
+          const body = '<b>A scheduled job stopped working: ' + nm + '</b>' + NL
+            + (w ? 'What it does: ' + w[0] + '.' + NL + 'What this breaks: ' + w[1] + '.' + NL : 'No description on file for this job yet.' + NL)
+            + NL + 'Error: <code>' + msg.replace(/[<>&]/g, '') + '</code>' + NL
+            + 'It retries on the next schedule, so a one-off usually clears itself. You get this once per job per 20 hours.' + NL
+            + '<a href="https://marginpad.io/api/stats#health/alerts">Health</a>';
+          await tgAdmin(env, body, { kind: 'cron-failed-' + nm, sev: 'warn' });
+        })()); } catch (_) {}
       };
       try { const p = fn(env); if (p && typeof p.then === 'function') ctx.waitUntil(p.catch(onErr)); } catch (e) { onErr(e); }
     };
