@@ -89,7 +89,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function poolGone(x) { return S && S.price > 0 && (x.long ? x.price >= S.price : x.price <= S.price); } // crossed by the live price = consumed, waiting for the server sweep
   function fpx(p) { p = +p; if (!isFinite(p)) return '-'; return p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 1 }) : p >= 1 ? p.toFixed(3) : p.toPrecision(4); }
   function liqPx(entry, lev, long) { return long ? entry * (1 - (1 - MMR) / lev) : entry * (1 + (1 - MMR) / lev); }
-  function tlabel(t) { var d = new Date(t * 1000); var w = S && WINS[S.win].mins >= 4320; return w ? (d.getUTCDate() + '.' + (d.getUTCMonth() + 1) + '.') : (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2)); }
+  function tlabel(t) { var d = new Date(t * 1000); var w = S && WINS[S.win].mins >= 4320; return w ? (d.getDate() + '.' + (d.getMonth() + 1) + '.') : (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2)); }
 
   // pool model: only what still STANDS is returned (consumed pools vanish - that is the whole point)
   function buildPools(bars) {
@@ -153,7 +153,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.stroke();
     ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
     ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
-    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'center';
+    ctx.font = '10px "Space Mono",monospace';
+    ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.textAlign = 'left'; ctx.fillText('local', 6, PH + AXH - 5); // an axis that does not name its clock is an axis you cannot check
+    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.textAlign = 'center';
     for (i = 1; i < 6; i++) { var tt = v.t0 + (v.t1 - v.t0) / 6 * i; ctx.fillText(tlabel(tt), W / 6 * i, PH + AXH - 5); }
     // STANDING pool bands - the heat. Band starts when the crowd started building and runs to the right edge.
     // A band is exactly one bin tall (1.02 closes the hairline seam). It used to be 1.15 bins with a halo 2.2 bins
@@ -858,6 +860,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-ct-r .rk2c{color:#5c6b84}.hm-ct-r .sym{color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.hm-ct-r .pxc{color:#c9d4e8;white-space:nowrap}.hm-ct-r .pxc i{font-style:normal;font-size:9.5px;display:block}' +
     '.hm-ct-r .hv{border-radius:5px;padding:4px 6px;color:#eef3ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-nomap{color:#5c6b84;font:11px "Space Mono",monospace;align-self:center}' +
     '@media(max-width:980px){.hm-tmd-g{grid-template-columns:1fr 1fr}' +
     '.hm-ct-hd,.hm-ct-r{grid-template-columns:24px minmax(0,1fr) minmax(0,84px) minmax(0,72px) minmax(0,72px);min-width:0;gap:5px;font-size:10.5px}' +
     '.hm-ct-tw{overflow-x:hidden}' +
@@ -917,6 +920,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       });
       h += '</div><div class="hm-tmd-cta">';
       if (COINS.indexOf(sym) >= 0) h += '<button type="button" data-map="' + sym + '">View ' + sym + ' on the liquidation map</button>';
+      else if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<span class="hm-nomap">Zone map covers the 10 majors, ' + sym + ' is not one of them yet</span>'; // saying so beats a button that is simply absent
       if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<a href="/paper-trade?coin=' + sym + '">Paper trade ' + sym + '</a>';
       h += '</div>';
       det.innerHTML = h; det.style.display = 'block';
@@ -1083,10 +1087,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     section.classList.add('hm-full');
     try { document.documentElement.style.overflowY = 'scroll'; } catch (e) {} // keep the scrollbar gutter ALWAYS on - without it this page (which fits the viewport) centers 8px wider than /paper-trade and the logo visibly shifts
     coin = (coin || 'BTC').toUpperCase(); if (COINS.indexOf(coin) < 0) coin = 'BTC';
+    var win0 = '1D'; try { var qw = (location.search.match(/[?&]win=([A-Za-z0-9]+)/) || [])[1]; if (qw && WINS[qw.toUpperCase()]) win0 = qw.toUpperCase(); } catch (e) {}
     var wrap = el('div', 'hm-wrap');
     var bar = el('div', 'hm-bar');
     var selC = el('select', 'hm-sel'); COINS.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; if (c === coin) o.selected = true; selC.appendChild(o); });
-    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? 'Last 4 hours' : wk === '12H' ? 'Last 12 hours' : wk === '1D' ? 'Last 24 hours' : wk === '3D' ? 'Last 3 days' : 'Last 7 days'; if (wk === '1D') o.selected = true; selW.appendChild(o); });
+    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? 'Last 4 hours' : wk === '12H' ? 'Last 12 hours' : wk === '1D' ? 'Last 24 hours' : wk === '3D' ? 'Last 3 days' : 'Last 7 days'; if (wk === win0) o.selected = true; selW.appendChild(o); });
     var seg = el('div', 'hm-seg');
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
     // Dots used to be an all-or-nothing toggle. It is a SIZE now, because the noise is not the dots, it is the
@@ -1132,11 +1137,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: Math.max(0, dotMin0), showDots: dotMin0 >= 0, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: Math.max(0, dotMin0), showDots: dotMin0 >= 0, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
+    function urlSync() { // replaceState, not pushState: the back button belongs to the page, not to a dropdown
+      try { var u = new URL(location.href); u.searchParams.set('coin', S.coin); if (S.win === '1D') u.searchParams.delete('win'); else u.searchParams.set('win', S.win); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+    }
     S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
-    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
     selD.addEventListener('change', function () { if (!S) return; var v = +selD.value; S.showDots = v >= 0; S.dotMin = Math.max(0, v);
       try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
       if (S.sel && S.sel.type === 'ev' && !dotOk(S.sel.ref)) { S.sel = null; if (S.showSel) S.showSel(); } // never leave a selection pinned to a dot that is no longer drawn
