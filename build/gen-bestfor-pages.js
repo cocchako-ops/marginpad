@@ -39,7 +39,7 @@ const EN_SHARED = {
 const EN_KNOWN = { bybit: 'a fast matching engine and deep USDT-perpetual liquidity', binance: 'the largest volume and the widest range of futures pairs', okx: 'a powerful pro interface and a unified account model', kucoin: 'a huge altcoin futures selection', kraken: 'security and long-standing trust' };
 
 const EX = {
-  bybit:   { name: 'Bybit',   ref: 'https://www.bybit.com/invite?ref=LZKBERJ',     lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perp liquidity' },
+  bybit:   { name: 'Bybit',   ref: 'https://partner.bybit.com/b/162071',     lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perp liquidity' },
   binance: { name: 'Binance', ref: 'https://www.binance.com/register?ref=MAOZM9DS', lev: 125, mmr: 0.4, maker: 0.02, taker: 0.04,  accent: '#f0b90b', fg: '#181a20', known: 'the largest volume and the widest range of futures pairs' },
   okx:     { name: 'OKX',     ref: 'https://okx.com/join/96160298',                 lev: 125, mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#cfd3d8', fg: '#0a0b0d', known: 'a powerful pro interface and a unified account model' },
   kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',          lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection' },

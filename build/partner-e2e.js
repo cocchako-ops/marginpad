@@ -40,7 +40,10 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
   chk('a click-out naming no partner is not a row at all, and the real one still is', mine.some(r => r.e === 'Bybit') && !mine.some(r => r.e === 'other') && !mine.some(r => String(r.e || '').indexOf('UNION') >= 0), mine.map(r => r.e));
   chk('a real partner label survives untouched', mine.some(r => r.e === 'Bybit'), mine.map(r => r.e));
   const rev = (await J('/api/admin/revenue?_=' + Date.now())).body;
-  const KNOWN = ['Bybit', 'Binance', 'OKX', 'Bitget', 'Kraken', 'Coinbase', 'KuCoin', 'MEXC', 'Moon', 'Gate', 'Crypto.com', 'BingX', 'Phemex', 'Hyperliquid', 'TradingView', 'Koinly', '3Commas', 'Ledger', 'Trezor'];
+  // Mirror of PARTNERS in worker.js. A venue missing here is a permanently red check, not a finding:
+  // 'Fomo' shipped 2026-09-15 and this list was not moved with it, so it went red on the first Fomo click.
+  // When you add a partner to PARTNERS, add it here in the same commit.
+  const KNOWN = ['Bybit', 'Binance', 'OKX', 'Bitget', 'Kraken', 'Coinbase', 'KuCoin', 'MEXC', 'Moon', 'Gate', 'Crypto.com', 'BingX', 'Phemex', 'Hyperliquid', 'Fomo', 'TradingView', 'Koinly', '3Commas', 'Ledger', 'Trezor'];
   const badEx = (rev.byEx || []).filter(r => KNOWN.indexOf(r.ex) < 0);
   chk('Revenue: every exchange row is a real partner (historical junk filtered at read time)', badEx.length === 0 && (rev.byEx || []).length > 0, { rows: (rev.byEx || []).length, bad: badEx.slice(0, 3) });
   chk('Revenue: the junk that used to sit in the table is counted apart and is substantial', (+rev.junk || 0) > 0, { junk: rev.junk, top: (rev.byEx || []).slice(0, 4) });
@@ -89,7 +92,7 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     await openClosedTab();
     let gl = null; for (let w = 0; w < 20; w++) { await sleep(500); gl = await page.evaluate(() => { const a = document.querySelector('#jrList .mp-gl'); return a ? { txt: a.textContent.replace(/\s+/g, ' ').trim(), href: a.getAttribute('href'), ex: a.getAttribute('data-mpex'), n: document.querySelectorAll('#jrList .mp-gl').length } : null; }); if (gl) break; if (w === 8) await openClosedTab(); }
     chk('terminal: the winning ticket carries ONE line, with the real percentage and the pair', !!gl && gl.n === 1 && /18\.3%/.test(gl.txt) && /SOL/.test(gl.txt), gl && { txt: gl.txt.slice(0, 90), n: gl.n });
-    chk('terminal: the link is the EXACT pair on the venue that fits this reader, marked sponsored', !!gl && gl.href === 'https://www.bybit.com/trade/usdt/SOLUSDT?ref=LZKBERJ' && gl.ex === 'Bybit', gl && { href: gl.href });
+    chk('terminal: the link is the EXACT pair on the venue that fits this reader, marked sponsored', !!gl && gl.href === 'https://www.bybit.com/trade/usdt/SOLUSDT?affiliate_id=162071&group_id=1922256&group_type=1' && gl.ex === 'Bybit', gl && { href: gl.href });
     const dis = await page.evaluate(() => { const x = document.querySelector('#jrList .mp-gl .mp-gl-x'); if (!x) return null; x.click(); return { gone: !document.querySelector('#jrList .mp-gl'), stored: !!localStorage.getItem('mp_golive_x') }; });
     chk('terminal: the dismiss button removes it and remembers the choice', !!dis && dis.gone && dis.stored, dis);
     await page.evaluate(() => { if (window.mpJournalRender) window.mpJournalRender(); }); await sleep(700);
@@ -125,8 +128,8 @@ const J = (p) => fetch(ORIGIN + p, { headers: H }).then(async r => ({ status: r.
     await page.goto(ORIGIN + '/rewards/?cb=' + Date.now(), { waitUntil: 'load', timeout: 60000 });
     await sleep(1500);
     const rw = await page.evaluate(() => { const a = document.querySelector('#wdNoteBybit .wd-go'); const s = document.querySelector('.step a[data-mpex="Bybit"]'); return { has: !!a, href: a && a.getAttribute('href'), ex: a && a.getAttribute('data-mpex'), rel: a && a.getAttribute('rel'), step: !!s, stepHref: s && s.getAttribute('href') }; });
-    chk('rewards: the payout note has a tracked button to open the account a payout needs', rw.has && rw.ex === 'Bybit' && /bybit\.com\/invite\?ref=LZKBERJ/.test(rw.href || '') && /sponsored/.test(rw.rel || ''), rw);
-    chk('rewards: the "how it works" step links there too', rw.step && /bybit\.com\/invite\?ref=LZKBERJ/.test(rw.stepHref || ''), { stepHref: rw.stepHref });
+    chk('rewards: the payout note has a tracked button to open the account a payout needs', rw.has && rw.ex === 'Bybit' && /partner\.bybit\.com\/b\/162071/.test(rw.href || '') && /sponsored/.test(rw.rel || ''), rw);
+    chk('rewards: the "how it works" step links there too', rw.step && /partner\.bybit\.com\/b\/162071/.test(rw.stepHref || ''), { stepHref: rw.stepHref });
     await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
     await page.goto(ORIGIN + '/rewards/?cb=' + Date.now(), { waitUntil: 'load', timeout: 60000 }); await sleep(1500);
     const ph = await page.evaluate(() => { const w = document.getElementById('wdNoteBybit'); if (!w) return { none: true }; // the payout block only exists once a member opens Withdraw - reveal the same DOM the member sees

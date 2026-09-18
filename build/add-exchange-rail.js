@@ -26,7 +26,7 @@ const AFF = /bybit\.com\/invite\?ref=|binance\.com\/register\?ref=|okx\.com\/joi
 // Partner links. `d` is a deliberately language-neutral descriptor (numbers + proper nouns) so the card
 // needs no translation; only Moon's needs words, and that one is in the string table below.
 const EX = {
-  bybit:    { name: 'Bybit',    href: 'https://www.bybit.com/invite?ref=LZKBERJ',            accent: '#f7a600', d: 'USDT-perp &middot; 100x' },
+  bybit:    { name: 'Bybit',    href: 'https://partner.bybit.com/b/162071',            accent: '#f7a600', d: 'USDT-perp &middot; 100x' },
   binance:  { name: 'Binance',  href: 'https://www.binance.com/register?ref=MAOZM9DS',       accent: '#f0b90b', d: 'USDT-perp &middot; 125x' },
   kraken:   { name: 'Kraken',   href: 'https://invite.kraken.com/JDNW/guj2tf28',             accent: '#7b6cf6', d: 'US &middot; 50x' },
   coinbase: { name: 'Coinbase', href: 'https://base.app/invite/chakko/FHSFNY5H',             accent: '#3b7bff', d: 'US &middot; spot' },

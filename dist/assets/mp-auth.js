@@ -2524,7 +2524,11 @@
   // ref = the plain sign-up link; deep(sym) = the exact pair, which is the whole point of linking from a chart or a
   // ticket. usOk = the venue onboards US retail (documented restriction, not a guess) - the rest go last there.
   var P = {
-    Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://www.bybit.com/invite?ref=LZKBERJ', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }, perk: 'fee discount' },
+    // Bybit (2026-09-18): the AFFILIATE programme (id 162071), not the personal `ref=LZKBERJ` invite the site carried
+    // until today - that one rendered "…@privaterelay.appleid.com invites you" and is a different account from the one
+    // whose CSV export feeds the volume board (its `Source` column IS 162071). Measured: a pair page DOES carry the
+    // affiliate - `?affiliate_id=…&group_id=…&group_type=1` writes REG_REF_prod with `"medium":"affiliate"`.
+    Bybit: { c: '#f7a600', no: 'US,CA', ref: 'https://partner.bybit.com/b/162071', deep: function (s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?affiliate_id=162071&group_id=1922256&group_type=1'; }, perk: 'fee discount' },
     Binance: { c: '#f0b90b', no: 'US,CA', ref: 'https://www.binance.com/register?ref=MAOZM9DS', deep: function (s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }, perk: '20% off fees' },
     Moon: { c: '#8a5cff', no: '', ref: 'https://moon.com/?offer=marginpad', deep: null, perk: '24/7 markets' },
     // Hyperliquid (2026-09-11): on-chain perps DEX, API-first. The join link carries the referral; a /trade deep link would
@@ -2539,9 +2543,14 @@
     // Fomo's own theme-color is #060510, which is invisible on our dark cards.
     Fomo: { c: '#ff4d8d', no: '', ref: 'https://fomo.family/r/Marginpad', deep: null, perk: 'social trading' },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
-    MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://promote.mexc.com/r/GND4jI97o0', deep: function (s) { return 'https://futures.mexc.com/exchange/' + s + '_USDT?inviteCode=GND4jI97o0'; }, perk: 'low fees' },
+    // MEXC (2026-09-18): the old `promote.mexc.com/r/GND4jI97o0` resolved to inviteCode 41aeB - a DIFFERENT MEXC
+    // account ("65****35 invites you") - so every MEXC sign-up we sent was credited elsewhere. The owner's link
+    // resolves to inviteCode 47LrK ("64****89"), which is what the pair links carry now.
+    MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://s.mexc.com/referral/YkL887dVgt', deep: function (s) { return 'https://www.mexc.com/futures/' + s + '_USDT?inviteCode=47LrK'; }, perk: 'low fees' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing - the join page attributes (2026-09-13) */, perk: 'pro tools' },
-    Gate: { c: '#3361ff', no: 'US', ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103', deep: function (s) { return 'https://www.gate.com/futures/USDT/' + s + '_USDT?ref=VFIWB10KUG'; }, perk: 'early listings' },
+    // Gate (2026-09-18): `gate.com/VFIWB10KUG?ref=…` answered a real HTTP 404 ("Sorry, page not found"). The rebate
+    // campaign link below returns 200 and writes ref_uid / ref_type / ref_click_time.
+    Gate: { c: '#3361ff', no: 'US', ref: 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate', deep: function (s) { return 'https://www.gate.com/futures/USDT/' + s + '_USDT?ref=VFIWB10KUG'; }, perk: 'early listings' },
     KuCoin: { c: '#23af91', no: 'US', ref: 'https://www.kucoin.com/r/rf/VHP8AYKY', deep: function (s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }, perk: 'altcoins' },
     Kraken: { c: '#7b5cff', no: '', ref: 'https://invite.kraken.com/JDNW/guj2tf28', deep: null, perk: 'regulated' },
     Coinbase: { c: '#0052ff', no: '', ref: 'https://base.app/invite/chakko/FHSFNY5H', deep: null, perk: 'US-regulated' },

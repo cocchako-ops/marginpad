@@ -192,7 +192,7 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
         <div class="gl-card" data-ex="Bybit" id="glBy">
           <div class="gl-ch"><span class="gl-mark" style="background:#f7a600;color:#1a1200">B</span><b id="glName">Bybit</b><span class="gl-pill">centralised &middot; deepest books</span></div>
           <p id="glTxt">REST and WebSocket shapes close to this API, a separate key per sub-account, and one of the feeds our own prices come from. The default when you want a centralised book with fiat on-ramps.</p>
-          <a class="gl-cta" id="glLink" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
+          <a class="gl-cta" id="glLink" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Bybit" data-ex="Bybit">Open a Bybit account &rarr;</a>
         </div>
       </div>
       <span class="gl-note">Referral links - MarginPad may earn a commission if you open an account, at no cost to you; the Hyperliquid discount is their referral discount. Every API on this page stays free either way. Hyperliquid is not available to US persons under its terms.</span>

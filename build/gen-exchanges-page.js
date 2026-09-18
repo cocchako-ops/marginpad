@@ -20,7 +20,7 @@ const lg = id => id == null ? 'data:,' : 'https://s2.coinmarketcap.com/static/im
 // Editorial ratings are our take (0-100), meant for at-a-glance comparison - not financial advice. Fees are the
 // standard/base VIP-0 tier (VIP levels + the referral fee discount lower them). Pair counts & leverage are approximate.
 const EX = [
-  { key: 'bybit', name: 'Bybit', logo: 521, color: '#f7a600', href: 'https://www.bybit.com/invite?ref=LZKBERJ',
+  { key: 'bybit', name: 'Bybit', logo: 521, color: '#f7a600', href: 'https://partner.bybit.com/b/162071',
     lev: '100×', tk: '0.055%', mk: '0.02%', pairs: '500+', kyc: 'Optional*', us: 'No', bonus: 'Up to 30,000 USDT + 20% off fees',
     r: { fees: 85, liq: 92, mkts: 88, lev: 80, trust: 84, easy: 88 }, badge: 'Best all-round for futures',
     feel: 'The default home base for derivatives traders. Deep books on majors so your market orders fill near the mid-price, a fast matching engine that rarely lags in volatility, and a clean pro UI. Liquidations use a fair-price mark, so you’re less likely to get wicked out by a single bad print.',
@@ -60,13 +60,13 @@ const EX = [
     feel: 'A social-first trading app rather than an exchange terminal: a feed of what other traders are actually buying, profiles you can follow, and copy trading, with spot across six chains on a single USDC balance. Perpetuals arrived in June 2026 and are the interesting part here - not just BTC, ETH, SOL and HYPE, but equity perps (NVDA, GOOGL, AMD), indices (S&amp;P 500, Nasdaq 100, Nikkei 225), commodities (gold, silver, oil, copper, natural gas) and even pre-IPO exposure such as SpaceX, all from one account. Execution is not theirs: perps are powered by Hyperliquid and Trade[XYZ], so you are trading on books that already exist. The fee is the headline - one flat 0.05% per transaction, no maker/taker split and no VIP ladder to climb.',
     pro: ['Flat 0.05% per transaction on perps - no maker/taker split, no VIP tiers to chase', 'Stocks, indices, commodities and pre-IPO perps beside crypto, on one balance', 'Perps execute on Hyperliquid and Trade[XYZ], not on a book they had to bootstrap', 'Social feed, follow and copy trading built in - useful while you are still learning'],
     con: ['Perpetuals are not available to U.S. Persons under its own terms', 'Maximum leverage is not published - check it in the app before you size a position', 'Not a regulated broker or exchange: no FDIC or SIPC-style protection', 'Newer than the venues above, with a shorter track record to judge'] },
-  { key: 'mexc', name: 'MEXC', logo: 544, color: '#1972ff', href: 'https://promote.mexc.com/r/GND4jI97o0',
+  { key: 'mexc', name: 'MEXC', logo: 544, color: '#1972ff', href: 'https://s.mexc.com/referral/YkL887dVgt',
     lev: '500×', tk: '0.02%', mk: '0.00%', pairs: '700+', kyc: 'Optional (light)', us: 'No', bonus: 'Up to 10,000 USDT + $20 gift',
     r: { fees: 94, liq: 62, mkts: 98, lev: 100, trust: 62, easy: 82 }, badge: 'Lowest fees + most pairs',
     feel: 'The degen playground: the lowest taker fees around (often 0% maker), up to 500× leverage and the widest list of new/low-cap perps - you’ll find pairs here that exist nowhere else. The catch: those exotic books are thin, so slippage and wick-outs are real. Great for cheap majors trading and early listings, risky for size on small caps.',
     pro: ['Lowest trading fees (0% maker on many pairs)', 'The most listings - catch new coins first', 'Extreme leverage available (up to 500×)'],
     con: ['Thin liquidity on exotic pairs → slippage & wick-outs', '500× is a liquidation trap for most', 'Lighter oversight than the top tier'] },
-  { key: 'gate', name: 'Gate.io', logo: 302, color: '#17e6a1', href: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063',
+  { key: 'gate', name: 'Gate.io', logo: 302, color: '#17e6a1', href: 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate',
     lev: '100×', tk: '0.05%', mk: '0.02%', pairs: '500+', kyc: 'Optional*', us: 'No', bonus: 'Up to 6,666 USDT + 20% off fees',
     r: { fees: 84, liq: 66, mkts: 95, lev: 80, trust: 70, easy: 70 }, badge: 'Huge altcoin selection',
     feel: 'A veteran exchange with an enormous catalog - if a coin is tradeable anywhere, it’s probably on Gate. Publishes proof-of-reserves. Majors are fine; the long tail is where liquidity thins out, so treat small-cap perps with respect.',

@@ -24,7 +24,7 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, n
   const u1 = 'e2ebyb' + Date.now().toString(36), u2 = 'e2ebyc' + Date.now().toString(36);
   const H1 = await mk(u1), H2 = await mk(u2);
   const TU = '9999' + String(Date.now()).slice(-8); // test UID range: e2e accounts may register 9999…, never public, never on the allowlist
-  const g0 = await j('/api/reward/bybitlink', { headers: H1 }); ok(g0.s === 200 && g0.b.uid === '' && g0.b.eligible === false && /bybit\.com\/invite\?ref=LZKBERJ/.test(g0.b.ref), 'fresh member: nothing registered, referral link offered');
+  const g0 = await j('/api/reward/bybitlink', { headers: H1 }); ok(g0.s === 200 && g0.b.uid === '' && g0.b.eligible === false && /partner\.bybit\.com\/b\/162071/.test(g0.b.ref), 'fresh member: nothing registered, referral link offered');
   ok((await j('/api/reward/bybitlink', { method: 'POST', headers: H1, body: JSON.stringify({ uid: '12ab' }) })).b.error === 'bad_uid', 'malformed UID refused');
   ok((await j('/api/reward/bybitlink', { method: 'POST', headers: H1, body: JSON.stringify({ uid: '123456789012' }) })).b.error === 'uid_not_ours', 'a UID that is not on the withdrawal allowlist is refused (uid_not_ours)');
   ok((await j('/api/reward/bybitlink')).s === 401, 'signed-out: 401');

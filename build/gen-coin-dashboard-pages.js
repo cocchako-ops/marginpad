@@ -105,9 +105,11 @@ const COINS = [
 ];
 
 function slug(s) { return s.toLowerCase(); }
-function bybit(s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }
+function bybit(s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?affiliate_id=162071&group_id=1922256&group_type=1'; }
 function binance(s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }
-function okx(s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }
+// OKX has NO usable deep link: its pair page cannot carry our code (2026-09-13) and `/trade-swap/<pair>`
+// answered a plain 404 on top of that, so every click there was dead twice over. The join page attributes.
+function okx(s) { return 'https://okx.com/join/96160298'; }
 function kucoin(s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }
 
 const CSS = `

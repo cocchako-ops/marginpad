@@ -7,7 +7,7 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist');
 
 const RAILS = `<div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
-<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>`;
 
 const STYLE = `<style>

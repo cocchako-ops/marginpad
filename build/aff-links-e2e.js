@@ -9,8 +9,11 @@ let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ok  ' + m); } else { fail++; console.log('  FAIL ' + m); } };
 // host → what the URL must contain to attribute to us
 const CODE = [
-  [/bybit\.com/, /ref=LZKBERJ/], [/binance\.com/, /ref=MAOZM9DS/], [/okx\.com/, /join\/96160298/], [/bitget\.com/, /clacCode=DSSSQKGK/],
-  [/mexc\.com/, /(inviteCode=GND4jI97o0|\/r\/GND4jI97o0)/], [/gate\.com/, /VFIWB10KUG/], [/kucoin\.com/, /(rcode=VHP8AYKY|\/r\/rf\/VHP8AYKY)/],
+  // Bybit 2026-09-18: the AFFILIATE programme (162071). `ref=LZKBERJ` was a personal invite on a different
+  // account from the one whose report feeds the volume board - it must never come back.
+  [/bybit\.com/, /(affiliate_id=162071|partner\.bybit\.com\/b\/162071)/], [/binance\.com/, /ref=MAOZM9DS/], [/okx\.com/, /join\/96160298/], [/bitget\.com/, /clacCode=DSSSQKGK/],
+  // MEXC 2026-09-18: `/r/GND4jI97o0` resolved to a DIFFERENT account's inviteCode (41aeB) - not an alias of ours.
+  [/mexc\.com/, /(inviteCode=47LrK|referral\/YkL887dVgt)/], [/gate\.com/, /VFIWB10KUG/], [/kucoin\.com/, /(rcode=VHP8AYKY|\/r\/rf\/VHP8AYKY)/],
   [/moon\.com/, /offer=marginpad/], [/hyperliquid\.xyz/, /join\/MARGINPAD/], [/kraken\.com/, /invite\.kraken\.com/], [/base\.app/, /invite\/chakko/],
 ];
 const EXH = /bybit\.com|binance\.com|okx\.com|bitget\.com|mexc\.com|gate\.com|kucoin\.com|moon\.com|hyperliquid\.xyz|kraken\.com|base\.app/;

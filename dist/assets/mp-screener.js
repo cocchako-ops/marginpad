@@ -140,13 +140,13 @@
     sheet.addEventListener('click',function(e){var ex=e.target.closest&&e.target.closest('[data-ex]');if(ex){try{if(window.__mpTrack)window.__mpTrack('exchange',ex.getAttribute('data-ex'));}catch(_){}}if(e.target.closest('.scr-sheet-bd')||e.target.closest('.scr-sheet-x'))closeSheet();});}
   // exchanges where the pair can be traded - affiliate deep-links (Bybit/Binance open the exact pair with our ref)
   var SCR_EXCH=[
-    {n:'Bybit',c:'#f7a600',fg:'#0a0b0d',u:function(s){return 'https://www.bybit.com/trade/usdt/'+s+'USDT?ref=LZKBERJ';}},
+    {n:'Bybit',c:'#f7a600',fg:'#0a0b0d',u:function(s){return 'https://www.bybit.com/trade/usdt/'+s+'USDT?affiliate_id=162071&group_id=1922256&group_type=1';}},
     {n:'Binance',c:'#f0b90b',fg:'#181a20',u:function(s){return 'https://www.binance.com/en/futures/'+s+'USDT?ref=MAOZM9DS';}},
     {n:'OKX',c:'#cfd3d8',fg:'#0a0b0d',u:function(s){return 'https://okx.com/join/96160298';}}, /* the OKX pair page cannot carry our code - the join page attributes (2026-09-13) */
     {n:'Bitget',c:'#00e7d8',fg:'#06231d',u:function(s){return 'https://www.bitget.com/futures/usdt/'+s+'USDT?clacCode=DSSSQKGK';}},
     {n:'KuCoin',c:'#23af91',fg:'#06231d',u:function(s){return 'https://www.kucoin.com/futures/trade/'+(s==='BTC'?'XBT':s)+'USDTM?rcode=VHP8AYKY';}},
     {n:'Gate',c:'#3361ff',fg:'#ffffff',u:function(s){return 'https://www.gate.com/futures/USDT/'+s+'_USDT?ref=VFIWB10KUG';}},
-    {n:'MEXC',c:'#0ac2d6',fg:'#06231d',u:function(s){return 'https://futures.mexc.com/exchange/'+s+'_USDT?inviteCode=GND4jI97o0';}},
+    {n:'MEXC',c:'#0ac2d6',fg:'#06231d',u:function(s){return 'https://www.mexc.com/futures/'+s+'_USDT?inviteCode=47LrK';}},
     {n:'Hyperliquid',c:'#5ee6c8',fg:'#062a24',u:function(s){return 'https://app.hyperliquid.xyz/join/MARGINPAD';}},
     {n:'Fomo',c:'#ff4d8d',fg:'#0a0b0d',u:function(s){return 'https://fomo.family/r/Marginpad';}}, /* no public pair link keeps the referral - the /r/ link is the referral */
     {n:'Kraken',c:'#7b5cff',fg:'#ffffff',u:function(s){return 'https://invite.kraken.com/JDNW/guj2tf28';}},

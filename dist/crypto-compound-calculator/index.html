@@ -90,12 +90,12 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <h2>Related tools</h2>
 <div class="rel"><a href="/crypto-drawdown-calculator/">Drawdown recovery</a><a href="/crypto-win-rate-calculator/">Win-rate expectancy</a><a href="/crypto-roi-calculator/">ROI calculator</a><a href="/paper-trade">Paper trading</a></div>
 <div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
-<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
 <a href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
 <p class="note">Free, no signup, runs entirely in your browser. Educational tool - not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
 </div>
 <script>function calc(){var s=+document.getElementById('start').value,re=+document.getElementById('ret').value/100,n=+document.getElementById('per').value;var u=document.getElementById('unit').value;var r=document.getElementById('res');if(!(s>0&&n>0)){r.innerHTML='';return;}var f=s*Math.pow(1+re,n),tot=(f/s-1)*100;r.innerHTML='<div class="rrow big"><span class="k">After '+n+' '+u+'s</span><span class="v">'+f.toLocaleString(undefined,{maximumFractionDigits:2})+' USD</span></div><div class="rrow"><span class="k">Total return</span><span class="v '+(tot>=0?'up':'dn')+'">'+(tot>=0?'+':'')+tot.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Same edge NOT compounded</span><span class="v">'+(s+s*re*n).toFixed(2)+' USD</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
+<script defer src="/assets/mp-nav.js?v=36c6cc53"></script>
 </body>
 </html>

@@ -2247,7 +2247,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
       +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
       +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
-      +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Bybit\')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
+      +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Bybit\')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
       +'<i class="mprl-cut"></i>'
       +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Moon\')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
       +'</div></div>'
@@ -3208,7 +3208,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var NXKEY='mp_grad_next';
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
   /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here - the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
-  var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
+  var EX=[{n:'Bybit',h:'https://partner.bybit.com/b/162071',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
           {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
@@ -3432,7 +3432,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=74086156';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=4174bf81';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
