@@ -495,16 +495,34 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     for(i=0;i<prev.length;i++){var k=n-6+i;if(+bars[k].close>=+bars[k].open)up+=v[k];else dn+=v[k];}
     // volume-at-price over the loaded window, 24 buckets - the fattest bucket is the node
     var lo=Infinity,hi=-Infinity;for(i=0;i<n;i++){if(+bars[i].low<lo)lo=+bars[i].low;if(+bars[i].high>hi)hi=+bars[i].high;}
-    var node=null;
+    var node=null,nodes=null,thin=null;
     if(hi>lo){var B=24,w2=(hi-lo)/B,acc=new Array(B);for(i=0;i<B;i++)acc[i]=0;
       for(i=0;i<n;i++){var mid=(+bars[i].high+ +bars[i].low)/2,b=Math.min(B-1,Math.max(0,Math.floor((mid-lo)/w2)));acc[b]+=v[i];}
       var best=0;for(i=1;i<B;i++)if(acc[i]>acc[best])best=i;
-      if(acc[best]>0)node=_p6(lo+(best+0.5)*w2);}
+      if(acc[best]>0)node=_p6(lo+(best+0.5)*w2);
+      /* the shelf, not just its peak: the three heaviest buckets with their weight against the fattest, plus
+         the thinnest bucket price has to cross, which is where a move accelerates because nobody is there. */
+      var ranked=[];for(i=0;i<B;i++)ranked.push({i:i,v:acc[i]});
+      ranked.sort(function(x,y){return y.v-x.v;});
+      if(ranked[0].v>0){
+        nodes=ranked.slice(0,3).filter(function(r){return r.v>0;}).map(function(r){
+          return {price:_p6(lo+(r.i+0.5)*w2),relToHeaviest:+(r.v/ranked[0].v).toFixed(2)};});
+        if(nodes&&nodes.length>=2){
+          var iA=ranked[0].i,iB=ranked[1].i,pLo=Math.min(iA,iB),pHi=Math.max(iA,iB);
+          if(pHi-pLo>=2){
+            var thr=ranked[0].v*0.25,run=[];
+            for(i=pLo+1;i<pHi;i++)if(acc[i]<thr)run.push(i);
+            if(run.length)thin=_p6(lo+(run[Math.floor(run.length/2)]+0.5)*w2);
+          }
+        }
+      }}
     return {lastBarVsMedian20:+(last/med).toFixed(2),
       state:last>=med*1.8?'much heavier than usual':last>=med*1.25?'heavier than usual':last<=med*0.6?'unusually thin':'normal',
       last5BuyersVsSellers:(up+dn)>0?Math.round(up/(up+dn)*100)+'% of the last 5 bars’ volume traded on up-candles':null,
       heaviestTradedPrice:node,
-      note:'heaviestTradedPrice is where the most volume changed hands on screen - price tends to return to it'};}
+      volumeNodes:nodes,
+      thinnestPrice:thin,
+      note:'heaviestTradedPrice is where the most volume changed hands on screen and price tends to return to it. volumeNodes are the three heaviest shelves with their weight against the fattest. thinnestPrice is the emptiest price on screen - almost nothing traded there, so price crosses it fast and it is a poor place to put a target and a worse place to put a stop.'};}
 
   /* HIGHER TIMEFRAME, WITHOUT A SINGLE EXTRA REQUEST. A desk always checks the frame above before taking a trade,
      and the prompt has been telling the model "never draw a level from another timeframe" - a prohibition, because
