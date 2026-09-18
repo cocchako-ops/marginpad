@@ -1597,7 +1597,8 @@ async function handleSsrComp(request, url, env, ctx) {
   const endsIn = c.season.ends_in_hours;
   const endTxt = endsIn >= 48 ? Math.round(endsIn / 24) + ' days' : endsIn + ' hours';
   const ends = new Date(c.season.ends).toISOString().slice(0, 10);
-  const contenders = c.boards.reduce((a, b) => a + (b.entries || 0), 0);
+  const contenders = c.boards.reduce((a, b) => a + (b.entries || 0), 0); // total board placements
+  const people = (c.competitors != null) ? c.competitors : null; // distinct competitors
   const withLeader = c.boards.filter(b => b.leader && b.leader.name);
 
   // THE SEASON DESK. When and how much are the two facts that decide whether anyone enters, and they used to be
@@ -1615,7 +1616,8 @@ async function handleSsrComp(request, url, env, ctx) {
      + ', and the next one starts the same day - you can join on any day and still place.</p></div>'
      + '<div class="cp-dr"><div class="cp-pot"><span class="amt">$' + c.prize_pool_usd_per_season + '</span></div>'
      + '<div class="cp-potk">on the line this season, free to enter</div>'
-     + '<div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>' + contenders + '</b> entries ranked</span></div>'
+     + '<div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span>'
+     + (people != null ? '<span><b>' + people + '</b> ' + (people === 1 ? 'person is' : 'people are') + ' competing</span>' : '<span><b>' + contenders + '</b> placements</span>') + '</div>'
      + '</div></div>';
   H += '<p class="cp-src">Measured ' + new Date(c.measured_at).toISOString().slice(0, 16).replace('T', ' ') + ' UTC by MarginPad, from the same data that pays the prizes.</p>';
 
@@ -2653,17 +2655,17 @@ async function handleCgCycle(url, env) {
 // against real candles, the sixth from real Bybit volume. Everything here is read from the same sources
 // that pay the prizes, so an assistant quoting it is quoting what actually happens.
 const COMP_BOARDS = [
-  { id: 'roe', key: 'top', prize: 'lbRoe', name: 'Highest ROE', asks: 'the best return on a single closed trade', unit: 'ROE %', f: 'roe' },
-  { id: 'green', key: 'topGreen', prize: 'lbRoe2', name: 'Green Days', asks: 'the most days closed in profit', unit: 'green days', f: 'days' },
-  { id: 'winrate', key: 'topWr', prize: 'lbWr', name: 'Best Win Rate', asks: 'the highest win rate, ranked by Wilson score so a lucky streak cannot win it', unit: 'win rate %', f: 'wr' },
-  { id: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
-  { id: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
-  { id: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
-  { id: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
+  { id: 'roe', ent: 'top', key: 'top', prize: 'lbRoe', name: 'Highest ROE', asks: 'the best return on a single closed trade', unit: 'ROE %', f: 'roe' },
+  { id: 'green', ent: 'green', key: 'topGreen', prize: 'lbRoe2', name: 'Green Days', asks: 'the most days closed in profit', unit: 'green days', f: 'days' },
+  { id: 'winrate', ent: 'wr', key: 'topWr', prize: 'lbWr', name: 'Best Win Rate', asks: 'the highest win rate, ranked by Wilson score so a lucky streak cannot win it', unit: 'win rate %', f: 'wr' },
+  { id: 'xp', ent: 'xp', key: 'topXp', prize: 'lbXp', name: 'Season XP', asks: 'the most XP earned this season', unit: 'XP', f: 'xp' },
+  { id: 'gold', ent: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
+  { id: 'bybit', ent: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
+  { id: 'moon', ent: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v2'); // v2: King of the Moon (28-day contest, own window)
+  const ck = new Request('https://marginpad.io/__competition_v3'); // v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -2678,7 +2680,7 @@ async function handleCompetition(url, request, env, ctx) {
     return {
       id: b.id, name: b.name, scored_on: b.asks, unit: b.unit,
       prize_usd_top5: prizes.map(x => +x || 0), prize_pool_usd: pool,
-      entries: rows.length,
+      entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
       entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : 'free_paper',
@@ -2686,6 +2688,7 @@ async function handleCompetition(url, request, env, ctx) {
       ...(b.id === 'moon' && lb && lb.moonContest ? { contest: { starts: lb.moonContest.start ? new Date(lb.moonContest.start).toISOString() : null, ends: lb.moonContest.end ? new Date(lb.moonContest.end).toISOString() : null, updated: lb.moonContest.updated ? new Date(lb.moonContest.updated).toISOString() : null } } : {}),
     };
   });
+  const competitors = (lb && lb.people != null) ? lb.people : null; // distinct people, not the sum of board lengths
   const total = boards.filter(b => b.period_days === Math.round(LB_PERIOD / 86400000)).reduce((a, b) => a + b.prize_pool_usd, 0); // per SEASON = the fourteen-day boards; the Moon contest runs 28 days and is stated on its own board
 
   const out = {
@@ -2695,6 +2698,7 @@ async function handleCompetition(url, request, env, ctx) {
     live: true,
     season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
               day_of_season: Math.floor((now - from) / 86400000) + 1, ends_in_hours: Math.max(0, Math.round((to - now) / 3600000)) },
+    competitors: competitors, // DISTINCT people ranked this season, not the sum of the boards - one trader on three boards is one person
     prize_pool_usd_per_season: total,
     prize_pool_usd_per_month: Math.round(total * (30 / (LB_PERIOD / 86400000)) + boards.filter(b => b.period_days !== Math.round(LB_PERIOD / 86400000)).reduce((a, b) => a + b.prize_pool_usd * 30 / b.period_days, 0)), // fourteen-day boards scaled to a month + the 28-day Moon contest scaled to a month
     prize_pool_usd_all_boards: boards.reduce((a, b) => a + b.prize_pool_usd, 0),
@@ -12145,7 +12149,8 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v10')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v10')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v2')); } catch (e) {}
   return snap;
 }
@@ -12240,7 +12245,8 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => ({ rank: r.rank, who: r.name, vol: r.vol })), n: b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0 };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 60 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v9')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v10')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v10')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   return snap;
 }
 async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0 }; }
@@ -15919,7 +15925,8 @@ async function handleReward(url, request, env) {
     return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL });
   }
   if (path === '/lb' && request.method === 'GET') {
-    const lbCk = new Request('https://marginpad.io/__reward_lb_v9'); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v10' : 'v10')); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -15928,38 +15935,51 @@ async function handleReward(url, request, env) {
       try {
         let board = [], xpBoard = [], greenBoard = [], goldBoard = [];
         if (env.USERS) {
-          const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40'));
+          const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=500'));
           const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || [];
         }
         const banned = {};
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
         const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
-        const top = board.filter(x => !banned[x.uid] && (+x.roe > 0)).slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side })); // Highest-ROE board shows only real gains (a losing/liquidated best trade isn't a contender)
+        const CUT = lbFull ? 1e6 : 15;
+        const qTop = board.filter(x => !banned[x.uid] && (+x.roe > 0));
+        const top = qTop.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side })); // Highest-ROE board shows only real gains (a losing/liquidated best trade isn't a contender)
         // Best-win-rate board: min 20 closed trades this week, sorted by WR% then by games played (wins already ≥5%-ROE gated in the DO from v2)
         const _wilson = (w, n) => { if (!n) return 0; const z = 1.96, p = w / n, z2 = z * z; return (p + z2 / (2 * n) - z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
         // ranked by the WILSON LOWER BOUND (95%) of the win rate, not the raw % - 45-3 (score 89.1) beats 20-0
         // (score 83.9): a perfect small sample can no longer lock the board (owner, 2026-08-03). Raw WR still shown.
-        const topWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
-          .map(x => { const w = +x.w || 0, l = +x.l || 0; return { who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1) }; })
-          .sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l)))
-          .slice(0, 15).map((x, i) => ({ rank: i + 1, ...x }));
+        const qWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
+          .map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1) }; })
+          .sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l)));
+        const topWr = qWr.slice(0, CUT).map((x, i) => { const y = { rank: i + 1, ...x }; delete y.uid; return y; });
         // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL - can't be gamed by size.
-        const topXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0)
-          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
+        const qXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0);
+        const topXp = qXp.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
         // GREEN DAYS board (replaced the Demo-Spot bank board, owner 2026-08-17): days of the season finished
         // in profit. The Spot board ranked a STANDING BALANCE, so it could list someone who had not opened the
         // site in weeks; this one only moves when you come back and close the day green.
-        const topGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0)
-          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
+        const qGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0);
+        const topGreen = qGreen.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
         // GOLD ROOM: Gold-level members only, ranked by winning trades. `goldPaidFrom` is the first season that pays -
         // the client shows the "no prizes this season" line from it instead of hard-coding a date.
-        const topGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && ((+x.w || 0) + (+x.l || 0)) > 0)
-          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
+        const qGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && ((+x.w || 0) + (+x.l || 0)) > 0);
+        const topGold = qGold.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h - a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
         let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+        // ONE TRADER ON THREE BOARDS IS ONE PERSON. The competition page reported "79 entries ranked", which was
+        // the sum of seven board lengths - capped at 15 each AND double-counting anybody ranked on more than one.
+        // `entrants` is per board, measured before the slice; `people` is the distinct union across all of them.
+        const keyOf = x => { const u = String((x && x.uid) || ''); return u || ('n:' + String((x && (x.who || x.name)) || '').toLowerCase()); };
+        const who = {};
+        [qTop, qWr, qXp, qGreen, qGold].forEach(a => a.forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; }));
+        (bybit.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
+        if (moon) (moon.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
+        const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
+          bybit: (bybit.rows || []).length, moon: moon ? (moon.rows || []).length : 0 };
+        const people = Object.keys(who).length;
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, entrants, people, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
@@ -23743,7 +23763,7 @@ export class UserStore {
     }
     if (path === '/leaderboard') { // authoritative weekly Trade League - best CLOSED-trade ROE per signed-in user in [ws,we), straight from the synced journal
       const ws = +url.searchParams.get('ws') || 0, we = +url.searchParams.get('we') || (now + 1);
-      const limit = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 30));
+      const limit = Math.min(500, Math.max(1, +url.searchParams.get('limit') || 30)); // 50 -> 500: /leaderboards/ shows every qualifying entrant, everything else still asks for its own small slice
       const rows = this.rows("SELECT u.id uid, u.username, t.json FROM utrades t JOIN users u ON u.id=t.user_id WHERE t.n>0 AND (u.status IS NULL OR u.status='active') ORDER BY t.updated DESC LIMIT 1000");
       const best = [];
       const v2 = ws >= LB_V2_START; // from the 3-board launch: a win must clear +5% ROE to count on the win-rate board
@@ -23925,10 +23945,21 @@ export class UserStore {
         // at the user's first grant of the season, so the delta is exactly this season's positive XP - never trimmed,
         // immune to duel-stake (which doesn't touch xp_life), lbprize excluded via the base bump in _grantXp.
         const SX = "(COALESCE((SELECT s2.base FROM xpseason s2 WHERE s2.user_id=s.user_id AND s2.season>s.season ORDER BY s2.season ASC LIMIT 1), COALESCE(u.xp_life,0)) - COALESCE(s.base,0))";
-        xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, limit)
+        xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, 2000)
           .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
       } catch (e) {}
-      return this.j({ top: best.slice(0, limit), xp, green: green.slice(0, limit), gold: gold.slice(0, limit) });
+      // COUNTS ARE MEASURED BEFORE THE ROWS ARE TRIMMED. Every caller used to read a board's length as "how
+      // many people are competing", which was really "how many rows did you ask me for" - the five paper boards
+      // all reported exactly 15 because 15 was the slice. `people` is the DISTINCT union across the boards,
+      // because one trader on three boards is one person, not three.
+      const seen = {};
+      const mark = a => { const k = String((a && a.uid) || ''); if (k) seen[k] = 1; };
+      best.forEach(mark); green.forEach(mark); gold.forEach(mark); xp.forEach(mark);
+      return this.j({
+        top: best.slice(0, limit), xp: xp.slice(0, limit), green: green.slice(0, limit), gold: gold.slice(0, limit),
+        counts: { top: best.length, green: green.length, gold: gold.length, xp: xp.length },
+        people: Object.keys(seen).length
+      });
     }
     if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
