@@ -171,7 +171,7 @@ curl -H "X-API-Key: mpb_..." "https://marginpad.io/api/v1/klines?symbol=ETH&amp;
       ${row('POST', '/api/bot/v1/ai <span class="tag p">Premium</span>', 'The chart panel&rsquo;s AI read from the API: an answer, a parsed plan and the brief it reasoned over, 50 a day <span class="tag n">2.3</span>.')}
     </table></div>
     <div class="tw"><table class="plans">
-      <tr><th>Plan</th><th>Free</th><th class="hl">Premium ($3.99/mo)</th></tr>
+      <tr><th>Plan</th><th>Free</th><th class="hl">Premium ($11.99/mo)</th></tr>
       <tr><td>Requests / minute per key (trading and market data)</td><td>120</td><td class="hl">600</td></tr>
       <tr><td>API keys · open positions · resting orders</td><td>3 · 50 · 20</td><td class="hl">10 · 200 · 20</td></tr>
       <tr><td>Market data, WebSocket, MCP, limit &amp; stop orders, trailing stops, modify, dry run, venue fee schedules</td><td>included</td><td class="hl">included</td></tr>

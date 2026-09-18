@@ -6288,7 +6288,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=36c6cc53" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4df236c7" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -10419,6 +10419,21 @@ async function handleNowpayIpn(request, env) {
         await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>Payment confirmed!</b> Welcome to <b>' + tier + '</b> signals' + (invite ? '\n\n <b>Join now:</b> ' + invite : '\n\nWe’ll add you shortly.') + '\n\n Access runs <b>30 days</b> (until ' + new Date(expiry).toISOString().slice(0, 10) + '). I’ll remind you before it ends. Status: /mysub' });
         await tgAdmin(env, '<b>NOWPayments - paid</b>\nTier: <b>' + tier + '</b> ($' + data.price_amount + ')\nUser chat: <code>' + chat + '</code> · until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
+    } else if (/^premplus_[a-z0-9]{4,40}$/i.test(orderId)) { // Premium Plus (2026-09-18) - its own KV row, its own book entry
+      const uid = orderId.slice(9), payId = String(data.payment_id || data.id || '');
+      const dup = payId ? await env.STATS.get('np:done:' + payId) : null;
+      if (!dup) {
+        if (payId) await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 });
+        let base = Date.now(); try { const cur = +(await env.STATS.get('prem:plus:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} // a month bought early EXTENDS, never replaces
+        const expiry = base + PREM_PLANS.plus.days * 86400000;
+        await env.STATS.put('prem:plus:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 });
+        try { await premMarkName(env, uid, true); } catch (e) {}
+        try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {} // Plus is a superset, so the ordinary Premium flag rides with it
+        try { await premPayLog(env, { id: 'np:' + (payId || uid + ':' + Date.now()), ts: Date.now(), acct: 'u:' + uid, kind: 'plus', cents: Math.round((+data.price_amount || PREM_USD('plus')) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {}
+        try { await revokeUserSessions(env, uid); } catch (e) {}
+        try { await evPush(env, null, 'sale', 'premium-plus ($' + (data.price_amount || PREM_USD('plus')) + ')', ''); } catch (e) {}
+        await tgAdmin(env, '<b>Premium PLUS paid</b>\nUser <code>' + uid + '</code> until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
+      }
     } else if (/^premlife_[a-z0-9]{4,40}$/i.test(orderId) || /^prem_[a-z0-9]{4,40}$/i.test(orderId)) {
       const life = orderId.indexOf('premlife_') === 0, uid = orderId.slice(life ? 9 : 5), payId = String(data.payment_id || data.id || '');
       const dup = payId ? await env.STATS.get('np:done:' + payId) : null;
@@ -10429,7 +10444,7 @@ async function handleNowpayIpn(request, env) {
         else { let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
         try { await premMarkName(env, uid); } catch (e) {}
         try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
-        try { await premPayLog(env, { id: 'np:' + (payId || uid + ':' + Date.now()), ts: Date.now(), acct: 'u:' + uid, kind: life ? 'founder' : 'monthly', cents: Math.round((+data.price_amount || (life ? 39.99 : 3.99)) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {} // payment book
+        try { await premPayLog(env, { id: 'np:' + (payId || uid + ':' + Date.now()), ts: Date.now(), acct: 'u:' + uid, kind: life ? 'founder' : 'monthly', cents: Math.round((+data.price_amount || (life ? 39.99 : PREM_USD('premium'))) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {} // payment book
         try { await revokeUserSessions(env, uid); } catch (e) {} // the session user object carries a stale premium=false - drop it so the buyer sees Premium immediately, not after ~2 min (worst-possible moment for a paying user)
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '39.99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
@@ -10472,6 +10487,20 @@ async function handleNowpayIpn(request, env) {
   }
   return new Response('ok');
 }
+// TWO CONSUMER PLANS SINCE 2026-09-18 (owner). ONE table, the way API_PLANS is one table - a price that lives in
+// a second place is a price that will disagree with itself.
+//   Premium      $11.99/mo  - the site: indicators, heatmap, alerts, duels, lounge, report breakdowns, Daily Brief
+//   Premium Plus $100/mo    - everything in Premium PLUS Ask AI on the charts
+// Ask AI moved behind Plus because it is the one feature with a real per-use cost: measured, a member on the 50-a-day
+// cap runs to $66 a month on claude-sonnet-5 (GET /api/admin/aicost), so it could never live inside a $3.99 - or even
+// an $11.99 - subscription. Every other Premium feature costs us nothing per use.
+// FOUNDER IS RETIRED AND UNBUYABLE. One person paid for it (CH4RLOTT3) and keeps it for life, with Plus included -
+// `prem:founder:<uid>` resolves to plus. The checkout branch is gone; do not bring it back.
+const PREM_PLANS = {
+  premium: { id: 'premium', name: 'Premium', cents: 1199, days: 30, order: 'prem_' },
+  plus: { id: 'plus', name: 'Premium Plus', cents: 10000, days: 30, order: 'premplus_' },
+};
+const PREM_USD = (id) => ((PREM_PLANS[id] || PREM_PLANS.premium).cents / 100);
 const PREM_FOUNDERS = ['chako', 'whyme', 'gladijator']; // always premium, can't be removed
 const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + MP One Field bg). Not a permission system - chat/mod powers live in the users.role column.
 // Badge text on the PUBLIC profile card, INDEPENDENT of PREM_OWNERS - the two were the same thing until
@@ -10662,13 +10691,27 @@ async function premiumFor(env, request) {
   if (!uid) return { premium: false, user: null, uid: null, until: null, source: null };
   const allow = new Set(PREM_FOUNDERS);
   try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
-  if (uname && allow.has(uname)) return { premium: true, user: uname, uid, until: null, source: 'grant' };
-  if (user && (+user.premium || 0) > Date.now()) return { premium: true, user: uname, uid, until: +user.premium, source: 'grant' }; // timed grant (mp-ops = 30 days) or paid - both set the users.premium expiry column
-  try { const until = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (until > Date.now()) return { premium: true, user: uname, uid, until, source: 'paid' }; } catch (e) {}
-  return { premium: false, user: uname, uid, until: null, source: null };
+  // ---- Premium PLUS resolves first: it is a superset, so a Plus holder must never be answered "premium" ----
+  // Three ways in, and the ordinary grant list is deliberately NOT one of them: `premium:allow` is what mp-ops
+  // hands out by the dozen, and letting it mint $100 plans would give away the only feature with a per-use cost.
+  let plus = false;
+  try { if (uname && PREM_FOUNDERS.indexOf(uname) >= 0) plus = true; } catch (e) {}
+  if (!plus) { try { ((await env.STATS.get('premium:plusallow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => { if (x === uname) plus = true; }); } catch (e) {} }
+  // The one Founder who paid keeps Plus for life (owner 2026-09-18). TWO tests, because only an IPN-created
+  // Founder has the `prem:founder:` marker - CH4RLOTT3's row is `src:'derived'`, reconstructed from a live
+  // prem:sub with a hundred-year expiry, and checking the marker alone would have quietly missed the only
+  // person this rule exists for. An expiry more than five years out IS a lifetime grant, however it was made.
+  if (!plus) { try { if (await env.STATS.get('prem:founder:' + uid)) plus = true; } catch (e) {} }
+  if (!plus) { try { const life = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (life > Date.now() + 5 * 365 * 86400000) plus = true; } catch (e) {} }
+  if (plus) return { premium: true, plus: true, plan: 'plus', user: uname, uid, until: null, source: 'grant' };
+  try { const pu = +(await env.STATS.get('prem:plus:' + uid)) || 0; if (pu > Date.now()) return { premium: true, plus: true, plan: 'plus', user: uname, uid, until: pu, source: 'paid' }; } catch (e) {}
+  if (uname && allow.has(uname)) return { premium: true, plus: false, plan: 'premium', user: uname, uid, until: null, source: 'grant' };
+  if (user && (+user.premium || 0) > Date.now()) return { premium: true, plus: false, plan: 'premium', user: uname, uid, until: +user.premium, source: 'grant' }; // timed grant (mp-ops = 30 days) or paid - both set the users.premium expirycolumn
+  try { const until = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (until > Date.now()) return { premium: true, plus: false, plan: 'premium', user: uname, uid, until, source: 'paid' }; } catch (e) {}
+  return { premium: false, plus: false, plan: null, user: uname, uid, until: null, source: null };
 }
 // cosmetics: remember a paid member's username so the PRO badge shows in leaderboards/chat (KV premium:names, cap ~500)
-async function premMarkName(env, uid) {
+async function premMarkName(env, uid, plus) { // plus: also remember them on the Plus roster, so the profile plate can name the plan
   if (!env.USERS || !uid) return;
   try {
     const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [uid] }) }));
@@ -10676,6 +10719,7 @@ async function premMarkName(env, uid) {
     if (!un) return;
     let set = ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean);
     if (set.indexOf(un) < 0) { set.push(un); if (set.length > 500) set = set.slice(-500); await env.STATS.put('premium:names', set.join(' ')); }
+    if (plus) { let ps = ((await env.STATS.get('premium:plusnames')) || '').toLowerCase().split(/s+/).filter(Boolean); if (ps.indexOf(un) < 0) { ps.push(un); if (ps.length > 500) ps = ps.slice(-500); await env.STATS.put('premium:plusnames', ps.join(' ')); } }
   } catch (e) {}
 }
 // Premium payment book (2026-09-12, owner: "who paid Premium, when and how much"): every dollar paid for Premium lands as ONE row in
@@ -11111,6 +11155,17 @@ function framesFor(xp, premium, founder) {
   return owned;
 }
 async function setPremiumDO(env, who, until) { if (!env.USERS) return; try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/setpremium', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ until: until }, who)) })); } catch (e) {} }
+// The usernames on Premium PLUS (2026-09-18) - the profile plate names the plan, so it needs its own set rather
+// than inferring "plus" from the Premium one. Founders and the `premium:plusallow` grant list only; an ordinary
+// Premium grant must never light up as Plus. Cached per isolate for 60 s like premiumSet.
+let _plusSet = { t: 0, s: null };
+async function premiumPlusSet(env) {
+  const now = Date.now(); if (_plusSet.s && now - _plusSet.t < 60000) return _plusSet.s;
+  const set = new Set(PREM_FOUNDERS);
+  try { ((await env.STATS.get('premium:plusallow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  try { ((await env.STATS.get('premium:plusnames')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  _plusSet = { t: now, s: set }; return set;
+}
 // the set of usernames that get the premium PRO badge (founders + owner-granted + paid) - cached per isolate 60s
 let _premSet = { t: 0, s: null };
 async function premiumSet(env) {
@@ -12645,7 +12700,10 @@ async function handleAiChart(url, request, env, ectx) {
   // effective daily limit = per-user override (KV ai:lim:<uid>) ?? global default (KV ai:cfg.limit) ?? 10 - both set from the admin
   let LIMIT = 10; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = c.limit; } catch (e) {}
   if (uid) { try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {} }
-  const _prem = _e2eAi ? true : (uid ? (await premiumFor(env, request)).premium : false);
+  // ASK AI IS PREMIUM PLUS (2026-09-18). It is the only feature with a real per-call cost - measured, a member on
+  // the 50-a-day cap runs to $66 a month - so it sits on the plan priced for it. Every other Premium benefit is free
+  // to serve and stays on Premium.
+  const _prem = _e2eAi ? true : (uid ? (await premiumFor(env, request)).plus === true : false);
   if (_prem) LIMIT = Math.max(LIMIT, 50); // premium members get a much higher AI daily allowance
   const rk = uid ? 'ai:u:' + uid + ':' + day : '';
   const usedNow = async () => { if (!rk) return 0; try { return parseInt(await env.STATS.get(rk) || '0', 10) || 0; } catch (e) { return 0; } };
@@ -12658,7 +12716,7 @@ async function handleAiChart(url, request, env, ectx) {
  let _huid = uid; if (request.method === 'GET' && _hsym && isAdminKey(env, adminKeyFrom(request, url))) { const q = String(url.searchParams.get('uid') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 64); if (q) _huid = q; }
  const _hkey = (s) => 'ai:h:' + _huid + ':' + s;
  if (request.method === 'GET' && _hsym) { if (!_huid) return J({ error: 'login_required' }, 401); let msgs = []; try { msgs = (await env.STATS.get(_hkey(_hsym), 'json')) || []; } catch (e) {} return J({ ok: true, sym: _hsym, msgs: Array.isArray(msgs) ? msgs : [] }); }
- if (request.method === 'GET') { return J({ signedIn: !!uid, premium: _prem, used: await usedNow(), limit: _prem ? LIMIT : 0, premiumOnly: !_prem, ai: !!env.ANTHROPIC_API_KEY }); } // limit 0 for non-Premium: the POST below refuses them, so the panel must not promise "N questions a day"
+ if (request.method === 'GET') { return J({ signedIn: !!uid, premium: _prem, plus: _prem, used: await usedNow(), limit: _prem ? LIMIT : 0, premiumOnly: !_prem, planNeeded: _prem ? null : 'plus', planName: PREM_PLANS.plus.name, planUsd: PREM_USD('plus'), ai: !!env.ANTHROPIC_API_KEY }); } // limit 0 for non-Premium: the POST below refuses them, so the panel must not promise "N questions a day"
   if (request.method !== 'POST') return J({ error: 'method' }, 405);
   if (!uid) return J({ error: 'login_required' }, 401);
   let _pk = null; try { _pk = await request.json(); } catch (e) { _pk = null; } // read ONCE - the model path below reuses it as `body`
@@ -12672,7 +12730,7 @@ async function handleAiChart(url, request, env, ectx) {
     try { if (msgs.length) await env.STATS.put(_hkey(sym), JSON.stringify(msgs), { expirationTtl: 5184000 }); else await env.STATS.delete(_hkey(sym)); } catch (e) { return J({ error: 'store_failed' }, 500); }
     return J({ ok: true, sym, n: msgs.length });
   }
-  if (!_prem) { try { await evPush(env, request, 'premgate', 'Ask AI', '/charts'); } catch (e) {} return J({ error: 'premium_required' }, 402); }
+  if (!_prem) { try { await evPush(env, request, 'premgate', 'Ask AI', '/charts'); } catch (e) {} return J({ error: 'premium_required', plan_needed: 'plus', plan_name: PREM_PLANS.plus.name, price_usd: PREM_USD('plus'), upgrade: 'https://marginpad.io/premium/#plus' }, 402); }
   if (!env.ANTHROPIC_API_KEY) return J({ error: 'ai_unconfigured' }, 503);
   const gk = 'ai:g:' + day; let g = 0; try { g = parseInt(await env.STATS.get(gk) || '0', 10) || 0; } catch (e) {}
   if (g >= 6000) return J({ error: 'busy' }, 503); // global daily backstop (KV, approximate - the hard per-user gate is the DO below)
@@ -14113,7 +14171,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '848bd005';
+const ASSET_V = '1502cc66';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -16387,7 +16445,7 @@ export default {
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)
       const st = await premiumFor(env, request);
-      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 3.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, plus: !!st.plus, plan: st.plan || null, signedIn: !!st.uid, until: st.until, source: st.source, price: PREM_USD('premium'), plusPrice: PREM_USD('plus'), plans: [{ id: 'premium', name: PREM_PLANS.premium.name, usd: PREM_USD('premium') }, { id: 'plus', name: PREM_PLANS.plus.name, usd: PREM_USD('plus'), adds: 'Ask AI on the charts' }], user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
     if (url.pathname === '/api/premium/brief') return handlePremiumBrief(env, request);
     if (url.pathname === '/api/brief') return handleBrief(env, request, url); // Daily Brief v2: ?teaser=1 public one-liner; GET full (Premium); POST delivery prefs
@@ -16399,7 +16457,7 @@ export default {
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
       if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
-      const uid = String(st.uid), cents = 399, lock = 'prem:paylock:' + uid;
+      const uid = String(st.uid), cents = PREM_PLANS.premium.cents, lock = 'prem:paylock:' + uid; // balance buys the $11.99 Premium month; Plus is card/crypto only
       if (await env.STATS.get(lock)) return J({ error: 'in_progress' }, 429); // a double tap must never charge twice
       await env.STATS.put(lock, '1', { expirationTtl: 60 });
       let deb = null;
@@ -16414,20 +16472,26 @@ export default {
       try { await premPayLog(env, { id: 'bal:' + uid + ':' + Date.now(), ts: Date.now(), acct: 'u:' + uid, kind: 'monthly', cents, via: 'balance', cur: 'USD', until: expiry, src: 'balance' }); } catch (e) {} // payment book
       try { await revokeUserSessions(env, uid); } catch (e) {}
       try { await evPush(env, request, 'sale', 'premium-balance ($3.99)', '/premium/'); } catch (e) {}
-      try { await tgAdmin(env, '<b>Premium paid from balance</b>\nUser <code>' + uid + '</code> · $3.99 · until ' + new Date(expiry).toISOString().slice(0, 10)); } catch (e) {}
+      try { await tgAdmin(env, '<b>Premium paid from balance</b>\nUser <code>' + uid + '</code> · $' + PREM_USD('premium') + ' · until ' + new Date(expiry).toISOString().slice(0, 10)); } catch (e) {}
       try { await env.STATS.delete(lock); } catch (e) {}
       return J({ ok: true, until: expiry, balance: deb.balance != null ? +deb.balance / 100 : null });
     }
-    if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $3.99/mo invoice for the signed-in user
+    if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $11.99/mo invoice for the signed-in user
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
       if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
-      const founder = url.searchParams.get('plan') === 'founder';
+      // FOUNDER IS RETIRED (2026-09-18): it is no longer sold, at any price. A stale page or a bookmarked link
+      // asking for it is answered plainly rather than quietly charged for something that no longer exists.
+      if (url.searchParams.get('plan') === 'founder') return J({ error: 'plan_retired', hint: 'The Founder plan is no longer sold. Premium is $' + PREM_USD('premium') + ' a month and Premium Plus, which adds Ask AI on the charts, is $' + PREM_USD('plus') + '.' }, 410);
+      const plus = url.searchParams.get('plan') === 'plus';
+      const P = plus ? PREM_PLANS.plus : PREM_PLANS.premium;
+      if (plus && st.plus) return J({ error: 'already_premium', until: st.until, source: st.source });
+      const founder = false;
       const body = founder
         ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium - Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
-        : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
-      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+        : { price_amount: PREM_USD(P.id), price_currency: 'usd', order_id: P.order + st.uid, order_description: 'MarginPad ' + P.name + ' - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$11.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     // ---- API PLANS (2026-09-15, owner: "API cemo da odvojimo od premium plana") ---------------------------------
@@ -17120,13 +17184,13 @@ export default {
         out.paidTodayUsd = ph.filter(w => new Date(+w.paidTs || 0).toISOString().slice(0, 10) === new Date(now).toISOString().slice(0, 10)).reduce((s, w) => s + (+w.amountUsd || 0), 0);
         out.totalPaidUsd = +d.totalPaidUsd || 0; out.totalEarnedUsd = +d.totalEarnedUsd || 0; out.accounts = d.accounts || 0;
       } catch (e) { out.ledgerErr = true; }
-      try { // income: affiliate clicks x the same ~$0.45 estimate the Overview uses (NOT real commission) + active paid Premium subs at $3.99/mo
+      try { // income: affiliate clicks x the same ~$0.45 estimate the Overview uses (NOT real commission) + active paid Premium subs at $11.99/mo
         const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
         const days = [1, 2, 3, 4, 5, 6, 7].map(i => new Date(now - i * 86400000).toISOString().slice(0, 10));
         const clicks = (await Promise.all(days.map(dk => gc('aff:day:' + dk)))).reduce((s, n) => s + n, 0);
         out.clicks7d = clicks; out.affEst7dUsd = Math.round(clicks * 0.45 * 100) / 100;
         let subs = 0; try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { if (/^e2e/.test(k.name.slice(9))) continue; if ((+(await env.STATS.get(k.name)) || 0) > now) subs++; } } catch (e) {} // e2e accounts buy Premium in tests (spot/premium E2Es) and are not revenue (2026-09-12)
-        out.premiumSubs = subs; out.premiumMrrUsd = Math.round(subs * 3.99 * 100) / 100; out.premium7dUsd = Math.round(subs * 3.99 / 30 * 7 * 100) / 100;
+        out.premiumSubs = subs; out.premiumMrrUsd = Math.round(subs * PREM_USD('premium') * 100) / 100; out.premium7dUsd = Math.round(subs * 3.99 / 30 * 7 * 100) / 100;
         out.income7dUsd = Math.round((out.affEst7dUsd + out.premium7dUsd) * 100) / 100;
         out.net7dUsd = Math.round((out.income7dUsd - (out.dispensed7dUsd || 0)) * 100) / 100;
       } catch (e) {}
@@ -18879,7 +18943,7 @@ export default {
         const tok = getCookie(request, SESS_COOKIE); const vu = tok ? await sessionUser(env, tok) : null;
         const q = 'https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || '') + (vu && vu.id ? '&viewer=' + encodeURIComponent(vu.id) : '');
         try { const r = await stub.fetch(new Request(q)); let txt = await r.text();
-          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; jd.otag = CARD_TAG[lnm] || (jd.owner ? 'OWNER' : ''); if (jd.uid) { try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbwins?acct=' + encodeURIComponent(jd.uid))); const wj = await wr.json(); if (wj && +wj.wins > 0) jd.wins = { n: +wj.wins || 0, boards: wj.boards || [], last: +wj.last || 0 }; } catch (e) {} } txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
+          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.plus = (await premiumPlusSet(env)).has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; jd.otag = CARD_TAG[lnm] || (jd.owner ? 'OWNER' : ''); if (jd.uid) { try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbwins?acct=' + encodeURIComponent(jd.uid))); const wj = await wr.json(); if (wj && +wj.wins > 0) jd.wins = { n: +wj.wins || 0, boards: wj.boards || [], last: +wj.last || 0 }; } catch (e) {} } txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
           return new Response(txt, { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
         catch (e) { return new Response('{"exists":false}', { headers: jh }); }
       }
@@ -19090,7 +19154,7 @@ export default {
         '/calculators': { og: 'https://marginpad.io/assets/og/calculators.jpg',  title: 'Crypto Futures Calculators - Liquidation, PnL & Size | MarginPad', desc: 'Free crypto futures calculators: liquidation price, profit & loss, position size, take-profit and risk/reward. Instant, private, no signup.', canon: 'https://marginpad.io/calculators' },
         '/charts': { og: 'https://marginpad.io/assets/og/charts.jpg',  title: 'Multi-Chart Crypto Workspace - Live Futures Charts | MarginPad', desc: 'A free multi-window crypto charting workspace: live futures charts, indicators, drawing tools and quick paper trades on one board.', canon: 'https://marginpad.io/charts' },
         '/screener': { og: 'https://marginpad.io/assets/og/screener.jpg',  sc: 1, title: 'Crypto Futures Screener - Scored Setups, Funding & OI | MarginPad', desc: 'Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups.', canon: 'https://marginpad.io/screener' },
- '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Crypto Liquidation Heatmap - Live, Free Preview | MarginPad', desc: 'Live crypto liquidation heatmap - free 5-minute preview without an account, unlimited with Premium ($3.99/mo): see where leveraged positions cluster and get liquidated on BTC, ETH and top alts, updated in real time.', canon: 'https://marginpad.io/heatmap', hm: true },
+ '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Crypto Liquidation Heatmap - Live, Free Preview | MarginPad', desc: 'Live crypto liquidation heatmap - free 5-minute preview without an account, unlimited with Premium ($11.99/mo): see where leveraged positions cluster and get liquidated on BTC, ETH and top alts, updated in real time.', canon: 'https://marginpad.io/heatmap', hm: true },
         '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap Crypto - 900+ Coins, No Account | MarginPad', desc: 'Swap 900+ cryptocurrencies instantly with no account and no signup. Fast, non-custodial crypto swaps.', canon: 'https://marginpad.io/swap' },
       };
       // Spanish twins of the six tool routes (2026-09-12): own title/description/canonical/h1; the English SEO blocks (pt/sc/hm) stay off here.
@@ -19099,7 +19163,7 @@ export default {
         '/calculators': { og: 'https://marginpad.io/assets/og/calculators.jpg',  title: 'Calculadoras de futuros cripto - Liquidación, PnL y tamaño | MarginPad', desc: 'Calculadoras gratis de futuros cripto: precio de liquidación, ganancias y pérdidas, tamaño de posición, take-profit y riesgo/beneficio. Instantáneas, privadas, sin registro.', canon: 'https://marginpad.io/es/calculators' },
         '/charts': { og: 'https://marginpad.io/assets/og/charts.jpg',  title: 'Espacio multigráfico de cripto - Gráficos de futuros en vivo | MarginPad', desc: 'Un espacio de trabajo gratuito con varias ventanas: gráficos de futuros en vivo, indicadores, herramientas de dibujo y operaciones simuladas rápidas en un solo tablero.', canon: 'https://marginpad.io/es/charts' },
         '/screener': { og: 'https://marginpad.io/assets/og/screener.jpg',  title: 'Screener de futuros cripto - Setups puntuados, funding y OI | MarginPad', desc: 'Screener gratis de futuros cripto: puntuaciones técnicas de 0 a 100 con RSI, MACD, funding e interés abierto en los principales perpetuos USDT, más setups listos para operar.', canon: 'https://marginpad.io/es/screener' },
-        '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Mapa de calor de liquidaciones cripto - En vivo, vista previa gratis | MarginPad', desc: 'Mapa de calor de liquidaciones en vivo: vista previa gratis de 5 minutos sin cuenta, ilimitado con Premium ($3.99/mes). Mira dónde se concentran y se liquidan las posiciones apalancadas en BTC, ETH y las principales alts, actualizado en tiempo real.', canon: 'https://marginpad.io/es/heatmap' },
+        '/heatmap': { og: 'https://marginpad.io/assets/og/heatmap.jpg',  title: 'Mapa de calor de liquidaciones cripto - En vivo, vista previa gratis | MarginPad', desc: 'Mapa de calor de liquidaciones en vivo: vista previa gratis de 5 minutos sin cuenta, ilimitado con Premium ($11.99/mes). Mira dónde se concentran y se liquidan las posiciones apalancadas en BTC, ETH y las principales alts, actualizado en tiempo real.', canon: 'https://marginpad.io/es/heatmap' },
         '/swap': { og: 'https://marginpad.io/assets/og/swap.jpg',  title: 'Swap de cripto - Más de 900 monedas, sin cuenta | MarginPad', desc: 'Intercambia más de 900 criptomonedas al instante, sin cuenta y sin registro. Swaps rápidos y sin custodia.', canon: 'https://marginpad.io/es/swap' },
       };
       const m = (esSite ? SPA_META_ES : SPA_META)[url.pathname.replace(/\/$/, '') || '/'];
@@ -19186,10 +19250,10 @@ export default {
         }
       }
       if (m.hm) { // /heatmap SEO push (2026-08-16 SEO kompas: "free/no login" is the intent Coinglass paywalls itself out of; AI crawlers only see raw HTML)
- const HM_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Liquidation Heatmap', url: 'https://marginpad.io/heatmap', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Live crypto liquidation heatmap - free 5-minute preview without an account, unlimited with Premium ($3.99/mo): estimated liquidation clusters on BTC, ETH and top altcoins, rebuilt in real time from live price action and a declared leverage mix, beside real liquidations streamed from nine exchanges.', offers: [{ '@type': 'Offer', name: 'Free preview', price: '0', priceCurrency: 'USD', description: '5-minute live preview without an account' }, { '@type': 'Offer', name: 'MarginPad Premium', price: '3.99', priceCurrency: 'USD', description: 'Unlimited heatmap, advanced indicators and the AI chart assistant, billed monthly' }] }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
- { '@type': 'Question', name: 'Is this liquidation heatmap free?', acceptedAnswer: { '@type': 'Answer', text: 'You can open it without an account and watch the live map for a free 5-minute preview. Unlimited access to the heatmap is part of MarginPad Premium at $3.99 a month, which also unlocks the advanced chart indicators and the AI chart assistant.' } },
+ const HM_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Liquidation Heatmap', url: 'https://marginpad.io/heatmap', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Live crypto liquidation heatmap - free 5-minute preview without an account, unlimited with Premium ($11.99/mo): estimated liquidation clusters on BTC, ETH and top altcoins, rebuilt in real time from live price action and a declared leverage mix, beside real liquidations streamed from nine exchanges.', offers: [{ '@type': 'Offer', name: 'Free preview', price: '0', priceCurrency: 'USD', description: '5-minute live preview without an account' }, { '@type': 'Offer', name: 'MarginPad Premium', price: '11.99', priceCurrency: 'USD', description: 'Unlimited heatmap, advanced indicators and the AI chart assistant, billed monthly' }] }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+ { '@type': 'Question', name: 'Is this liquidation heatmap free?', acceptedAnswer: { '@type': 'Answer', text: 'You can open it without an account and watch the live map for a free 5-minute preview. Unlimited access to the heatmap is part of MarginPad Premium at $11.99 a month, which also unlocks the advanced chart indicators and the AI chart assistant.' } },
           { '@type': 'Question', name: 'What does a liquidation heatmap show?', acceptedAnswer: { '@type': 'Answer', text: 'It estimates the price levels where leveraged positions would be liquidated. Bright bands mark clusters of liquidation levels - zones price is often drawn toward, because resting liquidations act like fuel for fast moves.' } },
- { '@type': 'Question', name: 'How is it different from Coinglass?', acceptedAnswer: { '@type': 'Answer', text: 'Coinglass gates its heatmap models and real-time refresh behind a paid Prime plan. MarginPad opens the live heatmap for a free preview without an account and unlocks it fully at $3.99 a month, and pairs it with a free liquidations feed, per-coin liquidation maps and calculators.' } },
+ { '@type': 'Question', name: 'How is it different from Coinglass?', acceptedAnswer: { '@type': 'Answer', text: 'Coinglass gates its heatmap models and real-time refresh behind a paid Prime plan. MarginPad opens the live heatmap for a free preview without an account and unlocks it fully at $11.99 a month, and pairs it with a free liquidations feed, per-coin liquidation maps and calculators.' } },
           { '@type': 'Question', name: 'Which coins are covered?', acceptedAnswer: { '@type': 'Answer', text: 'BTC and ETH plus top USDT-perpetual altcoins, with per-coin liquidation map pages for 18 coins and liquidation calculators for 65 coins.' } }
         ] }) + '</scr' + 'ipt>';
         const HM_SEO = '<section style="max-width:860px;margin:30px auto 40px;padding:0 20px;color:#9aa3ad;font-size:14px;line-height:1.7"><p style="color:#c8d0d9">MarginPad&#39;s crypto liquidation heatmap maps estimated liquidation clusters on BTC, ETH and top altcoins in real time, built from our own nine-exchange liquidation feed rather than a third-party API. Anyone can read the live map for five minutes every 12 hours without an account; continuous access comes with Premium. Free and unmetered: a <a href="/rekt/" style="color:#c2f64a">live liquidations feed</a>, <a href="/btc-liquidation-map/" style="color:#c2f64a">per-coin liquidation maps</a> for 18 coins and <a href="/calculators" style="color:#c2f64a">liquidation calculators</a> for 65 coins.</p><p>New to reading it? Start with the guide: <a href="/blog/how-to-read-a-liquidation-heatmap/" style="color:#c2f64a">how to read a liquidation heatmap</a>.</p></section>';

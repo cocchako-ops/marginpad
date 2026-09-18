@@ -58,7 +58,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
         await page.setRequestInterception(true);
         page.on('request', (req) => {
           const u = req.url();
-          if (u.indexOf('/api/premium/status') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ allowed: true, premium: true, signedIn: true, until: new Date(Date.now() + 20 * 864e5).toISOString(), source: 'paid', price: 3.99, user: { username: 'e2eprem' } }) });
+          if (u.indexOf('/api/premium/status') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ allowed: true, premium: true, signedIn: true, until: new Date(Date.now() + 20 * 864e5).toISOString(), source: 'paid', price: 11.99, plus: true, plan: 'plus', user: { username: 'e2eprem' } }) });
           if (u.indexOf('/api/auth/me') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'e2e', username: 'e2eprem', xp: 100 } }) });
           return req.continue();
         });

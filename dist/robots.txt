@@ -10,6 +10,7 @@ Allow: /api/v1/
 Allow: /api/competition
 Allow: /api/arena
 Allow: /api/apiplan
+Allow: /api/premium/status
 Allow: /api/openapi
 Allow: /api/status
 Allow: /api/changelog

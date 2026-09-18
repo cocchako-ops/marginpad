@@ -1770,7 +1770,7 @@
     function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
     var ov = null;
     function close() { if (ov) { ov.remove(); ov = null; } }
-    function payFromBalance(btn, note) { // one tap: the ledger debits $3.99 and Premium is on - no invoice, no redirect (owner 2026-09-02)
+    function payFromBalance(btn, note) { // one tap: the ledger debits $11.99 and Premium is on - no invoice, no redirect (owner 2026-09-02)
     var label = btn && btn.textContent; if (btn) { btn.disabled = true; btn.textContent = 'Activating...'; }
     fetch('/api/premium/paybalance', { method: 'POST', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
       if (j && j.ok) { if (btn) btn.textContent = 'Premium is on - welcome'; if (note) note.textContent = 'Active until ' + new Date(j.until).toISOString().slice(0, 10) + '. Reloading...'; setTimeout(function () { location.reload(); }, 1400); return; }
@@ -1824,7 +1824,7 @@
       card.querySelector('.mpprem-buy').addEventListener('click', function () { checkoutPlan('monthly', this, note); });
       card.querySelector('.mpprem-founder').addEventListener('click', function () { checkoutPlan('founder', this, note); });
       var balBtn = card.querySelector('.mpprem-bal');
-      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 3.99) { balBtn.hidden = false; balBtn.textContent = 'Pay from my rewards balance - $3.99 (you have $' + bal.toFixed(2) + ')'; } }).catch(function () {}); }
+      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 11.99) { balBtn.hidden = false; balBtn.textContent = 'Pay from my rewards balance - $11.99 (you have $' + bal.toFixed(2) + ')'; } }).catch(function () {}); }
       if (balBtn) balBtn.addEventListener('click', function () { payFromBalance(this, note); });
     }
     window.mpPremium = { show: function (reason) { try { location.href = '/premium'; } catch (e) {} }, showModal: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };

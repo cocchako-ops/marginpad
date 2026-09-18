@@ -2833,8 +2833,8 @@
    "w": 15
   },
   "usev_it21I": {
-   "en": "<strong>What this is:</strong> a Aave liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged AAVE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the AAVE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Aave que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders de AAVE apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos en relación con el precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de AAVE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Aave liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged AAVE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the AAVE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Aave que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders de AAVE apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos en relación con el precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de AAVE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -3282,8 +3282,8 @@
    "w": 6
   },
   "KxR1OriYGK": {
-   "en": "The map opens without a signup and the live heatmap runs free for a 5-minute preview; unlimited access is part of MarginPad Premium ($3.99/mo). You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers.",
-   "es": "El mapa se abre sin registro y el heatmap en vivo corre gratis durante una vista previa de 5 minutos; el acceso ilimitado es parte de MarginPad Premium ($3.99/mes). Puedes cambiar de moneda, cambiar la temporalidad (1D/1W/1M/1Y) y activar las capas real, estimada y teórica.",
+   "en": "The map opens without a signup and the live heatmap runs free for a 5-minute preview; unlimited access is part of MarginPad Premium ($11.99/mo). You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers.",
+   "es": "El mapa se abre sin registro y el heatmap en vivo corre gratis durante una vista previa de 5 minutos; el acceso ilimitado es parte de MarginPad Premium ($11.99/mes). Puedes cambiar de moneda, cambiar la temporalidad (1D/1W/1M/1Y) y activar las capas real, estimada y teórica.",
    "kind": [
     "ld"
    ],
@@ -3371,8 +3371,8 @@
    "w": 2
   },
   "2_MKxYaFAi": {
-   "en": "MarginPad is a free crypto-futures toolkit: a paper-trading terminal with live prices, a multi-chart workspace, a scored pair screener, an economic calendar, liquidation data and precision calculators - with no ads and no deposit, ever - the core stays free, with an optional $3.99/mo Premium tier for the pro tools.",
-   "es": "MarginPad es un kit de herramientas gratis para futuros cripto: un terminal de paper trading con precios en vivo, un espacio de trabajo multi-gráfico, un screener de pares con puntuación, un calendario económico, datos de liquidación y calculadoras de precisión - sin anuncios y sin depósito, nunca - el núcleo se mantiene gratis, con un nivel Premium opcional de $3.99/mes para las herramientas pro.",
+   "en": "MarginPad is a free crypto-futures toolkit: a paper-trading terminal with live prices, a multi-chart workspace, a scored pair screener, an economic calendar, liquidation data and precision calculators - with no ads and no deposit, ever - the core stays free, with an optional $11.99/mo Premium tier for the pro tools.",
+   "es": "MarginPad es un kit de herramientas gratis para futuros cripto: un terminal de paper trading con precios en vivo, un espacio de trabajo multi-gráfico, un screener de pares con puntuación, un calendario económico, datos de liquidación y calculadoras de precisión - sin anuncios y sin depósito, nunca - el núcleo se mantiene gratis, con un nivel Premium opcional de $11.99/mes para las herramientas pro.",
    "kind": [
     "html"
    ],
@@ -6478,8 +6478,8 @@
    "w": 15
   },
   "OnmTsT2Sc9": {
-   "en": "<strong>What this is:</strong> a Cardano liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ADA traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ADA price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Cardano que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders de ADA apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos en relación con el precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ADA. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Cardano liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged ADA traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ADA price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Cardano que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders de ADA apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos en relación con el precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ADA. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -6881,8 +6881,8 @@
    "w": 22
   },
   "Hp107vCAdM": {
-   "en": "<b>Premium</b><span>$3.99 a month or Founder once, on /charts and the mobile charts</span>",
-   "es": "<b>Premium</b><span>$3.99 al mes o Founder por única vez, en /charts y en los gráficos móviles</span>",
+   "en": "<b>Premium</b><span>$11.99 a month or Founder once, on /charts and the mobile charts</span>",
+   "es": "<b>Premium</b><span>$11.99 al mes o Founder por única vez, en /charts y en los gráficos móviles</span>",
    "kind": [
     "html"
    ],
@@ -7763,8 +7763,8 @@
    "w": 3
   },
   "bppmmApE1K": {
-   "en": "Yes. The four are part of MarginPad Premium ($3.99 a month, or a one-time Founder payment) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los cuatro forman parte de MarginPad Premium ($3.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+   "en": "Yes. The four are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "Sí. Los cuatro forman parte de MarginPad Premium ($11.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "html"
    ],
@@ -7811,8 +7811,8 @@
    "w": 5
   },
   "mW_HLS3MM8": {
-   "en": "Premium is $3.99 a month, or once as a Founder. Everything else on MarginPad stays free.",
-   "es": "Premium cuesta $3.99 al mes, o un solo pago como Founder. Todo lo demás en MarginPad sigue siendo gratis.",
+   "en": "Premium is $11.99 a month, or once as a Founder. Everything else on MarginPad stays free.",
+   "es": "Premium cuesta $11.99 al mes, o un solo pago como Founder. Todo lo demás en MarginPad sigue siendo gratis.",
    "kind": [
     "html"
    ],
@@ -8041,8 +8041,8 @@
    "w": 6
   },
   "LvOrSLuMfH": {
-   "en": "Yes. The four indicators are part of MarginPad Premium ($3.99 a month, or a one-time Founder payment) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los cuatro indicadores forman parte de MarginPad Premium ($3.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+   "en": "Yes. The four indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "Sí. Los cuatro indicadores forman parte de MarginPad Premium ($11.99 al mes, o un pago único como Founder) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "ld"
    ],
@@ -14714,8 +14714,8 @@
    "w": 15
   },
   "HF0fCWy5Pc": {
-   "en": "<strong>What this is:</strong> a Aptos liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged APT traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the APT price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Aptos que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de APT están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de APT. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Aptos liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged APT traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the APT price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Aptos que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de APT están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de APT. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -15450,8 +15450,8 @@
    "w": 15
   },
   "QNPnxAlu-h": {
-   "en": "<strong>What this is:</strong> a Arbitrum liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ARB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ARB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Arbitrum que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ARB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ARB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Arbitrum liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged ARB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ARB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Arbitrum que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ARB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ARB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -16538,8 +16538,8 @@
    "w": 15
   },
   "wgwtCvTSHE": {
-   "en": "<strong>What this is:</strong> a Cosmos liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ATOM traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ATOM price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Cosmos que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ATOM están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de ATOM. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Cosmos liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged ATOM traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ATOM price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Cosmos que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ATOM están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de ATOM. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -17262,8 +17262,8 @@
    "w": 15
   },
   "aKWr1jhpIZ": {
-   "en": "<strong>What this is:</strong> a Avalanche liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged AVAX traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the AVAX price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Avalanche que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de AVAX están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de AVAX. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Avalanche liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged AVAX traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the AVAX price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Avalanche que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de AVAX están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de AVAX. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -23056,8 +23056,8 @@
    "w": 6
   },
   "nTWSQmchsv": {
-   "en": "The best free liquidation heatmap in 2026 is <b>MarginPad</b> (live, free 5-minute preview, unlimited with Premium at $3.99/mo); the deepest paid product is <b>Coinglass</b>. Below: 6 tools compared honestly - including what every heatmap vendor shares and few advertise: cluster layers are <b>estimates</b>, on every platform. This list is published by MarginPad; every claim is verifiable in minutes.",
-   "es": "El mejor mapa de calor de liquidaciones gratis en 2026 es <b>MarginPad</b> (en vivo, vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes); el producto de pago más completo es <b>Coinglass</b>. A continuación: 6 herramientas comparadas honestamente - incluyendo algo que comparten todos los proveedores de mapas de calor y pocos anuncian: las capas de clústeres son <b>estimaciones</b>, en todas las plataformas. Esta lista la publica MarginPad; cada afirmación es verificable en minutos.",
+   "en": "The best free liquidation heatmap in 2026 is <b>MarginPad</b> (live, free 5-minute preview, unlimited with Premium at $11.99/mo); the deepest paid product is <b>Coinglass</b>. Below: 6 tools compared honestly - including what every heatmap vendor shares and few advertise: cluster layers are <b>estimates</b>, on every platform. This list is published by MarginPad; every claim is verifiable in minutes.",
+   "es": "El mejor mapa de calor de liquidaciones gratis en 2026 es <b>MarginPad</b> (en vivo, vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes); el producto de pago más completo es <b>Coinglass</b>. A continuación: 6 herramientas comparadas honestamente - incluyendo algo que comparten todos los proveedores de mapas de calor y pocos anuncian: las capas de clústeres son <b>estimaciones</b>, en todas las plataformas. Esta lista la publica MarginPad; cada afirmación es verificable en minutos.",
    "kind": [
     "html"
    ],
@@ -23467,8 +23467,8 @@
    "w": 10
   },
   "bVe1A4LTz_": {
-   "en": "The live heatmap, 32 per-coin liquidation maps (real events as bubbles + a price-level histogram) and a real-time liquidations feed from 9 exchanges are free to open with no account; unlimited heatmap time is part of Premium ($3.99/mo). Estimated cluster layers are clearly labelled as estimates, real events as real. Pairs with 65 per-coin liquidation calculators and a free paper trading terminal to act on what you see.",
-   "es": "El mapa de calor en vivo, 32 mapas de liquidación por moneda (eventos reales como burbujas + un histograma por nivel de precio) y un feed de liquidaciones en tiempo real de 9 exchanges son gratis de abrir sin cuenta; el tiempo ilimitado en el mapa de calor es parte de Premium ($3.99/mes). Las capas de clústeres estimados están claramente etiquetadas como estimaciones, y los eventos reales como reales. Se combina con 65 calculadoras de liquidación por moneda y una terminal de paper trading gratis para actuar sobre lo que ves.",
+   "en": "The live heatmap, 32 per-coin liquidation maps (real events as bubbles + a price-level histogram) and a real-time liquidations feed from 9 exchanges are free to open with no account; unlimited heatmap time is part of Premium ($11.99/mo). Estimated cluster layers are clearly labelled as estimates, real events as real. Pairs with 65 per-coin liquidation calculators and a free paper trading terminal to act on what you see.",
+   "es": "El mapa de calor en vivo, 32 mapas de liquidación por moneda (eventos reales como burbujas + un histograma por nivel de precio) y un feed de liquidaciones en tiempo real de 9 exchanges son gratis de abrir sin cuenta; el tiempo ilimitado en el mapa de calor es parte de Premium ($11.99/mes). Las capas de clústeres estimados están claramente etiquetadas como estimaciones, y los eventos reales como reales. Se combina con 65 calculadoras de liquidación por moneda y una terminal de paper trading gratis para actuar sobre lo que ves.",
    "kind": [
     "html"
    ],
@@ -23768,8 +23768,8 @@
    "w": 7
   },
   "Gt3PQ1B940": {
-   "en": "MarginPad - the live heatmap, 32 per-coin maps and the 9-exchange real-time feed are free to open with no login; the live heatmap runs as a 5-minute preview, unlimited with Premium ($3.99/mo). Coinglass is the deepest paid product.",
-   "es": "MarginPad - el mapa de calor en vivo, los 32 mapas por moneda y el feed en tiempo real de 9 exchanges son gratis de abrir sin inicio de sesión; el mapa de calor en vivo funciona como vista previa de 5 minutos, ilimitado con Premium ($3.99/mes). Coinglass es el producto de pago más completo.",
+   "en": "MarginPad - the live heatmap, 32 per-coin maps and the 9-exchange real-time feed are free to open with no login; the live heatmap runs as a 5-minute preview, unlimited with Premium ($11.99/mo). Coinglass is the deepest paid product.",
+   "es": "MarginPad - el mapa de calor en vivo, los 32 mapas por moneda y el feed en tiempo real de 9 exchanges son gratis de abrir sin inicio de sesión; el mapa de calor en vivo funciona como vista previa de 5 minutos, ilimitado con Premium ($11.99/mes). Coinglass es el producto de pago más completo.",
    "kind": [
     "html"
    ],
@@ -24073,8 +24073,8 @@
    "w": 4
   },
   "HLBfUlg7iu": {
-   "en": "MarginPad - the live heatmap, 32 per-coin liquidation maps and a 9-exchange real-time liquidations feed are free to open with no login; the live heatmap runs as a 5-minute preview, unlimited with Premium ($3.99/mo). Coinglass has the deepest paid product; its free tier is limited and its advanced heatmap models sit behind the Prime plan.",
-   "es": "MarginPad - el mapa de calor en vivo, 32 mapas de liquidación por moneda y un feed de liquidaciones en tiempo real de 9 exchanges son gratis de abrir sin inicio de sesión; el mapa de calor en vivo funciona como vista previa de 5 minutos, ilimitado con Premium ($3.99/mes). Coinglass tiene el producto de pago más completo; su plan gratis es limitado y sus modelos avanzados de mapa de calor están detrás del plan Prime.",
+   "en": "MarginPad - the live heatmap, 32 per-coin liquidation maps and a 9-exchange real-time liquidations feed are free to open with no login; the live heatmap runs as a 5-minute preview, unlimited with Premium ($11.99/mo). Coinglass has the deepest paid product; its free tier is limited and its advanced heatmap models sit behind the Prime plan.",
+   "es": "MarginPad - el mapa de calor en vivo, 32 mapas de liquidación por moneda y un feed de liquidaciones en tiempo real de 9 exchanges son gratis de abrir sin inicio de sesión; el mapa de calor en vivo funciona como vista previa de 5 minutos, ilimitado con Premium ($11.99/mes). Coinglass tiene el producto de pago más completo; su plan gratis es limitado y sus modelos avanzados de mapa de calor están detrás del plan Prime.",
    "kind": [
     "ld"
    ],
@@ -71686,8 +71686,8 @@
    "w": 15
   },
   "c3zbNGHytI": {
-   "en": "<strong>What this is:</strong> a BNB liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged BNB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BNB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de BNB que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BNB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short -según el tamaño de la posición- trazadas directamente sobre el gráfico de precio de BNB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a BNB liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged BNB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BNB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de BNB que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BNB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short -según el tamaño de la posición- trazadas directamente sobre el gráfico de precio de BNB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -72423,8 +72423,8 @@
    "w": 15
   },
   "OryozXQKHQ": {
-   "en": "<strong>What this is:</strong> a Bonk liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged BONK traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BONK price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bonk que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BONK están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short -según el tamaño de la posición- trazadas directamente sobre el gráfico de precio de BONK. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Bonk liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged BONK traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BONK price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bonk que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BONK están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short -según el tamaño de la posición- trazadas directamente sobre el gráfico de precio de BONK. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -73147,8 +73147,8 @@
    "w": 15
   },
   "1yLlncHvRs": {
-   "en": "<strong>What this is:</strong> a Bitcoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged BTC traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BTC price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bitcoin que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BTC están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de BTC. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Bitcoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged BTC traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the BTC price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bitcoin que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de BTC están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de BTC. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -78099,8 +78099,8 @@
    "w": 3
   },
   "TMMZvjIRIr": {
-   "en": "If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) - plus a real-time liquidation feed aggregated from 9 exchanges (with a free <a href=\"/liquidations/by-exchange/\">per-venue breakdown</a>) and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.",
-   "es": "Si usas Coinglass sobre todo para mapas de liquidación, tasas de funding, interés abierto y el ratio long/short, MarginPad te da ese mismo núcleo <strong>gratis, sin cuenta</strong> (el mapa de calor en vivo funciona como vista previa gratuita de 5 minutos; el acceso ilimitado forma parte de Premium por $3.99/mes), más un feed de liquidaciones en tiempo real agregado de 9 exchanges (con un <a href=\"/liquidations/by-exchange/\">desglose por exchange</a> gratuito) y una API JSON gratuita con los mismos datos. Coinglass sigue siendo la plataforma de investigación más profunda; esta página muestra exactamente qué obtienes gratis aquí y qué todavía requiere un plan de pago allí.",
+   "en": "If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $11.99/mo) - plus a real-time liquidation feed aggregated from 9 exchanges (with a free <a href=\"/liquidations/by-exchange/\">per-venue breakdown</a>) and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.",
+   "es": "Si usas Coinglass sobre todo para mapas de liquidación, tasas de funding, interés abierto y el ratio long/short, MarginPad te da ese mismo núcleo <strong>gratis, sin cuenta</strong> (el mapa de calor en vivo funciona como vista previa gratuita de 5 minutos; el acceso ilimitado forma parte de Premium por $11.99/mes), más un feed de liquidaciones en tiempo real agregado de 9 exchanges (con un <a href=\"/liquidations/by-exchange/\">desglose por exchange</a> gratuito) y una API JSON gratuita con los mismos datos. Coinglass sigue siendo la plataforma de investigación más profunda; esta página muestra exactamente qué obtienes gratis aquí y qué todavía requiere un plan de pago allí.",
    "kind": [
     "html"
    ],
@@ -78135,8 +78135,8 @@
    "w": 3
   },
   "PrYOA1A257": {
-   "en": "Free 5-minute preview, unlimited with Premium ($3.99/mo) - real events from exchange websockets + estimated clusters, all coins",
-   "es": "Vista previa gratuita de 5 minutos, ilimitado con Premium ($3.99/mes): eventos reales de los websockets de los exchanges + clústeres estimados, todas las monedas",
+   "en": "Free 5-minute preview, unlimited with Premium ($11.99/mo) - real events from exchange websockets + estimated clusters, all coins",
+   "es": "Vista previa gratuita de 5 minutos, ilimitado con Premium ($11.99/mes): eventos reales de los websockets de los exchanges + clústeres estimados, todas las monedas",
    "kind": [
     "html"
    ],
@@ -78399,8 +78399,8 @@
    "w": 8
   },
   "hJLZuNNaDb": {
-   "en": "Free core, no signup; Premium $3.99/mo (unlimited heatmap, advanced indicators, AI)",
-   "es": "Núcleo gratis, sin registro; Premium $3.99/mes (mapa de calor ilimitado, indicadores avanzados, IA)",
+   "en": "Free core, no signup; Premium $11.99/mo (unlimited heatmap, advanced indicators, AI)",
+   "es": "Núcleo gratis, sin registro; Premium $11.99/mes (mapa de calor ilimitado, indicadores avanzados, IA)",
    "kind": [
     "html"
    ],
@@ -78448,8 +78448,8 @@
    "w": 7
   },
   "lNvuHNFAqb": {
-   "en": "For the core derivatives dashboard - liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker - yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($3.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.",
-   "es": "Para el panel de derivados esencial (mapas de liquidación, un feed de liquidaciones en vivo, tasas de funding, interés abierto, ratio long/short y un rastreador de ballenas de Hyperliquid), sí, MarginPad es gratis y sin cuenta; el mapa de calor en vivo es una vista previa gratuita de 5 minutos e ilimitado con Premium ($3.99/mes). Coinglass profundiza más en investigación histórica y granularidad multiexchange, que es para lo que sirven sus planes de pago.",
+   "en": "For the core derivatives dashboard - liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker - yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($11.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.",
+   "es": "Para el panel de derivados esencial (mapas de liquidación, un feed de liquidaciones en vivo, tasas de funding, interés abierto, ratio long/short y un rastreador de ballenas de Hyperliquid), sí, MarginPad es gratis y sin cuenta; el mapa de calor en vivo es una vista previa gratuita de 5 minutos e ilimitado con Premium ($11.99/mes). Coinglass profundiza más en investigación histórica y granularidad multiexchange, que es para lo que sirven sus planes de pago.",
    "kind": [
     "html",
     "ld"
@@ -78650,8 +78650,8 @@
    "w": 36
   },
   "Tb3UNth6om": {
-   "en": "MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free per-venue breakdown, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo).",
-   "es": "MarginPad cubre gratis el conjunto principal de funciones de Coinglass: mapas de liquidaciones y mapa de calor en vivo, un feed de liquidaciones en tiempo real de 9 exchanges con desglose gratuito por exchange, tasas de funding, interés abierto, ratio long/short y un rastreador de ballenas de Hyperliquid. Sin registro para los datos; el mapa de calor en vivo es una vista previa gratuita de 5 minutos, ilimitado con Premium ($3.99/mes).",
+   "en": "MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free per-venue breakdown, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($11.99/mo).",
+   "es": "MarginPad cubre gratis el conjunto principal de funciones de Coinglass: mapas de liquidaciones y mapa de calor en vivo, un feed de liquidaciones en tiempo real de 9 exchanges con desglose gratuito por exchange, tasas de funding, interés abierto, ratio long/short y un rastreador de ballenas de Hyperliquid. Sin registro para los datos; el mapa de calor en vivo es una vista previa gratuita de 5 minutos, ilimitado con Premium ($11.99/mes).",
    "kind": [
     "attr:content"
    ],
@@ -87965,8 +87965,8 @@
    "w": 15
   },
   "4HOPVErCnI": {
-   "en": "<strong>What this is:</strong> a Dogecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged DOGE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the DOGE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Dogecoin que puedes abrir sin cuenta (vista previa gratuita en vivo de 5 minutos, ilimitado con Premium a $3.99/mes). Muestra, en tiempo real, dónde los traders de DOGE apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short, con un tamaño proporcional a la posición, graficadas directamente sobre el gráfico de precio de DOGE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Dogecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged DOGE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the DOGE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Dogecoin que puedes abrir sin cuenta (vista previa gratuita en vivo de 5 minutos, ilimitado con Premium a $11.99/mes). Muestra, en tiempo real, dónde los traders de DOGE apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short, con un tamaño proporcional a la posición, graficadas directamente sobre el gráfico de precio de DOGE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -88701,8 +88701,8 @@
    "w": 15
   },
   "FHOKD1vMI0": {
-   "en": "<strong>What this is:</strong> a Polkadot liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged DOT traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the DOT price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Polkadot que puedes abrir sin cuenta (vista previa gratuita en vivo de 5 minutos, ilimitado con Premium a $3.99/mes). Muestra, en tiempo real, dónde los traders de DOT apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short, con un tamaño proporcional a la posición, graficadas directamente sobre el gráfico de precio de DOT. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Polkadot liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged DOT traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the DOT price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Polkadot que puedes abrir sin cuenta (vista previa gratuita en vivo de 5 minutos, ilimitado con Premium a $11.99/mes). Muestra, en tiempo real, dónde los traders de DOT apalancados están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short, con un tamaño proporcional a la posición, graficadas directamente sobre el gráfico de precio de DOT. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -91059,8 +91059,8 @@
    "w": 15
   },
   "WuLtw5uoZh": {
-   "en": "<strong>What this is:</strong> a Ethereum liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ETH traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ETH price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Ethereum que puedes abrir sin cuenta (vista previa gratuita de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ETH están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ETH. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Ethereum liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged ETH traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ETH price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Ethereum que puedes abrir sin cuenta (vista previa gratuita de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de ETH están siendo forzados a salir de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de ETH. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -96040,8 +96040,8 @@
    "w": 15
   },
   "h5LJmDJaK3": {
-   "en": "<strong>What this is:</strong> a Filecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged FIL traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the FIL price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Filecoin que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de FIL están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de FIL. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Filecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged FIL traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the FIL price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Filecoin que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de FIL están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de FIL. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -96776,8 +96776,8 @@
    "w": 15
   },
   "FJ_v0FbSs-": {
-   "en": "<strong>What this is:</strong> a Floki liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged FLOKI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the FLOKI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Floki que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de FLOKI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de FLOKI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Floki liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged FLOKI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the FLOKI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Floki que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de FLOKI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de FLOKI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -108217,8 +108217,8 @@
    "w": 15
   },
   "vL2nosIpmD": {
-   "en": "<strong>What this is:</strong> a Hyperliquid liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged HYPE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the HYPE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Hyperliquid que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de HYPE están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos de liquidación respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de HYPE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Hyperliquid liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged HYPE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the HYPE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Hyperliquid que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de HYPE están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos de liquidación respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de HYPE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -114437,8 +114437,8 @@
    "w": 15
   },
   "H4SJgviiY3": {
-   "en": "<strong>What this is:</strong> a Injective liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged INJ traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the INJ price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Injective que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de INJ están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos de liquidación respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de INJ. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Injective liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged INJ traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the INJ price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Injective que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de INJ están siendo forzados a salir de sus posiciones y dónde se ubican los próximos grupos de liquidación respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño según el tamaño de la posición - trazadas directamente sobre el gráfico de precio de INJ. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -121301,8 +121301,8 @@
    "w": 15
   },
   "HVgxgnDPN1": {
-   "en": "<strong>What this is:</strong> a Chainlink liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged LINK traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the LINK price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Chainlink que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de LINK están siendo expulsados de sus posiciones y dónde se ubican los próximos grupos respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde un short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de LINK. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Chainlink liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged LINK traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the LINK price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Chainlink que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de LINK están siendo expulsados de sus posiciones y dónde se ubican los próximos grupos respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde un short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de LINK. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, para que veas de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -124363,8 +124363,8 @@
    "w": 15
   },
   "XZHvvXkAUV": {
-   "en": "<strong>What this is:</strong> a Litecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged LTC traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the LTC price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Litecoin que puedes abrir sin cuenta (vista previa gratis en vivo de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de LTC están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de LTC. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Litecoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged LTC traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the LTC price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Litecoin que puedes abrir sin cuenta (vista previa gratis en vivo de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de LTC están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de LTC. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -127741,8 +127741,8 @@
    "w": 15
   },
   "qWvmgaZTXy": {
-   "en": "<strong>What this is:</strong> a NEAR Protocol liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged NEAR traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the NEAR price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de NEAR Protocol que puedes abrir sin cuenta (vista previa gratis en vivo de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de NEAR están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de NEAR. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a NEAR Protocol liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged NEAR traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the NEAR price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de NEAR Protocol que puedes abrir sin cuenta (vista previa gratis en vivo de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de NEAR están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - su tamaño refleja el tamaño de la posición - trazadas directamente sobre el gráfico de precio de NEAR. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -130274,8 +130274,8 @@
    "w": 15
   },
   "0aEQ7mPdwc": {
-   "en": "<strong>What this is:</strong> a Optimism liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged OP traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the OP price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Optimism que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de OP y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de OP. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Optimism liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged OP traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the OP price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Optimism que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de OP y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de OP. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -131239,8 +131239,8 @@
    "w": 15
   },
   "L0V5t6Ic2M": {
-   "en": "<strong>What this is:</strong> a ORDI liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged ORDI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ORDI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de ORDI que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de ORDI y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de ORDI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a ORDI liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged ORDI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the ORDI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de ORDI que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de ORDI y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según lo grande que era la posición - graficadas directamente sobre el gráfico de precio de ORDI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así que puedes ver de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -133010,8 +133010,8 @@
    "w": 15
   },
   "Ug1K5bpDEW": {
-   "en": "<strong>What this is:</strong> a Pepe liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged PEPE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the PEPE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Pepe que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de PEPE están siendo expulsados a la fuerza de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño proporcional al de la posición - trazadas directamente sobre el gráfico de precio de PEPE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde está enterrado el dinero.",
+   "en": "<strong>What this is:</strong> a Pepe liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged PEPE traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the PEPE price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Pepe que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de PEPE están siendo expulsados a la fuerza de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - con un tamaño proporcional al de la posición - trazadas directamente sobre el gráfico de precio de PEPE. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde está enterrado el dinero.",
    "kind": [
     "html"
    ],
@@ -134493,8 +134493,8 @@
    "w": 6
   },
   "ykmo2_857L": {
-   "en": "MarginPad Premium - the pro trader toolkit | $3.99/mo",
-   "es": "MarginPad Premium - el kit de herramientas del trader profesional | $3.99/mes",
+   "en": "MarginPad Premium - the pro trader toolkit | $11.99/mo",
+   "es": "MarginPad Premium - el kit de herramientas del trader profesional | $11.99/mes",
    "kind": [
     "title",
     "ld"
@@ -134554,8 +134554,8 @@
    "w": 27
   },
   "NzFxzP_zYd": {
-   "en": "Get Premium - $3.99/mo",
-   "es": "Obtener Premium - $3.99/mes",
+   "en": "Get Premium - $11.99/mo",
+   "es": "Obtener Premium - $11.99/mes",
    "kind": [
     "html"
    ],
@@ -135598,8 +135598,8 @@
    "w": 4
   },
   "NpOYnPCie1": {
-   "en": "Unlock MarginPad Premium: 4 exclusive AI indicators, the live liquidation heatmap, Ask-AI on your charts, Balance Mode, premium leaderboards and more. $3.99/month or $39.99 lifetime - pay with crypto.",
-   "es": "Desbloquea MarginPad Premium: 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Ask-AI en tus gráficos, Balance Mode, clasificaciones premium y más. $3.99/mes o $39.99 de por vida - paga con cripto.",
+   "en": "Unlock MarginPad Premium: 4 exclusive AI indicators, the live liquidation heatmap, Ask-AI on your charts, Balance Mode, premium leaderboards and more. $11.99/month or $39.99 lifetime - pay with crypto.",
+   "es": "Desbloquea MarginPad Premium: 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Ask-AI en tus gráficos, Balance Mode, clasificaciones premium y más. $11.99/mes o $39.99 de por vida - paga con cripto.",
    "kind": [
     "attr:content"
    ],
@@ -135622,8 +135622,8 @@
    "w": 6
   },
   "bAtPyYVaag": {
-   "en": "4 exclusive AI indicators, live liquidation heatmap, Ask-AI, Balance Mode & more. $3.99/mo or $39.99 lifetime - pay with crypto.",
-   "es": "4 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Ask-AI, Balance Mode y más. $3.99/mes o $39.99 de por vida - paga con cripto.",
+   "en": "4 exclusive AI indicators, live liquidation heatmap, Ask-AI, Balance Mode & more. $11.99/mo or $39.99 lifetime - pay with crypto.",
+   "es": "4 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Ask-AI, Balance Mode y más. $11.99/mes o $39.99 de por vida - paga con cripto.",
    "kind": [
     "attr:content"
    ],
@@ -141980,8 +141980,8 @@
    "w": 15
   },
   "kkVMcYPy2L": {
-   "en": "<strong>What this is:</strong> a Sei liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged SEI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SEI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Sei que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SEI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SEI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Sei liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged SEI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SEI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Sei que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SEI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SEI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -142704,8 +142704,8 @@
    "w": 15
   },
   "DNAo2b1w-B": {
-   "en": "<strong>What this is:</strong> a Shiba Inu liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged SHIB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SHIB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Shiba Inu que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SHIB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SHIB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Shiba Inu liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged SHIB traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SHIB price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Shiba Inu que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SHIB están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SHIB. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -143440,8 +143440,8 @@
    "w": 15
   },
   "lHNqZw3J8j": {
-   "en": "<strong>What this is:</strong> a Solana liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged SOL traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SOL price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Solana que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SOL están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SOL. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Solana liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged SOL traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SOL price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Solana que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SOL están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SOL. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -146307,8 +146307,8 @@
    "w": 15
   },
   "DhKpjxTlrL": {
-   "en": "<strong>What this is:</strong> a Sui liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged SUI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SUI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Sui que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SUI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SUI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Sui liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged SUI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the SUI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Sui que puedes abrir sin cuenta (vista previa gratis de 5 minutos en vivo, ilimitada con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de SUI están siendo expulsados de sus posiciones y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño proporcional a la posición - trazadas directamente sobre el gráfico de precio de SUI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -147043,8 +147043,8 @@
    "w": 15
   },
   "cxxYkuS2B5": {
-   "en": "<strong>What this is:</strong> a Bittensor liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged TAO traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TAO price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bittensor que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de TAO están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según el tamaño de la posición - graficadas directamente sobre el gráfico de precio de TAO. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así ves de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Bittensor liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged TAO traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TAO price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Bittensor que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de TAO están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según el tamaño de la posición - graficadas directamente sobre el gráfico de precio de TAO. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así ves de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -149332,8 +149332,8 @@
    "w": 15
   },
   "sqUcYPvJlI": {
-   "en": "<strong>What this is:</strong> a Toncoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged TON traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TON price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Toncoin que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de TON están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según el tamaño de la posición - graficadas directamente sobre el gráfico de precio de TON. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así ves de un vistazo dónde están enterrados los cadáveres.",
+   "en": "<strong>What this is:</strong> a Toncoin liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged TON traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TON price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidaciones de Toncoin que puedes abrir sin cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de TON están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde una short - con un tamaño según el tamaño de la posición - graficadas directamente sobre el gráfico de precio de TON. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así ves de un vistazo dónde están enterrados los cadáveres.",
    "kind": [
     "html"
    ],
@@ -157686,8 +157686,8 @@
    "w": 15
   },
   "RTqEkrkKZK": {
-   "en": "<strong>What this is:</strong> a TRON liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged TRX traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TRX price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de TRON que puedes abrir sin una cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de TRX y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de TRX. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a TRON liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged TRX traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the TRX price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de TRON que puedes abrir sin una cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de TRX y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de TRX. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -158410,8 +158410,8 @@
    "w": 15
   },
   "axhZZCgGWD": {
-   "en": "<strong>What this is:</strong> a Uniswap liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged UNI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the UNI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Uniswap que puedes abrir sin una cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de UNI y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de UNI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a Uniswap liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged UNI traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the UNI price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de Uniswap que puedes abrir sin una cuenta (vista previa en vivo gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde están siendo expulsados de sus posiciones los traders apalancados de UNI y dónde se ubican los próximos clústeres respecto al precio actual. Cada burbuja roja es una liquidación de long, cada burbuja verde una de short - su tamaño según lo grande que era la posición - trazadas directamente sobre el gráfico de precio de UNI. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -161318,8 +161318,8 @@
    "w": 15
   },
   "Re4x7nOsxK": {
-   "en": "<strong>What this is:</strong> a dogwifhat liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged WIF traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the WIF price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de dogwifhat que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de WIF están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde es un short - con tamaño según qué tan grande era la posición - trazadas directamente sobre el gráfico de precio de WIF. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a dogwifhat liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged WIF traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the WIF price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de dogwifhat que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de WIF están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde es un short - con tamaño según qué tan grande era la posición - trazadas directamente sobre el gráfico de precio de WIF. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
@@ -164000,8 +164000,8 @@
    "w": 15
   },
   "Kkj3UlBcd0": {
-   "en": "<strong>What this is:</strong> a XRP liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) - it shows, in real time, where leveraged XRP traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the XRP price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
-   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de XRP que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $3.99/mes) - muestra, en tiempo real, dónde los traders apalancados de XRP están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde es un short - con tamaño según qué tan grande era la posición - trazadas directamente sobre el gráfico de precio de XRP. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
+   "en": "<strong>What this is:</strong> a XRP liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $11.99/mo) - it shows, in real time, where leveraged XRP traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short - sized by how big the position was - plotted directly on the XRP price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.",
+   "es": "<strong>Qué es esto:</strong> un mapa de liquidación de XRP que puedes abrir sin cuenta (vista previa gratis de 5 minutos, ilimitado con Premium a $11.99/mes) - muestra, en tiempo real, dónde los traders apalancados de XRP están siendo expulsados de sus posiciones y dónde se ubican los próximos clusters respecto al precio actual. Cada burbuja roja es una liquidación long, cada burbuja verde es un short - con tamaño según qué tan grande era la posición - trazadas directamente sobre el gráfico de precio de XRP. Un histograma en el borde derecho suma las liquidaciones en cada nivel de precio, así puedes ver de un vistazo dónde están enterrados los cuerpos.",
    "kind": [
     "html"
    ],
