@@ -97,7 +97,8 @@ const LAYOUT = () => {
     ok('the heat field occupies more than one level', levels >= 2,
       'faint=' + S.bandsFaint + ' mid=' + S.bandsMid + ' strong=' + S.bandsStrong);
     ok('the heaviest band on screen is bright', S.maxAlpha > 0.6, 'maxAlpha=' + S.maxAlpha);
-    ok('something on screen is genuinely faint', S.bandsFaint > 0, 'faint=' + S.bandsFaint);
+    ok('and it is a real multiple of the lightest, so weight stays readable', S.minAlpha > 0 && S.maxAlpha / S.minAlpha >= 2.5,
+      'max=' + S.maxAlpha + ' min=' + S.minAlpha + ' ratio=' + (S.minAlpha ? (S.maxAlpha / S.minAlpha).toFixed(1) : 'n/a'));
     ok('the field is mostly dark, so a heavy band means something', S.bandsStrong / Math.max(1, S.bands) < 0.5,
       'strong share=' + (S.bandsStrong / Math.max(1, S.bands)).toFixed(2));
 
@@ -204,17 +205,28 @@ const LAYOUT = () => {
       'faint=' + S.bandsFaint + ' mid=' + S.bandsMid + ' strong=' + S.bandsStrong);
     ok('the heaviest band on screen is bright', S.maxAlpha > 0.6, 'maxAlpha=' + S.maxAlpha);
 
-    // the touch readout must not be pinned over the top of the map
-    await page.evaluate(() => document.querySelector('.hm-tg-r .hm-tgb').click());
-    await new Promise(r => setTimeout(r, 900));
-    const sel = await page.evaluate(() => {
-      const sb = document.querySelector('.hm-selbox'), st = document.querySelector('.hm-stage').getBoundingClientRect();
-      const r = sb.getBoundingClientRect(), cs = getComputedStyle(sb);
-      return { shown: cs.display !== 'none', pos: cs.position, top: Math.round(r.top), stageTop: Math.round(st.top), stageH: Math.round(st.height) };
-    });
-    ok('the readout opens', sel.shown);
-    ok('the readout does not cover the top of the map', sel.top > sel.stageTop + sel.stageH * 0.4,
-      'readout top=' + sel.top + ' stage top=' + sel.stageTop);
+    // THE READOUT HAS TO LAND WHERE THE READER IS LOOKING, AND NOT ON WHAT THEY TOUCHED. Pinned top-left it
+    // covered the band it was explaining; pinned to the bottom of the VIEWPORT it could sit 300px below the
+    // circle the finger just touched, which on a phone reads as "nothing happened". It is inside the map, in
+    // the half opposite the touch.
+    const tapHalf = async (frac) => {
+      await page.evaluate(() => { const sb = document.querySelector('.hm-selbox'); if (sb) sb.style.display = 'none'; });
+      const b = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+      await page.touchscreen.tap(b.x + b.w * 0.55, b.y + b.h * frac);
+      await new Promise(r => setTimeout(r, 400));
+      return await page.evaluate(() => {
+        const sb = document.querySelector('.hm-selbox');
+        if (!sb || getComputedStyle(sb).display === 'none') return { shown: false };
+        const r = sb.getBoundingClientRect(), st = document.querySelector('.hm-stage').getBoundingClientRect();
+        return { shown: true, lo: sb.classList.contains('lo'), inside: r.top >= st.top - 2 && r.bottom <= st.bottom + 2,
+          midFrac: (r.top + r.height / 2 - st.top) / st.height, txt: sb.textContent.slice(0, 40) };
+      });
+    };
+    const hiTap = await tapHalf(0.25), loTap = await tapHalf(0.72);
+    ok('a tap on the map opens the readout', hiTap.shown && loTap.shown, { hi: hiTap.shown, lo: loTap.shown });
+    ok('the readout stays inside the map, where the reader is looking', hiTap.inside && loTap.inside, { hi: hiTap, lo: loTap });
+    ok('touching the top half puts it low, touching the bottom half puts it high', hiTap.midFrac > 0.5 && loTap.midFrac < 0.5,
+      { afterTopTap: +hiTap.midFrac.toFixed(2), afterBottomTap: +loTap.midFrac.toFixed(2) });
 
     await page.close();
   }, { timeoutMs: 230000 });

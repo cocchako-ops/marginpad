@@ -58,7 +58,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-cl-it:hover{background:rgba(255,255,255,.07)}' +
     '.hm-cl-it .ag{color:#5c6b84;margin-left:auto;font-size:10px}' +
     '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
-    '@media(max-width:980px){.hm-selbox{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);max-width:none;font-size:11px;z-index:2147482000;box-shadow:0 12px 34px rgba(0,0,0,.6);max-height:52vh;overflow-y:auto;overscroll-behavior:contain}}' +
+    '@media(max-width:980px){.hm-selbox{left:8px;right:8px;top:6px;max-width:none;font-size:11px;box-shadow:0 12px 34px rgba(0,0,0,.65);max-height:46%;overflow-y:auto;overscroll-behavior:contain}.hm-selbox.lo{top:auto;bottom:24px}.hm-cl-list{max-height:none}}' +
     '.hm-mast{order:0;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:2px 2px 8px}' +
     '.hm-mast-l{min-width:0}' +
     '.hm-mast-t{font:700 13.5px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a;white-space:nowrap}' +
@@ -434,6 +434,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function heatAlpha(h) { return 0.085 + Math.pow(h, 0.7) * 0.80; }
   function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
+  function selAt(my, H) { if (!S) return; S._selLo = (my / Math.max(1, H)) < 0.5; } // touched the top half -> the box goes low, and the other way round
   function dotR(e) { var d = Math.max(0.55, Math.min(1, (S.cv ? S.cv.clientWidth : 900) / 900)); return Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * d); }
   function dotNear(e, mx, my, slack, floor) { var d = Math.hypot(S.X(e.ts / 1000) - mx, S.Y(e.price) - my); return d <= Math.max(floor, dotR(e) + slack) ? d : -1; }
   function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
@@ -619,6 +620,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // frame (the price action keeps 30% of the height on purpose), so the chip that names it moves the view to it.
   function focusPool(x) {
     if (!S || !x) return;
+    S._selLo = false;
     var px = S.price > 0 ? S.price : x.price;
     var span = Math.max(Math.abs(x.price - px) * 2.4, px * 0.02), mid = (x.price + px) / 2;
     S.yView = { lo: mid - span / 2, hi: mid + span / 2 };
@@ -683,7 +685,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         if (refs.length > 30) h += '<div class="hm-cl-it" style="cursor:default;color:#5c6b84">+ ' + (refs.length - 30) + ' more (zoom in to split the cluster)</div>';
         h += '</div>';
         el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">\u00d7</button>';
-        el2.style.display = 'block';
+        el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
         el2.querySelector('.hm-selx').addEventListener('click', function (ev2) { ev2.stopPropagation(); S.sel = null; showSel(); sched(); });
         el2.querySelectorAll('.hm-cl-it[data-ci]').forEach(function (row) {
           row.addEventListener('click', function (ev3) { ev3.stopPropagation(); var ci = +row.getAttribute('data-ci'); var e4 = S.sel && S.sel.refs && S.sel.refs[ci]; if (e4) { S.sel = { type: 'ev', ref: e4 }; showSel(); sched(); } });
@@ -698,7 +700,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> actually liquidated in this band in the last 24h <span style="color:#8b95a1">(measured)</span><br>' : '<span style="color:#8b95a1">nothing has actually liquidated in this band in the last 24h (measured)</span><br>') + (relOf(pl2) > 0 ? '<b>' + relTxt(relOf(pl2)) + '</b> the average standing band on screen <span style="color:#8b95a1">(model - relative weight, not dollars)</span><br>' : '') + (S.price > 0 ? 'price must move <b>' + Math.abs((pl2.price - S.price) / S.price * 100).toFixed(2) + '%</b> to reach it<br>' : '') + 'building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
-      el2.style.display = 'block';
+      el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
       el2.querySelector('.hm-selx').addEventListener('click', function (ev2) { ev2.stopPropagation(); S.sel = null; showSel(); sched(); });
     }
     S.showSel = showSel;
@@ -706,6 +708,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (S._dragged) { S._dragged = 0; return; }
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+      selAt(my, S.plotH || r.height);
       var hits = [], i;
       if (S.showDots && S.sweeps) { var swH = null; for (i = 0; i < S.sweeps.length; i++) { var sw4 = S.sweeps[i]; if (S.sideF === 'long' && !sw4.long) continue; if (S.sideF === 'short' && sw4.long) continue; var d4 = Math.hypot(S.X(sw4.t / 1000) - mx, S.Y(sw4.p) - my); if (d4 < 16 && (!swH || d4 < swH.d)) swH = { d: d4, s: sw4 }; } if (swH) { S.sel = { type: 'swp', ref: swH.s }; showSel(); sched(); return; } }
       var SLACK = COARSE ? 16 : 10; // a fingertip covers more of the map than a pointer does
@@ -769,7 +772,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var pf = S.pf, g = null, moved = 0;
       function yr() { return { lo: S.yView ? S.yView.lo : S.yLo, hi: S.yView ? S.yView.hi : S.yHi }; }
       function apply(dy) { if (Math.abs(dy) > 4) moved = 1; var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
-      function pfPick(cy) { var r = pf.getBoundingClientRect(), s = poolHit(cy - r.top, S.plotH || r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
+      function pfPick(cy) { var r = pf.getBoundingClientRect(); selAt(cy - r.top, S.plotH || r.height); var s = poolHit(cy - r.top, S.plotH || r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
       pf.style.cursor = 'ns-resize'; pf.title = 'Drag to zoom the price axis';
       pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; moved = 0; ev.preventDefault(); });
       pf.addEventListener('click', function (ev) { if (moved) { moved = 0; return; } pfPick(ev.clientY); });
@@ -1271,12 +1274,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     state: function () {
       if (!S) return null;
       var vis = S.vis || [], h = vis.map(function (p) { return heatAlpha(p._h || 0); });
-      var mid = 0, faint = 0, strong = 0, mx = 0, i;
-      for (i = 0; i < h.length; i++) { if (h[i] > mx) mx = h[i]; if (h[i] > 0.5) strong++; else if (h[i] > 0.12) mid++; else faint++; }
+      var mid = 0, faint = 0, strong = 0, mx = 0, mn = 9, i;
+      for (i = 0; i < h.length; i++) { if (h[i] > mx) mx = h[i]; if (h[i] < mn) mn = h[i]; if (h[i] > 0.5) strong++; else if (h[i] > 0.12) mid++; else faint++; }
       return {
         coin: S.coin, win: S.win, side: S.sideF, dotMin: S.dotMin, showDots: !!S.showDots,
         plotH: S.plotH || 0, canvasH: S.cv ? S.cv.clientHeight : 0, canvasW: S.cv ? S.cv.clientWidth : 0,
-        bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint, maxAlpha: +mx.toFixed(3),
+        bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint, maxAlpha: +mx.toFixed(3), minAlpha: +(mn < 9 ? mn : 0).toFixed(3),
         dotsDrawn: S.dotsDrawn || 0, events: S.events.length,
         yLo: S.yLo, yHi: S.yHi, price: S.price, yViewed: !!S.yView,
         targets: (S._tg || []).map(function (x) { return { price: x.price, long: !!x.long }; })
