@@ -33,14 +33,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-tg-exp{display:none;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
-    '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:5px 24px 5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:32px}' +
+    '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:4px 22px 4px 9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:28px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
-    '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:32px}' +
+    '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:28px}' +
     '.hm-seg button{background:none;border:0;color:#8fa3c4;padding:0 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}' +
     '.hm-seg button.on{background:#1a2413;color:#c2f64a}.hm-seg button.on.s-l{background:#0f2418;color:#2ebd85}.hm-seg button.on.s-s{background:#2a1512;color:#ff6258}' +
     '.hm-px{margin-left:auto;font-family:"Space Mono",monospace;font-size:14.5px;font-weight:700;color:#fff;white-space:nowrap}.hm-px small{font-size:11px;margin-left:5px}.hm-px small.up{color:#2ebd85}.hm-px small.dn{color:#ff6258}' +
     '.hm-stats{font-size:11px;color:#5c6b84;font-family:"Space Mono",monospace;white-space:nowrap}' +
-    '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
+    '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
     '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 344px);max-height:820px}' +
@@ -59,18 +59,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-cl-it .ag{color:#5c6b84;margin-left:auto;font-size:10px}' +
     '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
     '@media(max-width:980px){.hm-selbox{position:fixed;left:8px;right:8px;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);max-width:none;font-size:11px;z-index:2147482000;box-shadow:0 12px 34px rgba(0,0,0,.6);max-height:52vh;overflow-y:auto;overscroll-behavior:contain}}' +
-    '.hm-mast{order:0;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:2px 2px 10px}' +
+    '.hm-mast{order:0;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:2px 2px 8px}' +
     '.hm-mast-l{min-width:0}' +
-    '.hm-mast-t{display:flex;align-items:center;gap:10px;font:700 13.5px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a}' +
+    '.hm-mast-t{font:700 13.5px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a;white-space:nowrap}' +
+    '.hm-mast-b{display:flex;align-items:center;gap:9px;margin-top:3px;min-width:0}' +
     '.hm-live{display:inline-flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.1em;color:#ff6258;border:1px solid #ff625855;border-radius:20px;padding:2px 8px}' +
     '.hm-live i{width:6px;height:6px;border-radius:50%;background:#ff6258;animation:hmLive 1.6s infinite}' +
     '@keyframes hmLive{0%,100%{opacity:1}50%{opacity:.25}}' +
-    '.hm-mast-s{font:11px "Familjen Grotesk",sans-serif;color:#5c6b84;margin-top:4px}' +
+    '.hm-mast-s{font:11px "Familjen Grotesk",sans-serif;color:#5c6b84;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.hm-mast-r{margin-left:auto;text-align:right}' +
     '.hm-mast-r .hm-px{margin-left:0;font-size:19px;line-height:1.15}' +
     '.hm-mast-r .hm-stats{display:block;margin-top:2px}' +
     '.hm-bar-b{margin-left:auto}' +
-    '.hm-stage{border:1px solid #1c2230;border-radius:12px;overflow:hidden}' +
+    '.hm-stage{border:1px solid #1c2230;border-radius:0 0 12px 12px;border-top:0;overflow:hidden}' +
+    '.hm-targets{background:#0b0e13;border:1px solid #1c2230;border-bottom:0;border-radius:12px 12px 0 0;padding:7px 12px;margin:0!important}' +
     '.hm-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}' +
     '.hm-foot-c{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 13px}' +
     '.hm-foot-h{font:700 10px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;margin-bottom:5px}' +
@@ -81,8 +83,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     'details.hm-foot-c[open]>summary.hm-foot-h{margin-bottom:6px}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
-    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
-    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0}'+'.hm-bar{gap:7px;margin-bottom:7px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:7px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:40px;padding:2px 22px 2px 10px;font-size:13px;border-radius:9px;background-position:right 8px center}'+'.hm-seg{height:40px;border-radius:9px}'+'.hm-btn{width:40px;height:40px;border-radius:9px;flex:none}.hm-btn svg{width:16px;height:16px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:34px;padding:2px 21px 2px 9px;font-size:12.5px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:34px;border-radius:9px}'+'.hm-btn{width:34px;height:34px;border-radius:9px;flex:none}.hm-btn svg{width:15px;height:15px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -312,12 +314,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (poolGone(s0)) continue;
       if (S.sideF === 'long' && !s0.long) continue; if (S.sideF === 'short' && s0.long) continue;
       if (s0.price < pLo || s0.price > pHi) continue; vis.push(s0); }
-    var wMax = 0; for (i = 0; i < vis.length; i++) if (vis[i].w > wMax) wMax = vis[i].w;
+    var wMax = 0, wSum = 0; for (i = 0; i < vis.length; i++) { if (vis[i].w > wMax) wMax = vis[i].w; wSum += (+vis[i].w || 0); }
+    var wAvg = vis.length ? wSum / vis.length : 0;
+    S._wAvgVis = wAvg; // every surface quotes the ratio against the SAME denominator
     var bh = Math.max(3, PH * (P.binH / (pHi - pLo)));
     for (i = vis.length - 1; i >= 0; i--) { var s = vis[i];
       var y = Y(s.price), rel = s.w / (wMax || 1);
       var bw = 4 + rel * (W - 8);
-      ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (0.3 + rel * 0.6).toFixed(2) + ')' : 'rgba(255,98,88,' + (0.3 + rel * 0.6).toFixed(2) + ')';
+      var ba = Math.min(0.95, (0.3 + rel * 0.6) * 1.3).toFixed(2); // owner 2026-09-18: the weak end was barely visible, +30%
+      ctx.fillStyle = s.long ? 'rgba(46,189,133,' + ba + ')' : 'rgba(255,98,88,' + ba + ')';
       ctx.fillRect(0, y - bh / 2, bw, bh); }
     // THE PRICE AXIS LIVES HERE NOW. The bars keep the full column and the five tick labels sit on top of them,
     // right-aligned on their own backing - five occluded rows out of ninety, against a price column that used to
@@ -325,6 +330,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // it: the figure is still on the band's tooltip and in the selection box, where it is explained rather than
     // abbreviated.
     var pxY = (S.price > 0 && S.price > pLo && S.price < pHi) ? Y(S.price) : -999;
+    // how heavy the heaviest clusters on screen are, in the one unit the model can support
+    var used = [pxY];
+    var hMax = W < 90 ? 1 : 3; // a 72px column has room for one figure, not three
+    for (i = 0; i < vis.length && i < hMax; i++) {
+      var hv = vis[i], hy = Y(hv.price), rv = wAvg > 0 ? hv.w / wAvg : 0;
+      if (!(rv >= 1.2) || hy < 10 || hy > PH - 14) continue;
+      var clash = false; for (var u2 = 0; u2 < used.length; u2++) if (Math.abs(used[u2] - hy) < 18) { clash = true; break; }
+      if (clash) continue; used.push(hy);
+      var ht = (rv >= 10 ? Math.round(rv) : rv.toFixed(1)) + 'x';
+      ctx.font = '700 9.5px "Space Mono",monospace'; ctx.textAlign = 'left';
+      var hw = ctx.measureText(ht).width;
+      ctx.fillStyle = 'rgba(7,9,12,.8)'; ctx.fillRect(2, hy - 6, hw + 6, 12);
+      ctx.fillStyle = hv.long ? '#7ee2b8' : '#ffa39b'; ctx.fillText(ht, 5, hy + 3);
+    }
     ctx.font = '10px "Space Mono",monospace'; ctx.textAlign = 'right';
     for (i = 1; i < 6; i++) {
       var lp = pHi - (pHi - pLo) / 6 * i, ly = PH / 6 * i, lt = fpx(lp), lw = ctx.measureText(lt).width;
@@ -341,9 +360,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
     ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
     ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-    var zw = ctx.measureText('ZONES').width;
+    var zt = 'ZONES x avg';
+    var zw = ctx.measureText(zt).width;
     ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect((W - zw) / 2 - 4, 2, zw + 8, 13);
-    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText('ZONES', W / 2, 12);
+    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText(zt, W / 2, 12);
   }
 
   // ---- band sizing -------------------------------------------------------------------------------
@@ -414,6 +434,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function heatAlpha(h) { return 0.015 + Math.pow(h, 1.3) * 0.88; }
   function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
+  function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
+  function relTxt(r) { return (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
   // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
   // from price so one stray far-out band can never flatten the candles into a hairline.
   function frameZones(lo, hi) {
@@ -608,7 +630,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if (S.pxEl) S.pxEl.innerHTML = S.price > 0 ? '$' + fpx(S.price) + ' <small class="' + (S.chg >= 0 ? 'up' : 'dn') + '">' + (S.chg >= 0 ? '+' : '') + (S.chg || 0).toFixed(2) + '%</small>' : '…';
     if (S.stEl) { var cut = Date.now() - WINS[S.win].mins * 60000, tot = 0, nn = 0;
       for (var i = 0; i < S.events.length; i++) { var e = S.events[i]; if (e.ts < cut) break; tot += e.notional || 0; nn++; }
-      S.stEl.textContent = nn ? (money(tot) + ' liquidated · ' + nn + ' liqs · ' + S.win) : ''; }
+      var nar = window.innerWidth <= 760;
+      S.stEl.textContent = nn ? (nar ? (money(tot) + ' · ' + nn + ' liqs') : (money(tot) + ' liquidated · ' + nn + ' liqs · ' + S.win)) : ''; }
   }
 
   function wire() {
@@ -625,7 +648,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (S.showDots && S.sweeps) for (i = 0; i < S.sweeps.length; i++) { var swv = S.sweeps[i]; if (S.sideF === 'long' && !swv.long) continue; if (S.sideF === 'short' && swv.long) continue; var sd0 = Math.hypot(S.X(swv.t / 1000) - mx, S.Y(swv.p) - my); if (sd0 < 16 && (!bsw || sd0 < bsw.d)) bsw = { d: sd0, s: swv }; }
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
       var h = '';
-      if (best) { var s2 = best.s; h += '<b>' + fpx(s2.price) + '</b> - <span class="' + (s2.long ? 'l' : 's') + '">projected ' + (s2.long ? 'long' : 'short') + '-liq zone</span><br>' + (s2.long ? 'longs' : 'shorts') + ' would liquidate here'; }
+      if (best) { var s2 = best.s, r2 = relOf(s2);
+        h += '<b>' + fpx(s2.price) + '</b> - <span class="' + (s2.long ? 'l' : 's') + '">projected ' + (s2.long ? 'long' : 'short') + '-liq zone</span>';
+        if (r2 > 0) h += '<br><b>' + relTxt(r2) + '</b> the average band on screen <span style="color:#8b95a1">(model)</span>';
+        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + '</b> really liquidated here in 24h <span style="color:#8b95a1">(measured)</span>' : '<span style="color:#8b95a1">nothing measured liquidating here in 24h</span>');
+      }
       if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + '<span class="' + (sw3.long ? 'l' : 's') + '">price swept a projected ' + (sw3.long ? 'long' : 'short') + ' zone</span>'; }
       else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more - click to list</span>' : ''); }
       tip.innerHTML = h; tip.style.display = 'block';
@@ -662,7 +689,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
         h += '<span class="' + (sw.long ? 'l' : 's') + '">price swept a projected ' + (sw.long ? 'long' : 'short') + ' leverage zone</span> @ <b>' + fpx(sw.p) + '</b><br>the model projected ' + (sw.long ? 'long' : 'short') + ' liquidations clustering here (estimated, not measured) · ' + ago2(sw.t);
       } else { var pl2 = S.sel.ref;
-        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> actually liquidated in this band in the last 24h <span style="color:#8b95a1">(measured)</span><br>' : '<span style="color:#8b95a1">nothing has actually liquidated in this band in the last 24h (measured)</span><br>') + (pl2.rel > 0 ? '<b>' + pl2.rel.toFixed(1) + 'x</b> the average standing band on screen <span style="color:#8b95a1">(model - relative weight, not dollars)</span><br>' : '') + (S.price > 0 ? 'price must move <b>' + Math.abs((pl2.price - S.price) / S.price * 100).toFixed(2) + '%</b> to reach it<br>' : '') + 'building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
+        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> actually liquidated in this band in the last 24h <span style="color:#8b95a1">(measured)</span><br>' : '<span style="color:#8b95a1">nothing has actually liquidated in this band in the last 24h (measured)</span><br>') + (relOf(pl2) > 0 ? '<b>' + relTxt(relOf(pl2)) + '</b> the average standing band on screen <span style="color:#8b95a1">(model - relative weight, not dollars)</span><br>' : '') + (S.price > 0 ? 'price must move <b>' + Math.abs((pl2.price - S.price) / S.price * 100).toFixed(2) + '%</b> to reach it<br>' : '') + 'building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.style.display = 'block';
@@ -1050,20 +1077,35 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var PREVIEW = 300, left = PREVIEW, signedIn = j && j.signedIn;
       var fmtLeft = function (s) { s = Math.max(0, s); var m = Math.floor(s / 60), r = s % 60; return m ? m + ':' + (r < 10 ? '0' : '') + r : r + 's'; }; // 300s reads as 5:00, not "300s"
       var LOCKKEY = 'mp_hm_lock', COOLDOWN = 12 * 3600 * 1000; // one short preview per 12h; a refresh after it locks stays locked
-      function lockNow() { // paint the paywall immediately (no preview)
+      // THE WALL USED TO TREAT A MEMBER AND A STRANGER IDENTICALLY. `signedIn` came back from
+      // /api/premium/status, was assigned, and was never read once - so somebody who already holds Premium on an
+      // account they are not signed into here was shown a buy button and no way in. A guest gets the sign-in path
+      // as well; a signed-in member without Premium gets the buy path alone, which is the only one that helps them.
+      function lockNow(lockedAt) {
         if (!S || !stage.parentNode) return;
         if (stage.querySelector('.hm-paywall')) return;
         try { if (!window.__hmGateLogged) { window.__hmGateLogged = 1; window.__mpTrack && window.__mpTrack('premgate', 'Heatmap'); } } catch (e) {} // ops feed: a non-premium visitor hit the heatmap premium wall
-        var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px;cursor:pointer';
-        ov.innerHTML = '<div style="font:700 11px \'Space Mono\',monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
-          '<div style="font:800 22px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
+        var backIn = '';
+        if (lockedAt) { var mins = Math.max(1, Math.round((COOLDOWN - (Date.now() - lockedAt)) / 60000));
+          backIn = mins >= 60 ? (Math.round(mins / 60) + 'h') : (mins + ' min'); } // a wall with no way forward should at least say when the door reopens
+        var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:9px;cursor:pointer';
+        ov.innerHTML = '<div style="font:700 11px Space Mono,monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
+          '<div style="font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
           '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped - plus 4 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$3.99/mo</b>.</div>' +
-          '<span class="hm-pw-btn" style="margin-top:10px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>';
+          '<span class="hm-pw-btn" style="margin-top:8px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>' +
+          (signedIn ? '' : '<span class="hm-pw-in" style="color:#8fa3c4;font-size:12.5px;margin-top:2px">Already have Premium? <b style="color:#c2f64a;text-decoration:underline">Sign in</b></span>') +
+          (backIn ? '<span style="color:#5c6b84;font-size:11px;margin-top:2px">Free preview again in ' + backIn + '</span>' : '');
         stage.appendChild(ov);
-        ov.addEventListener('click', function () { location.href = '/premium'; });
+        ov.addEventListener('click', function (ev) {
+          var si = ev.target.closest && ev.target.closest('.hm-pw-in');
+          if (si) { ev.stopPropagation(); // the sign-in path must not fall through to the checkout page
+            try { if (window.mpEnsureAuth) window.mpEnsureAuth(function () { window.mpAuth && window.mpAuth.open(); }); else if (window.mpAuth) window.mpAuth.open(); } catch (e) {}
+            return; }
+          location.href = '/premium';
+        });
       }
       var lockedAt = 0; try { lockedAt = +localStorage.getItem(LOCKKEY) || 0; } catch (e) {}
-      if (lockedAt && Date.now() - lockedAt < COOLDOWN) { lockNow(); return; } // already used the preview recently → stay locked across refreshes
+      if (lockedAt && Date.now() - lockedAt < COOLDOWN) { lockNow(lockedAt); return; } // already used the preview recently → stay locked across refreshes
       // The countdown used to sit centred over the top of the map, where on a phone it wrapped to two lines and
       // covered the thing it is advertising. It is a STATUS, not a map annotation, so it lives beside the LIVE
       // pill in the masthead - unmissable, over nothing, and it cannot collide with the selection box or the
@@ -1071,13 +1113,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var rib = el('span', 'hm-prevrib'); rib.style.cssText = 'display:inline-flex;align-items:center;background:rgba(194,246,74,.1);border:1px solid #c2f64a55;border-radius:20px;padding:2px 9px;font:10px "Space Mono",monospace;letter-spacing:.06em;color:#c2f64a;white-space:nowrap';
       var ribTxt = function () { return 'PREVIEW ' + fmtLeft(left); };
       rib.textContent = ribTxt();
-      (wrap.querySelector('.hm-mast-t') || stage).appendChild(rib);
+      (wrap.querySelector('.hm-mast-b') || stage).appendChild(rib);
       var iv = setInterval(function () { left--; if (rib) rib.textContent = ribTxt(); if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
       S.timers.push(iv);
       var t = setTimeout(function () {
         if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
-        try { localStorage.setItem(LOCKKEY, String(Date.now())); } catch (e) {} // remember the lock so a refresh doesn't grant a fresh preview
-        lockNow();
+        var now = Date.now(); try { localStorage.setItem(LOCKKEY, String(now)); } catch (e) {} // remember the lock so a refresh doesn't grant a fresh preview
+        lockNow(now);
       }, PREVIEW * 1000);
       S.timers.push(t);
     });
@@ -1115,7 +1157,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
-    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 9 exchanges, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
+    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 9 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>';
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');

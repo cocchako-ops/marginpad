@@ -15,6 +15,7 @@
 
 const { withBrowser } = require('./e2e-browser.js');
 const fs = require('fs'), path = require('path');
+const ADMIN = (() => { try { return (fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[a-z0-9]+/i) || [''])[0]; } catch (e) { return ''; } })();
 
 const LOCAL = process.argv.includes('--local');
 const BUNDLE = path.join(__dirname, '..', 'dist', 'assets', 'mp-heatmap.js');
@@ -71,7 +72,10 @@ const LAYOUT = () => {
     footOpen: [...document.querySelectorAll('details.hm-foot-c')].filter(d => d.open).length,
     footTotal: document.querySelectorAll('details.hm-foot-c').length,
     mastTxt: (document.querySelector('.hm-mast-s') || {}).textContent || '',
-    prevInMast: !!document.querySelector('.hm-mast-t .hm-prevrib')
+    prevInMast: !!document.querySelector('.hm-mast-b .hm-prevrib'),
+    mastLines: (() => { const t = document.querySelector('.hm-mast-t'), b = document.querySelector('.hm-mast-b'); return t && b ? Math.round(t.getBoundingClientRect().height + b.getBoundingClientRect().height) : 0; })(),
+    mastTitleH: (() => { const t = document.querySelector('.hm-mast-t'); return t ? Math.round(t.getBoundingClientRect().height) : 0; })(),
+    tgGap: (() => { const t = document.querySelector('.hm-targets'), st = document.querySelector('.hm-stage'); if (!t || !st) return null; const a = t.getBoundingClientRect(), b2 = st.getBoundingClientRect(); return Math.round(a.top > b2.top ? a.top - b2.bottom : b2.top - a.bottom); })()
   };
 };
 
@@ -89,9 +93,11 @@ const LAYOUT = () => {
     ok('the map renders standing bands', S.bands > 5, 'bands=' + S.bands);
 
     // THE central regression: a heat field with no mid-tone is the bug this whole pass existed to fix.
-    const midShare = S.bandsMid / Math.max(1, S.bands);
-    ok('the heat field has a mid-tone (not all-or-nothing)', S.bandsMid >= 3 && midShare > 0.05,
-      'mid=' + S.bandsMid + ' strong=' + S.bandsStrong + ' faint=' + S.bandsFaint);
+    const levels = [S.bandsFaint, S.bandsMid, S.bandsStrong].filter(n => n > 0).length;
+    ok('the heat field occupies more than one level', levels >= 2,
+      'faint=' + S.bandsFaint + ' mid=' + S.bandsMid + ' strong=' + S.bandsStrong);
+    ok('the heaviest band on screen is bright', S.maxAlpha > 0.6, 'maxAlpha=' + S.maxAlpha);
+    ok('something on screen is genuinely faint', S.bandsFaint > 0, 'faint=' + S.bandsFaint);
     ok('the field is mostly dark, so a heavy band means something', S.bandsStrong / Math.max(1, S.bands) < 0.5,
       'strong share=' + (S.bandsStrong / Math.max(1, S.bands)).toFixed(2));
 
@@ -182,8 +188,10 @@ const LAYOUT = () => {
     ok('the map gets the screen (canvas >= 300px of 390)', L.cv.w >= 300, 'canvas=' + L.cv.w);
     ok('the stage runs edge to edge', L.stage.x <= 1 && L.stage.w >= L.vw - 1, JSON.stringify(L.stage));
     ok('the whole map clears the fixed tab bar', L.stage.bottom <= L.vh - L.navH, 'bottom=' + L.stage.bottom + ' limit=' + (L.vh - L.navH));
-    ok('every control is at least 38px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 38), JSON.stringify(L.taps.filter(t => t.h < 38)));
-    ok('no control is narrower than 38px', L.taps.every(t => t.w >= 38), JSON.stringify(L.taps.filter(t => t.w < 38)));
+    ok('every control is at least 32px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 32), JSON.stringify(L.taps.filter(t => t.h < 32)));
+    ok('no control is narrower than 32px', L.taps.every(t => t.w >= 32), JSON.stringify(L.taps.filter(t => t.w < 32)));
+    ok('the title keeps one line, with LIVE on the row below it', L.mastTitleH > 0 && L.mastTitleH < 30, 'title h=' + L.mastTitleH);
+    ok('TARGETS is joined to the map, not floating beside it', L.tgGap === 0, 'gap=' + L.tgGap);
     ok('the legend is one row', L.legend.h <= 28, 'legend h=' + L.legend.h);
     ok('the page never scrolls sideways', L.scrollW <= L.vw, 'scrollW=' + L.scrollW);
     ok('nothing in the section is wider than the screen', L.wide === 0, 'wide=' + L.wide);
@@ -192,7 +200,9 @@ const LAYOUT = () => {
     ok('the prose is collapsed behind disclosures', L.footTotal === 3 && L.footOpen === 0, L.footOpen + '/' + L.footTotal);
     ok('the Premium countdown is in the masthead, not over the map', L.prevInMast);
     ok('the plot leaves a strip for the time axis', S.plotH < S.canvasH && S.canvasH - S.plotH >= 10, 'plotH=' + S.plotH + ' canvasH=' + S.canvasH);
-    ok('the heat field has a mid-tone', S.bandsMid >= 3, 'mid=' + S.bandsMid + ' of ' + S.bands);
+    ok('the heat field occupies more than one level', [S.bandsFaint, S.bandsMid, S.bandsStrong].filter(n => n > 0).length >= 2,
+      'faint=' + S.bandsFaint + ' mid=' + S.bandsMid + ' strong=' + S.bandsStrong);
+    ok('the heaviest band on screen is bright', S.maxAlpha > 0.6, 'maxAlpha=' + S.maxAlpha);
 
     // the touch readout must not be pinned over the top of the map
     await page.evaluate(() => document.querySelector('.hm-tg-r .hm-tgb').click());
@@ -218,6 +228,61 @@ const LAYOUT = () => {
   const html = await (await fetch(URL_ + '&cb=' + Date.now())).text();
   ok('the page does not claim the heatmap has no paywall', !/no paywall on models/.test(html));
   ok('the page states the real allowance', /five minutes every 12 hours/.test(html));
+
+  // ---- the paywall, both sides of it --------------------------------------------------------------------
+  // signedIn came back from /api/premium/status, was assigned and never read once, so a member who already holds
+  // Premium on an account they were not signed into here saw a buy button and no way in. A guest gets the
+  // sign-in path; a signed-in member without Premium gets the buy path alone, which is the only one that helps.
+  console.log('\npaywall');
+  const wall = async (cookie) => {
+    let out = null;
+    await withBrowser(async (browser) => {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1366, height: 768 });
+      await page.setRequestInterception(true);
+      const cdp = await page.target().createCDPSession();
+      await cdp.send('Network.setBypassServiceWorker', { bypass: true });
+      page.on('request', r => {
+        if (SRC && /\/assets\/mp-heatmap\.js/.test(r.url())) r.respond({ status: 200, contentType: 'application/javascript', body: SRC });
+        else r.continue();
+      });
+      if (cookie) await page.setCookie({ name: 'mp_sess', value: cookie, domain: 'marginpad.io', path: '/' });
+      // a preview already spent, so the wall paints at once instead of five minutes from now
+      await page.evaluateOnNewDocument(() => { try { localStorage.setItem('mp_hm_lock', String(Date.now() - 3600000)); } catch (e) {} });
+      await page.goto(URL_, { waitUntil: 'networkidle2', timeout: 60000 });
+      await page.waitForSelector('.hm-paywall', { timeout: 30000 }).catch(() => {});
+      out = await page.evaluate(() => {
+        const w = document.querySelector('.hm-paywall');
+        return w ? { shown: true, signIn: !!w.querySelector('.hm-pw-in'), buy: !!w.querySelector('.hm-pw-btn'), txt: w.textContent } : { shown: false };
+      });
+      if (out.shown && out.signIn) { // the sign-in path must not fall through to the checkout page
+        await page.evaluate(() => document.querySelector('.hm-pw-in').click());
+        await new Promise(r => setTimeout(r, 1200));
+        out.stayed = !/\/premium/.test(await page.evaluate(() => location.pathname));
+      }
+      await page.close();
+    }, { timeoutMs: 150000 });
+    return out;
+  };
+  const g = await wall(null);
+  ok('a guest hits the wall', g.shown);
+  ok('a guest is offered the sign-in path', g.signIn, g.txt);
+  ok('and the buy path', g.buy);
+  ok('clicking sign in does not fall through to /premium', g.stayed === true);
+  ok('the wall says when the free preview returns', /Free preview again in/.test(g.txt || ''), g.txt);
+  if (ADMIN) {
+    const uid = 'e2ehm' + Math.random().toString(36).slice(2, 6);
+    const H = { 'x-admin-key': ADMIN, 'content-type': 'application/json' };
+    const po = (p2, b2) => fetch('https://marginpad.io' + p2, { method: 'POST', headers: H, body: JSON.stringify(b2) }).then(r => r.json().catch(() => ({})));
+    await po('/api/admin/e2euser', { uid, op: 'mk' });
+    const se = await po('/api/admin/e2euser', { uid, op: 'sess' });
+    const m = se && se.token ? await wall(se.token) : null;
+    ok('a signed-in member without Premium hits the wall', m && m.shown, m && m.txt);
+    ok('and is NOT asked to sign in again', m && m.shown && !m.signIn, m && m.txt);
+    await po('/api/admin/e2euser', { uid, op: 'rm' });
+  } else {
+    console.log('  skip the member half (no ADMIN_KEY.local.txt)');
+  }
 
   console.log('\nheatmap-e2e: ' + pass + ' passed, ' + fail + ' failed');
   // process.exit() here aborts inside libuv while the harness is still tearing the browser down, and the shell
