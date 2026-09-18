@@ -158,7 +158,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<style>.plusshow{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:22px 0 8px}.plusshow figure{margin:0}.plusshow img{width:100%;height:auto;display:block;border:1px solid #1c2230;border-radius:14px;background:#0a0b0d}.plusshow figcaption{font-size:13.5px;line-height:1.5;color:#9aa6b8;margin-top:10px}.plusshow figcaption b{color:#e9e7df}@media(max-width:760px){.plusshow{grid-template-columns:1fr;gap:26px}}</style><style>#howto{margin:26px 0 4px;padding:20px 22px;border:1px solid #1c2230;border-radius:16px;background:#0e1218}#howto h3{margin:0 0 14px;font-size:19px}.hsteps{margin:0;padding-left:22px}.hsteps li{margin:0 0 11px;line-height:1.55;color:#c7d2e0}.hsteps b{color:#e9e7df}.hsteps a{color:#c2f64a;text-decoration:underline}.kbd{display:inline-block;padding:1px 7px;border:1px solid #2a3442;border-radius:6px;background:#141a22;color:#7cc4ff;font-family:"Space Mono",monospace;font-size:12px}#howto .pnote{margin:14px 0 0}</style></head>
+<style>.plusshow{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:22px 0 8px}.plusshow figure{margin:0}.plusshow img{width:100%;height:auto;display:block;border:1px solid #1c2230;border-radius:14px;background:#0a0b0d}.plusshow figcaption{font-size:13.5px;line-height:1.5;color:#9aa6b8;margin-top:10px}.plusshow figcaption b{color:#e9e7df}@media(max-width:760px){.plusshow{grid-template-columns:1fr;gap:26px}}</style><style>#howto{margin:26px 0 4px;padding:20px 22px;border:1px solid #1c2230;border-radius:16px;background:#0e1218}#howto h3{margin:0 0 14px;font-size:19px}.hsteps{margin:0;padding-left:22px}.hsteps li{margin:0 0 11px;line-height:1.55;color:#c7d2e0}.hsteps b{color:#e9e7df}.hsteps a{color:#c2f64a;text-decoration:underline}.kbd{display:inline-block;padding:1px 7px;border:1px solid #2a3442;border-radius:6px;background:#141a22;color:#7cc4ff;font-family:"Space Mono",monospace;font-size:12px}#howto .pnote{margin:14px 0 0}</style><style>#replay{margin:30px 0 6px}#replay h3{margin:0 0 10px;font-size:21px}.rp-lead{color:#c7d2e0;line-height:1.6;margin:0 0 18px;max-width:80ch}.rp-lead b{color:#e9e7df}.rp{margin:0 0 22px;padding:16px;border:1px solid #1c2230;border-radius:16px;background:#0e1218}.rp-imgs{display:grid;gap:10px}.rp-imgs img{width:100%;height:auto;display:block;border:1px solid #1c2230;border-radius:11px;background:#0a0b0d}.rp figcaption{margin-top:12px;font-size:13.5px;line-height:1.6;color:#9aa6b8}.rp figcaption b{color:#e9e7df}#replay .pnote{margin-top:6px}</style></head>
 <body>
 <div class="wrap">
   <header>
@@ -249,6 +249,19 @@
     <figure><img src="/assets/plus/plus-ai-read.jpg" alt="The same treatment on a Bitcoin chart" width="1434" height="764" loading="lazy">
       <figcaption><b>Any coin, any timeframe.</b> It reads the exact chart in front of you. On 18 September it called HYPE on the 15-minute at 81.688 with a stop at 79.640 and a first target of 83.720; four hours later price traded at 86.36, through that target and on toward the second.</figcaption></figure>
   </div>  <p class="pnote">A real reading of a real chart, captured on a phone. One example is an example, not a track record - the AI is a research tool and it will be wrong sometimes. Nothing here is financial advice.</p>
+  <div id="replay">
+    <h3>Shown the past, asked what happens next</h3>
+    <p class="rp-lead">These are <b>replays on real market data</b>, not marketing mock-ups and not a record of trades anyone took. The chart was cut at a past candle and the assistant was handed only what existed up to that point - the future was simply not in the data it read. Then the remaining candles are revealed. Top image: what it saw and drew. Bottom image: what the market did next.</p>
+      <figure class="rp">
+        <div class="rp-imgs"><img src="/assets/plus/replay-btc-before.jpg" alt="Bitcoin 1-hour replay before" width="1434" height="764" loading="lazy"><img src="/assets/plus/replay-btc-after.jpg" alt="Bitcoin 1-hour replay after" width="1434" height="764" loading="lazy"></div>
+        <figcaption><b>Bitcoin, 1-hour.</b> It marked a swept support at 76,305 and an unfilled bullish gap just under it, then set entry 76,305, stop 74,919, first target 77,482 and second 79,856. Price traded to 81,241: both targets cleared, the stop never touched. Note what it also printed on the block - <b>R:R 0.85, POOR</b>. It called the direction correctly and still told the reader the reward did not justify the risk. That warning is the product working, not a glitch.</figcaption>
+      </figure>
+      <figure class="rp">
+        <div class="rp-imgs"><img src="/assets/plus/replay-sol-before.jpg" alt="Solana 1-hour replay before" width="1434" height="764" loading="lazy"><img src="/assets/plus/replay-sol-after.jpg" alt="Solana 1-hour replay after" width="1434" height="764" loading="lazy"></div>
+        <figcaption><b>Solana, 1-hour.</b> Entry 98.30, stop 97.76, first target 102.37, second 104.78. Price ran to 114.17 - through both, with the stop untouched.</figcaption>
+      </figure>
+    <p class="pnote">Two replays are two replays. They are not a track record, they do not predict anything, and the assistant will be wrong plenty of times - it is a research tool, not a signal service. Nothing here is financial advice.</p>
+  </div>
   <div id="howto">
     <h3>How to use it, in three steps</h3>
     <ol class="hsteps">
