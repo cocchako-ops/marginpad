@@ -83,7 +83,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","description":"Un kit de herramientas gratuito de futuros de cripto: paper trading sin riesgo al precio en vivo, un mapa de calor de liquidaciones en tiempo real y calculadoras de precisión - precio de liquidación, tamaño de posición, PnL/ROI, entrada DCA y take-profit.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Liquidation price calculator","Position size calculator","PnL / ROI calculator","DCA average entry calculator","Take-profit target calculator"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo se calcula el precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Para una posición con margen aislado, el precio de liquidación estimado es Entry × (1 − 1/Leverage + MMR) para longs y Entry × (1 + 1/Leverage − MMR) para shorts, donde MMR es la tasa de margen de mantenimiento."}},{"@type":"Question","name":"¿Cómo calculo el tamaño de una posición por riesgo?","acceptedAnswer":{"@type":"Answer","text":"Decide qué porcentaje de tu cuenta arriesgar si se activa tu stop, y luego divide ese riesgo en dólares entre la distancia de la entrada al stop para obtener la cantidad de monedas a comprar."}},{"@type":"Question","name":"¿Cuál es la diferencia entre ROI y ROE?","acceptedAnswer":{"@type":"Answer","text":"El ROI de precio es el porcentaje que se movió el activo. El ROE es tu rendimiento sobre el margen aportado, que el apalancamiento multiplica."}},{"@type":"Question","name":"¿Cómo funciona una calculadora de DCA / promediar a la baja en cripto?","acceptedAnswer":{"@type":"Answer","text":"Calcula tu precio de entrada promedio combinado entre varias compras como el costo total dividido entre la cantidad total."}},{"@type":"Question","name":"¿Cómo calculo un precio de take-profit?","acceptedAnswer":{"@type":"Answer","text":"Elige un ROE objetivo. El precio de salida necesario es Entrada × (1 + ROE / (100 × Apalancamiento)) para longs y Entrada × (1 − ROE / (100 × Apalancamiento)) para shorts."}}]}</script>
-<link rel="stylesheet" href="/assets/home.css?v=381dc148">
+<link rel="stylesheet" href="/assets/home.css?v=486f068e">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -794,7 +794,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=381dc148"></script>
+<script src="/assets/home.js?v=486f068e"></script>
 <script defer src="/assets/mp-nav.js?v=e06a80fa"></script>
 </body>
 </html>
