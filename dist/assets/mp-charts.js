@@ -620,6 +620,57 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(a!==b)return {lastUtcDayOpenBarsAgo:n-1-i,note:'draw it with a vline when the day boundary matters'};}
     return null;}
 
+  function reactionsAt(bars,price,kind,look){
+    var n=bars.length,tol=price*0.0015,look=look||8,hits=[],i,j;
+    var WIN=300,GAP=8,MAXH=12,start=Math.max(2,n-WIN);
+    for(i=start;i<n-2;i++){
+      var b=bars[i],touched=(+b.low<=price+tol&&+b.high>=price-tol);
+      if(!touched)continue;
+      if(hits.length&&i-hits[hits.length-1].i<GAP)continue;   // one approach, not every candle inside it
+      if(hits.length>=MAXH)break;
+      var best=0,broke=false;
+      for(j=i+1;j<Math.min(n,i+look);j++){
+        var away=(kind==='resistance')?(price-+bars[j].low):(+bars[j].high-price);
+        if(away>best)best=away;
+        var beyond=(kind==='resistance')?(+bars[j].close>price+tol*2):(+bars[j].close<price-tol*2);
+        if(beyond)broke=true;
+      }
+      hits.push({i:i,barsAgo:n-1-i,movePct:+(best/price*100).toFixed(2),broke:broke});
+    }
+    if(!hits.length)return null;
+    var held=hits.filter(function(h){return !h.broke;});
+    var avg=held.length?held.reduce(function(a2,h){return a2+h.movePct;},0)/held.length:0;
+    var last=hits[hits.length-1];
+    return {approachesSeen:hits.length,windowBars:Math.min(WIN,n),held:held.length,brokeThrough:hits.length-held.length,
+      avgReactionPct:+avg.toFixed(2),lastApproachBarsAgo:last.barsAgo,lastHeld:!last.broke};
+  }
+  function avwapFrom(bars,from){
+    var pv=0,vv=0;
+    for(var i=from;i<bars.length;i++){
+      var b=bars[i],v=+b.vol;if(!(v>0))v=1;            // a candle with no volume still traded somewhere
+      var tp=(+b.high+ +b.low+ +b.close)/3;
+      pv+=tp*v;vv+=v;
+    }
+    return vv>0?pv/vv:null;
+  }
+  function avwapOf(bars,piv,price){
+    if(!bars||bars.length<30||!piv||!piv.length)return null;
+    var n=bars.length,out=null;
+    var hi=piv.filter(function(p){return p.kind==='high'&&p.barsAgo>=6;})[0];
+    var lo=piv.filter(function(p){return p.kind==='low'&&p.barsAgo>=6;})[0];
+    var mk=function(p,what){
+      if(!p)return null;
+      var v=avwapFrom(bars,Math.max(0,n-1-p.barsAgo));
+      if(!(v>0))return null;
+      return {from:what,anchorBarsAgo:p.barsAgo,anchorPrice:_p6(p.price),vwap:_p6(v),
+        priceVsPct:+((price-v)/v*100).toFixed(2)};
+    };
+    var a=mk(hi,'the last swing high'),b2=mk(lo,'the last swing low');
+    var arr=[a,b2].filter(Boolean);
+    if(!arr.length)return null;
+    out={anchors:arr,note:'Anchored VWAP: the average price everyone who traded since that turn actually paid, weighted by volume. Above it, the crowd from that anchor is in profit and tends to defend; below it they are under water and tend to sell into strength. It is a far better line to draw than a moving average nobody ever transacted at, and price reacts to it - use it as a level, and say which anchor you mean.'};
+    return out;
+  }
   /* Build a rich, pre-computed technical brief of the window so the AI reasons over real numbers (computed regardless of which indicators the user has toggled). */
   function aiContext(w){
     var bars=w.bars||[],n=bars.length,last=bars[n-1]||{},price=last.close;
@@ -665,7 +716,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var piv=null,lvls=null,struct=null;
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
       piv=_P.map(function(p){return {barsAgo:p.barsAgo,price:_p6(p.price),kind:p.kind};});
-      lvls=levelsOf(_P,price,0.004).map(function(l){return {price:_p6(l.price),kind:l.kind,touches:l.touches,lastTouchBarsAgo:l.lastTouchBarsAgo};});
+      lvls=levelsOf(_P,price,0.004).map(function(l){var o={price:_p6(l.price),kind:l.kind,touches:l.touches,lastTouchBarsAgo:l.lastTouchBarsAgo};
+        try{var rx=reactionsAt(bars,l.price,l.kind,8);if(rx){o.heldTimes=rx.held;o.brokeTimes=rx.brokeThrough;o.avgReactionPct=rx.avgReactionPct;o.lastHeld=rx.lastHeld;}}catch(e){}
+        return o;});
       var _hs=_P.filter(function(p){return p.kind==='high';}).slice(0,3),_ls=_P.filter(function(p){return p.kind==='low';}).slice(0,3);
       if(_hs.length>=2&&_ls.length>=2){var _hh=_hs[0].price>_hs[1].price,_hl=_ls[0].price>_ls[1].price;
         struct=(_hh&&_hl)?'higher highs and higher lows (uptrend structure)':((!_hh&&!_hl)?'lower highs and lower lows (downtrend structure)':'mixed - range or a transition');}
@@ -685,6 +738,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{_fvg=fvgOf(bars,price);}catch(e){}
     try{_setups=setupsOf(bars,_P||[],lvls||[],price,_vr);}catch(e){}
     try{_sess=sessionOf(bars);}catch(e){}
+    var _avw=null;try{_avw=avwapOf(bars,_P||[],price);}catch(e){}
     return {
       chartTools:tools, aiDrawings:ad,
       swingPivots:piv, respectedLevels:lvls, structure:struct, visibleWindow:vis,
@@ -703,7 +757,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       indicatorsUserHasOn:indsOn, recentCloses:rc, openPosition:pos,
       liquidationPools:pools, premiumReadouts:ro, userDrawings:ud,
       /* computed above - all from these same candles, nothing fetched (2026-09-18) */
-      volume:_vol, volatility:_vr, higherTimeframe:_htf,
+      volume:_vol, volatility:_vr, anchoredVwap:_avw,
       higherTimeframes:_htfs&&_htfs.length>1?{frames:_htfs,note:'the two frames above the one in view, from the same candles. Read all three together: the frame in view is the entry, the next one says whether the move has room, the highest says which way the whole thing leans. When they disagree, say so and let it lower your confidence.'}:null, fairValueGaps:_fvg, setups:_setups, session:_sess
     };
   }
@@ -724,7 +778,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var changed=all.length!==loc.length;aiHistSave(w,all,!changed);cb&&cb(changed?all:null);});}
   /* the user-visible receipt of what an answer DID on the chart ("Opened RSI", "Drew 4 shapes"), kept on the message so the
      thread re-renders with it and the model sees it in the history as "[Did: ...]" */
-  function aiActsNote(m){return (m&&m.acts&&m.acts.length)?('\n[Did on the chart: '+m.acts.join('; ')+']'):'';}
+  /* THE RECEIPT IS THE FEEDBACK CHANNEL (2026-09-19). It already told the model what it managed to do; it now
+     also tells it what was refused and why, because that is the half it can actually learn from mid-conversation. */
+  function aiActsNote(m){var o='';
+    if(m&&m.acts&&m.acts.length)o+='\n[Did on the chart: '+m.acts.join('; ')+']';
+    if(m&&m.rej&&m.rej.length)o+='\n[Refused, do not ask for these again as they are: '+m.rej.join('; ')+']';
+    return o;}
+  function aiRejections(){return _aiRej.slice(0,6);}
   function mdLite(t){t=escHtml(String(t||''));t=t.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');t=t.replace(/`([^`]+)`/g,'<code>$1</code>');t=t.replace(/(^|\n)\s*[-*•]\s+/g,'$1• ');t=t.replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>');return t;}
   var COPY_SVG='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
   /* split a trade-plan JSON block (```plan {...}```) off the prose so it never shows as raw text, and parse it for the "Add to chart" button */
@@ -809,6 +869,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        - a trend line needs its two anchors at least 4 bars apart, so two adjacent wicks cannot make a "trend"
        - every price stays inside a sane window around the last close
      ctx = {lo,hi} the loaded price range. */
+  var _aiRej=[];
+  function _rej(why,a){try{_aiRej.push(String((a&&(a.shape||a.a))||'shape')+': '+why);}catch(e){}return null;}
   function aiShapeOf(a,n,px,ctx){if(!a||typeof a!=='object'||!(n>1))return null;
     var FUT=30,last=n-1;
     var L=function(ba,dflt){ba=(ba==null||ba==='')?dflt:+ba;if(!isFinite(ba))ba=dflt||0;ba=Math.max(-FUT,Math.min(n-1,Math.round(ba)));return last-ba;};
@@ -904,7 +966,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(_b2>_b1){var _tb=_b1;_b1=_b2;_b2=_tb;var _tp=_p1;_p1=_p2;_p2=_tp;}
       if(sh!=='fib'){var _fx=fixPair(_sd,_b1,_p1,_b2,_p2);if(!_fx)return null;_b1=_fx[0];_p1=_fx[1];_b2=_fx[2];_p2=_fx[3];}
       var t1=L(_b1,Math.round(n*0.5)),tt2=L(_b2,0);
-      if(Math.abs(tt2-t1)<4)return null; // two anchors one candle apart are not a line
+      if(Math.abs(tt2-t1)<4)return _rej('its two anchors are fewer than 4 candles apart - two adjacent wicks are not a trend, pick pivots further apart',a); // two anchors one candle apart are not a line
       out.push(Object.assign({},base,{t:sh,l1:t1,p1:_p1,l2:tt2,p2:_p2,anch:sh==='fib'?0:1,txt:sh==='fib'?'':lbl}));
     }
     else if(sh==='arrow'){
@@ -928,13 +990,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       out.push(Object.assign({},base,{t:'poly',pts:pp2}));
       if(lbl)label(pp2[pp2.length-1].p);}
     else if(sh==='position'||sh==='rr'){ // the broker terminal's risk-reward block
-      if(!okp(a.entry)||!okp(a.stop))return null;
+      if(!okp(a.entry)||!okp(a.stop))return _rej('entry or stop is too far from the current price to be real (must sit between 0.4x and 2.5x of it)',a);
       /* THE SAME 1.5x RULE THE PLAN OBEYS (2026-09-19). The model could route around the plan by drawing the
          block directly - that is how R:R 0.83 reached the chart dressed as a setup. Below the floor the block
          is refused; the levels still arrive as lines, so nothing is hidden, it just is not drawn as a trade. */
       try{var _t0=(Array.isArray(a.targets)?a.targets:[a.target]).map(Number).filter(function(v){return v>0;})[0];
         if(_t0>0){var _rk=Math.abs(+a.entry-+a.stop),_rw=Math.abs(_t0-+a.entry);
-          if(_rk>0&&(_rw/_rk)<AI_MIN_RR)return null;}}catch(e){}
+          if(_rk>0&&(_rw/_rk)<AI_MIN_RR)return _rej('the first target pays '+(_rw/_rk).toFixed(2)+'x the risk, under the '+AI_MIN_RR+'x floor - make it a wait, or find a target that pays',a);}}catch(e){}
       var tg2=(Array.isArray(a.targets)?a.targets:[a.target]).map(Number).filter(function(v){return okp(v);}).slice(0,3);
       out.push(Object.assign({},base,{t:'pos',l1:L(a.barsAgo1!=null?a.barsAgo1:6,6),p:snapLv(a.entry,0.002),stop:snapLv(a.stop,0.002),tgts:tg2.map(function(v){return snapLv(v,0.002);}),w:1}));}
     else if(sh==='fibext'||sh==='fibx'){ // extension: the AB leg projected from C
@@ -1045,7 +1107,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{w._ghost.setData(data);}catch(e){return 0;}
     w._ghostBars=data;w._ghostB=batch;
     return data.length;}
-  function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;var n=w.bars.length,px=+w.bars[n-1].close,k=0;
+  function aiDrawActs(w,acts,batch){if(!w||!w.dr||!w.dr.shapes||!w.bars||w.bars.length<2)return 0;_aiRej=[];var n=w.bars.length,px=+w.bars[n-1].close,k=0;
     var lo=Infinity,hi=-Infinity;for(var i=Math.max(0,n-200);i<n;i++){var b=w.bars[i];if(!b)continue;if(+b.low<lo)lo=+b.low;if(+b.high>hi)hi=+b.high;}
     // the snap table: every price this chart can prove - the pivots, the levels it respected, the liquidation pools around price
     var snap=[];try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(w.bars,_k,16);
@@ -1234,7 +1296,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         if(sp.plan){try{aiDrawPlan(w,sp.plan,hasDraw);}catch(e){}}
         /* EXECUTE, then write the receipt onto the message (thread + server) and re-render the bubble with it */
         aiExec(w,sp.actions,entry.b).then(function(acts){
-          if(acts&&acts.length){entry.acts=acts;var h3=aiHistLoad(wk);for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts;break;}}aiHistSave(wk,h3);
+          var _rj=(typeof aiRejections==='function')?aiRejections():[];
+          if((acts&&acts.length)||_rj.length){entry.acts=acts||[];if(_rj.length)entry.rej=_rj;var h3=aiHistLoad(wk);for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts||[];if(_rj.length)h3[i].rej=_rj;break;}}aiHistSave(wk,h3);
             try{if(bub.isConnected){var atB2=atBottom();bub.innerHTML=aiAiInner(entry);if(atB2)body.scrollTop=body.scrollHeight;}}catch(e){}
             if(!acts.some(function(a){return /^Switched to/.test(a);}))chartToast(acts.join(' · '));}
           else aiHistPush(wk,aiHistLoad(wk));

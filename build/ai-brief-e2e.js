@@ -19,7 +19,7 @@ const { withBrowser, newPage } = require('./e2e-browser.js');
 
 const BUNDLE = path.join(__dirname, '..', 'dist', 'assets', 'mp-charts.js');
 const WORKER = path.join(__dirname, '..', 'src', 'worker.js');
-const CAP = 7000; // must match briefJson(ctx, N) in handleAiChart
+const CAP = 8200; // must match briefJson(ctx, N) in handleAiChart
 
 let pass = 0, fail = 0;
 const ok = (c, m, d) => { if (c) { pass++; console.log('  ok   ' + m); } else { fail++; console.log('  FAIL ' + m + (d ? '  ' + JSON.stringify(d).slice(0, 220) : '')); } };
@@ -146,7 +146,10 @@ console.log('\nPURE - the brief packer (an over-cap brief must be SMALLER, never
   const w = fs.readFileSync(WORKER, 'utf8');
   const i = w.indexOf('const BRIEF_DROP'), j = w.indexOf('// "Ask AI about this chart"');
   eval(w.slice(i, j));
-  ok(/briefJson\(ctx, 7000\)/.test(w), 'handleAiChart packs the brief at the cap this test checks (' + CAP + ')');
+  // read the cap out of the worker instead of hardcoding it twice - the last change moved it and this check
+  // failed for the honest reason, but a test that has to be edited alongside a constant will drift eventually
+  const capM = w.match(/briefJson\(ctx, (\d+)\)/);
+  ok(!!capM && +capM[1] === CAP, 'handleAiChart packs the brief at the cap this test checks (' + CAP + ')', capM && capM[1]);
   const big = {
     symbol: 'BTC', price: 80900, setups: [{ name: 'keep me' }], volume: { state: 'normal' }, chartTools: { x: 1 },
     swingPivots: new Array(60).fill({ barsAgo: 1, price: 80000, kind: 'high' }),
@@ -259,8 +262,8 @@ derivCheck().then(recordCheck).then(() => withBrowser(async (browser) => {
         sym: w.sym, total: JSON.stringify(c).length, bars: w.bars.length,
         hasVol: !!(c.volume && c.volume.heaviestTradedPrice),
         hasRegime: !!(c.volatility && typeof c.volatility.atrPercentileVsOwnHistory === 'number'),
-        hasHtf: !!(c.higherTimeframe && c.higherTimeframe.timeframe),
-        htfDiffers: !!(c.higherTimeframe && c.higherTimeframe.timeframe !== c.timeframe),
+        hasHtf: !!(c.higherTimeframes && c.higherTimeframes.frames && c.higherTimeframes.frames.length >= 2),
+        htfDiffers: !!(c.higherTimeframes && (c.higherTimeframes.frames||[]).every(f => f.timeframe !== c.timeframe)),
         fvg: (c.fairValueGaps || []).length,
         fvgSane: (c.fairValueGaps || []).every(g => g.from < g.to && g.widthPct > 0),
         sess: !!(c.session && c.session.lastUtcDayOpenBarsAgo >= 0),
@@ -271,7 +274,7 @@ derivCheck().then(recordCheck).then(() => withBrowser(async (browser) => {
     ok(o.total <= CAP, sym + ': the whole brief fits the cap (' + o.total + ' / ' + CAP + ' chars)', o);
     ok(o.hasVol && o.volSane, sym + ': volume is present with a traded-volume node and a sane ratio', o);
     ok(o.hasRegime, sym + ': volatility carries a percentile of this market\'s own history', o);
-    ok(o.hasHtf && o.htfDiffers, sym + ': the higher timeframe is present and is NOT the frame in view', o);
+    ok(o.hasHtf && o.htfDiffers, sym + ': TWO higher timeframes are present and neither is the frame in view', o);
     ok(o.fvgSane, sym + ': every fair value gap has from < to and a real width (' + o.fvg + ' found)', o);
     ok(o.sess, sym + ': the UTC day open is dated', o);
     ok(errs.length === 0, sym + ': no page errors', errs.slice(0, 3));
