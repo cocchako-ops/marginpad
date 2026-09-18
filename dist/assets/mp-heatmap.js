@@ -154,7 +154,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
     ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
     ctx.font = '10px "Space Mono",monospace';
-    ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.textAlign = 'left'; ctx.fillText('local', 6, PH + AXH - 5); // an axis that does not name its clock is an axis you cannot check
+    ctx.font = (W < 520 ? 8.5 : 10) + 'px "Space Mono",monospace'; // on a 318px canvas the first tick sits at 53px, so the marker has to be smaller than the ticks
+    ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.textAlign = 'left'; ctx.fillText('local', 4, PH + AXH - 5); // an axis that does not name its clock is an axis you cannot check
+    ctx.font = '10px "Space Mono",monospace';
     ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.textAlign = 'center';
     for (i = 1; i < 6; i++) { var tt = v.t0 + (v.t1 - v.t0) / 6 * i; ctx.fillText(tlabel(tt), W / 6 * i, PH + AXH - 5); }
     // STANDING pool bands - the heat. Band starts when the crowd started building and runs to the right edge.
