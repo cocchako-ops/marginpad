@@ -19348,7 +19348,9 @@ export default {
     bg(checkWhaleAlerts, 'whale');
  // bg(checkTokenUnlocks, 'unlocks'); // TEMP OFF 2026-08-21: no-coinglass test period - CG vesting needs a paid plan; re-enable when a source exists
     bg(checkNewsPost, 'news'); // auto-post fresh crypto news to @marginpadnews
-    bg(checkXPost, 'xpost'); // auto-post 3x/day (peak UTC 13:00 + 19:00 + 00:00) to X - one crypto news-story post + rotating live-data content, idempotent per slot
+    // bg(checkXPost, 'xpost'); // OFF 2026-09-18 (owner): the 3x/day auto-post burned Anthropic tokens on every run - measured
+    // as its own row on /api/admin/aicost - against a channel with no measured engagement (memory: x-traffic-quality-2026-08).
+    // The poster itself is intact: re-enable by restoring this line. `?task=xpost` on /api/admin/runcron still fires it by hand.
     bg(spotDailySnapshot, 'spotsnap'); // Demo Spot: start-of-day portfolio value per wallet (Today PnL + equity curve)
     bg(checkSubscriptions, 'subs'); // premium-sub reminders + kick on expiry
     bg(checkLbNotify, 'lbnotify'); // DM leaderboard rank changes to linked users

@@ -1285,12 +1285,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var bx=Math.min(Math.max(cx-tw/2-6,2),Math.max(2,w.dr.W-tw-14)),by=Math.min(ya+hh+6,w.dr.H-22);
       ctx.fillStyle='rgba(10,13,17,.92)';ctx.fillRect(bx,by,tw+12,18);ctx.strokeRect(bx,by,tw+12,18);
       ctx.fillStyle=col;ctx.textBaseline='middle';ctx.fillText(lbl,bx+6,by+9);ctx.restore();}
-    function drawText(s){var x=xOf(s.l),y=yOf(s.p);if(x==null||y==null){s._bb=null;return;}y+=(+s._dy||0);/* _dy = the collision nudge computed in layoutLabels, render-only */ctx.save();var fs=12+((s.w||2)-2)*3;ctx.font='600 '+fs+"px 'Familjen Grotesk',sans-serif";ctx.fillStyle=s.color;ctx.textBaseline='alphabetic';var tw=ctx.measureText(s.txt||'').width;if(s.ar)x=Math.max(2,x-tw);/* ar = right-aligned: the label ENDS at its anchor, so a label parked at the right edge runs into the gutter instead of under the price axis (2026-09-17) */
+    function drawText(s){var x=xOf(s.l),y=yOf(s.p);if(x==null||y==null){s._bb=null;return;}y+=(+s._dy||0);/* _dy = the collision nudge computed in layoutLabels, render-only */ctx.save();var fs=12+((s.w||2)-2)*3;ctx.font='600 '+fs+"px 'Familjen Grotesk',sans-serif";ctx.fillStyle=s.color;ctx.textBaseline='alphabetic';var tw=ctx.measureText(s.txt||'').width;if(s.ar)x=Math.max(2,x-tw);x=Math.max(3,Math.min(x,(w.dr.W||0)-tw-3));/* clamp 2026-09-18: a label parked past the right edge was simply cut off, taking its number with it *//* ar = right-aligned: the label ENDS at its anchor, so a label parked at the right edge runs into the gutter instead of under the price axis (2026-09-17) */
       /* A NUMBER YOU CANNOT READ IS WORSE THAN NO NUMBER (owner 2026-09-17): a label printed straight onto a trend line or a
          candle disappears into it. `bg` lays the chart's own ground under the text first, so the ink always wins. */
       if(s.bg){var pad=4;ctx.fillStyle='rgba(10,13,17,.82)';ctx.beginPath();var rx=x-pad,ry=y-fs+1,rw=tw+pad*2,rh=fs+4,rr=4;
         ctx.moveTo(rx+rr,ry);ctx.arcTo(rx+rw,ry,rx+rw,ry+rh,rr);ctx.arcTo(rx+rw,ry+rh,rx,ry+rh,rr);ctx.arcTo(rx,ry+rh,rx,ry,rr);ctx.arcTo(rx,ry,rx+rw,ry,rr);ctx.closePath();ctx.fill();ctx.fillStyle=s.color;}
-      ctx.fillText(s.txt||'',x,y);s._bb={x:x,y:y,w:tw,h:fs};ctx.restore();}
+      ctx.fillText(s.txt||'',x,y);s._bb={x:x,y:y,w:tw,h:fs};
+      try{_lab.push({x:x-4,y:y-fs,w:tw+8,h:fs+4});}catch(e){} // join the same frame register, so a zone's numbers step around this label too
+      ctx.restore();}
     /* A PREDICTION IS NOT A RULER LINE (2026-09-17, owner: "nek prati malo kako je chart izgledao pre toga ... ostro crtanje
        strelice dolazi u obzir samo ako trend stvarno tako izgleda da ce naglo cena da skoci"). A straight diagonal to the target
        tells the reader price gets there in three candles. `path` is a smoothed poly-line - quadratic curves through the midpoints,
@@ -1311,10 +1313,43 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* ---- a broker-grade kit (2026-09-17, owner: "za vrhunsku analizu trebaju i vrhunski alati ... alate za crtanje koje koriste
        brokeri, berze i slicno, da moze da nacrta kompleksno koliko god hoce"). Everything here is anchored in (bar, price) like
        the rest of the engine, so it pans and zooms with the candles. ---- */
-    function inkTxt(x,y,str,col,size,align){ // a readable number anywhere on the chart: the ground first, then the ink
-      if(!str)return;ctx.save();ctx.font='700 '+(size||10)+"px 'Space Mono',monospace";var tw=ctx.measureText(str).width;
+    /* EVERY NUMBER ON THE CHART GOES THROUGH HERE, so this is the one place that can make them all readable
+       (2026-09-18, owner sent two phone screenshots: "slova na crtezima preko linija i nije bas sve citko").
+       Three things were wrong and all three are fixed here rather than in thirteen callers:
+         1. NOTHING CLAMPED TO THE CANVAS. "ENTRY 81.688  R:R 0.99  POOR - risks m" simply ran off the right edge
+            and the reader lost the verdict - the most important word on the drawing.
+         2. NOTHING KNEW ABOUT ANYTHING ELSE. `layoutLabels` nudges only the AI's `text` SHAPES; the numbers a
+            zone, a position block or a level prints are drawn by their own draw function and were never in that
+            list, which is why EMA50 sat on top of "Buy zone (0.01% wide)". `_lab` is a per-frame register of
+            what has already been placed, so each label steps out of the way of the ones before it.
+         3. ON A PHONE THERE IS NO ROOM, and a label that cannot fit is worse than a shorter one: below
+            `_labTight` the size steps down once and the text is ellipsised on a word boundary rather than cut.
+       Placement order therefore matters - draw the important things first; they keep their spot. */
+    var _lab=[],_labTight=false;
+    function labReset(tight){_lab=[];_labTight=!!tight;}
+    function inkTxt(x,y,str,col,size,align,opt){ // a readable number anywhere on the chart: the ground first, then the ink
+      if(!str)return;str=String(str);
+      var W=w.dr.W||0,H=w.dr.H||0,fs=size||10;
+      if(_labTight&&fs>9)fs=9;
+      ctx.save();ctx.font='700 '+fs+"px 'Space Mono',monospace";
+      var tw=ctx.measureText(str).width;
+      // too wide to ever fit: trim on a word boundary and mark it, never let the edge do the cutting
+      if(tw>W-8){var words=str.split(' ');while(words.length>1&&ctx.measureText(words.join(' ')+'…').width>W-8)words.pop();
+        str=words.join(' ')+(words.length?'…':'');tw=ctx.measureText(str).width;}
       if(align==='r')x-=tw;else if(align==='c')x-=tw/2;
-      ctx.fillStyle='rgba(10,13,17,.86)';ctx.fillRect(x-3,y-(size||10),tw+6,(size||10)+4);
+      x=Math.max(3,Math.min(x,W-tw-3));                     // never off either edge
+      y=Math.max(fs+2,Math.min(y,H-3));
+      if(!(opt&&opt.fixed)){                                 // step out of the way of what is already on this frame
+        var box=function(yy){return {x:x-3,y:yy-fs,w:tw+6,h:fs+4};};
+        var hits=function(b){for(var i=0;i<_lab.length;i++){var o=_lab[i];
+          if(b.x<o.x+o.w&&b.x+b.w>o.x&&b.y<o.y+o.h&&b.y+b.h>o.y)return true;}return false;};
+        var step=fs+5,tries=0,dir=1,yy=y;
+        while(hits(box(yy))&&tries<10){tries++;yy=y+dir*step*Math.ceil(tries/2);dir=-dir;
+          if(yy<fs+2||yy>H-3){yy=y+step*tries;if(yy>H-3)break;}}
+        if(!hits(box(yy)))y=yy;
+        _lab.push(box(y));
+      }
+      ctx.fillStyle='rgba(10,13,17,.86)';ctx.fillRect(x-3,y-fs,tw+6,fs+4);
       ctx.fillStyle=col;ctx.textBaseline='alphabetic';ctx.fillText(str,x,y);ctx.restore();}
     function anchDot(x,y,col){ctx.save();ctx.beginPath();ctx.arc(x,y,3.4,0,6.2832);ctx.fillStyle='#0c1116';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=col;ctx.stroke();ctx.restore();}
     var _pct=function(a,b){return (b&&isFinite(a)&&isFinite(b))?(((a-b)/b)*100):null;};
@@ -1361,9 +1396,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       /* THE REWARD-TO-RISK IS THE NUMBER THAT SAYS WHETHER THIS IS A TRADE AT ALL, so it is coloured like a verdict rather than
          printed like a fact: a plan risking more than it stands to make is a blunder, and the reader should see that at a glance
          (owner 2026-09-17: "tu sam da te odvratim od blundersa" - one model plan came back at R:R 0.29). */
-      var rc='#3fd8e6',rw='';
-      if(rr!=null){if(rr<1){rc='#ff5a4d';rw='  POOR - risks more than it makes';}else if(rr<1.5){rc='#ffb020';rw='  thin';}else if(rr>=2.5)rc='#41e3a3';}
-      inkTxt(x1+7,ye-5,'ENTRY '+cwFmt(s.p)+(rr!=null?'   R:R '+rr.toFixed(2)+rw:''),rr!=null?rc:'#3fd8e6',10.5);
+      /* THE VERDICT MUST SURVIVE A PHONE (2026-09-18). One line carrying entry, price, ratio AND
+         "POOR - risks more than it makes" is ~50 characters; on the owner's 390px screenshot it ran off the right
+         edge and took the verdict - the most important word on the drawing - with it. Narrow screens get two
+         lines and the short verdict (the colour already says the rest); desktop keeps the full sentence. */
+      var rc='#3fd8e6',rw='',rwShort='';
+      if(rr!=null){if(rr<1){rc='#ff5a4d';rw='  POOR - risks more than it makes';rwShort='  POOR';}else if(rr<1.5){rc='#ffb020';rw='  thin';rwShort='  thin';}else if(rr>=2.5)rc='#41e3a3';}
+      if(_labTight){
+        inkTxt(x1+7,ye-5,'ENTRY '+cwFmt(s.p),rr!=null?rc:'#3fd8e6',10.5);
+        if(rr!=null)inkTxt(x1+7,ye+9,'R:R '+rr.toFixed(2)+rwShort,rc,10);
+      }else inkTxt(x1+7,ye-5,'ENTRY '+cwFmt(s.p)+(rr!=null?'   R:R '+rr.toFixed(2)+rw:''),rr!=null?rc:'#3fd8e6',10.5);
       inkTxt(x1+7,ys+(ys>ye?12:-4),'STOP '+cwFmt(s.stop)+'  '+(_pct(+s.stop,+s.p)||0).toFixed(2)+'%','#ff8a80',10);
       tg.forEach(function(v,i){var yy=yOf(v);if(yy==null)return;inkTxt(x1+7,yy+(yy<ye?-4:12),'TP'+(i+1)+' '+cwFmt(v)+'  '+(_pct(v,+s.p)||0).toFixed(2)+'%','#41e3a3',10);});}
     /* FIBONACCI EXTENSION - three points (A, B, C): projections of the AB leg measured from C */
@@ -1428,7 +1470,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ls.sort(function(a,b){return a.y-b.y;});
       var GAP=16,prev=-1e9;
       ls.forEach(function(o){var y=o.y;if(y-prev<GAP)y=prev+GAP;o.s._dy=y-o.y;prev=y;});}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);}
+    /* `tight` below 430px is the phone the owner photographed: there genuinely is not room for everything, so the
+       numbers step down one size rather than overlap. Reset per FRAME - the register is what is on screen now. */
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);}
     w.dr.redraw=redraw;
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
     function grid(){var b=w.bars;if(!b||b.length<2)return null;var iv=(b[b.length-1].time-b[0].time)/(b.length-1);return iv>0?{t0:b[0].time,iv:iv}:null;}
