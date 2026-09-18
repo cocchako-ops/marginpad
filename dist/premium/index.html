@@ -121,7 +121,7 @@
   .pmst .pmst-u b{color:#fff}
   .pmst .pmst-a{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
   .pmst .pmst-a .btn{padding:11px 16px;font-size:14px}
-  body.pm-member:not(.pm-plus) [data-buy="monthly"],body.pm-member:not(.pm-plus) [data-buy="balance"],body.pm-member:not(.pm-plus) .scarcity{display:none!important}body.pm-plus [data-buy],body.pm-plus .scarcity,body.pm-plus .final{display:none!important}
+  body.pm-member:not(.pm-plus) [data-buy="balance"],body.pm-member:not(.pm-plus) .scarcity{display:none!important}body.pm-plus .scarcity,body.pm-plus .final,body.pm-plus [data-buy="balance"]{display:none!important}body.pm-plus [data-buy]{pointer-events:none;opacity:1;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}body.pm-member:not(.pm-plus) [data-buy="monthly"]{pointer-events:none;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}
   /* the AI-indicators card opens a preview sheet (same idea as the fee window on a closed ticket) */
   .fcard.tap{cursor:pointer}
   .fcard.tap .tapk{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font:800 10.5px "Space Mono",monospace;letter-spacing:.08em;color:var(--lime)}
@@ -244,12 +244,11 @@
   <h2>It does not look at your chart. It reads it.</h2>
   <p class="lead">Send a screenshot to a general chatbot and it guesses from pixels. Ask AI is handed the measurements: where the liquidation pools sit, how much volume traded at which price, whether this volatility is high or low <b>for this market</b>, what the higher timeframe is doing, and where the unfilled gaps are. Then it draws the setup on your chart with the same tools a desk uses.</p>
   <div class="plusshow">
-    <figure><img src="/assets/plus/plus-ai-call.jpg" alt="Ask AI marks an entry, stop and two targets on a HYPE 15-minute chart" width="900" height="1406" loading="lazy">
-      <figcaption><b>22:46 - the call.</b> HYPE 15m. Entry 81.688, stop 79.640, first target 83.720, second 87.184 - every level taken from a price the market had already respected, not a round number.</figcaption></figure>
-    <figure><img src="/assets/plus/plus-ai-result.jpg" alt="The same HYPE chart four hours later with price above the first target" width="900" height="1406" loading="lazy">
-      <figcaption><b>03:01 - four hours later.</b> Price 86.36: the first target taken, the second in reach. One call on one chart, shown as it happened.</figcaption></figure>
-  </div>
-  <p class="pnote">A real reading of a real chart, captured on a phone. One example is an example, not a track record - the AI is a research tool and it will be wrong sometimes. Nothing here is financial advice.</p>
+    <figure><img src="/assets/plus/plus-ai-call.jpg" alt="Ask AI has drawn an entry zone, a stop, two targets and the expected path on a HYPE chart" width="1434" height="764" loading="lazy">
+      <figcaption><b>One question, a whole setup.</b> Entry zone, stop, both targets with their distance, the reward-to-risk judged out loud, the trend line on real pivots, and the expected path drawn as translucent candles. Every price is one the market already respected - never a round number it invented.</figcaption></figure>
+    <figure><img src="/assets/plus/plus-ai-read.jpg" alt="The same treatment on a Bitcoin chart" width="1434" height="764" loading="lazy">
+      <figcaption><b>Any coin, any timeframe.</b> It reads the exact chart in front of you. On 18 September it called HYPE on the 15-minute at 81.688 with a stop at 79.640 and a first target of 83.720; four hours later price traded at 86.36, through that target and on toward the second.</figcaption></figure>
+  </div>  <p class="pnote">A real reading of a real chart, captured on a phone. One example is an example, not a track record - the AI is a research tool and it will be wrong sometimes. Nothing here is financial advice.</p>
   <div id="howto">
     <h3>How to use it, in three steps</h3>
     <ol class="hsteps">
@@ -324,7 +323,7 @@
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
     // Premium member: say what they have and until when (owner 2026-09-17), instead of a line under the buy buttons
     function memberUntil(s){ if(!s.until) return s.source==='founder'?'Founder - lifetime, no renewals, ever.':'Lifetime access on this account.'; var d=new Date(s.until), days=Math.max(0,Math.ceil((d-Date.now())/864e5)); var when=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); return 'Active until <b>'+when+'</b> - '+(days===1?'1 day':days+' days')+' left. '+(s.source==='paid'?'Nothing renews on its own: pay again any time to extend, or let it lapse.':'Granted on your account.'); }
-    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); } var k=document.querySelector('section .sh .k'); if(k){ k.textContent='WHAT YOU HAVE'; k.nextElementSibling.textContent='Everything on your account'; } } }).catch(function(){});
+    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]','Premium is active'); if(s.plus) lbl('[data-buy="plus"]','Premium Plus is active'); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); } var k=document.querySelector('section .sh .k'); if(k){ k.textContent='WHAT YOU HAVE'; k.nextElementSibling.textContent='Everything on your account'; } } }).catch(function(){});
     // the AI-indicators card opens the preview sheet
     var ish=document.getElementById('indSheet');
     function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=event&type=indsheet&l=open&p=/premium/'); }catch(e){} }

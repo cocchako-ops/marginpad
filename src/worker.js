@@ -18160,6 +18160,17 @@ export default {
       }
       const usd = (m) => +((m || 0) / 1e6).toFixed(4);
       const dollars = (o) => { const r = {}; for (const k in o) r[k] = usd(o[k]); return r; };
+      // TEST ACCOUNTS NEVER SIT ON A MONEY VIEW (2026-09-18). The first cut of this endpoint listed `e2e-ai`
+      // beside real members and counted its spend in the total - the same class of mistake as the webhook desk
+      // reporting 11 accounts when the real number was zero. They are separated, not silently dropped, so the
+      // owner can still see what testing costs; `?e2e=1` folds them back in.
+      const showE2e = url.searchParams.get('e2e') === '1';
+      const isTest = (u) => /^e2e/i.test(String(u || ''));
+      let testMicros = 0, testCalls = 0;
+      if (!showE2e) {
+        for (const k of Object.keys(byUid)) if (isTest(k)) { testMicros += byUid[k]; delete byUid[k]; }
+        tot.micros = Math.max(0, tot.micros - testMicros);
+      }
       // The ceiling the caps allow today, priced per model - the number a subscription has to cover.
       let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); } catch (e) {}
       const perMember = Number.isFinite(cfg.limit) ? Math.max(cfg.limit, 50) : 50;
@@ -18171,7 +18182,15 @@ export default {
         days, total_usd: usd(tot.micros), calls: tot.calls, avg_call_usd: avg,
         tokens: { input: tot.inTok, output: tot.outTok },
         by_model_usd: dollars(byModel), by_surface_usd: dollars(bySurface),
-        by_account_usd: Object.entries(byUid).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([uid, m]) => ({ uid, usd: usd(m) })),
+        test_usd: usd(testMicros), test_note: showE2e ? 'test rows INCLUDED in every figure above' : 'spend by e2e test accounts, excluded from every figure above',
+        by_account: await (async () => {
+          const top = Object.entries(byUid).sort((a, b) => b[1] - a[1]).slice(0, 40);
+          let prof = {}; try { prof = await resolveProfiles(env, top.map(([u]) => u)); } catch (e) {}
+          return top.map(([uid, m]) => {
+            const p = prof[uid] || prof['u:' + uid] || null;
+            return { uid, username: (p && p.username) || null, usd: usd(m), share_pct: tot.micros ? +((m / tot.micros) * 100).toFixed(1) : 0, test: isTest(uid) };
+          });
+        })(),
         caps: { per_member_per_day: perMember, site_per_day: 6000 },
         worst_case: worst,
         note: 'Measured from Anthropic usage on every call since 2026-09-18. Days before that read 0 because nothing recorded it.',
@@ -25791,6 +25810,44 @@ async function handleComm(url, request, env, ctx) {
   const tok = getCookie(request, SESS_COOKIE);
   const su = tok && env.USERS ? await sessionUser(env, tok) : null;
   let uid = su && su.id ? String(su.id) : '';
+
+  /* COMMUNITY IMAGES (2026-09-18, owner: two images in his own post rendered as broken-image icons).
+     The cause was not the renderer: he had pasted https://ibb.co/<id>, which is a SHARE PAGE, not an image -
+     the browser asked for a picture and got HTML. No amount of markdown fixing makes a web page into a JPEG,
+     so the answer is to host them ourselves. Up to 3 per post (owner), R2-backed, served immutable.
+     A member's own upload is the only image URL we can promise will still resolve next month. */
+  if (path === '/upload' && request.method === 'POST') {
+    if (!uid) return jr({ error: 'login_required' }, 401);
+    if (!env.BACKUP) return jr({ error: 'unavailable' }, 503);
+    let b = null; try { b = await request.json(); } catch (e) {}
+    const type = String((b && b.type) || '').toLowerCase();
+    const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+    if (!EXT[type]) return jr({ error: 'bad_type', hint: 'PNG, JPEG, WebP or GIF.' }, 400);
+    let raw = String((b && b.data) || '');
+    const c = raw.indexOf(','); if (raw.slice(0, 5) === 'data:' && c > 0) raw = raw.slice(c + 1);
+    let bytes; try { bytes = Uint8Array.from(atob(raw), (ch) => ch.charCodeAt(0)); } catch (e) { return jr({ error: 'bad_data' }, 400); }
+    if (!bytes.length) return jr({ error: 'bad_data' }, 400);
+    if (bytes.length > 3 * 1024 * 1024) return jr({ error: 'too_large', hint: 'Images up to 3 MB.' }, 413);
+    // 12 a day per account: enough for any real post, not enough to use us as a CDN
+    const rk = 'commimg:' + uid + ':' + new Date().toISOString().slice(0, 10);
+    try { const n = +(await env.STATS.get(rk)) || 0; if (n >= 12) return jr({ error: 'rate_limited', hint: 'Up to 12 images a day.' }, 429); await env.STATS.put(rk, String(n + 1), { expirationTtl: 172800 }); } catch (e) {}
+    const id = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).replace(/[^a-z0-9]/g, '');
+    const key = 'commimg/' + uid.slice(0, 8) + '/' + id + '.' + EXT[type];
+    try { await env.BACKUP.put(key, bytes, { httpMetadata: { contentType: type, cacheControl: 'public, max-age=31536000, immutable' } }); }
+    catch (e) { return jr({ error: 'store_failed' }, 503); }
+    return jr({ ok: true, url: 'https://marginpad.io/api/comm/img/' + key.replace('commimg/', ''), bytes: bytes.length });
+  }
+  if (path.indexOf('/img/') === 0 && request.method === 'GET') {
+    const key = 'commimg/' + path.slice(5).replace(/[^A-Za-z0-9/._-]/g, '');
+    if (key.indexOf('..') >= 0) return new Response('bad', { status: 400 });
+    const ck = new Request(new URL(request.url).toString());
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    let obj = null; try { obj = await env.BACKUP.get(key); } catch (e) {}
+    if (!obj) return new Response('not found', { status: 404, headers: { 'cache-control': 'no-store' } });
+    const res = new Response(obj.body, { headers: { 'content-type': (obj.httpMetadata && obj.httpMetadata.contentType) || 'image/png', 'cache-control': 'public, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' } });
+    try { if (ctx && ctx.waitUntil) ctx.waitUntil(caches.default.put(ck, res.clone())); } catch (e) {}
+    return res;
+  }
   let author = su ? String(su.username || '') : '';
   if (request.method === 'POST' && (path === '/post' || path === '/comment' || path === '/like' || path === '/mark' || path === '/follow')) {
     if (!uid) return jr({ error: 'login_required' }, 401);

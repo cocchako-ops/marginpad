@@ -49,7 +49,7 @@
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
-    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
@@ -608,6 +608,35 @@
   } });
 
   // ---------- MONEY / REVENUE ----------
+  // AI USAGE (2026-09-18, owner: "koji nalog i koliko trosi"). Every figure here is MEASURED - Anthropic returns
+  // input/output tokens on each call and aiUsageLog records them. Test accounts are excluded by the endpoint, and
+  // what they cost is shown apart rather than hidden, so the number the owner prices from is the real one.
+  simple('money/aiusage', { urls: ['/api/admin/aicost?days=30'], every: 120000, html: function (d) {
+    var days = (d.days_list || d.byDay || []).length ? (d.days_list || d.byDay) : null;
+    var series = (d.daily || d.byDay || []);
+    var acc = d.by_account || [];
+    var perCall = d.avg_call_usd || 0;
+    var cap = (d.worst_case && d.worst_case['claude-sonnet-5']) || null;
+    var tiles = tile(USD(d.total_usd || 0), 'spent, last ' + (d.days || 30) + ' days', (d.total_usd > 20 ? 'hot' : 'dim'))
+      + tile(N(d.calls || 0), 'AI calls', 'dim')
+      + tile(USD(perCall), 'average call', 'dim', perCall ? Math.round(1 / perCall) + ' calls per dollar' : '')
+      + tile(acc.length ? N(acc.length) : '0', 'accounts using it', acc.length ? '' : 'dim');
+    var bym = d.by_model_usd || {}, bys = d.by_surface_usd || {};
+    var pairs = function (o) { return Object.keys(o).map(function (k) { return { k: k, v: o[k] }; }).sort(function (a, b) { return b.v - a.v; }); };
+    var barRow = function (r, tot) { var pct = tot ? Math.round(r.v / tot * 100) : 0; return '<div class="row"><span class="who">' + esc(r.k) + '</span><span class="grow"><span class="bar" style="width:' + Math.max(2, pct) + '%"></span></span><span class="meta">' + USD(r.v) + ' &middot; ' + pct + '%</span></div>'; };
+    var tm = (d.total_usd || 0);
+    var modelHtml = pairs(bym).map(function (r) { return barRow(r, tm); }).join('') || '<div class="empty">nothing yet</div>';
+    var surfHtml = pairs(bys).map(function (r) { return barRow(r, tm); }).join('') || '<div class="empty">nothing yet</div>';
+    var who = acc.length ? '<table class="tbl"><thead><tr><th>account</th><th>spent</th><th>share</th></tr></thead><tbody>'
+      + acc.map(function (a) { var nm = a.username ? userLink(a.username) : '<span class="mono meta" title="account id">' + esc(String(a.uid).slice(0, 12)) + '</span>'; return '<tr><td>' + nm + (a.test ? ' <span class="meta">test</span>' : '') + '</td><td>' + USD(a.usd) + '</td><td>' + (a.share_pct || 0) + '%</td></tr>'; }).join('')
+      + '</tbody></table>' : '<div class="empty">nobody has used Ask AI in this window</div>';
+    var capHtml = cap ? '<div class="line">A Premium Plus member is capped at <b>50</b> chart reads a day. At the measured ceiling that is <b>' + USD(cap.per_member_day_usd) + '</b> a day and <b>' + USD(cap.per_member_month_usd) + '</b> a month per member, against a $159 subscription. The site-wide backstop of 6,000 a day prices at <b>' + USD(cap.site_day_cap_usd) + '</b>.</div>' : '';
+    var testHtml = (d.test_usd > 0) ? '<div class="line meta">Test accounts spent ' + USD(d.test_usd) + ' in this window and are excluded from every figure above.</div>' : '';
+    return '<div class="grid g4">' + tiles + '</div>'
+      + card('Who is spending it', who, 'measured per call from the usage Anthropic returns - not estimated from prompt sizes')
+      + '<div class="grid g2">' + card('By model', modelHtml, 'the chart panel runs claude-sonnet-5') + card('By surface', surfHtml, 'panel = Ask AI on the charts') + '</div>'
+      + card('What the caps allow', capHtml + testHtml, 'the exposure, not the bill');
+  } });
   simple('money/revenue', { urls: ['/api/admin/revenue', '/api/admin/funnel'], every: 120000, html: function (d, fn) {
     var usd = +d.usdPerClick || 0.45, days = daysAgg(d.byDayEx || [], 'd', 'n', 14), t14 = days.reduce(function (s, x) { return s + x.v; }, 0), t7 = days.slice(7).reduce(function (s, x) { return s + x.v; }, 0), tPrev7 = t14 - t7, tToday = days[13].v, avg7 = days.slice(6, 13).reduce(function (s, x) { return s + x.v; }, 0) / 7;
     // $ per 1,000 visitors: the one number that tells whether traffic quality moved, not just volume
