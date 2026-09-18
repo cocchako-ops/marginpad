@@ -33,14 +33,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-tg-exp{display:none;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
-    '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:4px 22px 4px 9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:28px}' +
+    '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:3px 21px 3px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;height:25px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
-    '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:28px}' +
+    '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:25px}' +
     '.hm-seg button{background:none;border:0;color:#8fa3c4;padding:0 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}' +
     '.hm-seg button.on{background:#1a2413;color:#c2f64a}.hm-seg button.on.s-l{background:#0f2418;color:#2ebd85}.hm-seg button.on.s-s{background:#2a1512;color:#ff6258}' +
     '.hm-px{margin-left:auto;font-family:"Space Mono",monospace;font-size:14.5px;font-weight:700;color:#fff;white-space:nowrap}.hm-px small{font-size:11px;margin-left:5px}.hm-px small.up{color:#2ebd85}.hm-px small.dn{color:#ff6258}' +
     '.hm-stats{font-size:11px;color:#5c6b84;font-family:"Space Mono",monospace;white-space:nowrap}' +
-    '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
+    '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:25px;height:25px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
     '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 344px);max-height:820px}' +
@@ -84,7 +84,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
-    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:34px;padding:2px 21px 2px 9px;font-size:12.5px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:34px;border-radius:9px}'+'.hm-btn{width:34px;height:34px;border-radius:9px;flex:none}.hm-btn svg{width:15px;height:15px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -432,8 +432,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       p._h = Math.min(1, (+p.w || 0) / q);
     }
   }
-  function heatAlpha(h) { return 0.015 + Math.pow(h, 1.3) * 0.88; }
+  function heatAlpha(h) { return 0.085 + Math.pow(h, 0.7) * 0.80; }
   function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
+  function dotR(e) { var d = Math.max(0.55, Math.min(1, (S.cv ? S.cv.clientWidth : 900) / 900)); return Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * d); }
+  function dotNear(e, mx, my, slack, floor) { var d = Math.hypot(S.X(e.ts / 1000) - mx, S.Y(e.price) - my); return d <= Math.max(floor, dotR(e) + slack) ? d : -1; }
   function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
   function relTxt(r) { return (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
   // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
@@ -474,6 +476,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     }
     return best ? best.s : null;
   }
+  var COARSE = (function () { try { return window.matchMedia && window.matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } })();
   var rafP = false;
   function sched() { if (rafP) return; rafP = true; requestAnimationFrame(function () { rafP = false; try { draw(); } catch (e) {} }); }
 
@@ -638,12 +641,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var cv = S.cv, tip = S.tip;
     cv.addEventListener('mousemove', function (ev) {
       if (!S.X) return;
+      if (COARSE && !S.drag) { tip.style.display = 'none'; return; } // a tap must not raise the hover tip
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt; if (S.bars.length && S.view.t0 < S.bars[0].time + (S.bars[1] ? (S.bars[1].time - S.bars[0].time) : 60) * 30) loadMore(0);
         var dp = (my - S.drag.y) / (S.plotH || r.height) * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var _ph = poolHit(my, S.plotH || r.height), best = _ph ? { s: _ph } : null, i;
       var bev = null, nNear = 0;
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var dd = dotNear(e, mx, my, 6, 13); if (dd >= 0) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
       var bsw = null;
       if (S.showDots && S.sweeps) for (i = 0; i < S.sweeps.length; i++) { var swv = S.sweeps[i]; if (S.sideF === 'long' && !swv.long) continue; if (S.sideF === 'short' && swv.long) continue; var sd0 = Math.hypot(S.X(swv.t / 1000) - mx, S.Y(swv.p) - my); if (sd0 < 16 && (!bsw || sd0 < bsw.d)) bsw = { d: sd0, s: swv }; }
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
@@ -659,6 +663,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var tx = mx + 14, ty = my + 12;
       if (tx + tip.offsetWidth > r.width - 4) tx = mx - tip.offsetWidth - 12;
       if (ty + tip.offsetHeight > r.height - 4) ty = my - tip.offsetHeight - 10;
+      tx = Math.max(4, Math.min(tx, Math.max(4, r.width - tip.offsetWidth - 4))); // clamped, so a wide tip is never half off the edge
+      ty = Math.max(4, ty);
       tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
     });
     cv.addEventListener('mouseleave', function () { tip.style.display = 'none'; S.drag = null; });
@@ -702,7 +708,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       var hits = [], i;
       if (S.showDots && S.sweeps) { var swH = null; for (i = 0; i < S.sweeps.length; i++) { var sw4 = S.sweeps[i]; if (S.sideF === 'long' && !sw4.long) continue; if (S.sideF === 'short' && sw4.long) continue; var d4 = Math.hypot(S.X(sw4.t / 1000) - mx, S.Y(sw4.p) - my); if (d4 < 16 && (!swH || d4 < swH.d)) swH = { d: d4, s: sw4 }; } if (swH) { S.sel = { type: 'swp', ref: swH.s }; showSel(); sched(); return; } }
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
+      var SLACK = COARSE ? 16 : 10; // a fingertip covers more of the map than a pointer does
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i]; if (!dotOk(e)) continue; var dd = dotNear(e, mx, my, SLACK, 16); if (dd >= 0) hits.push({ d: dd, e: e }); }
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
       var best = poolHit(my, S.plotH || r.height);

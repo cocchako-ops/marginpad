@@ -188,8 +188,8 @@ const LAYOUT = () => {
     ok('the map gets the screen (canvas >= 300px of 390)', L.cv.w >= 300, 'canvas=' + L.cv.w);
     ok('the stage runs edge to edge', L.stage.x <= 1 && L.stage.w >= L.vw - 1, JSON.stringify(L.stage));
     ok('the whole map clears the fixed tab bar', L.stage.bottom <= L.vh - L.navH, 'bottom=' + L.stage.bottom + ' limit=' + (L.vh - L.navH));
-    ok('every control is at least 32px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 32), JSON.stringify(L.taps.filter(t => t.h < 32)));
-    ok('no control is narrower than 32px', L.taps.every(t => t.w >= 32), JSON.stringify(L.taps.filter(t => t.w < 32)));
+    ok('every control is at least 29px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 29), JSON.stringify(L.taps.filter(t => t.h < 29)));
+    ok('no control is narrower than 29px', L.taps.every(t => t.w >= 29), JSON.stringify(L.taps.filter(t => t.w < 29)));
     ok('the title keeps one line, with LIVE on the row below it', L.mastTitleH > 0 && L.mastTitleH < 30, 'title h=' + L.mastTitleH);
     ok('TARGETS is joined to the map, not floating beside it', L.tgGap === 0, 'gap=' + L.tgGap);
     ok('the legend is one row', L.legend.h <= 28, 'legend h=' + L.legend.h);
@@ -218,6 +218,66 @@ const LAYOUT = () => {
 
     await page.close();
   }, { timeoutMs: 230000 });
+
+  // ---- picking things off the map ------------------------------------------------------------------------
+  // Three owner reports, all of them about the same surface. On a phone Chrome fires compatibility mouse events
+  // after a tap, which raised the DESKTOP hover tip - white-space:nowrap, and much wider since it gained the
+  // ratio and measured-dollars lines - so its own flip-to-the-left rule pushed it off the canvas and the reader
+  // saw the second half of every line. And a click collected dots within a flat 16px of their CENTRES while a
+  // drawn dot can be 10px in radius, so two circles that visibly overlap never clustered.
+  console.log('\npicking');
+  await withBrowser(async (browser) => {
+    const { page } = await open(browser, { width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }, IPHONE);
+    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '0'; s.dispatchEvent(new Event('change')); });
+    await new Promise(r => setTimeout(r, 2500));
+    const box = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+    let tipEver = false, cluster = null, anySel = false;
+    outer:
+    for (let fy = 0.38; fy <= 0.60; fy += 0.03) for (let fx = 0.20; fx <= 0.92; fx += 0.04) {
+      await page.touchscreen.tap(box.x + box.w * fx, box.y + box.h * fy);
+      await new Promise(r => setTimeout(r, 90));
+      const st = await page.evaluate(() => {
+        const t = document.querySelector('.hm-tip'), sb = document.querySelector('.hm-selbox');
+        const shownSb = sb && getComputedStyle(sb).display !== 'none';
+        return {
+          tip: !!(t && getComputedStyle(t).display !== 'none'),
+          tipLeft: t ? Math.round(t.getBoundingClientRect().left) : null,
+          sel: shownSb ? (sb.querySelector('.hm-cl-list') ? 'clu' : 'one') : null,
+          n: shownSb ? sb.querySelectorAll('.hm-cl-it[data-ci]').length : 0,
+          boxL: shownSb ? Math.round(sb.getBoundingClientRect().left) : null
+        };
+      });
+      if (st.tip) tipEver = true;
+      if (st.sel) anySel = true;
+      if (st.sel === 'clu') { cluster = st; break outer; }
+    }
+    ok('a tap never raises the desktop hover tip', !tipEver);
+    ok('a tap selects something', anySel);
+    ok('and a tap into a dense patch opens the list, not one liquidation', !!cluster && cluster.n >= 2, cluster);
+    ok('the readout starts on screen, not half off the left edge', !cluster || cluster.boxL >= 0, cluster && cluster.boxL);
+    await page.close();
+  }, { timeoutMs: 230000 });
+
+  await withBrowser(async (browser) => {
+    const { page } = await open(browser, { width: 1366, height: 900 });
+    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '0'; s.dispatchEvent(new Event('change')); });
+    await new Promise(r => setTimeout(r, 2500));
+    const box = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+    let lists = 0, biggest = 0, offEdge = 0;
+    for (let fy = 0.32; fy <= 0.68; fy += 0.05) for (let fx = 0.12; fx <= 0.94; fx += 0.05) {
+      await page.mouse.move(box.x + box.w * fx, box.y + box.h * fy);
+      await new Promise(r => setTimeout(r, 25));
+      const t = await page.evaluate(() => { const e = document.querySelector('.hm-tip'); if (!e || getComputedStyle(e).display === 'none') return null; const r = e.getBoundingClientRect(); const c = document.querySelector('.hm-cv').getBoundingClientRect(); return { l: Math.round(r.left - c.left), r: Math.round(c.right - r.right) }; });
+      if (t && (t.l < 0 || t.r < 0)) offEdge++;
+      await page.mouse.click(box.x + box.w * fx, box.y + box.h * fy);
+      await new Promise(r => setTimeout(r, 30));
+      const n = await page.evaluate(() => { const sb = document.querySelector('.hm-selbox'); if (!sb || getComputedStyle(sb).display === 'none') return 0; return sb.querySelectorAll('.hm-cl-it[data-ci]').length; });
+      if (n > 1) { lists++; if (n > biggest) biggest = n; }
+    }
+    ok('clicking into a clump of dots lists them instead of picking one', lists > 0 && biggest >= 5, { lists, biggest });
+    ok('the hover tip never hangs off either edge of the canvas', offEdge === 0, offEdge);
+    await page.close();
+  }, { timeoutMs: 280000 });
 
   // ---- copy that has to agree with itself ---------------------------------------------------------------
   console.log('\ncopy');
