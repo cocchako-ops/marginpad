@@ -196,9 +196,55 @@ async function derivCheck() {
   ok(!/(cannot|can't|do not have|don't have|not provided|no data)/i.test(a.slice(0, 260)), 'it does NOT say the data is missing', a.slice(0, 160));
 }
 
+// The reader's own record is merged server-side too, and it is the one thing no competitor can copy - so it is
+// worth proving it arrives rather than assuming. An explicit ?uid= behind the admin key reads that account's
+// record; a real member with a real history is used, and the figures are checked against /api/trade/report so a
+// silently empty dossier cannot pass.
+async function recordCheck() {
+  const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
+  const UID = 'df9952f897f92aaeb74e48990da23dca';
+  let rep = null;
+  try { rep = await (await fetch('https://marginpad.io/api/trade/report?days=60&uid=' + UID, { headers: { 'x-admin-key': KEY } })).json(); } catch (e) {}
+  const t = rep && rep.total;
+  if (!t || !(t.n >= 8)) { ok(true, 'record check skipped - that account has too little history to read one'); return; }
+
+  const brief = {
+    symbol: 'BTC', timeframe: '1-hour', price: 81000, barsLoaded: 1000,
+    swingPivots: [{ barsAgo: 4, price: 81390, kind: 'high' }],
+    respectedLevels: [{ price: 79743, kind: 'resistance', touches: 3 }],
+    chartTools: { indicators: { ids: ['rsi'], on: [], locked: [] }, shapes: ['level'], timeframes: ['60'], currentTf: '60', currentTfLabel: '1-hour', canSwitchSymbol: true },
+  };
+  let j = null;
+  try {
+    const r = await fetch('https://marginpad.io/api/ai/chart?uid=' + UID, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
+      body: JSON.stringify({ context: brief, question: 'How many trades have I closed in the last 60 days and what is my win rate? Numbers only.', stream: false, lang: 'en' }),
+    });
+    j = await r.json();
+  } catch (e) { ok(false, 'the record call threw: ' + e.message); return; }
+  const a = String((j && j.answer) || '');
+  ok(a.indexOf(String(t.n)) >= 0, 'the assistant knows how many trades this reader has closed (' + t.n + ')', a.slice(0, 140));
+  ok(a.indexOf(String(t.wr)) >= 0 || a.indexOf(String(Math.round(t.wr))) >= 0, 'and their win rate (' + t.wr + '%)', a.slice(0, 140));
+  ok(!/(cannot|don't have|not attached|no trade history)/i.test(a.slice(0, 200)), 'it does not say the history is missing', a.slice(0, 140));
+
+  // and a reader with no history must get NO dossier rather than an invented one
+  let k = null;
+  try {
+    const r2 = await fetch('https://marginpad.io/api/ai/chart?uid=e2e-nobody-at-all', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
+      body: JSON.stringify({ context: brief, question: 'How many trades have I closed? One line.', stream: false, lang: 'en' }),
+    });
+    k = await r2.json();
+  } catch (e) {}
+  const b2 = String((k && k.answer) || '');
+  ok(!b2 || !/\b(80|[1-9]\d{2,})\b *(closed )?trades/i.test(b2), 'an account with no history gets no invented record', b2.slice(0, 140));
+}
+
 // ---- live ----------------------------------------------------------------------------------------------------
 console.log('\nLIVE - a real chart in a real browser');
-derivCheck().then(() => withBrowser(async (browser) => {
+derivCheck().then(recordCheck).then(() => withBrowser(async (browser) => {
   for (const sym of ['BTC', 'SOL']) {
     const page = await newPage(browser);
     const errs = [];
