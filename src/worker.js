@@ -12762,7 +12762,12 @@ async function handleAiChart(url, request, env, ectx) {
   const langName = langNames[langCode] || langNames[langCode.split('-')[0]] || langCode;
   const sysFull = sys + "\n\nLANGUAGE: Write your ENTIRE reply (verdict, bullets, the disclaimer line, any plan reason/label text, drawing labels and the chips) in " + langName + " - natural, fluent, native-sounding. If the user's latest message is clearly written in a different language, reply in THAT language instead. Keep every JSON key, the \"bias\" value (exactly \"long\", \"short\" or \"wait\"), the action \"a\"/\"shape\"/\"id\"/\"tf\"/\"sym\" values and the colors in English; only human-readable text (reason, label, txt, chips) is in the user's language.";
   // model is KV-tunable (ai:cfg.model) - Sonnet 5 at low effort reads a chart better than Haiku did and answers in a few seconds (2026-09-17)
+  // A/B A MODEL WITHOUT TOUCHING THE LIVE SETTING (2026-09-18). Comparing two models used to mean writing
+  // ai:cfg.model and changing it for every member for as long as the test ran. `model` on the E2E path - admin
+  // key + x-mp-e2e, the same gate that already runs real calls as uid e2e-ai - answers the question for one
+  // request and nobody else's read moves. Ignored on every other path.
   let aiModel = 'claude-sonnet-5'; try { const c2 = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c2 && typeof c2.model === 'string' && /^claude-/.test(c2.model)) aiModel = c2.model; } catch (e) {}
+  if (_e2eAi && body && typeof body.model === 'string' && /^claude-[a-z0-9-]{3,40}$/.test(body.model)) aiModel = body.model;
   const reqBody = JSON.stringify({ model: aiModel, max_tokens: 2200, system: sysFull, messages: msgs, stream: wantStream, output_config: { effort: 'low' } }); // 2200: prose + plan + an actions block with up to 8 shapes
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   let ar;
