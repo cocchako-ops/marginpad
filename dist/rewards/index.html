@@ -289,6 +289,36 @@
   .rwd-cards>.card.aff{order:8}     /* 2-col */
   .rwd-cards>#exchanges{order:20}
   @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard{grid-row:auto;grid-column:auto}}
+  /* ═══════ WHAT'S ON THE TABLE (2026-09-18) ═══════
+     A page about money that showed no money. The first screen said "Stack free USDT every 5 minutes" and named
+     no amount at all, while the two biggest rewards on the site - $1.00 for a Moon account and $1.00 for a Fomo
+     one - sat in cards marked hidden for anybody not signed in. So the page led with its SMALLEST reward (the
+     $0.02 faucet, implied by "every 5 minutes") and hid its largest behind the sign-in it was asking for.
+     Four rows, one per cadence, with the amounts in a right-aligned column so they can actually be compared.
+     Every figure comes from /api/reward/me, which a guest can already read. */
+  body:not(.rwd-in) #lvlCard{display:none}
+  /* the welcome hook was a bordered, tinted panel inside a bordered card - one frame is enough */
+  #welcomeHook>div{background:none!important;border:0!important;padding:0 0 4px!important}
+  .rwd-table{margin:0 0 20px;border:1px solid var(--line2);border-radius:18px;background:linear-gradient(170deg,var(--panel2),var(--panel));overflow:hidden}
+  .et-h{padding:18px 20px 0}
+  .et-h h2{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:19px;letter-spacing:-.02em;margin:0 0 5px;color:var(--ink)}
+  .et-h p{margin:0 0 14px;font-size:13.5px;line-height:1.55;color:var(--dim)}
+  .et-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:baseline;
+    padding:13px 20px;border-top:1px solid var(--line)}
+  .et-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);grid-column:1;grid-row:1}
+  .et-v{grid-column:2;grid-row:1 / span 2;text-align:right;white-space:nowrap}
+  .eamt{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--lime);display:inline-block;line-height:1}
+  .eamt::first-letter{font-size:.56em;font-weight:700;vertical-align:.42em;opacity:.78}
+  .et-v i{display:block;font-style:normal;font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);margin-top:4px}
+  .et-d{grid-column:1;grid-row:2;font-size:13.5px;line-height:1.6;color:var(--dim);min-width:0}
+  .et-d b{color:var(--ink);font-weight:700}
+  .et-d a{color:var(--lime)}
+  .et-gate{margin:0;padding:12px 20px;border-top:1px solid var(--line);font-size:13px;line-height:1.6;color:var(--dim);background:rgba(194,246,74,.045)}
+  .et-gate b{color:var(--lime);font-weight:700}.et-gate a{color:var(--lime)}
+  .et-f{margin:0;padding:13px 20px 16px;border-top:1px solid var(--line);font-size:12px;line-height:1.65;color:var(--faint);background:rgba(0,0,0,.18)}
+  .et-f b{color:var(--dim)}
+  @media(max-width:560px){.et-r{grid-template-columns:minmax(0,1fr) auto;padding:12px 15px;gap:3px 12px}
+    .eamt{font-size:22px}.et-h{padding:15px 15px 0}.et-f,.et-gate{padding:12px 15px 14px}.et-d{font-size:13px}}
   /* ═══════ CLEAN SINGLE COLUMN (2026-08-05): the 2-col masonry left ragged gaps + lonely half-cards
      (Moon card sat alone, mismatched heights) - owner: "rastureno, bez alignment-a". One aligned column,
      every card same width, logical order. Visual layer only; no JS/ID/markup touched. ═══════ */
@@ -343,8 +373,37 @@
   <div class="rwd-hero">
     <span class="pill">● Free USDT · No deposit</span>
     <h1>Stack <span>free USDT</span> every 5 minutes.</h1>
-    <p class="sub">Use the site, complete missions, stack USDT - then cash out to your Bybit or Moon account. Your daily rewards hub.</p>
+    <p class="sub">Use the site, finish the daily missions, stack USDT - then cash it out to your Bybit or Moon account.</p>
   </div>
+
+  <section class="rwd-table" id="earnBoard" aria-label="What you can earn on MarginPad">
+    <div class="et-h">
+      <h2>What&#39;s on the table</h2>
+      <p>Every way to earn here, and how often each one pays. No deposit anywhere on this list.</p>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Once, when you start</div>
+      <div class="et-v"><span class="eamt" id="eaOnce">$2.50</span><i>in total</i></div>
+      <div class="et-d"><b id="eaWel">$0.50</b> welcome bonus, plus <b id="eaMoon">$1.00</b> for opening a Moon account through us and <b id="eaFomo">$1.00</b> for a Fomo one.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Every day</div>
+      <div class="et-v"><span class="eamt" id="eaDay">$0.20</span><i>a day</i></div>
+      <div class="et-d">Claim <b id="eaAmt">$0.02</b> from the faucet every few minutes and finish the daily missions. Resets at 00:00 UTC.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Every time you do it</div>
+      <div class="et-v"><span class="eamt">$0.50</span><i>per friend</i></div>
+      <div class="et-d"><b>$0.50</b> to you and <b>$0.50</b> to them once a friend really trades, and <b id="eaPost">$0.10</b> for a post about MarginPad on X.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Every season</div>
+      <div class="et-v"><span class="eamt">$350</span><i>prize pool</i></div>
+      <div class="et-d">Seven leaderboards pay their top five every fourteen days. <a href="/trading-competition/">How the competition works</a>.</div>
+    </div>
+    <p class="et-gate">The faucet, the missions and withdrawals open at <b>Bronze - 500 XP</b>, which is free to earn on the <a href="/academy/">Academy</a> and <a href="/paper-trade">Paper Trade</a>. The welcome bonus and the sign-up bonuses do not wait for it.</p>
+    <p class="et-f">Paid in USDT to your MarginPad balance. Cash out from <b id="eaMin">$5.00</b> to a Bybit or Moon account. Fair use: one balance per person, rate-limited, paid from a daily pool - a thank-you for using the site, not an income.</p>
+  </section>
 
   <div class="rwd-cards">
 
@@ -670,7 +729,7 @@
 
   </div>
 
-  <p class="note">Fair use: one balance per address, rate-limited, with a daily pool. Bots and multi-accounting get nothing. Rewards are a thank-you for stopping by, not an income.</p>
+  <p class="note">Bots and multi-accounting get nothing.</p>
 
   <footer>© MarginPad · <a href="/">Tools</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <a href="/rekt/">Rekt</a> · Free crypto-futures tools</footer>
 </div>
@@ -772,7 +831,20 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
+  function earnBoard(j){
+    var usd=function(v){return '$'+(+v).toFixed(2);};
+    var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+    var wel=j.welcomeAmt!=null?+j.welcomeAmt:0.5;
+    var moon=(j.moonEnabled===false)?0:(j.moonUsd!=null?+j.moonUsd:1);
+    var fomo=(j.fomoEnabled===false)?0:(j.fomoUsd!=null?+j.fomoUsd:1);
+    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+fomo));
+    if(moon)set('eaMoon',usd(moon)); if(fomo)set('eaFomo',usd(fomo));
+    if(j.perDay!=null)set('eaDay',usd(j.perDay));
+    if(j.amount!=null)set('eaAmt',usd(j.amount));
+    if(j.minWd!=null)set('eaMin',usd(j.minWd));
+    if(j.promoUsd!=null&&j.promoEnabled!==false)set('eaPost',usd(j.promoUsd));
+  }
+  function applyCfg(j){try{earnBoard(j);}catch(e){}if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
     window.__moonOff=(j.moonEnabled===false);
     var mc=document.getElementById('moonCard');
     if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
@@ -961,6 +1033,7 @@
   }
   function onAuth(user){
     signedIn=!!user;
+    try{document.body.classList.toggle('rwd-in',signedIn);}catch(e){}
     rewardsLocked=isUnranked(user);
     paintLock(user);
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
