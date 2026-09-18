@@ -165,9 +165,9 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   r = await bot('/report?days=30');
   chk('report on premium: findings + breakdowns present', r.status === 200 && r.body.data.premium === true && Array.isArray(r.body.data.findings) && r.body.data.byCoin !== undefined, r.body.data && { findings: r.body.data.findings.length, total: r.body.data.total && r.body.data.total.n });
   r = await bot('/ai', { symbol: 'BTC', interval: '60', question: 'One sentence: is this leaning long or short?' });
-  chk('/v1/ai on premium: an answer with the brief (or a clean 503 when unconfigured)', (r.status === 200 && r.body.ok && r.body.data.answer && r.body.data.brief && r.body.data.brief.rsi14 != null && r.body.data.used >= 1) || (r.status === 503 && r.body.error && r.body.error.code === 'ai_unconfigured'), r.body.data ? { used: r.body.data.used, limit: r.body.data.limit, rsi: r.body.data.brief.rsi14, plan: !!r.body.data.plan, answer: String(r.body.data.answer).slice(0, 80) } : r.body.error);
+  chk('/v1/ai is retired on every plan, with a reason and where it moved', r.status === 410 && r.body.error && (r.body.error.code || r.body.error) === 'endpoint_retired' && /charts/.test(JSON.stringify(r.body)), r.body.error);
   r = await bot('/ai', { symbol: 'ZZZZNOPE', interval: '60' });
-  chk('/v1/ai unknown symbol is 404', r.status === 404 || r.status === 503, r.body.error);
+  chk('/v1/ai answers 410 before it ever looks at the symbol', r.status === 410, r.body.error);
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
   chk('keyed data API on premium: limit 600', dr.headers.get('x-ratelimit-limit') === '600', { limit: dr.headers.get('x-ratelimit-limit') });
 
@@ -201,7 +201,7 @@ async function bot(path, body, extra) { // Bot API v2 with the account key; retu
   const names = ((mcp.result && mcp.result.tools) || []).map(t => t.name);
   chk('MCP lists 27 tools incl. paper_modify_order + paper_report + paper_fees + paper_replay', names.length >= 27 && names.indexOf('paper_replay') >= 0 && names.indexOf('paper_modify_order') >= 0 && names.indexOf('paper_report') >= 0 && names.indexOf('paper_fees') >= 0, { n: names.length });
   const oa = await (await fetch(ORIGIN + '/api/openapi.json')).json();
-  chk('OpenAPI carries the 2.3+ paths + schemas', /^2\.[5-9]\.|^[3-9]\./.test(String(oa.info.version)) && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
+  chk('OpenAPI carries the 2.3+ paths + schemas', /^2\.[5-9]\.|^[3-9]\./.test(String(oa.info.version)) && oa.paths['/api/bot/v1/fees'] && oa.paths['/api/bot/v1/webhooks'] && oa.paths['/api/bot/v1/modify_order'] && oa.paths['/api/bot/v1/report'] && !oa.paths['/api/bot/v1/ai'] && oa.components.schemas.WebhookDelivery, { paths: Object.keys(oa.paths).length });
   const cl = await (await fetch(ORIGIN + '/api/changelog?format=json')).json();
   chk('changelog current_version is 2.5 or newer', cl.data && /^2\.[5-9]\.|^[3-9]\./.test(String(cl.data.current_version)), { v: cl.data && cl.data.current_version });
   const sdkPy = await fetch(ORIGIN + '/assets/sdk/marginpad.py'), sdkJs = await fetch(ORIGIN + '/assets/sdk/marginpad.js');

@@ -58,7 +58,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
         await page.setRequestInterception(true);
         page.on('request', (req) => {
           const u = req.url();
-          if (u.indexOf('/api/premium/status') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ allowed: true, premium: true, signedIn: true, until: new Date(Date.now() + 20 * 864e5).toISOString(), source: 'paid', price: 11.99, plus: true, plan: 'plus', user: { username: 'e2eprem' } }) });
+          if (u.indexOf('/api/premium/status') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ allowed: true, premium: true, signedIn: true, until: new Date(Date.now() + 20 * 864e5).toISOString(), source: 'paid', price: 11.99, plus: false, plan: 'premium', user: { username: 'e2eprem' } }) });
           if (u.indexOf('/api/auth/me') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'e2e', username: 'e2eprem', xp: 100 } }) });
           return req.continue();
         });
@@ -92,8 +92,8 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
       const { ctx, page } = await fresh(1366, 860, true);
       await page.goto(ORIGIN + '/premium/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       await page.waitForFunction("document.getElementById('pmStatus') && !document.getElementById('pmStatus').hidden", { timeout: 15000 }).catch(() => {});
-      const m = await page.evaluate(() => { const st = document.getElementById('pmStatus'); const r = st.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { shown: !st.hidden, reach: !!(hit && st.contains(hit)), until: (document.getElementById('pmUntil') || {}).textContent, cta: getComputedStyle(document.querySelector('.cta-row')).display, head: (document.querySelector('section .sh .k') || {}).textContent, final: getComputedStyle(document.querySelector('.final')).display, member: document.body.classList.contains('pm-member') }; });
-      chk('member: status card shown and reachable with the expiry + days left, buy buttons and final CTA hidden, header says WHAT YOU HAVE', m.shown && m.reach && /Active until/.test(m.until) && /(19|20|21) days left/.test(m.until) && m.cta === 'none' && m.final === 'none' && m.head === 'WHAT YOU HAVE' && m.member, m);
+      const m = await page.evaluate(() => { const st = document.getElementById('pmStatus'); const r = st.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const vis=(p)=>[...document.querySelectorAll('[data-buy="'+p+'"]')].filter(b=>b.offsetParent&&getComputedStyle(b).display!=='none').length; return { plusBuy: vis('plus'), monthlyBuy: vis('monthly'), shown: !st.hidden, reach: !!(hit && st.contains(hit)), until: (document.getElementById('pmUntil') || {}).textContent, cta: getComputedStyle(document.querySelector('.cta-row')).display, head: (document.querySelector('section .sh .k') || {}).textContent, final: getComputedStyle(document.querySelector('.final')).display, member: document.body.classList.contains('pm-member') }; });
+      chk('member: status card shown and reachable with the expiry + days left, header says WHAT YOU HAVE, and the PLUS buttons stay reachable so a Premium member can still upgrade', m.shown && m.reach && /Active until/.test(m.until) && /(19|20|21) days left/.test(m.until) && m.head === 'WHAT YOU HAVE' && m.member && m.plusBuy > 0 && m.monthlyBuy === 0, m);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'premium-member.png') });
       await ctx.close();
     }

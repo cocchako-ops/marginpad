@@ -154856,7 +154856,7 @@
    "w": 7
   },
   "7cSneLH-vH": {
-   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key, 3 keys and 50 open positions, with the whole trading engine, the WebSocket stream and all keyless market data included. Paid plans only raise the ceilings - they add no endpoint the free plan cannot reach except webhooks and AI reads.",
+   "en": "Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key, 3 keys and 50 open positions, with the whole trading engine, the WebSocket stream and all keyless market data included. Paid plans only raise the ceilings - they add no endpoint the free plan cannot reach except webhooks.",
    "es": "Sí. Es un simulador de paper trading: las posiciones usan precios de mercado reales y en vivo, pero no dinero real. Regístrate con un correo, genera una clave de API y empieza a probar tu bot de inmediato. 120 peticiones por minuto y por clave, 3 claves y 50 posiciones abiertas, con el motor de ejecución entero, el stream por WebSocket y todos los datos de mercado sin clave incluidos. Los planes de pago solo suben los topes: no añaden ningún endpoint al que el plan gratuito no llegue, salvo los webhooks y las lecturas con IA.",
    "kind": [
     "ld"

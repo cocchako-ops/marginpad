@@ -56,7 +56,9 @@ const usage = async () => (await bot('/usage')).body.data || {};
   let r = await bot('/webhooks');
   chk('webhooks 402 plan_required on Free', r.status === 402 && r.body.error && r.body.error.code === 'plan_required', r.body.error && r.body.error.code);
   r = await bot('/ai', { symbol: 'BTC', interval: '60' });
-  chk('/v1/ai 402 plan_required on Free', r.status === 402 && r.body.error && r.body.error.code === 'plan_required', r.body.error && r.body.error.code);
+  // Ask AI was RETIRED from the API on 2026-09-18 (owner) - it is a Premium Plus feature of the site now. The route
+  // answers 410 with a reason on every plan, so a 2.4 bot gets an explanation instead of a mystery.
+  chk('/v1/ai is retired on Free, with a reason', r.status === 410 && r.body.error && (r.body.error.code || r.body.error) === 'endpoint_retired', r.body.error);
   let dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
   chk('keyed data limit is 120 on Free', dr.headers.get('x-ratelimit-limit') === '120', { limit: dr.headers.get('x-ratelimit-limit') });
 
@@ -67,7 +69,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
   u = await usage();
   chk('PREMIUM DOES NOT RAISE THE API: still Free, still 120/min', u.plan === 'free' && u.limits.requests_per_minute === 120, { plan: u.plan, rpm: u.limits && u.limits.requests_per_minute });
   chk('Premium still cannot open a webhook', (await bot('/webhooks')).status === 402);
-  chk('Premium still cannot call /v1/ai', (await bot('/ai', { symbol: 'BTC', interval: '60' })).status === 402);
+  chk('/v1/ai is retired for a Premium member too - no plan buys it back', (await bot('/ai', { symbol: 'BTC', interval: '60' })).status === 410);
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
   chk('Premium leaves the keyed data limit at 120', dr.headers.get('x-ratelimit-limit') === '120', { limit: dr.headers.get('x-ratelimit-limit') });
   await admin('/api/admin/premium?remove=' + encodeURIComponent(USERNAME));
@@ -78,7 +80,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
   await resync();
   u = await usage();
   chk('Pro: 600/min, 10 keys, 200 positions, 5 books', u.plan === 'pro' && u.limits.requests_per_minute === 600 && u.limits.max_keys === 10 && u.limits.max_open_positions === 200 && u.limits.max_books === 5, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
-  chk('Pro: 3 webhooks and 50 AI reads a day', u.features.webhooks === 3 && u.features.ai_market_read === '50/day', u.features && { wh: u.features.webhooks, ai: u.features.ai_market_read });
+  chk('Pro: 3 webhooks, and no AI allowance is advertised any more', u.features.webhooks === 3 && !u.features.ai_market_read, u.features && { wh: u.features.webhooks, ai: u.features.ai_market_read });
   chk('Pro: report breakdowns on, plan end reported', u.features.report_breakdowns === true && u.plan_days_left > 28 && u.plan_days_left <= 30, { days: u.plan_days_left });
   chk('Pro: usage prints the price of the plan it is on', u.plan_price_usd === 29, { price: u.plan_price_usd });
   r = await bot('/webhooks');
@@ -94,7 +96,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
   await resync();
   u = await usage();
   chk('Max: 2000/min, 30 keys, 500 positions, 20 books', u.plan === 'max' && u.limits.requests_per_minute === 2000 && u.limits.max_keys === 30 && u.limits.max_open_positions === 500 && u.limits.max_books === 20, { rpm: u.limits.requests_per_minute });
-  chk('Max: 15 webhooks and 200 AI reads a day', u.features.webhooks === 15 && u.features.ai_market_read === '200/day', u.features && { wh: u.features.webhooks });
+  chk('Max: 15 webhooks, no AI allowance advertised', u.features.webhooks === 15 && !u.features.ai_market_read, u.features && { wh: u.features.webhooks });
   r = await bot('/webhooks');
   chk('Max webhook cap is 15 in the DO too', r.status === 200 && r.body.data.max === 15, r.body.data && { max: r.body.data.max });
 
@@ -104,7 +106,7 @@ const usage = async () => (await bot('/usage')).body.data || {};
   await resync();
   u = await usage();
   chk('Business: 5000/min, 100 keys, 1000 positions, 50 books', u.plan === 'business' && u.limits.requests_per_minute === 5000 && u.limits.max_keys === 100 && u.limits.max_open_positions === 1000 && u.limits.max_books === 50, { rpm: u.limits.requests_per_minute, keys: u.limits.max_keys });
-  chk('Business: 50 webhooks and 500 AI reads a day, priced at $159', u.features.webhooks === 50 && u.features.ai_market_read === '500/day' && u.plan_price_usd === 159, u.features && { wh: u.features.webhooks, price: u.plan_price_usd });
+  chk('Business: 50 webhooks, no AI allowance advertised, priced at $159', u.features.webhooks === 50 && !u.features.ai_market_read && u.plan_price_usd === 159, u.features && { wh: u.features.webhooks, price: u.plan_price_usd });
   r = await bot('/webhooks');
   chk('Business webhook cap is 50 in the DO too', r.status === 200 && r.body.data.max === 50, r.body.data && { max: r.body.data.max });
   dr = await fetch(ORIGIN + '/api/v1/price?symbol=BTC', { headers: { 'x-api-key': KEY } });
