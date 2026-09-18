@@ -12950,7 +12950,10 @@ async function handleAiChart(url, request, env, ectx) {
   // request and nobody else's read moves. Ignored on every other path.
   let aiModel = 'claude-sonnet-5'; try { const c2 = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c2 && typeof c2.model === 'string' && /^claude-/.test(c2.model)) aiModel = c2.model; } catch (e) {}
   if (_e2eAi && body && typeof body.model === 'string' && /^claude-[a-z0-9-]{3,40}$/.test(body.model)) aiModel = body.model;
-  const reqBody = JSON.stringify({ model: aiModel, max_tokens: 2200, system: sysFull, messages: msgs, stream: wantStream, output_config: { effort: 'low' } }); // 2200: prose + plan + an actions block with up to 8 shapes
+  let aiEffort = 'low'; try { const c3 = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c3 && /^(low|medium|high|xhigh|max)$/.test(String(c3.effort || ''))) aiEffort = c3.effort; } catch (e) {}
+  const _e2eEffort = (_e2eAi && body && /^(low|medium|high|xhigh|max)$/.test(String(body.effort || ''))) ? String(body.effort) : null;
+  if (_e2eEffort) aiEffort = _e2eEffort;
+  const reqBody = JSON.stringify({ model: aiModel, max_tokens: 2200, system: sysFull, messages: msgs, stream: wantStream, output_config: { effort: aiEffort } }); // 2200: prose + plan + an actions block with up to 8 shapes
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   let ar;
   try { ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal, headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: reqBody }); }
