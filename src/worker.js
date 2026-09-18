@@ -631,6 +631,7 @@ async function handleNewsRead(url, env, ctx) {
     }) });
     if (!ar.ok) { aiFail(env, 'newsbrief', ar.status); return jr({ error: 'ai_failed' }, 502); }
     const ad = await ar.json();
+    try { aiUsageLog(env, ctx, { model: 'claude-haiku-4-5-20251001', surface: 'news', uid: '', sym: '', usage: ad && ad.usage }); } catch (e) {}
     const brief = (ad && ad.content && ad.content[0] && ad.content[0].text || '').trim();
     if (brief.length < 200) return jr({ error: 'ai_failed' }, 502);
     const out = { title, brief, url: u, host: h, ts: Date.now() };
@@ -5075,7 +5076,7 @@ async function xComposeNews(env) {
       const prompt = 'You write X/Twitter posts for MarginPad, a free crypto paper-trading site. From these live crypto headlines, write ONE short original post (in YOUR OWN words - do NOT copy a headline verbatim) about the single most interesting active development. Rules: max 170 characters; factual and neutral with a light trading angle; NO price predictions, NO financial advice, NO hype words like "moon" or "explode"; no hashtags and no links (added separately); no quotes around it. Headlines:\n- ' + heads.join('\n- ');
       const r = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 160, messages: [{ role: 'user', content: prompt }] }) }, 12000, env, 'xnews');
       if (!(r && r.ok)) aiFail(env, 'xnews', r ? r.status : 0);
-      if (r && r.ok) { const j = await r.json(); let body = (j && j.content && j.content[0] && j.content[0].text || '').trim().replace(/^["']|["']$/g, '').replace(/\s+/g, ' '); if (body.length > 180) body = body.slice(0, 178) + '…'; if (body.length >= 20) { const tags = xHashtags(body + ' ' + heads.join(' ')); const s = '' + body + link + tags; if (s.length <= 275) return s; } }
+      if (r && r.ok) { const j = await r.json(); try { aiUsageLog(env, null, { model: 'claude-haiku-4-5-20251001', surface: 'xpost', uid: '', sym: '', usage: j && j.usage }); } catch (e) {} let body = (j && j.content && j.content[0] && j.content[0].text || '').trim().replace(/^["']|["']$/g, '').replace(/\s+/g, ' '); if (body.length > 180) body = body.slice(0, 178) + '…'; if (body.length >= 20) { const tags = xHashtags(body + ' ' + heads.join(' ')); const s = '' + body + link + tags; if (s.length <= 275) return s; } }
     } catch (e) {}
   }
   // 2) fallback: restate the freshest headline + our angle (rotates hourly so it varies)
@@ -12493,6 +12494,85 @@ async function handleAiAdmin(url, request, env) {
   }
   return J({ error: 'bad' }, 400);
 }
+// ---------------------------------------------------------------------------------------------------------------
+// WHAT THE AI ACTUALLY COSTS (2026-09-18, owner: "hocu da to krenemo da merimo i da znam tacnu cenu")
+//
+// Until today every figure about AI spend on this site was ARITHMETIC, not measurement: Anthropic returns a `usage`
+// object on every single call and we threw it away, so "what does a member cost us" could only ever be estimated
+// from prompt lengths. It is measured now, per call, per model, per surface, per account.
+//
+// ONE price table, the way API_PLANS is one table - a model priced nowhere else in the codebase. Dollars per MILLION
+// tokens, exactly as Anthropic publishes them. A model missing here still logs its tokens and simply costs 0, which
+// shows up in ops as "unpriced" rather than silently under-reporting.
+const AI_PRICES = { // [input, output, cacheRead, cacheWrite] $/MTok
+  'claude-haiku-4-5-20251001': [1, 5, 0.1, 1.25],
+  'claude-haiku-4-5': [1, 5, 0.1, 1.25],
+  'claude-sonnet-5': [2, 10, 0.2, 2.5],
+  'claude-opus-5': [5, 25, 0.5, 6.25],
+  'claude-fable-5-1': [10, 50, 1, 12.5],
+};
+// Cost of ONE call in micro-dollars (integer - a float sum over thousands of rows drifts, and AE doubles are floats).
+// Pure, so the E2E can run the real function over a real usage object.
+function aiCostMicros(model, u) {
+  const p = AI_PRICES[String(model || '')]; if (!p || !u) return 0;
+  const n = (v) => (Number.isFinite(+v) ? +v : 0);
+  return Math.round(
+    n(u.input_tokens) * p[0] + n(u.output_tokens) * p[1]
+    + n(u.cache_read_input_tokens) * p[2] + n(u.cache_creation_input_tokens) * p[3]
+  ); // tokens * ($/1e6 tok) * 1e6 micro-$ == tokens * $/MTok
+}
+// Record one call. AE is the history (90 d, queryable); the KV day-rollup is what ops reads instantly and what the
+// spend alarm compares - AE alone would make the dashboard wait on a SQL round trip for a number it shows on every load.
+function aiUsageLog(env, ctx, o) {
+  const u = (o && o.usage) || null; if (!u) return;
+  const micros = aiCostMicros(o.model, u);
+  try {
+    if (env.AE) env.AE.writeDataPoint({
+      indexes: ['aicost'],
+      blobs: ['aicost', String(o.model || '?'), String(o.surface || '?'), String(o.uid || '').slice(0, 40), String(o.sym || '').slice(0, 16)],
+      doubles: [+u.input_tokens || 0, +u.output_tokens || 0, +u.cache_read_input_tokens || 0, +u.cache_creation_input_tokens || 0, micros],
+    });
+  } catch (e) {}
+  const day = new Date().toISOString().slice(0, 10);
+  const bump = async () => { // read-modify-write: approximate under concurrency, and at this volume that is fine - AE is authoritative
+    try {
+      const k = 'ai:spend:' + day;
+      let r = {}; try { r = JSON.parse(await env.STATS.get(k) || '{}'); } catch (e) {}
+      r.micros = (+r.micros || 0) + micros; r.calls = (+r.calls || 0) + 1;
+      r.inTok = (+r.inTok || 0) + (+u.input_tokens || 0); r.outTok = (+r.outTok || 0) + (+u.output_tokens || 0);
+      r.byModel = r.byModel || {}; r.byModel[o.model] = (+r.byModel[o.model] || 0) + micros;
+      r.bySurface = r.bySurface || {}; r.bySurface[o.surface] = (+r.bySurface[o.surface] || 0) + micros;
+      if (o.uid) { r.byUid = r.byUid || {}; r.byUid[o.uid] = (+r.byUid[o.uid] || 0) + micros; }
+      await env.STATS.put(k, JSON.stringify(r), { expirationTtl: 100 * 86400 });
+    } catch (e) {}
+  };
+  if (ctx && ctx.waitUntil) ctx.waitUntil(bump()); else bump();
+}
+// A STREAMED reply never resolves to a JSON body, so `usage` has to be read out of the SSE frames as they pass:
+// `message_start` carries the input side, `message_delta` the running output count. This tees the stream - the
+// reader still gets every byte untouched, byte for byte and at the same time - and logs once the stream ends.
+function aiMeterStream(body, env, ctx, o) {
+  let buf = '', usage = null;
+  const merge = (u) => { if (!u) return; usage = Object.assign(usage || {}, u); };
+  const ts = new TransformStream({
+    transform(chunk, ctl) {
+      ctl.enqueue(chunk); // pass through FIRST - metering must never delay or alter what the page receives
+      try {
+        buf += new TextDecoder().decode(chunk, { stream: true });
+        let i; // SSE frames are separated by a blank line; keep the tail until it completes
+        while ((i = buf.indexOf('\n\n')) >= 0) {
+          const frame = buf.slice(0, i); buf = buf.slice(i + 2);
+          const dl = frame.split('\n').find(l => l.indexOf('data:') === 0); if (!dl) continue;
+          let d = null; try { d = JSON.parse(dl.slice(5).trim()); } catch (e) { continue; }
+          if (d && d.type === 'message_start' && d.message && d.message.usage) merge(d.message.usage);
+          else if (d && d.type === 'message_delta' && d.usage) merge(d.usage);
+        }
+      } catch (e) {}
+    },
+    flush() { try { aiUsageLog(env, ctx, Object.assign({}, o, { usage })); } catch (e) {} },
+  });
+  return body.pipeThrough(ts);
+}
 // "Ask AI about this chart" - signed-in only, daily limit per user (admin-tunable). POST {context, question} → Claude (Haiku) → {answer,used,limit}. GET = status {signedIn,used,limit}.
 // ONE prompt for both AI surfaces: the chart panel (handleAiChart) and the Bot API (/v1/ai, Bot API 2.3). The API builds
 // the same JSON brief server-side from candles, so a bot gets the reading the panel would give for that chart.
@@ -12527,7 +12607,9 @@ async function aiBrief(sym, iv, env) {
     recentCloses: c.slice(-12).map(r4), asOf: new Date((+bars[n - 1].time || 0) * 1000).toISOString(),
   };
 }
-async function handleAiChart(url, request, env) {
+// NOTE: `ctx` inside this function is the chart BRIEF (body.context) - it has been that since the first version.
+// The execution context is therefore `ectx`; do not "tidy" it back to ctx, that is a redeclaration SyntaxError.
+async function handleAiChart(url, request, env, ectx) {
   const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
   if (!env.USERS) return J({ error: 'unavailable' }, 503);
@@ -12615,10 +12697,11 @@ async function handleAiChart(url, request, env) {
  const aiLabel = String(ctx.symbol || ctx.sym || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
  try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type: 'ai', label: aiLabel, path: '/charts', cc: (request.cf && request.cf.country) || '', dev: deviceOf(request.headers.get('user-agent') || '') }) })); } catch (e) {}
  try { await evPush(env, request, 'ai', aiLabel, '/charts'); } catch (e) {} // activity trail + AE analytics (the client beacon that used to do this is gone)
-  if (wantStream) { clearTimeout(to); return new Response(ar.body, { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-ai-used': String(used + 1), 'x-ai-limit': String(LIMIT), ...CORS } }); }
+  const _meta = { model: aiModel, surface: 'panel', uid, sym: String(ctx.symbol || ctx.sym || '').slice(0, 16) };
+  if (wantStream) { clearTimeout(to); return new Response(aiMeterStream(ar.body, env, ectx, _meta), { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-ai-used': String(used + 1), 'x-ai-limit': String(LIMIT), ...CORS } }); }
   clearTimeout(to);
   let answer = '';
-  try { const d = await ar.json(); const tb = (d && Array.isArray(d.content)) ? d.content.find(b => b && b.type === 'text') : null; answer = (tb && tb.text) || ''; } catch (e) {} // the first block may be thinking, never assume [0] is text
+  try { const d = await ar.json(); const tb = (d && Array.isArray(d.content)) ? d.content.find(b => b && b.type === 'text') : null; answer = (tb && tb.text) || ''; aiUsageLog(env, ectx, Object.assign({}, _meta, { usage: d && d.usage })); } catch (e) {} // the first block may be thinking, never assume [0] is text
   if (!answer) return J({ error: 'ai_empty' }, 502);
   return J({ ok: true, answer, used: used + 1, limit: LIMIT });
 }
@@ -13995,7 +14078,7 @@ async function handleBot(url, request, env, ctx) {
     catch (e) { clearTimeout(to); aiFail(env, 'api', 0); try { await doCall('/ailimit', { uid, day, refund: true }); } catch (e2) {} return jb({ error: 'ai_error' }, 502); }
     clearTimeout(to);
     if (!ar.ok) { aiFail(env, 'api', ar.status); try { await doCall('/ailimit', { uid, day, refund: true }); } catch (e2) {} return jb({ error: 'ai_error', status: ar.status }, 502); }
-    let answer = ''; try { const d = await ar.json(); answer = (d && d.content && d.content[0] && d.content[0].text) || ''; } catch (e) {}
+    let answer = ''; try { const d = await ar.json(); answer = (d && d.content && d.content[0] && d.content[0].text) || ''; aiUsageLog(env, ctx, { model: 'claude-haiku-4-5-20251001', surface: 'botapi', uid, sym, usage: d && d.usage }); } catch (e) {}
     if (!answer) return jb({ error: 'ai_empty' }, 502);
     let plan = null; const pm = answer.match(/```plan\s*([\s\S]*?)```/); if (pm) { try { plan = JSON.parse(pm[1]); } catch (e) { plan = null; } answer = answer.replace(pm[0], '').trim(); }
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['ai'], blobs: ['ai', 'api', sym], doubles: [1] }); } catch (e) {}
@@ -16663,7 +16746,7 @@ export default {
     }
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname.startsWith('/api/whsink/')) return handleWhSink(url, request, env); // Bot API 2.3 webhook test sink
-    if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
+    if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env, ctx); // ctx: the token meter finishes after the stream does
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
     if (url.pathname === '/unsubscribe') return handleUnsubscribe(url, env);
     if (url.pathname === '/api/tgclaim') { // import a position opened from Telegram into the site's My Trades
@@ -17968,6 +18051,41 @@ export default {
     }
     if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
       return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
+    }
+    // What the AI really costs, MEASURED from the `usage` Anthropic returns - not derived from prompt lengths.
+    // Per day: spend, calls, tokens, split by model / surface / account, plus the worst-case exposure the current
+    // caps still allow. `?days=` walks the KV day-rollups (100 d); AE keeps the per-call history behind it.
+    if (url.pathname === '/api/admin/aicost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const days = Math.min(100, Math.max(1, parseInt(url.searchParams.get('days') || '14', 10) || 14));
+      const out = [], tot = { micros: 0, calls: 0, inTok: 0, outTok: 0 }, byModel = {}, bySurface = {}, byUid = {};
+      for (let i = 0; i < days; i++) {
+        const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+        let r = null; try { r = await env.STATS.get('ai:spend:' + d, 'json'); } catch (e) {}
+        if (!r) { out.push({ day: d, usd: 0, calls: 0 }); continue; }
+        tot.micros += +r.micros || 0; tot.calls += +r.calls || 0; tot.inTok += +r.inTok || 0; tot.outTok += +r.outTok || 0;
+        for (const k in (r.byModel || {})) byModel[k] = (byModel[k] || 0) + r.byModel[k];
+        for (const k in (r.bySurface || {})) bySurface[k] = (bySurface[k] || 0) + r.bySurface[k];
+        for (const k in (r.byUid || {})) byUid[k] = (byUid[k] || 0) + r.byUid[k];
+        out.push({ day: d, usd: +((+r.micros || 0) / 1e6).toFixed(4), calls: +r.calls || 0, inTok: +r.inTok || 0, outTok: +r.outTok || 0 });
+      }
+      const usd = (m) => +((m || 0) / 1e6).toFixed(4);
+      const dollars = (o) => { const r = {}; for (const k in o) r[k] = usd(o[k]); return r; };
+      // The ceiling the caps allow today, priced per model - the number a subscription has to cover.
+      let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); } catch (e) {}
+      const perMember = Number.isFinite(cfg.limit) ? Math.max(cfg.limit, 50) : 50;
+      const MAXIN = 11100, MAXOUT = 2200; // measured prompt ceiling: system 17,936 chars + brief 5,200 + 8 history turns; max_tokens caps output
+      const worst = {};
+      for (const m in AI_PRICES) { const c = aiCostMicros(m, { input_tokens: MAXIN, output_tokens: MAXOUT }); worst[m] = { per_call_usd: usd(c), per_member_day_usd: usd(c * perMember), per_member_month_usd: usd(c * perMember * 30), site_day_cap_usd: usd(c * 6000) }; }
+      const avg = tot.calls ? usd(tot.micros / tot.calls) : 0;
+      return J({
+        days, total_usd: usd(tot.micros), calls: tot.calls, avg_call_usd: avg,
+        tokens: { input: tot.inTok, output: tot.outTok },
+        by_model_usd: dollars(byModel), by_surface_usd: dollars(bySurface),
+        by_account_usd: Object.entries(byUid).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([uid, m]) => ({ uid, usd: usd(m) })),
+        caps: { per_member_per_day: perMember, site_per_day: 6000 },
+        worst_case: worst,
+        note: 'Measured from Anthropic usage on every call since 2026-09-18. Days before that read 0 because nothing recorded it.',
+      });
     }
     if (url.pathname === '/api/admin/mailstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Resend failures (AE mailerr) by day / hour / sender / status + sign-in code requests vs successful logins per day - the deliverability read (2026-09-07)
       const days = Math.max(1, Math.min(30, +url.searchParams.get('days') || 7)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
