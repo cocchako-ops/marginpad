@@ -1205,5 +1205,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try { S.ro && S.ro.disconnect(); } catch (e) {}
     S = null;
   }
+  // READ-ONLY MIRROR FOR THE E2E. S is closure-private and must stay that way (the map decides nothing from the
+  // page), so the harness gets a snapshot of what was last drawn rather than a handle on the state. Same pattern
+  // as the PT terminal's _dots/_marks mirror.
+  window.__mpHeat = {
+    state: function () {
+      if (!S) return null;
+      var vis = S.vis || [], h = vis.map(function (p) { return heatAlpha(p._h || 0); });
+      var mid = 0, faint = 0, strong = 0, mx = 0, i;
+      for (i = 0; i < h.length; i++) { if (h[i] > mx) mx = h[i]; if (h[i] > 0.5) strong++; else if (h[i] > 0.12) mid++; else faint++; }
+      return {
+        coin: S.coin, win: S.win, side: S.sideF, dotMin: S.dotMin, showDots: !!S.showDots,
+        plotH: S.plotH || 0, canvasH: S.cv ? S.cv.clientHeight : 0, canvasW: S.cv ? S.cv.clientWidth : 0,
+        bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint, maxAlpha: +mx.toFixed(3),
+        dotsDrawn: S.dotsDrawn || 0, events: S.events.length,
+        yLo: S.yLo, yHi: S.yHi, price: S.price, yViewed: !!S.yView,
+        targets: (S._tg || []).map(function (x) { return { price: x.price, long: !!x.long }; })
+      };
+    }
+  };
   window.mpHeatmap = { mount: mount, unmount: unmount };
 })();
