@@ -705,14 +705,42 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function _aiPlanOk(p){return p&&typeof p==='object'&&(p.entry||p.stop||p.bias||(p.levels&&p.levels.length)||(p.targets&&p.targets.length));}
   /* the plan card (2026-09-17): bias + confidence, entry / stop / targets with their distance from the live price, R:R, the
      invalidation line, and the two actions. Rows carry data-px so a tap flashes that level on the chart. */
+  /* IS THIS ACTUALLY A TRADE? (2026-09-19). Two faults this settles, both seen in production:
+     1. A `wait` plan still drew AI ENTRY, AI STOP and both TP lines. The plan CARD hid those rows correctly
+        (`if(!isW)`) while aiDrawPlan painted all four anyway, so the reader got a card saying WAIT over a chart
+        showing a full trade. Measured 2026-09-19: bias 'wait' returned with entry 107.20, stop 104.2 and two
+        targets on SOL.
+     2. The prompt has always said a first target that does not pay 1.5x the risk should be a wait - and the
+        chart happily drew R:R 0.83 as a position block with POOR written across it. Printing the warning is not
+        the same as honouring the rule. Below 1.5 the levels are still SHOWN, because they are real levels, but
+        they stop being dressed as a trade.
+     Everything downstream asks this one function, so the card, the price lines and the position block can never
+     disagree with each other again. */
+  var AI_MIN_RR = 1.5;
+  function aiTradable(plan){
+    if(!plan) return false;
+    var b = String(plan.bias||'').toLowerCase();
+    if(b !== 'long' && b !== 'short') return false;
+    var rr = aiRR(plan);
+    if(rr != null && rr < AI_MIN_RR) return false;
+    return true;
+  }
+  function aiWhyNotTradable(plan){
+    if(!plan) return '';
+    var b = String(plan.bias||'').toLowerCase();
+    if(b !== 'long' && b !== 'short') return '';
+    var rr = aiRR(plan);
+    return (rr != null && rr < AI_MIN_RR) ? rr : '';
+  }
   function aiRR(plan){var e=+plan.entry,st=+plan.stop,t=(plan.targets||[]).map(Number).filter(function(x){return x>0;})[0];if(!(e>0&&st>0&&t>0))return null;var risk=Math.abs(e-st),rew=Math.abs(t-e);return risk>0?+(rew/risk).toFixed(2):null;}
-  function aiPlanCard(plan,price){if(!plan)return '';var bias=String(plan.bias||'').toLowerCase(),isW=bias==='wait'||!(bias==='long'||bias==='short');
+  function aiPlanCard(plan,price){if(!plan)return '';var bias=String(plan.bias||'').toLowerCase(),isW=!aiTradable(plan),_rrLow=aiWhyNotTradable(plan);
     var pct=function(v){v=+v;if(!(v>0&&price>0))return '';var d=(v-price)/price*100;return '<i>'+(d>=0?'+':'')+d.toFixed(2)+'%</i>';};
     var row=function(k,v,cls){v=+v;if(!(v>0))return '';return '<button type="button" class="aipr '+(cls||'')+'" data-px="'+v+'"><span>'+k+'</span><b>'+cwFmt(v)+'</b>'+pct(v)+'</button>';};
     var rr=aiRR(plan),conf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
     var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(isW?'WAIT':bias.toUpperCase())+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
     if(!isW)h+='<div class="aipc-rows">'+row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+(plan.targets||[]).map(function(t,i){return row('Target '+(i+1),t,'t');}).join('')+'</div>';
     var lv=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lv.length)h+='<div class="aipc-lv-rows">'+lv.slice(0,4).map(function(l){return '<button type="button" class="aipr l" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,18))+'</span><b>'+cwFmt(+l.price)+'</b>'+pct(l.price)+'</button>';}).join('')+'</div>';
+    if(_rrLow!=='')h+='<div class="aipc-inv aipc-rr"><span>Not worth it</span>The first target pays '+_rrLow+'x the risk - under the 1.5x this assistant will call a trade, so the levels are marked to watch, not to take.</div>';
     if(plan.invalidation)h+='<div class="aipc-inv"><span>Wrong if</span>'+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
     if(plan.manage)h+='<div class="aipc-inv"><span>Your position</span>'+escHtml(String(plan.manage).slice(0,160))+'</div>';
     h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+'">On chart</button>'+(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+'">Trade it</button>':'')+'</div></div>';return h;}
@@ -875,6 +903,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(lbl)label(pp2[pp2.length-1].p);}
     else if(sh==='position'||sh==='rr'){ // the broker terminal's risk-reward block
       if(!okp(a.entry)||!okp(a.stop))return null;
+      /* THE SAME 1.5x RULE THE PLAN OBEYS (2026-09-19). The model could route around the plan by drawing the
+         block directly - that is how R:R 0.83 reached the chart dressed as a setup. Below the floor the block
+         is refused; the levels still arrive as lines, so nothing is hidden, it just is not drawn as a trade. */
+      try{var _t0=(Array.isArray(a.targets)?a.targets:[a.target]).map(Number).filter(function(v){return v>0;})[0];
+        if(_t0>0){var _rk=Math.abs(+a.entry-+a.stop),_rw=Math.abs(_t0-+a.entry);
+          if(_rk>0&&(_rw/_rk)<AI_MIN_RR)return null;}}catch(e){}
       var tg2=(Array.isArray(a.targets)?a.targets:[a.target]).map(Number).filter(function(v){return okp(v);}).slice(0,3);
       out.push(Object.assign({},base,{t:'pos',l1:L(a.barsAgo1!=null?a.barsAgo1:6,6),p:snapLv(a.entry,0.002),stop:snapLv(a.stop,0.002),tgts:tg2.map(function(v){return snapLv(v,0.002);}),w:1}));}
     else if(sh==='fibext'||sh==='fibx'){ // extension: the AB leg projected from C
@@ -1067,13 +1101,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];var noZones=drew;
     function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title}));}catch(e){}}
     w._aiPlanObj=plan;
-    if(plan.entry)pl(plan.entry,'#3fd8e6','AI ENTRY',0,2);
-    if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);
-    (plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});
+    var _tradable=aiTradable(plan);
+    if(_tradable){
+      if(plan.entry)pl(plan.entry,'#3fd8e6','AI ENTRY',0,2);
+      if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);
+      (plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});
+    }else{
+      /* still worth seeing, just not as a trade: the same prices as plain watch levels */
+      if(plan.entry)pl(plan.entry,'#6b7c93','WATCH',3,1);
+      (plan.targets||[]).forEach(function(t,i){pl(t,'#6b7c93','WATCH',3,1);});
+    }
     if(!drew)(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
     /* the risk and the reward as ZONES ahead of the last candle (owner 2026-09-17: show the target, not only a line):
        drawing-engine rects flagged ai - drawn by the same canvas as the user's shapes, excluded from persistence */
-    try{if(w.dr&&w.dr.shapes&&w.bars&&w.bars.length>2&&plan.entry>0){var n=w.bars.length-1,hb=Math.max(6,Math.min(60,Math.round(+plan.horizonBars||14))),e=+plan.entry,st=+plan.stop,tg=(plan.targets||[]).map(Number).filter(function(x){return x>0;});
+    try{if(_tradable&&w.dr&&w.dr.shapes&&w.bars&&w.bars.length>2&&plan.entry>0){var n=w.bars.length-1,hb=Math.max(6,Math.min(60,Math.round(+plan.horizonBars||14))),e=+plan.entry,st=+plan.stop,tg=(plan.targets||[]).map(Number).filter(function(x){return x>0;});
       var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
       if(st>0&&!noZones)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
       if(tg.length&&!noZones){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
@@ -1661,7 +1702,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;window.__mpAi={ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
+  try{window.__mpAiContext=aiContext;window.__mpAi={ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote};}catch(e){} // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}
