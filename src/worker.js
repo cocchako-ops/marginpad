@@ -12607,7 +12607,7 @@ function aiUsageLog(env, ctx, o) {
 // `message_start` carries the input side, `message_delta` the running output count. This tees the stream - the
 // reader still gets every byte untouched, byte for byte and at the same time - and logs once the stream ends.
 function aiMeterStream(body, env, ctx, o) {
-  let buf = '', usage = null;
+  let buf = '', usage = null, text = '';
   const merge = (u) => { if (!u) return; usage = Object.assign(usage || {}, u); };
   const ts = new TransformStream({
     transform(chunk, ctl) {
@@ -12619,15 +12619,99 @@ function aiMeterStream(body, env, ctx, o) {
           const frame = buf.slice(0, i); buf = buf.slice(i + 2);
           const dl = frame.split('\n').find(l => l.indexOf('data:') === 0); if (!dl) continue;
           let d = null; try { d = JSON.parse(dl.slice(5).trim()); } catch (e) { continue; }
+          if (d && d.type === 'content_block_delta' && d.delta && typeof d.delta.text === 'string' && text.length < 20000) text += d.delta.text;
           if (d && d.type === 'message_start' && d.message && d.message.usage) merge(d.message.usage);
           else if (d && d.type === 'message_delta' && d.usage) merge(d.usage);
         }
       } catch (e) {}
     },
-    flush() { try { aiUsageLog(env, ctx, Object.assign({}, o, { usage })); } catch (e) {} },
+    flush() { try { aiUsageLog(env, ctx, Object.assign({}, o, { usage })); } catch (e) {}
+      try { if (typeof o.onText === 'function') o.onText(text); } catch (e) {} },
   });
   return body.pipeThrough(ts);
 }
+// DOES IT ACTUALLY WORK? (2026-09-19, the owner's own question)
+//
+// We measure to the cent what the AI COSTS and have never measured whether it is RIGHT. Every claim about the
+// quality of a read - on the sales page, in a plan decision, in an argument about which model to use - has been
+// somebody's impression. That is not good enough for a feature priced at $159.
+//
+// So every directional plan is recorded with its own levels, and a cron walks the open ones against real candles
+// and settles them: the first target reached, or the stop, whichever the market touched FIRST. Not "did price
+// eventually get there" - a stop hit on the way up is a loss even if the target printed an hour later. When both
+// land inside one candle the call is UNCLEAR and counts as neither; pretending to know the order inside a bar is
+// exactly the kind of invented precision that makes a hit-rate worthless.
+//
+// A wait plan is recorded too, with no outcome. It is not a trade and is never scored - but a model that answers
+// "wait" to everything would otherwise look like it never misses.
+const AICALL_KEY = (id) => 'aicall:' + id;
+const AICALL_OPEN = 'aicall:open';          // ids awaiting an outcome
+const AICALL_MAXAGE = 7 * 86400000;         // a call nobody settled in a week expires unresolved
+
+function aiCallRecord(env, ctx, o) {
+  if (!o || !o.sym) return;
+  const bias = String(o.bias || '').toLowerCase();
+  const id = (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  const row = {
+    id, ts: Date.now(), sym: String(o.sym).slice(0, 12), tf: String(o.tf || '').slice(0, 8),
+    model: String(o.model || ''), uid: String(o.uid || ''), bias,
+    entry: +o.entry || null, stop: +o.stop || null, tp1: +o.tp1 || null,
+    conf: +o.conf || null, rr: +o.rr || null, px: +o.px || null,
+    state: (bias === 'long' || bias === 'short') && +o.stop > 0 && +o.tp1 > 0 ? 'open' : 'nocall',
+  };
+  const work = async () => {
+    try {
+      await env.STATS.put(AICALL_KEY(id), JSON.stringify(row), { expirationTtl: 120 * 86400 });
+      if (row.state !== 'open') return;
+      let open = []; try { open = JSON.parse(await env.STATS.get(AICALL_OPEN) || '[]'); } catch (e) {}
+      open.push(id); if (open.length > 400) open = open.slice(-400);
+      await env.STATS.put(AICALL_OPEN, JSON.stringify(open));
+    } catch (e) {}
+  };
+  if (ctx && ctx.waitUntil) ctx.waitUntil(work()); else work();
+}
+
+// Settle what the market has already decided. Pure enough to test: given a call and the candles since it was
+// made, say what happened. Exported shape { state, hitAt, bars }.
+function aiCallSettle(row, bars) {
+  if (!row || !bars || !bars.length) return null;
+  const long = row.bias === 'long';
+  const tp = +row.tp1, st = +row.stop;
+  if (!(tp > 0 && st > 0)) return null;
+  for (let i = 0; i < bars.length; i++) {
+    const hi = +bars[i].high, lo = +bars[i].low;
+    const tpHit = long ? hi >= tp : lo <= tp;
+    const stHit = long ? lo <= st : hi >= st;
+    if (tpHit && stHit) return { state: 'unclear', hitAt: +bars[i].time, bars: i + 1 };  // both inside one candle - the order is unknowable
+    if (tpHit) return { state: 'win', hitAt: +bars[i].time, bars: i + 1 };
+    if (stHit) return { state: 'loss', hitAt: +bars[i].time, bars: i + 1 };
+  }
+  return null;  // still running
+}
+
+async function checkAiCalls(env) {
+  let open = []; try { open = JSON.parse(await env.STATS.get(AICALL_OPEN) || '[]'); } catch (e) {}
+  if (!open.length) return;
+  const keep = [];
+  for (const id of open.slice(0, 60)) {
+    let row = null; try { row = await env.STATS.get(AICALL_KEY(id), 'json'); } catch (e) {}
+    if (!row || row.state !== 'open') continue;
+    if (Date.now() - row.ts > AICALL_MAXAGE) { row.state = 'expired'; try { await env.STATS.put(AICALL_KEY(id), JSON.stringify(row), { expirationTtl: 120 * 86400 }); } catch (e) {} continue; }
+    let kl = null;
+    try { kl = await handleKlines(new URL('https://x/?symbol=' + encodeURIComponent(row.sym) + '&interval=' + (row.tf || '60') + '&limit=500'), env); } catch (e) {}
+    let bars = [];
+    try { const d = kl && await kl.json(); bars = (d && (d.klines || (d.data && d.data.klines))) || []; } catch (e) {}
+    const after = bars.filter(b => (+b.time * 1000) > row.ts);
+    const res = aiCallSettle(row, after);
+    if (!res) { keep.push(id); continue; }
+    row.state = res.state; row.settledAt = Date.now(); row.barsToSettle = res.bars;
+    try { await env.STATS.put(AICALL_KEY(id), JSON.stringify(row), { expirationTtl: 120 * 86400 }); } catch (e) {}
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: ['aicall'], blobs: ['aicall', row.state, row.model, row.sym, row.bias], doubles: [1, +row.rr || 0, +row.conf || 0, res.bars] }); } catch (e) {}
+  }
+  for (const id of open.slice(60)) keep.push(id);
+  try { await env.STATS.put(AICALL_OPEN, JSON.stringify(keep)); } catch (e) {}
+}
+
 // THE BRIEF IS A DOCUMENT, NOT A STRING (2026-09-18). It used to go out as `JSON.stringify(ctx).slice(0, 5200)`,
 // which on a rich chart cut the JSON mid-string: the model then received a document that does not parse and had to
 // guess at the half-field it ended on. Nothing ever surfaced it, because a model will happily answer anyway.
@@ -12783,10 +12867,18 @@ async function handleAiChart(url, request, env, ectx) {
  try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type: 'ai', label: aiLabel, path: '/charts', cc: (request.cf && request.cf.country) || '', dev: deviceOf(request.headers.get('user-agent') || '') }) })); } catch (e) {}
  try { await evPush(env, request, 'ai', aiLabel, '/charts'); } catch (e) {} // activity trail + AE analytics (the client beacon that used to do this is gone)
   const _meta = { model: aiModel, surface: 'panel', uid, sym: String(ctx.symbol || ctx.sym || '').slice(0, 16) };
-  if (wantStream) { clearTimeout(to); return new Response(aiMeterStream(ar.body, env, ectx, _meta), { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-ai-used': String(used + 1), 'x-ai-limit': String(LIMIT), ...CORS } }); }
+  // the quality meter, beside the cost one: what was promised, so a cron can later say what happened
+  const _recPlan = (ans) => { try {
+    const pm = String(ans || '').match(/```plan\s*([\s\S]*?)```/); if (!pm) return;
+    let p = null; try { p = JSON.parse(pm[1]); } catch (e) { return; }
+    const t1 = (Array.isArray(p.targets) ? p.targets : []).map(Number).filter(v => v > 0)[0] || null;
+    const rr = (p.entry > 0 && p.stop > 0 && t1 > 0) ? Math.abs(t1 - p.entry) / Math.abs(p.entry - p.stop) : null;
+    aiCallRecord(env, ectx, { sym: _meta.sym, tf: String(ctx.timeframe || ctx.tf || '60'), model: aiModel, uid, bias: p.bias, entry: p.entry, stop: p.stop, tp1: t1, conf: p.confidence, rr, px: +ctx.price || null });
+  } catch (e) {} };
+  if (wantStream) { clearTimeout(to); return new Response(aiMeterStream(ar.body, env, ectx, Object.assign({}, _meta, { onText: _recPlan })), { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-ai-used': String(used + 1), 'x-ai-limit': String(LIMIT), ...CORS } }); }
   clearTimeout(to);
   let answer = '';
-  try { const d = await ar.json(); const tb = (d && Array.isArray(d.content)) ? d.content.find(b => b && b.type === 'text') : null; answer = (tb && tb.text) || ''; aiUsageLog(env, ectx, Object.assign({}, _meta, { usage: d && d.usage })); } catch (e) {} // the first block may be thinking, never assume [0] is text
+  try { const d = await ar.json(); const tb = (d && Array.isArray(d.content)) ? d.content.find(b => b && b.type === 'text') : null; answer = (tb && tb.text) || ''; aiUsageLog(env, ectx, Object.assign({}, _meta, { usage: d && d.usage })); _recPlan(answer); } catch (e) {} // the first block may be thinking, never assume [0] is text
   if (!answer) return J({ error: 'ai_empty' }, 502);
   return J({ ok: true, answer, used: used + 1, limit: LIMIT });
 }
@@ -18150,6 +18242,28 @@ export default {
     // What the AI really costs, MEASURED from the `usage` Anthropic returns - not derived from prompt lengths.
     // Per day: spend, calls, tokens, split by model / surface / account, plus the worst-case exposure the current
     // caps still allow. `?days=` walks the KV day-rollups (100 d); AE keeps the per-call history behind it.
+    // Does it work? The hit-rate the cost desk had no answer to. ?run=1 settles now instead of waiting for the cron.
+    if (url.pathname === '/api/admin/aicalls' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      if (url.searchParams.get('run') === '1') { try { await checkAiCalls(env); } catch (e) { return J({ error: String(e && e.message || e).slice(0, 200) }); } }
+      let open = []; try { open = JSON.parse(await env.STATS.get(AICALL_OPEN) || '[]'); } catch (e) {}
+      const days = Math.min(120, Math.max(1, parseInt(url.searchParams.get('days') || '30', 10) || 30));
+      const cut = Date.now() - days * 86400000;
+      const ids = new Set(open);
+      // AE holds the settled history; KV holds the live ones. Read both so a fresh install still shows something.
+      let rows = [];
+      try { const q = await aeQuery(env, "SELECT blob2 AS state, blob3 AS model, blob5 AS bias, SUM(_sample_interval) AS n, AVG(double2) AS rr, AVG(double3) AS conf, AVG(double4) AS bars FROM marginpad_events WHERE index1 = 'aicall' AND timestamp > NOW() - INTERVAL '" + days + "' DAY GROUP BY state, model, bias"); rows = q || []; } catch (e) {}
+      const tot = { win: 0, loss: 0, unclear: 0 };
+      const byModel = {};
+      rows.forEach(r => { const st = String(r.state || ''), n = +r.n || 0; if (st in tot) tot[st] += n;
+        const m = String(r.model || '?'); byModel[m] = byModel[m] || { win: 0, loss: 0, unclear: 0, rr: 0, conf: 0 };
+        if (st in byModel[m]) byModel[m][st] += n; if (+r.rr) byModel[m].rr = +(+r.rr).toFixed(2); if (+r.conf) byModel[m].conf = Math.round(+r.conf); });
+      const decided = tot.win + tot.loss;
+      const pct = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
+      for (const m in byModel) byModel[m].hit_pct = pct(byModel[m].win, byModel[m].loss);
+      return J({ days, decided, win: tot.win, loss: tot.loss, unclear: tot.unclear,
+        hit_rate_pct: pct(tot.win, tot.loss), by_model: byModel, still_open: open.length,
+        note: decided < 20 ? 'Too few settled calls to read a hit rate - ' + decided + ' so far. A number under about 20 is noise.' : 'A call is a win when the first target was touched before the stop, on the same candles the reader saw.' });
+    }
     if (url.pathname === '/api/admin/aicost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.min(100, Math.max(1, parseInt(url.searchParams.get('days') || '14', 10) || 14));
       const out = [], tot = { micros: 0, calls: 0, inTok: 0, outTok: 0 }, byModel = {}, bySurface = {}, byUid = {};
@@ -19457,6 +19571,7 @@ export default {
     bg(checkOpsAlerts, 'opsalerts');
     bg(settleDuels, 'duels');
     bg(checkIndexNow, 'indexnow');
+    bg(checkAiCalls, 'aicalls'); // settle what the AI promised against what the market did
     bg(syncBotTiers, 'bottiers'); // reconcile each API key's tier with premium standing (grants expire silently otherwise)
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
