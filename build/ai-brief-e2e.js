@@ -165,9 +165,40 @@ console.log('\nPURE - the brief packer (an over-cap brief must be SMALLER, never
   ok(/_omitted/.test(briefJson(big, 1200)), 'a trimmed brief SAYS what was left out, so an absent block is never read as an absent market');
 }
 
+// ---- the server's own half of the brief -----------------------------------------------------------------------
+// marketPressure is merged SERVER-side (funding, open interest, positioning, our collector's liquidations), so it
+// cannot be seen from the client builder. The only honest test is to ask the model for the numbers and check it
+// has them - if the merge breaks, the assistant simply says it cannot see them and nobody would ever notice.
+console.log('\nLIVE - the half of the brief the server adds');
+async function derivCheck() {
+  const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
+  const brief = {
+    symbol: 'BTC', timeframe: '1-hour', price: 81000, barsLoaded: 1000,
+    swingPivots: [{ barsAgo: 4, price: 81390, kind: 'high' }],
+    respectedLevels: [{ price: 79743, kind: 'resistance', touches: 3 }],
+    chartTools: { indicators: { ids: ['rsi'], on: [], locked: [] }, shapes: ['level'], timeframes: ['60'], currentTf: '60', currentTfLabel: '1-hour', canSwitchSymbol: true },
+  };
+  let j = null;
+  try {
+    const r = await fetch('https://marginpad.io/api/ai/chart', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
+      body: JSON.stringify({ context: brief, question: 'State the funding rate, the 24h open-interest change and the 24h liquidation split. Numbers only.', stream: false, lang: 'en' }),
+    });
+    j = await r.json();
+  } catch (e) { ok(false, 'the model call threw: ' + e.message); return; }
+  const a = String((j && j.answer) || '');
+  ok(!!a, 'the model answered');
+  // a live funding rate and an OI change, in an answer that could only contain them if the merge worked
+  ok(/funding/i.test(a) && /-?\d+\.\d+ ?%/.test(a), 'it can state a funding rate', a.slice(0, 120));
+  ok(/open interest/i.test(a), 'and the open-interest move', a.slice(0, 120));
+  ok(/liquidat/i.test(a) && /\$\s?[\d.,]+ ?[MBK]/i.test(a), 'and the liquidation split in dollars - our collector, not a model', a.slice(0, 160));
+  ok(!/(cannot|can't|do not have|don't have|not provided|no data)/i.test(a.slice(0, 260)), 'it does NOT say the data is missing', a.slice(0, 160));
+}
+
 // ---- live ----------------------------------------------------------------------------------------------------
 console.log('\nLIVE - a real chart in a real browser');
-withBrowser(async (browser) => {
+derivCheck().then(() => withBrowser(async (browser) => {
   for (const sym of ['BTC', 'SOL']) {
     const page = await newPage(browser);
     const errs = [];
@@ -200,7 +231,7 @@ withBrowser(async (browser) => {
     ok(errs.length === 0, sym + ': no page errors', errs.slice(0, 3));
     await page.close().catch(() => {});
   }
-}, { timeoutMs: 230000 })
+}, { timeoutMs: 230000 }))
   .catch(e => { fail++; console.error('fatal ' + e.message); })
   .then(() => {
     console.log('\n' + pass + ' checks, ' + fail + ' failed');
