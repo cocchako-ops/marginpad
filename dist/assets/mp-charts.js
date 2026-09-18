@@ -533,8 +533,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       for(j=i;j<i+f;j++){if(+bars[j].high>h)h=+bars[j].high;if(+bars[j].low<l)l=+bars[j].low;vv+=(+bars[j].vol||0);}
       out.push({time:o.time,open:+o.open,high:h,low:l,close:+bars[i+f-1].close,vol:vv});}
     return out;}
-  function htfOf(bars,tf,price){
-    var f=4,lab=tfWords?tfWords(String((+tf||60)*f)):'higher timeframe';
+  function htfOf(bars,tf,price,mult){
+    var f=mult||4,_m=(+tf||60)*f,lab=(tfWords?tfWords(String(_m)):'')||'';
+    if(!lab||/^[0-9]+$/.test(lab))lab=_m>=1440?((_m/1440).toFixed(_m%1440?1:0)+'-day'):(_m>=60?((_m/60).toFixed(_m%60?1:0)+'-hour'):(_m+'-minute'));
     var hb=aggBars(bars,f);if(hb.length<40)return null;
     var k=Math.max(2,Math.min(9,Math.round(hb.length/40))),P=pivotsOf(hb,k,16);
     if(P.length<4)return null;
@@ -543,7 +544,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       st=(hh&&hl)?'uptrend':((!hh&&!hl)?'downtrend':'range or transition');}
     return {timeframe:lab,structure:st,
       levels:levelsOf(P,price,0.006).slice(0,3).map(function(l){return {price:_p6(l.price),kind:l.kind,touches:l.touches};}),
-      note:'from the same candles aggregated x'+f+'. A level here outranks one on the chart in view; say which frame you are quoting.'};}
+      mult:f,note:'from the same candles aggregated x'+f+'. A level here outranks one on the chart in view; say which frame you are quoting.'};}
 
   /* FAIR VALUE GAPS - mechanical, three candles: bar i-1 high below bar i+1 low is a gap price jumped through
      without trading. It needs NO new drawing primitive, the model already has `zone`. Kept only while unfilled and
@@ -674,7 +675,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _vol=null,_vr=null,_htf=null,_fvg=null,_setups=null,_sess=null;
     try{_vol=volOf(bars);}catch(e){}
     try{_vr=volRegimeOf(bars);}catch(e){}
-    try{_htf=htfOf(bars,w.tf,price);}catch(e){}
+    var _htfs=null;
+    try{_htf=htfOf(bars,w.tf,price,4);}catch(e){}
+    try{var _h16=htfOf(bars,w.tf,price,16);
+      _htfs=[_htf,_h16].filter(Boolean);
+      if(_htfs.length===2&&_htf&&_h16&&_htf.structure&&_h16.structure&&_htf.structure!==_h16.structure)
+        _htfs.agree=false;
+      if(!_htfs.length)_htfs=null;}catch(e){}
     try{_fvg=fvgOf(bars,price);}catch(e){}
     try{_setups=setupsOf(bars,_P||[],lvls||[],price,_vr);}catch(e){}
     try{_sess=sessionOf(bars);}catch(e){}
@@ -696,7 +703,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       indicatorsUserHasOn:indsOn, recentCloses:rc, openPosition:pos,
       liquidationPools:pools, premiumReadouts:ro, userDrawings:ud,
       /* computed above - all from these same candles, nothing fetched (2026-09-18) */
-      volume:_vol, volatility:_vr, higherTimeframe:_htf, fairValueGaps:_fvg, setups:_setups, session:_sess
+      volume:_vol, volatility:_vr, higherTimeframe:_htf,
+      higherTimeframes:_htfs&&_htfs.length>1?{frames:_htfs,note:'the two frames above the one in view, from the same candles. Read all three together: the frame in view is the entry, the next one says whether the move has room, the highest says which way the whole thing leans. When they disagree, say so and let it lower your confidence.'}:null, fairValueGaps:_fvg, setups:_setups, session:_sess
     };
   }
   function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+' / '+limit+' today';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}

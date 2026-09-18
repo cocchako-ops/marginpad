@@ -18383,10 +18383,24 @@ export default {
       rows.forEach(r => { const st = String(r.state || ''), n = +r.n || 0; if (st in tot) tot[st] += n;
         const m = String(r.model || '?'); byModel[m] = byModel[m] || { win: 0, loss: 0, unclear: 0, rr: 0, conf: 0 };
         if (st in byModel[m]) byModel[m][st] += n; if (+r.rr) byModel[m].rr = +(+r.rr).toFixed(2); if (+r.conf) byModel[m].conf = Math.round(+r.conf); });
+      // Is a 70 actually better than a 40? Buckets rather than a correlation: a reader thinks in bands,
+      // and with call counts this small a correlation coefficient would be false precision.
+      let conf = [];
+      try {
+        const cq = await aeQuery(env, "SELECT blob2 AS state, floor(double3 / 20) * 20 AS band, SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'aicall' AND double3 > 0 AND timestamp > NOW() - INTERVAL '" + days + "' DAY GROUP BY state, band");
+        const byBand = {};
+        (cq || []).forEach(r => { const band = Math.max(0, Math.min(80, +r.band || 0)); byBand[band] = byBand[band] || { win: 0, loss: 0 }; const st = String(r.state || ''); if (st === 'win' || st === 'loss') byBand[band][st] += +r.n || 0; });
+        conf = Object.keys(byBand).sort((x, y) => x - y).map(k => {
+          const v = byBand[k], n = v.win + v.loss;
+          return { said: k + '-' + (+k + 19) + '%', calls: n, hit_pct: n >= 5 ? Math.round(v.win / n * 100) : null };
+        });
+      } catch (e) {}
       const decided = tot.win + tot.loss;
       const pct = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
       for (const m in byModel) byModel[m].hit_pct = pct(byModel[m].win, byModel[m].loss);
       return J({ days, decided, win: tot.win, loss: tot.loss, unclear: tot.unclear,
+        confidence_buckets: conf,
+        confidence_note: 'What the model SAID against what happened. A band with fewer than 5 settled calls prints no rate. If the bands do not climb, the confidence number is decoration and should not be shown to readers.',
         hit_rate_pct: pct(tot.win, tot.loss), by_model: byModel, still_open: open.length,
         note: decided < 20 ? 'Too few settled calls to read a hit rate - ' + decided + ' so far. A number under about 20 is noise.' : 'A call is a win when the first target was touched before the stop, on the same candles the reader saw.' });
     }
