@@ -297,6 +297,8 @@
      Four rows, one per cadence, with the amounts in a right-aligned column so they can actually be compared.
      Every figure comes from /api/reward/me, which a guest can already read. */
   body:not(.rwd-in) #lvlCard{display:none}
+  /* the stream card's glow is 440px wide and was the one thing on this page overflowing a 390px screen */
+  #streamCard{overflow:hidden}
   /* the welcome hook was a bordered, tinted panel inside a bordered card - one frame is enough */
   #welcomeHook>div{background:none!important;border:0!important;padding:0 0 4px!important}
   .rwd-table{margin:0 0 20px;border:1px solid var(--line2);border-radius:18px;background:linear-gradient(170deg,var(--panel2),var(--panel));overflow:hidden}
@@ -401,7 +403,7 @@
       <div class="et-v"><span class="eamt">$350</span><i>prize pool</i></div>
       <div class="et-d">Seven leaderboards pay their top five every fourteen days. <a href="/trading-competition/">How the competition works</a>.</div>
     </div>
-    <p class="et-gate">The faucet, the missions and withdrawals open at <b>Bronze - 500 XP</b>, which is free to earn on the <a href="/academy/">Academy</a> and <a href="/paper-trade">Paper Trade</a>. The welcome bonus and the sign-up bonuses do not wait for it.</p>
+    <p class="et-gate">The faucet, the missions, referrals and withdrawals open at <b>Bronze - 500 XP</b>, which is free to earn on the <a href="/academy/">Academy</a> and <a href="/paper-trade">Paper Trade</a>. The welcome bonus and the sign-up bonuses do not wait for it.</p>
     <p class="et-f">Paid in USDT to your MarginPad balance. Cash out from <b id="eaMin">$5.00</b> to a Bybit or Moon account. Fair use: one balance per person, rate-limited, paid from a daily pool - a thank-you for using the site, not an income.</p>
   </section>
 
