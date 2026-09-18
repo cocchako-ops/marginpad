@@ -195,3 +195,11 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
 .vc-p{font-size:12px;color:var(--dim);margin-top:4px}.vc-path{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px;margin-top:6px;font:12px var(--mono);color:var(--ink);word-break:break-all}.vc-path i{color:var(--faint);font-style:normal}.vc-path span{background:#0a0d12;border:1px solid var(--line2);border-radius:6px;padding:1px 6px}
 .vc-s{font-size:12px;margin-top:6px}.vdiv{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:8px 6px 4px;border-top:1px dashed var(--line2);margin-top:4px}
 @media (max-width:560px){.vcs{grid-template-columns:minmax(0,1fr)}.acon-i .meta{max-width:140px}.acfeed .row.pvrow.hop .grow{order:0;flex:1 1 auto}}
+
+/* API access desk (2026-09-18): the owner grants and revokes a plan from here, so the panel sits inside the
+   "Who is on a plan" card and reads as one row of controls above the table it changes. */
+.apgrant{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin:0 0 12px;background:rgba(255,255,255,.015)}
+.apgrant .i{min-width:150px}
+.apgrant .chips{display:inline-flex;gap:5px;flex-wrap:wrap}
+.apgrant .btn{white-space:nowrap}
+#apMsg{line-height:1.55}

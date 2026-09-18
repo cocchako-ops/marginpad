@@ -522,7 +522,7 @@
   function tbl(cols, rows, empty) { if (!rows || !rows.length) return '<div class="empty">' + (empty || 'nothing here') + '</div>'; return '<div class="tblwrap"><table class="tbl"><thead><tr>' + cols.map(function (c) { return '<th class="' + (c.r ? 'r' : '') + '">' + c.h + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + cols.map(function (c) { return '<td class="' + (c.r ? 'r ' : '') + (c.mono ? 'mono ' : '') + (c.grow ? 'grow' : '') + '">' + c.f(r) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>'; }
   function userLink(u, e) { var name = u || (e || '').split('@')[0]; return name ? '<a href="/api/admin/user?' + (u ? 'u=' + encodeURIComponent(u) : 'email=' + encodeURIComponent(e)) + '" target="_blank">@' + esc(name) + '</a>' : '<span class="meta">visitor</span>'; }
   // opts.url = one endpoint → html(d); opts.urls = several → html(d0, d1, ...) where the extra ones fail soft (null)
-  function simple(key, opts) { VIEWS[key] = { render: function (el) { function paint() { var us = opts.urls || [opts.url]; Promise.all(us.map(function (u, i) { var p = J(u); return i ? p.catch(function () { return null; }) : p; })).then(function (r) { el.innerHTML = opts.html.apply(null, [r[0] || {}].concat(r.slice(1))); if (opts.wire) opts.wire(el, r[0] || {}, paint); stamp(); }).catch(function () { el.innerHTML = failHtml('could not load'); }); } paint(); if (opts.every) every(opts.every, paint); } }; }
+  function simple(key, opts) { VIEWS[key] = { render: function (el) { function paint(force) { if (!force && typing() && el.contains(document.activeElement)) return; var us = opts.urls || [opts.url]; Promise.all(us.map(function (u, i) { var p = J(u); return i ? p.catch(function () { return null; }) : p; })).then(function (r) { el.innerHTML = opts.html.apply(null, [r[0] || {}].concat(r.slice(1))); if (opts.wire) opts.wire(el, r[0] || {}, function () { paint(true); }); stamp(); }).catch(function () { el.innerHTML = failHtml('could not load'); }); } paint(true); if (opts.every) every(opts.every, paint); } }; }
 
   // ---------- MONEY / PREMIUM DESK ----------
   // Members first (who pays, who is about to lapse, who is not using it), the trading detail folded away.
@@ -972,6 +972,11 @@
   } });
   // 2026-09-15: the API has its own plans, so this view reads the plan desk beside the usage stats.
   var API_PLAN = function (t) { t = +t || 0; return t >= 3 ? 'business' : t === 2 ? 'max' : t === 1 ? 'pro' : 'free'; };
+  var API_PLAN_IDS = [['free', 'Free'], ['pro', 'Pro $29'], ['max', 'Max $79'], ['business', 'Business $159']];
+  // The panel refreshes the table under itself after a change, and a refresh replaces the whole view - so the
+  // confirmation has to survive its own repaint or the owner sees nothing happen. Same trap the Bybit volume
+  // table hit: it wiped its own message a moment after writing it.
+  var AP_LAST = null, AP_USER = '', AP_PLAN_SEL = 'business', AP_DAYS_SEL = '3650';
   simple('trading/botapi', { urls: ['/api/admin/apistats', '/api/admin/apiplans'], every: 60000, html: function (d, pl) {
     var ks = (d.keys || []).slice().sort(function (a, b) { return (b.last || 0) - (a.last || 0); });
     var byKey = {}; (d.use || []).forEach(function (u) { byKey[u.k] = (byKey[u.k] || 0) + (+u.n || 0); }); var byDay = daysAgg(d.use || [], 'day', 'n', 14); var u7 = byDay.slice(7).reduce(function (s, x) { return s + x.v; }, 0), uP = byDay.slice(0, 7).reduce(function (s, x) { return s + x.v; }, 0);
@@ -986,16 +991,63 @@
             { h: 'how', f: function (r) { return r.src === 'trial' ? '<span class="badge amber">free month</span>' : r.src === 'paid' ? 'paid' : '<span class="meta">' + esc(r.src || 'granted') + '</span>'; } },
             { h: 'days left', num: true, f: function (r) { return r.days_left <= 3 ? '<b style="color:var(--red)">' + N(r.days_left) + '</b>' : N(r.days_left); } },
             { h: 'until', f: function (r) { return dt(r.until); } }];
+          var apGrant = '<div class="apgrant">'
+            + '<div class="bar" style="gap:8px;flex-wrap:wrap;align-items:center">'
+            + '<input class="i" id="apUser" placeholder="username" autocomplete="off" spellcheck="false" style="max-width:190px">'
+            + '<span class="meta">plan</span><span class="chips" id="apPlan">' + API_PLAN_IDS.map(function (x, i) { return '<span class="chip' + (i === 3 ? ' on' : '') + '" data-p="' + x[0] + '">' + x[1] + '</span>'; }).join('') + '</span>'
+            + '<span class="meta">for</span><span class="chips" id="apDays">' + [['30', '30 days'], ['90', '90 days'], ['365', '1 year'], ['3650', 'forever']].map(function (x, i) { return '<span class="chip' + (i === 3 ? ' on' : '') + '" data-d="' + x[0] + '">' + x[1] + '</span>'; }).join('') + '</span>'
+            + '<button class="btn" id="apGive">Give access</button>'
+            + '<button class="btn" id="apTake">Take it away</button>'
+            + '</div><div class="meta" id="apMsg" style="margin-top:7px">Type a username, pick a plan, press Give access. Take it away drops them to Free at once - their keys keep working, on Free limits.</div></div>';
           return '<div class="grid g4">' + tile(N(rows.length), 'accounts on a paid plan', rows.length ? '' : 'dim', N(pl.paying || 0) + ' paying · ' + N(pl.trials || 0) + ' on the free month')
             + tile(USD(pl.mrrUsd || 0), 'API MRR', pl.mrrUsd ? '' : 'dim', 'paid plans only, grants and the free month excluded')
             + tile(USD(pl.lifetimeUsd || 0), 'paid for API plans, all time', pl.lifetimeUsd ? '' : 'dim', N((pl.payments || []).length) + ' payment' + ((pl.payments || []).length === 1 ? '' : 's'))
             + tile(N(rows.filter(function (r) { return r.src === 'trial' && r.days_left <= 3; }).length), 'free months ending in 3 days', 'dim', 'they drop to Free unless they pick a plan') + '</div>'
-            + card('Who is on a plan', tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $29 · Max $79 · Business $159 · site Premium does not raise any API limit');
+            + card('Who is on a plan', apGrant + tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free $0 · Pro $29 · Max $79 · Business $159 · site Premium does not raise any API limit');
         })()
       + card('Keys in use', tbl(keyCols, live, 'no key made a call in the last 14 days'), live.length + ' keys with calls in the last 14 days · click the owner for the card')
       + card('What the API is used for', bars((d.byEp || []).map(function (e) { return { l: e.ep, n: e.n }; }), 'l', 'n'), 'calls per endpoint, last 14 days · price/klines are keyless and not attributed · data = market-data calls sent with a key')
       + (d.webhooks ? card('Webhooks (API Pro and Max)', '<div class="grid g4">' + tile(N(d.webhooks.active), 'active hooks', d.webhooks.active ? '' : 'dim', N(d.webhooks.accounts) + ' account' + (d.webhooks.accounts === 1 ? '' : 's')) + tile(N(d.webhooks.paused), 'paused after failures', d.webhooks.paused ? 'amber' : 'dim') + tile(N(d.webhooks.delivered), 'deliveries, lifetime', 'dim') + tile(N(d.webhooks.pending), 'queued right now', d.webhooks.pending > 50 ? 'amber' : 'dim') + '</div>', 'a paused hook is one that failed 25 times in a row; its owner sees why in GET /v1/webhooks') : '')
       + fold('Idle and revoked keys', tbl([{ h: 'owner', f: function (k) { return userLink(k.username) + ' <span class="meta">' + esc(k.name || 'default') + '</span>' + (k.revoked ? ' <span class="badge red">REVOKED</span>' : ''); } }, { h: 'plan', f: function (k) { var p = API_PLAN(k.tier); return '<span class="badge' + (p === 'free' ? '' : ' lime') + '">' + p + '</span>'; } }, { h: 'calls', r: true, mono: true, f: function (k) { return N(k.calls); } }, { h: '14d', r: true, mono: true, f: function (k) { return N(byKey[k.k] || 0); } }, { h: 'last call', mono: true, f: function (k) { return k.last ? ago(k.last) + ' ago' : 'never'; } }, { h: 'created', mono: true, f: function (k) { return dt(k.created).slice(0, 10); } }], rest, 'none'), rest.length + ' keys with no call in 14 days', false);
+  }, wire: function (el, d, paint) {
+    var plan = AP_PLAN_SEL, days = AP_DAYS_SEL;
+    var uIn = el.querySelector('#apUser'); if (uIn) { uIn.value = AP_USER; uIn.addEventListener('input', function () { AP_USER = uIn.value; }); }
+    el.querySelectorAll('#apPlan .chip').forEach(function (c) { c.classList.toggle('on', c.getAttribute('data-p') === plan); });
+    el.querySelectorAll('#apDays .chip').forEach(function (c) { c.classList.toggle('on', c.getAttribute('data-d') === days); });
+    function chips(id, attr, set) {
+      var box = el.querySelector('#' + id); if (!box) return;
+      box.addEventListener('click', function (ev) {
+        var c = ev.target.closest && ev.target.closest('.chip'); if (!c) return;
+        box.querySelectorAll('.chip').forEach(function (x) { x.classList.toggle('on', x === c); });
+        set(c.getAttribute(attr));
+      });
+    }
+    chips('apPlan', 'data-p', function (v) { plan = v; AP_PLAN_SEL = v; });
+    chips('apDays', 'data-d', function (v) { days = v; AP_DAYS_SEL = v; });
+    var msg = el.querySelector('#apMsg');
+    function say(t, bad, keep) { if (msg) { msg.innerHTML = t; msg.style.color = bad ? 'var(--red)' : 'var(--lime)'; } if (keep) AP_LAST = { t: t, bad: bad }; }
+    if (AP_LAST && msg) { msg.innerHTML = AP_LAST.t; msg.style.color = AP_LAST.bad ? 'var(--red)' : 'var(--lime)'; } // survives the repaint it triggered
+    function send(p, dys) {
+      var u = (el.querySelector('#apUser') || {}).value || '';
+      if (!u.trim()) { say('Type a username first.', 1); return; }
+      say('Working...');
+      post('/api/admin/apiplans', { username: u.trim(), plan: p, days: +dys, src: 'owner' }).then(function (r) {
+        if (!r || r.error) { say(r && r.error === 'no_user' ? 'No account called <b>' + esc(u) + '</b>.' : 'That did not go through: ' + esc((r && r.error) || 'unknown'), 1); return; }
+        var untilTxt = r.until ? (' until ' + dt(r.until)) : '';
+        say(r.tier ? ('<b>@' + esc(u) + '</b> now has <b>' + esc(r.plan) + '</b>' + untilTxt + '. It is live on their keys immediately.')
+                   : ('<b>@' + esc(u) + '</b> is back on <b>Free</b>. Their keys keep working, on Free limits.'), 0, 1);
+        // let the message stand, then refresh the table under it
+        setTimeout(function () { paint(); }, 2500);
+      }).catch(function () { say('That did not go through - the request failed.', 1); });
+    }
+    var g = el.querySelector('#apGive'); if (g) g.addEventListener('click', function () { send(plan, days); });
+    var t = el.querySelector('#apTake'); if (t) t.addEventListener('click', function () {
+      var u = ((el.querySelector('#apUser') || {}).value || '').trim();
+      if (!u) { say('Type a username first.', 1); return; }
+      if (!confirm('Drop @' + u + ' to the Free API plan?')) return;
+      send('free', 0);
+    });
+
   } });
 
   // ---------- INBOX / TELEGRAM BOT ----------

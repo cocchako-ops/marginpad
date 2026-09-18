@@ -17556,6 +17556,7 @@ export default {
       let eb = {}; try { eb = await request.json(); } catch (e) {}
       // {op:'mk', xp:N} also grants XP (e2e uids only) so an E2E can pass the Bronze gate on rewards routes (moon-limit-e2e, 2026-09-13)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
+      if (String((eb && eb.op) || '') === 'rm' && eb.uid) { try { await apiPlanGrant(env, String(eb.uid), 0, 0, 'owner'); } catch (e) {} } // an API plan lives in KV, not in the DO, so the account cleanup cannot see it
     }
     if (url.pathname === '/api/admin/bybitvol' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Bybit volume board: the owner's report (upload / preview / clear) + the joined view
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
