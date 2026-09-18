@@ -1600,41 +1600,58 @@ async function handleSsrComp(request, url, env, ctx) {
   const contenders = c.boards.reduce((a, b) => a + (b.entries || 0), 0);
   const withLeader = c.boards.filter(b => b.leader && b.leader.name);
 
-  let H = '<div class="cp-live">';
-  H += '<p class="big">A crypto trading competition is running right now: <span>day ' + day + ' of ' + days + '</span>, '
-     + '<span>$' + c.prize_pool_usd_per_season + '</span> in prizes on the line, free to enter.</p>';
-  H += '<p>This season ends ' + esc(ends) + ', in ' + endTxt + ', and the next one starts the same day - you can join on any day and still place. '
-     + 'Six leaderboards are live and ' + contenders + ' entries are ranked across them.</p>';
-  H += '<div class="cp-tiles">'
-     + '<div class="cp-tile"><div class="k">Prize pool</div><div class="v lime">$' + c.prize_pool_usd_per_season + ' / season</div></div>'
-     + '<div class="cp-tile"><div class="k">Entry fee</div><div class="v">$0</div></div>'
-     + '<div class="cp-tile"><div class="k">Deposit needed</div><div class="v">None</div></div>'
-     + '<div class="cp-tile"><div class="k">Season ends</div><div class="v">' + esc(ends) + '</div></div>'
-     + '</div>';
-  H += '<p class="src">Measured ' + new Date(c.measured_at).toISOString().slice(0, 16).replace('T', ' ') + ' UTC by MarginPad, from the same data that pays the prizes.</p>';
-  H += '</div>';
+  // THE SEASON DESK. When and how much are the two facts that decide whether anyone enters, and they used to be
+  // words inside a sentence - so they are objects here: a tick per day with the elapsed ones lit, and the pot as
+  // display type. The prose line still spells out "day N of 14" and the ISO end date in plain text, because a
+  // crawler reads the text and those are the two figures this page exists to be quoted on.
+  const maxPot = c.boards.reduce((m, b) => Math.max(m, +b.prize_pool_usd || 0), 0) || 1;
+  let ticks = '';
+  for (let d = 1; d <= days; d++) ticks += '<i class="' + (d < day ? 'on' : d === day ? 'now' : '') + '"></i>';
+  let H = '<div class="cp-desk">'
+     + '<div class="cp-dl"><div class="cp-kick">Day of season</div>'
+     + '<p class="cp-day"><em>' + day + '</em><small>/ ' + days + '</small></p>'
+     + '<div class="cp-meter" aria-hidden="true">' + ticks + '</div>'
+     + '<p class="cp-when">Right now it is <b>day ' + day + ' of ' + days + '</b>. This season ends <b>' + esc(ends) + '</b>, in ' + endTxt
+     + ', and the next one starts the same day - you can join on any day and still place.</p></div>'
+     + '<div class="cp-dr"><div class="cp-pot"><span class="amt">$' + c.prize_pool_usd_per_season + '</span></div>'
+     + '<div class="cp-potk">on the line this season, free to enter</div>'
+     + '<div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>' + contenders + '</b> entries ranked</span></div>'
+     + '</div></div>';
+  H += '<p class="cp-src">Measured ' + new Date(c.measured_at).toISOString().slice(0, 16).replace('T', ' ') + ' UTC by MarginPad, from the same data that pays the prizes.</p>';
 
-  if (withLeader.length) {
-    H += '<h2 style="margin-top:26px">Who is winning right now</h2>'
-       + '<div class="cp-w"><table class="cp-t"><thead><tr><th>Board</th><th>Leading</th><th class="r">Score</th><th class="r">Entries</th><th class="r">Pool</th></tr></thead><tbody>';
-    for (const b of c.boards) {
-      const lv = b.leader && b.leader.value;
-      let v = '-';
-      if (lv != null) {
-        if (b.id === 'roe') v = (+lv).toFixed(1) + '% ROE';
-        else if (b.id === 'winrate') v = (+lv).toFixed(1) + '% win rate';
-        else if (b.id === 'green') v = Math.round(+lv) + ' green day' + (Math.round(+lv) === 1 ? '' : 's');
-        else if (b.id === 'gold') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
-        else if (b.id === 'xp') v = Math.round(+lv).toLocaleString('en-US') + ' XP';
-        else if (b.id === 'bybit') v = '$' + Math.round(+lv).toLocaleString('en-US');
-        else v = Math.round(+lv).toLocaleString('en-US');
-      }
-      H += '<tr><td>' + esc(b.name) + '</td><td>' + (b.leader && b.leader.name ? esc(b.leader.name) : 'open - nobody has scored yet')
-         + '</td><td class="n">' + v + '</td><td class="n">' + (b.entries || 0) + '</td><td class="n pz">$' + b.prize_pool_usd + '</td></tr>';
+  // ONE ROW PER BOARD, SAID ONCE. The page used to carry two tables of the same seven boards - one for the live
+  // leader, one for the description - with Board and Pool in both. The pot is drawn at TRUE relative scale
+  // against the biggest one, because $300 is ten times $30 and a table column hid that completely.
+  H += '<h2>The seven boards</h2>';
+  H += '<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>';
+  H += '<div class="cp-brds">';
+  for (const b of c.boards) {
+    const lv = b.leader && b.leader.value;
+    let v = '';
+    if (lv != null) {
+      if (b.id === 'roe') v = (+lv).toFixed(1) + '% ROE';
+      else if (b.id === 'winrate') v = (+lv).toFixed(1) + '% win rate';
+      else if (b.id === 'green') v = Math.round(+lv) + ' green day' + (Math.round(+lv) === 1 ? '' : 's');
+      else if (b.id === 'gold') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
+      else if (b.id === 'xp') v = Math.round(+lv).toLocaleString('en-US') + ' XP';
+      else if (b.id === 'bybit' || b.id === 'moon') v = '$' + Math.round(+lv).toLocaleString('en-US') + ' wagered';
+      else v = Math.round(+lv).toLocaleString('en-US');
     }
-    H += '</tbody></table></div>';
-    H += '<p class="cp-note">Standings refresh as trades close. A board with no entries yet is an open board - one qualifying trade puts you first on it.</p>';
+    const real = b.entry === 'real_money';
+    const pot = +b.prize_pool_usd || 0;
+    const named = b.leader && b.leader.name;
+    H += '<div class="cp-brd">'
+       + '<div><p class="cp-bn">' + esc(b.name) + '</p><p class="cp-bw">' + esc(b.scored_on || '') + '.</p></div>'
+       + '<div class="cp-bl' + (named ? '' : ' open') + '"><div class="cp-blk">' + (named ? 'Leading' : 'Open board') + '</div>'
+       + '<div class="cp-bln">' + (named ? esc(b.leader.name) : 'nobody has scored yet') + '</div>'
+       + (named ? '<div class="cp-bls">' + esc(v) + ' · ' + (b.entries || 0) + ' entered</div>' : '<div class="cp-bls" style="color:var(--ink-faint)">one qualifying trade puts you first</div>')
+       + '</div>'
+       + '<div class="cp-bp' + (real ? ' real' : '') + '"><span class="amt">$' + pot + '</span>'
+       + '<div class="cp-bbar"><i style="width:' + Math.max(4, Math.round(pot / maxPot * 100)) + '%"></i></div>'
+       + '<span class="cp-bpe">' + (real ? 'Real money' : 'Free - paper') + '</span></div>'
+       + '</div>';
   }
+  H += '</div>';
 
   const out = ssrStampDate(html.slice(0, open) + '<div id="compdata" data-ssr="comp">' + H + html.slice(close), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'competition' } });

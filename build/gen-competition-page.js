@@ -78,27 +78,60 @@ const CSS = `
   p{font-size:15.5px;line-height:1.68;color:var(--ink-dim);max-width:72ch}
   p b,li b{color:var(--ink);font-weight:600}
   a{color:var(--lime)}
-  /* the live answer block */
-  .cp-live{border:1px solid var(--line-bright);border-radius:16px;background:linear-gradient(180deg,rgba(194,246,74,.05),transparent 60%),var(--panel);padding:20px 20px 16px;margin:0 0 26px}
-  .cp-live .big{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:clamp(22px,3.6vw,30px);line-height:1.22;letter-spacing:-.02em;color:var(--ink);margin:0 0 10px}
-  .cp-live .big span{color:var(--lime)}
-  .cp-live p{font-size:14.5px;margin:0 0 8px;color:var(--ink-dim)}
-  .cp-live .src{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:10px 0 0}
-  .cp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:14px 0 0}
-  .cp-tile{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:11px;padding:11px 12px;min-width:0}
-  .cp-tile .k{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.07em;color:var(--ink-faint);text-transform:uppercase}
-  .cp-tile .v{font-family:'Space Mono',monospace;font-size:17px;font-weight:800;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cp-tile .v.lime{color:var(--lime)}
-  /* standings */
-  .cp-w{overflow-x:auto;margin:0 0 8px}
-  .cp-t{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:12.5px;min-width:460px}
-  .cp-t th{text-align:left;font-size:9.5px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:700;padding:0 10px 8px;border-bottom:1px solid var(--line-bright)}
-  .cp-t th.r,.cp-t td.n{text-align:right}
-  .cp-t td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--ink-dim)}
-  .cp-t td:first-child{color:var(--ink);font-weight:700}
-  .cp-t tr:last-child td{border-bottom:0}
-  .cp-t .pz{color:var(--lime);font-weight:700}
-  .cp-t .rm{color:var(--gold);font-weight:700}
+  /* ---- THE SEASON DESK ------------------------------------------------------------------------------
+     The two facts that decide whether anyone enters are WHEN and HOW MUCH, and they used to be words inside a
+     sentence. They are objects now: a fourteen-tick rail with the elapsed days lit, and the pot as display type.
+     The rail is structure carrying real information - which day it is and how many are left - so it earns its
+     pixels; nothing else on the page is allowed to compete with it. */
+  .cp-desk{border:1px solid var(--line-bright);border-radius:18px;background:
+    radial-gradient(120% 140% at 88% 0%,rgba(194,246,74,.10),transparent 58%),var(--panel);
+    padding:22px 22px 18px;margin:0 0 14px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:26px;align-items:start}
+  .cp-dl{min-width:0}
+  .cp-kick{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+  .cp-day{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:clamp(30px,4.4vw,42px);line-height:1;letter-spacing:-.03em;color:var(--ink);margin:6px 0 0}
+  .cp-day em{font-style:normal;color:var(--lime)}
+  .cp-day small{font-size:.44em;color:var(--ink-faint);font-weight:600;letter-spacing:0;margin-left:2px}
+  /* one tick per day of the season; lit ticks are days already run */
+  .cp-meter{display:flex;gap:3px;margin:14px 0 9px}
+  .cp-meter i{flex:1;height:9px;border-radius:2px;background:rgba(255,255,255,.07);display:block}
+  .cp-meter i.on{background:var(--lime)}
+  .cp-meter i.now{background:var(--lime);box-shadow:0 0 0 2px rgba(194,246,74,.25)}
+  .cp-when{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);line-height:1.6}
+  .cp-when b{color:var(--ink)}
+  .cp-dr{min-width:0;border-left:1px solid var(--line);padding-left:24px}
+  /* the money figure, used for the pot and for every prize on the page */
+  .amt{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;letter-spacing:-.035em;color:var(--lime);display:inline-block;line-height:1}
+  .amt::first-letter{font-size:.55em;font-weight:700;vertical-align:.42em;opacity:.78}
+  .cp-pot .amt{font-size:clamp(38px,6.2vw,58px)}
+  .cp-potk{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-dim);margin-top:5px;line-height:1.55}
+  .cp-facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+  .cp-facts span{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-dim);border:1px solid var(--line);border-radius:8px;padding:5px 9px;white-space:nowrap}
+  .cp-facts span b{color:var(--ink)}
+  .cp-src{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin:0 0 26px;line-height:1.6}
+  /* ---- THE SEVEN BOARDS, SAID ONCE ------------------------------------------------------------------
+     This page used to carry two tables of the same seven boards - one for the live leader, one for the
+     description - with BOARD and POOL in both. One row per board now: what it measures, who is on top of it,
+     and the pot drawn at TRUE relative scale, because $300 is ten times $30 and a table column hid that
+     completely. */
+  .cp-brds{border-top:1px solid var(--line-bright);margin:12px 0 0}
+  .cp-brd{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.15fr) 168px;gap:18px;align-items:center;
+    padding:15px 2px;border-bottom:1px solid var(--line)}
+  .cp-brd:last-child{border-bottom:0}
+  .cp-bn{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:16.5px;font-weight:700;letter-spacing:-.015em;color:var(--ink);margin:0 0 3px}
+  .cp-bw{font-size:13px;line-height:1.5;color:var(--ink-faint);margin:0;max-width:44ch}
+  .cp-bl{min-width:0}
+  .cp-blk{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
+  .cp-bln{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cp-bls{font-family:'Space Mono',monospace;font-size:12px;color:var(--grn);margin-top:1px}
+  .cp-bl.open .cp-bln{color:var(--ink-faint);font-weight:400}
+  .cp-bp{text-align:right}
+  .cp-bp .amt{font-size:21px}
+  .cp-bbar{height:6px;border-radius:3px;background:rgba(255,255,255,.055);margin-top:7px;overflow:hidden}
+  .cp-bbar i{display:block;height:100%;border-radius:3px;background:var(--lime)}
+  .cp-bp.real .amt{color:var(--gold)}
+  .cp-bp.real .cp-bbar i{background:var(--gold)}
+  .cp-bpe{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-top:6px;display:block}
+  .cp-bp.real .cp-bpe{color:var(--gold)}
   /* cta */
   .cp-cta{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 10px}
   .cp-cta a{flex:1;min-width:180px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:14px 16px;
@@ -122,6 +155,16 @@ const CSS = `
   .cp-note{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);line-height:1.7;margin:18px 0 0}
   .site-foot{border-top:1px solid var(--line);margin-top:40px;padding:18px 0;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint)}
   .site-foot a{color:var(--ink-faint)}
+  @media(max-width:900px){.cp-desk{grid-template-columns:1fr;gap:16px;padding:18px 16px 15px}
+    .cp-dr{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:15px}
+    .cp-brd{grid-template-columns:minmax(0,1fr) 88px;column-gap:14px;row-gap:7px;align-items:start;padding:14px 2px}
+    .cp-brd>div:first-child{grid-column:1;grid-row:1}
+    .cp-bp{grid-column:2;grid-row:1;text-align:right}
+    .cp-bl{grid-column:1 / -1;grid-row:2}
+    .cp-bp .amt{font-size:19px}.cp-bbar{margin-top:6px}.cp-bpe{font-size:9px;margin-top:4px}
+    .cp-bw{max-width:none;font-size:12.5px}
+    .cp-bln{font-size:13.5px}.cp-bls{font-size:11.5px}
+    .lead{font-size:15px;line-height:1.58}}
   @media(max-width:620px){.wrap{padding:0 14px 60px}.cp-cta a{min-width:100%}}
 `;
 
@@ -199,31 +242,45 @@ const html = `<!DOCTYPE html>
   <article>
     <div class="eyebrow"><i></i>Running now</div>
     <h1>Crypto trading competition, free to enter</h1>
-    <p class="lead">MarginPad runs a <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Six leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on five of them. Trades are filled by our server against real exchange candles, so the standings measure trading, not a browser.</p>
+    <p class="lead">A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Seven leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on five of them.</p>
 
     <div id="compdata">
-      <div class="cp-live">
-        <p class="big">A season is running right now.</p>
-        <p>The live standings, the prize pool and the exact end of this season load with the page.</p>
+      <div class="cp-desk">
+        <div class="cp-dl">
+          <div class="cp-kick">This season</div>
+          <p class="cp-day">Running <em>now</em></p>
+          <p class="cp-when">Seasons are <b>fourteen days</b> and the next one starts the day this one ends - you can join on any day and still place.</p>
+        </div>
+        <div class="cp-dr">
+          <div class="cp-pot"><span class="amt">$350</span></div>
+          <div class="cp-potk">on the line this season, free to enter</div>
+          <div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>7</b> boards</span></div>
+        </div>
+      </div>
+      <p class="cp-src">Live standings, the exact pot and the day of the season load with the page.</p>
+
+      <h2>The seven boards</h2>
+      <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>
+      <div class="cp-brds">
+${BOARDS.map(([n, w, p, e]) => {
+  const amt = +String(p).replace(/[^0-9]/g, '');
+  const real = e === 'Real money';
+  return `        <div class="cp-brd">
+          <div><p class="cp-bn">${n}</p><p class="cp-bw">${w}</p></div>
+          <div class="cp-bl open"><div class="cp-blk">Leading</div><div class="cp-bln">standings load with the page</div></div>
+          <div class="cp-bp${real ? ' real' : ''}"><span class="amt">$${amt}</span><div class="cp-bbar"><i style="width:${Math.round(amt / 300 * 100)}%"></i></div><span class="cp-bpe">${real ? 'Real money' : 'Free - paper'}</span></div>
+        </div>`;
+}).join('')}
       </div>
     </div>
+
+    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <div class="cp-cta">
       <a class="go" href="/season/">Enter the season - free →</a>
       <a href="/paper-trade">Try the terminal, no account</a>
     </div>
 
-    <h2>The seven boards</h2>
-    <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>
-    <div class="cp-w">
-      <table class="cp-t">
-        <thead><tr><th>Board</th><th>What it measures</th><th class="r">Pool</th><th class="r">Entry</th></tr></thead>
-        <tbody>
-${BOARDS.map(([n, w, p, e]) => `          <tr><td>${n}</td><td>${w}</td><td class="n pz">${p}</td><td class="n${e === 'Real money' ? ' rm' : ''}">${e}</td></tr>`).join('\n')}
-        </tbody>
-      </table>
-    </div>
-    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season; King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <h2>How to enter</h2>
     <ol class="cp-steps">

@@ -91,17 +91,27 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
           const el = document.elementFromPoint(bb.left + bb.width / 2, bb.top + bb.height / 2); hit = !!(el && (cta === el || cta.contains(el))); }
         return {
           over: document.documentElement.scrollWidth > window.innerWidth + 1 ? document.documentElement.scrollWidth : 0,
-          tiles: document.querySelectorAll('.cp-tile').length,
+          facts: document.querySelectorAll('.cp-facts span').length,
+          pot: (document.querySelector('.cp-pot .amt') || {}).textContent,
+          ticks: document.querySelectorAll('.cp-meter i').length,
+          ticksOn: document.querySelectorAll('.cp-meter i.on, .cp-meter i.now').length,
           faq: document.querySelectorAll('.cp-faq details').length,
           ctaHit: hit, ctaHref: cta && cta.getAttribute('href'),
-          boards: document.querySelectorAll('.cp-t tbody tr').length,
+          boards: document.querySelectorAll('.cp-brd').length,
+          bars: [...document.querySelectorAll('.cp-brd .cp-bbar i')].map(e => Math.round(parseFloat(e.style.width) || 0)),
+          amts: [...document.querySelectorAll('.cp-brd .cp-bp .amt')].map(e => e.textContent),
         };
       });
       ok(r.over === 0, '[' + tag + '] never scrolls sideways', r.over);
-      ok(r.tiles === 4, '[' + tag + '] the four answer tiles are there', r.tiles);
+      ok(r.facts >= 3 && /^\$\d+$/.test(r.pot || ''), '[' + tag + '] the desk states the pot and the entry facts', { pot: r.pot, facts: r.facts });
+      ok(r.ticks === 14 && r.ticksOn >= 1 && r.ticksOn <= 14, '[' + tag + '] the season meter has one tick per day, with the elapsed ones lit', { ticks: r.ticks, on: r.ticksOn });
       ok(r.faq === 7, '[' + tag + '] seven questions answered', r.faq);
       ok(r.ctaHit && r.ctaHref === '/season/', '[' + tag + '] the entry button is reachable and goes to the season', r);
-      ok(r.boards >= 12, '[' + tag + '] both tables render (' + r.boards + ' rows)', r.boards);
+      ok(r.boards === 7, '[' + tag + '] all seven boards, listed once (' + r.boards + ')', r.boards);
+      ok(r.amts.length === 7 && r.amts.every(a => /^\$\d+$/.test(a)), '[' + tag + '] every board shows its prize as one figure', r.amts);
+      // the whole point of the bars: $300 is ten times $30 and has to look it
+      ok(Math.max(...r.bars) === 100 && Math.min(...r.bars) <= 15 && Math.max(...r.bars) / Math.max(1, Math.min(...r.bars)) >= 5,
+        '[' + tag + '] the prize bars are drawn at true relative scale', r.bars);
       ok(errs.length === 0, '[' + tag + '] no page errors' + (errs.length ? ': ' + errs.join(' | ') : ''));
       await p.close();
     }
