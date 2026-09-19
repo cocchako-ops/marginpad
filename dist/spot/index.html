@@ -176,6 +176,7 @@
   details.why .why-b b{color:var(--ink);}
   .v-bank details.why{border-color:#ddd3b8;background:#efe9d4;} .v-bank details.why summary{color:#6b6350;} .v-bank details.why .why-b{color:#6b6350;} .v-bank details.why .why-b b{color:#241f12;}
   .v-wal details.why{border-color:rgba(255,98,88,.26);background:rgba(255,98,88,.06);margin:8px 0;} .v-wal details.why summary{color:#ffb4ad;} .v-wal details.why .why-b{color:#e6bcb8;} .v-wal details.why .why-b b{color:#fff;}
+  .wd-mine-lead{width:100%;justify-content:center;margin:0 0 7px;padding:10px 12px;font-size:12.5px;}
   .wd-mine{display:inline-flex;align-items:center;gap:7px;margin-top:8px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.45);color:#d9ccff;border-radius:999px;padding:8px 13px;font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
   .wd-mine.on{background:rgba(167,139,250,.3);color:#fff;}
   .m-go.done{background:var(--panel);color:var(--dim);border:1px solid var(--line2);}
@@ -1573,10 +1574,10 @@
       +'<div class="np" data-n="eth"><b>Ethereum</b><span>'+L('wd_n_eth')+'</span></div>'
       +'</div>'
       +'<div class="tin-l">'+L('wd_dest')+'</div>'
+      +'<button class="wd-mine wd-mine-lead" id="wdPaste" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg><span id="wdMineL"></span></button>'
       +'<input class="tin sm" id="wdAddr" type="text" autocomplete="off" spellcheck="false" placeholder="'+esc(L('wd_ph'))+'" />'
-      +'<button class="wd-mine" id="wdPaste" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg><span id="wdMineL"></span></button>'
       +'<div class="tin-hint">'+L('wd_hint')+'</div>'
-      +'<div class="tin-l" style="margin-top:10px">'+L('wd_amt')+'</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" />'
+      +'<div class="tin-l" style="margin-top:10px">'+L('wd_amt')+'</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" value="'+(Math.max(5,Math.floor(((PORT&&PORT.usdtUsd)||0)/2))||'')+'" />'
       +'<div class="chips"><button class="chip" data-wd="25" type="button">25%</button><button class="chip" data-wd="50" type="button">50%</button><button class="chip" data-wd="100" type="button">'+L('chip_all')+'</button></div>'
       +'<div class="m-est" id="wdEst" hidden></div>'
       +'<div class="lesson">'+L('wd_lesson')+'</div>'
@@ -1594,7 +1595,7 @@
       paintMine();est();});});
     $('wdPaste').addEventListener('click',function(e){e.preventDefault();$('wdAddr').value=mine();paintMine();try{$('wdAmt').focus();}catch(e2){}});
     $('wdAddr').addEventListener('input',paintMine);
-    paintMine();
+    paintMine();est(); /* the amount starts filled, so show what arrives and what it costs straight away */
     $('wdAmt').addEventListener('input',est);
     Array.prototype.forEach.call($('smod').querySelectorAll('[data-wd]'),function(c){c.addEventListener('click',function(){
       var p2=+c.getAttribute('data-wd');var fee=NETS[net].wd;
