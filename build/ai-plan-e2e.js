@@ -85,8 +85,13 @@ withBrowser(async (browser) => {
 
   const waitPlan = await run({ bias: 'wait', e: 0.99, s: 0.975, t: [1.02, 1.04] });
   if (!waitPlan.err) {
-    ok(!/>Entry</.test(waitPlan.card) && !/aipc-rows/.test(waitPlan.card), 'a WAIT plan shows no entry/stop/target rows on the card', { card: waitPlan.card.slice(0, 120) });
+    // 2026-09-19: a wait plan used to hide its levels, which left "wait for a pullback" with nothing to wait
+    // FOR. It shows the trigger now - but it has to be unmistakably not-a-trade, and THAT is what is load-bearing
+    // here: no risk/reward rectangles, no position block, and the rows carried under the waiting label.
+    ok(/aipc-wait/.test(waitPlan.card) && /aipc-rows w/.test(waitPlan.card), 'a WAIT plan shows its trigger rows, marked as waiting', { card: waitPlan.card.slice(0, 200) });
+    ok(/waiting for/i.test(waitPlan.card), 'and the label says it is not a trade yet');
     ok(waitPlan.rects === 0, 'and paints no risk/reward rectangles', waitPlan);
+    ok(waitPlan.lines >= 3, 'the trigger is on the chart too (' + waitPlan.lines + ' lines)', waitPlan);
     ok(/WAIT/.test(waitPlan.card), 'the card says WAIT');
   }
 

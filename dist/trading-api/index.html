@@ -200,6 +200,10 @@
   /* ── key box ──────────────────────────────────────────────────────────────────────────────────────────── */
   .keybox{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:40px;align-items:start;overflow:hidden;padding:30px;border:1px solid var(--line2);border-radius:16px;background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.055),transparent 55%),var(--panel);margin-top:30px;}
   .keybox h3{font-size:21px;font-weight:700;}
+  .keybox h2{font-size:27px;font-weight:700;letter-spacing:-.01em;}
+  .keybox.kb-lead{margin-top:0;padding:34px;border-color:rgba(194,246,74,.28);}
+  #getkey{margin-top:34px;}
+  @media(max-width:860px){.keybox h2{font-size:23px;}.keybox.kb-lead{padding:24px;}#getkey{margin-top:24px;}}
   .keybox > div > p{margin-top:11px;font-size:14.5px;line-height:1.65;color:var(--dim);}
   .akb-key{display:none;margin-top:14px;background:#08090c;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--lime);word-break:break-all;}
   .akb-key.on{display:block;}
@@ -423,6 +427,9 @@
     .rail ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0 20px;}
   }
   @media(max-width:760px){ .tnav a{display:none;} }
+  /* On a phone the hero's terminal mock is 411px of decoration standing between the headline and the key box,
+     and the real curl lives in the quickstart directly under it. Same rule the bento homepage already follows. */
+  @media(max-width:720px){ #heroTerm{display:none;} }
   @media(max-width:900px){
     .hero{grid-template-columns:minmax(0,1fr);gap:34px;padding:34px 0 30px;min-height:0;}
     .proof{grid-template-columns:1fr 1fr;}
@@ -464,9 +471,10 @@
   <div class="shell">
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
     <div class="tnav">
+      <a href="#akb">Get a key</a>
       <a href="#quickstart">Quickstart</a>
-      <a href="#endpoints">Endpoints</a>
       <a href="#plans">Plans</a>
+      <a href="#endpoints">Endpoints</a>
       <a href="/api-docs/">Reference</a>
       <a href="/arena/">Arena</a>
       <button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button>
@@ -506,25 +514,34 @@
   </div>
 </div>
 
-<!-- ── PROOF ─────────────────────────────────────────────────────────────────────────────────────────── -->
-<div class="proof">
-  <div><div class="v">24</div><div class="l">endpoints, plus a WebSocket, webhooks and an MCP server</div></div>
-  <div><div class="v">9</div><div class="l">real venue fee schedules your fills can be charged at</div></div>
-  <div><div class="v">1,000<span style="font-size:18px">&times;</span></div><div class="l">maximum leverage, on any USDT pair with a live price</div></div>
-  <div><div class="v" id="pvCalls">1.1M</div><div class="l">calls served for the bots already running on it</div></div>
 </div>
 </div>
 
-<div class="shell">
-  <a class="statusbar" href="/status/" id="statusBar" aria-label="Live service status">
-    <span class="sb-l">STATUS</span>
-    <span class="sb-i" id="sbStore"><i></i>trading store</span>
-    <span class="sb-i" id="sbColl"><i></i>liquidation collector</span>
-    <span class="sb-i" id="sbCron"><i></i>scheduled jobs</span>
-    <span class="sb-n" id="sbNote">reading /api/status&hellip;</span>
-    <span class="sb-go">Full status and history &rarr;</span>
-  </a>
-</div>
+
+<!-- GET A KEY -->
+<section id="getkey">
+  <div class="shell">
+    <div class="keybox kb-lead" id="akb">
+      <div>
+        <h2>Get your key</h2>
+        <p>Sign in with an email - no password, no KYC. Your bot's positions persist on your account, and one account can hold several keys so a backtest bot and a live bot never share a rate budget.</p>
+        <button class="btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
+        <div class="akb-key" id="akbKey"></div>
+        <div class="akb-msg" id="akbMsg"></div>
+      </div>
+      <div>
+        <div id="akbMgr" hidden>
+          <div class="akb-plan" id="akbPlan"></div>
+          <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Book</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
+          <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (optional)" autocomplete="off"><button class="btn akb-sm" type="submit">Create key</button></form>
+          <div class="akb-rev" id="akbRev" hidden></div>
+          <div class="akb-use" id="akbUse" hidden></div>
+        </div>
+        <p class="akb-empty" id="akbEmpty">Your keys, their usage and the book each one trades appear here once you are signed in. Keys are secrets - anyone holding one can trade your paper account.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ── QUICKSTART ────────────────────────────────────────────────────────────────────────────────────── -->
 <section id="quickstart">
@@ -627,48 +644,8 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     </div>
     <p class="note" style="margin-top:8px">Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style="color:var(--ink)">Official clients</b>, zero dependencies - <code>npm install marginpad</code> or <code>pip install marginpad</code>, or one file each: <a href="/assets/sdk/marginpad.py">marginpad.py</a> · <a href="/assets/sdk/marginpad.js">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.</p>
 
-    <div class="keybox" id="akb">
-      <div>
-        <h3>Get your key</h3>
-        <p>Sign in with an email - no password, no KYC. Your bot's positions persist on your account, and one account can hold several keys so a backtest bot and a live bot never share a rate budget.</p>
-        <button class="btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
-        <div class="akb-key" id="akbKey"></div>
-        <div class="akb-msg" id="akbMsg"></div>
-      </div>
-      <div>
-        <div id="akbMgr" hidden>
-          <div class="akb-plan" id="akbPlan"></div>
-          <div class="akb-tw"><table class="akb-t" id="akbTable"><thead><tr><th>Name</th><th>Book</th><th>Key</th><th>Calls</th><th>Last used</th><th></th></tr></thead><tbody></tbody></table></div>
-          <form class="akb-new" id="akbNew"><input type="text" id="akbName" maxlength="40" placeholder="Name the key (e.g. grid-bot)" autocomplete="off"><input type="text" id="akbBook" maxlength="24" placeholder="Book (optional)" autocomplete="off"><button class="btn akb-sm" type="submit">Create key</button></form>
-          <div class="akb-rev" id="akbRev" hidden></div>
-          <div class="akb-use" id="akbUse" hidden></div>
-        </div>
-        <p class="akb-empty" id="akbEmpty">Your keys, their usage and the book each one trades appear here once you are signed in. Keys are secrets - anyone holding one can trade your paper account.</p>
-      </div>
-    </div>
   </div>
 </section>
-
-<!-- ── WHY ───────────────────────────────────────────────────────────────────────────────────────────── -->
-<div class="band">
-<section id="why">
-  <div class="shell">
-    <div class="shead">
-      <span class="kick">Why not an exchange testnet</span>
-      <h2>A testnet gives you fake prices. This gives you real ones and fake money.</h2>
-      <p>Testnet books are thin, their prices drift from the real market, and they reset without warning. Everything here is priced from the live multi-exchange feed our own charts run on - only the dollars are simulated.</p>
-    </div>
-    <div class="diffs">
-      <div class="diff"><span class="dn">Execution</span><h3>The server holds your orders</h3><p>Limit entries, stop entries, stop-losses, targets and trailing stops are all evaluated on our side against 1-minute candles. <b>Your bot can be offline, restarting or redeployed</b> and the fill still lands at your level, stamped with the minute the market actually reached it.</p></div>
-      <div class="diff"><span class="dn">Costs</span><h3>Fees that match your real bill</h3><p>Both legs pay a taker fee, charged as a round trip at close, with funding accrued across marks. Name a venue and the paper account is charged at <b>that exchange's published schedule</b> less our referral discount - so a scalping strategy fails here for the same reason it would fail there.</p></div>
-      <div class="diff"><span class="dn">Failure</span><h3>Liquidation that behaves</h3><p>Isolated margin, 0.5% maintenance, losses capped at your margin. A trailing stop is moved by each candle's extreme <b>after</b> that candle was checked against the stop in force - so a bar can never stop you out at a level it created itself.</p></div>
-      <div class="diff"><span class="dn">Idempotency</span><h3>A timeout is not a mystery</h3><p>Send <code>client_order_id</code> and a retried open returns the position the first call created, flagged <code>idempotent: true</code>. Closing takes one too. This single field is the difference between a bot you trust unattended and one you babysit.</p></div>
-      <div class="diff"><span class="dn">Observability</span><h3>Push, not poll</h3><p>A free WebSocket pushes position events and marks every ~2 s; webhooks POST the same shape to your own URL, HMAC-signed and retried, even while nothing of yours is connected. ETags make the polls you keep nearly free.</p></div>
-      <div class="diff"><span class="dn">Measurement</span><h3>It grades your strategy</h3><p>Every book gets its own journal, equity curve and drawdown. <code>/v1/report</code> returns win rate and return by coin, leverage band, side and hour, with a skill score - and it <b>says nothing under eight trades</b> rather than inventing a pattern.</p></div>
-    </div>
-  </div>
-</section>
-</div>
 
 <!-- ── PLANS ─────────────────────────────────────────────────────────────────────────────────────────── -->
 <section id="plans">
@@ -760,6 +737,49 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
     <p class="apfoot"><b>Your bot is told before the plan lapses, not after.</b> Every keyed response carries <code>X-MP-Plan</code>, and inside the last fourteen days it also carries <code>X-MP-Plan-Expires</code> and <code>X-MP-Plan-Days-Left</code>. Log them and an unattended bot can warn you itself; the same countdown is on this page and in <code>/v1/usage</code>. A plan that runs out drops the key to Free - it never stops answering.</p>
   </div>
 </section>
+
+<!-- PROOF MOVED BELOW THE PRICES -->
+<div class="shell">
+<!-- ── PROOF ─────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="proof">
+  <div><div class="v">24</div><div class="l">endpoints, plus a WebSocket, webhooks and an MCP server</div></div>
+  <div><div class="v">9</div><div class="l">real venue fee schedules your fills can be charged at</div></div>
+  <div><div class="v">1,000<span style="font-size:18px">&times;</span></div><div class="l">maximum leverage, on any USDT pair with a live price</div></div>
+  <div><div class="v" id="pvCalls">1.1M</div><div class="l">calls served for the bots already running on it</div></div>
+</div>
+
+<div class="shell">
+  <a class="statusbar" href="/status/" id="statusBar" aria-label="Live service status">
+    <span class="sb-l">STATUS</span>
+    <span class="sb-i" id="sbStore"><i></i>trading store</span>
+    <span class="sb-i" id="sbColl"><i></i>liquidation collector</span>
+    <span class="sb-i" id="sbCron"><i></i>scheduled jobs</span>
+    <span class="sb-n" id="sbNote">reading /api/status&hellip;</span>
+    <span class="sb-go">Full status and history &rarr;</span>
+  </a>
+</div>
+
+<!-- ── WHY ───────────────────────────────────────────────────────────────────────────────────────────── -->
+<div class="band">
+<section id="why">
+  <div class="shell">
+    <div class="shead">
+      <span class="kick">Why not an exchange testnet</span>
+      <h2>A testnet gives you fake prices. This gives you real ones and fake money.</h2>
+      <p>Testnet books are thin, their prices drift from the real market, and they reset without warning. Everything here is priced from the live multi-exchange feed our own charts run on - only the dollars are simulated.</p>
+    </div>
+    <div class="diffs">
+      <div class="diff"><span class="dn">Execution</span><h3>The server holds your orders</h3><p>Limit entries, stop entries, stop-losses, targets and trailing stops are all evaluated on our side against 1-minute candles. <b>Your bot can be offline, restarting or redeployed</b> and the fill still lands at your level, stamped with the minute the market actually reached it.</p></div>
+      <div class="diff"><span class="dn">Costs</span><h3>Fees that match your real bill</h3><p>Both legs pay a taker fee, charged as a round trip at close, with funding accrued across marks. Name a venue and the paper account is charged at <b>that exchange's published schedule</b> less our referral discount - so a scalping strategy fails here for the same reason it would fail there.</p></div>
+      <div class="diff"><span class="dn">Failure</span><h3>Liquidation that behaves</h3><p>Isolated margin, 0.5% maintenance, losses capped at your margin. A trailing stop is moved by each candle's extreme <b>after</b> that candle was checked against the stop in force - so a bar can never stop you out at a level it created itself.</p></div>
+      <div class="diff"><span class="dn">Idempotency</span><h3>A timeout is not a mystery</h3><p>Send <code>client_order_id</code> and a retried open returns the position the first call created, flagged <code>idempotent: true</code>. Closing takes one too. This single field is the difference between a bot you trust unattended and one you babysit.</p></div>
+      <div class="diff"><span class="dn">Observability</span><h3>Push, not poll</h3><p>A free WebSocket pushes position events and marks every ~2 s; webhooks POST the same shape to your own URL, HMAC-signed and retried, even while nothing of yours is connected. ETags make the polls you keep nearly free.</p></div>
+      <div class="diff"><span class="dn">Measurement</span><h3>It grades your strategy</h3><p>Every book gets its own journal, equity curve and drawdown. <code>/v1/report</code> returns win rate and return by coin, leverage band, side and hour, with a skill score - and it <b>says nothing under eight trades</b> rather than inventing a pattern.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+
 
 <!-- ── DOCS ──────────────────────────────────────────────────────────────────────────────────────────── -->
 <div class="band">

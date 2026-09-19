@@ -824,7 +824,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var row=function(k,v,cls){v=+v;if(!(v>0))return '';return '<button type="button" class="aipr '+(cls||'')+'" data-px="'+v+'"><span>'+k+'</span><b>'+cwFmt(v)+'</b>'+pct(v)+'</button>';};
     var rr=aiRR(plan),conf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
     var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(isW?'WAIT':bias.toUpperCase())+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
-    if(!isW)h+='<div class="aipc-rows">'+row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+(plan.targets||[]).map(function(t,i){return row('Target '+(i+1),t,'t');}).join('')+'</div>';
+    var _rows=row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+(plan.targets||[]).map(function(t,i){return row('Target '+(i+1),t,'t');}).join('');if(_rows){if(!isW)h+='<div class="aipc-rows">'+_rows+'</div>';else h+='<div class="aipc-wait">'+(_rrLow?'not worth taking at R:R '+_rrLow+' - the levels, for watching':'waiting for - not a trade yet')+'</div><div class="aipc-rows w">'+_rows+'</div>';}
     var lv=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lv.length)h+='<div class="aipc-lv-rows">'+lv.slice(0,4).map(function(l){return '<button type="button" class="aipr l" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,18))+'</span><b>'+cwFmt(+l.price)+'</b>'+pct(l.price)+'</button>';}).join('')+'</div>';
     if(_rrLow!=='')h+='<div class="aipc-inv aipc-rr"><span>Not worth it</span>The first target pays '+_rrLow+'x the risk - under the 1.5x this assistant will call a trade, so the levels are marked to watch, not to take.</div>';
     if(plan.invalidation)h+='<div class="aipc-inv"><span>Wrong if</span>'+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
@@ -1201,8 +1201,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       (plan.targets||[]).forEach(function(t,i){pl(t,'#2ebd85','AI TP'+(i+1),2,1);});
     }else{
       /* still worth seeing, just not as a trade: the same prices as plain watch levels */
-      if(plan.entry)pl(plan.entry,'#6b7c93','WATCH',3,1);
-      (plan.targets||[]).forEach(function(t,i){pl(t,'#6b7c93','WATCH',3,1);});
+      if(plan.entry)pl(plan.entry,'#6b7c93','WAIT FOR',3,1);
+      if(plan.stop)pl(plan.stop,'#8a6a66','WOULD STOP',3,1);
+      (plan.targets||[]).forEach(function(t,i){pl(t,'#6b7c93','WOULD TP'+(i+1),3,1);});
     }
     if(!drew)(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
     /* the risk and the reward as ZONES ahead of the last candle (owner 2026-09-17: show the target, not only a line):
