@@ -126,6 +126,7 @@ const PRACTICE_LINKS = [
   ['/spot/', 'Demo Spot - a $10,000 card, an exchange and your own wallet'],
   ['/academy/', 'Academy - 16 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
+  ['/trading-competition/', 'Live leaderboards - $350 a season, free to enter'],
 ].filter(([h]) => h === '/paper-trade' || has(h.replace(/^\/|\/$/g, '')));
 const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
 for (const c of COINS) {
