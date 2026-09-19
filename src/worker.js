@@ -305,7 +305,7 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'Replay status, price and candles', description: 'While a replay runs on this key’s book: cursor (market time), the price under it, progress, finished, and the candles up to the cursor. ?interval=1|5|15|60|240 (minutes), ?bars=1-500.', security: [{ ApiKeyAuth: [] }], parameters: [q('interval', 'Candle size in minutes (aggregated from 1m).', false, '5'), q('bars', 'How many candles up to the cursor.', false, '120')], responses: { '200': { description: '{ running, symbol, day, speed, cursor_ts, cursor_iso, progress_pct, price, finished, bars:[{time,open,high,low,close}] }' } } },
         post: { tags: ['Paper trading'], summary: 'Start or stop a replay of a past day', description: 'Start: {symbol, day:"YYYY-MM-DD" (a complete past UTC day), speed (1-600 market seconds per real second, default 60)}. From then on the key’s trading calls act on a separate replay journal priced from MarginPad’s own 1-minute candles; stops, targets and liquidations are checked on every candle between two calls. Stop: {act:"stop"} closes everything at the cursor, returns the summary and empties the replay journal. One replay per key at a time; crypto only; limit and stop entries are not available in replay.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, day: { type: 'string', example: '2026-09-11' }, speed: { type: 'number', example: 60 }, act: { type: 'string', enum: ['start', 'stop'] } } } } } }, responses: { '200': { description: 'start: { ok, replay:{id, symbol, day, speed, start_ts, end_ts, candles, first_price} } · stop: { ok, replay:{closes, wins, losses, win_rate_pct, pnl_usd, return_pct, liquidations, trades} }' }, '400': { description: 'day_invalid / day_not_finished / speed_invalid / replay_crypto_only' }, '404': { description: 'no_data / no_replay' }, '409': { description: 'replay_running' } } },
       },
-      '/api/premium/status': { get: { tags: ['Plans'], summary: 'Consumer plans and where the caller stands', description: "Keyless. The live consumer plans and their prices - Premium and Premium Plus - so an assistant never has to quote a figure off a cached page. Premium ($11.99/month) covers the four AI indicators, the live liquidation heatmap, position alerts, Balance Mode, every duel format, the Premium lounge, trading-report breakdowns and the Daily Brief. Premium Plus ($159/month) adds Ask AI on the charts, 50 questions a day. Signed in, it also answers where the caller stands (premium, plus, plan, until, source). The Founder plan is retired and is not sold.", parameters: [], responses: { '200': { description: '{ premium, plus, plan, until, source, price, plusPrice, plans[] }' } } } },
+      '/api/premium/status': { get: { tags: ['Plans'], summary: 'Consumer plans and where the caller stands', description: "Keyless. The live consumer plans and their prices - Premium and Premium Plus - so an assistant never has to quote a figure off a cached page. Premium ($11.99/month) covers the four AI indicators, the live liquidation heatmap, position alerts, Balance Mode, every duel format, the Premium lounge, trading-report breakdowns and the Daily Brief. Premium includes ONE Ask AI read on the charts a day; Premium Plus ($159/month) raises that to 50 a day. GET /api/ai/chart publishes the allowance as dailyByPlan. Signed in, it also answers where the caller stands (premium, plus, plan, until, source). The Founder plan is retired and is not sold.", parameters: [], responses: { '200': { description: '{ premium, plus, plan, until, source, price, plusPrice, plans[] }' } } } },
       '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L. win_rate_pct counts CLOSED trades only - read it beside open_positions and open_unrealized_usd, because a bot that closes its winners and holds its losers reads 100% and is not winning; pnl_incl_open_usd is the whole book. realism.label says what the fills ran with (off = the engine defaults, no slippage and a flat 0.5% maintenance margin). No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, note, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations, open_positions, open_margin_usd, open_unrealized_usd, pnl_incl_open_usd, realism:{slippage_closes, tiered_closes, label}}] }' } } } },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/whsink/{token}': {
@@ -10490,7 +10490,7 @@ async function handleNowpayIpn(request, env) {
 // TWO CONSUMER PLANS SINCE 2026-09-18 (owner). ONE table, the way API_PLANS is one table - a price that lives in
 // a second place is a price that will disagree with itself.
 //   Premium      $11.99/mo  - the site: indicators, heatmap, alerts, duels, lounge, report breakdowns, Daily Brief
-//   Premium Plus $159/mo    - everything in Premium PLUS Ask AI on the charts
+//   Premium Plus $159/mo    - everything in Premium, with Ask AI raised from 1 read a day to 50 (AI_DAILY)
 // Ask AI moved behind Plus because it is the one feature with a real per-use cost: measured, a member on the 50-a-day
 // cap runs to $66 a month on claude-sonnet-5 (GET /api/admin/aicost), so it could never live inside a $3.99 - or even
 // an $11.99 - subscription. Every other Premium feature costs us nothing per use.
@@ -10501,6 +10501,10 @@ const PREM_PLANS = {
   plus: { id: 'plus', name: 'Premium Plus', cents: 15900, days: 30, order: 'premplus_' },
 };
 const PREM_USD = (id) => ((PREM_PLANS[id] || PREM_PLANS.premium).cents / 100);
+// Ask-AI daily allowance per plan. Read by handleAiChart AND published on GET /api/ai/chart, /api/premium/status
+// and the pricing copy - never write one of these numbers anywhere else.
+const AI_DAILY = { plus: 50, premium: 1, free: 0 };
+const aiDailyFor = (st) => (st && st.plus) ? AI_DAILY.plus : ((st && st.premium) ? AI_DAILY.premium : AI_DAILY.free);
 const PREM_FOUNDERS = ['chako', 'whyme', 'gladijator']; // always premium, can't be removed
 const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + MP One Field bg). Not a permission system - chat/mod powers live in the users.role column.
 // Badge text on the PUBLIC profile card, INDEPENDENT of PREM_OWNERS - the two were the same thing until
@@ -12913,11 +12917,17 @@ async function handleAiChart(url, request, env, ectx) {
   // effective daily limit = per-user override (KV ai:lim:<uid>) ?? global default (KV ai:cfg.limit) ?? 10 - both set from the admin
   let LIMIT = 10; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = c.limit; } catch (e) {}
   if (uid) { try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {} }
-  // ASK AI IS PREMIUM PLUS (2026-09-18). It is the only feature with a real per-call cost - measured, a member on
-  // the 50-a-day cap runs to $66 a month - so it sits on the plan priced for it. Every other Premium benefit is free
-  // to serve and stays on Premium.
-  const _prem = _e2eAi ? true : (uid ? (await premiumFor(env, request)).plus === true : false);
-  if (_prem) LIMIT = Math.max(LIMIT, 50); // premium members get a much higher AI daily allowance
+  // ASK AI: ONE READ A DAY ON PREMIUM, 50 ON PLUS (2026-09-19, owner). It is the only feature with a real per-call
+  // cost - measured, a member on the 50-a-day cap runs to about $66 a month, while one read a day is ~$0.018 against
+  // an $11.99 subscription. So Premium carries it as a daily trial and Plus is what buys the volume. AI_DAILY is the
+  // one table; never write one of these numbers anywhere else.
+  const _st = _e2eAi ? { plus: true, premium: true } : (uid ? await premiumFor(env, request) : { plus: false, premium: false });
+  const _plus = _st.plus === true, _prem = _plus || _st.premium === true;
+  // the PLAN decides the allowance; Plus keeps whatever the KV default raised it to, ordinary Premium is exactly
+  // AI_DAILY.premium (never the global default, which is a free-tier number and would hand it ten)
+  LIMIT = _plus ? Math.max(LIMIT, AI_DAILY.plus) : (_prem ? AI_DAILY.premium : 0);
+  // a per-account override still wins over the plan - that is what it is for
+  if (uid) { try { const ov2 = await env.STATS.get('ai:lim:' + uid); if (ov2 != null && ov2 !== '') { const n2 = parseInt(ov2, 10); if (!isNaN(n2)) LIMIT = n2; } } catch (e) {} }
   const rk = uid ? 'ai:u:' + uid + ':' + day : '';
   const usedNow = async () => { if (!rk) return 0; try { return parseInt(await env.STATS.get(rk) || '0', 10) || 0; } catch (e) { return 0; } };
  // CHAT HISTORY lives server-side too (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): KV `ai:h:<uid>:<SYM>`, one
@@ -12929,7 +12939,7 @@ async function handleAiChart(url, request, env, ectx) {
  let _huid = uid; if (request.method === 'GET' && _hsym && isAdminKey(env, adminKeyFrom(request, url))) { const q = String(url.searchParams.get('uid') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 64); if (q) _huid = q; }
  const _hkey = (s) => 'ai:h:' + _huid + ':' + s;
  if (request.method === 'GET' && _hsym) { if (!_huid) return J({ error: 'login_required' }, 401); let msgs = []; try { msgs = (await env.STATS.get(_hkey(_hsym), 'json')) || []; } catch (e) {} return J({ ok: true, sym: _hsym, msgs: Array.isArray(msgs) ? msgs : [] }); }
- if (request.method === 'GET') { return J({ signedIn: !!uid, premium: _prem, plus: _prem, used: await usedNow(), limit: _prem ? LIMIT : 0, premiumOnly: !_prem, planNeeded: _prem ? null : 'plus', planName: PREM_PLANS.plus.name, planUsd: PREM_USD('plus'), ai: !!env.ANTHROPIC_API_KEY }); } // limit 0 for non-Premium: the POST below refuses them, so the panel must not promise "N questions a day"
+ if (request.method === 'GET') { return J({ signedIn: !!uid, premium: _prem, plus: _plus, plan: _plus ? 'plus' : (_prem ? 'premium' : null), used: await usedNow(), limit: _prem ? LIMIT : 0, dailyByPlan: AI_DAILY, premiumOnly: !_prem, planNeeded: _prem ? (_plus ? null : 'plus') : 'premium', planName: _prem ? PREM_PLANS.plus.name : PREM_PLANS.premium.name, planUsd: _prem ? PREM_USD('plus') : PREM_USD('premium'), plusName: PREM_PLANS.plus.name, plusUsd: PREM_USD('plus'), ai: !!env.ANTHROPIC_API_KEY }); } // a member on ordinary Premium is NOT premiumOnly-gated any more: they have AI_DAILY.premium a day and planNeeded points at Plus for more // limit 0 for non-Premium: the POST below refuses them, so the panel must not promise "N questions a day"
   if (request.method !== 'POST') return J({ error: 'method' }, 405);
   if (!uid) return J({ error: 'login_required' }, 401);
   let _pk = null; try { _pk = await request.json(); } catch (e) { _pk = null; } // read ONCE - the model path below reuses it as `body`
@@ -12943,7 +12953,7 @@ async function handleAiChart(url, request, env, ectx) {
     try { if (msgs.length) await env.STATS.put(_hkey(sym), JSON.stringify(msgs), { expirationTtl: 5184000 }); else await env.STATS.delete(_hkey(sym)); } catch (e) { return J({ error: 'store_failed' }, 500); }
     return J({ ok: true, sym, n: msgs.length });
   }
-  if (!_prem) { try { await evPush(env, request, 'premgate', 'Ask AI', '/charts'); } catch (e) {} return J({ error: 'premium_required', plan_needed: 'plus', plan_name: PREM_PLANS.plus.name, price_usd: PREM_USD('plus'), upgrade: 'https://marginpad.io/premium/#plus' }, 402); }
+  if (!_prem) { try { await evPush(env, request, 'premgate', 'Ask AI', '/charts'); } catch (e) {} return J({ error: 'premium_required', plan_needed: 'premium', plan_name: PREM_PLANS.premium.name, price_usd: PREM_USD('premium'), daily: AI_DAILY.premium, plus_name: PREM_PLANS.plus.name, plus_usd: PREM_USD('plus'), plus_daily: AI_DAILY.plus, upgrade: 'https://marginpad.io/premium/' }, 402); } // the cheapest way in is ordinary Premium now, so that is what a guest is pointed at
   if (!env.ANTHROPIC_API_KEY) return J({ error: 'ai_unconfigured' }, 503);
   const gk = 'ai:g:' + day; let g = 0; try { g = parseInt(await env.STATS.get(gk) || '0', 10) || 0; } catch (e) {}
   if (g >= 6000) return J({ error: 'busy' }, 503); // global daily backstop (KV, approximate - the hard per-user gate is the DO below)
@@ -12953,7 +12963,9 @@ async function handleAiChart(url, request, env, ectx) {
   const aiCall = (bodyObj) => aiStub.fetch(new Request('https://do/ailimit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bodyObj) })).then(r => r.json()).catch(() => null);
   const resv = await aiCall({ uid, limit: LIMIT, day });
   if (!resv) return J({ error: 'unavailable' }, 503);
-  if (!resv.ok) return J({ error: 'rate_limit', used: resv.used || 0, limit: LIMIT }, 429);
+  if (!resv.ok) return J(_plus
+    ? { error: 'rate_limit', used: resv.used || 0, limit: LIMIT, plan: 'plus' }
+    : { error: 'rate_limit', used: resv.used || 0, limit: LIMIT, plan: 'premium', plan_needed: 'plus', plus_name: PREM_PLANS.plus.name, plus_usd: PREM_USD('plus'), plus_daily: AI_DAILY.plus, upgrade: 'https://marginpad.io/premium/#plus' }, 429);
   const used = (resv.used || 1) - 1; // keep the "used before this call" semantics for the response fields below
   const refund = () => { try { return aiCall({ uid, day, refund: true }); } catch (e) {} };
   const body = (_pk && typeof _pk === 'object') ? _pk : {};
@@ -14367,7 +14379,7 @@ async function handleBot(url, request, env, ctx) {
     const { ok: _ok9, ...rest } = rep;
     return jb(Object.assign({ plan: BOT_TIER_LIMITS(+auth.tier || 0).name, breakdowns: true, premium: true, findings: reportFindings(rep) }, rest), 200);
   }
-  // ASK AI IS OFF ON THE API (2026-09-18, owner). It is a Premium Plus feature of the SITE now - the plan priced
+  // ASK AI IS OFF ON THE API (2026-09-18, owner). It is a SITE feature - 1 read a day on Premium, 50 on Plus - priced
   // for it - and an API key is not a consumer subscription. The route answers plainly rather than 404ing, so a bot
   // written against 2.4 gets a reason instead of a mystery, and every claim that the API carries it has been removed.
   if (path === '/v1/ai' && request.method === 'POST') return jb({ error: 'endpoint_retired', hint: 'AI market reads are no longer part of any API plan. Ask AI now lives on the charts at https://marginpad.io/charts as part of Premium Plus.', moved_to: 'https://marginpad.io/premium/#plus' }, 410);

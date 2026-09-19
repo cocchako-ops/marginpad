@@ -655,7 +655,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var payloadHist=h.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+(AI?AI.actsNote(m):'')};});
       render();var bub=document.createElement('div');bub.className='mfc-ai-msg ai';bub.textContent='…';msgs.appendChild(bub);msgs.scrollTop=msgs.scrollHeight;
       fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
-        if(!resp.ok){busy=false;bub.textContent=resp.status===429?'Daily AI limit reached - resets tomorrow.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI is part of MarginPad Premium ($11.99/mo) - upgrade from your profile to use it.':'Could not reach AI - try again.'));return;}
+        if(!resp.ok){busy=false;bub.textContent=resp.status===429?'That is your Ask AI read for today - it resets at midnight UTC. Premium Plus raises it to 50 a day.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI comes with MarginPad Premium ($11.99/mo) - one read a day, 50 a day on Premium Plus.':'Could not reach AI - try again.'));return;}
         if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';
         function show(){var sp=AI?AI.split(acc):{prose:acc};if(AI)bub.innerHTML=AI.mdLite(sp.prose||acc);else bub.textContent=sp.prose||acc;msgs.scrollTop=msgs.scrollHeight;}
