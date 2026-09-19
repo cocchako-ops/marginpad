@@ -303,7 +303,7 @@ html[dir="rtl"] .node{text-align:right}
   ar:{h:'من الصفر إلى <span class="g">متداول</span>',les:'درسًا',crs:'دورات',xp:'مكافآت XP',fr:'مجاني',start:'ابدأ التعلّم',cont:'متابعة · الدرس {n}/{t}',done:'أكملت الأكاديمية',pdone:'دروس مكتملة',anon:'لا تحتاج حسابًا للبدء. <button type="button" data-auth-open>سجّل مجانًا</button> واكسب <b style="color:var(--gold)">+25 XP لكل درس</b> لمستواك.',anonp:'يُحفظ التقدّم على هذا الجهاز. <button type="button" data-auth-open>سجّل مجانًا</button> لحفظه في حسابك وكسب <b style="color:var(--gold)">+25 XP لكل درس</b>.',sin:'تم تسجيل الدخول - كل درس يمنح +25 XP وكل دورة مكتملة +50 مكافأة.',locked:'مقفل',lockm:'أكمل الدورة السابقة للفتح.',steps:'خطوات',qs:'أسئلة',ho:'تطبيق عملي',sb:'ابدأ',contb:'متابعة',exb:'أكمل التمرين أعلاه أولًا',qof:'السؤال {i} من {n}',lc:'اكتمل الدرس',al:'مكتمل مسبقًا - لا XP إضافي',nx:'فُتح الدرس التالي.',la:'كان هذا الأخير - أنهيت الأكاديمية كاملة!',nud:'التقدّم محفوظ على هذا الجهاز. <b>سجّل مجانًا</b> (بريد فقط) لتحصيل <b style="color:var(--gold)">+25 XP</b> عن كل درس.',nudb:'سجّل واحصل على XP',tryt:'جرّبها فعليًا (أموال افتراضية)',back:'العودة إلى المسار',fin:'إنهاء',oh:'نفدت القلوب',ohp:'ثلاثة أخطاء - هذا الحد. لا تسرّع: يبدأ الدرس من جديد لتترسّخ الأفكار فعلًا.',rst:'أعد الدرس',cb:'مكافأة الدورة',enote:'الدروس بالإنجليزية حاليًا - الترجمة قريبًا.'}
   };
   var lang='en';
-  try{lang=localStorage.getItem('mp_acad_lang')||localStorage.getItem('mp_lang')||((navigator.language||'en').slice(0,2));}catch(e){}
+  try{var q=new URLSearchParams(location.search).get('lang');var pfx=String(location.pathname||'').split('/')[1];lang=q||(UI[pfx]?pfx:'')||localStorage.getItem('mp_acad_lang')||localStorage.getItem('mp_lang')||((navigator.language||'en').slice(0,2));}catch(e){}
   if(!UI[lang])lang='en';
   function U(k){return (UI[lang]&&UI[lang][k])||UI.en[k]||'';}
   function fmt(str,map){return str.replace(/\{(\w+)\}/g,function(m,k){return map[k]!=null?map[k]:m;});}
@@ -2410,7 +2410,7 @@ VIZ.trhhhl=function(h){var P='<rect x="6" y="6" width="328" height="110" rx="8" 
   try{var pv='/api/track?t=pageview&p=/academy/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)pv+='&src='+encodeURIComponent(_e9);else if(_s9)pv+='&s0='+encodeURIComponent(_s9);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=9e684271"></script>
-<script defer src="/assets/mp-nav.js?v=8d46a488"></script>
+<script defer src="/assets/mp-auth.js?v=b622878d"></script>
+<script defer src="/assets/mp-nav.js?v=956f7091"></script>
 </body>
 </html>
