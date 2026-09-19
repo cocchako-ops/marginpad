@@ -115,16 +115,29 @@ const API_LINKS = [
   ['/arena/', 'Bot leaderboard - what other bots are doing'],
 ].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
 const API_INTRO = 'Every number on this page is available as free JSON, and the same account can run a paper-trading bot against it - no deposit, no KYC, and an MCP server for AI agents.';
+// DEMO SPOT WAS INVISIBLE TO CRAWLERS (2026-09-19). Measured over 30 days: /spot/ took **zero** crawler hits
+// while still bringing 17 assistant-referred visits, against /paper-trade at 1,363 crawls -> 626 visits and
+// /heatmap at 535 -> 362. It is indexable, in the sitemap, has 2,171 static words and four JSON-LD blocks -
+// nothing was blocking it, it was simply never reached, exactly as /trading-api/ was. The same three practice
+// surfaces also answer three different questions ("try a leveraged trade", "learn to hold and self-custody",
+// "learn the words"), which is why they travel together rather than as one link.
+const PRACTICE_LINKS = [
+  ['/paper-trade', 'Paper trade these moves - futures, live prices, fake money'],
+  ['/spot/', 'Demo Spot - a $10,000 card, an exchange and your own wallet'],
+  ['/academy/', 'Academy - 16 courses, from the words up'],
+  ['/where-to-start/', 'Not sure where to start?'],
+].filter(([h]) => h === '/paper-trade' || has(h.replace(/^\/|\/$/g, '')));
+const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
 for (const c of COINS) {
   const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
-  const b = [block('Build on this data', API_INTRO, API_LINKS)];
+  const b = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
   if (others.length) b.push(block('Other coins', '', others));
   if (inject(path.join(COINDIR, c, 'index.html'), null, b)) n++;
 }
 // the two liquidation pages that take thousands of crawls and had no route to the API either
 for (const d of ['liquidation-statistics', 'liquidations/by-exchange']) {
   const f = path.join(DIST, d, 'index.html');
-  if (fs.existsSync(f) && inject(f, null, [block('Build on this data', API_INTRO, API_LINKS)])) n++;
+  if (fs.existsSync(f) && inject(f, null, [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)])) n++;
 }
 // 5) English hubs link their translations (and each translation links the English original + its siblings)
 for (const hub of HUBS) {
