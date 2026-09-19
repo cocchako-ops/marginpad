@@ -10235,6 +10235,181 @@ function refTagLinks(s, tag) {
     return m + (m.includes('?') ? '&' : '?') + 'ref=' + tag + tail;
   });
 }
+
+// ---- CAMPAIGN MAIL (2026-09-19, owner: "da vracam stare nazad i da promovisem stvari") ------------------
+// A template is SUBJECT + BODY BLOCKS, never raw HTML typed into a box: the shell, the button, the footer and
+// the unsubscribe link are the same on every send, so one bad paste cannot produce a broken or unlawful email.
+// {name} {code} {amount} {days} {date} are filled per recipient; anything unfilled is stripped rather than sent
+// as a literal brace.
+const CAMPAIGN_SEGS = [
+  { id: 'churn', name: 'Slipping away', hint: 'traded before, quiet 7 to 30 days - the classic win-back' },
+  { id: 'idle14', name: 'Quiet 14 days', hint: 'no visit in two weeks' },
+  { id: 'idle30', name: 'Quiet 30 days', hint: 'no visit in a month' },
+  { id: 'idle60', name: 'Quiet 60 days', hint: 'no visit in two months' },
+  { id: 'idle90', name: 'Quiet 90 days', hint: 'long gone - expect little' },
+  { id: 'traded_gone', name: 'Traded, then left', hint: 'placed trades, no visit in 30 days' },
+  { id: 'never_traded', name: 'Signed up, never traded', hint: 'account exists, zero trades' },
+  { id: 'new_quiet', name: 'New but never came back', hint: 'joined in the last 30 days, under 2 logins' },
+  { id: 'premium_exp', name: 'Premium expiring', hint: 'Premium ends within 7 days' },
+  { id: 'premium_lapsed', name: 'Premium lapsed', hint: 'had Premium, it has run out' },
+  { id: 'traders_active', name: 'Active traders', hint: 'traded and seen in the last 14 days - for announcements' },
+  { id: 'no_tg', name: 'No Telegram linked', hint: 'to push the bot and the daily wrap' },
+  { id: 'all', name: 'Everyone reachable', hint: 'every account that can be emailed - use sparingly' },
+];
+
+function campShell(bodyHtml, uid, ctaText, ctaHref) {
+  const unsub = 'https://marginpad.io/unsubscribe?u=' + encodeURIComponent(uid || '');
+  const btn = (ctaText && ctaHref)
+    ? '<p style="margin:22px 0 4px"><a href="' + ctaHref + '" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;font-size:15px;padding:13px 22px;border-radius:10px">' + ctaText + '</a></p>'
+    : '';
+  return '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.65;color:#111;max-width:520px">'
+    + bodyHtml + btn
+    + '<p style="margin:26px 0 0;font-size:12px;color:#888;line-height:1.6">You are getting this because you have a MarginPad account. '
+    + '<a href="' + unsub + '" style="color:#888">Unsubscribe</a> and we will not email you again.<br>'
+    + 'MarginPad is a paper-trading and education site. Nothing here is financial advice.</p></div>';
+}
+
+// Each template: subject, a body builder, and which variables it wants the owner to fill in.
+const CAMPAIGN_TPLS = [
+  { id: 'comeback_code', name: 'Come back - here is a code', group: 'Win-back', needs: ['code'],
+    subject: 'Your MarginPad code is waiting',
+    lead: 'A code they can redeem on /rewards/ or /season/. Generate it in Settings > Codes first.',
+    body: (v) => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">We kept your seat, {name}.</p>'
+      + '<p style="margin:0 0 12px">You have not been on MarginPad for a while, and a few things have changed since. Your account, your trade history and your XP are exactly where you left them.</p>'
+      + '<p style="margin:0 0 12px">Here is a code to start again with something in your hand:</p>'
+      + '<p style="margin:0 0 6px;text-align:center"><span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:22px;font-weight:800;letter-spacing:2px;background:#f4f7ea;border:2px dashed #c2d47a;border-radius:10px;padding:12px 20px">' + (v.code || 'YOURCODE') + '</span></p>'
+      + '<p style="margin:10px 0 0;font-size:13px;color:#555">Redeem it in the box on your season page. One use, this account only.</p>',
+    cta: ['Redeem it now', 'https://marginpad.io/season/#redeem'] },
+
+  { id: 'comeback_plain', name: 'Come back - no code', group: 'Win-back', needs: [],
+    subject: 'Still here whenever you want it',
+    lead: 'A soft nudge with no incentive attached.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">It has been a while, {name}.</p>'
+      + '<p style="margin:0 0 12px">No pitch. Your paper account, your history and your XP are untouched, and the market has done plenty since you were last in.</p>'
+      + '<p style="margin:0 0 12px">If you have ten minutes, open a chart and see where you would have been.</p>',
+    cta: ['Open my account', 'https://marginpad.io/paper-trade'] },
+
+  { id: 'moon_contest', name: 'King of the Moon contest', group: 'Competitions', needs: [],
+    subject: 'King of the Moon is live - real prizes, free to enter',
+    lead: 'The Moon wagering contest. Entry is an approved Moon sign-up bonus claim.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">King of the Moon is running, {name}.</p>'
+      + '<p style="margin:0 0 12px">A prize pool of <b>$300</b> across the top five, decided by how much you trade on Moon while the contest is open. It is free to enter and it runs alongside the season boards you already play.</p>'
+      + '<p style="margin:0 0 12px">To take part: open your Moon account through MarginPad and claim the Moon sign-up bonus on the rewards page. That approved claim is the whole registration - there is nothing else to do.</p>',
+    cta: ['See the board', 'https://marginpad.io/leaderboards/'] },
+
+  { id: 'competition', name: 'Season competition - free to enter', group: 'Competitions', needs: [],
+    subject: 'There is $350 a season on the boards, and it is free',
+    lead: 'The seven season boards.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">You are already eligible, {name}.</p>'
+      + '<p style="margin:0 0 12px">Every 14 days MarginPad pays out across seven leaderboards - green days, return, win rate, XP and more. No entry fee, no deposit, and paper trades count.</p>'
+      + '<p style="margin:0 0 12px">Most people who place were not trying to. They just traded that fortnight.</p>',
+    cta: ['See what is on the table', 'https://marginpad.io/trading-competition/'] },
+
+  { id: 'ai_charts', name: 'Ask AI on your charts', group: 'Product', needs: [],
+    subject: 'Your charts can read themselves now',
+    lead: 'Ask AI: one read a day on Premium, 50 on Premium Plus.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">It does not look at your chart. It reads it.</p>'
+      + '<p style="margin:0 0 12px">Ask AI is handed the measurements - where the liquidation pools sit, how much volume traded at which price, what the higher timeframe is doing - and then draws the setup on your chart with the same tools a desk uses.</p>'
+      + '<p style="margin:0 0 12px">Premium members get <b>one read a day</b>. It also says plainly when the honest answer is to wait.</p>',
+    cta: ['Try it on a chart', 'https://marginpad.io/charts'] },
+
+  { id: 'demo_spot', name: 'Demo Spot - the $10,000 journey', group: 'Product', needs: [],
+    subject: 'Your first $10,000 in crypto, with nothing at stake',
+    lead: 'The spot life-simulator: card, exchange, self-custody wallet.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Every step, none of the consequences.</p>'
+      + '<p style="margin:0 0 12px">Demo Spot gives you $10,000 of practice money on a card, an exchange to buy USDT, and a real-shaped self-custody wallet with a seed phrase and gas you have to buy before you can move anything.</p>'
+      + '<p style="margin:0 0 12px">Real fees, real networks, real mistakes - and none of them cost you anything. Sending on the wrong chain here is a lesson instead of a loss.</p>',
+    cta: ['Get the $10,000 card', 'https://marginpad.io/spot/'] },
+
+  { id: 'heatmap', name: 'Liquidation heatmap', group: 'Product', needs: [],
+    subject: 'See where the liquidations are stacked',
+    lead: 'The live heatmap.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Where the market keeps its fuel.</p>'
+      + '<p style="margin:0 0 12px">Our liquidation heatmap is built from our own collector across nine venues - not an estimate bought from someone else. You can see the bands price tends to get pulled into, and how heavy each one is.</p>',
+    cta: ['Open the heatmap', 'https://marginpad.io/heatmap'] },
+
+  { id: 'premium_expiring', name: 'Premium is about to end', group: 'Premium', needs: ['days'],
+    subject: 'Your Premium ends in {days} days',
+    lead: 'Fill in the days. Use with the "Premium expiring" segment.',
+    body: (v) => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">A heads-up, {name}.</p>'
+      + '<p style="margin:0 0 12px">Your MarginPad Premium ends in <b>' + (v.days || '7') + ' days</b>. Nothing renews automatically and there is nothing to cancel - if you do nothing, it simply stops and your account carries on as a free one.</p>'
+      + '<p style="margin:0 0 12px">If you want to keep the indicators, the heatmap and your daily Ask AI read, one month is $11.99.</p>',
+    cta: ['Keep Premium', 'https://marginpad.io/premium/'] },
+
+  { id: 'premium_lapsed', name: 'Premium has lapsed', group: 'Premium', needs: [],
+    subject: 'What you are missing since Premium ended',
+    lead: 'For accounts whose Premium has already run out.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Your Premium ran out, {name}.</p>'
+      + '<p style="margin:0 0 12px">Since then we added Ask AI on the charts - one read a day on Premium - and rebuilt the liquidation heatmap so it actually shows where the heat is.</p>'
+      + '<p style="margin:0 0 12px">Everything you had before is still there: the four exclusive indicators, position alerts, the trading report breakdowns and the Daily Brief.</p>',
+    cta: ['Come back to Premium', 'https://marginpad.io/premium/'] },
+
+  { id: 'never_traded', name: 'You never placed a trade', group: 'Activation', needs: [],
+    subject: 'Your practice account has never been used',
+    lead: 'For accounts with zero trades.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">You signed up and then life happened.</p>'
+      + '<p style="margin:0 0 12px">Your account has a full paper-trading terminal sitting in it, on live prices, with fake money. No deposit, no KYC, nothing to lose.</p>'
+      + '<p style="margin:0 0 12px">One trade takes about thirty seconds, and it puts you on the season boards that pay out every fortnight.</p>',
+    cta: ['Place one trade', 'https://marginpad.io/paper-trade'] },
+
+  { id: 'telegram', name: 'Link Telegram', group: 'Activation', needs: [],
+    subject: 'Get the daily market wrap where you already are',
+    lead: 'For accounts with no Telegram linked.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">One message a day, no noise.</p>'
+      + '<p style="margin:0 0 12px">Link Telegram and you get the daily wrap at 16:00 UTC - what moved, what got liquidated, what is coming - plus alerts when your own positions reach a level you set.</p>',
+    cta: ['Link Telegram', 'https://marginpad.io/alerts/'] },
+
+  { id: 'rewards', name: 'Free rewards and the faucet', group: 'Activation', needs: [],
+    subject: 'There is money on the table you have not taken',
+    lead: 'Rewards, missions, the faucet. Opens at Bronze (500 XP).',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Free, and you have not claimed it.</p>'
+      + '<p style="margin:0 0 12px">MarginPad pays real USDT for things you can do without depositing anything: daily missions, the faucet, exchange sign-up bonuses and the season boards.</p>'
+      + '<p style="margin:0 0 12px">The rewards area opens at Bronze - 500 XP - which is a few days of ordinary use.</p>',
+    cta: ['See what pays', 'https://marginpad.io/rewards/'] },
+
+  { id: 'bot_api', name: 'For developers - the Bot API', group: 'Product', needs: [],
+    subject: 'Test your trading bot on live prices, free',
+    lead: 'For the developer audience.',
+    body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">An exchange your bot can afford to break.</p>'
+      + '<p style="margin:0 0 12px">A paper-trading futures API on real live prices: leveraged positions, resting limit and stop orders, trailing stops and liquidations - all settled on our servers whether or not your bot is running.</p>'
+      + '<p style="margin:0 0 12px">Free forever at 120 requests a minute. No card, no KYC, no deposit.</p>',
+    cta: ['Get an API key', 'https://marginpad.io/trading-api/'] },
+
+  { id: 'blank', name: 'Blank - write it yourself', group: 'Other', needs: ['headline', 'text', 'ctaText', 'ctaHref'],
+    subject: '{headline}',
+    lead: 'Your own words, in the same shell with the same footer and unsubscribe link.',
+    body: (v) => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">' + campEsc(v.headline || 'Hello') + '</p>'
+      + String(v.text || '').split(/\n{2,}/).map(p => '<p style="margin:0 0 12px">' + campEsc(p).replace(/\n/g, '<br>') + '</p>').join(''),
+    cta: null },
+];
+
+const campEsc = (t) => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const campTpl = (id) => CAMPAIGN_TPLS.find(t => t.id === id) || null;
+// {name} is the only per-recipient variable; everything else is the same for the whole send.
+function campFill(str, vars, user) {
+  return String(str || '')
+    .replace(/\{name\}/g, campEsc((user && (user.username || '')) || 'there'))
+    .replace(/\{code\}/g, campEsc(vars.code || ''))
+    .replace(/\{amount\}/g, campEsc(vars.amount || ''))
+    .replace(/\{days\}/g, campEsc(vars.days || ''))
+    .replace(/\{date\}/g, campEsc(vars.date || ''))
+    .replace(/\{headline\}/g, campEsc(vars.headline || ''))
+    .replace(/\{[a-z]+\}/gi, '');   // never ship a literal brace to a reader
+}
+function campRender(tplId, vars, user) {
+  const t = campTpl(tplId);
+  if (!t) return null;
+  const v = vars || {};
+  const bodyRaw = t.body(v);
+  const body = campFill(bodyRaw, v, user);
+  const cta = t.id === 'blank'
+    ? ((v.ctaText && v.ctaHref) ? [campEsc(v.ctaText), String(v.ctaHref)] : null)
+    : t.cta;
+  return {
+    subject: campFill(t.subject, v, user),
+    html: campShell(body, user && user.id, cta && cta[0], cta && cta[1]),
+  };
+}
 function refTagEmail(p) { try { if (p) { if (typeof p.text === 'string') p.text = refTagLinks(p.text, 'email'); if (typeof p.html === 'string') p.html = refTagLinks(p.html, 'email'); } } catch (e) {} return p; }
 async function tgApi(token, method, body) {
   try {
@@ -18928,6 +19103,105 @@ export default {
       const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
       return new Response(JSON.stringify({ store: env.BACKUP ? 'r2' : 'kv', hasUsers: !!u, hasRewards: !!rr, usersKB: u ? Math.round(u.length / 1024) : 0, rewardsKB: rr ? Math.round(rr.length / 1024) : 0, note: 'daily @ first */10 cron after midnight UTC; 7-day rotation bkp:<store>:<dow>' }), { headers: jh });
     }
+    if (url.pathname === '/api/admin/campaign' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // CAMPAIGN MAIL (2026-09-19). Four guards, none of them optional, all enforced HERE so the screen cannot
+      // skip one: the audience already excludes anyone who unsubscribed; a campaign never mails the same person
+      // twice (KV camp:sent:<id>); a send is capped per call and resumes; and a real send is refused until a test
+      // has gone to the owner, because a broken template found by 400 people is not recoverable.
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const jr = (o, st) => new Response(JSON.stringify(o, null, 2), { status: st || 200, headers: jh });
+      const stub9 = env.USERS.get(env.USERS.idFromName('main'));
+      const doJ = (p, body) => stub9.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })).then(r => r.json()).catch(() => null);
+
+      if (request.method === 'GET') {
+        const sizes = await doJ('/campaign/sizes', {});
+        let hist = []; try { hist = (await env.STATS.get('camp:log', 'json')) || []; } catch (e) {}
+        return jr({
+          ok: true,
+          segments: CAMPAIGN_SEGS.map(x => Object.assign({}, x, { size: (sizes && sizes.sizes && sizes.sizes[x.id]) || 0 })),
+          templates: CAMPAIGN_TPLS.map(t => ({ id: t.id, name: t.name, group: t.group, needs: t.needs, subject: t.subject, lead: t.lead })),
+          optedOut: (sizes && sizes.optedOut) || 0,
+          history: hist.slice(0, 40),
+        });
+      }
+      if (request.method !== 'POST') return jr({ error: 'method' }, 405);
+      let cb = null; try { cb = await request.json(); } catch (e) {}
+      if (!cb || typeof cb !== 'object') return jr({ error: 'bad_body' }, 400);
+      const op = String(cb.op || '');
+      const vars = (cb.vars && typeof cb.vars === 'object') ? cb.vars : {};
+      const tplId = String(cb.tpl || '');
+      if (!campTpl(tplId)) return jr({ error: 'bad_template' }, 400);
+
+      if (op === 'preview') {
+        const r = campRender(tplId, vars, { id: 'preview', username: cb.asName || 'Alex' });
+        return jr({ ok: true, subject: r.subject, html: r.html });
+      }
+
+      if (!env.RESEND_API_KEY) return jr({ error: 'no_resend' }, 500);
+      const FROM = mailFrom(cb.from || 'hello');
+      const send1 = async (to, subject, html) => {
+        try {
+          const rr = await fetch('https://api.resend.com/emails', {
+            method: 'POST', headers: { authorization: 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
+            body: JSON.stringify(refTagEmail({ from: 'MarginPad <' + FROM.addr + '>', to: [to], reply_to: mailFrom('support').addr, subject, html })),
+          });
+          if (rr.ok) return true;
+          try { await aeWrite(env, 'mailerr', { blob1: 'campaign', blob2: String(rr.status) }); } catch (e) {}
+          return false;
+        } catch (e) { return false; }
+      };
+
+      if (op === 'test') {
+        const to = String(cb.to || '').trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return jr({ error: 'bad_to' }, 400);
+        const r = campRender(tplId, vars, { id: 'test', username: cb.asName || 'Alex' });
+        const okS = await send1(to, '[TEST] ' + r.subject, r.html);
+        if (okS) { try { await env.STATS.put('camp:tested:' + tplId, String(Date.now()), { expirationTtl: 7 * 86400 }); } catch (e) {} }
+        return jr({ ok: okS, sent: okS ? 1 : 0, to });
+      }
+
+      if (op === 'send') {
+        const seg = String(cb.seg || '');
+        if (!CAMPAIGN_SEGS.some(x => x.id === seg)) return jr({ error: 'bad_segment' }, 400);
+        const camp = String(cb.campaign || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40);
+        if (!camp) return jr({ error: 'need_campaign_id', hint: 'a short name like moon-sep - it is what stops the same person being mailed twice' }, 400);
+        // a template that has never been tested is refused - the test costs one email and catches the broken one
+        let tested = null; try { tested = await env.STATS.get('camp:tested:' + tplId); } catch (e) {}
+        if (!tested && !cb.force) return jr({ error: 'not_tested', hint: 'send a test to yourself first - it is the only thing that catches a broken template before 400 people see it' }, 400);
+        const aud = await doJ('/campaign/audience', { seg, limit: 5000 });
+        if (!aud || !aud.ok) return jr({ error: 'audience_failed' }, 500);
+        let sent = []; try { sent = (await env.STATS.get('camp:sent:' + camp, 'json')) || []; } catch (e) {}
+        const already = new Set(sent);
+        const todo = (aud.users || []).filter(u => u.email && !already.has(u.id));
+        const batch = Math.max(1, Math.min(300, parseInt(cb.limit, 10) || 100));
+        const slice = todo.slice(0, batch);
+        let okN = 0, failN = 0;
+        for (let i = 0; i < slice.length; i += 6) {
+          const part = slice.slice(i, i + 6);
+          const res = await Promise.all(part.map(async (u) => {
+            const r = campRender(tplId, vars, u);
+            const good = await send1(u.email, r.subject, r.html);
+            if (good) already.add(u.id);
+            return good;
+          }));
+          res.forEach(x => { if (x) okN++; else failN++; });
+        }
+        try { await env.STATS.put('camp:sent:' + camp, JSON.stringify([...already].slice(0, 20000))); } catch (e) {}
+        let hist = []; try { hist = (await env.STATS.get('camp:log', 'json')) || []; } catch (e) {}
+        hist.unshift({ ts: Date.now(), campaign: camp, tpl: tplId, seg, sent: okN, failed: failN, remaining: Math.max(0, todo.length - slice.length) });
+        try { await env.STATS.put('camp:log', JSON.stringify(hist.slice(0, 60))); } catch (e) {}
+        try { await tgAdmin(env, 'Campaign ' + camp + ': ' + okN + ' sent to ' + seg + ' (' + tplId + ')' + (failN ? ', ' + failN + ' failed' : '') + (todo.length - slice.length > 0 ? ', ' + (todo.length - slice.length) + ' left' : ''), { kind: 'campaign sent', sev: 'info' }); } catch (e) {}
+        return jr({ ok: true, campaign: camp, seg, tpl: tplId, audience: aud.total, eligible: todo.length, sent: okN, failed: failN, remaining: Math.max(0, todo.length - slice.length) });
+      }
+
+      if (op === 'reset') { // let a campaign id be reused deliberately
+        const camp = String(cb.campaign || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40);
+        if (!camp) return jr({ error: 'need_campaign_id' }, 400);
+        try { await env.STATS.delete('camp:sent:' + camp); } catch (e) {}
+        return jr({ ok: true, reset: camp });
+      }
+      return jr({ error: 'bad_op' }, 400);
+    }
     if (url.pathname === '/api/admin/sendmail' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // owner utility + the mp-ops Email tab: send as any whitelisted identity via Resend; GET = sent log + address list
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'GET') { // Email tab bootstrap: identities + last sends
@@ -23993,6 +24267,55 @@ export class UserStore {
     }
     // ---- weekly digest opt-in ----
     if (path === '/digest/recipients') { return this.j({ users: this.rows("SELECT id,email FROM users WHERE COALESCE(digest,1)=1 AND COALESCE(status,'active')!='banned' AND email IS NOT NULL LIMIT 5000") }); } // internal: cron recipient list
+    // ---- campaign audiences (2026-09-19) --------------------------------------------------------------
+    // One place that decides who may receive a campaign. THREE RULES ARE NOT OPTIONAL and live here rather
+    // than in the caller, so no future sender can forget them: a real email, not banned, and digest=1 -
+    // which is the flag /unsubscribe sets, so an unsubscribe silences campaigns too, not just the digest.
+    if (path === '/campaign/audience') {
+      const seg = String((b && b.seg) || url.searchParams.get('seg') || 'idle30');
+      const cap = Math.max(1, Math.min(5000, parseInt((b && b.limit) || url.searchParams.get('limit') || '2000', 10) || 2000));
+      const D = 86400000, TR = 'COALESCE((SELECT MAX(COALESCE(t.n,0),COALESCE(t.life_closes,0)+COALESCE(t.opens,0)) FROM utrades t WHERE t.user_id=users.id),0)';
+      const W = ["email IS NOT NULL", "email!=''", "COALESCE(digest,1)=1", "COALESCE(status,'active')!='banned'"];
+      const A2 = [];
+      if (seg === 'idle14') { W.push('COALESCE(last_seen,created)<?'); A2.push(now - 14 * D); }
+      else if (seg === 'idle30') { W.push('COALESCE(last_seen,created)<?'); A2.push(now - 30 * D); }
+      else if (seg === 'idle60') { W.push('COALESCE(last_seen,created)<?'); A2.push(now - 60 * D); }
+      else if (seg === 'idle90') { W.push('COALESCE(last_seen,created)<?'); A2.push(now - 90 * D); }
+      else if (seg === 'churn') { W.push('COALESCE(last_seen,created)<? AND COALESCE(last_seen,created)>=? AND ' + TR + '>0'); A2.push(now - 7 * D, now - 30 * D); }
+      else if (seg === 'traded_gone') { W.push('COALESCE(last_seen,created)<? AND ' + TR + '>0'); A2.push(now - 30 * D); }
+      else if (seg === 'never_traded') { W.push(TR + '=0'); }
+      else if (seg === 'new_quiet') { W.push('created>=? AND COALESCE(logins,0)<2'); A2.push(now - 30 * D); }
+      else if (seg === 'premium_exp') { W.push('COALESCE(premium,0)>? AND COALESCE(premium,0)<?'); A2.push(now, now + 7 * D); }
+      else if (seg === 'premium_lapsed') { W.push('COALESCE(premium,0)>0 AND COALESCE(premium,0)<?'); A2.push(now); }
+      else if (seg === 'traders_active') { W.push('COALESCE(last_seen,created)>=? AND ' + TR + '>0'); A2.push(now - 14 * D); }
+      else if (seg === 'no_tg') { W.push("(tg_chat IS NULL OR tg_chat='')"); }
+      else if (seg === 'all') { /* everyone who can be emailed */ }
+      else return this.j({ error: 'bad_segment' }, 400);
+      const rows = this.rows('SELECT id,email,username,last_seen,created,' + TR + ' trades FROM users WHERE ' + W.join(' AND ') + ' ORDER BY COALESCE(last_seen,created) DESC LIMIT ' + cap, ...A2);
+      const tot = this.rows('SELECT COUNT(*) n FROM users WHERE ' + W.join(' AND '), ...A2)[0];
+      return this.j({ ok: true, seg, total: (tot && tot.n) || 0, users: rows });
+    }
+    // counts for every segment at once - what the campaign screen opens with
+    if (path === '/campaign/sizes') {
+      const D = 86400000, TR = 'COALESCE((SELECT MAX(COALESCE(t.n,0),COALESCE(t.life_closes,0)+COALESCE(t.opens,0)) FROM utrades t WHERE t.user_id=users.id),0)';
+      const base = "email IS NOT NULL AND email!='' AND COALESCE(digest,1)=1 AND COALESCE(status,'active')!='banned'";
+      const one = (extra, ...a) => { try { const r = this.rows('SELECT COUNT(*) n FROM users WHERE ' + base + (extra ? ' AND ' + extra : ''), ...a)[0]; return (r && r.n) || 0; } catch (e) { return 0; } };
+      return this.j({ ok: true, sizes: {
+        all: one(''),
+        idle14: one('COALESCE(last_seen,created)<?', now - 14 * D),
+        idle30: one('COALESCE(last_seen,created)<?', now - 30 * D),
+        idle60: one('COALESCE(last_seen,created)<?', now - 60 * D),
+        idle90: one('COALESCE(last_seen,created)<?', now - 90 * D),
+        churn: one('COALESCE(last_seen,created)<? AND COALESCE(last_seen,created)>=? AND ' + TR + '>0', now - 7 * D, now - 30 * D),
+        traded_gone: one('COALESCE(last_seen,created)<? AND ' + TR + '>0', now - 30 * D),
+        never_traded: one(TR + '=0'),
+        new_quiet: one('created>=? AND COALESCE(logins,0)<2', now - 30 * D),
+        premium_exp: one('COALESCE(premium,0)>? AND COALESCE(premium,0)<?', now, now + 7 * D),
+        premium_lapsed: one('COALESCE(premium,0)>0 AND COALESCE(premium,0)<?', now),
+        traders_active: one('COALESCE(last_seen,created)>=? AND ' + TR + '>0', now - 14 * D),
+        no_tg: one("(tg_chat IS NULL OR tg_chat='')"),
+      }, optedOut: (this.rows("SELECT COUNT(*) n FROM users WHERE COALESCE(digest,1)=0")[0] || {}).n || 0 });
+    }
     if (path === '/digest/optout') { const uid = String((b && b.uid) || url.searchParams.get('u') || ''); if (uid) sql.exec('UPDATE users SET digest=0 WHERE id=?', uid); return this.j({ ok: true }); }
     if (path === '/digest/set') { const tok = String((b && b.token) || ''); const ss = tok ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', tok, now)[0] : null; if (!ss) return this.j({ error: 'not_signed_in' }, 401); sql.exec('UPDATE users SET digest=? WHERE id=?', b.on ? 1 : 0, ss.user_id); return this.j({ ok: true }); }
     // ---- price alerts (account-based) ----

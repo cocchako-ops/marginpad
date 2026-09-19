@@ -48,7 +48,7 @@
   // 8 sections instead of 24 flat tabs. Every view is native since 2026-09-03 evening (the old server-rendered dashboard is no longer embedded).
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
-    { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'tgbot', title: 'Telegram bot' }] },
+    { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'campaigns', title: 'Campaigns' }, { id: 'tgbot', title: 'Telegram bot' }] },
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
@@ -1486,6 +1486,140 @@
     el.innerHTML = SKEL; load(); every(60000, load);
   } };
 
+  // CAMPAIGN MAIL (2026-09-19, owner: "da vracam stare nazad i da promovisem stvari").
+  // Three steps and nothing to type unless the template asks for it: pick who, pick what, look at it, send.
+  // Chips, never a native select - that is the one control the owner cannot use. The send button is deliberately
+  // the LAST thing that becomes live: a test to yourself is required first, because a broken template found by
+  // 400 people cannot be taken back.
+  VIEWS['inbox/campaigns'] = { render: function (el, arg) {
+    var D = null, st = { seg: 'churn', tpl: 'comeback_code', vars: {}, camp: '', tested: false, sending: false };
+    recall('inbox/campaigns', st, ['seg', 'tpl']);
+    function suggestName() {
+      var d = new Date(), m = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][d.getUTCMonth()];
+      return String(st.tpl).replace(/_/g, '-') + '-' + m + d.getUTCDate();
+    }
+    function segOf(id) { for (var i = 0; i < (D.segments || []).length; i++) if (D.segments[i].id === id) return D.segments[i]; return null; }
+    function tplOf(id) { for (var i = 0; i < (D.templates || []).length; i++) if (D.templates[i].id === id) return D.templates[i]; return null; }
+
+    function paint() {
+      var seg = segOf(st.seg) || (D.segments || [])[0] || { id: '', name: '?', size: 0, hint: '' };
+      var tpl = tplOf(st.tpl) || (D.templates || [])[0] || { id: '', name: '?', needs: [], lead: '' };
+      st.seg = seg.id; st.tpl = tpl.id;
+      if (!st.camp) st.camp = suggestName();
+
+      var segH = '<div class="line" style="margin-bottom:8px">Everyone who unsubscribed is already excluded (<b>' + N(D.optedOut) + '</b> people), and nobody is mailed twice for the same campaign.</div>'
+        + '<div id="cpSegs" class="chips">' + (D.segments || []).map(function (x) {
+          return '<button class="chip' + (x.id === st.seg ? ' on' : '') + '" data-seg="' + x.id + '" title="' + esc(x.hint) + '">' + esc(x.name) + ' <b>' + N(x.size) + '</b></button>';
+        }).join('') + '</div>'
+        + '<div class="line" style="margin-top:8px"><b>' + esc(seg.name) + '</b> - ' + esc(seg.hint) + '</div>';
+
+      var groups = {}; (D.templates || []).forEach(function (t) { (groups[t.group] = groups[t.group] || []).push(t); });
+      var tplH = '<div id="cpTpls">' + Object.keys(groups).map(function (g) {
+        return '<div style="margin:0 0 9px"><div class="k" style="margin-bottom:5px">' + esc(g) + '</div><div class="chips">'
+          + groups[g].map(function (t) { return '<button class="chip' + (t.id === st.tpl ? ' on' : '') + '" data-tpl="' + t.id + '">' + esc(t.name) + '</button>'; }).join('')
+          + '</div></div>';
+      }).join('') + '</div>'
+        + '<div class="line" style="margin-top:4px">' + esc(tpl.lead || '') + '</div>';
+
+      var needs = tpl.needs || [];
+      var LBL = { code: 'Code to give them', days: 'How many days', amount: 'Amount', date: 'Date', headline: 'Headline', text: 'Your message (blank line = new paragraph)', ctaText: 'Button text', ctaHref: 'Button link' };
+      var fillH = needs.length
+        ? '<div class="grid g2">' + needs.map(function (k) {
+            var v = esc(st.vars[k] || '');
+            return k === 'text'
+              ? '<div style="grid-column:1/-1"><div class="k">' + esc(LBL[k] || k) + '</div><textarea class="in" rows="5" data-var="' + k + '">' + v + '</textarea></div>'
+              : '<div><div class="k">' + esc(LBL[k] || k) + '</div><input class="in" data-var="' + k + '" value="' + v + '"></div>';
+          }).join('') + '</div>'
+          + (needs.indexOf('code') >= 0 ? '<div class="line" style="margin-top:6px">Generate the code first in <a href="#settings/codes">Settings &rsaquo; Codes</a> - one batch, unlimited uses, and paste it here.</div>' : '')
+        : '<div class="line">Nothing to fill in - this one is ready to send.</div>';
+
+      var ready = st.tested && !st.sending;
+      var sendH = '<div class="grid g2">'
+        + '<div><div class="k">Campaign name (stops double-sends)</div><input class="in" id="cpName" value="' + esc(st.camp) + '"></div>'
+        + '<div><div class="k">Send at most, this press</div><input class="in" id="cpLimit" type="number" value="100" min="1" max="300"></div>'
+        + '</div>'
+        + '<div class="line" style="margin-top:10px">1. Look at the preview. 2. Send yourself a test. 3. Then the send button turns on.</div>'
+        + '<div class="chips" style="margin-top:8px">'
+        + '<button class="chip" id="cpTest">Send a test to me</button>'
+        + '<button class="chip' + (ready ? ' on' : '') + '" id="cpSend"' + (ready ? '' : ' disabled title="send yourself a test first"') + '>Send to ' + N(seg.size) + ' people</button>'
+        + '</div><div id="cpMsg" class="line" style="margin-top:8px"></div>';
+
+      var hist = (D.history || []).length
+        ? tbl([{ h: 'when', mono: true, f: function (x) { return dt(x.ts); } }, { h: 'campaign', f: function (x) { return esc(x.campaign); } },
+               { h: 'template', f: function (x) { return esc(x.tpl); } }, { h: 'segment', f: function (x) { return esc(x.seg); } },
+               { h: 'sent', num: true, f: function (x) { return N(x.sent); } }, { h: 'failed', num: true, f: function (x) { return x.failed ? '<span class="dn">' + x.failed + '</span>' : '0'; } },
+               { h: 'left', num: true, f: function (x) { return N(x.remaining); } }], D.history)
+        : '<div class="empty">Nothing sent yet.</div>';
+
+      el.innerHTML = card('1 - Who gets it', segH, 'live counts, refreshed every time you open this')
+        + card('2 - What it says', tplH)
+        + card('3 - Fill in', fillH)
+        + card('Preview', '<div id="cpPrev" style="background:#fff;border-radius:12px;padding:18px;max-height:420px;overflow:auto"><div class="empty" style="color:#666">loading the preview...</div></div>', 'exactly what lands in their inbox')
+        + card('Send', sendH)
+        + card('Already sent', hist);
+
+      // `chips` is a local helper of another view, not a global - wire the two chip rows here instead
+      function wireChips(id, attr, fn) {
+        var box = el.querySelector('#' + id); if (!box) return;
+        box.addEventListener('click', function (ev) {
+          var b2 = ev.target.closest('[data-' + attr + ']'); if (!b2) return;
+          fn(b2.getAttribute('data-' + attr));
+        });
+      }
+      wireChips('cpSegs', 'seg', function (v) { st.seg = v; remember('inbox/campaigns', st, ['seg', 'tpl']); paint(); });
+      wireChips('cpTpls', 'tpl', function (v) { st.tpl = v; st.vars = {}; st.tested = false; st.camp = ''; remember('inbox/campaigns', st, ['seg', 'tpl']); paint(); });
+      Array.prototype.forEach.call(el.querySelectorAll('[data-var]'), function (inp) {
+        inp.oninput = function () { st.vars[inp.getAttribute('data-var')] = inp.value; clearTimeout(st._pt); st._pt = setTimeout(preview, 450); };
+      });
+      var nm = $('cpName'); if (nm) nm.oninput = function () { st.camp = nm.value; };
+      $('cpTest').onclick = doTest;
+      if (ready) $('cpSend').onclick = doSend;
+      preview();
+    }
+
+    function preview() {
+      post('/api/admin/campaign', { op: 'preview', tpl: st.tpl, vars: st.vars }).then(function (r) {
+        var box = $('cpPrev'); if (!box) return;
+        if (!r || r.error) { box.innerHTML = '<div class="empty" style="color:#a33">' + esc((r && r.error) || 'failed') + '</div>'; return; }
+        box.innerHTML = '<div style="color:#666;font:600 12px system-ui;margin-bottom:10px">Subject: <span style="color:#111">' + esc(r.subject) + '</span></div>' + r.html;
+      });
+    }
+
+    function doTest() {
+      var to = prompt('Send a test to which address?', 'milan@marginpad.io');
+      if (!to) return;
+      $('cpMsg').innerHTML = 'sending the test...';
+      post('/api/admin/campaign', { op: 'test', tpl: st.tpl, vars: st.vars, to: to }).then(function (r) {
+        if (r && r.ok) { st.tested = true; toast('Test sent to ' + to); paint(); $('cpMsg').innerHTML = '<b>Test sent to ' + esc(to) + '.</b> Read it, then the send button below is live.'; }
+        else { $('cpMsg').innerHTML = '<span class="dn">Test failed: ' + esc((r && r.error) || '?') + '</span>'; }
+      });
+    }
+
+    function doSend() {
+      var seg = segOf(st.seg), lim = Math.max(1, Math.min(300, +($('cpLimit') || {}).value || 100));
+      var name = ($('cpName') || {}).value || st.camp;
+      if (!name) { $('cpMsg').innerHTML = '<span class="dn">Give the campaign a name first.</span>'; return; }
+      if (!confirm('Send "' + st.tpl + '" to up to ' + lim + ' people in "' + seg.name + '"?\n\nNobody who already got campaign "' + name + '" will be mailed again.')) return;
+      st.sending = true; $('cpMsg').innerHTML = 'sending...';
+      post('/api/admin/campaign', { op: 'send', tpl: st.tpl, vars: st.vars, seg: st.seg, campaign: name, limit: lim }).then(function (r) {
+        st.sending = false;
+        if (!r || r.error) { $('cpMsg').innerHTML = '<span class="dn">' + esc((r && r.error) || 'failed') + (r && r.hint ? ' - ' + esc(r.hint) : '') + '</span>'; return; }
+        // the message has to survive the repaint it triggers, or the confirmation vanishes two seconds later
+        var msg = '<b>Sent ' + r.sent + '.</b> ' + (r.failed ? r.failed + ' failed. ' : '') + (r.remaining ? (r.remaining + ' still to go in this segment - press send again to continue.') : 'That is everyone in this segment.');
+        st.camp = name;
+        load(function () { var m = $('cpMsg'); if (m) m.innerHTML = msg; });
+        toast('Sent ' + r.sent + ' emails');
+      });
+    }
+
+    function load(after) {
+      J('/api/admin/campaign').then(function (d) {
+        if (!d || d.error) { el.innerHTML = card('Campaigns', '<div class="empty">' + esc((d && d.error) || 'could not load') + '</div>'); return; }
+        D = d; paint(); if (after) after();
+      });
+    }
+    el.innerHTML = SKEL; load();
+  } };
   VIEWS['inbox/mail'] = { render: function (el, arg) {
     var addrs = [];
     function paint(keepForm) {
