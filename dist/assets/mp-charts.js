@@ -711,7 +711,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
     var _lockedIds=[],_onIds=[],_wi=w.inds||{};INDS.forEach(function(t){if(MP_INDS[t[0]]&&!indAllowed())_lockedIds.push(t[0]);if(_wi[t[0]])_onIds.push(t[0]);});
-    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','pitchfork','forecast','text','hline','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
+    var tools={indicators:{ids:INDS.map(function(t){return t[0];}),on:_onIds,locked:_lockedIds,emaPeriodsNow:w.emaList||[21],smaPeriodsNow:w.smaList||[50]},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','pitchfork','forecast','measure','text','hline','vline'],timeframes:TFS.map(function(t){return t[0];}),currentTf:w.tf,currentTfLabel:tfWords(w.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+n+' candles are loaded, so barsAgo runs 0-'+(n-1)+' into the past; negative projects into the future (max -30)'};
     /* the structure a human would draw on: real pivots, the levels price kept respecting, and how many bars one screen holds */
     var piv=null,lvls=null,struct=null;
     try{var _k=Math.max(2,Math.min(9,Math.round(n/40))),_P=pivotsOf(bars,_k,16);
@@ -989,6 +989,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(pp2.length<2)return null;
       out.push(Object.assign({},base,{t:'poly',pts:pp2}));
       if(lbl)label(pp2[pp2.length-1].p);}
+    else if(sh==='measure'){ // the ranged box: price move, percent and candles between two anchors
+      if(!okp(a.p1)||!okp(a.p2))return _rej('measure needs two real prices',a);
+      var ml1=L(a.barsAgo1,12),ml2=L(a.barsAgo2,0);
+      if(Math.abs(ml1-ml2)<2)return _rej('a measure box needs its two anchors at least 2 candles apart',a);
+      out.push(Object.assign({},base,{t:'measure',l1:ml1,p1:snapBar(a.p1,a.barsAgo1),l2:ml2,p2:snapBar(a.p2,a.barsAgo2),w:1}));}
     else if(sh==='position'||sh==='rr'){ // the broker terminal's risk-reward block
       if(!okp(a.entry)||!okp(a.stop))return _rej('entry or stop is too far from the current price to be real (must sit between 0.4x and 2.5x of it)',a);
       /* THE SAME 1.5x RULE THE PLAN OBEYS (2026-09-19). The model could route around the plan by drawing the
