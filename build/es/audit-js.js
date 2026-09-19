@@ -126,6 +126,18 @@ function literals(src) {
   return out;
 }
 
+// A DICTIONARY IS NOT A DEFECT. mp-nav's MPI and mp-auth's AUTH_T hold the English strings ON PURPOSE - they
+// are the fallback every other language is measured against - and i18n.js IS the translation loader. Counting
+// them made the bundles look several hundred strings worse than they are. Cut the dictionary span out first.
+const DICTS = {
+  'mp-nav.js': /var MPI = \{.*?\};\r?\n/s,
+  'mp-auth.js': /AUTH_T\s*=\s*\{[\s\S]*?\};/,
+};
+const PACKED = new Set(['i18n.js']);                       // the loader itself: every string in it is a default
+// Pages that replace their own text at runtime from a translation pack of their own. They are reported apart,
+// because "2,314 English strings" on /es/academy/ is the EN master the page swaps out, not what a reader sees.
+const RUNTIME_PACK = [/\/es\/academy\//, /\/es\/spot\//];
+
 function scriptsOf(html) {
   const out = []; const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi; let m;
   while ((m = re.exec(html))) {
@@ -144,7 +156,7 @@ function walk(dir, out) {
   return out;
 }
 
-const F = { pages: [], bundles: [] };
+const F = { pages: [], packedPages: [], bundles: [] };
 
 if (!BUNDLES_ONLY) {
   const esPages = walk(path.join(DIST, 'es'), []).concat([path.join(DIST, 'app-es.html').split(path.sep).join('/')]).filter(p => fs.existsSync(p));
@@ -161,7 +173,10 @@ if (!BUNDLES_ONLY) {
         seen.set(k, (seen.get(k) || 0) + 1);
       }
     }
-    if (seen.size) F.pages.push({ page: url, n: seen.size, strings: [...seen.keys()] });
+    if (seen.size) {
+      const packed = RUNTIME_PACK.some(re => re.test(url));
+      (packed ? F.packedPages : F.pages).push({ page: url, n: seen.size, strings: [...seen.keys()] });
+    }
   }
 }
 
@@ -169,7 +184,9 @@ const BUNDLE_DIR = path.join(DIST, 'assets');
 let bundles = [];
 try { bundles = fs.readdirSync(BUNDLE_DIR).filter(f => f.endsWith('.js') && !/lightweight-charts|\.min\./.test(f)); } catch (e) {}
 for (const f of bundles) {
+  if (PACKED.has(f)) continue;
   let src = ''; try { src = fs.readFileSync(path.join(BUNDLE_DIR, f), 'utf8'); } catch (e) { continue; }
+  if (DICTS[f]) src = src.replace(DICTS[f], ' ');
   const seen = new Map();
   for (const L of literals(src)) {
     if (!candidate(L.s)) continue;
@@ -193,7 +210,11 @@ say('gen-pages translates static HTML only, so none of this is reached by the Sp
 say('');
 say('  ' + String(F.pages.length).padStart(4) + '  /es/ pages whose own inline script writes English');
 say('  ' + String(F.bundles.length).padStart(4) + '  shared bundles carrying English (they serve BOTH languages)');
-say('  ' + String(uniq.size).padStart(4) + '  distinct English strings in total');
+say('  ' + String(uniq.size).padStart(4) + '  distinct English strings a reader can actually meet');
+say('');
+say('  covered by a runtime pack, reported apart (the page swaps these out itself):');
+F.packedPages.forEach(p => say('  ' + String(p.n).padStart(4) + '  ' + p.page));
+say('  dictionaries and the i18n loader are not counted at all - an English default is the point of them.');
 say('');
 say('PAGES, worst first');
 for (const p of F.pages.sort((a, b) => b.n - a.n).slice(0, 30)) say('  ' + String(p.n).padStart(4) + '  ' + p.page);
